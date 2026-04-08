@@ -1,0 +1,85 @@
+
+ESBMC version 8.0.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-division_by_zero-item_denom-line6.py
+<unknown>:45: SyntaxWarning: invalid escape sequence '\d'
+Converting
+Generating GOTO Program
+GOTO program creation time: 10.117s
+GOTO program processing time: 0.010s
+Starting Bounded Model Checking
+Symex completed in: 0.032s (353 assignments)
+Caching time: 0.003s (removed 50 assertions)
+Slicing time: 0.001s (removed 194 assignments)
+Generated 208 VCC(s), 46 remaining after simplification (109 assignments)
+No solver specified; defaulting to z3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Z3 v4.8.12
+Runtime decision procedure: 0.569s
+Building error trace
+
+[Counterexample]
+
+
+State 2 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 19 column 3 function __ESBMC_list_create thread 0
+----------------------------------------------------
+  l->type = { .type=&list_type, .items=dynamic_2_value.items, .size=0 }
+
+State 20 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 19 column 3 function __ESBMC_list_create thread 0
+----------------------------------------------------
+  l->type = { .type=&list_type, .items=dynamic_11_value.items, .size=0 }
+
+State 26 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 64 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->value = { .value=&dynamic_14_array[0], .type_id=0, .size=0 }
+
+State 28 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 65 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->type_id = { .value=&dynamic_14_array[0], .type_id=0xAED305094B3D4A9F, .size=0 }
+
+State 29 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 66 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->size = { .value=&dynamic_14_array[0], .type_id=0xAED305094B3D4A9F, .size=8 }
+
+State 34 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 64 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->value = { .value=&dynamic_16_array[0], .type_id=4035265467554725888, .size=4035265467554725888 }
+
+State 36 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 65 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->type_id = { .value=&dynamic_16_array[0], .type_id=0xAED305094B3D4A9F, .size=4035265467554725888 }
+
+State 37 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 66 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->size = { .value=&dynamic_16_array[0], .type_id=0xAED305094B3D4A9F, .size=8 }
+
+State 42 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 64 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->value = { .value=&dynamic_18_array[0], .type_id=4035265467554725888, .size=4035265467554725888 }
+
+State 44 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 65 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->type_id = { .value=&dynamic_18_array[0], .type_id=0xAED305094B3D4A9F, .size=4035265467554725888 }
+
+State 45 file /build/esbmc-14wCF1/esbmc-8.0.0+fix1/src/c2goto/library/python/list.c line 66 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->size = { .value=&dynamic_18_array[0], .type_id=0xAED305094B3D4A9F, .size=8 }
+
+State 46 file /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-division_by_zero-item_denom-line6.py line 22 column 4 function __esbmc_driver__ thread 0
+----------------------------------------------------
+  idx = 0 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 47 file /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-division_by_zero-item_denom-line6.py line 23 column 4 function __esbmc_driver__ thread 0
+----------------------------------------------------
+  denom = 0 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 60 file /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-division_by_zero-item_denom-line6.py line 7 column 4 function analyze_me thread 0
+----------------------------------------------------
+Violated property:
+  file /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-division_by_zero-item_denom-line6.py line 7 column 4 function analyze_me
+  division_by_zero
+  denom != 0
+
+
+VERIFICATION FAILED
