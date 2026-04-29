@@ -1,0 +1,9 @@
+[93m
+Type checking warning:[0m
+
+ERROR: Module 'ast2json' not found.
+Please install it with: pip3 install ast2json
+
+ESBMC version 8.0.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing artifacts/research-pipeline/instrumented/examples_minimal_index_division.py_analyze_me_llm_analysis_suspected_bug_division_by_zero_item_div_denom.py

@@ -2,14 +2,87 @@ from __future__ import annotations
 
 import json
 import os
-import re
-from dataclasses import asdict
 from typing import Protocol
 from urllib import error, request
 
 from .models import CodeUnit, Finding
 
-FINDINGS_JSON_SCHEMA = {
+# ---------------------------------------------------------------------------
+# Shared prompt content
+# ---------------------------------------------------------------------------
+
+_SYSTEM_PROMPT = (
+    "Você é um analisador estático especializado em Python para um pipeline híbrido de pesquisa LLM + ESBMC.\n\n"
+
+    "Sua tarefa: analisar funções Python e gerar achados estruturados em dois tipos:\n"
+    "  1. TRILHA HEURÍSTICA (smell_heuristic): problemas de qualidade que NÃO podem ser verificados formalmente.\n"
+    "  2. TRILHA FORMAL (suspected_bug): erros de runtime que PODEM ser verificados pelo ESBMC "
+    "via bounded model checking.\n\n"
+
+    "## REGRAS DA TRILHA FORMAL\n"
+    "Marque verifiable=true SOMENTE para:\n"
+    "  - category='division_by_zero': divisão (/, //, %) com divisor VARIÁVEL que pode ser zero.\n"
+    "  - category='out_of_bounds': acesso indexado (lista[idx]) com índice VARIÁVEL que pode estar fora do intervalo.\n\n"
+    "NÃO marque verifiable=true quando:\n"
+    "  - O divisor ou índice é uma constante literal: x/2, arr[0], lst[-1], x%3.\n"
+    "  - Há guarda clara ANTES da operação: 'if denom != 0:', 'assert idx < len(arr)', 'if not items:', etc.\n"
+    "  - A variável foi validada por condicional ou assert antes do ponto suspeito.\n"
+    "  - O acesso é um slice com literais: lst[::-1], lst[1:3].\n\n"
+
+    "## CATEGORIAS DA TRILHA HEURÍSTICA\n"
+    "Use uma dessas categorias para achados smell_heuristic:\n"
+    "  - long_method: função com mais de 20 linhas\n"
+    "  - complex_conditional: muitos ramos ou condicionais aninhados (branch_count > 3)\n"
+    "  - many_parameters: mais de 4 parâmetros\n"
+    "  - missing_validation: parâmetros sem type hints ou sem validação de entrada\n"
+    "  - magic_number: valores numéricos hardcoded sem nome explicativo\n"
+    "  - poor_naming: nomes de variáveis ou parâmetros pouco claros (a, b, x, tmp, etc.)\n\n"
+
+    "## NÍVEIS DE CONFIANÇA\n"
+    "  - high: evidência forte, impacto claro, sem ambiguidade\n"
+    "  - medium: possível problema, depende do contexto de chamada\n"
+    "  - low: especulativo, improvável de causar problema real\n\n"
+
+    "## EXEMPLOS DE ACHADOS CORRETOS\n\n"
+
+    "### CASO 1 — division_by_zero real (verifiable=true)\n"
+    "Código: def calc(x: int, n: int) -> int: return x // n\n"
+    "Correto: verifiable=true, category='division_by_zero', expression='x // n', confidence='high'\n"
+    "Motivo: 'n' é variável sem guarda — pode ser zero.\n\n"
+
+    "### CASO 2 — divisor literal (verifiable=false)\n"
+    "Código: def half(x: int) -> float: return x / 2\n"
+    "Correto: verifiable=false — '2' é literal, nunca será zero. Não gere finding formal.\n\n"
+
+    "### CASO 3 — out_of_bounds real (verifiable=true)\n"
+    "Código: def get(lst: List[int], i: int) -> int: return lst[i]\n"
+    "Correto: verifiable=true, category='out_of_bounds', expression='lst[i]', confidence='high'\n"
+    "Motivo: 'i' é variável sem restrição de intervalo.\n\n"
+
+    "### CASO 4 — operação protegida por guarda (verifiable=false)\n"
+    "Código: def safe(lst, i): return lst[i] if 0 <= i < len(lst) else None\n"
+    "Correto: verifiable=false — a guarda 'if 0 <= i < len(lst)' protege o acesso.\n\n"
+
+    "### CASO 5 — smell sem bug formal\n"
+    "Código: def f(a, b, c, d, e): ...\n"
+    "Correto: finding_type='smell_heuristic', category='many_parameters', verifiable=false\n\n"
+
+    "### CASO 6 — código limpo, sem achados\n"
+    "Código: def add(a: int, b: int) -> int: return a + b\n"
+    "Correto: {\"findings\": []}  — retorne lista vazia.\n\n"
+
+    "## REGRAS DE SAÍDA\n"
+    "  - Retorne APENAS o objeto JSON com a chave 'findings'. Sem markdown, sem comentários.\n"
+    "  - evidence: snippets CURTOS do código real (máximo 1 linha por item).\n"
+    "  - explanation: clara e objetiva (2-4 frases sobre o risco ou problema).\n"
+    "  - IDs únicos, ex: analyze_me_division_by_zero_1\n"
+    "  - metadata.expression: expressão exata (ex: 'lst[i]', 'x // n').\n"
+    "  - metadata.line: linha absoluta no arquivo.\n"
+    "  - metadata.relative_line: linha relativa ao início da função (1 = primeira linha).\n"
+    "  - Se não houver problemas: {\"findings\": []}.\n"
+)
+
+_FINDINGS_JSON_SCHEMA = {
     "name": "pipeline_findings",
     "schema": {
         "type": "object",
@@ -65,151 +138,187 @@ FINDINGS_JSON_SCHEMA = {
 }
 
 
+def _build_user_prompt(unit: CodeUnit) -> str:
+    divisions = [op for op in unit.operations if op.kind == "division"]
+    subscripts = [op for op in unit.operations if op.kind == "subscript"]
+
+    def fmt_ops(ops: list) -> str:
+        if not ops:
+            return "  (nenhuma)"
+        return "\n".join(f"  - linha relativa {op.relative_line}: {op.expression}" for op in ops)
+
+    guards_str = (
+        "\n".join(f"  - {g}" for g in unit.guards)
+        if unit.guards
+        else "  (nenhuma guarda detectada)"
+    )
+
+    metadata = {
+        "path": str(unit.path),
+        "start_line": unit.start_line,
+        "end_line": unit.end_line,
+        "parameters": unit.parameters,
+        "type_hints": unit.type_hints,
+        "metrics": unit.metrics,
+    }
+
+    return (
+        f"Analise a função '{unit.qualname}' para o pipeline LLM + ESBMC.\n\n"
+        "OPERAÇÕES DETECTADAS PELA ANÁLISE ESTÁTICA:\n"
+        f"  Divisões/módulos (/, //, %):\n{fmt_ops(divisions)}\n"
+        f"  Acessos indexados (subscripts):\n{fmt_ops(subscripts)}\n\n"
+        f"GUARDAS/ASSERTS EXISTENTES:\n{guards_str}\n\n"
+        "CÓDIGO DA FUNÇÃO:\n"
+        f"```python\n{unit.source}\n```\n\n"
+        "METADADOS DA FUNÇÃO:\n"
+        f"{json.dumps(metadata, ensure_ascii=False, indent=2)}\n\n"
+        "Instruções:\n"
+        "1. Revise cada operação detectada para riscos de runtime (division_by_zero, out_of_bounds).\n"
+        "2. Se guardas existentes já protegem a operação, NÃO reporte como verifiable=true.\n"
+        "3. Identifique smells de qualidade de código presentes.\n"
+        "4. Para cada achado: explanation clara e evidence com trecho real do código.\n\n"
+        "Responda SOMENTE com JSON válido no schema solicitado."
+    )
+
+
+# ---------------------------------------------------------------------------
+# Protocol
+# ---------------------------------------------------------------------------
+
+
 class LLMAnalyzer(Protocol):
-    def analyze(self, unit: CodeUnit) -> list[Finding]:
-        ...
+    def analyze(self, unit: CodeUnit) -> list[Finding]: ...
 
 
-class MockLLMAnalyzer:
-    """Offline stand-in for LLM 1.
+# ---------------------------------------------------------------------------
+# Shared parsing logic
+# ---------------------------------------------------------------------------
 
-    The class uses deterministic heuristics so the rest of the pipeline can be
-    executed without API credentials while preserving the same interfaces.
-    """
 
-    def analyze(self, unit: CodeUnit) -> list[Finding]:
-        findings: list[Finding] = []
-        line_count = unit.metrics["line_count"]
-        parameter_count = unit.metrics["parameter_count"]
+def _coerce_findings(payload: dict) -> list[dict]:
+    findings = payload.get("findings")
+    if not isinstance(findings, list):
+        raise RuntimeError("JSON da LLM não contém a chave 'findings' no formato esperado.")
+    return findings
 
-        if line_count >= 20 or unit.metrics["branch_count"] >= 4:
-            findings.append(
-                Finding(
-                    id=f"{unit.qualname}:long_method",
-                    stage="llm_analysis",
-                    finding_type="smell_heuristic",
-                    category="long_method",
-                    title="Long Method",
-                    explanation=(
-                        "A unidade concentra muitos ramos ou linhas, o que tende "
-                        "a dificultar revisão, teste e manutenção."
+
+def _finding_from_dict(data: dict) -> Finding:
+    evidence_raw = data.get("evidence", [])
+    if isinstance(evidence_raw, str):
+        evidence = [evidence_raw]
+    elif isinstance(evidence_raw, list):
+        evidence = [str(item) for item in evidence_raw]
+    else:
+        evidence = [str(evidence_raw)]
+
+    metadata_raw = data.get("metadata", {})
+    if not isinstance(metadata_raw, dict):
+        metadata_raw = {}
+    metadata = {
+        "expression": str(metadata_raw.get("expression", "")),
+        "line": str(metadata_raw.get("line", "")),
+        "relative_line": str(metadata_raw.get("relative_line", "")),
+    }
+
+    return Finding(
+        id=str(data["id"]),
+        stage=str(data["stage"]),
+        finding_type=str(data["finding_type"]),
+        category=str(data["category"]),
+        title=str(data["title"]),
+        explanation=str(data["explanation"]),
+        evidence=evidence,
+        verifiable=bool(data["verifiable"]),
+        confidence=str(data["confidence"]),
+        metadata=metadata,
+    )
+
+
+_VERIFIABLE_OP_KIND: dict[str, str] = {
+    "division_by_zero": "division",
+    "out_of_bounds": "subscript",
+}
+
+
+def _normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]:
+    normalized: list[Finding] = []
+    seen_ids: set[str] = set()
+    for index, finding in enumerate(findings, start=1):
+        metadata = dict(finding.metadata)
+        verifiable = finding.verifiable
+        finding_type = finding.finding_type
+
+        if verifiable:
+            expected_op_kind = _VERIFIABLE_OP_KIND.get(finding.category)
+            if expected_op_kind is None:
+                # LLM marcou verifiable em categoria que não tem verificação formal — rebaixa
+                verifiable = False
+                finding_type = "smell_heuristic"
+            else:
+                expression = metadata.get("expression", "")
+                matched_op = next(
+                    (
+                        op
+                        for op in unit.operations
+                        if op.kind == expected_op_kind
+                        and (not expression or op.expression == expression)
                     ),
-                    evidence=[
-                        f"line_count={line_count}",
-                        f"branch_count={unit.metrics['branch_count']}",
-                    ],
-                    verifiable=False,
-                    confidence="medium",
+                    None,
                 )
+                if matched_op is not None:
+                    metadata["line"] = str(matched_op.line)
+                    metadata["relative_line"] = str(matched_op.relative_line)
+                else:
+                    # LLM alucinou: disse verifiable mas não há operação correspondente
+                    verifiable = False
+                    finding_type = "smell_heuristic"
+
+        candidate_id = finding.id.strip() or f"{unit.qualname}:llm:{index}"
+        if candidate_id in seen_ids:
+            candidate_id = f"{candidate_id}:{index}"
+        seen_ids.add(candidate_id)
+        normalized.append(
+            Finding(
+                id=candidate_id,
+                stage=finding.stage or "llm_analysis",
+                finding_type=finding_type,
+                category=finding.category,
+                title=finding.title,
+                explanation=finding.explanation,
+                evidence=finding.evidence,
+                verifiable=verifiable,
+                confidence=finding.confidence,
+                metadata=metadata,
             )
-
-        if parameter_count >= 6:
-            findings.append(
-                Finding(
-                    id=f"{unit.qualname}:excessive_parameters",
-                    stage="llm_analysis",
-                    finding_type="smell_heuristic",
-                    category="excessive_parameter_count",
-                    title="Excessive Parameter Count",
-                    explanation=(
-                        "A funcao recebe muitos parametros, sinalizando possivel "
-                        "baixa coesao ou concentracao excessiva de responsabilidade."
-                    ),
-                    evidence=[f"parameter_count={parameter_count}"],
-                    verifiable=False,
-                    confidence="medium",
-                )
-            )
-
-        for op in unit.operations:
-            if op.kind == "subscript":
-                expression_suffix = _slugify(op.expression)
-                findings.append(
-                    Finding(
-                        id=f"{unit.qualname}:subscript:{op.line}:{expression_suffix}",
-                        stage="llm_analysis",
-                        finding_type="suspected_bug",
-                        category="out_of_bounds",
-                        title="Possible Out-of-Bounds Access",
-                        explanation=(
-                            "Ha acesso indexado sem evidencias suficientes de que "
-                            "o indice esteja sempre dentro dos limites da colecao."
-                        ),
-                        evidence=[f"line={op.line}", f"expression={op.expression}"],
-                        verifiable=True,
-                        confidence="medium",
-                        metadata={
-                            "expression": op.expression,
-                            "line": str(op.line),
-                            "relative_line": str(op.relative_line),
-                        },
-                    )
-                )
-
-            if op.kind == "division":
-                expression_suffix = _slugify(op.expression)
-                findings.append(
-                    Finding(
-                        id=f"{unit.qualname}:division:{op.line}:{expression_suffix}",
-                        stage="llm_analysis",
-                        finding_type="suspected_bug",
-                        category="division_by_zero",
-                        title="Possible Division by Zero",
-                        explanation=(
-                            "Existe operacao de divisao ou modulo que pode depender "
-                            "de um denominador sem validacao explicita."
-                        ),
-                        evidence=[f"line={op.line}", f"expression={op.expression}"],
-                        verifiable=True,
-                        confidence="medium",
-                        metadata={
-                            "expression": op.expression,
-                            "line": str(op.line),
-                            "relative_line": str(op.relative_line),
-                        },
-                    )
-                )
-
-        if self._needs_validation_smell(unit):
-            findings.append(
-                Finding(
-                    id=f"{unit.qualname}:input_validation",
-                    stage="llm_analysis",
-                    finding_type="smell_heuristic",
-                    category="missing_input_validation",
-                    title="Missing Input Validation",
-                    explanation=(
-                        "A unidade manipula operacoes sensiveis sem guardas claras "
-                        "de pre-condicao, o que aumenta o risco de falhas."
-                    ),
-                    evidence=[
-                        f"critical_operations={sum(1 for op in unit.operations if op.kind in {'subscript', 'division'})}",
-                        f"guards={len(unit.guards)}",
-                    ],
-                    verifiable=False,
-                    confidence="medium",
-                )
-            )
-
-        return findings
-
-    def _needs_validation_smell(self, unit: CodeUnit) -> bool:
-        critical_ops = [op for op in unit.operations if op.kind in {"subscript", "division"}]
-        return bool(critical_ops) and not unit.guards
+        )
+    return normalized
 
 
-def _slugify(value: str) -> str:
-    slug = re.sub(r"[^a-zA-Z0-9]+", "_", value).strip("_").lower()
-    return slug or "expr"
+def _strip_markdown_json(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        # Remove opening fence (```json or ```)
+        lines = lines[1:]
+        # Remove closing fence
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+    return text
+
+
+# ---------------------------------------------------------------------------
+# OpenAI backend
+# ---------------------------------------------------------------------------
 
 
 class OpenAIResponsesAnalyzer:
-    """Real LLM analyzer backed by the OpenAI Responses API."""
+    """LLM analyzer backed by the OpenAI Responses API."""
 
     def __init__(
         self,
         api_key: str | None = None,
-        model: str = "gpt-5.4",
+        model: str = "gpt-4o",
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
     ) -> None:
@@ -219,7 +328,7 @@ class OpenAIResponsesAnalyzer:
         self.timeout_seconds = timeout_seconds
         if not self.api_key:
             raise ValueError(
-                "OPENAI_API_KEY nao configurada. Defina a variavel de ambiente ou passe api_key explicitamente."
+                "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
             )
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
@@ -228,72 +337,20 @@ class OpenAIResponsesAnalyzer:
             "input": [
                 {
                     "role": "system",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": (
-                                "Voce analisa codigo Python para um pipeline de pesquisa LLM + ESBMC. "
-                                "Retorne apenas os dados estruturados solicitados, sem markdown, sem comentarios "
-                                "e sem texto extra. A resposta deve ser um objeto com a chave 'findings', "
-                                "contendo uma lista. "
-                                "Cada finding precisa ter: "
-                                "id, stage, finding_type, category, title, explanation, evidence, "
-                                "verifiable, confidence e metadata. "
-                                "Use finding_type='smell_heuristic' para smells e "
-                                "finding_type='suspected_bug' para bugs ou vulnerabilidades suspeitas. "
-                                "Marque verifiable=true apenas quando a suspeita puder virar uma propriedade "
-                                "formal local do tipo divisao por zero ou acesso fora dos limites. "
-                                "Use as categorias 'division_by_zero' e 'out_of_bounds' nesses casos. "
-                                "Use stage='llm_analysis'. "
-                                "Gere IDs unicos e estaveis por finding. "
-                                "Evidencias devem ser curtas. Metadata deve sempre incluir as chaves "
-                                "'expression', 'line' e 'relative_line'. Quando nao se aplicarem, use string vazia."
-                            ),
-                        }
-                    ],
+                    "content": [{"type": "input_text", "text": _SYSTEM_PROMPT}],
                 },
                 {
                     "role": "user",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": self._build_user_prompt(unit),
-                        }
-                    ],
+                    "content": [{"type": "input_text", "text": _build_user_prompt(unit)}],
                 },
             ],
-            "text": {"format": {"type": "json_schema", **FINDINGS_JSON_SCHEMA}},
+            "text": {"format": {"type": "json_schema", **_FINDINGS_JSON_SCHEMA}},
         }
 
         raw_response = self._post_json(payload)
         findings_data = self._extract_findings_payload(raw_response)
-        findings = [self._finding_from_dict(item) for item in findings_data]
-        return self._normalize_findings(unit, findings)
-
-    def _build_user_prompt(self, unit: CodeUnit) -> str:
-        operations = [asdict(op) for op in unit.operations]
-        summary = {
-            "path": str(unit.path),
-            "name": unit.name,
-            "qualname": unit.qualname,
-            "start_line": unit.start_line,
-            "end_line": unit.end_line,
-            "parameters": unit.parameters,
-            "type_hints": unit.type_hints,
-            "loops": unit.loops,
-            "conditionals": unit.conditionals,
-            "guards": unit.guards,
-            "metrics": unit.metrics,
-            "operations": operations,
-            "source": unit.source,
-        }
-        return (
-            "Analise a unidade abaixo e gere findings uteis para um pipeline hibrido.\n"
-            "Nao confunda code smell com bug.\n"
-            "Se um acesso indexado ou divisao ja estiver protegido por guardas claros, evite falso positivo.\n"
-            "Responda somente com JSON no schema pedido.\n\n"
-            f"{json.dumps(summary, ensure_ascii=False, indent=2)}"
-        )
+        findings = [_finding_from_dict(item) for item in findings_data]
+        return _normalize_findings(unit, findings)
 
     def _post_json(self, payload: dict) -> dict:
         body = json.dumps(payload).encode("utf-8")
@@ -318,92 +375,82 @@ class OpenAIResponsesAnalyzer:
     def _extract_findings_payload(self, response_data: dict) -> list[dict]:
         if isinstance(response_data.get("output_text"), str):
             parsed = json.loads(response_data["output_text"])
-            return self._coerce_findings(parsed)
+            return _coerce_findings(parsed)
 
         for item in response_data.get("output", []):
             for content in item.get("content", []):
                 if content.get("type") in {"output_text", "text"} and content.get("text"):
                     parsed = json.loads(content["text"])
-                    return self._coerce_findings(parsed)
+                    return _coerce_findings(parsed)
 
-        raise RuntimeError("A resposta da OpenAI nao contem texto JSON analisavel.")
+        raise RuntimeError("A resposta da OpenAI não contém texto JSON analisável.")
 
-    def _coerce_findings(self, payload: dict) -> list[dict]:
-        findings = payload.get("findings")
-        if not isinstance(findings, list):
-            raise RuntimeError("JSON da LLM nao contem a chave 'findings' no formato esperado.")
-        return findings
 
-    def _finding_from_dict(self, data: dict) -> Finding:
-        evidence_raw = data.get("evidence", [])
-        if isinstance(evidence_raw, str):
-            evidence = [evidence_raw]
-        elif isinstance(evidence_raw, list):
-            evidence = [str(item) for item in evidence_raw]
-        else:
-            evidence = [str(evidence_raw)]
+# ---------------------------------------------------------------------------
+# Anthropic (Claude) backend
+# ---------------------------------------------------------------------------
 
-        metadata_raw = data.get("metadata", {})
-        if not isinstance(metadata_raw, dict):
-            metadata_raw = {}
-        metadata = {
-            "expression": str(metadata_raw.get("expression", "")),
-            "line": str(metadata_raw.get("line", "")),
-            "relative_line": str(metadata_raw.get("relative_line", "")),
+
+class AnthropicAnalyzer:
+    """LLM analyzer backed by the Anthropic Messages API (Claude)."""
+
+    _API_URL = "https://api.anthropic.com/v1/messages"
+    _API_VERSION = "2023-06-01"
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str = "claude-sonnet-4-6",
+        timeout_seconds: int = 60,
+    ) -> None:
+        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+        self.model = model
+        self.timeout_seconds = timeout_seconds
+        if not self.api_key:
+            raise ValueError(
+                "ANTHROPIC_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
+            )
+
+    def analyze(self, unit: CodeUnit) -> list[Finding]:
+        payload = {
+            "model": self.model,
+            "max_tokens": 4096,
+            "system": _SYSTEM_PROMPT,
+            "messages": [
+                {"role": "user", "content": _build_user_prompt(unit)},
+            ],
         }
 
-        return Finding(
-            id=str(data["id"]),
-            stage=str(data["stage"]),
-            finding_type=str(data["finding_type"]),
-            category=str(data["category"]),
-            title=str(data["title"]),
-            explanation=str(data["explanation"]),
-            evidence=evidence,
-            verifiable=bool(data["verifiable"]),
-            confidence=str(data["confidence"]),
-            metadata=metadata,
-        )
+        raw_response = self._post_json(payload)
+        findings_data = self._extract_findings_payload(raw_response)
+        findings = [_finding_from_dict(item) for item in findings_data]
+        return _normalize_findings(unit, findings)
 
-    def _normalize_findings(self, unit: CodeUnit, findings: list[Finding]) -> list[Finding]:
-        normalized: list[Finding] = []
-        seen_ids: set[str] = set()
-        for index, finding in enumerate(findings, start=1):
-            metadata = dict(finding.metadata)
-            if finding.verifiable:
-                expression = metadata.get("expression", "")
-                if expression and "relative_line" not in metadata:
-                    matched_op = next(
-                        (
-                            op
-                            for op in unit.operations
-                            if op.expression == expression
-                            and (
-                                (finding.category == "division_by_zero" and op.kind == "division")
-                                or (finding.category == "out_of_bounds" and op.kind == "subscript")
-                            )
-                        ),
-                        None,
-                    )
-                    if matched_op is not None:
-                        metadata["line"] = str(matched_op.line)
-                        metadata["relative_line"] = str(matched_op.relative_line)
-            candidate_id = finding.id.strip() or f"{unit.qualname}:llm:{index}"
-            if candidate_id in seen_ids:
-                candidate_id = f"{candidate_id}:{index}"
-            seen_ids.add(candidate_id)
-            normalized.append(
-                Finding(
-                    id=candidate_id,
-                    stage=finding.stage or "llm_analysis",
-                    finding_type=finding.finding_type,
-                    category=finding.category,
-                    title=finding.title,
-                    explanation=finding.explanation,
-                    evidence=finding.evidence,
-                    verifiable=finding.verifiable,
-                    confidence=finding.confidence,
-                    metadata=metadata,
-                )
-            )
-        return normalized
+    def _post_json(self, payload: dict) -> dict:
+        body = json.dumps(payload).encode("utf-8")
+        req = request.Request(
+            self._API_URL,
+            data=body,
+            headers={
+                "x-api-key": self.api_key,
+                "anthropic-version": self._API_VERSION,
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout_seconds) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except error.HTTPError as exc:
+            details = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"Falha ao chamar Anthropic API: {exc.code} {details}") from exc
+        except error.URLError as exc:
+            raise RuntimeError(f"Falha de rede ao chamar Anthropic API: {exc.reason}") from exc
+
+    def _extract_findings_payload(self, response_data: dict) -> list[dict]:
+        for block in response_data.get("content", []):
+            if block.get("type") == "text":
+                text = _strip_markdown_json(block["text"])
+                parsed = json.loads(text)
+                return _coerce_findings(parsed)
+        raise RuntimeError("A resposta da Anthropic não contém texto JSON analisável.")

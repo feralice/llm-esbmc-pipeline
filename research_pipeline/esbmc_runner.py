@@ -14,7 +14,10 @@ def run_esbmc(
     esbmc_command: list[str] | None = None,
     timeout_seconds: int = 30,
 ) -> ESBMCResult:
-    command = esbmc_command or ["esbmc", "--python", "python3", "--incremental-bmc"]
+    command = _build_esbmc_command(
+        esbmc_command=esbmc_command,
+        esbmc_flags=instrumentation.esbmc_flags,
+    )
     executable = shutil.which(command[0])
     if executable is None:
         return ESBMCResult(
@@ -28,9 +31,6 @@ def run_esbmc(
     full_command = [*command, str(Path(instrumentation.output_path))]
     try:
         env = os.environ.copy()
-        env["TMPDIR"] = "/tmp"
-        env["TMP"] = "/tmp"
-        env["TEMP"] = "/tmp"
         site_packages = _find_local_site_packages()
         if site_packages is not None:
             existing = env.get("PYTHONPATH")
@@ -245,3 +245,14 @@ def _find_local_site_packages() -> Path | None:
         if candidate.exists():
             return candidate
     return None
+
+
+def _build_esbmc_command(
+    esbmc_command: list[str] | None,
+    esbmc_flags: list[str],
+) -> list[str]:
+    command = list(esbmc_command or ["esbmc", "--python", "python3", "--incremental-bmc"])
+    for flag in esbmc_flags:
+        if flag not in command:
+            command.append(flag)
+    return command

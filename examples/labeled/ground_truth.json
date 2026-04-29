@@ -1,0 +1,24 @@
+{
+  "div_zero_real.py": {
+    "expected_findings": [
+      {"function": "divide", "category": "division_by_zero", "verifiable": true, "line": 2}
+    ]
+  },
+  "div_zero_guarded.py": {
+    "expected_findings": []
+  },
+  "oob_real.py": {
+    "expected_findings": [
+      {"function": "get", "category": "out_of_bounds", "verifiable": true, "line": 5}
+    ]
+  },
+  "oob_guarded.py": {
+    "expected_findings": []
+  },
+  "smells_only.py": {
+    "expected_findings": []
+  },
+  "clean.py": {
+    "expected_findings": []
+  }
+}

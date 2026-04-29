@@ -19,7 +19,7 @@ class _UnitCollector(ast.NodeVisitor):
         self.scope.pop()
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        if node.name.startswith("test_"):
+        if self._should_skip(node.name):
             return
         self.units.append(self._build_unit(node))
         self.scope.append(node.name)
@@ -27,12 +27,20 @@ class _UnitCollector(ast.NodeVisitor):
         self.scope.pop()
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
-        if node.name.startswith("test_"):
+        if self._should_skip(node.name):
             return
         self.units.append(self._build_unit(node))
         self.scope.append(node.name)
         self.generic_visit(node)
         self.scope.pop()
+
+    def _should_skip(self, name: str) -> bool:
+        if name.startswith("test_"):
+            return True
+        # main() de nível de módulo é apenas orquestração, sem propriedades formais úteis
+        if name == "main" and not self.scope:
+            return True
+        return False
 
     def _build_unit(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> CodeUnit:
         extractor = _StructureExtractor(self.source_lines)

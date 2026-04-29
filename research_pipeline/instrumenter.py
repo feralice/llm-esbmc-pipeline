@@ -37,6 +37,7 @@ def instrument_unit(
         instrumented_source=instrumented_source,
         assertions=[formal_property.assertion],
         assumptions=formal_property.assumptions,
+        esbmc_flags=formal_property.esbmc_flags,
         output_path=output_path,
     )
 

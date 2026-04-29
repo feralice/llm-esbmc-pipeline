@@ -6,59 +6,79 @@ from pathlib import Path
 from .models import ESBMCResult, FinalResult, Finding, FormalProperty
 
 
+def _interpretation(
+    classification: str,
+    finding: Finding,
+    formal_property: FormalProperty | None,
+    esbmc_result: ESBMCResult | None,
+) -> str:
+    expr = finding.metadata.get("expression", "")
+    cat = finding.category
+    conf = finding.confidence
+    expr_str = f" ({expr})" if expr else ""
+
+    if classification == "smell_heuristic":
+        return (
+            f"Smell heurístico de categoria '{cat}' com confiança '{conf}'. "
+            "Sem verificação formal — melhoria de qualidade de código."
+        )
+
+    if classification == "vulnerability_potential_with_partial_evidence":
+        return (
+            f"Suspeita de '{cat}'{expr_str} com confiança '{conf}'. "
+            "Verificação formal não executada (ESBMC indisponível ou skipped)."
+        )
+
+    if classification == "formally_confirmed_bug":
+        prop = formal_property.assertion if formal_property else "?"
+        return (
+            f"Bug formalmente confirmado: '{cat}'{expr_str}. "
+            f"O ESBMC violou a propriedade: {prop}. "
+            "Existe ao menos um contraexemplo real."
+        )
+
+    if classification == "unconfirmed_hypothesis":
+        return (
+            f"Suspeita de '{cat}'{expr_str} não confirmada pelo ESBMC "
+            "dentro do escopo analisado. "
+            "Pode ser falso positivo da LLM ou limitação do modelo formal."
+        )
+
+    # inconclusive_case
+    esbmc_summary = esbmc_result.summary if esbmc_result else "sem detalhes"
+    return (
+        f"Caso inconclusivo para '{cat}'{expr_str}. "
+        f"ESBMC: {esbmc_summary}. "
+        "Pode ser limitação da ferramenta, timeout ou erro de modelagem."
+    )
+
+
 def consolidate_result(
     unit_name: str,
+    source_file: str,
     finding: Finding,
     formal_property: FormalProperty | None,
     esbmc_result: ESBMCResult | None,
 ) -> FinalResult:
     if finding.finding_type == "smell_heuristic":
-        return FinalResult(
-            unit_name=unit_name,
-            finding=finding,
-            formal_property=formal_property,
-            esbmc_result=esbmc_result,
-            final_classification="smell_heuristic",
-            interpretation="Achado heuristico explicado pelo analisador, sem prova formal direta.",
-        )
-
-    if esbmc_result is None or esbmc_result.status == "skipped":
-        return FinalResult(
-            unit_name=unit_name,
-            finding=finding,
-            formal_property=formal_property,
-            esbmc_result=esbmc_result,
-            final_classification="vulnerability_potential_with_partial_evidence",
-            interpretation="Ha suspeita relevante, mas a validacao formal nao foi executada.",
-        )
-
-    if esbmc_result.status == "violation_found":
-        return FinalResult(
-            unit_name=unit_name,
-            finding=finding,
-            formal_property=formal_property,
-            esbmc_result=esbmc_result,
-            final_classification="formally_confirmed_bug",
-            interpretation="A hipotese heuristica foi convertida em propriedade e violada pelo ESBMC.",
-        )
-
-    if esbmc_result.status == "no_violation_found":
-        return FinalResult(
-            unit_name=unit_name,
-            finding=finding,
-            formal_property=formal_property,
-            esbmc_result=esbmc_result,
-            final_classification="unconfirmed_hypothesis",
-            interpretation="Nao houve confirmacao da suspeita dentro do escopo analisado.",
-        )
+        classification = "smell_heuristic"
+    elif esbmc_result is None or esbmc_result.status == "skipped":
+        classification = "vulnerability_potential_with_partial_evidence"
+    elif esbmc_result.status == "violation_found":
+        classification = "formally_confirmed_bug"
+    elif esbmc_result.status == "no_violation_found":
+        classification = "unconfirmed_hypothesis"
+    else:
+        classification = "inconclusive_case"
 
     return FinalResult(
         unit_name=unit_name,
+        source_file=source_file,
         finding=finding,
         formal_property=formal_property,
         esbmc_result=esbmc_result,
-        final_classification="inconclusive_case",
-        interpretation="A suspeita nao pode ser decidida por limitacoes da ferramenta ou da modelagem.",
+        final_classification=classification,
+        interpretation=_interpretation(classification, finding, formal_property, esbmc_result),
     )
 
 

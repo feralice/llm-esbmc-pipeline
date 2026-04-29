@@ -1,8 +1,41 @@
 from __future__ import annotations
 
 import ast
+from dataclasses import dataclass
 
 from .models import CodeUnit, Finding, FormalProperty
+
+
+@dataclass(frozen=True)
+class _ESBMCPropertyProfile:
+    category: str
+    hypothesis: str
+    esbmc_flags: list[str]
+    notes: str
+
+
+_PROPERTY_PROFILES: dict[str, _ESBMCPropertyProfile] = {
+    "division_by_zero": _ESBMCPropertyProfile(
+        category="division_by_zero",
+        hypothesis="O denominador deve ser diferente de zero antes da operacao.",
+        esbmc_flags=["--no-bounds-check"],
+        notes=(
+            "Propriedade local gerada a partir de divisao detectada pelo analisador. "
+            "Perfil de flags baseado na documentacao do ESBMC: mantem a checagem de divisao "
+            "por zero e desabilita bounds-check, que ja e verificado em outro finding."
+        ),
+    ),
+    "out_of_bounds": _ESBMCPropertyProfile(
+        category="out_of_bounds",
+        hypothesis="O indice deve permanecer dentro dos limites da colecao.",
+        esbmc_flags=["--no-div-by-zero-check"],
+        notes=(
+            "Propriedade local para acesso indexado. Perfil de flags baseado na documentacao "
+            "do ESBMC: mantem a checagem de bounds e desabilita divisao por zero, irrelevante "
+            "para este finding."
+        ),
+    ),
+}
 
 
 def formalize_finding(unit: CodeUnit, finding: Finding) -> FormalProperty | None:
@@ -10,21 +43,24 @@ def formalize_finding(unit: CodeUnit, finding: Finding) -> FormalProperty | None
         return None
 
     if finding.category == "division_by_zero":
+        profile = _PROPERTY_PROFILES[finding.category]
         expression = finding.metadata.get("expression", "")
         denominator = _extract_denominator(expression)
         assertion = f"({denominator}) != 0" if denominator else "False"
         return FormalProperty(
             finding_id=finding.id,
             category=finding.category,
-            hypothesis="O denominador deve ser diferente de zero antes da operacao.",
+            hypothesis=profile.hypothesis,
             assertion=assertion,
             assumptions=_build_reachability_assumptions(unit, skip_category="division_by_zero"),
-            notes="Propriedade local gerada a partir de divisao detectada pelo analisador.",
+            esbmc_flags=list(profile.esbmc_flags),
+            notes=profile.notes,
             insertion_line=_parse_relative_line(finding),
             absolute_line=_parse_absolute_line(finding),
         )
 
     if finding.category == "out_of_bounds":
+        profile = _PROPERTY_PROFILES[finding.category]
         expression = finding.metadata.get("expression", "")
         base, index = _extract_subscript_parts(expression)
         if base and index:
@@ -34,10 +70,11 @@ def formalize_finding(unit: CodeUnit, finding: Finding) -> FormalProperty | None
         return FormalProperty(
             finding_id=finding.id,
             category=finding.category,
-            hypothesis="O indice deve permanecer dentro dos limites da colecao.",
+            hypothesis=profile.hypothesis,
             assertion=assertion,
             assumptions=[],
-            notes="Propriedade local para acesso indexado.",
+            esbmc_flags=list(profile.esbmc_flags),
+            notes=profile.notes,
             insertion_line=_parse_relative_line(finding),
             absolute_line=_parse_absolute_line(finding),
         )

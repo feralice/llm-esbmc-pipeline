@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from research_pipeline.esbmc_runner import _build_esbmc_command
+from research_pipeline.formalizer import formalize_finding
 from research_pipeline.pipeline import run_pipeline
 
 
@@ -77,3 +80,49 @@ def test_preprocess_ignores_test_functions_and_annotations(tmp_path: Path) -> No
 
     assert "test_target" not in unit_names
     assert "List[int]" not in expressions
+
+
+def test_esbmc_command_scopes_flags_by_finding_category() -> None:
+    div_command = _build_esbmc_command(None, ["--no-bounds-check"])
+    oob_command = _build_esbmc_command(None, ["--no-div-by-zero-check"])
+
+    assert "--no-bounds-check" in div_command
+    assert "--no-div-by-zero-check" not in div_command
+
+    assert "--no-div-by-zero-check" in oob_command
+    assert "--no-bounds-check" not in oob_command
+
+
+def test_formalizer_attaches_asserts_and_esbmc_flags() -> None:
+    unit = SimpleNamespace(
+        operations=[
+            SimpleNamespace(kind="subscript", expression="values[idx]", line=5, relative_line=2),
+            SimpleNamespace(kind="division", expression="item // denom", line=6, relative_line=3),
+        ]
+    )
+
+    div_finding = SimpleNamespace(
+        id="f1",
+        category="division_by_zero",
+        verifiable=True,
+        metadata={"expression": "item // denom", "line": "6", "relative_line": "3"},
+    )
+    oob_finding = SimpleNamespace(
+        id="f2",
+        category="out_of_bounds",
+        verifiable=True,
+        metadata={"expression": "values[idx]", "line": "5", "relative_line": "2"},
+    )
+
+    div_property = formalize_finding(unit, div_finding)
+    oob_property = formalize_finding(unit, oob_finding)
+
+    assert div_property is not None
+    assert div_property.assertion == "(denom) != 0"
+    assert div_property.esbmc_flags == ["--no-bounds-check"]
+    assert div_property.assumptions == ["(0 <= (idx)) and ((idx) < len(values))"]
+
+    assert oob_property is not None
+    assert oob_property.assertion == "(0 <= (idx)) and ((idx) < len(values))"
+    assert oob_property.esbmc_flags == ["--no-div-by-zero-check"]
+    assert oob_property.assumptions == []

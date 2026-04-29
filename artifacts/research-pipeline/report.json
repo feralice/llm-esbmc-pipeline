@@ -1,16 +1,16 @@
 [
   {
     "unit_name": "analyze_me",
+    "source_file": "examples/minimal_index_division.py",
     "finding": {
-      "id": "analyze_me-out_of_bounds-values_idx-line5",
-      "stage": "llm_analysis",
+      "id": "analyze_me_out_of_bounds_1",
+      "stage": "code_review",
       "finding_type": "suspected_bug",
       "category": "out_of_bounds",
-      "title": "Acesso indexado sem validação de limites",
-      "explanation": "O índice idx é usado para acessar values sem qualquer guarda local que assegure 0 <= idx < len(values). Isso pode causar IndexError se idx estiver fora dos limites válidos.",
+      "title": "Possible index out of bounds access",
+      "explanation": "The function accesses 'values[idx]' without verifying 'idx' is within the valid range, potentially causing an IndexError if 'idx' is out of bounds.",
       "evidence": [
-        "values[idx] sem guarda",
-        "nenhum condicional ou guarda local"
+        "item = values[idx]"
       ],
       "verifiable": true,
       "confidence": "high",
@@ -21,7 +21,7 @@
       }
     },
     "formal_property": {
-      "finding_id": "analyze_me-out_of_bounds-values_idx-line5",
+      "finding_id": "analyze_me_out_of_bounds_1",
       "category": "out_of_bounds",
       "hypothesis": "O indice deve permanecer dentro dos limites da colecao.",
       "assertion": "(0 <= (idx)) and ((idx) < len(values))",
@@ -31,46 +31,49 @@
       "absolute_line": 5
     },
     "esbmc_result": {
-      "finding_id": "analyze_me-out_of_bounds-values_idx-line5",
+      "finding_id": "analyze_me_out_of_bounds_1",
       "status": "violation_found",
       "command": [
         "esbmc",
-        "/mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-out_of_bounds-values_idx-line5.py"
+        "--python",
+        "python3",
+        "--incremental-bmc",
+        "--no-div-by-zero-check",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipeline/instrumented/analyze_me_out_of_bounds_1.py"
       ],
       "returncode": 1,
       "summary": "ESBMC encontrou violacao: out_of_bounds (tmp$2). Local: analyze_me, linha 6.",
-      "stdout": "",
-      "stderr": "ESBMC confirmou violacao.\nLocal: analyze_me, linha 6\nTipo de propriedade: out_of_bounds\nPropriedade: tmp$2\nContraexemplo relevante:\n- idx = 4\n- denom = 1\nAvisos:\n- invalid escape sequence '\\d'\nLog bruto completo: /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/logs/analyze_me-out_of_bounds-values_idx-line5.log",
+      "stdout": "\u001b[93m\nType checking warning:\u001b[0m\n\n",
+      "stderr": "ESBMC confirmou violacao.\nLocal: analyze_me, linha 6\nTipo de propriedade: out_of_bounds\nPropriedade: tmp$2\nContraexemplo relevante:\n- idx = -8932139217840400384\nAvisos:\n- invalid escape sequence '\\d'\nLog bruto completo: /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipeline/logs/analyze_me_out_of_bounds_1.log",
       "details": {
         "warnings": [
           "invalid escape sequence '\\d'"
         ],
         "counterexample": [
-          "idx = 4",
-          "denom = 1"
+          "idx = -8932139217840400384"
         ],
         "property_kind": "out_of_bounds",
         "property_text": "tmp$2",
         "location": "analyze_me, linha 6",
         "function": "analyze_me"
       },
-      "raw_log_path": "/mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/logs/analyze_me-out_of_bounds-values_idx-line5.log"
+      "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipeline/logs/analyze_me_out_of_bounds_1.log"
     },
     "final_classification": "formally_confirmed_bug",
-    "interpretation": "A hipotese heuristica foi convertida em propriedade e violada pelo ESBMC."
+    "interpretation": "Bug formalmente confirmado: 'out_of_bounds' (values[idx]). O ESBMC violou a propriedade: (0 <= (idx)) and ((idx) < len(values)). Existe ao menos um contraexemplo real."
   },
   {
     "unit_name": "analyze_me",
+    "source_file": "examples/minimal_index_division.py",
     "finding": {
-      "id": "analyze_me-division_by_zero-item_denom-line6",
-      "stage": "llm_analysis",
+      "id": "analyze_me_division_by_zero_1",
+      "stage": "code_review",
       "finding_type": "suspected_bug",
       "category": "division_by_zero",
-      "title": "Divisão inteira sem validação de denominador",
-      "explanation": "A expressão item // denom é executada sem verificar se denom é diferente de zero. Isso pode causar ZeroDivisionError quando denom == 0.",
+      "title": "Possible division by zero",
+      "explanation": "The function performs an integer division 'item // denom' without checking if 'denom' is zero, which may result in a ZeroDivisionError.",
       "evidence": [
-        "item // denom sem guarda",
-        "nenhum teste para denom != 0"
+        "return item // denom"
       ],
       "verifiable": true,
       "confidence": "high",
@@ -81,7 +84,7 @@
       }
     },
     "formal_property": {
-      "finding_id": "analyze_me-division_by_zero-item_denom-line6",
+      "finding_id": "analyze_me_division_by_zero_1",
       "category": "division_by_zero",
       "hypothesis": "O denominador deve ser diferente de zero antes da operacao.",
       "assertion": "(denom) != 0",
@@ -93,16 +96,20 @@
       "absolute_line": 6
     },
     "esbmc_result": {
-      "finding_id": "analyze_me-division_by_zero-item_denom-line6",
+      "finding_id": "analyze_me_division_by_zero_1",
       "status": "violation_found",
       "command": [
         "esbmc",
-        "/mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/instrumented/analyze_me-division_by_zero-item_denom-line6.py"
+        "--python",
+        "python3",
+        "--incremental-bmc",
+        "--no-bounds-check",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipeline/instrumented/analyze_me_division_by_zero_1.py"
       ],
       "returncode": 1,
       "summary": "ESBMC encontrou violacao: division_by_zero (denom != 0). Local: analyze_me, linha 7.",
-      "stdout": "",
-      "stderr": "ESBMC confirmou violacao.\nLocal: analyze_me, linha 7\nTipo de propriedade: division_by_zero\nPropriedade: denom != 0\nContraexemplo relevante:\n- idx = 0\n- denom = 0\nAvisos:\n- invalid escape sequence '\\d'\nLog bruto completo: /mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/logs/analyze_me-division_by_zero-item_denom-line6.log",
+      "stdout": "\u001b[93m\nType checking warning:\u001b[0m\n\n",
+      "stderr": "ESBMC confirmou violacao.\nLocal: analyze_me, linha 7\nTipo de propriedade: division_by_zero\nPropriedade: denom != 0\nContraexemplo relevante:\n- idx = 0\n- denom = 0\nAvisos:\n- invalid escape sequence '\\d'\nLog bruto completo: /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipeline/logs/analyze_me_division_by_zero_1.log",
       "details": {
         "warnings": [
           "invalid escape sequence '\\d'"
@@ -116,9 +123,9 @@
         "location": "analyze_me, linha 7",
         "function": "analyze_me"
       },
-      "raw_log_path": "/mnt/c/Users/ferna/esbmc/experiments/research_pipeline_prototype/artifacts/research-pipeline/logs/analyze_me-division_by_zero-item_denom-line6.log"
+      "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipeline/logs/analyze_me_division_by_zero_1.log"
     },
     "final_classification": "formally_confirmed_bug",
-    "interpretation": "A hipotese heuristica foi convertida em propriedade e violada pelo ESBMC."
+    "interpretation": "Bug formalmente confirmado: 'division_by_zero' (item // denom). O ESBMC violou a propriedade: (denom) != 0. Existe ao menos um contraexemplo real."
   }
 ]

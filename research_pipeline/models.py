@@ -50,6 +50,7 @@ class FormalProperty:
     hypothesis: str
     assertion: str
     assumptions: list[str]
+    esbmc_flags: list[str]
     notes: str
     insertion_line: int | None = None
     absolute_line: int | None = None
@@ -62,6 +63,7 @@ class InstrumentationResult:
     instrumented_source: str
     assertions: list[str]
     assumptions: list[str]
+    esbmc_flags: list[str]
     output_path: Path
 
 
@@ -81,6 +83,7 @@ class ESBMCResult:
 @dataclass
 class FinalResult:
     unit_name: str
+    source_file: str
     finding: Finding
     formal_property: FormalProperty | None
     esbmc_result: ESBMCResult | None
