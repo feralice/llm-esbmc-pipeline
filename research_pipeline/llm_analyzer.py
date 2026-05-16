@@ -15,70 +15,99 @@ _SYSTEM_PROMPT = (
     "Você é um analisador estático especializado em Python para um pipeline híbrido de pesquisa LLM + ESBMC.\n\n"
 
     "Sua tarefa: analisar funções Python e gerar achados estruturados em dois tipos:\n"
-    "  1. TRILHA HEURÍSTICA (smell_heuristic): problemas de qualidade que NÃO podem ser verificados formalmente.\n"
-    "  2. TRILHA FORMAL (suspected_bug): erros de runtime que PODEM ser verificados pelo ESBMC "
-    "via bounded model checking.\n\n"
+    "  1. TRILHA FORMAL (suspected_bug, verifiable=true): erros de runtime que PODEM causar exceção "
+    "e que o ESBMC pode verificar formalmente via bounded model checking.\n"
+    "  2. TRILHA HEURÍSTICA (smell_heuristic, verifiable=false): problemas de qualidade de código "
+    "que prejudicam legibilidade ou manutenção, mas não causam exceção diretamente.\n\n"
 
-    "## REGRAS DA TRILHA FORMAL\n"
-    "Marque verifiable=true SOMENTE para:\n"
-    "  - category='division_by_zero': divisão (/, //, %) com divisor VARIÁVEL que pode ser zero.\n"
-    "  - category='out_of_bounds': acesso indexado (lista[idx]) com índice VARIÁVEL que pode estar fora do intervalo.\n\n"
-    "NÃO marque verifiable=true quando:\n"
+    "## O QUE É UM BUG FORMAL\n\n"
+
+    "### division_by_zero\n"
+    "Acontece quando o Python executa uma divisão (/, //, %) e o denominador vale zero em tempo de execução. "
+    "Isso lança ZeroDivisionError e encerra o programa abruptamente.\n"
+    "Um bug é real quando o denominador é uma VARIÁVEL ou expressão que PODE assumir zero "
+    "e não há nada no código que garanta que ele nunca será zero antes da divisão.\n"
+    "Pergunta-chave: 'Existe algum valor dos parâmetros que faria o denominador ser zero?' "
+    "Se sim, e não há guarda, marque verifiable=true.\n\n"
+
+    "### out_of_bounds\n"
+    "Acontece quando o Python acessa lst[i] e o índice i está fora do intervalo válido "
+    "[0, len(lst)-1]. Isso lança IndexError.\n"
+    "Um bug é real quando o índice é uma VARIÁVEL que pode ser negativo, maior ou igual ao tamanho "
+    "da lista, e não há verificação prévia que garanta que o acesso é seguro.\n"
+    "Pergunta-chave: 'Existe algum valor dos parâmetros que faria o índice cair fora da lista?' "
+    "Se sim, e não há guarda, marque verifiable=true.\n\n"
+
+    "## QUANDO NÃO MARCAR verifiable=true\n"
     "  - O divisor ou índice é uma constante literal: x/2, arr[0], lst[-1], x%3.\n"
-    "  - Há guarda clara ANTES da operação: 'if denom != 0:', 'assert idx < len(arr)', 'if not items:', etc.\n"
-    "  - A variável foi validada por condicional ou assert antes do ponto suspeito.\n"
+    "  - Há verificação ANTES da operação: 'if denom != 0:', 'if 0 <= i < len(lst):', "
+    "'assert idx < len(arr)', 'if not items:', etc.\n"
     "  - O acesso é um slice com literais: lst[::-1], lst[1:3].\n\n"
 
-    "## CATEGORIAS DA TRILHA HEURÍSTICA\n"
-    "Use uma dessas categorias para achados smell_heuristic:\n"
-    "  - long_method: função com mais de 20 linhas\n"
-    "  - complex_conditional: muitos ramos ou condicionais aninhados (branch_count > 3)\n"
-    "  - many_parameters: mais de 4 parâmetros\n"
-    "  - missing_validation: parâmetros sem type hints ou sem validação de entrada\n"
-    "  - magic_number: valores numéricos hardcoded sem nome explicativo\n"
-    "  - poor_naming: nomes de variáveis ou parâmetros pouco claros (a, b, x, tmp, etc.)\n\n"
+    "## O QUE SÃO SMELLS DE CÓDIGO\n"
+    "Smells não causam exceção mas indicam problemas de design ou legibilidade. "
+    "Analise a função como um todo e reporte o que realmente está presente:\n"
+    "  - long_method: função excessivamente longa, difícil de entender de uma vez\n"
+    "  - complex_conditional: lógica condicional com muitos ramos, aninhamentos ou condições compostas\n"
+    "  - many_parameters: lista de parâmetros longa, indica que a função faz coisas demais\n"
+    "  - missing_validation: parâmetros sem type hints e sem qualquer verificação de entrada\n"
+    "  - magic_number: valores numéricos sem nome ou contexto que explique seu significado\n"
+    "  - poor_naming: nomes de 1 letra (a, b, x, n), abreviações obscuras ou genéricos (tmp, val, data, res)\n\n"
 
     "## NÍVEIS DE CONFIANÇA\n"
-    "  - high: evidência forte, impacto claro, sem ambiguidade\n"
-    "  - medium: possível problema, depende do contexto de chamada\n"
-    "  - low: especulativo, improvável de causar problema real\n\n"
+    "  - high: a evidência no código é clara e direta, sem ambiguidade\n"
+    "  - medium: possível problema, mas depende do contexto de uso\n"
+    "  - low: especulativo ou improvável de causar problema real\n\n"
 
-    "## EXEMPLOS DE ACHADOS CORRETOS\n\n"
+    "## EXEMPLOS\n\n"
 
-    "### CASO 1 — division_by_zero real (verifiable=true)\n"
+    "### CASO 1 — division_by_zero (verifiable=true)\n"
     "Código: def calc(x: int, n: int) -> int: return x // n\n"
-    "Correto: verifiable=true, category='division_by_zero', expression='x // n', confidence='high'\n"
-    "Motivo: 'n' é variável sem guarda — pode ser zero.\n\n"
+    "Análise: 'n' é parâmetro livre — se o chamador passar 0, o programa quebra com ZeroDivisionError. "
+    "Não há nenhuma verificação antes da divisão.\n"
+    "Resultado: verifiable=true, category='division_by_zero', confidence='high'\n\n"
 
-    "### CASO 2 — divisor literal (verifiable=false)\n"
+    "### CASO 2 — divisor literal (sem finding formal)\n"
     "Código: def half(x: int) -> float: return x / 2\n"
-    "Correto: verifiable=false — '2' é literal, nunca será zero. Não gere finding formal.\n\n"
+    "Análise: o denominador é 2, uma constante. Nunca será zero.\n"
+    "Resultado: não gere finding formal para essa divisão.\n\n"
 
-    "### CASO 3 — out_of_bounds real (verifiable=true)\n"
+    "### CASO 3 — out_of_bounds (verifiable=true)\n"
     "Código: def get(lst: List[int], i: int) -> int: return lst[i]\n"
-    "Correto: verifiable=true, category='out_of_bounds', expression='lst[i]', confidence='high'\n"
-    "Motivo: 'i' é variável sem restrição de intervalo.\n\n"
+    "Análise: 'i' é parâmetro livre sem restrição. Se i >= len(lst) ou i < 0, lança IndexError. "
+    "Não há guarda alguma.\n"
+    "Resultado: verifiable=true, category='out_of_bounds', confidence='high'\n\n"
 
-    "### CASO 4 — operação protegida por guarda (verifiable=false)\n"
+    "### CASO 4 — acesso protegido por guarda (verifiable=false)\n"
     "Código: def safe(lst, i): return lst[i] if 0 <= i < len(lst) else None\n"
-    "Correto: verifiable=false — a guarda 'if 0 <= i < len(lst)' protege o acesso.\n\n"
+    "Análise: a expressão condicional garante que o acesso só ocorre quando i está dentro dos limites.\n"
+    "Resultado: verifiable=false — não há risco real.\n\n"
 
-    "### CASO 5 — smell sem bug formal\n"
-    "Código: def f(a, b, c, d, e): ...\n"
-    "Correto: finding_type='smell_heuristic', category='many_parameters', verifiable=false\n\n"
+    "### CASO 5 — função com múltiplos smells\n"
+    "Código: def proc(a, b, c, d, e, f):\n"
+    "            x = a + b\n"
+    "            if x > 0:\n"
+    "                if c > 0: x += c\n"
+    "                else: x -= c\n"
+    "            elif b < 0: x += d + e + f\n"
+    "            return x\n"
+    "Análise: seis parâmetros (lista longa), if aninhado dentro de if/elif (lógica complexa), "
+    "todos os nomes são letras únicas (péssima legibilidade).\n"
+    "Resultado: three findings — many_parameters, complex_conditional, poor_naming. Todos verifiable=false.\n\n"
 
-    "### CASO 6 — código limpo, sem achados\n"
+    "### CASO 6 — código limpo\n"
     "Código: def add(a: int, b: int) -> int: return a + b\n"
-    "Correto: {\"findings\": []}  — retorne lista vazia.\n\n"
+    "Análise: operação simples, sem divisão, sem acesso indexado, sem smells relevantes.\n"
+    "Resultado: {\"findings\": []} — lista vazia.\n\n"
 
     "## REGRAS DE SAÍDA\n"
     "  - Retorne APENAS o objeto JSON com a chave 'findings'. Sem markdown, sem comentários.\n"
-    "  - evidence: snippets CURTOS do código real (máximo 1 linha por item).\n"
-    "  - explanation: clara e objetiva (2-4 frases sobre o risco ou problema).\n"
-    "  - IDs únicos, ex: analyze_me_division_by_zero_1\n"
-    "  - metadata.expression: expressão exata (ex: 'lst[i]', 'x // n').\n"
+    "  - evidence: trecho EXATO do código (máximo 1 linha por item).\n"
+    "  - explanation: 2-4 frases explicando o risco concreto ou o problema de qualidade.\n"
+    "  - IDs únicos no formato: nomefuncao_categoria_N (ex: get_out_of_bounds_1).\n"
+    "  - metadata.expression: expressão exata envolvida (ex: 'lst[i]', 'x // n').\n"
     "  - metadata.line: linha absoluta no arquivo.\n"
-    "  - metadata.relative_line: linha relativa ao início da função (1 = primeira linha).\n"
+    "  - metadata.relative_line: linha relativa ao início da função (1 = primeira linha da função).\n"
     "  - Se não houver problemas: {\"findings\": []}.\n"
 )
 
@@ -221,15 +250,15 @@ def _finding_from_dict(data: dict) -> Finding:
     }
 
     return Finding(
-        id=str(data["id"]),
-        stage=str(data["stage"]),
-        finding_type=str(data["finding_type"]),
-        category=str(data["category"]),
-        title=str(data["title"]),
-        explanation=str(data["explanation"]),
+        id=str(data.get("id") or "unknown"),
+        stage=str(data.get("stage") or "llm_analysis"),
+        finding_type=str(data.get("finding_type") or "smell_heuristic"),
+        category=str(data.get("category") or "unknown"),
+        title=str(data.get("title") or ""),
+        explanation=str(data.get("explanation") or ""),
         evidence=evidence,
-        verifiable=bool(data["verifiable"]),
-        confidence=str(data["confidence"]),
+        verifiable=bool(data.get("verifiable", False)),
+        confidence=str(data.get("confidence") or "low"),
         metadata=metadata,
     )
 
@@ -268,6 +297,7 @@ def _normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding
                 if matched_op is not None:
                     metadata["line"] = str(matched_op.line)
                     metadata["relative_line"] = str(matched_op.relative_line)
+                    finding_type = "suspected_bug"
                 else:
                     # LLM alucinou: disse verifiable mas não há operação correspondente
                     verifiable = False
@@ -305,6 +335,76 @@ def _strip_markdown_json(text: str) -> str:
             lines = lines[:-1]
         text = "\n".join(lines).strip()
     return text
+
+
+# ---------------------------------------------------------------------------
+# Chat Completions backend (Ollama, LM Studio, qualquer OpenAI-compatible)
+# ---------------------------------------------------------------------------
+
+
+class ChatCompletionsAnalyzer:
+    """Analyzer para qualquer API compatível com OpenAI Chat Completions (Ollama, LM Studio, etc.)."""
+
+    def __init__(
+        self,
+        base_url: str = "http://localhost:11434/v1",
+        model: str = "llama3.2",
+        api_key: str = "ollama",
+        timeout_seconds: int = 120,
+    ) -> None:
+        self.base_url = base_url.rstrip("/") + "/chat/completions"
+        self.model = model
+        self.api_key = api_key
+        self.timeout_seconds = timeout_seconds
+
+    def analyze(self, unit: CodeUnit) -> list[Finding]:
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": _build_user_prompt(unit)},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0,
+            "stream": False,
+        }
+        raw_response = self._post_json(payload)
+        findings_data = self._extract_findings_payload(raw_response)
+        findings = [_finding_from_dict(item) for item in findings_data]
+        return _normalize_findings(unit, findings)
+
+    def _post_json(self, payload: dict) -> dict:
+        body = json.dumps(payload).encode("utf-8")
+        req = request.Request(
+            self.base_url,
+            data=body,
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout_seconds) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except error.HTTPError as exc:
+            details = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
+        except error.URLError as exc:
+            raise RuntimeError(
+                f"Falha de rede ao chamar {self.base_url}: {exc.reason}\n"
+                "Verifique se o Ollama está rodando com: ollama serve"
+            ) from exc
+
+    def _extract_findings_payload(self, response_data: dict) -> list[dict]:
+        choices = response_data.get("choices", [])
+        if choices:
+            content = choices[0].get("message", {}).get("content", "")
+            if content:
+                text = _strip_markdown_json(content)
+                parsed = json.loads(text)
+                return _coerce_findings(parsed)
+        raise RuntimeError("Resposta da API não contém conteúdo JSON analisável.")
 
 
 # ---------------------------------------------------------------------------

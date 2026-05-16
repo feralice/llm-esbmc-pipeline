@@ -1,7 +1,7 @@
 {
   "div_zero_real.py": {
     "expected_findings": [
-      {"function": "divide", "category": "division_by_zero", "verifiable": true, "line": 2}
+      {"function": "divide", "category": "division_by_zero", "verifiable": true}
     ]
   },
   "div_zero_guarded.py": {
@@ -9,14 +9,18 @@
   },
   "oob_real.py": {
     "expected_findings": [
-      {"function": "get", "category": "out_of_bounds", "verifiable": true, "line": 5}
+      {"function": "get", "category": "out_of_bounds", "verifiable": true}
     ]
   },
   "oob_guarded.py": {
     "expected_findings": []
   },
   "smells_only.py": {
-    "expected_findings": []
+    "expected_findings": [
+      {"function": "proc", "category": "many_parameters",    "verifiable": false},
+      {"function": "proc", "category": "complex_conditional","verifiable": false},
+      {"function": "proc", "category": "poor_naming",        "verifiable": false}
+    ]
   },
   "clean.py": {
     "expected_findings": []

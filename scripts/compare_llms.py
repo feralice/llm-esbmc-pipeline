@@ -11,6 +11,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from dotenv import load_dotenv
+load_dotenv(REPO_ROOT / ".env")
+
 from research_pipeline.pipeline import build_analyzer
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.models import Finding

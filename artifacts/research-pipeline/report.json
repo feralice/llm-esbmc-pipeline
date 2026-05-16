@@ -4,11 +4,11 @@
     "source_file": "examples/minimal_index_division.py",
     "finding": {
       "id": "analyze_me_out_of_bounds_1",
-      "stage": "code_review",
+      "stage": "formal",
       "finding_type": "suspected_bug",
       "category": "out_of_bounds",
-      "title": "Possible index out of bounds access",
-      "explanation": "The function accesses 'values[idx]' without verifying 'idx' is within the valid range, potentially causing an IndexError if 'idx' is out of bounds.",
+      "title": "IndexError risk due to unguarded list access",
+      "explanation": "The index 'idx' is passed as a parameter and is used to access the 'values' list without any validation. If 'idx' is out of the valid range (negative or >= len(values)), this will cause an IndexError.",
       "evidence": [
         "item = values[idx]"
       ],
@@ -26,7 +26,10 @@
       "hypothesis": "O indice deve permanecer dentro dos limites da colecao.",
       "assertion": "(0 <= (idx)) and ((idx) < len(values))",
       "assumptions": [],
-      "notes": "Propriedade local para acesso indexado.",
+      "esbmc_flags": [
+        "--no-div-by-zero-check"
+      ],
+      "notes": "Propriedade local para acesso indexado. Perfil de flags baseado na documentacao do ESBMC: mantem a checagem de bounds e desabilita divisao por zero, irrelevante para este finding.",
       "insertion_line": 2,
       "absolute_line": 5
     },
@@ -67,11 +70,11 @@
     "source_file": "examples/minimal_index_division.py",
     "finding": {
       "id": "analyze_me_division_by_zero_1",
-      "stage": "code_review",
+      "stage": "formal",
       "finding_type": "suspected_bug",
       "category": "division_by_zero",
-      "title": "Possible division by zero",
-      "explanation": "The function performs an integer division 'item // denom' without checking if 'denom' is zero, which may result in a ZeroDivisionError.",
+      "title": "Potential ZeroDivisionError due to division without guard",
+      "explanation": "The denominator 'denom' is used in a division operation without a guard. If 'denom' is zero, this will cause a ZeroDivisionError, terminating the program.",
       "evidence": [
         "return item // denom"
       ],
@@ -91,7 +94,10 @@
       "assumptions": [
         "(0 <= (idx)) and ((idx) < len(values))"
       ],
-      "notes": "Propriedade local gerada a partir de divisao detectada pelo analisador.",
+      "esbmc_flags": [
+        "--no-bounds-check"
+      ],
+      "notes": "Propriedade local gerada a partir de divisao detectada pelo analisador. Perfil de flags baseado na documentacao do ESBMC: mantem a checagem de divisao por zero e desabilita bounds-check, que ja e verificado em outro finding.",
       "insertion_line": 3,
       "absolute_line": 6
     },

@@ -3,12 +3,17 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
+import subprocess
 import sys
+import webbrowser
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+
+from dotenv import load_dotenv
+load_dotenv(REPO_ROOT / ".env")
 
 from research_pipeline.pipeline import run_pipeline_multi
 
@@ -50,17 +55,16 @@ Exemplos:
     )
     parser.add_argument(
         "--llm-backend",
-        choices=["openai", "anthropic"],
+        choices=["openai", "anthropic", "ollama"],
         default="openai",
-        help="Backend LLM. 'anthropic' usa Claude; 'openai' usa modelos OpenAI. (padrão: anthropic)",
+        help="Backend LLM. 'ollama' roda modelos locais. (padrão: openai)",
     )
     parser.add_argument(
         "--llm-model",
         default=None,
         help=(
-            "Modelo a usar. Padrão: 'claude-sonnet-4-6' para anthropic, 'gpt-4o' para openai. "
-            "Exemplos Claude: claude-opus-4-7, claude-haiku-4-5-20251001. "
-            "Exemplos OpenAI: gpt-4o, gpt-4o-mini, o1."
+            "Modelo a usar. Padrões: 'claude-sonnet-4-6' (anthropic), 'gpt-4o' (openai), 'llama3.2' (ollama). "
+            "Exemplos Ollama: llama3.2, mistral, phi3, gemma3."
         ),
     )
     parser.add_argument(
@@ -73,6 +77,11 @@ Exemplos:
         default=None,
         help="Chave de API Anthropic. Se omitida, usa ANTHROPIC_API_KEY do ambiente.",
     )
+    parser.add_argument(
+        "--ollama-base-url",
+        default=None,
+        help="URL base do Ollama. (padrão: http://localhost:11434/v1)",
+    )
     return parser
 
 
@@ -83,9 +92,7 @@ def _resolve_api_keys(args: argparse.Namespace) -> tuple[str | None, str | None]
     if args.llm_backend == "anthropic" and not anthropic_key:
         print(
             "Erro: backend 'anthropic' selecionado, mas ANTHROPIC_API_KEY nao esta configurada.\n"
-            "Defina a variavel de ambiente ou passe --anthropic-api-key.\n"
-            "Exemplo no terminal atual:\n"
-            "  export ANTHROPIC_API_KEY='sua-chave-aqui'",
+            "Defina no arquivo .env ou passe --anthropic-api-key.",
             file=sys.stderr,
         )
         raise SystemExit(2)
@@ -93,9 +100,7 @@ def _resolve_api_keys(args: argparse.Namespace) -> tuple[str | None, str | None]
     if args.llm_backend == "openai" and not openai_key:
         print(
             "Erro: backend 'openai' selecionado, mas OPENAI_API_KEY nao esta configurada.\n"
-            "Defina a variavel de ambiente ou passe --openai-api-key.\n"
-            "Exemplo no terminal atual:\n"
-            "  export OPENAI_API_KEY='sua-chave-aqui'",
+            "Defina no arquivo .env ou passe --openai-api-key.",
             file=sys.stderr,
         )
         raise SystemExit(2)
@@ -124,11 +129,51 @@ def main() -> int:
         llm_model=args.llm_model,
         openai_api_key=openai_key,
         anthropic_api_key=anthropic_key,
+        ollama_base_url=getattr(args, "ollama_base_url", None),
     )
 
+    report_path = Path(args.output_dir) / "report.json"
     print(json.dumps([result.to_dict() for result in results], indent=2, ensure_ascii=False))
-    print(f"\nRelatório salvo em: {Path(args.output_dir) / 'report.json'}", file=sys.stderr)
+    print(f"\nRelatório JSON salvo em: {report_path}", file=sys.stderr)
+
+    html_path = _generate_html(report_path)
+    if html_path:
+        print(f"Relatório HTML salvo em: {html_path}", file=sys.stderr)
+        _open_browser(html_path)
+
     return 0
+
+
+def _generate_html(report_path: Path) -> Path | None:
+    sys.path.insert(0, str(Path(__file__).parent))
+    try:
+        from report_html import generate_html, _load_ground_truth
+    except ImportError:
+        return None
+
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    gt_path = REPO_ROOT / "examples" / "labeled" / "ground_truth.json"
+    gt = _load_ground_truth(gt_path)
+    html_path = report_path.with_suffix(".html")
+    html_path.write_text(generate_html(report, str(report_path), gt), encoding="utf-8")
+    return html_path
+
+
+def _open_browser(path: Path) -> None:
+    # WSL: converte para caminho Windows e abre com explorer
+    try:
+        win_path = subprocess.check_output(
+            ["wslpath", "-w", str(path)], text=True
+        ).strip()
+        subprocess.Popen(["explorer.exe", win_path])
+        return
+    except Exception:
+        pass
+    # Fallback: webbrowser padrão
+    try:
+        webbrowser.open(path.as_uri())
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

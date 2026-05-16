@@ -8,19 +8,19 @@ Parsing /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/research-pipel
 <unknown>:45: SyntaxWarning: invalid escape sequence '\d'
 Converting
 Generating GOTO Program
-GOTO program creation time: 0.367s
-GOTO program processing time: 0.003s
+GOTO program creation time: 1.451s
+GOTO program processing time: 0.005s
 Checking base case, k = 1
 Starting Bounded Model Checking
-Symex completed in: 0.021s (400 assignments)
-Caching time: 0.001s (removed 52 assertions)
+Symex completed in: 0.039s (400 assignments)
+Caching time: 0.003s (removed 52 assertions)
 Slicing time: 0.001s (removed 234 assignments)
 Generated 162 VCC(s), 37 remaining after simplification (114 assignments)
 No solver specified; defaulting to z3
 Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
-Encoding to solver time: 0.003s
+Encoding to solver time: 0.007s
 Solving with solver Z3 v4.8.12
-Runtime decision procedure: 0.261s
+Runtime decision procedure: 0.495s
 Building error trace
 
 [Counterexample]
