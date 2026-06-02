@@ -1,0 +1,55 @@
+{
+  "dataset_name": "python-smells-long-method",
+  "category": "long_method",
+  "total_items": 3,
+  "items": [
+    {
+      "id": "scrapy_cmdline_long_method",
+      "source": "real",
+      "source_project": "scrapy",
+      "source_file": "scrapy/cmdline.py",
+      "file": "scrapy_cmdline.py",
+      "function": "execute",
+      "expected_label": "smell",
+      "expected_category": "long_method",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "execute() handles arg parsing, command lookup, settings config, logging and run in one body"
+    },
+    {
+      "id": "tqdm_format_meter_long_method",
+      "source": "real",
+      "source_project": "tqdm",
+      "source_file": "tqdm/_tqdm.py",
+      "file": "tqdm_format_meter.py",
+      "function": "format_meter",
+      "expected_label": "smell",
+      "expected_category": "long_method",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "format_meter handles ETA, rate, units, bar rendering, custom format and ASCII/unicode in one body"
+    },
+    {
+      "id": "black_format_str_long_method",
+      "source": "real",
+      "source_project": "black",
+      "source_file": "black.py",
+      "file": "black_format_str.py",
+      "function": "format_str",
+      "expected_label": "smell",
+      "expected_category": "long_method",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "format_str mixes encoding, parsing, indentation, and output normalization"
+    }
+  ]
+}

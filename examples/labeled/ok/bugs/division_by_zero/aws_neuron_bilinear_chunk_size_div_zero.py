@@ -1,3 +1,7 @@
+# Extracted from aws-neuron/nki-samples — AWS Neuron NKI kernel samples
+# Source: AWS Neuron GitHub issue #125 / PR #126
+# Bug: step_size = chunk_size - 1 is zero when chunk_size == 1, causing ZeroDivisionError
+# Real fix: added assertion assert chunk_size > 1 before computing step_size
 import math
 
 

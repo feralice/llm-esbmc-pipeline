@@ -5,14 +5,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .models import (
-    CLASSIFICATION_ESBMC_INCONCLUSIVE,
-    CLASSIFICATION_ESBMC_NATIVE_BUG,
-    CLASSIFICATION_HEURISTIC_SMELL,
-    CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC,
-    CLASSIFICATION_LLM_FALSE_POSITIVE,
-    CLASSIFICATION_LLM_MISSED_ESBMC_BUG,
-    CLASSIFICATION_NOT_CONFIRMED,
-    CLASSIFICATION_SKIPPED,
     ESBMCDirectResult,
     Finding,
 )
@@ -22,7 +14,7 @@ from .preprocess import preprocess_file
 
 @dataclass
 class EvalCounts:
-    # LLM vs. ground truth
+    # LLM vs. ground truth — global
     bug_tp: int = 0
     bug_fp: int = 0
     bug_fn: int = 0
@@ -45,6 +37,29 @@ class EvalCounts:
     not_confirmed_within_bound: int = 0
     esbmc_inconclusive: int = 0
     skipped_not_verifiable: int = 0
+
+    # Per-category breakdown: {category: {"tp": int, "fp": int, "fn": int}}
+    per_category: dict = None
+
+    def __post_init__(self):
+        if self.per_category is None:
+            self.per_category = {}
+
+    def add_category_tp(self, category: str) -> None:
+        self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["tp"] += 1
+
+    def add_category_fp(self, category: str) -> None:
+        self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fp"] += 1
+
+    def add_category_fn(self, category: str) -> None:
+        self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
+
+    def merge_category(self, other: "EvalCounts") -> None:
+        for cat, counts in other.per_category.items():
+            d = self.per_category.setdefault(cat, {"tp": 0, "fp": 0, "fn": 0})
+            d["tp"] += counts["tp"]
+            d["fp"] += counts["fp"]
+            d["fn"] += counts["fn"]
 
 
 def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[dict]]]:
@@ -102,7 +117,7 @@ def _expected_from_dataset_item(item: dict) -> dict:
 
 def _match(generated: list[Finding], expected: list[dict]) -> tuple[int, int, int]:
     matched: set[int] = set()
-    tp = fn = 0
+    tp = fp = fn = 0
     for exp in expected:
         idx = next(
             (i for i, g in enumerate(generated) if i not in matched and g.category == exp["category"]),
@@ -115,6 +130,34 @@ def _match(generated: list[Finding], expected: list[dict]) -> tuple[int, int, in
             fn += 1
     fp = sum(1 for i in range(len(generated)) if i not in matched)
     return tp, fp, fn
+
+
+def _match_with_categories(
+    generated: list[Finding],
+    expected: list[dict],
+) -> tuple[int, int, int, list[tuple[str, str]]]:
+    """Like _match but also returns per-finding (category, verdict) pairs: tp/fp/fn."""
+    matched: set[int] = set()
+    tp = fp = fn = 0
+    verdicts: list[tuple[str, str]] = []
+    for exp in expected:
+        cat = exp["category"]
+        idx = next(
+            (i for i, g in enumerate(generated) if i not in matched and g.category == cat),
+            None,
+        )
+        if idx is not None:
+            matched.add(idx)
+            tp += 1
+            verdicts.append((cat, "tp"))
+        else:
+            fn += 1
+            verdicts.append((cat, "fn"))
+    for i, g in enumerate(generated):
+        if i not in matched:
+            fp += 1
+            verdicts.append((g.category, "fp"))
+    return tp, fp, fn, verdicts
 
 
 def evaluate_file(
@@ -147,8 +190,8 @@ def evaluate_file(
     exp_bugs   = [e for e in expected if e.get("verifiable") is True]
     exp_smells = [e for e in expected if e.get("verifiable") is False]
 
-    bug_tp, bug_fp, bug_fn       = _match(bugs, exp_bugs)
-    smell_tp, smell_fp, smell_fn = _match(smells, exp_smells)
+    bug_tp, bug_fp, bug_fn, bug_verdicts     = _match_with_categories(bugs, exp_bugs)
+    smell_tp, smell_fp, smell_fn, smell_verdicts = _match_with_categories(smells, exp_smells)
 
     counts.bug_tp   = bug_tp
     counts.bug_fp   = bug_fp
@@ -157,6 +200,14 @@ def evaluate_file(
     counts.smell_fp = smell_fp
     counts.smell_fn = smell_fn
     counts.hallucination_count = len(hallucinations)
+
+    for cat, verdict in bug_verdicts + smell_verdicts:
+        if verdict == "tp":
+            counts.add_category_tp(cat)
+        elif verdict == "fp":
+            counts.add_category_fp(cat)
+        elif verdict == "fn":
+            counts.add_category_fn(cat)
 
     # ---- ESBMC direct evaluation ----
     direct = run_esbmc_direct(
@@ -224,6 +275,7 @@ def evaluate_model(
         total.esbmc_direct_tp += c.esbmc_direct_tp
         total.esbmc_direct_fp += c.esbmc_direct_fp
         total.esbmc_direct_fn += c.esbmc_direct_fn
+        total.merge_category(c)
 
     return total
 

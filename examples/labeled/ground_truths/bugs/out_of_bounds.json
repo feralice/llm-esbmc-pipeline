@@ -1,10 +1,11 @@
 {
   "dataset_name": "python-bugs-out-of-bounds",
   "category": "out_of_bounds",
-  "total_items": 2,
+  "total_items": 5,
   "items": [
     {
       "id": "bugsinpy_scrapy_18_out_of_bounds",
+      "source": "real",
       "source_dataset": "BugsInPy",
       "source_project": "scrapy",
       "source_bug_id": "18",
@@ -17,10 +18,12 @@
       "expression": "content_disposition.split(';')[1].split('=')[1]",
       "verifiable": true,
       "should_go_to_esbmc": true,
-      "confidence": "medium"
+      "confidence": "medium",
+      "should_be_detected": true
     },
     {
       "id": "bugsinpy_thefuck_9_out_of_bounds",
+      "source": "real",
       "source_dataset": "BugsInPy",
       "source_project": "thefuck",
       "source_bug_id": "9",
@@ -33,7 +36,64 @@
       "expression": "script_parts.pop(upstream_option_index)",
       "verifiable": true,
       "should_go_to_esbmc": true,
-      "confidence": "high"
+      "confidence": "high",
+      "should_be_detected": true
+    },
+    {
+      "id": "bugsinpy_keras_38_out_of_bounds",
+      "source": "real",
+      "source_dataset": "BugsInPy",
+      "source_project": "keras",
+      "source_bug_id": "38",
+      "file": "keras_38_out_of_bounds.py",
+      "function": "get_config",
+      "expected_label": "bug",
+      "expected_category": "out_of_bounds",
+      "expected_type": "suspected_bug",
+      "line": 2,
+      "expression": "input_shape[0]",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "medium",
+      "should_be_detected": true
+    },
+    {
+      "id": "bugsinpy_black_17_out_of_bounds",
+      "source": "real",
+      "source_dataset": "BugsInPy",
+      "source_project": "black",
+      "source_bug_id": "17",
+      "file": "black_17_out_of_bounds.py",
+      "function": "lib2to3_parse",
+      "expected_label": "bug",
+      "expected_category": "out_of_bounds",
+      "expected_type": "suspected_bug",
+      "line": 7,
+      "expression": "src_txt[-1]",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "IndexError when src_txt is empty string; fix: src_txt[-1:] never raises"
+    },
+    {
+      "id": "bugsinpy_thefuck_1_out_of_bounds",
+      "source": "real",
+      "source_dataset": "BugsInPy",
+      "source_project": "thefuck",
+      "source_bug_id": "1",
+      "file": "thefuck_1_out_of_bounds.py",
+      "function": "get_new_command",
+      "expected_label": "bug",
+      "expected_category": "out_of_bounds",
+      "expected_type": "suspected_bug",
+      "line": 11,
+      "expression": "re.findall(r'ERROR: unknown command \"([a-z]+)\"', output)[0]",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "IndexError when regex matches nothing; real fix broadened regex pattern"
     }
   ]
 }

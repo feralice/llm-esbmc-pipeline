@@ -1,0 +1,55 @@
+{
+  "dataset_name": "python-smells-many-parameters",
+  "category": "many_parameters",
+  "total_items": 3,
+  "items": [
+    {
+      "id": "requests_get_many_parameters",
+      "source": "real",
+      "source_project": "requests",
+      "source_file": "requests/api.py",
+      "file": "requests_get.py",
+      "function": "get",
+      "expected_label": "smell",
+      "expected_category": "many_parameters",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "8 explicit parameters (url, params, headers, auth, timeout, allow_redirects, verify, stream)"
+    },
+    {
+      "id": "scrapy_request_many_parameters",
+      "source": "real",
+      "source_project": "scrapy",
+      "source_file": "scrapy/http/request/__init__.py",
+      "file": "scrapy_request.py",
+      "function": "init_request",
+      "expected_label": "smell",
+      "expected_category": "many_parameters",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "12 parameters covering url, method, headers, body, cookies, meta, encoding, priority, flags, callbacks"
+    },
+    {
+      "id": "matplotlib_plot_many_parameters",
+      "source": "real",
+      "source_project": "matplotlib",
+      "source_file": "matplotlib/axes/_axes.py",
+      "file": "matplotlib_plot.py",
+      "function": "plot_line",
+      "expected_label": "smell",
+      "expected_category": "many_parameters",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "13 parameters controlling visual style: fmt, color, linestyle, linewidth, marker, markersize, label, alpha, zorder, visible, animated"
+    }
+  ]
+}

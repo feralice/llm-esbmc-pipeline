@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import ast
-
 from .categories import SUPPORTED_CATEGORIES, VERIFIABLE_OPERATION_KIND
 from ..models import CodeUnit, Finding
 from ..runtime_harness_validator import expression_exists_in_executable_ast

@@ -35,6 +35,8 @@ scratch_*.py
 
 # Pipeline outputs — generated at runtime, não versionar
 artifacts/
+output/
+archive/outputs/
 reports/json/
 reports/html/
 logs/

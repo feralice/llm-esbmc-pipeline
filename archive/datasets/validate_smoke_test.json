@@ -1,0 +1,18 @@
+[
+  {
+    "file": "aws_neuron_bilinear_chunk_size_div_zero.py",
+    "category": "division_by_zero",
+    "confidence_gt": "high",
+    "needs_review": false,
+    "expected_label": "bug",
+    "detected_categories": [
+      "division_by_zero"
+    ],
+    "hit": true,
+    "pipeline_classifications": [
+      "esbmc_inconclusive"
+    ],
+    "elapsed_s": 35.0,
+    "llm_findings": 1
+  }
+]

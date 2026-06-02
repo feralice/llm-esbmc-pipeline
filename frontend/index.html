@@ -733,13 +733,12 @@ function renderBenchmark() {
     const b = data.metrics?.bugs || {};
     const e = data.metrics?.esbmc_direct_baseline || {};
     const h = data.hallucinations || {};
-    const tp = b.tp??'—', fp = b.fp??'—', fn = b.fn??'—';
     return `<tr>
       <td><b>${esc(data.model || name)}</b></td>
       <td class="num">${fmt2(b.precision)}</td>
       <td class="num">${fmt2(b.recall)}</td>
       <td class="num"><b>${fmt2(b.f1)}</b></td>
-      <td class="num">${tp}</td><td class="num">${fp}</td><td class="num">${fn}</td>
+      <td class="num">${b.tp??'—'}</td><td class="num">${b.fp??'—'}</td><td class="num">${b.fn??'—'}</td>
       <td class="num">${fmt2(e.f1)}</td>
       <td class="num">${h.count??'—'} <span style="color:#95a5a6;font-size:.8em">(${fmtPct(h.rate)})</span></td>
       <td class="num">${data.bound??'—'}</td>
@@ -757,8 +756,32 @@ function renderBenchmark() {
     </tr>`;
   }).join('');
 
+  // Per-category table — collect all categories across all benchmarks
+  const allCats = new Set();
+  state.bmList.forEach(({ data }) => {
+    if (data.per_category) Object.keys(data.per_category).forEach(c => allCats.add(c));
+  });
+  const catRows = Array.from(allCats).sort().map(cat => {
+    const cells = state.bmList.map(({ data }) => {
+      const c = data.per_category?.[cat];
+      if (!c) return `<td colspan="3" class="center" style="color:#bbb">—</td>`;
+      return `<td class="num">${fmt2(c.precision)}</td><td class="num">${fmt2(c.recall)}</td><td class="num"><b>${fmt2(c.f1)}</b></td>`;
+    }).join('');
+    return `<tr><td><code>${esc(cat)}</code></td>${cells}</tr>`;
+  }).join('');
+
+  const modelHeaders = state.bmList.map(({ data, name }) =>
+    `<th colspan="3" style="text-align:center">${esc(data.model || name)}</th>`
+  ).join('');
+  const metricHeaders = state.bmList.map(() =>
+    `<th class="num">P</th><th class="num">R</th><th class="num">F1</th>`
+  ).join('');
+
   el.innerHTML = `
-    <div class="section-title">Métricas de bugs formais por modelo</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="section-title" style="margin:0">Métricas de bugs formais por modelo</div>
+      <button onclick="exportCsv()" style="padding:5px 12px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:.8em;font-weight:700">Export CSV</button>
+    </div>
     <table class="data-table">
       <tr>
         <th>Modelo</th>
@@ -780,13 +803,41 @@ function renderBenchmark() {
       </tr>
       ${smellRows}
     </table>
-    <p style="font-size:.76em;color:#95a5a6;margin-top:-10px">
-      Bugs formais e smells calculados separadamente. Não some os dois como TP único.
-      Resultados de harness runtime não entram nesta tabela.
+
+    ${catRows ? `
+    <div class="section-title">Por categoria</div>
+    <table class="data-table">
+      <tr><th rowspan="2">Categoria</th>${modelHeaders}</tr>
+      <tr>${metricHeaders}</tr>
+      ${catRows}
+    </table>` : ''}
+
+    <p style="font-size:.76em;color:#95a5a6;margin-top:4px">
+      Bugs formais e smells calculados separadamente. Harness runtime não entra nestas métricas.
     </p>
-    <p style="margin-top:8px;font-size:.76em;color:#95a5a6">
+    <p style="margin-top:6px;font-size:.76em;color:#95a5a6">
       Para adicionar mais modelos: arraste múltiplos arquivos benchmark_*.json na zona de benchmark na tela inicial.
     </p>`;
+}
+
+function exportCsv() {
+  if (!state.bmList.length) return;
+  const rows = [['model','precision_bugs','recall_bugs','f1_bugs','tp_bugs','fp_bugs','fn_bugs','precision_smells','recall_smells','f1_smells','hallucinations','hallucination_rate','bound']];
+  for (const { data, name } of state.bmList) {
+    const b = data.metrics?.bugs || {};
+    const s = data.metrics?.smells || {};
+    const h = data.hallucinations || {};
+    rows.push([
+      data.model || name,
+      b.precision??'', b.recall??'', b.f1??'', b.tp??'', b.fp??'', b.fn??'',
+      s.precision??'', s.recall??'', s.f1??'',
+      h.count??'', h.rate??'', data.bound??'',
+    ]);
+  }
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'benchmark_results.csv'; a.click();
 }
 
 // =================== JSON VIEWER ===================

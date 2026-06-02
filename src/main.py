@@ -255,12 +255,17 @@ def _print_benchmark_table(label: str, counts: EvalCounts) -> None:
     print(f"Modelo: {label}")
     print(f"{'─' * 60}")
     print(f"  Bug P/R/F1:          {bug_p:.2f} / {bug_r:.2f} / {bug_f1:.2f}")
+    print(f"    TP={counts.bug_tp}  FP={counts.bug_fp}  FN={counts.bug_fn}")
     print(f"  Smell P/R/F1:        {smell_p:.2f} / {smell_r:.2f} / {smell_f1:.2f}")
+    print(f"    TP={counts.smell_tp}  FP={counts.smell_fp}  FN={counts.smell_fn}")
     print(f"  ESBMC direct P/R/F1: {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}")
     print(f"  Alucinações LLM:     {counts.hallucination_count}  (taxa: {hlr:.1%})")
-    print(f"  TP bugs:             {counts.bug_tp}")
-    print(f"  FP bugs:             {counts.bug_fp}")
-    print(f"  FN bugs:             {counts.bug_fn}")
+
+    if counts.per_category:
+        print(f"\n  Por categoria:")
+        for cat, c in sorted(counts.per_category.items()):
+            cp, cr, cf1 = prf(c["tp"], c["fp"], c["fn"])
+            print(f"    {cat:<30} P={cp:.2f} R={cr:.2f} F1={cf1:.2f}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")
     print(f"{'─' * 60}")
 
 
@@ -404,13 +409,13 @@ def mode_full(args: argparse.Namespace) -> int:
 
 
 def mode_benchmark(args: argparse.Namespace) -> int:
-    # --input deve ser um diretório com JSONs de ground truth ou um único arquivo .json.
-    raw_input = args.input[0]
-    gt_path   = Path(raw_input)
+    # --ground-truth tem prioridade; fallback para --input (compatibilidade retroativa)
+    gt_raw = getattr(args, "ground_truth", None) or args.input[0]
+    gt_path = Path(gt_raw)
 
     if not gt_path.exists():
         print(f"Ground truth não encontrado em: {gt_path}", file=sys.stderr)
-        print("Exemplo: --input examples/labeled/ground_truths/bugs", file=sys.stderr)
+        print("Exemplo: --ground-truth examples/labeled/ground_truths/bugs", file=sys.stderr)
         return 1
 
     backend = args.backend or _infer_backend(args.model)
@@ -477,6 +482,17 @@ def mode_benchmark(args: argparse.Namespace) -> int:
             "hallucinations": {
                 "count": counts.hallucination_count,
                 "rate": round(hallucination_rate(counts), 4),
+            },
+            "per_category": {
+                cat: {
+                    "precision": round(prf(c["tp"], c["fp"], c["fn"])[0], 4),
+                    "recall":    round(prf(c["tp"], c["fp"], c["fn"])[1], 4),
+                    "f1":        round(prf(c["tp"], c["fp"], c["fn"])[2], 4),
+                    "tp": c["tp"],
+                    "fp": c["fp"],
+                    "fn": c["fn"],
+                }
+                for cat, c in sorted(counts.per_category.items())
             },
         }
         report_path_out = Path(report_arg)

@@ -23,15 +23,13 @@ from research_pipeline.esbmc_runner import (
     _extract_generated_vcc_count,
 )
 from research_pipeline.formalizer import formalize_finding
+from research_pipeline.instrumenter import instrument_unit
 from research_pipeline.pipeline import run_pipeline
 from research_pipeline.runtime_harness_validator import (
-    HARNESS_EXECUTION_ERROR,
     HARNESS_NOT_REPRODUCED,
     HARNESS_REPRODUCED,
-    HARNESS_TIMEOUT,
     HARNESS_UNSAFE,
     HARNESS_WRONG_EXCEPTION,
-    HarnessValidationResult,
     expression_exists_in_executable_ast,
     validate_harness,
 )
@@ -233,6 +231,26 @@ def test_formalizer_attaches_asserts_and_esbmc_flags() -> None:
     assert oob_property.assertion == "(0 <= (idx)) and ((idx) < len(values))"
     assert oob_property.esbmc_flags == ["--no-div-by-zero-check"]
     assert oob_property.assumptions == []
+
+
+def test_instrumenter_imports_esbmc_stubs(tmp_path: Path) -> None:
+    sample = tmp_path / "sample.py"
+    sample.write_text(
+        "def divide(numerator: int, denominator: int) -> float:\n"
+        "    return numerator / denominator\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    finding = _make_finding("division_by_zero", "numerator / denominator")
+    normalized = normalize_findings(unit, [finding])[0]
+    formal_property = formalize_finding(unit, normalized)
+
+    assert formal_property is not None
+    instrumentation = instrument_unit(unit, formal_property, tmp_path / "instrumented")
+
+    assert "from esbmc import __ESBMC_assert, __ESBMC_assume, nondet_bool, nondet_float, nondet_int" in instrumentation.instrumented_source
+    assert "denominator = nondet_int()" in instrumentation.instrumented_source
+    assert "assert (denominator) != 0" in instrumentation.instrumented_source
 
 
 # ---------------------------------------------------------------------------

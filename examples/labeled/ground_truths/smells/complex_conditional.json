@@ -1,0 +1,55 @@
+{
+  "dataset_name": "python-smells-complex-conditional",
+  "category": "complex_conditional",
+  "total_items": 3,
+  "items": [
+    {
+      "id": "thefuck_match_complex_conditional",
+      "source": "real",
+      "source_project": "thefuck",
+      "source_file": "thefuck/rules/git_push.py",
+      "file": "thefuck_match.py",
+      "function": "match",
+      "expected_label": "smell",
+      "expected_category": "complex_conditional",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "5 elif branches each combining script check + specific stderr pattern"
+    },
+    {
+      "id": "scrapy_should_retry_complex_conditional",
+      "source": "real",
+      "source_project": "scrapy",
+      "source_file": "scrapy/downloadermiddlewares/retry.py",
+      "file": "scrapy_middleware.py",
+      "function": "should_retry",
+      "expected_label": "smell",
+      "expected_category": "complex_conditional",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "6 branches combining response status, exception type, retry count and settings"
+    },
+    {
+      "id": "tornado_xsrf_complex_conditional",
+      "source": "real",
+      "source_project": "tornado",
+      "source_file": "tornado/web.py",
+      "file": "tornado_routing.py",
+      "function": "check_xsrf_cookie",
+      "expected_label": "smell",
+      "expected_category": "complex_conditional",
+      "expected_type": "smell_heuristic",
+      "verifiable": false,
+      "should_go_to_esbmc": false,
+      "confidence": "high",
+      "should_be_detected": true,
+      "notes": "5 branches mixing HTTP method, cookie/header/argument token comparison, and version-based logic"
+    }
+  ]
+}
