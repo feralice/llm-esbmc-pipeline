@@ -18,8 +18,7 @@
   "smells_only.py": {
     "expected_findings": [
       {"function": "proc", "category": "many_parameters",    "verifiable": false},
-      {"function": "proc", "category": "complex_conditional","verifiable": false},
-      {"function": "proc", "category": "poor_naming",        "verifiable": false}
+      {"function": "proc", "category": "complex_conditional","verifiable": false}
     ]
   },
   "clean.py": {

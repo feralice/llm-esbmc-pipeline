@@ -1,18 +1,46 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sys
 from types import SimpleNamespace
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from research_pipeline.esbmc_runner import _build_esbmc_command
+_needs_openai = pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"),
+    reason="OPENAI_API_KEY não configurada — teste requer API real",
+)
+
+from research_pipeline.esbmc_runner import (
+    _build_esbmc_command,
+    _classify_esbmc_result,
+    _classify_esbmc_direct_result,
+    _extract_generated_vcc_count,
+)
 from research_pipeline.formalizer import formalize_finding
 from research_pipeline.pipeline import run_pipeline
+from research_pipeline.runtime_harness_validator import (
+    HARNESS_EXECUTION_ERROR,
+    HARNESS_NOT_REPRODUCED,
+    HARNESS_REPRODUCED,
+    HARNESS_TIMEOUT,
+    HARNESS_UNSAFE,
+    HARNESS_WRONG_EXCEPTION,
+    HarnessValidationResult,
+    expression_exists_in_executable_ast,
+    validate_harness,
+)
+from research_pipeline.preprocess import preprocess_file
+from research_pipeline.llm.findings import normalize_findings
+from research_pipeline.models import Finding
 
 
+@_needs_openai
 def test_pipeline_generates_mixed_results(tmp_path: Path) -> None:
     sample = tmp_path / "sample.py"
     sample.write_text(
@@ -46,15 +74,17 @@ def test_pipeline_generates_mixed_results(tmp_path: Path) -> None:
     categories = {result.finding.category for result in results}
 
     assert (
-        "formally_confirmed_bug" in classifications
-        or "unconfirmed_hypothesis" in classifications
-        or "vulnerability_potential_with_partial_evidence" in classifications
+        "llm_confirmed_by_esbmc" in classifications
+        or "not_confirmed_within_bound" in classifications
+        or "esbmc_inconclusive" in classifications
+        or "skipped_not_verifiable" in classifications
     )
-    assert "smell_heuristic" in classifications
+    assert "heuristic_smell_only" in classifications
     assert "division_by_zero" in categories
     assert "out_of_bounds" in categories
 
 
+@_needs_openai
 def test_preprocess_ignores_test_functions_and_annotations(tmp_path: Path) -> None:
     sample = tmp_path / "sample_annotations.py"
     sample.write_text(
@@ -93,6 +123,83 @@ def test_esbmc_command_scopes_flags_by_finding_category() -> None:
     assert "--no-bounds-check" not in oob_command
 
 
+# ---------------------------------------------------------------------------
+# Testes unitários do classificador ESBMC — sem chamada de API
+# ---------------------------------------------------------------------------
+
+def test_classify_verification_failed_is_violation_found() -> None:
+    """VERIFICATION FAILED no output → violation_found."""
+    output = (
+        "Parsing /tmp/test.py\n"
+        "Violated property:\n"
+        "  file /tmp/test.py line 3\n"
+        "  assertion violated\n"
+        "VERIFICATION FAILED\n"
+    )
+    assert _classify_esbmc_result(output, 1) == "violation_found"
+    assert _classify_esbmc_direct_result(output, 1) == "violation_found"
+
+
+def test_classify_zero_vcc_is_no_vcc_generated() -> None:
+    """VERIFICATION SUCCESSFUL com 0 VCCs → status deve ser no_vcc_generated (após override)."""
+    output = (
+        "Parsing /tmp/test.py\n"
+        "Generated 0 VCC(s), 0 remaining after simplification (0 assignments)\n"
+        "VERIFICATION SUCCESSFUL\n"
+    )
+    # _classify_esbmc_result retorna no_violation_found; o override para no_vcc_generated
+    # acontece em run_esbmc_direct após a chamada. Aqui validamos a função base e o extrator.
+    assert _classify_esbmc_result(output, 0) == "no_violation_found"
+    assert _extract_generated_vcc_count(output) == 0
+
+
+def test_classify_filename_with_violation_not_false_positive() -> None:
+    """Arquivo com 'assertion_violation' no nome não pode gerar violation_found se ESBMC diz SUCCESSFUL."""
+    output = (
+        "Parsing /path/to/black_23_assertion_violation.py\n"
+        "Generated 0 VCC(s), 0 remaining after simplification (0 assignments)\n"
+        "VERIFICATION SUCCESSFUL\n"
+    )
+    assert _classify_esbmc_result(output, 0) == "no_violation_found", (
+        "O nome do arquivo contém 'violation' mas o ESBMC retornou SUCCESSFUL — "
+        "não deve ser classificado como violation_found."
+    )
+    assert _classify_esbmc_direct_result(output, 0) == "no_violation_found"
+
+
+def test_classify_pandas_assertion_violation_filename() -> None:
+    """Variante com pandas_42_assertion_violation.py."""
+    output = (
+        "Parsing /home/user/pandas_42_assertion_violation.py\n"
+        "Generated 0 VCC(s), 0 remaining after simplification (0 assignments)\n"
+        "VERIFICATION SUCCESSFUL\n"
+    )
+    assert _classify_esbmc_result(output, 0) == "no_violation_found"
+
+
+def test_classify_verification_successful_with_vccs() -> None:
+    """VERIFICATION SUCCESSFUL com VCCs geradas → no_violation_found."""
+    output = (
+        "Parsing /tmp/test.py\n"
+        "Generated 3 VCC(s), 1 remaining after simplification\n"
+        "VERIFICATION SUCCESSFUL\n"
+    )
+    assert _classify_esbmc_result(output, 0) == "no_violation_found"
+    assert _extract_generated_vcc_count(output) == 3
+
+
+def test_classify_tool_error() -> None:
+    """ERROR: sem 'Cannot open file' e sem 'not supported' → tool_error."""
+    output = "Parsing /tmp/test.py\nERROR: internal ESBMC error\n"
+    assert _classify_esbmc_direct_result(output, 1) == "tool_error"
+
+
+def test_classify_unsupported_case() -> None:
+    """Cannot open file → unsupported_case."""
+    output = "Parsing /tmp/test.py\nERROR: Cannot open file 'numpy'\n"
+    assert _classify_esbmc_direct_result(output, 1) == "unsupported_case"
+
+
 def test_formalizer_attaches_asserts_and_esbmc_flags() -> None:
     unit = SimpleNamespace(
         operations=[
@@ -126,3 +233,162 @@ def test_formalizer_attaches_asserts_and_esbmc_flags() -> None:
     assert oob_property.assertion == "(0 <= (idx)) and ((idx) < len(values))"
     assert oob_property.esbmc_flags == ["--no-div-by-zero-check"]
     assert oob_property.assumptions == []
+
+
+# ---------------------------------------------------------------------------
+# Runtime harness validator — testes sem API
+# ---------------------------------------------------------------------------
+
+def _make_finding(category: str, expression: str, verifiable: bool = True) -> Finding:
+    return Finding(
+        id=f"test_{category}_1",
+        stage="llm_analysis",
+        finding_type="suspected_bug" if verifiable else "smell_heuristic",
+        category=category,
+        title="test",
+        explanation="test",
+        evidence=[],
+        verifiable=verifiable,
+        confidence="high",
+        metadata={
+            "expression": expression,
+            "line": "2",
+            "relative_line": "1",
+            "has_guard": "false",
+            "expected_exception": "",
+            "reproduction_harness": "",
+        },
+    )
+
+
+def test_harness_pop_reproduces_index_error() -> None:
+    source = "def f(lst: list, i: int):\n    lst.pop(i)\n"
+    result = validate_harness(source, "f", "f([], 0)", "IndexError")
+    assert result.status == HARNESS_REPRODUCED
+    assert result.exception_type == "IndexError"
+
+
+def test_harness_split_index_reproduces_index_error() -> None:
+    source = 'def f(s: str) -> str:\n    return s.split(";")[1]\n'
+    result = validate_harness(source, "f", 'f("nocolon")', "IndexError")
+    assert result.status == HARNESS_REPRODUCED
+    assert result.exception_type == "IndexError"
+
+
+def test_harness_division_by_zero_reproduces() -> None:
+    source = "def divide(a: int, b: int) -> int:\n    return a // b\n"
+    result = validate_harness(source, "divide", "divide(5, 0)", "ZeroDivisionError")
+    assert result.status == HARNESS_REPRODUCED
+    assert result.exception_type == "ZeroDivisionError"
+
+
+def test_harness_assertion_reproduces() -> None:
+    source = (
+        "def parse(ok: bool) -> str:\n"
+        "    if not ok:\n"
+        "        raise AssertionError('fail')\n"
+        "    return 'ok'\n"
+    )
+    result = validate_harness(source, "parse", "parse(False)", "AssertionError")
+    assert result.status == HARNESS_REPRODUCED
+    assert result.exception_type == "AssertionError"
+
+
+def test_harness_not_reproduced_when_no_exception() -> None:
+    source = "def safe(lst: list, i: int):\n    return lst[i] if 0 <= i < len(lst) else None\n"
+    result = validate_harness(source, "safe", "safe([1, 2, 3], 1)", "IndexError")
+    assert result.status == HARNESS_NOT_REPRODUCED
+
+
+def test_harness_wrong_exception_detected() -> None:
+    source = "def f(d: dict, k: str):\n    return d[k]\n"
+    result = validate_harness(source, "f", 'f({}, "missing")', "IndexError")
+    # KeyError != IndexError → wrong_exception
+    assert result.status == HARNESS_WRONG_EXCEPTION
+    assert result.exception_type == "KeyError"
+
+
+def test_harness_unsafe_import_rejected() -> None:
+    result = validate_harness("def f(): pass", "f", "import os; f()", "")
+    assert result.status == HARNESS_UNSAFE
+
+
+def test_harness_unsafe_eval_rejected() -> None:
+    result = validate_harness("def f(): pass", "f", "eval('1+1')", "")
+    assert result.status == HARNESS_UNSAFE
+
+
+def test_harness_unsafe_while_rejected() -> None:
+    result = validate_harness("def f(): pass", "f", "while True: f()", "")
+    assert result.status == HARNESS_UNSAFE
+
+
+def test_harness_unsafe_open_rejected() -> None:
+    result = validate_harness("def f(): pass", "f", "open('/etc/passwd')", "")
+    assert result.status == HARNESS_UNSAFE
+
+
+def test_harness_clean_code_not_reproduced() -> None:
+    source = "def add(a: int, b: int) -> int:\n    return a + b\n"
+    result = validate_harness(source, "add", "add(1, 2)", "ZeroDivisionError")
+    assert result.status == HARNESS_NOT_REPRODUCED
+
+
+# ---------------------------------------------------------------------------
+# AST existence check — imune a comentários e strings literais
+# ---------------------------------------------------------------------------
+
+def test_expression_exists_in_executable_ast_subscript(tmp_path: Path) -> None:
+    source = "def f(lst, i):\n    return lst[i]\n"
+    assert expression_exists_in_executable_ast("lst[i]", source) is True
+
+
+def test_expression_exists_in_executable_ast_pop(tmp_path: Path) -> None:
+    source = "def f(lst, i):\n    lst.pop(i)\n"
+    assert expression_exists_in_executable_ast("lst.pop(i)", source) is True
+
+
+def test_expression_not_in_comment(tmp_path: Path) -> None:
+    source = "def f(lst, i):\n    # lst[i] would be risky\n    return lst\n"
+    assert expression_exists_in_executable_ast("lst[i]", source) is False
+
+
+def test_expression_not_in_string_literal(tmp_path: Path) -> None:
+    source = 'def f(lst, i):\n    msg = "lst[i]"\n    return lst\n'
+    assert expression_exists_in_executable_ast("lst[i]", source) is False
+
+
+# ---------------------------------------------------------------------------
+# normalize_findings — pop não deve ser llm_false_positive
+# ---------------------------------------------------------------------------
+
+def test_normalize_pop_not_false_positive(tmp_path: Path) -> None:
+    sample = tmp_path / "f.py"
+    sample.write_text(
+        "def remove(lst: list, i: int) -> list:\n    lst.pop(i)\n    return lst\n"
+    )
+    units = preprocess_file(sample)
+    unit = units[0]
+
+    finding = _make_finding("out_of_bounds", "lst.pop(i)")
+    normalized = normalize_findings(unit, [finding])
+
+    assert normalized[0].finding_type != "llm_false_positive", (
+        ".pop(i) existe no código — não deve ser classificado como alucinação da LLM"
+    )
+    assert normalized[0].finding_type == "suspected_bug"
+    assert normalized[0].metadata.get("ast_unrecognized") == "true"
+
+
+def test_normalize_true_hallucination_is_false_positive(tmp_path: Path) -> None:
+    sample = tmp_path / "f.py"
+    sample.write_text("def add(a: int, b: int) -> int:\n    return a + b\n")
+    units = preprocess_file(sample)
+    unit = units[0]
+
+    finding = _make_finding("division_by_zero", "a / b")  # divisão não existe
+    normalized = normalize_findings(unit, [finding])
+
+    assert normalized[0].finding_type == "llm_false_positive", (
+        "Divisão não existe no código — deve ser llm_false_positive"
+    )

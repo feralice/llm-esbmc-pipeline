@@ -1,3 +1,47 @@
-.venv
-.claude
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code
+.claude/
+
+# Scratch / temporários na raiz
+teste.py
+scratch_*.py
+
+# Pipeline outputs — generated at runtime, não versionar
+artifacts/
+reports/json/
+reports/html/
+logs/
+
+# ESBMC outputs
+*.smt2
+*.goto
+
+# Node (frontend futuro)
+node_modules/

@@ -1,0 +1,39 @@
+{
+  "dataset_name": "python-bugs-assertion-violation",
+  "category": "assertion_violation",
+  "total_items": 2,
+  "items": [
+    {
+      "id": "bugsinpy_black_23_assertion_violation",
+      "source_dataset": "BugsInPy",
+      "source_project": "black",
+      "source_bug_id": "23",
+      "file": "black_23_assertion_violation.py",
+      "function": "parse_source",
+      "expected_label": "bug",
+      "expected_category": "assertion_violation",
+      "expected_type": "suspected_bug",
+      "line": 3,
+      "expression": "raise AssertionError(\"cannot parse source\")",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "medium"
+    },
+    {
+      "id": "bugsinpy_pandas_42_assertion_violation",
+      "source_dataset": "BugsInPy",
+      "source_project": "pandas",
+      "source_bug_id": "42",
+      "file": "pandas_42_assertion_violation.py",
+      "function": "compare_interval_dtype",
+      "expected_label": "bug",
+      "expected_category": "assertion_violation",
+      "expected_type": "suspected_bug",
+      "line": 3,
+      "expression": "assert left_is_interval and right_is_interval",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "high"
+    }
+  ]
+}

@@ -14,8 +14,7 @@ load_dotenv(REPO_ROOT / ".env")
 
 from research_pipeline.evaluator import EvalCounts, evaluate_model, prf
 
-LABELED_DIR = REPO_ROOT / "examples" / "labeled"
-GROUND_TRUTH_PATH = LABELED_DIR / "ground_truth.json"
+GROUND_TRUTH_PATH = REPO_ROOT / "examples" / "labeled" / "ground_truths" / "bugs"
 
 _DEFAULT_MODEL: dict[str, str] = {"openai": "gpt-4o", "anthropic": "claude-sonnet-4-6"}
 

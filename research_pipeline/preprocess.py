@@ -121,6 +121,11 @@ class _StructureExtractor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Subscript(self, node: ast.Subscript) -> None:
+        # LIMITAÇÃO CONHECIDA: apenas acessos da forma lst[i] são detectados aqui.
+        # Métodos como .pop(i), .insert(i, v), .remove(x) que também podem causar
+        # IndexError são registrados como ast.Call, não ast.Subscript, e portanto
+        # não são capturados. Achados da LLM sobre esses padrões serão classificados
+        # como llm_false_positive pelo _normalize_findings. Não corrigir neste momento.
         self.operations.append(
             OperationRecord(
                 kind="subscript",

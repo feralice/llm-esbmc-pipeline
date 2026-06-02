@@ -78,6 +78,9 @@ def _build_symbolic_value(parameter: str, annotation: str) -> tuple[list[str], s
         return [f"{parameter} = nondet_float()"], parameter
 
     if normalized in {"str"}:
+        # LIMITAÇÃO CONHECIDA: parâmetros str recebem o valor concreto "abc".
+        # O ESBMC não tem suporte a strings simbólicas; "abc" é usado como proxy.
+        # Bugs que só se manifestam com strings específicas podem não ser detectados.
         return [f"{parameter} = \"abc\""], parameter
 
     if normalized in {"List[int]", "list[int]"}:

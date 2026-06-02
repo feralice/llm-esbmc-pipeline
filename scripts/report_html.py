@@ -9,19 +9,29 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 _DEFAULT_GT = REPO_ROOT / "examples" / "labeled" / "ground_truth.json"
 
 _CLASS_META = {
-    "formally_confirmed_bug":                        ("🐛 Bug Confirmado",        "#e74c3c", "#fdf2f2"),
-    "vulnerability_potential_with_partial_evidence": ("⚠️ Suspeita",              "#e67e22", "#fef9f0"),
-    "unconfirmed_hypothesis":                        ("🔍 Hipótese",              "#3498db", "#f0f7fd"),
-    "smell_heuristic":                               ("👃 Smell",                 "#9b59b6", "#f8f4fd"),
-    "inconclusive_case":                             ("❓ Inconclusivo",           "#7f8c8d", "#f5f5f5"),
+    "llm_confirmed_by_esbmc":     ("🐛 Bug Confirmado",          "#e74c3c", "#fdf2f2"),
+    "esbmc_native_bug":           ("🔬 Bug ESBMC Direto",         "#c0392b", "#fdf2f2"),
+    "llm_missed_esbmc_bug":       ("🔴 LLM Não Detectou",        "#e67e22", "#fef9f0"),
+    "llm_false_positive":         ("🚫 Falso Positivo LLM",      "#e67e22", "#fef9f0"),
+    "not_confirmed_within_bound": ("🔍 Não Confirmado",           "#3498db", "#f0f7fd"),
+    "heuristic_smell_only":       ("👃 Smell",                    "#9b59b6", "#f8f4fd"),
+    "esbmc_inconclusive":         ("❓ Inconclusivo",              "#7f8c8d", "#f5f5f5"),
+    "skipped_not_verifiable":     ("⏭ Skipped",                  "#95a5a6", "#f5f5f5"),
+    "no_vcc_generated":           ("⚪ Sem VCC Gerada",           "#636e72", "#f5f6fa"),
+    "out_of_scope_finding":       ("🚫 Fora do Escopo MVP",       "#8e44ad", "#f5eef8"),
+    "clean":                      ("✅ Sem Achados",              "#27ae60", "#eafaf1"),
 }
 
 _CONF_COLOR = {"high": "#27ae60", "medium": "#f39c12", "low": "#e74c3c"}
 _ESBMC_META = {
-    "violation_found":    ("VIOLAÇÃO ENCONTRADA", "#e74c3c"),
-    "no_violation_found": ("SEM VIOLAÇÃO",         "#27ae60"),
-    "skipped":            ("ESBMC não disponível", "#95a5a6"),
-    "inconclusive":       ("INCONCLUSIVO",          "#f39c12"),
+    "violation_found":    ("VIOLAÇÃO ENCONTRADA",   "#e74c3c"),
+    "no_violation_found": ("SEM VIOLAÇÃO",           "#27ae60"),
+    "no_vcc_generated":   ("0 VCCs — SEM VERIFICAÇÃO", "#636e72"),
+    "skipped":            ("ESBMC não disponível",   "#95a5a6"),
+    "inconclusive":       ("INCONCLUSIVO",            "#f39c12"),
+    "tool_error":         ("ERRO INTERNO ESBMC",     "#e74c3c"),
+    "timeout":            ("TIMEOUT",                 "#f39c12"),
+    "unsupported_case":   ("NÃO SUPORTADO",           "#f39c12"),
 }
 
 # verdict
@@ -135,7 +145,7 @@ def _verdict_banner(verdict: str) -> str:
 
 
 def _card(result: dict, idx: int, verdict: str) -> str:
-    cls = result.get("final_classification", "inconclusive_case")
+    cls = result.get("final_classification", "esbmc_inconclusive")
     label, accent, bg = _CLASS_META.get(cls, ("?", "#7f8c8d", "#f5f5f5"))
     f = result["finding"]
     category    = f.get("category", "")
@@ -259,10 +269,10 @@ def generate_html(report: list[dict], source_label: str, ground_truth: dict | No
     verdict_map, missed = _build_verdict_map(report, gt)
 
     total    = len(report)
-    n_bug    = sum(1 for r in report if r["final_classification"] == "formally_confirmed_bug")
-    n_sus    = sum(1 for r in report if r["final_classification"] == "vulnerability_potential_with_partial_evidence")
-    n_smell  = sum(1 for r in report if r["final_classification"] == "smell_heuristic")
-    n_unconf = sum(1 for r in report if r["final_classification"] == "unconfirmed_hypothesis")
+    n_bug    = sum(1 for r in report if r["final_classification"] == "llm_confirmed_by_esbmc")
+    n_esbmc  = sum(1 for r in report if r["final_classification"] in ("esbmc_native_bug", "llm_missed_esbmc_bug"))
+    n_smell  = sum(1 for r in report if r["final_classification"] == "heuristic_smell_only")
+    n_unconf = sum(1 for r in report if r["final_classification"] == "not_confirmed_within_bound")
     n_verif  = sum(1 for r in report if r["finding"].get("verifiable"))
 
     n_tp       = sum(1 for v in verdict_map.values() if v == "tp")
@@ -400,8 +410,8 @@ def generate_html(report: list[dict], source_label: str, ground_truth: dict | No
 
   <div class="stats">
     <div class="stat-card"><span class="num" style="color:#2c3e50">{total}</span><div class="lbl">Total findings</div></div>
-    <div class="stat-card"><span class="num" style="color:#e74c3c">{n_bug}</span><div class="lbl">🐛 Bugs confirmados</div></div>
-    <div class="stat-card"><span class="num" style="color:#e67e22">{n_sus}</span><div class="lbl">⚠️ Suspeitas</div></div>
+    <div class="stat-card"><span class="num" style="color:#e74c3c">{n_bug}</span><div class="lbl">🐛 Confirmados LLM+ESBMC</div></div>
+    <div class="stat-card"><span class="num" style="color:#c0392b">{n_esbmc}</span><div class="lbl">🔬 ESBMC Direto</div></div>
     <div class="stat-card"><span class="num" style="color:#9b59b6">{n_smell}</span><div class="lbl">👃 Smells</div></div>
     <div class="stat-card"><span class="num" style="color:#27ae60">{n_verif}</span><div class="lbl">Verificáveis</div></div>
   </div>
@@ -424,9 +434,9 @@ def generate_html(report: list[dict], source_label: str, ground_truth: dict | No
   <div class="section-title">Findings detalhados</div>
   <div class="filters">
     <button class="filter-btn active" onclick="filter('all')">Todos ({total})</button>
-    <button class="filter-btn" onclick="filter('formally_confirmed_bug')">🐛 Bugs ({n_bug})</button>
-    <button class="filter-btn" onclick="filter('vulnerability_potential_with_partial_evidence')">⚠️ Suspeitas ({n_sus})</button>
-    <button class="filter-btn" onclick="filter('smell_heuristic')">👃 Smells ({n_smell})</button>
+    <button class="filter-btn" onclick="filter('llm_confirmed_by_esbmc')">🐛 Confirmados ({n_bug})</button>
+    <button class="filter-btn" onclick="filter('esbmc_native_bug')">🔬 ESBMC Direto ({n_esbmc})</button>
+    <button class="filter-btn" onclick="filter('heuristic_smell_only')">👃 Smells ({n_smell})</button>
     <button class="filter-btn" onclick="filter('verifiable')">✓ Verificáveis ({n_verif})</button>
     {filter_verdict}
   </div>
@@ -450,6 +460,8 @@ function filter(cls) {{
       card.classList.toggle('hidden', card.dataset.verifiable !== 'true');
     }} else if (['tp','tp_wrong','fp'].includes(cls)) {{
       card.classList.toggle('hidden', card.dataset.verdict !== cls);
+    }} else if (cls === 'esbmc_native_bug') {{
+      card.classList.toggle('hidden', !['esbmc_native_bug','llm_missed_esbmc_bug'].includes(card.dataset.cls));
     }} else {{
       card.classList.toggle('hidden', card.dataset.cls !== cls);
     }}

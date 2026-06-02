@@ -147,13 +147,14 @@ def main() -> int:
 def _generate_html(report_path: Path) -> Path | None:
     sys.path.insert(0, str(Path(__file__).parent))
     try:
-        from report_html import generate_html, _load_ground_truth
+        from report_html import generate_html, _load_ground_truth  # type: ignore[import]
     except ImportError:
         return None
 
     report = json.loads(report_path.read_text(encoding="utf-8"))
+    # Ground truth para comparação — passa vazio se o arquivo não existir.
     gt_path = REPO_ROOT / "examples" / "labeled" / "ground_truth.json"
-    gt = _load_ground_truth(gt_path)
+    gt = _load_ground_truth(gt_path) if gt_path.exists() else {}
     html_path = report_path.with_suffix(".html")
     html_path.write_text(generate_html(report, str(report_path), gt), encoding="utf-8")
     return html_path

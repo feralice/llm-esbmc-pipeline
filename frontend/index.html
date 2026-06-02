@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LLM+ESBMC — Análise V1</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f0f2f5; color: #2c3e50; min-height: 100vh; font-size: 14px;
+}
+
+/* ---- Header ---- */
+header {
+  background: linear-gradient(135deg, #1a252f, #2980b9);
+  color: white; padding: 16px 28px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+header h1 { font-size: 1.2em; font-weight: 700; }
+header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
+
+/* ---- Loader ---- */
+#loader { max-width: 720px; margin: 40px auto; padding: 0 20px; }
+.loader-box {
+  background: white; border-radius: 12px; padding: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+.loader-box h2 { font-size: 1em; font-weight: 700; margin-bottom: 18px; color: #2c3e50; }
+
+.file-zone {
+  border: 2px dashed #dee2e6; border-radius: 8px; padding: 18px 20px;
+  margin-bottom: 12px; transition: border-color .2s, background .2s; cursor: pointer;
+}
+.file-zone:hover, .file-zone.drag-over { border-color: #2980b9; background: #f0f7ff; }
+.file-zone label { cursor: pointer; display: block; }
+.file-zone input[type=file] { display: none; }
+.zone-title { font-weight: 600; font-size: .9em; margin-bottom: 3px; }
+.zone-hint { font-size: .78em; color: #95a5a6; }
+.zone-loaded { font-size: .78em; color: #27ae60; margin-top: 5px; font-weight: 600; }
+
+.load-btn {
+  width: 100%; padding: 11px; background: #2980b9; color: white;
+  border: none; border-radius: 8px; font-size: .95em; font-weight: 700;
+  cursor: pointer; margin-top: 6px; transition: background .2s;
+}
+.load-btn:hover { background: #1a6da0; }
+.load-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+/* ---- App ---- */
+#app { display: none; }
+
+.app-nav {
+  background: white; border-bottom: 1px solid #dee2e6;
+  display: flex; align-items: center; padding: 0 20px; gap: 2px;
+  position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.tab-btn {
+  border: none; background: none; padding: 13px 16px; cursor: pointer;
+  font-size: .88em; font-weight: 600; color: #7f8c8d;
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+  transition: color .15s, border-color .15s; white-space: nowrap;
+}
+.tab-btn:hover { color: #2c3e50; }
+.tab-btn.active { color: #2980b9; border-bottom-color: #2980b9; }
+.tab-btn.hidden { display: none; }
+.nav-meta { margin-left: auto; font-size: .75em; color: #95a5a6; white-space: nowrap; }
+
+.tab-panel { display: none; padding: 22px; max-width: 1100px; margin: 0 auto; }
+.tab-panel.active { display: block; }
+
+/* ---- Stats grid ---- */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px; margin-bottom: 22px;
+}
+.stat-card {
+  background: white; border-radius: 10px; padding: 14px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07); text-align: center;
+}
+.stat-num { font-size: 2em; font-weight: 800; display: block; }
+.stat-lbl { font-size: .72em; color: #7f8c8d; margin-top: 3px; line-height: 1.35; }
+
+/* ---- Section title ---- */
+.section-title {
+  font-size: .95em; font-weight: 700; color: #2c3e50;
+  margin: 20px 0 10px; padding-bottom: 7px; border-bottom: 2px solid #dee2e6;
+}
+
+/* ---- Table ---- */
+.data-table {
+  width: 100%; border-collapse: collapse; background: white;
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07); margin-bottom: 22px;
+}
+.data-table th {
+  background: #2c3e50; color: white; padding: 9px 13px;
+  text-align: left; font-size: .78em; white-space: nowrap;
+}
+.data-table td { padding: 8px 13px; border-bottom: 1px solid #f0f2f5; font-size: .84em; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #f8f9fa; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.center { text-align: center; }
+
+/* ---- Badge ---- */
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: .73em; font-weight: 700; white-space: nowrap; vertical-align: middle;
+}
+
+/* ---- Progress bar ---- */
+.bar-wrap { display: flex; align-items: center; gap: 7px; }
+.bar-bg { flex: 1; background: #f0f2f5; border-radius: 4px; height: 9px; min-width: 60px; }
+.bar-fill { background: #3498db; border-radius: 4px; height: 9px; }
+.bar-pct { font-size: .75em; color: #7f8c8d; min-width: 34px; text-align: right; }
+
+/* ---- File accordion ---- */
+.file-item {
+  background: white; border-radius: 10px; margin-bottom: 9px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.07); overflow: hidden;
+}
+.file-header {
+  padding: 11px 15px; cursor: pointer;
+  display: flex; align-items: center; gap: 9px; user-select: none;
+  transition: background .12s;
+}
+.file-header:hover { background: #f8f9fa; }
+.chevron { font-size: .65em; color: #95a5a6; transition: transform .18s; flex-shrink: 0; }
+.chevron.open { transform: rotate(90deg); }
+.file-name { font-weight: 700; font-size: .88em; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-meta { font-size: .75em; color: #7f8c8d; white-space: nowrap; }
+.file-body { display: none; padding: 4px 15px 15px; border-top: 1px solid #f0f2f5; }
+.file-body.open { display: block; }
+
+/* ---- Finding card ---- */
+.finding-card {
+  margin-top: 10px; border-radius: 8px; overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+.finding-hdr {
+  padding: 8px 12px; display: flex; justify-content: space-between;
+  align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.finding-body { padding: 10px 12px; background: #fafafa; font-size: .84em; }
+.prop-row { display: flex; gap: 8px; margin-bottom: 5px; align-items: baseline; }
+.prop-key { color: #95a5a6; font-size: .8em; min-width: 100px; flex-shrink: 0; }
+.code-block {
+  background: #1e272e; color: #dfe6e9; font-family: "Fira Code", "Courier New", monospace;
+  font-size: .78em; padding: 7px 10px; border-radius: 5px;
+  white-space: pre-wrap; word-break: break-all; margin: 5px 0;
+}
+.interp {
+  margin-top: 8px; font-size: .79em; color: #7f8c8d; font-style: italic;
+  border-top: 1px solid #eee; padding-top: 7px;
+}
+
+/* ---- ESBMC direct pill ---- */
+.esbmc-row {
+  display: flex; align-items: center; gap: 7px; margin: 10px 0;
+  padding: 7px 11px; background: #f8f9fa; border-radius: 6px; font-size: .8em;
+}
+.esbmc-row .time { margin-left: auto; color: #95a5a6; }
+
+/* ---- GT box ---- */
+.gt-box {
+  background: #f0f7ff; border: 1px solid #bde0fe; border-radius: 6px;
+  padding: 8px 12px; margin: 10px 0 0; font-size: .8em;
+}
+.gt-box .gt-title { font-weight: 700; color: #1a6da0; margin-bottom: 5px; font-size: .85em; }
+.gt-item { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+
+/* ---- JSON viewer ---- */
+#json-output {
+  background: #1e272e; color: #dfe6e9; font-family: "Fira Code", "Courier New", monospace;
+  font-size: .78em; padding: 18px; border-radius: 10px;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 72vh; overflow-y: auto;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07);
+}
+.json-toolbar { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+.json-toolbar button {
+  padding: 7px 16px; background: #2980b9; color: white;
+  border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: .84em;
+}
+.json-toolbar button:hover { background: #1a6da0; }
+.json-selector { padding: 6px 10px; border-radius: 6px; border: 1px solid #dee2e6; font-size: .84em; }
+
+/* ---- Misc ---- */
+.empty { color: #95a5a6; font-size: .85em; padding: 16px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🔍 LLM + ESBMC — Análise V1</h1>
+    <div class="sub">Visualizador de resultados · apenas leitura · sem alteração de classificações</div>
+  </div>
+</header>
+
+<!-- =================== LOADER =================== -->
+<div id="loader">
+  <div class="loader-box">
+    <h2>Carregar relatórios gerados pelo pipeline</h2>
+
+    <div class="file-zone" id="zone-report"
+         ondrop="onDrop(event,'report')"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')">
+      <label>
+        <div class="zone-title">📊 Relatório de análise</div>
+        <div class="zone-hint">full_report.json · report.json — arraste ou clique</div>
+        <div id="zone-report-name" class="zone-loaded" style="display:none"></div>
+        <input type="file" id="input-report" accept=".json" onchange="onInputChange('report',this)">
+      </label>
+    </div>
+
+    <div class="file-zone" id="zone-bm"
+         ondrop="onDrop(event,'bm')"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')">
+      <label>
+        <div class="zone-title">📈 Benchmark / métricas <span style="font-weight:400;color:#95a5a6">— opcional, aceita vários arquivos</span></div>
+        <div class="zone-hint">benchmark_v1.json — arraste ou clique para comparar modelos</div>
+        <div id="zone-bm-name" class="zone-loaded" style="display:none"></div>
+        <input type="file" id="input-bm" accept=".json" multiple onchange="onInputChange('bm',this)">
+      </label>
+    </div>
+
+    <button class="load-btn" id="load-btn" onclick="loadData()" disabled>Carregar e visualizar</button>
+  </div>
+</div>
+
+<!-- =================== APP =================== -->
+<div id="app">
+  <nav class="app-nav">
+    <button class="tab-btn active"  data-tab="dashboard"   onclick="showTab(this,'dashboard')">Dashboard</button>
+    <button class="tab-btn"         data-tab="categories"  onclick="showTab(this,'categories')">Por Categoria</button>
+    <button class="tab-btn"         data-tab="files"       onclick="showTab(this,'files')">Por Arquivo</button>
+    <button class="tab-btn hidden"  data-tab="benchmark"   onclick="showTab(this,'benchmark')" id="btn-benchmark">Benchmark / Modelos</button>
+    <button class="tab-btn"         data-tab="json"        onclick="showTab(this,'json')">JSON Raw</button>
+    <div class="nav-meta" id="nav-meta"></div>
+  </nav>
+
+  <div id="tab-dashboard"  class="tab-panel active"></div>
+  <div id="tab-categories" class="tab-panel"></div>
+  <div id="tab-files"      class="tab-panel"></div>
+  <div id="tab-benchmark"  class="tab-panel"></div>
+  <div id="tab-json" class="tab-panel">
+    <div class="json-toolbar">
+      <button onclick="copyJson()">Copiar JSON</button>
+      <select class="json-selector" id="json-selector" onchange="updateJsonView()"></select>
+    </div>
+    <pre id="json-output"></pre>
+  </div>
+</div>
+
+<script>
+// =================== STATE ===================
+const state = {
+  reportFile: null,   // File object
+  bmFiles: [],        // File objects (multiple)
+  reportData: null,
+  bmList: [],         // [{name, data}]
+  rawTexts: {},       // name -> text
+};
+
+// =================== CLASSIFICATION META ===================
+const CLS = {
+  'llm_confirmed_by_esbmc':     { lbl: 'Confirmado LLM+ESBMC',   clr: '#e74c3c' },
+  'esbmc_native_bug':           { lbl: 'Bug ESBMC Direto',        clr: '#c0392b' },
+  'llm_missed_esbmc_bug':       { lbl: 'LLM Não Detectou',        clr: '#e67e22' },
+  'llm_false_positive':         { lbl: 'Falso Positivo LLM',      clr: '#e67e22' },
+  'not_confirmed_within_bound': { lbl: 'Não Confirmado',           clr: '#3498db' },
+  'heuristic_smell_only':       { lbl: 'Smell Heurístico',         clr: '#9b59b6' },
+  'esbmc_inconclusive':         { lbl: 'Inconclusivo',             clr: '#7f8c8d' },
+  'skipped_not_verifiable':     { lbl: 'Skipped',                  clr: '#95a5a6' },
+  'out_of_scope_finding':       { lbl: 'Fora do Escopo',           clr: '#8e44ad' },
+  'runtime_reproduced_by_harness': { lbl: 'Harness (Exp.)',        clr: '#16a085' },
+  'runtime_not_reproduced':     { lbl: 'Harness: não reprod.',     clr: '#7f8c8d' },
+  'runtime_inconclusive':       { lbl: 'Harness inconclusivo',     clr: '#95a5a6' },
+  'clean':                      { lbl: 'Sem Achados',              clr: '#27ae60' },
+};
+const ESBMC = {
+  'violation_found':    { lbl: 'VIOLAÇÃO',        clr: '#e74c3c' },
+  'no_violation_found': { lbl: 'Sem Violação',    clr: '#27ae60' },
+  'no_vcc_generated':   { lbl: '0 VCCs',          clr: '#636e72' },
+  'inconclusive':       { lbl: 'Inconclusivo',    clr: '#f39c12' },
+  'tool_error':         { lbl: 'Erro ESBMC',      clr: '#e74c3c' },
+  'timeout':            { lbl: 'Timeout',         clr: '#f39c12' },
+  'unsupported_case':   { lbl: 'Não Suportado',   clr: '#f39c12' },
+  'skipped':            { lbl: 'Skipped',         clr: '#95a5a6' },
+};
+
+// =================== HELPERS ===================
+function badge(text, clr, bg) {
+  bg = bg || clr + '22';
+  return `<span class="badge" style="background:${bg};color:${clr}">${esc(text)}</span>`;
+}
+function clsBadge(cls) {
+  const m = CLS[cls] || { lbl: cls || '?', clr: '#7f8c8d' };
+  return badge(m.lbl, m.clr);
+}
+function esbmcBadge(status) {
+  const m = ESBMC[status] || { lbl: status || '?', clr: '#7f8c8d' };
+  return badge(m.lbl, m.clr);
+}
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fname(path) { return (path || '').split(/[\\/]/).pop(); }
+function fmt2(v) { return (v == null) ? '—' : Number(v).toFixed(2); }
+function fmtPct(v) { return (v == null) ? '—' : (Number(v) * 100).toFixed(1) + '%'; }
+function progressBar(n, total) {
+  const p = total > 0 ? Math.round(n / total * 100) : 0;
+  return `<div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${p}%"></div></div><span class="bar-pct">${p}%</span></div>`;
+}
+
+// =================== FORMAT DETECTION ===================
+function detectFmt(data) {
+  if (Array.isArray(data)) return 'flat';
+  if (data.files && data.summary && data.experiment) return 'full_report';
+  if (data.metrics && (data.model != null || data.backend != null)) return 'benchmark';
+  return 'unknown';
+}
+
+// =================== NORMALIZATION ===================
+// Returns [{file, esbmc_direct, llm_results[], ground_truth_findings[], final_file_classification}]
+function toFiles(data) {
+  const fmt = detectFmt(data);
+  if (fmt === 'full_report') return data.files || [];
+  if (fmt === 'flat') {
+    const byFile = {};
+    for (const r of data) {
+      const k = r.source_file || '(unknown)';
+      (byFile[k] = byFile[k] || []).push(r);
+    }
+    return Object.entries(byFile).map(([file, rs]) => ({
+      file,
+      ground_truth_findings: [],
+      esbmc_direct: rs[0]?.esbmc_direct_result
+        ? { status: rs[0].esbmc_direct_result.status, summary: rs[0].esbmc_direct_result.summary, time_seconds: rs[0].esbmc_direct_result.time_seconds }
+        : null,
+      llm_results: rs.filter(r => r.finding?.stage !== 'esbmc_direct').map(r => ({
+        function: r.unit_name,
+        category: r.finding?.category,
+        type: r.finding?.finding_type,
+        line: r.finding?.metadata?.line,
+        expression: r.finding?.metadata?.expression,
+        confidence: r.finding?.confidence,
+        reasoning: r.finding?.explanation,
+        evidence: r.finding?.evidence || [],
+        verifiable: r.finding?.verifiable,
+        ast_validation: { valid: r.finding?.finding_type !== 'llm_false_positive', reason: '' },
+        formal_property: r.formal_property ? { supported: true, assertion: r.formal_property.assertion, esbmc_flags: r.formal_property.esbmc_flags } : { supported: false },
+        esbmc_instrumented: r.esbmc_result ? { status: r.esbmc_result.status, summary: r.esbmc_result.summary } : null,
+        final_classification: r.final_classification,
+        interpretation: r.interpretation,
+      })),
+      final_file_classification: rs[0]?.final_classification || '',
+    }));
+  }
+  return [];
+}
+
+function toSummary(data) {
+  const fmt = detectFmt(data);
+  if (fmt === 'full_report') return data.summary || {};
+  if (fmt === 'flat') {
+    const files = toFiles(data);
+    const all = files.flatMap(f => f.llm_results || []);
+    return {
+      total_files: files.length,
+      total_llm_findings: all.length,
+      total_confirmed_by_esbmc: all.filter(r => r.final_classification === 'llm_confirmed_by_esbmc').length,
+      total_llm_false_positives: all.filter(r => r.final_classification === 'llm_false_positive').length,
+      total_smells: all.filter(r => r.final_classification === 'heuristic_smell_only').length,
+      total_inconclusive: all.filter(r => ['esbmc_inconclusive','not_confirmed_within_bound','skipped_not_verifiable'].includes(r.final_classification)).length,
+      total_esbmc_direct_violations: files.filter(f => f.esbmc_direct?.status === 'violation_found').length,
+      total_no_vcc_generated: files.filter(f => f.esbmc_direct?.status === 'no_vcc_generated').length,
+    };
+  }
+  return {};
+}
+
+// =================== FILE INPUT ===================
+function onInputChange(kind, input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  if (kind === 'report') {
+    state.reportFile = files[0];
+    show('zone-report-name', '✓ ' + files[0].name);
+  } else {
+    state.bmFiles = files;
+    show('zone-bm-name', '✓ ' + files.map(f => f.name).join(', '));
+  }
+  document.getElementById('load-btn').disabled = false;
+}
+
+function onDrop(event, kind) {
+  event.preventDefault();
+  document.getElementById('zone-' + kind).classList.remove('drag-over');
+  const files = Array.from(event.dataTransfer.files).filter(f => f.name.endsWith('.json'));
+  if (!files.length) return;
+  if (kind === 'report') {
+    state.reportFile = files[0];
+    show('zone-report-name', '✓ ' + files[0].name);
+  } else {
+    state.bmFiles = files;
+    show('zone-bm-name', '✓ ' + files.map(f => f.name).join(', '));
+  }
+  document.getElementById('load-btn').disabled = false;
+}
+
+function show(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.style.display = '';
+}
+
+async function readText(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsText(file, 'utf-8');
+  });
+}
+
+async function loadData() {
+  if (!state.reportFile && !state.bmFiles.length) {
+    alert('Selecione pelo menos um arquivo JSON.');
+    return;
+  }
+
+  state.bmList = [];
+  state.rawTexts = {};
+
+  // Load report
+  if (state.reportFile) {
+    const text = await readText(state.reportFile);
+    state.rawTexts[state.reportFile.name] = text;
+    try {
+      const parsed = JSON.parse(text);
+      const fmt = detectFmt(parsed);
+      if (fmt === 'benchmark') {
+        // if only a benchmark file was put in the report slot, treat it correctly
+        state.bmList.push({ name: state.reportFile.name, data: parsed });
+        state.reportData = null;
+      } else {
+        state.reportData = parsed;
+      }
+    } catch(e) { alert('Erro ao parsear ' + state.reportFile.name + ': ' + e.message); return; }
+  } else {
+    state.reportData = null;
+  }
+
+  // Load benchmarks
+  for (const f of state.bmFiles) {
+    const text = await readText(f);
+    state.rawTexts[f.name] = text;
+    try {
+      const parsed = JSON.parse(text);
+      const fmt = detectFmt(parsed);
+      if (fmt === 'benchmark') {
+        state.bmList.push({ name: f.name, data: parsed });
+      } else if (!state.reportData && (fmt === 'full_report' || fmt === 'flat')) {
+        state.reportData = parsed;
+      }
+    } catch(e) { console.warn('Erro ao parsear', f.name, e); }
+  }
+
+  if (!state.reportData && !state.bmList.length) {
+    alert('Nenhum JSON reconhecido. Formatos aceitos: full_report.json, report.json, benchmark_v1.json');
+    return;
+  }
+
+  renderAll();
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+// =================== NAVIGATION ===================
+function showTab(btn, name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// =================== RENDER ALL ===================
+function renderAll() {
+  renderDashboard();
+  renderCategories();
+  renderFiles();
+  renderBenchmark();
+  renderJson();
+  updateNavMeta();
+}
+
+function updateNavMeta() {
+  const el = document.getElementById('nav-meta');
+  if (state.reportData) {
+    const fmt = detectFmt(state.reportData);
+    if (fmt === 'full_report') {
+      const exp = state.reportData.experiment || {};
+      el.textContent = (exp.model || '') + (exp.created_at ? '  ·  ' + exp.created_at.slice(0,16).replace('T',' ') : '');
+    }
+  }
+}
+
+// =================== DASHBOARD ===================
+function renderDashboard() {
+  const el = document.getElementById('tab-dashboard');
+  if (!state.reportData) {
+    el.innerHTML = '<p class="empty">Nenhum relatório carregado — carregue um full_report.json ou report.json.</p>';
+    return;
+  }
+  const summary = toSummary(state.reportData);
+  const fmt = detectFmt(state.reportData);
+  const exp = fmt === 'full_report' ? (state.reportData.experiment || {}) : null;
+
+  const expHtml = exp ? `
+    <div class="section-title">Experimento</div>
+    <table class="data-table" style="margin-bottom:20px">
+      <tr><td style="width:120px"><b>Modelo</b></td><td>${esc(exp.model||'—')}</td><td style="width:80px"><b>Modo</b></td><td>${esc(exp.mode||'—')}</td></tr>
+      <tr><td><b>Bound</b></td><td>${exp.bound??'—'}</td><td><b>Timeout</b></td><td>${exp.timeout??'—'}s</td></tr>
+      <tr><td><b>Data</b></td><td colspan="3">${(exp.created_at||'').slice(0,19).replace('T',' ')||'—'}</td></tr>
+    </table>` : '';
+
+  const files = toFiles(state.reportData);
+  const allLLM = files.flatMap(f => f.llm_results || []);
+  const clsCounts = {};
+  for (const r of allLLM) { const c = r.final_classification || 'unknown'; clsCounts[c] = (clsCounts[c]||0)+1; }
+  const sortedCls = Object.entries(clsCounts).sort((a,b) => b[1]-a[1]);
+  const breakdownRows = sortedCls.map(([cls, n]) =>
+    `<tr><td>${clsBadge(cls)}</td><td class="num">${n}</td><td style="padding:8px 13px">${progressBar(n, allLLM.length)}</td></tr>`
+  ).join('');
+
+  el.innerHTML = `
+    ${expHtml}
+    <div class="section-title">Resumo geral</div>
+    <div class="stat-grid">
+      <div class="stat-card"><span class="stat-num" style="color:#2c3e50">${summary.total_files??'—'}</span><div class="stat-lbl">Arquivos</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#3498db">${summary.total_llm_findings??'—'}</span><div class="stat-lbl">Achados LLM</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#e74c3c">${summary.total_confirmed_by_esbmc??'—'}</span><div class="stat-lbl">Confirmados ESBMC</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#e67e22">${summary.total_llm_false_positives??'—'}</span><div class="stat-lbl">Falsos positivos</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#9b59b6">${summary.total_smells??'—'}</span><div class="stat-lbl">Smells</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#7f8c8d">${summary.total_inconclusive??'—'}</span><div class="stat-lbl">Inconclusivos</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#636e72">${summary.total_no_vcc_generated??'—'}</span><div class="stat-lbl">ESBMC 0 VCCs</div></div>
+      <div class="stat-card"><span class="stat-num" style="color:#27ae60">${summary.total_esbmc_direct_violations??'—'}</span><div class="stat-lbl">ESBMC direto violações</div></div>
+    </div>
+    ${allLLM.length ? `
+    <div class="section-title">Distribuição de classificações</div>
+    <table class="data-table"><tr><th>Classificação</th><th class="num">Qtd</th><th>Proporção</th></tr>${breakdownRows}</table>` : ''}
+  `;
+}
+
+// =================== CATEGORIES ===================
+function renderCategories() {
+  const el = document.getElementById('tab-categories');
+  if (!state.reportData) { el.innerHTML = ''; return; }
+
+  const files = toFiles(state.reportData);
+  const allLLM = files.flatMap(f => f.llm_results || []);
+
+  const BUG_CATS = ['division_by_zero', 'out_of_bounds', 'assertion_violation'];
+  const SMELL_CATS = ['long_method', 'many_parameters', 'complex_conditional'];
+
+  function catRow(cat, isSmell) {
+    const items = allLLM.filter(r => r.category === cat);
+    if (isSmell) return `<tr><td><code>${cat}</code></td><td class="num">${items.length}</td>
+      <td colspan="5" style="color:#9b59b6;text-align:center;font-size:.8em">heurístico — sem verificação formal</td></tr>`;
+    if (!items.length) return `<tr><td><code>${cat}</code></td><td class="num">0</td>
+      <td colspan="5" style="color:#95a5a6;text-align:center;font-size:.8em">sem achados</td></tr>`;
+    const conf = items.filter(r => r.final_classification === 'llm_confirmed_by_esbmc').length;
+    const nc   = items.filter(r => r.final_classification === 'not_confirmed_within_bound').length;
+    const fp   = items.filter(r => r.final_classification === 'llm_false_positive').length;
+    const inc  = items.filter(r => r.final_classification === 'esbmc_inconclusive').length;
+    const sk   = items.filter(r => r.final_classification === 'skipped_not_verifiable').length;
+    return `<tr>
+      <td><code>${cat}</code></td>
+      <td class="num">${items.length}</td>
+      <td class="num" style="color:#e74c3c;font-weight:700">${conf}</td>
+      <td class="num" style="color:#3498db">${nc}</td>
+      <td class="num" style="color:#e67e22">${fp}</td>
+      <td class="num" style="color:#7f8c8d">${inc}</td>
+      <td class="num" style="color:#95a5a6">${sk}</td>
+    </tr>`;
+  }
+
+  const known = [...BUG_CATS, ...SMELL_CATS];
+  const otherCounts = {};
+  for (const r of allLLM) if (!known.includes(r.category)) otherCounts[r.category] = (otherCounts[r.category]||0)+1;
+  const otherRows = Object.entries(otherCounts).map(([c,n]) =>
+    `<tr><td><code>${esc(c)}</code></td><td class="num">${n}</td><td colspan="5" style="color:#95a5a6;text-align:center;font-size:.8em">outro</td></tr>`
+  ).join('');
+
+  el.innerHTML = `
+    <div class="section-title">Bugs formais — V1</div>
+    <table class="data-table">
+      <tr><th>Categoria</th><th class="num">Total</th>
+          <th class="num">Confirmados</th><th class="num">Não conf.</th>
+          <th class="num">Falso pos.</th><th class="num">Inconcl.</th><th class="num">Skipped</th></tr>
+      ${BUG_CATS.map(c => catRow(c, false)).join('')}
+    </table>
+    <div class="section-title">Code smells — secundários</div>
+    <table class="data-table">
+      <tr><th>Categoria</th><th class="num">Total</th><th colspan="5"></th></tr>
+      ${SMELL_CATS.map(c => catRow(c, true)).join('')}
+    </table>
+    ${otherRows ? `<div class="section-title">Outros</div><table class="data-table"><tr><th>Categoria</th><th class="num">Total</th><th colspan="5"></th></tr>${otherRows}</table>` : ''}
+  `;
+}
+
+// =================== FILES ===================
+function renderFiles() {
+  const el = document.getElementById('tab-files');
+  if (!state.reportData) { el.innerHTML = ''; return; }
+  const files = toFiles(state.reportData);
+  el.innerHTML = `
+    <div class="section-title">Por arquivo — ${files.length} arquivo(s)</div>
+    ${files.map((f, i) => fileItem(f, i)).join('') || '<p class="empty">Sem arquivos.</p>'}
+  `;
+}
+
+function fileItem(f, idx) {
+  const name = fname(f.file);
+  const cls  = f.final_file_classification || '';
+  const m    = CLS[cls] || { lbl: cls || '—', clr: '#7f8c8d' };
+  const n    = (f.llm_results || []).length;
+  const direct = f.esbmc_direct;
+  const dm   = direct ? (ESBMC[direct.status] || { lbl: direct.status, clr: '#7f8c8d' }) : null;
+
+  const gtHtml = (f.ground_truth_findings || []).length ? `
+    <div class="gt-box">
+      <div class="gt-title">Ground truth esperado</div>
+      ${f.ground_truth_findings.map(gt => `<div class="gt-item">
+        ${badge(gt.category || '?', '#1a6da0', '#dbeafe')}
+        <span style="color:#555">em <b>${esc(gt.function||'?')}</b></span>
+        ${gt.verifiable ? badge('verifiable','#27ae60') : badge('smell','#9b59b6')}
+        ${gt.expression ? `<code style="font-size:.85em;color:#555">— ${esc(gt.expression)}</code>` : ''}
+      </div>`).join('')}
+    </div>` : '';
+
+  const directHtml = direct ? `
+    <div class="esbmc-row">
+      <b style="color:#555">ESBMC direto:</b>
+      ${esbmcBadge(direct.status)}
+      <span style="color:#7f8c8d">${esc(direct.summary||'')}</span>
+      ${direct.time_seconds != null ? `<span class="time">${direct.time_seconds.toFixed(2)}s</span>` : ''}
+    </div>` : '';
+
+  const findingsHtml = (f.llm_results || []).map(r => findingCard(r)).join('');
+
+  return `
+    <div class="file-item" id="fi-${idx}">
+      <div class="file-header" onclick="toggleFile(${idx})">
+        <span class="chevron" id="chv-${idx}">▶</span>
+        <span class="file-name" title="${esc(f.file)}">${esc(name)}</span>
+        <span class="file-meta">${n} finding(s)</span>
+        <span class="badge" style="background:${m.clr}22;color:${m.clr}">${esc(m.lbl)}</span>
+      </div>
+      <div class="file-body" id="fb-${idx}">
+        ${gtHtml}
+        ${directHtml}
+        ${findingsHtml || '<p class="empty" style="padding-top:10px">Sem achados da LLM.</p>'}
+        <div style="margin-top:10px;font-size:.72em;color:#bbb;word-break:break-all">${esc(f.file)}</div>
+      </div>
+    </div>`;
+}
+
+function findingCard(r) {
+  const cls  = r.final_classification || '';
+  const m    = CLS[cls] || { lbl: cls, clr: '#7f8c8d' };
+  const bg   = m.clr + '18';
+  const ei   = r.esbmc_instrumented;
+  const em   = ei ? (ESBMC[ei.status] || { lbl: ei.status, clr: '#7f8c8d' }) : null;
+  const fp   = r.formal_property;
+  const evidHtml = (r.evidence || []).map(e => `<div class="code-block">${esc(e)}</div>`).join('');
+  const formalHtml = fp?.supported
+    ? `<div class="prop-row"><span class="prop-key">Assertion:</span><span><code>${esc(fp.assertion||'?')}</code></span></div>
+       ${fp.esbmc_flags?.length ? `<div class="prop-row"><span class="prop-key">Flags ESBMC:</span><span><code>${esc(fp.esbmc_flags.join(' '))}</code></span></div>` : ''}`
+    : `<div class="prop-row"><span class="prop-key">Propriedade formal:</span><span style="color:#95a5a6">não gerada</span></div>`;
+  const esbmcHtml = ei
+    ? `<div class="prop-row"><span class="prop-key">ESBMC:</span><span>${badge(em.lbl, em.clr)} <span style="color:#7f8c8d;font-size:.85em">${esc(ei.summary||'')}</span></span></div>`
+    : '';
+  const astHtml = r.ast_validation
+    ? `<div class="prop-row"><span class="prop-key">AST:</span><span style="color:${r.ast_validation.valid?'#27ae60':'#e74c3c'}">${r.ast_validation.valid?'✓ válido':'✗ inválido'}</span></div>`
+    : '';
+
+  return `
+    <div class="finding-card">
+      <div class="finding-hdr" style="background:${bg}">
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+          ${badge(r.category||'?','#636e72')}
+          ${r.verifiable ? badge('verifiable','#27ae60') : badge('smell','#9b59b6')}
+          <span style="font-size:.82em;color:#555">fn: <b>${esc(r.function||'?')}</b></span>
+          ${r.line ? `<span style="font-size:.75em;color:#95a5a6">linha ${esc(r.line)}</span>` : ''}
+          ${r.confidence ? badge(r.confidence, r.confidence==='high'?'#27ae60':r.confidence==='medium'?'#f39c12':'#e74c3c') : ''}
+        </div>
+        ${badge(m.lbl, m.clr)}
+      </div>
+      <div class="finding-body">
+        ${r.expression ? `<div class="prop-row"><span class="prop-key">Expressão:</span><span><code>${esc(r.expression)}</code></span></div>` : ''}
+        ${astHtml}
+        ${r.reasoning ? `<div style="margin:7px 0;color:#444;line-height:1.5">${esc(r.reasoning)}</div>` : ''}
+        ${evidHtml}
+        ${formalHtml}
+        ${esbmcHtml}
+        ${r.interpretation ? `<div class="interp">${esc(r.interpretation)}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function toggleFile(idx) {
+  const body = document.getElementById('fb-' + idx);
+  const chv  = document.getElementById('chv-' + idx);
+  const open = body.classList.toggle('open');
+  chv.classList.toggle('open', open);
+}
+
+// =================== BENCHMARK ===================
+function renderBenchmark() {
+  const el  = document.getElementById('tab-benchmark');
+  const btn = document.getElementById('btn-benchmark');
+  if (!state.bmList.length) { btn.classList.add('hidden'); el.innerHTML = ''; return; }
+  btn.classList.remove('hidden');
+
+  const rows = state.bmList.map(({ name, data }) => {
+    const b = data.metrics?.bugs || {};
+    const e = data.metrics?.esbmc_direct_baseline || {};
+    const h = data.hallucinations || {};
+    const tp = b.tp??'—', fp = b.fp??'—', fn = b.fn??'—';
+    return `<tr>
+      <td><b>${esc(data.model || name)}</b></td>
+      <td class="num">${fmt2(b.precision)}</td>
+      <td class="num">${fmt2(b.recall)}</td>
+      <td class="num"><b>${fmt2(b.f1)}</b></td>
+      <td class="num">${tp}</td><td class="num">${fp}</td><td class="num">${fn}</td>
+      <td class="num">${fmt2(e.f1)}</td>
+      <td class="num">${h.count??'—'} <span style="color:#95a5a6;font-size:.8em">(${fmtPct(h.rate)})</span></td>
+      <td class="num">${data.bound??'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const smellRows = state.bmList.map(({ name, data }) => {
+    const s = data.metrics?.smells || {};
+    return `<tr>
+      <td><b>${esc(data.model || name)}</b></td>
+      <td class="num">${fmt2(s.precision)}</td>
+      <td class="num">${fmt2(s.recall)}</td>
+      <td class="num"><b>${fmt2(s.f1)}</b></td>
+      <td class="num">${s.tp??'—'}</td><td class="num">${s.fp??'—'}</td><td class="num">${s.fn??'—'}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="section-title">Métricas de bugs formais por modelo</div>
+    <table class="data-table">
+      <tr>
+        <th>Modelo</th>
+        <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
+        <th class="num">TP</th><th class="num">FP</th><th class="num">FN</th>
+        <th class="num">ESBMC direto F1</th>
+        <th class="num">Alucinações</th>
+        <th class="num">Bound</th>
+      </tr>
+      ${rows}
+    </table>
+
+    <div class="section-title">Métricas de smells por modelo</div>
+    <table class="data-table">
+      <tr>
+        <th>Modelo</th>
+        <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
+        <th class="num">TP</th><th class="num">FP</th><th class="num">FN</th>
+      </tr>
+      ${smellRows}
+    </table>
+    <p style="font-size:.76em;color:#95a5a6;margin-top:-10px">
+      Bugs formais e smells calculados separadamente. Não some os dois como TP único.
+      Resultados de harness runtime não entram nesta tabela.
+    </p>
+    <p style="margin-top:8px;font-size:.76em;color:#95a5a6">
+      Para adicionar mais modelos: arraste múltiplos arquivos benchmark_*.json na zona de benchmark na tela inicial.
+    </p>`;
+}
+
+// =================== JSON VIEWER ===================
+function renderJson() {
+  const sel = document.getElementById('json-selector');
+  sel.innerHTML = '';
+  const files = [];
+  if (state.reportData) files.push({ label: 'Relatório principal', text: JSON.stringify(state.reportData, null, 2) });
+  for (const { name, data } of state.bmList) files.push({ label: name, text: JSON.stringify(data, null, 2) });
+  for (const [name, text] of Object.entries(state.rawTexts)) {
+    if (!files.find(f => f.text.startsWith(text.slice(0,20)))) files.push({ label: name + ' (raw)', text });
+  }
+  files.forEach((f, i) => {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = f.label;
+    sel.appendChild(opt);
+  });
+  window._jsonFiles = files;
+  updateJsonView();
+}
+
+function updateJsonView() {
+  const sel = document.getElementById('json-selector');
+  const idx = parseInt(sel.value) || 0;
+  const files = window._jsonFiles || [];
+  document.getElementById('json-output').textContent = files[idx]?.text || '';
+}
+
+function copyJson() {
+  const text = document.getElementById('json-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btns = document.querySelectorAll('.json-toolbar button');
+    btns[0].textContent = 'Copiado ✓';
+    setTimeout(() => btns[0].textContent = 'Copiar JSON', 2000);
+  }).catch(() => {
+    // fallback for non-HTTPS
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
+</body>
+</html>

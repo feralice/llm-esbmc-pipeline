@@ -1,4 +1,4 @@
-def proc(a, b, c, d, e, f):
+def proc(a: int, b: int, c: int, d: int, e: int, f: int) -> int:
     x = a + b
     if x > 0:
         if c > 0:

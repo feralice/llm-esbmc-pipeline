@@ -35,6 +35,15 @@ _PROPERTY_PROFILES: dict[str, _ESBMCPropertyProfile] = {
             "para este finding."
         ),
     ),
+    "assertion_violation": _ESBMCPropertyProfile(
+        category="assertion_violation",
+        hypothesis="A execucao nao deve alcancar uma assercao falsa ou raise AssertionError.",
+        esbmc_flags=[],
+        notes=(
+            "Propriedade local para caminhos que chegam a assert falso ou raise AssertionError. "
+            "Mantem checagens nativas do ESBMC habilitadas."
+        ),
+    ),
 }
 
 
@@ -43,43 +52,82 @@ def formalize_finding(unit: CodeUnit, finding: Finding) -> FormalProperty | None
         return None
 
     if finding.category == "division_by_zero":
-        profile = _PROPERTY_PROFILES[finding.category]
-        expression = finding.metadata.get("expression", "")
-        denominator = _extract_denominator(expression)
-        assertion = f"({denominator}) != 0" if denominator else "False"
-        return FormalProperty(
-            finding_id=finding.id,
-            category=finding.category,
-            hypothesis=profile.hypothesis,
-            assertion=assertion,
-            assumptions=_build_reachability_assumptions(unit, skip_category="division_by_zero"),
-            esbmc_flags=list(profile.esbmc_flags),
-            notes=profile.notes,
-            insertion_line=_parse_relative_line(finding),
-            absolute_line=_parse_absolute_line(finding),
-        )
+        return _formalize_division_by_zero(unit, finding)
 
     if finding.category == "out_of_bounds":
-        profile = _PROPERTY_PROFILES[finding.category]
-        expression = finding.metadata.get("expression", "")
-        base, index = _extract_subscript_parts(expression)
-        if base and index:
-            assertion = f"(0 <= ({index})) and (({index}) < len({base}))"
-        else:
-            assertion = "False"
-        return FormalProperty(
-            finding_id=finding.id,
-            category=finding.category,
-            hypothesis=profile.hypothesis,
-            assertion=assertion,
-            assumptions=[],
-            esbmc_flags=list(profile.esbmc_flags),
-            notes=profile.notes,
-            insertion_line=_parse_relative_line(finding),
-            absolute_line=_parse_absolute_line(finding),
-        )
+        return _formalize_out_of_bounds(finding)
+
+    if finding.category == "assertion_violation":
+        return _formalize_assertion_violation(finding)
 
     return None
+
+
+def _formalize_division_by_zero(unit: CodeUnit, finding: Finding) -> FormalProperty:
+    profile = _PROPERTY_PROFILES[finding.category]
+    expression = finding.metadata.get("expression", "")
+    denominator = _extract_denominator(expression)
+    assertion = f"({denominator}) != 0" if denominator else "False"
+    return _build_formal_property(
+        finding=finding,
+        profile=profile,
+        assertion=assertion,
+        assumptions=_build_reachability_assumptions(unit, skip_category="division_by_zero"),
+    )
+
+
+def _formalize_out_of_bounds(finding: Finding) -> FormalProperty:
+    profile = _PROPERTY_PROFILES[finding.category]
+    expression = finding.metadata.get("expression", "")
+    base, index = _extract_subscript_parts(expression)
+    if base and index:
+        assertion = f"(0 <= ({index})) and (({index}) < len({base}))"
+    else:
+        assertion = "False"
+    return _build_formal_property(
+        finding=finding,
+        profile=profile,
+        assertion=assertion,
+        assumptions=[],
+    )
+
+
+def _formalize_assertion_violation(finding: Finding) -> FormalProperty:
+    profile = _PROPERTY_PROFILES[finding.category]
+    expression = finding.metadata.get("expression", "")
+    return _build_formal_property(
+        finding=finding,
+        profile=profile,
+        assertion=_assertion_property_from_expression(expression),
+        assumptions=[],
+    )
+
+
+def _build_formal_property(
+    finding: Finding,
+    profile: _ESBMCPropertyProfile,
+    assertion: str,
+    assumptions: list[str],
+) -> FormalProperty:
+    return FormalProperty(
+        finding_id=finding.id,
+        category=finding.category,
+        hypothesis=profile.hypothesis,
+        assertion=assertion,
+        assumptions=assumptions,
+        esbmc_flags=list(profile.esbmc_flags),
+        notes=profile.notes,
+        insertion_line=_parse_relative_line(finding),
+        absolute_line=_parse_absolute_line(finding),
+    )
+
+
+def _assertion_property_from_expression(expression: str) -> str:
+    expression = expression.strip()
+    if expression.startswith("assert "):
+        assertion_text = expression[len("assert ") :].split(",", 1)[0].strip()
+        return assertion_text or "False"
+    return "False"
 
 
 def _extract_denominator(expression: str) -> str:

@@ -14,8 +14,7 @@ load_dotenv(REPO_ROOT / ".env")
 
 from research_pipeline.evaluator import EvalCounts, evaluate_model, prf
 
-LABELED_DIR = REPO_ROOT / "examples" / "labeled"
-GROUND_TRUTH_PATH = LABELED_DIR / "ground_truth.json"
+GROUND_TRUTH_PATH = REPO_ROOT / "examples" / "labeled" / "ground_truths" / "bugs"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -99,7 +98,7 @@ def _print_table(results: list[tuple[str, EvalCounts]]) -> None:
         all_tp = c.bug_tp + c.smell_tp
         all_fp = c.bug_fp + c.smell_fp
         all_fn = c.bug_fn + c.smell_fn
-        _, _, ov_f1 = prf(all_tp, all_fp, all_fn)
+        _ov_p, _ov_r, ov_f1 = prf(all_tp, all_fp, all_fn)
         print(
             f"{name:{W}} | {bug_p:>5.0%} {bug_r:>6.0%} {bug_f1:>7.0%}"
             f" | {smell_p:>6.0%} {smell_r:>7.0%} {smell_f1:>8.0%}"

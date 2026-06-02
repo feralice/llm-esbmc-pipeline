@@ -1,0 +1,39 @@
+{
+  "dataset_name": "python-bugs-division-by-zero",
+  "category": "division_by_zero",
+  "total_items": 2,
+  "items": [
+    {
+      "id": "bugsinpy_pandas_73_division_by_zero",
+      "source_dataset": "BugsInPy",
+      "source_project": "pandas",
+      "source_bug_id": "73",
+      "file": "pandas_73_division_by_zero.py",
+      "function": "pandas_division_behavior",
+      "expected_label": "bug",
+      "expected_category": "division_by_zero",
+      "expected_type": "suspected_bug",
+      "line": 2,
+      "expression": "return value / divisor",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "high"
+    },
+    {
+      "id": "aws_neuron_125_bilinear_division_by_zero",
+      "source_dataset": "AWS-Neuron",
+      "source_project": "nki-samples",
+      "source_issue": "125",
+      "source_pr": "126",
+      "file": "aws_neuron_bilinear_chunk_size_div_zero.py",
+      "function": "interpolate_bilinear_trip_count",
+      "expected_label": "bug",
+      "expected_category": "division_by_zero",
+      "expected_type": "suspected_bug",
+      "expression": "(h_src - wdw_size) / step_size",
+      "verifiable": true,
+      "should_go_to_esbmc": true,
+      "confidence": "high"
+    }
+  ]
+}
