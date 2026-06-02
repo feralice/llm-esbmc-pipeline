@@ -507,6 +507,7 @@ def main() -> int:
     output_path = Path(args.output) if args.output else input_path.with_suffix(".html")
 
     html = generate_html(report, str(input_path), gt)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html, encoding="utf-8")
     print(f"Relatório HTML salvo em: {output_path}")
     return 0
