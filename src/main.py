@@ -249,13 +249,19 @@ def _print_benchmark_table(label: str, counts: EvalCounts) -> None:
     esbmc_p, esbmc_r, esbmc_f1 = prf(
         counts.esbmc_direct_tp, counts.esbmc_direct_fp, counts.esbmc_direct_fn
     )
+    hybrid_p, hybrid_r, hybrid_f1 = prf(
+        counts.hybrid_bug_tp, counts.hybrid_bug_fp, counts.hybrid_bug_fn
+    )
     hlr = hallucination_rate(counts)
 
     print(f"\n{'─' * 60}")
     print(f"Modelo: {label}")
     print(f"{'─' * 60}")
-    print(f"  Bug P/R/F1:          {bug_p:.2f} / {bug_r:.2f} / {bug_f1:.2f}")
+    print(f"  Bug LLM P/R/F1:      {bug_p:.2f} / {bug_r:.2f} / {bug_f1:.2f}")
     print(f"    TP={counts.bug_tp}  FP={counts.bug_fp}  FN={counts.bug_fn}")
+    print(f"  Bug Híbrido P/R/F1:  {hybrid_p:.2f} / {hybrid_r:.2f} / {hybrid_f1:.2f}")
+    print(f"    TP={counts.hybrid_bug_tp}  FP={counts.hybrid_bug_fp}  FN={counts.hybrid_bug_fn}")
+    print(f"    confirmados ESBMC={counts.llm_confirmed_by_esbmc}  não confirmados={counts.not_confirmed_within_bound}  inconclusivos={counts.esbmc_inconclusive}")
     print(f"  Smell P/R/F1:        {smell_p:.2f} / {smell_r:.2f} / {smell_f1:.2f}")
     print(f"    TP={counts.smell_tp}  FP={counts.smell_fp}  FN={counts.smell_fn}")
     print(f"  ESBMC direct P/R/F1: {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}")
@@ -447,6 +453,9 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         esbmc_p, esbmc_r, esbmc_f1 = prf(
             counts.esbmc_direct_tp, counts.esbmc_direct_fp, counts.esbmc_direct_fn
         )
+        hybrid_p, hybrid_r, hybrid_f1 = prf(
+            counts.hybrid_bug_tp, counts.hybrid_bug_fp, counts.hybrid_bug_fn
+        )
         report_data = {
             "model": label,
             "backend": backend,
@@ -454,13 +463,24 @@ def mode_benchmark(args: argparse.Namespace) -> int:
             "bound": args.bound,
             "timeout": args.timeout,
             "metrics": {
-                "bugs": {
+                "bugs_llm_only": {
                     "precision": round(bug_p, 4),
                     "recall": round(bug_r, 4),
                     "f1": round(bug_f1, 4),
                     "tp": counts.bug_tp,
                     "fp": counts.bug_fp,
                     "fn": counts.bug_fn,
+                },
+                "bugs_hybrid_pipeline": {
+                    "precision": round(hybrid_p, 4),
+                    "recall": round(hybrid_r, 4),
+                    "f1": round(hybrid_f1, 4),
+                    "tp": counts.hybrid_bug_tp,
+                    "fp": counts.hybrid_bug_fp,
+                    "fn": counts.hybrid_bug_fn,
+                    "llm_confirmed_by_esbmc": counts.llm_confirmed_by_esbmc,
+                    "not_confirmed_within_bound": counts.not_confirmed_within_bound,
+                    "esbmc_inconclusive": counts.esbmc_inconclusive,
                 },
                 "smells": {
                     "precision": round(smell_p, 4),

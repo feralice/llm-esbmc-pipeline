@@ -24,6 +24,8 @@ from research_pipeline.esbmc_runner import (
 )
 from research_pipeline.formalizer import formalize_finding
 from research_pipeline.instrumenter import instrument_unit
+from research_pipeline.evaluator import evaluate_file, load_ground_truth_cases
+from research_pipeline.report import consolidate_result
 from research_pipeline.pipeline import run_pipeline
 from research_pipeline.runtime_harness_validator import (
     HARNESS_NOT_REPRODUCED,
@@ -233,6 +235,35 @@ def test_formalizer_attaches_asserts_and_esbmc_flags() -> None:
     assert oob_property.assumptions == []
 
 
+def test_formalizer_unsupported_patterns_do_not_generate_false_property() -> None:
+    unit = SimpleNamespace(operations=[])
+
+    unsupported = [
+        _make_finding("out_of_bounds", "items.pop(index)"),
+        _make_finding("out_of_bounds", "re.findall('x', text)[0]"),
+        _make_finding("out_of_bounds", "items[1:3]"),
+        _make_finding("assertion_violation", "raise AssertionError('fail')"),
+        _make_finding("division_by_zero", "divide(a, b)"),
+    ]
+
+    for finding in unsupported:
+        assert formalize_finding(unit, finding) is None
+
+
+def test_pop_without_formal_property_is_skipped_not_confirmed() -> None:
+    finding = _make_finding("out_of_bounds", "items.pop(index)")
+    result = consolidate_result(
+        unit_name="remove",
+        source_file="sample.py",
+        finding=finding,
+        formal_property=None,
+        esbmc_result=None,
+        esbmc_direct_result=None,
+    )
+
+    assert result.final_classification == "skipped_not_verifiable"
+
+
 def test_instrumenter_imports_esbmc_stubs(tmp_path: Path) -> None:
     sample = tmp_path / "sample.py"
     sample.write_text(
@@ -248,9 +279,90 @@ def test_instrumenter_imports_esbmc_stubs(tmp_path: Path) -> None:
     assert formal_property is not None
     instrumentation = instrument_unit(unit, formal_property, tmp_path / "instrumented")
 
-    assert "from esbmc import __ESBMC_assert, __ESBMC_assume, nondet_bool, nondet_float, nondet_int" in instrumentation.instrumented_source
+    assert "from esbmc import __ESBMC_assert, __ESBMC_assume, nondet_bool, nondet_int" in instrumentation.instrumented_source
+    assert "def nondet_float() -> float:" in instrumentation.instrumented_source
     assert "denominator = nondet_int()" in instrumentation.instrumented_source
     assert "assert (denominator) != 0" in instrumentation.instrumented_source
+
+
+def test_instrumenter_float_fallback_keeps_float_parameters_working(tmp_path: Path) -> None:
+    sample = tmp_path / "sample_float.py"
+    sample.write_text(
+        "def divide(numerator: float, denominator: float) -> float:\n"
+        "    return numerator / denominator\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    finding = _make_finding("division_by_zero", "numerator / denominator")
+    normalized = normalize_findings(unit, [finding])[0]
+    formal_property = formalize_finding(unit, normalized)
+
+    assert formal_property is not None
+    instrumentation = instrument_unit(unit, formal_property, tmp_path / "instrumented")
+
+    assert "try:\n    from esbmc import nondet_float" in instrumentation.instrumented_source
+    assert "denominator = nondet_float()" in instrumentation.instrumented_source
+
+
+class _FakeAnalyzer:
+    def __init__(self, findings_by_function: dict[str, list[Finding]]):
+        self.findings_by_function = findings_by_function
+
+    def analyze(self, unit):
+        return list(self.findings_by_function.get(unit.name, []))
+
+
+def test_clean_case_without_findings_does_not_generate_fn(tmp_path: Path) -> None:
+    sample = tmp_path / "clean.py"
+    sample.write_text("def safe_add(a: int, b: int) -> int:\n    return a + b\n", encoding="utf-8")
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "safe_add", "category": "clean", "verifiable": False}],
+        analyzer=_FakeAnalyzer({}),
+    )
+
+    assert counts.bug_fn == 0
+    assert counts.smell_fn == 0
+    assert counts.bug_fp == 0
+    assert counts.smell_fp == 0
+
+
+def test_clean_case_with_findings_counts_false_positive(tmp_path: Path) -> None:
+    sample = tmp_path / "clean.py"
+    sample.write_text("def safe_add(a: int, b: int) -> int:\n    return a + b\n", encoding="utf-8")
+    smell = _make_finding("long_method", "", verifiable=False)
+    smell.finding_type = "smell_heuristic"
+    bug = _make_finding("division_by_zero", "a / b")
+    bug.finding_type = "llm_false_positive"
+    bug.verifiable = False
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "safe_add", "category": "clean", "verifiable": False}],
+        analyzer=_FakeAnalyzer({"safe_add": [smell, bug]}),
+    )
+
+    assert counts.bug_fn == 0
+    assert counts.smell_fn == 0
+    assert counts.bug_fp == 1
+    assert counts.smell_fp == 1
+
+
+def test_ground_truth_loader_recurses_all_v1_subfolders() -> None:
+    cases = load_ground_truth_cases(REPO_ROOT / "examples" / "labeled" / "ground_truths")
+
+    assert len(cases) == 26
+    assert any(path.name == "clean_math.py" for path, _ in cases)
+    assert all("archive" not in path.parts for path, _ in cases)
+    assert all(path.exists() for path, _ in cases)
+
+
+def test_frontend_benchmark_schema_uses_current_keys_with_legacy_fallback() -> None:
+    html = (REPO_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+
+    assert "metricBlock(data, 'bugs_llm_only', 'bugs')" in html
+    assert "metricBlock(data, 'bugs_hybrid_pipeline', 'bugs')" in html
 
 
 # ---------------------------------------------------------------------------

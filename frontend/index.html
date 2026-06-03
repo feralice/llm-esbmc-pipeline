@@ -325,6 +325,9 @@ function detectFmt(data) {
   if (data.metrics && (data.model != null || data.backend != null)) return 'benchmark';
   return 'unknown';
 }
+function metricBlock(data, primary, fallback) {
+  return data.metrics?.[primary] || (fallback ? data.metrics?.[fallback] : null) || {};
+}
 
 // =================== NORMALIZATION ===================
 // Returns [{file, esbmc_direct, llm_results[], ground_truth_findings[], final_file_classification}]
@@ -730,15 +733,19 @@ function renderBenchmark() {
   btn.classList.remove('hidden');
 
   const rows = state.bmList.map(({ name, data }) => {
-    const b = data.metrics?.bugs || {};
-    const e = data.metrics?.esbmc_direct_baseline || {};
-    const h = data.hallucinations || {};
+    const b   = metricBlock(data, 'bugs_llm_only', 'bugs');
+    const hyb = metricBlock(data, 'bugs_hybrid_pipeline', 'bugs');
+    const e   = metricBlock(data, 'esbmc_direct_baseline');
+    const h   = data.hallucinations || {};
     return `<tr>
       <td><b>${esc(data.model || name)}</b></td>
       <td class="num">${fmt2(b.precision)}</td>
       <td class="num">${fmt2(b.recall)}</td>
       <td class="num"><b>${fmt2(b.f1)}</b></td>
       <td class="num">${b.tp??'—'}</td><td class="num">${b.fp??'—'}</td><td class="num">${b.fn??'—'}</td>
+      <td class="num">${fmt2(hyb.precision)}</td>
+      <td class="num">${fmt2(hyb.recall)}</td>
+      <td class="num"><b>${fmt2(hyb.f1)}</b></td>
       <td class="num">${fmt2(e.f1)}</td>
       <td class="num">${h.count??'—'} <span style="color:#95a5a6;font-size:.8em">(${fmtPct(h.rate)})</span></td>
       <td class="num">${data.bound??'—'}</td>
@@ -784,12 +791,17 @@ function renderBenchmark() {
     </div>
     <table class="data-table">
       <tr>
-        <th>Modelo</th>
+        <th rowspan="2">Modelo</th>
+        <th colspan="6" style="text-align:center;border-bottom:1px solid #ddd">LLM (puro)</th>
+        <th colspan="3" style="text-align:center;border-bottom:1px solid #ddd">Híbrido (LLM+ESBMC)</th>
+        <th rowspan="2" class="num">ESBMC direto F1</th>
+        <th rowspan="2" class="num">Alucinações</th>
+        <th rowspan="2" class="num">Bound</th>
+      </tr>
+      <tr>
         <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
         <th class="num">TP</th><th class="num">FP</th><th class="num">FN</th>
-        <th class="num">ESBMC direto F1</th>
-        <th class="num">Alucinações</th>
-        <th class="num">Bound</th>
+        <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
       </tr>
       ${rows}
     </table>
@@ -822,14 +834,16 @@ function renderBenchmark() {
 
 function exportCsv() {
   if (!state.bmList.length) return;
-  const rows = [['model','precision_bugs','recall_bugs','f1_bugs','tp_bugs','fp_bugs','fn_bugs','precision_smells','recall_smells','f1_smells','hallucinations','hallucination_rate','bound']];
+  const rows = [['model','llm_precision_bugs','llm_recall_bugs','llm_f1_bugs','llm_tp_bugs','llm_fp_bugs','llm_fn_bugs','hybrid_precision_bugs','hybrid_recall_bugs','hybrid_f1_bugs','precision_smells','recall_smells','f1_smells','hallucinations','hallucination_rate','bound']];
   for (const { data, name } of state.bmList) {
-    const b = data.metrics?.bugs || {};
-    const s = data.metrics?.smells || {};
-    const h = data.hallucinations || {};
+    const b   = metricBlock(data, 'bugs_llm_only', 'bugs');
+    const hyb = metricBlock(data, 'bugs_hybrid_pipeline', 'bugs');
+    const s   = metricBlock(data, 'smells');
+    const h   = data.hallucinations || {};
     rows.push([
       data.model || name,
       b.precision??'', b.recall??'', b.f1??'', b.tp??'', b.fp??'', b.fn??'',
+      hyb.precision??'', hyb.recall??'', hyb.f1??'',
       s.precision??'', s.recall??'', s.f1??'',
       h.count??'', h.rate??'', data.bound??'',
     ]);

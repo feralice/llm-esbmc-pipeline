@@ -33,6 +33,7 @@ class AnthropicAnalyzer:
         payload = {
             "model": self.model,
             "max_tokens": 4096,
+            "temperature": 0,
             "system": load_system_prompt(),
             "messages": [
                 {"role": "user", "content": build_user_prompt(unit)},

@@ -5,9 +5,15 @@ from pathlib import Path
 from .models import CodeUnit, FormalProperty, InstrumentationResult
 
 
-_ESBMC_IMPORT_LINE = (
-    "from esbmc import __ESBMC_assert, __ESBMC_assume, nondet_bool, nondet_float, nondet_int"
-)
+_ESBMC_IMPORT_BLOCK = [
+    "from esbmc import __ESBMC_assert, __ESBMC_assume, nondet_bool, nondet_int",
+    "try:",
+    "    from esbmc import nondet_float  # type: ignore[import-untyped]",
+    "except ImportError:",
+    "    # V1 fallback: some local ESBMC stubs do not expose symbolic floats.",
+    "    def nondet_float() -> float:",
+    "        return float(nondet_int())",
+]
 
 
 def instrument_unit(
@@ -29,7 +35,7 @@ def instrument_unit(
     driver_lines = _build_esbmc_driver(unit, formal_property.assumptions)
     instrumented_lines = _patch_import_lines(instrumented_lines)
     instrumented_source = "\n".join(
-        ["# mypy: disable-error-code=name-defined", _ESBMC_IMPORT_LINE, *instrumented_lines, "", *driver_lines]
+        ["# mypy: disable-error-code=name-defined", *_ESBMC_IMPORT_BLOCK, *instrumented_lines, "", *driver_lines]
     ) + "\n"
 
     output_path = Path(output_dir) / f"{_sanitize_filename(formal_property.finding_id)}.py"

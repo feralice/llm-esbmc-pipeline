@@ -167,11 +167,13 @@ def run_esbmc(
     try:
         env = os.environ.copy()
         site_packages = _find_local_site_packages()
-        if site_packages is not None:
-            existing = env.get("PYTHONPATH")
-            env["PYTHONPATH"] = (
-                f"{site_packages}:{existing}" if existing else str(site_packages)
-            )
+        esbmc_python  = _find_esbmc_python_path()
+        extra_paths = [
+            str(p) for p in [esbmc_python, site_packages] if p is not None
+        ]
+        if extra_paths:
+            existing = env.get("PYTHONPATH", "")
+            env["PYTHONPATH"] = os.pathsep.join(extra_paths + ([existing] if existing else []))
         completed = subprocess.run(
             full_command,
             check=False,
@@ -395,6 +397,28 @@ def _find_local_site_packages() -> Path | None:
     for candidate in candidates:
         if candidate.exists():
             return candidate
+    return None
+
+
+def _find_esbmc_python_path() -> Path | None:
+    """Return the directory containing esbmc.py (nondet_int, nondet_bool, etc.).
+
+    Priority:
+    1. ESBMC_PYTHON_PATH env var — use this to point to the full ESBMC models
+       directory if you need the complete set of stubs (builtins, math, etc.).
+    2. Bundled stubs at research_pipeline/esbmc_stubs/ — covers the common
+       nondet_* and __ESBMC_* functions used by the instrumented files.
+    """
+    env_path = os.environ.get("ESBMC_PYTHON_PATH")
+    if env_path:
+        p = Path(env_path)
+        if (p / "esbmc.py").exists():
+            return p
+
+    bundled = Path(__file__).resolve().parent / "esbmc_stubs"
+    if (bundled / "esbmc.py").exists():
+        return bundled
+
     return None
 
 

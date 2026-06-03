@@ -63,42 +63,44 @@ def formalize_finding(unit: CodeUnit, finding: Finding) -> FormalProperty | None
     return None
 
 
-def _formalize_division_by_zero(unit: CodeUnit, finding: Finding) -> FormalProperty:
+def _formalize_division_by_zero(unit: CodeUnit, finding: Finding) -> FormalProperty | None:
     profile = _PROPERTY_PROFILES[finding.category]
     expression = finding.metadata.get("expression", "")
     denominator = _extract_denominator(expression)
-    assertion = f"({denominator}) != 0" if denominator else "False"
+    if not denominator:
+        return None
     return _build_formal_property(
         finding=finding,
         profile=profile,
-        assertion=assertion,
+        assertion=f"({denominator}) != 0",
         assumptions=_build_reachability_assumptions(unit, skip_category="division_by_zero"),
     )
 
 
-def _formalize_out_of_bounds(finding: Finding) -> FormalProperty:
+def _formalize_out_of_bounds(finding: Finding) -> FormalProperty | None:
     profile = _PROPERTY_PROFILES[finding.category]
     expression = finding.metadata.get("expression", "")
     base, index = _extract_subscript_parts(expression)
-    if base and index:
-        assertion = f"(0 <= ({index})) and (({index}) < len({base}))"
-    else:
-        assertion = "False"
+    if not base or not index:
+        return None
     return _build_formal_property(
         finding=finding,
         profile=profile,
-        assertion=assertion,
+        assertion=f"(0 <= ({index})) and (({index}) < len({base}))",
         assumptions=[],
     )
 
 
-def _formalize_assertion_violation(finding: Finding) -> FormalProperty:
+def _formalize_assertion_violation(finding: Finding) -> FormalProperty | None:
     profile = _PROPERTY_PROFILES[finding.category]
     expression = finding.metadata.get("expression", "")
+    assertion = _assertion_property_from_expression(expression)
+    if not assertion:
+        return None
     return _build_formal_property(
         finding=finding,
         profile=profile,
-        assertion=_assertion_property_from_expression(expression),
+        assertion=assertion,
         assumptions=[],
     )
 
@@ -124,10 +126,15 @@ def _build_formal_property(
 
 def _assertion_property_from_expression(expression: str) -> str:
     expression = expression.strip()
-    if expression.startswith("assert "):
-        assertion_text = expression[len("assert ") :].split(",", 1)[0].strip()
-        return assertion_text or "False"
-    return "False"
+    if not expression.startswith("assert "):
+        return ""
+    try:
+        parsed = ast.parse(expression)
+    except SyntaxError:
+        return ""
+    if len(parsed.body) != 1 or not isinstance(parsed.body[0], ast.Assert):
+        return ""
+    return ast.unparse(parsed.body[0].test).strip()
 
 
 def _extract_denominator(expression: str) -> str:
@@ -148,6 +155,10 @@ def _extract_subscript_parts(expression: str) -> tuple[str, str]:
         return "", ""
     body = parsed.body
     if not isinstance(body, ast.Subscript):
+        return "", ""
+    if not isinstance(body.value, (ast.Name, ast.Attribute)):
+        return "", ""
+    if isinstance(body.slice, ast.Slice):
         return "", ""
     base = ast.unparse(body.value)
     index = ast.unparse(body.slice)
