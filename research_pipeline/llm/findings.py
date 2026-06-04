@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .categories import SUPPORTED_CATEGORIES, VERIFIABLE_OPERATION_KIND
 from ..models import CodeUnit, Finding
-from ..runtime_harness_validator import expression_exists_in_executable_ast
+from ..experimental.runtime_harness_validator import expression_exists_in_executable_ast
 
 
 def coerce_findings_payload(payload: dict) -> list[dict]:

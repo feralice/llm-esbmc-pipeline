@@ -1,4 +1,4 @@
-# Modos de Execução
+﻿# Modos de Execução
 
 ## Visão geral
 
@@ -22,7 +22,7 @@ Roda o ESBMC diretamente nos arquivos originais, sem LLM.
 
 ```bash
 python src/main.py --mode esbmc-direct \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --bound 5 \
   --timeout 30
 ```
@@ -39,7 +39,7 @@ Roda apenas o Flow B: LLM → AST → Formalizer → Instrumenter → ESBMC.
 
 ```bash
 python src/main.py --mode llm-first \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --model gpt-4o \
   --bound 5 \
   --timeout 30
@@ -55,7 +55,7 @@ Roda Flow A + Flow B para cada arquivo. O resultado inclui tanto o ESBMC direto 
 
 ```bash
 python src/main.py --mode full \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --model gpt-4o \
   --bound 5 \
   --timeout 30 \
@@ -82,7 +82,7 @@ Avalia um modelo contra um conjunto de ground truths anotados.
 
 ```bash
 python src/main.py --mode benchmark \
-  --input examples/labeled/ground_truths/bugs \
+  --input dataset/labeled/ground_truths/bugs \
   --model gpt-4o \
   --bound 5 \
   --timeout 30
@@ -104,7 +104,7 @@ python src/main.py --mode benchmark \
 }
 ```
 
-Os arquivos Python ficam em `examples/labeled/ok/bugs/<categoria>/`.
+Os arquivos Python ficam em `dataset/labeled/ok/bugs/<categoria>/`.
 
 **Saída:** métricas no terminal — Precision, Recall, F1 por categoria.
 
@@ -116,7 +116,7 @@ Gera harnesses automáticos para funções e roda o ESBMC neles. Modo experiment
 
 ```bash
 python src/main.py --mode esbmc-harness \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --bound 5 \
   --timeout 30
 ```

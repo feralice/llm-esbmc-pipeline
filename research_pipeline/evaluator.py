@@ -4,15 +4,15 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from .esbmc_runner import run_esbmc
-from .formalizer import formalize_finding
-from .instrumenter import instrument_unit
+from .llm.backends.factory import build_analyzer
 from .models import (
     ESBMCDirectResult,
     Finding,
 )
-from .pipeline import build_analyzer, run_esbmc_direct
 from .preprocess import preprocess_file
+from .verification.esbmc_runner import run_esbmc, run_esbmc_direct
+from .verification.formalizer import formalize_finding
+from .verification.instrumenter import instrument_unit
 
 
 @dataclass
@@ -97,8 +97,6 @@ def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
     """Load dataset JSONs recursively from a ground_truths directory or category dir."""
     cases: list[tuple[Path, list[dict]]] = []
     for json_path in sorted(directory.rglob("*.json")):
-        if "archive" in json_path.parts:
-            continue
         payload = json.loads(json_path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict) or "items" not in payload:
             continue
@@ -112,7 +110,7 @@ def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
 
 
 def _infer_source_root_for_ground_truth_dir(ground_truth_dir: Path) -> Path:
-    # examples/labeled/ground_truths/bugs -> examples/labeled/ok/bugs
+    # dataset/labeled/ground_truths/bugs -> dataset/labeled/ok/bugs
     if ground_truth_dir.parent.name == "ground_truths":
         return ground_truth_dir.parent.parent / "ok" / ground_truth_dir.name
     return ground_truth_dir.parent / "ok" / ground_truth_dir.name

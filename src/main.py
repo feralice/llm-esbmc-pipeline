@@ -1,4 +1,4 @@
-"""
+﻿"""
 main.py — Pipeline LLM + AST + ESBMC para verificação de bugs em Python.
 
 Modos de execução:
@@ -9,10 +9,10 @@ Modos de execução:
   benchmark     Avalia todos os modelos configurados contra o ground truth.
 
 Exemplos:
-  python src/main.py --mode esbmc-direct --input examples/labeled --bound 5
-  python src/main.py --mode llm-first    --input examples/labeled --model claude --bound 5
-  python src/main.py --mode full         --input examples/labeled --model claude --bound 5 --timeout 30 --report reports/full_report.json
-  python src/main.py --mode benchmark    --input examples/labeled/ground_truths/bugs --model claude
+  python src/main.py --mode esbmc-direct --input dataset/labeled --bound 5
+  python src/main.py --mode llm-first    --input dataset/labeled --model claude --bound 5
+  python src/main.py --mode full         --input dataset/labeled --model claude --bound 5 --timeout 30 --report reports/full_report.json
+  python src/main.py --mode benchmark    --input dataset/labeled/ground_truths/bugs --model claude
 """
 from __future__ import annotations
 
@@ -62,7 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="CAMINHO",
         help=(
             "Arquivo(s) Python ou diretório. Diretórios são lidos recursivamente. "
-            "No modo benchmark, passe um diretório com JSONs de ground truth (ex: examples/labeled/ground_truths/bugs)."
+            "No modo benchmark, passe um diretório com JSONs de ground truth (ex: dataset/labeled/ground_truths/bugs)."
         ),
     )
     parser.add_argument(
@@ -134,7 +134,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Diretório de ground truth para comparação. "
             "No modo benchmark, pode ser passado aqui em vez de --input. "
-            "Exemplo: examples/labeled/ground_truths/bugs"
+            "Exemplo: dataset/labeled/ground_truths/bugs"
         ),
     )
     parser.add_argument(
@@ -421,7 +421,7 @@ def mode_benchmark(args: argparse.Namespace) -> int:
 
     if not gt_path.exists():
         print(f"Ground truth não encontrado em: {gt_path}", file=sys.stderr)
-        print("Exemplo: --ground-truth examples/labeled/ground_truths/bugs", file=sys.stderr)
+        print("Exemplo: --ground-truth dataset/labeled/ground_truths/bugs", file=sys.stderr)
         return 1
 
     backend = args.backend or _infer_backend(args.model)

@@ -16,18 +16,18 @@ _needs_openai = pytest.mark.skipif(
     reason="OPENAI_API_KEY não configurada — teste requer API real",
 )
 
-from research_pipeline.esbmc_runner import (
+from research_pipeline.verification.esbmc_runner import (
     _build_esbmc_command,
     _classify_esbmc_result,
     _classify_esbmc_direct_result,
     _extract_generated_vcc_count,
 )
-from research_pipeline.formalizer import formalize_finding
-from research_pipeline.instrumenter import instrument_unit
+from research_pipeline.verification.formalizer import formalize_finding
+from research_pipeline.verification.instrumenter import instrument_unit
 from research_pipeline.evaluator import evaluate_file, load_ground_truth_cases
 from research_pipeline.report import consolidate_result
 from research_pipeline.pipeline import run_pipeline
-from research_pipeline.runtime_harness_validator import (
+from research_pipeline.experimental.runtime_harness_validator import (
     HARNESS_NOT_REPRODUCED,
     HARNESS_REPRODUCED,
     HARNESS_UNSAFE,
@@ -350,11 +350,10 @@ def test_clean_case_with_findings_counts_false_positive(tmp_path: Path) -> None:
 
 
 def test_ground_truth_loader_recurses_all_v1_subfolders() -> None:
-    cases = load_ground_truth_cases(REPO_ROOT / "examples" / "labeled" / "ground_truths")
+    cases = load_ground_truth_cases(REPO_ROOT / "dataset" / "labeled" / "ground_truths")
 
-    assert len(cases) == 26
-    assert any(path.name == "clean_math.py" for path, _ in cases)
-    assert all("archive" not in path.parts for path, _ in cases)
+    assert len(cases) == 70
+    assert any(path.name == "clean_01.py" for path, _ in cases)
     assert all(path.exists() for path, _ in cases)
 
 

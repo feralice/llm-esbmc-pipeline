@@ -1,4 +1,4 @@
-"""
+﻿"""
 Verifica a confiabilidade do dataset V1:
   1. Metadados do ground truth batem com o arquivo .py
   2. Arquivos são compatíveis com ESBMC (type hints, sem top-level calls, sem imports externos)
@@ -13,10 +13,10 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 ROOT = Path(__file__).parent.parent
-BUGS_DIR = ROOT / "examples/labeled/ok/bugs"
-CLEAN_DIR = ROOT / "examples/labeled/ok/clean"
-GT_BUGS_DIR = ROOT / "examples/labeled/ground_truths/bugs"
-GT_CLEAN = ROOT / "examples/labeled/ground_truths/clean/clean.json"
+BUGS_DIR = ROOT / "dataset/labeled/ok/bugs"
+CLEAN_DIR = ROOT / "dataset/labeled/ok/clean"
+GT_BUGS_DIR = ROOT / "dataset/labeled/ground_truths/bugs"
+GT_CLEAN = ROOT / "dataset/labeled/ground_truths/clean/clean.json"
 
 STDLIB_MODULES = {
     "math", "os", "sys", "re", "json", "collections", "itertools",

@@ -22,7 +22,7 @@ from .models import (
     Finding,
     FormalProperty,
 )
-from .runtime_harness_validator import (
+from .experimental.runtime_harness_validator import (
     HARNESS_NOT_REPRODUCED,
     HARNESS_REPRODUCED,
     HARNESS_WRONG_EXCEPTION,

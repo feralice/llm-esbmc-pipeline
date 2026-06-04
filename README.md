@@ -1,4 +1,4 @@
-# llm-esbmc-pipeline
+﻿# llm-esbmc-pipeline
 
 Pipeline de pesquisa que combina análise semântica por LLM com verificação formal por Bounded Model Checking (ESBMC) para detectar e confirmar bugs de runtime em código Python.
 
@@ -67,7 +67,7 @@ ANTHROPIC_API_KEY=    # para modelo claude-*
 
 ```bash
 python src/main.py --mode full \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --model gpt-4o \
   --bound 5 \
   --timeout 30 \
@@ -78,7 +78,7 @@ python src/main.py --mode full \
 
 ```bash
 python src/main.py --mode esbmc-direct \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --bound 5 \
   --timeout 30
 ```
@@ -87,7 +87,7 @@ python src/main.py --mode esbmc-direct \
 
 ```bash
 python src/main.py --mode benchmark \
-  --input examples/labeled/ground_truths/bugs \
+  --input dataset/labeled/ground_truths/bugs \
   --model gpt-4o \
   --bound 5 \
   --timeout 30
@@ -97,7 +97,7 @@ python src/main.py --mode benchmark \
 
 ```bash
 python src/main.py --mode llm-first \
-  --input examples/labeled/ok/bugs \
+  --input dataset/labeled/ok/bugs \
   --model gpt-4o \
   --bound 5
 ```
@@ -192,13 +192,13 @@ llm-esbmc-pipeline/
 │   ├── full_report.py             # JSON hierárquico por arquivo
 │   ├── evaluator.py               # Métricas: P, R, F1
 │   └── models.py                  # Dataclasses e constantes
-├── examples/
+├── dataset/
 │   └── labeled/
-│       ├── ok/bugs/               # Arquivos Python do benchmark
-│       │   ├── division_by_zero/
-│       │   ├── out_of_bounds/
-│       │   └── assertion_violation/
-│       └── ground_truths/bugs/    # Anotações esperadas
+│       ├── ok/                    # Arquivos Python do benchmark
+│       │   ├── bugs/
+│       │   ├── clean/
+│       │   └── smells/
+│       └── ground_truths/         # Anotações esperadas
 ├── scripts/                       # Utilitários: compare_llms, evaluate, etc.
 ├── tests/
 │   └── test_research_pipeline.py  # Testes unitários sem API
@@ -233,5 +233,5 @@ pytest tests/
 python -c "from research_pipeline.pipeline import run_full_pipeline; print('OK')"
 
 # ESBMC direto nos exemplos
-python src/main.py --mode esbmc-direct --input examples/labeled/ok/bugs --bound 5
+python src/main.py --mode esbmc-direct --input dataset/labeled/ok/bugs --bound 5
 ```

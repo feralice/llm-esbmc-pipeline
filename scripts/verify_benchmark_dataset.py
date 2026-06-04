@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import ast
 import json
@@ -121,7 +121,7 @@ def verify_case(path: Path, expected: dict) -> list[str]:
 
 
 def main() -> int:
-    gt = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "examples/labeled/ground_truths"
+    gt = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dataset/labeled/ground_truths"
     cases = load_ground_truth_cases(gt)
     failures: list[tuple[Path, str, list[str]]] = []
     counts: Counter[str] = Counter()

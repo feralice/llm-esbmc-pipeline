@@ -5,7 +5,8 @@ import os
 from urllib import error, request
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
-from ..prompts import FINDINGS_JSON_SCHEMA, build_user_prompt, load_system_prompt
+from ..prompts import build_user_prompt, load_system_prompt
+from ..schema import FINDINGS_JSON_SCHEMA
 from ...models import CodeUnit, Finding
 
 

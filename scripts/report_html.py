@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import json
@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-_DEFAULT_GT = REPO_ROOT / "examples" / "labeled" / "ground_truth.json"
+_DEFAULT_GT = REPO_ROOT / "dataset" / "labeled" / "ground_truths"
 
 _CLASS_META = {
     "llm_confirmed_by_esbmc":     ("🐛 Bug Confirmado",          "#e74c3c", "#fdf2f2"),
@@ -51,6 +51,25 @@ _VERDICT = {
 def _load_ground_truth(gt_path: Path) -> dict:
     if not gt_path.exists():
         return {}
+    if gt_path.is_dir():
+        ground_truth: dict[str, dict[str, list[dict]]] = {}
+        for json_path in sorted(gt_path.rglob("*.json")):
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+            if not isinstance(payload, dict) or "items" not in payload:
+                continue
+            for item in payload["items"]:
+                if not isinstance(item, dict) or not item.get("file"):
+                    continue
+                ground_truth[str(item["file"])] = {
+                    "expected_findings": [
+                        {
+                            "category": item.get("expected_category", item.get("category", "")),
+                            "function": item.get("function", ""),
+                            "verifiable": item.get("verifiable", False),
+                        }
+                    ]
+                }
+        return ground_truth
     return json.loads(gt_path.read_text(encoding="utf-8"))
 
 
@@ -489,7 +508,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--ground-truth",
         default=str(_DEFAULT_GT),
-        help="Caminho do ground_truth.json para comparação. (padrão: examples/labeled/ground_truth.json)",
+        help="Caminho do ground truth para comparação. (padrão: dataset/labeled/ground_truths)",
     )
     return parser
 

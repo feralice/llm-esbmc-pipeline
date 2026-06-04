@@ -1,4 +1,4 @@
-# Fluxo Completo do Protótipo LLM + ESBMC
+﻿# Fluxo Completo do Protótipo LLM + ESBMC
 
 Este documento explica o fluxo completo que construímos no protótipo de pesquisa para análise de código Python com apoio de LLM e validação formal com ESBMC.
 
@@ -29,7 +29,7 @@ O fluxo completo é:
 
 ### Entrada
 
-- `experiments/research_pipeline_prototype/examples/minimal_index_division.py`
+- `dataset/labeled/ok/bugs/division_by_zero/dz_01.py`
 
 Este é um exemplo de arquivo Python real usado como entrada do pipeline.
 
@@ -324,14 +324,14 @@ Esse achado ficou apenas na trilha heurística.
 ### Modo offline
 
 ```bash
-python experiments/research_pipeline_prototype/scripts/run_research_pipeline.py experiments/research_pipeline_prototype/examples/minimal_index_division.py --esbmc-command esbmc
+python experiments/research_pipeline_prototype/scripts/run_research_pipeline.py dataset/labeled/ok/bugs/division_by_zero/dz_01.py --esbmc-command esbmc
 ```
 
 ### Modo com OpenAI real
 
 ```bash
 export OPENAI_API_KEY="SUA_CHAVE_AQUI"
-python experiments/research_pipeline_prototype/scripts/run_research_pipeline.py experiments/research_pipeline_prototype/examples/minimal_index_division.py --llm-backend openai --llm-model gpt-5.4 --esbmc-command esbmc
+python experiments/research_pipeline_prototype/scripts/run_research_pipeline.py dataset/labeled/ok/bugs/division_by_zero/dz_01.py --llm-backend openai --llm-model gpt-5.4 --esbmc-command esbmc
 ```
 
 ## Leitura Conceitual Final

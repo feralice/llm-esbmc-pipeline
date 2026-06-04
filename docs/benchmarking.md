@@ -1,4 +1,4 @@
-# Benchmark V1
+﻿# Benchmark V1
 
 This is the repeatable V1 flow for comparing multiple LLMs on the Python ESBMC pipeline.
 
@@ -23,8 +23,8 @@ Smells are not sent to ESBMC in V1 because they are maintainability findings, no
 Run this before a benchmark run:
 
 ```bash
-.venv/bin/python3 -m compileall -q examples/labeled/ok
-.venv/bin/python3 scripts/verify_benchmark_dataset.py examples/labeled/ground_truths
+.venv/bin/python3 -m compileall -q dataset/labeled/ok
+.venv/bin/python3 scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 ```
 
 Expected shape after the V1 seed dataset:
@@ -45,7 +45,7 @@ out_of_bounds: 15
 ```bash
 .venv/bin/python3 src/main.py \
   --mode benchmark \
-  --input examples/labeled/ground_truths \
+  --input dataset/labeled/ground_truths \
   --model gpt-4o \
   --bound 5 \
   --timeout 30 \
@@ -57,7 +57,7 @@ out_of_bounds: 15
 ```bash
 .venv/bin/python3 scripts/run_benchmark_matrix.py \
   --models gpt-4o claude qwen2.5-coder:7b \
-  --ground-truth examples/labeled/ground_truths \
+  --ground-truth dataset/labeled/ground_truths \
   --bound 5 \
   --timeout 30 \
   --output-dir reports/json/benchmarks
