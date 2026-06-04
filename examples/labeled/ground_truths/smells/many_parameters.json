@@ -1,0 +1,11 @@
+{
+  "category": "many_parameters",
+  "description": "V1 smell controls: functions with six or more parameters.",
+  "items": [
+    {"id": "mp_01", "file": "mp_01.py", "function": "create_user_record", "expected_category": "many_parameters", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "mp_02", "file": "mp_02.py", "function": "calculate_quote", "expected_category": "many_parameters", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "mp_03", "file": "mp_03.py", "function": "update_position", "expected_category": "many_parameters", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "mp_04", "file": "mp_04.py", "function": "format_metric", "expected_category": "many_parameters", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "mp_05", "file": "mp_05.py", "function": "register_event", "expected_category": "many_parameters", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false}
+  ]
+}

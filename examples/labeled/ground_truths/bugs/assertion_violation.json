@@ -1,0 +1,21 @@
+{
+  "category": "assertion_violation",
+  "description": "V1 dataset: explicit assertions over symbolic parameters, including guarded and relational assertions.",
+  "items": [
+    {"id": "av_01", "file": "av_01.py", "function": "require_positive", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert x > 0", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_02", "file": "av_02.py", "function": "bounded_score", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert score <= 100", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_03", "file": "av_03.py", "function": "non_negative_balance", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert balance >= 0", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_04", "file": "av_04.py", "function": "threshold_gap", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert value < threshold", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_05", "file": "av_05.py", "function": "valid_percent", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert percent >= 0 and percent <= 100", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_06", "file": "av_06.py", "function": "guarded_but_too_weak", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert x > 10", "line": 3, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_07", "file": "av_07.py", "function": "upper_limit_check", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert value < limit", "line": 3, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_08", "file": "av_08.py", "function": "ordered_pair", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert left <= right", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_09", "file": "av_09.py", "function": "branch_assertion", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert amount > 0", "line": 5, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_10", "file": "av_10.py", "function": "nonzero_total", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert total != 0", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_11", "file": "av_11.py", "function": "score_lower_bound", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert score >= 0", "line": 3, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_12", "file": "av_12.py", "function": "even_count", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert count % 2 == 0", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_13", "file": "av_13.py", "function": "nonzero_positive", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert value > 0", "line": 3, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_14", "file": "av_14.py", "function": "increasing_bounds", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert low < high", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true},
+    {"id": "av_15", "file": "av_15.py", "function": "strict_percent", "expected_category": "assertion_violation", "verifiable": true, "expression": "assert percent > 0 and percent < 100", "line": 2, "expected_type": "AssertionError", "should_go_to_esbmc": true}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "category": "long_method",
+  "description": "V1 smell controls: locally adapted microbenchmarks for long-method detection. Inspired by public code-smell taxonomies; not part of the formal ESBMC metrics.",
+  "items": [
+    {"id": "lm_01", "file": "lm_01.py", "function": "summarize_invoice", "expected_category": "long_method", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "lm_02", "file": "lm_02.py", "function": "classify_order", "expected_category": "long_method", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "lm_03", "file": "lm_03.py", "function": "normalize_scores", "expected_category": "long_method", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "lm_04", "file": "lm_04.py", "function": "build_status", "expected_category": "long_method", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "lm_05", "file": "lm_05.py", "function": "compute_shipping", "expected_category": "long_method", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false}
+  ]
+}
