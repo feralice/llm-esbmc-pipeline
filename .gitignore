@@ -28,6 +28,7 @@ env/
 
 # Claude Code
 .claude/
+.codex/
 
 # Scratch / temporários na raiz
 teste.py

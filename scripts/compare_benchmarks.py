@@ -24,7 +24,7 @@ def load_reports(directory: Path, suffix: str) -> list[dict]:
 def short_name(model_label: str) -> str:
     name = model_label.split("/")[-1]
     replacements = {
-        "gpt-4o-2024-11-20": "GPT-4o",
+        "gpt-5.5-2026-04-23": "GPT-5.5",
         "claude-3-5-sonnet-20241022": "Claude 3.5 Sonnet",
         "qwen2.5-coder:7b": "Qwen2.5-Coder-7B",
         "qwen2.5-coder:32b": "Qwen2.5-Coder-32B",
@@ -62,7 +62,7 @@ def print_table(title: str, reports: list[dict], section: str, latex: bool) -> N
         fp = metrics.get("fp", "-")
         fn = metrics.get("fn", "-")
 
-        # esbmc_direct_baseline: precision é indefinida se tp+fp=0
+        # esbmc_direct_baseline/Flow A: precision é indefinida se tp+fp=0
         if section == "esbmc_direct_baseline" and tp == 0 and fp == 0:
             p_str = "N/A"
         else:
@@ -142,7 +142,7 @@ def print_esbmc_note(reports: list[dict]) -> None:
     for r in reports:
         m = r.get("metrics", {}).get("esbmc_direct_baseline", {})
         if m.get("tp", 0) == 0 and m.get("fp", 0) == 0:
-            print("\n  Nota: ESBMC direto gerou 0 VCCs em todos os arquivos.")
+            print("\n  Nota: Flow A não produziu detecções neste conjunto.")
             print("        Precision = N/A (sem detecções); Recall = 0.00.")
             return
 
@@ -168,7 +168,7 @@ def main() -> None:
     if bugs:
         print_table("Bugs — LLM only",         bugs, "bugs_llm_only",          args.latex)
         print_table("Bugs — Hybrid (LLM+ESBMC)", bugs, "bugs_hybrid_pipeline",  args.latex)
-        print_table("ESBMC direto (baseline)",  bugs, "esbmc_direct_baseline",  args.latex)
+        print_table("Flow A — ESBMC-only",  bugs, "esbmc_direct_baseline",  args.latex)
         print_esbmc_note(bugs)
         print_per_category(bugs, args.latex)
 

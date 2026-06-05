@@ -6,7 +6,7 @@ This is the repeatable V1 flow for comparing multiple LLMs on the Python ESBMC p
 
 V1 has three groups:
 
-- Bugs formally checked by ESBMC after LLM + AST instrumentation:
+- Bugs formally checked by ESBMC after LLM + AST validation and `--function` execution:
   - `division_by_zero`
   - `out_of_bounds`
   - `assertion_violation`
@@ -46,17 +46,17 @@ out_of_bounds: 15
 .venv/bin/python3 src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30 \
-  --report reports/json/benchmarks/benchmark_gpt-4o.json
+  --report reports/json/benchmarks/benchmark_gpt-5.5.json
 ```
 
 ## Run Several Models
 
 ```bash
 .venv/bin/python3 scripts/run_benchmark_matrix.py \
-  --models gpt-4o claude qwen2.5-coder:7b \
+  --models gpt-5.5-2026-04-23 claude qwen2.5-coder:7b \
   --ground-truth dataset/labeled/ground_truths \
   --bound 5 \
   --timeout 30 \
@@ -77,15 +77,23 @@ Open:
 frontend/index.html
 ```
 
-Use the Benchmark / Modelos tab and load the generated `benchmark_*.json` files. The frontend already supports comparing multiple model reports and exporting CSV.
+Use the Benchmark / Modelos tab and load the generated `benchmark_*.json` files. The frontend supports comparing multiple model reports and exporting CSV.
+
+For quick manual notes while comparing GPT, Claude and Ollama, open:
+
+```text
+frontend/benchmark_notes.html
+```
+
+Load multiple `full_report.json`, `report.json` or benchmark JSON files, mark a manual verdict, add notes, and export CSV/JSON annotations.
 
 ## Important V1 Choice
 
 Do not pass `--enable-harness` for the main V1 numbers. The runtime harness is useful future work, but the V1 claim is specifically:
 
-LLM finding -> formal property -> instrumented Python -> ESBMC confirmation.
+LLM finding -> AST validation -> ESBMC `--function` -> ESBMC confirmation.
 
-Direct ESBMC remains a baseline. On library-style functions with no top-level call, it can produce zero VCCs, which is part of the motivation for the pipeline.
+Flow A is the ESBMC-only baseline: the AST lists candidate functions and ESBMC runs each one with `--function`, without LLM findings or category hints. Flow B is LLM+ESBMC with `--function`. Flow C is LLM-only and makes no ESBMC calls.
 
 ## External Smell Dataset Note
 

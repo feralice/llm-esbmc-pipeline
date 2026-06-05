@@ -14,7 +14,7 @@ cd "$ROOT"
 
 # --- modelos fixados para reprodutibilidade ---
 MODELS=(
-    "gpt-4o-2024-11-20"
+    "gpt-5.5-2026-04-23"
     "claude-3-5-sonnet-20241022"
     "qwen2.5-coder:7b"
 )

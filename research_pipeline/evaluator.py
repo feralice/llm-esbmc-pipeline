@@ -10,9 +10,7 @@ from .models import (
     Finding,
 )
 from .preprocess import preprocess_file
-from .verification.esbmc_runner import run_esbmc, run_esbmc_direct
-from .verification.formalizer import formalize_finding
-from .verification.instrumenter import instrument_unit
+from .verification.esbmc_runner import run_esbmc_function_baseline, run_esbmc_on_function
 
 
 @dataclass
@@ -28,7 +26,7 @@ class EvalCounts:
     # LLM quality
     hallucination_count: int = 0   # findings where LLM claimed verifiable but AST rejected
 
-    # ESBMC direct vs. ground truth (Flow A)
+    # Flow A (ESBMC-only --function) vs. ground truth
     esbmc_direct_tp: int = 0
     esbmc_direct_fp: int = 0
     esbmc_direct_fn: int = 0
@@ -272,26 +270,29 @@ def evaluate_file(
         elif verdict == "fn":
             counts.add_category_fn(cat)
 
-    # ---- CRÍTICO 1: Flow B — ESBMC instrumented verification for verifiable bugs ----
-    instrumented_dir = _resolve_instrumented_dir(output_dir, file_path)
+    # ---- Flow B — ESBMC with --function (symbolic entry point) ----
     esbmc_confirmed_bugs: list[Finding] = []
 
     for unit, bug_finding in bugs_with_units:
-        formal_property = formalize_finding(unit, bug_finding)
-        if formal_property is None:
-            counts.skipped_not_verifiable += 1
-            continue
-        instrumentation = instrument_unit(unit, formal_property, instrumented_dir)
-        esbmc_result = run_esbmc(
-            instrumentation,
+        esbmc_result = run_esbmc_on_function(
+            file_path=file_path,
+            function_name=unit.name,
+            finding_id=bug_finding.id,
+            category=bug_finding.category,
             esbmc_command=esbmc_command,
+            bound=bound,
             timeout_seconds=timeout_seconds,
+            output_dir=output_dir,
         )
-        if esbmc_result.status == "violation_found":
+        if esbmc_result.status == "violation_found" and _esbmc_result_matches_category(esbmc_result.details, bug_finding.category):
             esbmc_confirmed_bugs.append(bug_finding)
             counts.llm_confirmed_by_esbmc += 1
+        elif esbmc_result.status == "violation_found":
+            counts.esbmc_inconclusive += 1
         elif esbmc_result.status == "no_violation_found":
             counts.not_confirmed_within_bound += 1
+        elif esbmc_result.status == "skipped":
+            counts.skipped_not_verifiable += 1
         else:
             counts.esbmc_inconclusive += 1
 
@@ -300,37 +301,29 @@ def evaluate_file(
     counts.hybrid_bug_fp = hybrid_fp
     counts.hybrid_bug_fn = hybrid_fn
 
-    # ---- Flow A: ESBMC direct evaluation ----
-    direct = run_esbmc_direct(
-        file_path,
+    # ---- Flow A: ESBMC-only function baseline ----
+    direct = run_esbmc_function_baseline(
+        file_path=file_path,
+        function_names=[unit.name for unit in units],
         esbmc_command=esbmc_command,
         bound=bound,
         timeout_seconds=timeout_seconds,
+        output_dir=output_dir,
     )
-    esbmc_found_bug  = direct.status == "violation_found"
-    has_expected_bug = len(exp_bugs) > 0
+    flow_a_findings = _flow_a_findings_from_direct(direct)
+    if direct.status not in ("inconclusive", "tool_error", "skipped", "timeout", "unsupported_case", "no_vcc_generated"):
+        a_tp, a_fp, a_fn, _ = _match_with_categories(flow_a_findings, exp_bugs)
+        counts.esbmc_direct_tp = a_tp
+        counts.esbmc_direct_fp = a_fp
+        counts.esbmc_direct_fn = a_fn
 
-    if esbmc_found_bug and has_expected_bug:
-        counts.esbmc_direct_tp = 1
-    elif esbmc_found_bug and not has_expected_bug:
-        counts.esbmc_direct_fp = 1
-    elif not esbmc_found_bug and has_expected_bug:
-        if direct.status not in ("inconclusive", "tool_error", "skipped", "timeout", "unsupported_case", "no_vcc_generated"):
-            counts.esbmc_direct_fn = 1
-
-    if esbmc_found_bug:
-        counts.esbmc_native_bug = 1
+    if flow_a_findings:
+        counts.esbmc_native_bug = len(flow_a_findings)
 
     if verbose:
         _print_detail(file_path.name, bugs, exp_bugs, smells, exp_smells, direct)
 
     return counts
-
-
-def _resolve_instrumented_dir(output_dir: str | Path | None, file_path: Path) -> Path:
-    if output_dir is not None:
-        return Path(output_dir) / "instrumented_eval"
-    return Path(__file__).resolve().parents[1] / "artifacts" / "benchmark_instrumented"
 
 
 def evaluate_model(
@@ -396,6 +389,55 @@ def prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
     return p, r, f1
 
 
+def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Finding]:
+    if direct is None or direct.status != "violation_found":
+        return []
+
+    findings: list[Finding] = []
+    for item in direct.details.get("functions", []):
+        if not isinstance(item, dict) or item.get("status") != "violation_found":
+            continue
+        property_text = " ".join(
+            str(item.get(key, ""))
+            for key in ("property_kind", "summary", "location")
+        )
+        category = _category_from_esbmc_property(property_text)
+        findings.append(
+            Finding(
+                id=f"flow_a_{item.get('name', len(findings))}",
+                stage="esbmc_direct",
+                finding_type="suspected_bug",
+                category=category,
+                title=f"Flow A violation in {item.get('name', '?')}",
+                explanation=str(item.get("summary", "")),
+                evidence=[str(item.get("property_kind", ""))],
+                verifiable=True,
+                confidence="high",
+                metadata={"function": str(item.get("name", ""))},
+            )
+        )
+    return findings
+
+
+def _esbmc_result_matches_category(details: dict[str, object], expected_category: str) -> bool:
+    text = " ".join(
+        str(details.get(key, ""))
+        for key in ("property_kind", "property_text", "location")
+    )
+    return _category_from_esbmc_property(text) == expected_category
+
+
+def _category_from_esbmc_property(text: str) -> str:
+    normalized = text.lower()
+    if "assertion" in normalized:
+        return "assertion_violation"
+    if "division_by_zero" in normalized or "division by zero" in normalized or "divisor" in normalized:
+        return "division_by_zero"
+    if "out-of-bounds" in normalized or "out of bounds" in normalized or "bounds" in normalized:
+        return "out_of_bounds"
+    return "unknown_esbmc_violation"
+
+
 def hallucination_rate(counts: EvalCounts) -> float:
     total_verifiable_claims = counts.bug_tp + counts.bug_fp + counts.hallucination_count
     if total_verifiable_claims == 0:
@@ -415,7 +457,7 @@ def _print_detail(
     _print_matches("bug", bugs, exp_bugs)
     _print_matches("smell", smells, exp_smells)
     if direct:
-        print(f"  ESBMC direto: {direct.status} — {direct.summary[:80]}")
+        print(f"  Flow A: {direct.status} — {direct.summary[:80]}")
 
 
 def _print_matches(label: str, generated: list[Finding], expected: list[dict]) -> None:

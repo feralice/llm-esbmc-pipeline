@@ -1,17 +1,16 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import re
 import shutil
 import subprocess
 import time
-import os
 from pathlib import Path
 
-from ..models import ESBMCDirectResult, ESBMCResult, InstrumentationResult
+from ..models import ESBMCDirectResult, ESBMCResult
 
 
 # ---------------------------------------------------------------------------
-# Flow A — ESBMC direct on original file
+# Legacy helper — ESBMC on original file at module level
 # ---------------------------------------------------------------------------
 
 def run_esbmc_direct(
@@ -140,54 +139,57 @@ def _write_direct_log(file_path: Path, combined: str, output_dir: str | Path | N
 
 
 # ---------------------------------------------------------------------------
-# Flow B — ESBMC on instrumented file
+# Flow B — ESBMC with --function (symbolic entry point, no instrumentation)
 # ---------------------------------------------------------------------------
 
-def run_esbmc(
-    instrumentation: InstrumentationResult,
+_FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
+    "division_by_zero":    ["--no-bounds-check"],
+    "out_of_bounds":       ["--no-div-by-zero-check"],
+    "assertion_violation": [],
+}
+
+
+def run_esbmc_on_function(
+    file_path: str | Path,
+    function_name: str,
+    finding_id: str,
+    category: str,
     esbmc_command: list[str] | None = None,
+    bound: int = 10,
     timeout_seconds: int = 30,
+    output_dir: str | Path | None = None,
 ) -> ESBMCResult:
-    command = _build_esbmc_command(
-        esbmc_command=esbmc_command,
-        esbmc_flags=instrumentation.esbmc_flags,
-    )
+    """Flow B: run ESBMC with --function so parameters become symbolic automatically."""
+    file_path = Path(file_path).resolve()
+    base = list(esbmc_command or ["esbmc", "--python", "python3"])
+    flags = _FLOW_B_CATEGORY_FLAGS.get(category, [])
+    command = [*base, "--function", function_name, "--unwind", str(bound), *flags, str(file_path)]
+
     executable = shutil.which(command[0])
     if executable is None:
         return ESBMCResult(
-            finding_id=instrumentation.finding_id,
+            finding_id=finding_id,
             status="skipped",
-            command=command + [str(instrumentation.output_path)],
+            command=command,
             returncode=None,
             summary="ESBMC não encontrado no PATH. Verificação formal não executada.",
         )
 
-    full_command = [*command, str(Path(instrumentation.output_path))]
     start = time.monotonic()
     try:
-        env = os.environ.copy()
-        site_packages = _find_local_site_packages()
-        esbmc_python  = _find_esbmc_python_path()
-        extra_paths = [
-            str(p) for p in [esbmc_python, site_packages] if p is not None
-        ]
-        if extra_paths:
-            existing = env.get("PYTHONPATH", "")
-            env["PYTHONPATH"] = os.pathsep.join(extra_paths + ([existing] if existing else []))
         completed = subprocess.run(
-            full_command,
+            command,
             check=False,
             capture_output=True,
             text=True,
             timeout=timeout_seconds,
-            env=env,
         )
         elapsed = time.monotonic() - start
     except subprocess.TimeoutExpired:
         return ESBMCResult(
-            finding_id=instrumentation.finding_id,
+            finding_id=finding_id,
             status="inconclusive",
-            command=full_command,
+            command=command,
             returncode=None,
             summary="ESBMC excedeu o tempo limite configurado.",
             time_seconds=float(timeout_seconds),
@@ -202,16 +204,17 @@ def run_esbmc(
     else:
         status = _classify_esbmc_result(combined, completed.returncode)
 
-    raw_log_path = _write_raw_log(instrumentation, combined)
-    details = _extract_esbmc_details(
-        output=combined,
-        instrumented_path=Path(instrumentation.output_path),
-    )
+    details = _extract_esbmc_details(combined, file_path)
+
+    logs_dir = (Path(output_dir) if output_dir else Path(__file__).resolve().parents[1] / "artifacts" / "esbmc_function_logs")
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    raw_log_path = logs_dir / f"{file_path.stem}_{finding_id}.log"
+    raw_log_path.write_text(combined, encoding="utf-8")
 
     return ESBMCResult(
-        finding_id=instrumentation.finding_id,
+        finding_id=finding_id,
         status=status,
-        command=full_command,
+        command=command,
         returncode=completed.returncode,
         summary=_summarize(status, details),
         time_seconds=round(elapsed, 3),
@@ -220,6 +223,120 @@ def run_esbmc(
         details=details,
         raw_log_path=str(raw_log_path),
     )
+
+
+def run_esbmc_function_baseline(
+    file_path: str | Path,
+    function_names: list[str],
+    esbmc_command: list[str] | None = None,
+    bound: int = 5,
+    timeout_seconds: int = 30,
+    output_dir: str | Path | None = None,
+) -> ESBMCDirectResult:
+    """Flow A: run ESBMC with --function for each function, without LLM guidance."""
+    file_path = Path(file_path).resolve()
+    unique_names = list(dict.fromkeys(function_names))
+    command = [
+        *(esbmc_command or ["esbmc", "--python", "python3"]),
+        "--function",
+        "<each-function>",
+        "--unwind",
+        str(bound),
+        str(file_path),
+    ]
+
+    if not unique_names:
+        return ESBMCDirectResult(
+            source_file=str(file_path),
+            status="skipped",
+            command=command,
+            returncode=None,
+            summary="ESBMC Flow A: nenhuma função candidata encontrada.",
+            details={
+                "mode": "function_baseline",
+                "bound": bound,
+                "function_count": 0,
+                "functions": [],
+            },
+        )
+
+    start = time.monotonic()
+    results = [
+        run_esbmc_on_function(
+            file_path=file_path,
+            function_name=function_name,
+            finding_id=f"flow_a_{function_name}",
+            category="",
+            esbmc_command=esbmc_command,
+            bound=bound,
+            timeout_seconds=timeout_seconds,
+            output_dir=output_dir,
+        )
+        for function_name in unique_names
+    ]
+    elapsed = time.monotonic() - start
+
+    statuses = [r.status for r in results]
+    if any(status == "violation_found" for status in statuses):
+        status = "violation_found"
+    elif all(status == "skipped" for status in statuses):
+        status = "skipped"
+    elif any(status == "no_violation_found" for status in statuses):
+        status = "no_violation_found"
+    elif all(status == "tool_error" for status in statuses):
+        status = "tool_error"
+    else:
+        status = "inconclusive"
+
+    violating = [
+        name for name, result in zip(unique_names, results)
+        if result.status == "violation_found"
+    ]
+    details = {
+        "mode": "function_baseline",
+        "bound": bound,
+        "function_count": len(unique_names),
+        "functions": [
+            {
+                "name": name,
+                "status": result.status,
+                "summary": result.summary,
+                "command": result.command,
+                "raw_log_path": result.raw_log_path,
+                "property_kind": result.details.get("property_kind", ""),
+                "location": result.details.get("location", ""),
+            }
+            for name, result in zip(unique_names, results)
+        ],
+        "violating_functions": violating,
+    }
+
+    return ESBMCDirectResult(
+        source_file=str(file_path),
+        status=status,
+        command=command,
+        returncode=None,
+        summary=_summarize_function_baseline(status, unique_names, violating),
+        time_seconds=round(elapsed, 3),
+        details=details,
+    )
+
+
+def _summarize_function_baseline(
+    status: str,
+    function_names: list[str],
+    violating_functions: list[str],
+) -> str:
+    if status == "violation_found":
+        names = ", ".join(violating_functions)
+        return f"ESBMC Flow A encontrou violação em função candidata: {names}."
+    if status == "no_violation_found":
+        return f"ESBMC Flow A verificou {len(function_names)} função(ões) com --function sem violação no bound."
+    if status == "skipped":
+        return "ESBMC Flow A não executou: ESBMC não encontrado ou nenhuma função candidata."
+    if status == "tool_error":
+        return "ESBMC Flow A encontrou erro de ferramenta em todas as funções candidatas."
+    return "ESBMC Flow A retornou resultado inconclusivo nas funções candidatas."
 
 
 # ---------------------------------------------------------------------------
@@ -260,18 +377,9 @@ def _summarize(status: str, details: dict[str, object]) -> str:
     return "Resultado inconclusivo da verificação formal."
 
 
-def _write_raw_log(instrumentation: InstrumentationResult, combined_output: str) -> Path:
-    artifacts_dir = instrumentation.output_path.parent.parent
-    logs_dir = artifacts_dir / "logs"
-    logs_dir.mkdir(parents=True, exist_ok=True)
-    target = logs_dir / f"{instrumentation.output_path.stem}.log"
-    target.write_text(combined_output, encoding="utf-8")
-    return target
-
-
 def _extract_esbmc_details(
     output: str,
-    instrumented_path: Path | None = None,
+    source_path: Path | None = None,
 ) -> dict[str, object]:
     normalized_lines = output.splitlines()
     warnings: list[str] = []
@@ -281,7 +389,7 @@ def _extract_esbmc_details(
     location = ""
     function_name = ""
 
-    path_text = str(instrumented_path).replace("\\", "/") if instrumented_path else ""
+    path_text = str(source_path).replace("\\", "/") if source_path else ""
 
     for raw_line in normalized_lines:
         line = raw_line.strip()
@@ -385,49 +493,3 @@ def _prettify_output(
 
     lines.append(f"Log bruto completo: {raw_log_path}")
     return "\n".join(lines)
-
-
-def _find_local_site_packages() -> Path | None:
-    # Look for .venv in the project root (2 levels up from this file)
-    repo_root = Path(__file__).resolve().parents[1]
-    venv_lib = repo_root / ".venv" / "lib"
-    if not venv_lib.exists():
-        return None
-    candidates = sorted(venv_lib.glob("python*/site-packages"))
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return None
-
-
-def _find_esbmc_python_path() -> Path | None:
-    """Return the directory containing esbmc.py (nondet_int, nondet_bool, etc.).
-
-    Priority:
-    1. ESBMC_PYTHON_PATH env var — use this to point to the full ESBMC models
-       directory if you need the complete set of stubs (builtins, math, etc.).
-    2. Bundled stubs at research_pipeline/esbmc_stubs/ — covers the common
-       nondet_* and __ESBMC_* functions used by the instrumented files.
-    """
-    env_path = os.environ.get("ESBMC_PYTHON_PATH")
-    if env_path:
-        p = Path(env_path)
-        if (p / "esbmc.py").exists():
-            return p
-
-    bundled = Path(__file__).resolve().parent / "esbmc_stubs"
-    if (bundled / "esbmc.py").exists():
-        return bundled
-
-    return None
-
-
-def _build_esbmc_command(
-    esbmc_command: list[str] | None,
-    esbmc_flags: list[str],
-) -> list[str]:
-    command = list(esbmc_command or ["esbmc", "--python", "python3", "--incremental-bmc"])
-    for flag in esbmc_flags:
-        if flag not in command:
-            command.append(flag)
-    return command

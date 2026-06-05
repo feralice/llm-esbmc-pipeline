@@ -16,7 +16,7 @@ class OpenAIResponsesAnalyzer:
     def __init__(
         self,
         api_key: str | None = None,
-        model: str = "gpt-4o",
+        model: str = "gpt-5.5-2026-04-23",
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
     ) -> None:

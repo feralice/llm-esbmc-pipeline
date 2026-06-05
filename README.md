@@ -14,18 +14,18 @@ flowchart LR
     A([arquivo.py]) --> B[Preprocess\nAST]
     B --> C[LLM Analyzer]
     C --> D{verifiable?}
-    D -- sim --> E[Formalizer]
-    E --> F[Instrumenter\ndriver simbólico]
-    F --> G[ESBMC\nBMC formal]
-    G --> H([full_report.json])
+    D -- sim --> E[ESBMC --function\nBMC formal]
+    E --> H([full_report.json])
     D -- não → smell --> H
-    E -- não formaliza --> J[Harness\nruntime]
+    E -- inconclusivo --> J[resultado documentado]
     J --> H
 ```
 
-**Flow A** (esbmc-direct): ESBMC roda direto no arquivo original — baseline, sem LLM.
+**Flow A** (esbmc-direct): ESBMC-only com `--function <funcao>` em cada função detectada, sem LLM.
 
-**Flow B** (llm-first): LLM identifica hipóteses → Formalizer gera assertion → Instrumenter adiciona driver simbólico → ESBMC verifica formalmente.
+**Flow B** (llm-first): LLM identifica hipóteses → AST valida a expressão → ESBMC roda no arquivo original com `--function <funcao>`.
+
+**Flow C** (llm-only): LLM identifica hipóteses sem chamada ao ESBMC, usado como baseline de qualidade da LLM.
 
 **Modo full**: Flow A + Flow B combinados no mesmo relatório.
 
@@ -68,7 +68,7 @@ ANTHROPIC_API_KEY=    # para modelo claude-*
 ```bash
 python src/main.py --mode full \
   --input dataset/labeled/ok/bugs \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30 \
   --report reports/json/full_report.json
@@ -88,7 +88,7 @@ python src/main.py --mode esbmc-direct \
 ```bash
 python src/main.py --mode benchmark \
   --input dataset/labeled/ground_truths/bugs \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30
 ```
@@ -98,7 +98,7 @@ python src/main.py --mode benchmark \
 ```bash
 python src/main.py --mode llm-first \
   --input dataset/labeled/ok/bugs \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5
 ```
 
@@ -110,7 +110,7 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 
 | Backend | Alias `--model` | Modelo padrão |
 |---|---|---|
-| OpenAI | `gpt-4o`, `gpt-4o-mini`, `o1`, ... | `gpt-4o` |
+| OpenAI | `gpt-5.5-2026-04-23`, `gpt-4o`, `gpt-4o-mini`, ... | `gpt-5.5-2026-04-23` |
 | Anthropic | `claude` | `claude-sonnet-4-6` |
 | Ollama | `qwen2.5-coder:7b`, `llama3.2`, ... | `qwen2.5-coder:7b` |
 
@@ -145,7 +145,7 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 | `llm_confirmed_by_esbmc` | LLM encontrou, ESBMC confirmou formalmente (**principal**) |
 | `not_confirmed_within_bound` | ESBMC verificou sem encontrar violação no bound |
 | `esbmc_inconclusive` | Erro, timeout ou resultado ambíguo do ESBMC |
-| `esbmc_native_bug` | ESBMC direto encontrou sem ajuda da LLM |
+| `esbmc_native_bug` | Flow A encontrou sem ajuda da LLM |
 | `llm_missed_esbmc_bug` | ESBMC encontrou bug que a LLM não reportou |
 
 ### Trilha runtime (harness auxiliar)
@@ -162,9 +162,9 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 |---|---|
 | `llm_false_positive` | Expressão não existe no código executável (alucinação) |
 | `heuristic_smell_only` | Smell de qualidade, sem verificação formal |
-| `skipped_not_verifiable` | Não formalizável e sem harness disponível |
+| `skipped_not_verifiable` | Achado não verificável no Flow B atual |
 | `out_of_scope_finding` | Categoria fora das 5 aceitas pelo MVP |
-| `no_vcc_generated` | ESBMC direto: 0 VCCs (arquivo sem ponto de entrada) |
+| `no_vcc_generated` | Legado: ESBMC em nível de módulo gerou 0 VCCs |
 
 Veja [`docs/classification.md`](docs/classification.md) para o fluxo de decisão completo.
 
@@ -183,10 +183,10 @@ llm-esbmc-pipeline/
 │   │   ├── categories.py          # Categorias MVP
 │   │   ├── findings.py            # Normalização e validação de findings
 │   │   └── prompts.py             # System prompt e schema JSON
-│   ├── formalizer.py              # Geração de propriedades formais
-│   ├── instrumenter.py            # Injeção de assert + driver simbólico
-│   ├── esbmc_runner.py            # Execução e classificação do ESBMC
-│   ├── runtime_harness_validator.py # Fallback: execução controlada de harness
+│   ├── verification/
+│   │   └── esbmc_runner.py        # Flow A/B com --function
+│   ├── experimental/
+│   │   └── runtime_harness_validator.py # Harness runtime experimental
 │   ├── pipeline.py                # Orquestração dos flows
 │   ├── report.py                  # Consolidação e classificação final
 │   ├── full_report.py             # JSON hierárquico por arquivo
@@ -220,6 +220,7 @@ llm-esbmc-pipeline/
 | [`docs/classification.md`](docs/classification.md) | Todas as classificações com fluxo de decisão |
 | [`docs/modes.md`](docs/modes.md) | Referência completa dos modos de execução |
 | [`docs/current_limitations.md`](docs/current_limitations.md) | Limitações conhecidas e status |
+| [`frontend/benchmark_notes.html`](frontend/benchmark_notes.html) | Anotador simples para comparar GPT/Claude/Ollama |
 
 ---
 
@@ -232,6 +233,6 @@ pytest tests/
 # Smoke test
 python -c "from research_pipeline.pipeline import run_full_pipeline; print('OK')"
 
-# ESBMC direto nos exemplos
+# Flow A: ESBMC-only com --function
 python src/main.py --mode esbmc-direct --input dataset/labeled/ok/bugs --bound 5
 ```

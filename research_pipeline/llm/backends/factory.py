@@ -10,7 +10,7 @@ from .openai import OpenAIResponsesAnalyzer
 Backend = Literal["openai", "anthropic", "ollama"]
 
 _DEFAULT_MODEL: dict[str, str] = {
-    "openai":    "gpt-4o",
+    "openai":    "gpt-5.5-2026-04-23",
     "anthropic": "claude-sonnet-4-6",
     "ollama":    "qwen2.5-coder:7b",
 }

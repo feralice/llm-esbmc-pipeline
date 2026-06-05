@@ -178,23 +178,11 @@ def _card(result: dict, idx: int, verdict: str) -> str:
     unit        = result.get("unit_name", "")
     src         = result.get("source_file", "")
     interp      = result.get("interpretation", "")
-    formal      = result.get("formal_property")
-    esbmc       = result.get("esbmc_result")
+    esbmc       = result.get("esbmc_result") or result.get("esbmc_function")
 
     ev_html = "".join(
         f'<div class="code-snippet">{e}</div>' for e in evidence
     ) if evidence else ""
-
-    formal_html = ""
-    if formal:
-        assertion = formal.get("assertion", "")
-        flags = " ".join(formal.get("esbmc_flags", []))
-        formal_html = f"""
-        <div class="sub-block">
-            <div class="block-title">📐 Propriedade Formal</div>
-            <div class="code-snippet">assert {assertion}</div>
-            {f'<div class="flags-line">flags: <code>{flags}</code></div>' if flags else ''}
-        </div>"""
 
     esbmc_html = ""
     if esbmc:
@@ -209,7 +197,7 @@ def _card(result: dict, idx: int, verdict: str) -> str:
             counter_html = f'<div class="block-title" style="margin-top:8px">Contraexemplo</div>{items}'
         esbmc_html = f"""
         <div class="sub-block" style="border-left:4px solid {scolor}">
-            <div class="block-title">🔬 ESBMC</div>
+            <div class="block-title">🔬 ESBMC --function</div>
             {_badge(slabel, scolor)}
             <span style="font-size:.85em;color:#555;margin-left:8px">{summary}</span>
             {counter_html}
@@ -239,7 +227,6 @@ def _card(result: dict, idx: int, verdict: str) -> str:
             <p class="explanation">{explanation}</p>
             {ev_html}
             {f'<div class="expr-line">Expressão: <code>{expr}</code></div>' if expr else ''}
-            {formal_html}
             {esbmc_html}
             <div class="interpretation">{interp}</div>
         </div>

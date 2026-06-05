@@ -52,44 +52,12 @@ class Finding:
 
 
 # ---------------------------------------------------------------------------
-# Formalization layer
-# ---------------------------------------------------------------------------
-
-@dataclass
-class FormalProperty:
-    finding_id: str
-    category: str
-    hypothesis: str
-    assertion: str
-    assumptions: list[str]
-    esbmc_flags: list[str]
-    notes: str
-    insertion_line: int | None = None
-    absolute_line: int | None = None
-
-
-# ---------------------------------------------------------------------------
-# Instrumentation layer
-# ---------------------------------------------------------------------------
-
-@dataclass
-class InstrumentationResult:
-    finding_id: str
-    category: str
-    instrumented_source: str
-    assertions: list[str]
-    assumptions: list[str]
-    esbmc_flags: list[str]
-    output_path: Path
-
-
-# ---------------------------------------------------------------------------
-# ESBMC layer  (two variants: direct and instrumented)
+# ESBMC layer  (two variants: direct and function-scoped)
 # ---------------------------------------------------------------------------
 
 @dataclass
 class ESBMCResult:
-    """Result of running ESBMC on an *instrumented* file (Flow B)."""
+    """Result of running ESBMC on a function (Flow B, --function flag)."""
     finding_id: str
     status: str          # violation_found | no_violation_found | inconclusive | skipped | tool_error
     command: list[str]
@@ -104,7 +72,7 @@ class ESBMCResult:
 
 @dataclass
 class ESBMCDirectResult:
-    """Result of running ESBMC directly on the *original* file (Flow A)."""
+    """Aggregated result for the ESBMC-only baseline (Flow A)."""
     source_file: str
     status: str          # violation_found | no_violation_found | no_vcc_generated | timeout | tool_error | unsupported_case | skipped | inconclusive
     command: list[str]
@@ -138,6 +106,7 @@ CLASSIFICATION_ESBMC_NATIVE_BUG        = "esbmc_native_bug"
 CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC  = "llm_confirmed_by_esbmc"
 CLASSIFICATION_LLM_MISSED_ESBMC_BUG    = "llm_missed_esbmc_bug"
 CLASSIFICATION_LLM_FALSE_POSITIVE      = "llm_false_positive"
+CLASSIFICATION_LLM_ONLY                = "llm_only_suspected"
 CLASSIFICATION_NOT_CONFIRMED           = "not_confirmed_within_bound"
 CLASSIFICATION_ESBMC_INCONCLUSIVE      = "esbmc_inconclusive"
 CLASSIFICATION_HEURISTIC_SMELL         = "heuristic_smell_only"
@@ -154,7 +123,6 @@ class FinalResult:
     unit_name: str
     source_file: str
     finding: Finding
-    formal_property: FormalProperty | None
     esbmc_result: ESBMCResult | None
     esbmc_direct_result: ESBMCDirectResult | None
     final_classification: str
@@ -170,7 +138,6 @@ class FinalResult:
             "final_classification": self.final_classification,
             "interpretation": self.interpretation,
             "finding": asdict(self.finding),
-            "formal_property": asdict(self.formal_property) if self.formal_property else None,
             "esbmc_result": asdict(self.esbmc_result) if self.esbmc_result else None,
             "esbmc_direct_result": self.esbmc_direct_result.to_dict() if self.esbmc_direct_result else None,
             "harness_result": self.harness_result,

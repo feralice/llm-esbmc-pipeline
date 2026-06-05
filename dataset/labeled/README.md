@@ -33,13 +33,13 @@ python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 
 python src/main.py --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30 \
-  --report reports/json/benchmarks/benchmark_gpt-4o.json
+  --report reports/json/benchmarks/benchmark_gpt-5.5.json
 
 python scripts/run_benchmark_matrix.py \
-  --models gpt-4o claude qwen2.5-coder:7b \
+  --models gpt-5.5-2026-04-23 claude qwen2.5-coder:7b \
   --ground-truth dataset/labeled/ground_truths \
   --bound 5 \
   --timeout 30 \

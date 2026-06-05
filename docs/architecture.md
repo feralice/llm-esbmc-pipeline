@@ -14,21 +14,18 @@ graph TD
     E -- não --> SMELL[heuristic_smell_only]
     E -- sim --> F{Expressão existe\nno código?}
     F -- não --> FP[llm_false_positive]
-    F -- sim --> G[Formalizer]
-    G --> H{Consegue gerar\npropriedade formal?}
-    H -- sim --> I[Instrumenter]
-    H -- não --> J{Tem harness\nda LLM?}
+    F -- sim --> G[ESBMC --function]
+    G --> H{Resultado?}
+    H -- skipped --> J{Tem harness\nda LLM?}
     J -- não --> SKIP[skipped_not_verifiable]
     J -- sim --> K[Runtime Harness\nValidator]
     K --> L{Reproduziu\nexceção esperada?}
     L -- sim --> REPR[runtime_reproduced_by_harness]
     L -- não --> NREPR[runtime_not_reproduced]
     L -- erro/unsafe --> RINC[runtime_inconclusive]
-    I --> M[ESBMC]
-    M --> N{Resultado?}
-    N -- violation_found --> CONF[llm_confirmed_by_esbmc]
-    N -- no_violation_found --> NC[not_confirmed_within_bound]
-    N -- error/timeout --> INC[esbmc_inconclusive]
+    H -- violation_found --> CONF[llm_confirmed_by_esbmc]
+    H -- no_violation_found --> NC[not_confirmed_within_bound]
+    H -- error/timeout --> INC[esbmc_inconclusive]
 ```
 
 ## Camadas
@@ -74,60 +71,43 @@ Valida os findings da LLM em três fases:
 
 Só marca `llm_false_positive` quando a expressão genuinamente não existe no código.
 
-### 4. Formalizer
+### 4. ESBMC Runner
 
-**Arquivo:** `research_pipeline/formalizer.py`
+**Arquivo:** `research_pipeline/verification/esbmc_runner.py`
 
-Converte o finding em propriedade formal verificável pelo ESBMC:
+O runner tem duas trilhas:
 
-| Categoria | Assertion gerada |
-|---|---|
-| `division_by_zero` | `(denominador) != 0` |
-| `out_of_bounds` | `(0 <= index) and (index < len(base))` |
-| `assertion_violation` | condição do assert/raise extraída |
+| Trilha | Comando | Papel |
+|---|---|---|
+| Flow A | `esbmc --python python3 --function <funcao> --unwind <bound> <arquivo>` | Baseline ESBMC-only, sem LLM |
+| Flow B | `esbmc --python python3 --function <funcao> --unwind <bound> <arquivo>` | Verificação formal guiada pela LLM |
 
-Retorna `None` se não consegue formalizar (aciona o harness).
-
-### 5. Instrumenter
-
-**Arquivo:** `research_pipeline/instrumenter.py`
-
-Gera o arquivo Python instrumentado:
-1. Remove entrypoints top-level (`main()`, `if __name__ == "__main__":`)
-2. Injeta `assert <propriedade>` antes da operação suspeita
-3. Gera driver simbólico `__esbmc_driver__()` com valores `nondet_int()`, `nondet_float()`, etc.
-4. Escreve o arquivo em `artifacts/*/instrumented/`
-
-### 6. ESBMC
-
-**Arquivo:** `research_pipeline/esbmc_runner.py`
-
-Executa `esbmc --python python3 --incremental-bmc <arquivo>` com timeout.
+No Flow A, o AST lista as funções candidatas e o ESBMC roda cada uma com `--function`, sem receber hipótese da LLM. No Flow B, a LLM escolhe a função/achado, a normalização AST valida que a expressão existe, e o ESBMC recebe a função como ponto de entrada simbólico. O pipeline não gera mais arquivo instrumentado nem driver próprio.
 
 Classifica a saída:
 - `"VERIFICATION FAILED"` → `violation_found`
 - `"VERIFICATION SUCCESSFUL"` → `no_violation_found`
-- `"Generated 0 VCC(s)"` + SUCCESSFUL → `no_vcc_generated`
+- nenhuma função candidata → `skipped`
 - `"ERROR:"` sem VERIFICATION → `tool_error` ou `unsupported_case`
 - Timeout → `inconclusive`
 
-### 7. Runtime Harness Validator (fallback)
+### 5. Runtime Harness Validator (experimental)
 
-**Arquivo:** `research_pipeline/runtime_harness_validator.py`
+**Arquivo:** `research_pipeline/experimental/runtime_harness_validator.py`
 
-Usado quando o Formalizer não consegue gerar propriedade formal. Executa o harness mínimo gerado pela LLM em subprocess isolado com timeout.
+Usado apenas como trilha auxiliar/experimental. Executa o harness mínimo gerado pela LLM em subprocess isolado com timeout.
 
 **Validação de segurança via AST** antes de qualquer execução — rejeita `import`, `eval`, `exec`, `open`, `while` sem limite, dunder methods perigosos.
 
 **Não substitui o ESBMC.** É validação auxiliar para padrões que o BMC não consegue verificar formalmente.
 
-### 8. Report / Classification
+### 6. Report / Classification
 
 **Arquivo:** `research_pipeline/report.py`
 
 Combina todos os resultados em `FinalResult` com `final_classification` e `interpretation`.
 
-### 9. Full Report
+### 7. Full Report
 
 **Arquivo:** `research_pipeline/full_report.py`
 

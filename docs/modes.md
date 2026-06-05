@@ -6,19 +6,25 @@
 python src/main.py --mode <modo> [opções]
 ```
 
-| Modo | Flow A (ESBMC direto) | Flow B (LLM + ESBMC) | Relatório |
-|---|:---:|:---:|---|
-| `esbmc-direct` | ✅ | ❌ | `esbmc_direct_results.json` |
-| `llm-first` | ❌ | ✅ | `report.json` |
-| `full` | ✅ | ✅ | `full_report.json` |
-| `benchmark` | ✅ | ✅ | métricas no terminal |
-| `esbmc-harness` | ✅ (harness) | ❌ | `esbmc_harness_results.json` |
+| Modo | Flow A (ESBMC-only) | Flow B (LLM + ESBMC) | Flow C (LLM-only) | Relatório |
+|---|:---:|:---:|:---:|---|
+| `esbmc-direct` | ✅ | ❌ | ❌ | `esbmc_direct_results.json` |
+| `llm-first` | ❌ | ✅ | ❌ | `report.json` |
+| `full` | ✅ | ✅ | ❌ | `full_report.json` |
+| `benchmark` | ✅ | ✅ | ✅ | métricas no terminal |
+| `esbmc-harness` | experimental | ❌ | ❌ | `esbmc_harness_results.json` |
+
+**Flow A:** ESBMC-only. O pipeline detecta funções via AST e roda ESBMC com `--function <funcao>` em cada função, sem LLM.
+
+**Flow B:** LLM + ESBMC. A LLM propõe achados, o AST normaliza/valida, e o ESBMC confirma os bugs verificáveis com `--function <funcao>`.
+
+**Flow C:** LLM-only. A LLM propõe achados e o pipeline avalia contra o ground truth sem chamada ao ESBMC.
 
 ---
 
 ## `esbmc-direct`
 
-Roda o ESBMC diretamente nos arquivos originais, sem LLM.
+Roda o ESBMC sem LLM, mas com ponto de entrada simbólico por função usando `--function`.
 
 ```bash
 python src/main.py --mode esbmc-direct \
@@ -27,36 +33,34 @@ python src/main.py --mode esbmc-direct \
   --timeout 30
 ```
 
-**Quando usar:** baseline para comparação. Mostra o que o ESBMC consegue verificar sem orientação da LLM.
-
-**Limitação:** arquivos com apenas definições de função geram `no_vcc_generated` — o ESBMC precisa de um ponto de entrada (chamada top-level ou `main()`) para gerar VCCs.
+**Quando usar:** baseline justo para comparação. Mostra o que o ESBMC consegue verificar sem orientação da LLM, recebendo apenas as funções detectadas pelo AST.
 
 ---
 
 ## `llm-first`
 
-Roda apenas o Flow B: LLM → AST → Formalizer → Instrumenter → ESBMC.
+Roda apenas o Flow B: LLM → AST → ESBMC `--function`.
 
 ```bash
 python src/main.py --mode llm-first \
   --input dataset/labeled/ok/bugs \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30
 ```
 
-**Quando usar:** testar a análise da LLM isolada, sem o contexto do ESBMC direto.
+**Quando usar:** testar a análise da LLM com confirmação formal, sem rodar o baseline Flow A.
 
 ---
 
 ## `full` (recomendado)
 
-Roda Flow A + Flow B para cada arquivo. O resultado inclui tanto o ESBMC direto quanto a análise da LLM com ESBMC instrumentado.
+Roda Flow A + Flow B para cada arquivo. O resultado inclui tanto o baseline ESBMC-only quanto a análise da LLM confirmada pelo ESBMC com `--function`.
 
 ```bash
 python src/main.py --mode full \
   --input dataset/labeled/ok/bugs \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30 \
   --report reports/json/full_report.json
@@ -67,7 +71,7 @@ python src/main.py --mode full \
 | Parâmetro | Descrição | Padrão |
 |---|---|---|
 | `--input` | Arquivo(s) Python ou diretório (recursivo) | obrigatório |
-| `--model` | Modelo LLM (`gpt-4o`, `claude`, `qwen2.5-coder:7b`) | `gpt-4o` |
+| `--model` | Modelo LLM (`gpt-5.5-2026-04-23`, `claude`, `qwen2.5-coder:7b`) | `gpt-5.5-2026-04-23` |
 | `--backend` | Backend LLM (`openai`, `anthropic`, `ollama`) | inferido do model |
 | `--bound` | Bound de unwinding do ESBMC | 5 |
 | `--timeout` | Timeout por chamada ESBMC (segundos) | 30 |
@@ -83,7 +87,7 @@ Avalia um modelo contra um conjunto de ground truths anotados.
 ```bash
 python src/main.py --mode benchmark \
   --input dataset/labeled/ground_truths/bugs \
-  --model gpt-4o \
+  --model gpt-5.5-2026-04-23 \
   --bound 5 \
   --timeout 30
 ```
@@ -128,7 +132,7 @@ python src/main.py --mode esbmc-harness \
 | Alias | Modelo completo |
 |---|---|
 | `claude` | `claude-sonnet-4-6` |
-| `gpt` | `gpt-4o` |
+| `gpt` | `gpt-5.5-2026-04-23` |
 
 ---
 

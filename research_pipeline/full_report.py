@@ -7,8 +7,7 @@ and reorganises it into the hierarchical structure expected by the frontend:
                                           ├── esbmc_direct
                                           └── llm_results[]
                                                 ├── ast_validation
-                                                ├── formal_property
-                                                └── esbmc_instrumented
+                                                └── esbmc_function
 """
 from __future__ import annotations
 
@@ -34,7 +33,6 @@ from .models import (
     ESBMCResult,
     FinalResult,
     Finding,
-    FormalProperty,
 )
 
 
@@ -168,7 +166,7 @@ def _summary_block(file_entries: list[dict]) -> dict:
         ),
         "total_no_vcc_generated": sum(
             1 for e in file_entries
-            if (e["esbmc_direct"] or {}).get("status") == "no_vcc_generated"
+            if (e["esbmc_direct"] or {}).get("function_count") == 0
         ),
         "total_confirmed_by_esbmc": sum(
             1 for lr in all_llm
@@ -252,9 +250,12 @@ def _direct_dict(direct: ESBMCDirectResult | None) -> dict | None:
         "counterexample": direct.details.get("counterexample", []),
         "zero_vccs": zero_vccs,
         "generated_vcc_count": direct.details.get("generated_vcc_count"),
+        "function_count": direct.details.get("function_count"),
+        "functions": direct.details.get("functions", []),
+        "violating_functions": direct.details.get("violating_functions", []),
         "bound": direct.details.get("bound", 0),
         "observation": (
-            "ESBMC retornou SUCCESSFUL, mas nao gerou VCCs; este resultado nao e tratado como prova de ausencia de violacao."
+            "Flow A usa ESBMC com --function em cada funcao detectada, sem orientacao da LLM."
             if zero_vccs else ""
         ),
         "stdout_path": direct.raw_log_path,
@@ -269,7 +270,6 @@ def _direct_dict(direct: ESBMCDirectResult | None) -> dict | None:
 
 def _finding_to_result(result: FinalResult, model: str | None) -> dict:
     f = result.finding
-    instr_file = _instrumented_file_path(result.esbmc_result)
     out_of_scope = result.final_classification == CLASSIFICATION_OUT_OF_SCOPE
     cls = result.final_classification
     validation_strategy = _validation_strategy(result)
@@ -291,9 +291,7 @@ def _finding_to_result(result: FinalResult, model: str | None) -> dict:
         "expected_exception": f.metadata.get("expected_exception", ""),
         "reproduction_harness": f.metadata.get("reproduction_harness", ""),
         "ast_validation": _ast_validation(f),
-        "formal_property": _formal_prop_dict(result.formal_property),
-        "instrumented_file": instr_file,
-        "esbmc_instrumented": _esbmc_instrumented_dict(result.esbmc_result),
+        "esbmc_function": _esbmc_function_dict(result.esbmc_result),
         "runtime_validation": result.harness_result,
         "final_classification": cls,
         "interpretation": result.interpretation,
@@ -319,7 +317,7 @@ def _ast_validation(finding: Finding) -> dict:
         if ast_unrecognized:
             reason = (
                 "Expressão encontrada no código como nó AST executável, mas padrão não "
-                "reconhecido pelo analisador. Encaminhado ao Formalizer/harness."
+                "reconhecido pelo analisador. Encaminhado ao ESBMC com --function."
             )
         elif has_guard:
             reason = (
@@ -358,41 +356,19 @@ def _ast_validation(finding: Finding) -> dict:
     }
 
 
-def _formal_prop_dict(prop: FormalProperty | None) -> dict:
-    if prop is None:
-        return {"supported": False, "property": None, "assertion": None}
-    return {
-        "supported": True,
-        "property": prop.hypothesis,
-        "assertion": prop.assertion,
-        "assumptions": prop.assumptions,
-        "esbmc_flags": prop.esbmc_flags,
-    }
-
-
-def _esbmc_instrumented_dict(esbmc: ESBMCResult | None) -> dict | None:
+def _esbmc_function_dict(esbmc: ESBMCResult | None) -> dict | None:
     if esbmc is None:
         return None
     return {
         "status": esbmc.status,
         "command": esbmc.command,
         "return_code": esbmc.returncode,
-        "time_seconds": 0.0,   # ESBMCResult does not track elapsed time
+        "time_seconds": esbmc.time_seconds,
         "summary": esbmc.summary,
         "property_kind": esbmc.details.get("property_kind", ""),
         "counterexample": esbmc.details.get("counterexample", []),
         "stdout_path": esbmc.raw_log_path,
     }
-
-
-def _instrumented_file_path(esbmc: ESBMCResult | None) -> str | None:
-    """Extract the instrumented .py path from the ESBMC command (always the last argument)."""
-    if esbmc is None or not esbmc.command:
-        return None
-    candidate = esbmc.command[-1]
-    if candidate.endswith(".py"):
-        return candidate
-    return None
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anotador de Benchmarks - LLM ESBMC</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f6f7f9;
+      color: #263238;
+      font-size: 14px;
+    }
+    header {
+      padding: 16px 22px;
+      background: #263238;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    h1 { margin: 0; font-size: 18px; }
+    main { padding: 18px 22px 28px; }
+    .panel {
+      background: white;
+      border: 1px solid #dde3ea;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    input[type="file"], input[type="search"], select, textarea {
+      border: 1px solid #cfd8dc;
+      border-radius: 6px;
+      padding: 8px;
+      font: inherit;
+      background: white;
+    }
+    input[type="search"] { min-width: 260px; }
+    button {
+      border: 0;
+      border-radius: 6px;
+      padding: 8px 11px;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      background: #1565c0;
+    }
+    button.secondary { background: #607d8b; }
+    button.good { background: #2e7d32; }
+    button.warn { background: #c62828; }
+    .hint { color: #607d8b; font-size: 13px; margin-top: 8px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .stat {
+      border: 1px solid #e4e9ee;
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+    .stat b { display: block; font-size: 22px; margin-bottom: 2px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border: 1px solid #dde3ea;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid #edf1f4;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #37474f;
+      color: white;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    tr:hover td { background: #fafafa; }
+    code {
+      background: #eceff1;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 12px;
+    }
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e3f2fd;
+      color: #1565c0;
+      white-space: nowrap;
+    }
+    .cls-ok { background: #e8f5e9; color: #2e7d32; }
+    .cls-bad { background: #ffebee; color: #c62828; }
+    .cls-mid { background: #fff8e1; color: #ef6c00; }
+    .cls-neutral { background: #eceff1; color: #455a64; }
+    textarea { width: 260px; min-height: 42px; resize: vertical; }
+    .empty {
+      color: #607d8b;
+      padding: 22px;
+      text-align: center;
+    }
+    .file-cell {
+      max-width: 210px;
+      word-break: break-word;
+    }
+    .expr-cell {
+      max-width: 280px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Anotador simples de benchmarks</h1>
+    <div id="save-status">Anotações salvas no navegador</div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="toolbar">
+        <input id="file-input" type="file" accept=".json" multiple>
+        <button onclick="loadFiles()">Carregar JSONs</button>
+        <button class="good" onclick="exportCsv()">Exportar CSV</button>
+        <button class="good" onclick="exportJson()">Exportar JSON</button>
+        <button class="warn" onclick="clearNotes()">Limpar notas</button>
+      </div>
+      <div class="hint">
+        Carregue relatórios de GPT, Claude e Ollama juntos. Aceita <code>full_report.json</code>, <code>report.json</code> e JSONs de benchmark.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Filtrar arquivo, função, categoria, expressão..." oninput="render()">
+        <select id="model-filter" onchange="render()">
+          <option value="">Todos os modelos</option>
+        </select>
+        <select id="verdict-filter" onchange="render()">
+          <option value="">Todos os verdicts manuais</option>
+          <option value="correct">Correto</option>
+          <option value="false_positive">Falso positivo</option>
+          <option value="false_negative">Falso negativo</option>
+          <option value="wrong_category">Categoria errada</option>
+          <option value="inconclusive">Inconclusivo</option>
+          <option value="review">Revisar</option>
+          <option value="__empty__">Sem anotação</option>
+        </select>
+      </div>
+      <div id="stats" class="stats"></div>
+    </section>
+
+    <section id="table-wrap"></section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "llm_esbmc_benchmark_notes_v1";
+    const state = {
+      reports: [],
+      rows: [],
+      notes: loadNotes(),
+    };
+
+    function loadNotes() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+      catch { return {}; }
+    }
+
+    function saveNotes() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.notes));
+      const el = document.getElementById("save-status");
+      el.textContent = "Salvo " + new Date().toLocaleTimeString();
+    }
+
+    function esc(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function fileName(path) {
+      return String(path || "").split(/[\\/]/).pop();
+    }
+
+    function detectFormat(data) {
+      if (Array.isArray(data)) return "flat";
+      if (data.files && data.summary && data.experiment) return "full";
+      if (data.metrics && (data.model || data.backend)) return "benchmark";
+      return "unknown";
+    }
+
+    function modelName(data, fallback) {
+      return data?.experiment?.model || data?.model || fallback.replace(/\.json$/i, "");
+    }
+
+    function classificationClass(cls) {
+      if (cls === "llm_confirmed_by_esbmc" || cls === "runtime_reproduced_by_harness") return "cls-ok";
+      if (cls === "llm_false_positive" || cls === "llm_missed_esbmc_bug") return "cls-bad";
+      if (cls === "not_confirmed_within_bound" || cls === "esbmc_inconclusive") return "cls-mid";
+      return "cls-neutral";
+    }
+
+    function normalizeReport(name, data) {
+      const fmt = detectFormat(data);
+      const model = modelName(data, name);
+
+      if (fmt === "benchmark") {
+        return [{
+          key: ["benchmark", model, name].join("::"),
+          model,
+          report: name,
+          file: "(benchmark agregado)",
+          functionName: "",
+          category: "metrics",
+          expression: "",
+          pipelineClass: "benchmark",
+          confidence: "",
+          summary: benchmarkSummary(data),
+        }];
+      }
+
+      if (fmt === "full") {
+        return (data.files || []).flatMap(file =>
+          (file.llm_results || []).map(finding => rowFromFinding(model, name, file.file, finding))
+        );
+      }
+
+      if (fmt === "flat") {
+        return data
+          .filter(item => item.finding?.stage !== "esbmc_direct")
+          .map(item => rowFromFinding(
+            model,
+            name,
+            item.source_file || "",
+            {
+              function: item.unit_name,
+              category: item.finding?.category,
+              expression: item.finding?.metadata?.expression,
+              line: item.finding?.metadata?.line,
+              final_classification: item.final_classification,
+              confidence: item.finding?.confidence,
+              reasoning: item.finding?.explanation,
+            }
+          ));
+      }
+
+      return [];
+    }
+
+    function benchmarkSummary(data) {
+      const bugs = data.metrics?.bugs_llm_only || data.metrics?.bugs || {};
+      const hybrid = data.metrics?.bugs_hybrid_pipeline || {};
+      const smells = data.metrics?.smells || {};
+      return [
+        "LLM bugs F1=" + value(bugs.f1),
+        "Hybrid F1=" + value(hybrid.f1),
+        "Smells F1=" + value(smells.f1),
+      ].join(" | ");
+    }
+
+    function value(v) {
+      return v == null ? "-" : Number(v).toFixed(3);
+    }
+
+    function rowFromFinding(model, report, file, finding) {
+      const row = {
+        model,
+        report,
+        file: file || "",
+        functionName: finding.function || "",
+        category: finding.category || "",
+        expression: finding.expression || "",
+        line: finding.line || "",
+        pipelineClass: finding.final_classification || "",
+        confidence: finding.confidence || "",
+        summary: finding.reasoning || finding.interpretation || "",
+      };
+      row.key = [
+        row.model,
+        fileName(row.file),
+        row.functionName,
+        row.category,
+        row.line,
+        row.expression,
+        row.pipelineClass,
+      ].join("::");
+      return row;
+    }
+
+    async function loadFiles() {
+      const files = Array.from(document.getElementById("file-input").files || []);
+      if (!files.length) {
+        alert("Escolha pelo menos um JSON.");
+        return;
+      }
+
+      state.reports = [];
+      state.rows = [];
+
+      for (const file of files) {
+        const text = await file.text();
+        try {
+          const data = JSON.parse(text);
+          const rows = normalizeReport(file.name, data);
+          state.reports.push({ name: file.name, model: modelName(data, file.name), format: detectFormat(data) });
+          state.rows.push(...rows);
+        } catch (err) {
+          alert("Erro lendo " + file.name + ": " + err.message);
+        }
+      }
+
+      updateModelFilter();
+      render();
+    }
+
+    function updateModelFilter() {
+      const select = document.getElementById("model-filter");
+      const current = select.value;
+      const models = [...new Set(state.rows.map(row => row.model))].sort();
+      select.innerHTML = '<option value="">Todos os modelos</option>' +
+        models.map(model => `<option value="${esc(model)}">${esc(model)}</option>`).join("");
+      select.value = models.includes(current) ? current : "";
+    }
+
+    function currentRows() {
+      const query = document.getElementById("search").value.toLowerCase().trim();
+      const model = document.getElementById("model-filter").value;
+      const verdict = document.getElementById("verdict-filter").value;
+
+      return state.rows.filter(row => {
+        const note = state.notes[row.key] || {};
+        const haystack = [
+          row.model, row.report, row.file, row.functionName, row.category,
+          row.expression, row.pipelineClass, row.summary, note.text || "",
+        ].join(" ").toLowerCase();
+        const modelOk = !model || row.model === model;
+        const queryOk = !query || haystack.includes(query);
+        const verdictOk =
+          !verdict ||
+          (verdict === "__empty__" && !note.verdict && !note.text) ||
+          note.verdict === verdict;
+        return modelOk && queryOk && verdictOk;
+      });
+    }
+
+    function renderStats(rows) {
+      const annotated = state.rows.filter(row => {
+        const note = state.notes[row.key] || {};
+        return note.verdict || note.text;
+      }).length;
+      const models = new Set(state.rows.map(row => row.model)).size;
+      const confirmed = state.rows.filter(row => row.pipelineClass === "llm_confirmed_by_esbmc").length;
+      const falsePositives = state.rows.filter(row => row.pipelineClass === "llm_false_positive").length;
+
+      document.getElementById("stats").innerHTML = [
+        ["Modelos", models],
+        ["Achados", state.rows.length],
+        ["Visíveis", rows.length],
+        ["Anotados", annotated],
+        ["Confirmados", confirmed],
+        ["FP pipeline", falsePositives],
+      ].map(([label, number]) => `<div class="stat"><b>${number}</b>${label}</div>`).join("");
+    }
+
+    function render() {
+      const rows = currentRows();
+      renderStats(rows);
+
+      const wrap = document.getElementById("table-wrap");
+      if (!state.rows.length) {
+        wrap.innerHTML = '<div class="panel empty">Carregue JSONs de GPT, Claude e Ollama para começar.</div>';
+        return;
+      }
+
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Arquivo</th>
+              <th>Função</th>
+              <th>Categoria</th>
+              <th>Pipeline</th>
+              <th>Expressão / resumo</th>
+              <th>Verdict manual</th>
+              <th>Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(renderRow).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderRow(row) {
+      const note = state.notes[row.key] || {};
+      return `
+        <tr>
+          <td><b>${esc(row.model)}</b><br><small>${esc(row.report)}</small></td>
+          <td class="file-cell" title="${esc(row.file)}">${esc(fileName(row.file))}${row.line ? "<br><small>linha " + esc(row.line) + "</small>" : ""}</td>
+          <td>${esc(row.functionName || "-")}</td>
+          <td><span class="badge">${esc(row.category || "-")}</span></td>
+          <td><span class="badge ${classificationClass(row.pipelineClass)}">${esc(row.pipelineClass || "-")}</span><br><small>${esc(row.confidence || "")}</small></td>
+          <td class="expr-cell">${row.expression ? "<code>" + esc(row.expression) + "</code>" : esc(row.summary || "-")}</td>
+          <td>
+            <select onchange="setNote('${js(row.key)}', 'verdict', this.value)">
+              ${verdictOptions(note.verdict || "")}
+            </select>
+          </td>
+          <td>
+            <textarea placeholder="ex: correto, mas categoria fraca..." oninput="setNote('${js(row.key)}', 'text', this.value)">${esc(note.text || "")}</textarea>
+          </td>
+        </tr>
+      `;
+    }
+
+    function verdictOptions(selected) {
+      const options = [
+        ["", "Sem anotação"],
+        ["correct", "Correto"],
+        ["false_positive", "Falso positivo"],
+        ["false_negative", "Falso negativo"],
+        ["wrong_category", "Categoria errada"],
+        ["inconclusive", "Inconclusivo"],
+        ["review", "Revisar"],
+      ];
+      return options.map(([value, label]) =>
+        `<option value="${value}"${selected === value ? " selected" : ""}>${label}</option>`
+      ).join("");
+    }
+
+    function js(value) {
+      return String(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    }
+
+    function setNote(key, field, value) {
+      const current = state.notes[key] || {};
+      state.notes[key] = { ...current, [field]: value, updated_at: new Date().toISOString() };
+      if (!state.notes[key].verdict && !state.notes[key].text) delete state.notes[key];
+      saveNotes();
+      renderStats(currentRows());
+    }
+
+    function annotatedPayload() {
+      return state.rows
+        .map(row => ({ ...row, manual: state.notes[row.key] || {} }))
+        .filter(row => row.manual.verdict || row.manual.text);
+    }
+
+    function exportJson() {
+      const payload = {
+        exported_at: new Date().toISOString(),
+        reports: state.reports,
+        annotations: annotatedPayload(),
+      };
+      download("benchmark_annotations.json", JSON.stringify(payload, null, 2), "application/json");
+    }
+
+    function exportCsv() {
+      const header = [
+        "model", "report", "file", "function", "category", "line", "expression",
+        "pipeline_classification", "confidence", "manual_verdict", "note", "updated_at",
+      ];
+      const rows = annotatedPayload().map(row => [
+        row.model, row.report, row.file, row.functionName, row.category, row.line,
+        row.expression, row.pipelineClass, row.confidence,
+        row.manual.verdict || "", row.manual.text || "", row.manual.updated_at || "",
+      ]);
+      const csv = [header, ...rows]
+        .map(items => items.map(item => '"' + String(item ?? "").replace(/"/g, '""') + '"').join(","))
+        .join("\n");
+      download("benchmark_annotations.csv", csv, "text/csv");
+    }
+
+    function download(name, text, type) {
+      const blob = new Blob([text], { type });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    }
+
+    function clearNotes() {
+      if (!confirm("Apagar todas as anotações salvas neste navegador?")) return;
+      state.notes = {};
+      saveNotes();
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

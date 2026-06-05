@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -357,8 +357,7 @@ function toFiles(data) {
         evidence: r.finding?.evidence || [],
         verifiable: r.finding?.verifiable,
         ast_validation: { valid: r.finding?.finding_type !== 'llm_false_positive', reason: '' },
-        formal_property: r.formal_property ? { supported: true, assertion: r.formal_property.assertion, esbmc_flags: r.formal_property.esbmc_flags } : { supported: false },
-        esbmc_instrumented: r.esbmc_result ? { status: r.esbmc_result.status, summary: r.esbmc_result.summary } : null,
+        esbmc_function: r.esbmc_result ? { status: r.esbmc_result.status, summary: r.esbmc_result.summary } : null,
         final_classification: r.final_classification,
         interpretation: r.interpretation,
       })),
@@ -679,16 +678,11 @@ function findingCard(r) {
   const cls  = r.final_classification || '';
   const m    = CLS[cls] || { lbl: cls, clr: '#7f8c8d' };
   const bg   = m.clr + '18';
-  const ei   = r.esbmc_instrumented;
+  const ei   = r.esbmc_function;
   const em   = ei ? (ESBMC[ei.status] || { lbl: ei.status, clr: '#7f8c8d' }) : null;
-  const fp   = r.formal_property;
   const evidHtml = (r.evidence || []).map(e => `<div class="code-block">${esc(e)}</div>`).join('');
-  const formalHtml = fp?.supported
-    ? `<div class="prop-row"><span class="prop-key">Assertion:</span><span><code>${esc(fp.assertion||'?')}</code></span></div>
-       ${fp.esbmc_flags?.length ? `<div class="prop-row"><span class="prop-key">Flags ESBMC:</span><span><code>${esc(fp.esbmc_flags.join(' '))}</code></span></div>` : ''}`
-    : `<div class="prop-row"><span class="prop-key">Propriedade formal:</span><span style="color:#95a5a6">não gerada</span></div>`;
   const esbmcHtml = ei
-    ? `<div class="prop-row"><span class="prop-key">ESBMC:</span><span>${badge(em.lbl, em.clr)} <span style="color:#7f8c8d;font-size:.85em">${esc(ei.summary||'')}</span></span></div>`
+    ? `<div class="prop-row"><span class="prop-key">ESBMC --function:</span><span>${badge(em.lbl, em.clr)} <span style="color:#7f8c8d;font-size:.85em">${esc(ei.summary||'')}</span></span></div>`
     : '';
   const astHtml = r.ast_validation
     ? `<div class="prop-row"><span class="prop-key">AST:</span><span style="color:${r.ast_validation.valid?'#27ae60':'#e74c3c'}">${r.ast_validation.valid?'✓ válido':'✗ inválido'}</span></div>`
@@ -711,7 +705,6 @@ function findingCard(r) {
         ${astHtml}
         ${r.reasoning ? `<div style="margin:7px 0;color:#444;line-height:1.5">${esc(r.reasoning)}</div>` : ''}
         ${evidHtml}
-        ${formalHtml}
         ${esbmcHtml}
         ${r.interpretation ? `<div class="interp">${esc(r.interpretation)}</div>` : ''}
       </div>

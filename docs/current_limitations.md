@@ -1,21 +1,16 @@
 # Limitações Atuais
 
-## 1. ESBMC direto: 0 VCCs em arquivos sem top-level call
+## 1. ESBMC precisa de ponto de entrada simbólico
 
-**Impacto:** Alto no Flow A (esbmc-direct).
+**Impacto:** Resolvido no Flow A/B atuais; documentado como motivo do uso de `--function`.
 
-O ESBMC precisa de um ponto de entrada executável para gerar VCCs. Arquivos que contêm apenas definições de função (sem chamada top-level nem `main()`) retornam:
+O ESBMC precisa de um ponto de entrada executável para gerar VCCs. Por isso, os fluxos principais não rodam mais o arquivo apenas em nível de módulo. Eles usam:
 
-```
-Generated 0 VCC(s)
-VERIFICATION SUCCESSFUL
-```
+- **Flow A:** ESBMC-only com `--function <funcao>` para cada função detectada pelo AST.
+- **Flow B:** LLM escolhe achados verificáveis e ESBMC confirma com `--function <funcao>`.
+- **Flow C:** LLM-only, sem chamada ao ESBMC.
 
-O pipeline trata isso como `no_vcc_generated` — não como prova de ausência de bug.
-
-**Workaround atual:** O Flow B (LLM + ESBMC) gera um driver simbólico (`__esbmc_driver__`) que torna a função alcançável. Esta é a principal contribuição do pipeline.
-
-**Não confundir com:** `no_violation_found` — que significa verificação real sem violação.
+O status legado `no_vcc_generated` continua tratado como não-prova caso algum helper experimental rode ESBMC em nível de módulo, mas não é o baseline principal da V1.
 
 ---
 
@@ -27,23 +22,21 @@ O analisador AST detecta `lst[i]` como `ast.Subscript`. Chamadas de método como
 
 **Solução implementada:** O `_normalize_operation_finding` verifica se a expressão existe como **nó executável no AST** quando o kind não casa. Isso impede que `.pop(i)` seja marcado como alucinação.
 
-**Limitação restante:** O Formalizer não consegue extrair `base` e `index` de `.pop(i)` pela lógica atual de `_extract_subscript_parts`. Achados `.pop(i)` passam pelo Formalizer mas recebem `assertion = "False"` → caem no harness runtime como fallback.
+**Limitação restante:** o ESBMC pode não tratar todos os padrões Python dinâmicos com a mesma precisão. A validação AST evita alucinação, mas o resultado formal ainda depende do suporte do frontend Python do ESBMC.
 
-**Para corrigir completamente:** adicionar `_extract_pop_parts()` no Formalizer (ver `docs/architecture.md`).
+**Para corrigir completamente:** ampliar a categorização de padrões AST e documentar quais operações o frontend Python do ESBMC cobre de forma confiável.
 
 ---
 
-## 3. Parâmetros `str` no driver: valor concreto `"abc"`
+## 3. Parâmetros simbólicos dependem do suporte do ESBMC Python
 
 **Impacto:** Baixo na prática para o dataset atual, mas limita a generalidade.
 
-O `instrumenter.py` gera drivers com `nondet_int()` para `int` (simbólico), mas usa `"abc"` fixo para `str`. O ESBMC não possui `nondet_str()`.
+No Flow B atual, o ESBMC recebe `--function <funcao>` e cria o ponto de entrada simbólico a partir da própria função. A qualidade da exploração depende do suporte do frontend Python do ESBMC para os tipos usados.
 
-**Efeito:** Para funções com parâmetro `str`, o ESBMC verifica apenas o comportamento com `"abc"`. Se o bug só ocorre com outras strings específicas, o ESBMC pode não detectar.
+**Efeito:** tipos simples como `int` tendem a funcionar melhor. Tipos como `str`, listas e chamadas de biblioteca podem depender de modelagem parcial do frontend.
 
-**No dataset atual:** `scrapy_18_out_of_bounds.py` usa `str` e `"abc"` acidentalmente ativa o bug (pois `"abc".split(";")` tem só 1 elemento). O resultado é correto, mas não por exploração simbólica completa.
-
-**Solução futura:** modelar o resultado do `.split()` como lista simbólica de comprimento `nondet_int()`.
+**Solução futura:** registrar por categoria quais tipos de parâmetro e operações são suportados de forma estável pelo ESBMC Python.
 
 ---
 
@@ -103,24 +96,20 @@ a falha decorre de uma propriedade estaticamente falsa, não de exploração sim
 
 **Tratamento atual:** manter os casos no dataset como bugs reais e documentar essa limitação.
 
-**Solução futura:** marcar propriedades triviais no `FormalProperty` ou especializar a formalização de
-índices constantes/negativos para explicar melhor o tipo de evidência gerada.
+**Solução futura:** marcar no relatório quando a violação decorre de índice constante/trivial para explicar melhor o tipo de evidência gerada.
 
 ---
 
-## 8. Diferença de configuração entre Flow A e Flow B
+## 8. Diferença entre Flow A e Flow B
 
-**Impacto:** Médio para comparação direta entre os fluxos.
+**Impacto:** Médio para interpretação experimental.
 
-O Flow A (`esbmc-direct`) usa `--unwind {bound}`. O Flow B instrumentado usa `--incremental-bmc`.
-Isso significa que uma diferença entre Flow A e Flow B pode refletir tanto a metodologia quanto a
-configuração do ESBMC.
+Flow A e Flow B usam `--function <funcao>` e o mesmo `--unwind {bound}`. A diferença é a origem da função/candidato:
 
-**Tratamento atual:** os relatórios separam Flow A e Flow B, e o texto experimental deve mencionar a
-diferença.
+- Flow A varre funções detectadas pelo AST, sem hipótese da LLM.
+- Flow B verifica apenas achados que a LLM propôs e que a validação AST aceitou.
 
-**Solução futura:** parametrizar o Flow B para usar o mesmo bound do Flow A, ou documentar explicitamente
-que o Flow B é o fluxo principal e não uma comparação controlada de flags.
+**Tratamento atual:** os relatórios separam Flow A, Flow B e Flow C para comparar ESBMC-only, LLM+ESBMC e LLM-only.
 
 ---
 
@@ -128,15 +117,14 @@ que o Flow B é o fluxo principal e não uma comparação controlada de flags.
 
 **Impacto:** Baixo no MVP, mas importante para leitura dos relatórios.
 
-`skipped_not_verifiable` significa que o achado não seguiu para ESBMC porque não havia uma obrigação
-formal confiável para aquele item na versão atual do pipeline. Isso pode acontecer em dois grupos:
+`skipped_not_verifiable` significa que o achado não seguiu para confirmação formal no Flow B atual. Isso pode acontecer em dois grupos:
 
 - smells heurísticos (`complex_conditional`, `long_method`, `many_parameters`), que são intencionalmente
   não formais;
-- achados de bug que a LLM marcou como não verificáveis ou que ficaram sem expressão/harness suficiente.
+- achados de bug que a LLM marcou como não verificáveis, ficaram fora do escopo ou não puderam ser enviados ao ESBMC.
 
 **Tratamento atual:** smells devem aparecer como `heuristic_smell_only` quando categorizados corretamente
-pela LLM. `skipped_not_verifiable` fica reservado para itens que não viraram obrigação formal no fluxo.
+pela LLM. `skipped_not_verifiable` fica reservado para itens que não viraram confirmação formal no fluxo.
 
 **Solução futura:** separar explicitamente no relatório os skips por motivo, por exemplo
 `skipped_smell`, `skipped_missing_expression` e `skipped_missing_harness`.
@@ -156,12 +144,12 @@ sanity check técnico e experimento piloto, mas ainda pequeno para generalizaç�
 
 | Limitação | Status | Prioridade para corrigir |
 |---|---|---|
-| 0 VCCs em funções sem top-level | Documentado, tratado como `no_vcc_generated` | Baixa — Flow B resolve |
-| `.pop(i)` no Formalizer | Parcialmente resolvido (passa pelo harness) | Média |
-| `str` simbólico | Documentado no código | Baixa para MVP |
+| Ponto de entrada simbólico | Resolvido com `--function` em Flow A/B | Baixa |
+| `.pop(i)` e padrões dinâmicos | Dependem do suporte do ESBMC Python | Média |
+| Tipos simbólicos Python | Documentado | Baixa para MVP |
 | Harness não é prova formal | Documentado — separado nas classificações | N/A (correto por design) |
 | ESBMC Python limitado | Documentado, erros capturados | N/A (limitação da ferramenta) |
 | OOB trivialmente falso | Documentado | Baixa |
-| Flags Flow A/Flow B diferentes | Documentado | Média |
+| Diferença Flow A/Flow B | Documentada | Média |
 | `skipped_not_verifiable` agregado | Documentado, smells têm classe própria | Baixa para MVP |
 | Dataset pequeno | V1 seed com 70 casos | Alta para experimentos finais |

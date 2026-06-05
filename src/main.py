@@ -2,10 +2,10 @@
 main.py — Pipeline LLM + AST + ESBMC para verificação de bugs em Python.
 
 Modos de execução:
-  esbmc-direct  Roda o ESBMC diretamente nos arquivos, sem LLM.
+  esbmc-direct  Flow A: ESBMC-only com --function, sem LLM.
   esbmc-harness Roda ESBMC em harnesses experimentais gerados para funções.
-  llm-first     Roda apenas o pipeline LLM + AST + ESBMC instrumentado.
-  full          Roda Flow A (ESBMC direto) + Flow B (LLM-first) integrados.
+  llm-first     Roda apenas o pipeline LLM + AST + ESBMC --function.
+  full          Roda Flow A (ESBMC-only) + Flow B (LLM-first) integrados.
   benchmark     Avalia todos os modelos configurados contra o ground truth.
 
 Exemplos:
@@ -78,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Modelo LLM a usar. "
             "Valores: 'claude' ou nome completo como 'claude-sonnet-4-6', "
-            "'gpt-4o', 'qwen2.5-coder:7b'. (padrão: gpt-4o)"
+            "'gpt-5.5-2026-04-23', 'qwen2.5-coder:7b'. (padrão: gpt-5.5-2026-04-23)"
         ),
     )
     parser.add_argument(
@@ -143,7 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=False,
         help=(
             "[Experimental] Habilita validação por harness runtime como fallback "
-            "quando o Formalizer não consegue gerar propriedade formal. "
+            "para achados verificáveis que não passam pela trilha formal principal. "
             "Desabilitado por padrão na V1 — não entra nas métricas principais."
         ),
     )
@@ -203,7 +203,7 @@ def _resolve_model(model: str | None, backend: str) -> str | None:
         return None
     aliases = {
         "claude": "claude-sonnet-4-6",
-        "gpt":    "gpt-4o",
+        "gpt":    "gpt-5.5-2026-04-23",
     }
     return aliases.get(model.lower(), model)
 
@@ -232,8 +232,8 @@ def _print_full_summary(summary: dict) -> None:
     print("\n── Resumo ──────────────────────────────────────────")
     print(f"  {summary['total_files']:3d}  arquivos analisados")
     print(f"  {summary['total_llm_findings']:3d}  achados da LLM")
-    print(f"  {summary['total_esbmc_direct_violations']:3d}  violações ESBMC direto")
-    print(f"  {summary['total_no_vcc_generated']:3d}  arquivos sem VCC gerada (ESBMC direto)")
+    print(f"  {summary['total_esbmc_direct_violations']:3d}  violações Flow A (ESBMC-only)")
+    print(f"  {summary['total_no_vcc_generated']:3d}  arquivos sem função candidata no Flow A")
     print(f"  {summary['total_confirmed_by_esbmc']:3d}  confirmados LLM+ESBMC (formal)")
     print(f"  {summary.get('total_runtime_reproduced', 0):3d}  reproduzidos por harness (auxiliar)")
     print(f"  {summary['total_llm_false_positives']:3d}  falsos positivos LLM")
@@ -264,7 +264,7 @@ def _print_benchmark_table(label: str, counts: EvalCounts) -> None:
     print(f"    confirmados ESBMC={counts.llm_confirmed_by_esbmc}  não confirmados={counts.not_confirmed_within_bound}  inconclusivos={counts.esbmc_inconclusive}")
     print(f"  Smell P/R/F1:        {smell_p:.2f} / {smell_r:.2f} / {smell_f1:.2f}")
     print(f"    TP={counts.smell_tp}  FP={counts.smell_fp}  FN={counts.smell_fn}")
-    print(f"  ESBMC direct P/R/F1: {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}")
+    print(f"  Flow A P/R/F1:       {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}")
     print(f"  Alucinações LLM:     {counts.hallucination_count}  (taxa: {hlr:.1%})")
 
     if counts.per_category:
@@ -294,7 +294,7 @@ def mode_esbmc_direct(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout,
     )
 
-    print(f"\nESBMC direto — {len(results)} arquivo(s) analisado(s):")
+    print(f"\nFlow A — ESBMC-only com --function — {len(results)} arquivo(s) analisado(s):")
     for r in results:
         print(f"  [{r.status:20s}]  {Path(r.source_file).name}  — {r.summary[:70]}")
 
@@ -348,6 +348,7 @@ def mode_llm_first(args: argparse.Namespace) -> int:
         openai_api_key=openai_key,
         anthropic_api_key=anthropic_key,
         ollama_base_url=args.ollama_base_url,
+        bound=args.bound,
         timeout_seconds=args.timeout,
         enable_harness=getattr(args, "enable_harness", False),
     )

@@ -10,18 +10,17 @@ flowchart TD
     C -- sim --> FP[llm_false_positive]
     C -- não --> D{smell_heuristic?}
     D -- sim --> SMELL[heuristic_smell_only]
-    D -- não --> E{formal_property gerada?}
-    E -- não --> F{harness disponível?}
+    D -- não --> E{esbmc_result.status}
+    E -- skipped --> F{harness disponível?}
     F -- não --> SKIP[skipped_not_verifiable]
     F -- sim --> G{status harness}
     G -- reproduced --> REPR[runtime_reproduced_by_harness]
     G -- not_reproduced / wrong_exc --> NR[runtime_not_reproduced]
     G -- unsafe / timeout / error --> RI[runtime_inconclusive]
-    E -- sim --> H{esbmc_result.status}
-    H -- violation_found --> CONF[llm_confirmed_by_esbmc]
-    H -- no_violation_found --> NC[not_confirmed_within_bound]
-    H -- tool_error / inconclusive --> INC[esbmc_inconclusive]
-    H -- skipped --> K{ESBMC direto\nviolation_found?}
+    E -- violation_found --> CONF[llm_confirmed_by_esbmc]
+    E -- no_violation_found --> NC[not_confirmed_within_bound]
+    E -- tool_error / inconclusive --> INC[esbmc_inconclusive]
+    E -- skipped --> K{Flow A\nviolation_found?}
     K -- sim --> NATIVE[esbmc_native_bug]
     K -- não --> SKIP2[skipped_not_verifiable]
 ```
@@ -35,8 +34,8 @@ flowchart TD
 | `llm_confirmed_by_esbmc` | LLM identificou e ESBMC confirmou formalmente via BMC | **Principal** — prova formal |
 | `not_confirmed_within_bound` | ESBMC verificou mas não encontrou violação no bound | Resultado negativo formal |
 | `esbmc_inconclusive` | ESBMC retornou erro, timeout ou resultado ambíguo | Limitação da ferramenta |
-| `esbmc_native_bug` | ESBMC direto detectou violação sem depender da LLM | ESBMC > LLM |
-| `llm_missed_esbmc_bug` | ESBMC direto encontrou bug que a LLM não apontou | Falso negativo da LLM |
+| `esbmc_native_bug` | Flow A detectou violação sem depender da LLM | ESBMC > LLM |
+| `llm_missed_esbmc_bug` | Flow A encontrou bug que a LLM não apontou | Falso negativo da LLM |
 
 ### Trilha runtime (harness)
 
@@ -54,16 +53,18 @@ flowchart TD
 |---|---|
 | `llm_false_positive` | LLM citou operação que não existe no código executável (alucinação) |
 | `heuristic_smell_only` | Smell de qualidade de código — sem verificação formal |
-| `skipped_not_verifiable` | Formalizer não gerou propriedade e não há harness |
+| `skipped_not_verifiable` | Achado não pôde ser verificado no Flow B atual |
 | `out_of_scope_finding` | Categoria fora das 5 aceitas pelo MVP |
 
-### ESBMC direto (Flow A)
+### Flow A — ESBMC-only
+
+O Flow A roda ESBMC com `--function <funcao>` para cada função detectada pelo AST, sem usar achados ou categorias da LLM.
 
 | Status | Significado |
 |---|---|
 | `violation_found` | ESBMC encontrou violação com ponto de entrada disponível |
 | `no_violation_found` | ESBMC verificou e não encontrou violação no bound |
-| `no_vcc_generated` | ESBMC retornou SUCCESSFUL mas gerou 0 VCCs — arquivo sem chamada top-level |
+| `skipped` | Nenhuma função candidata ou ESBMC indisponível |
 | `tool_error` | Erro interno do ESBMC (tipo não suportado, annotation ausente) |
 | `unsupported_case` | Módulo Python não suportado pelo ESBMC (numpy, pandas, etc.) |
 | `timeout` | Execução excedeu o tempo limite configurado |

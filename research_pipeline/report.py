@@ -10,6 +10,7 @@ from .models import (
     CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC,
     CLASSIFICATION_LLM_FALSE_POSITIVE,
     CLASSIFICATION_LLM_MISSED_ESBMC_BUG,
+    CLASSIFICATION_LLM_ONLY,
     CLASSIFICATION_NOT_CONFIRMED,
     CLASSIFICATION_OUT_OF_SCOPE,
     CLASSIFICATION_RUNTIME_INCONCLUSIVE,
@@ -20,7 +21,6 @@ from .models import (
     ESBMCResult,
     FinalResult,
     Finding,
-    FormalProperty,
 )
 from .experimental.runtime_harness_validator import (
     HARNESS_NOT_REPRODUCED,
@@ -32,7 +32,6 @@ from .experimental.runtime_harness_validator import (
 def _interpretation(
     classification: str,
     finding: Finding,
-    formal_property: FormalProperty | None,
     esbmc_result: ESBMCResult | None,
     esbmc_direct_result: ESBMCDirectResult | None,
 ) -> str:
@@ -68,11 +67,15 @@ def _interpretation(
             "verificável pelo ESBMC no escopo atual do MVP."
         )
 
+    if classification == CLASSIFICATION_LLM_ONLY:
+        return (
+            f"Bug '{cat}'{expr_str} suspeito pela LLM (Flow C — sem verificação formal). "
+            "Não foi executada confirmação via ESBMC."
+        )
+
     if classification == CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC:
-        prop = formal_property.assertion if formal_property else "?"
         return (
             f"Bug '{cat}'{expr_str} levantado pela LLM e confirmado formalmente pelo ESBMC. "
-            f"Propriedade violada: {prop}. "
             "Existe ao menos um contraexemplo concreto."
         )
 
@@ -106,7 +109,7 @@ def _interpretation(
     if classification == CLASSIFICATION_ESBMC_NATIVE_BUG:
         direct_summary = esbmc_direct_result.summary if esbmc_direct_result else ""
         return (
-            f"ESBMC direto detectou violação em '{cat}'{expr_str} "
+            f"Flow A detectou violação em '{cat}'{expr_str} "
             "sem depender da hipótese da LLM. "
             f"Resultado: {direct_summary}"
         )
@@ -114,7 +117,7 @@ def _interpretation(
     if classification == CLASSIFICATION_LLM_MISSED_ESBMC_BUG:
         direct_summary = esbmc_direct_result.summary if esbmc_direct_result else ""
         return (
-            f"ESBMC direto detectou violação que a LLM não apontou ({cat}{expr_str}). "
+            f"Flow A detectou violação que a LLM não apontou ({cat}{expr_str}). "
             f"Resultado: {direct_summary}"
         )
 
@@ -131,10 +134,10 @@ def consolidate_result(
     unit_name: str,
     source_file: str,
     finding: Finding,
-    formal_property: FormalProperty | None,
     esbmc_result: ESBMCResult | None,
     esbmc_direct_result: ESBMCDirectResult | None = None,
     harness_result: dict | None = None,
+    llm_only: bool = False,
 ) -> FinalResult:
 
     finding_type = finding.finding_type
@@ -148,47 +151,48 @@ def consolidate_result(
     elif finding_type == "smell_heuristic":
         classification = CLASSIFICATION_HEURISTIC_SMELL
 
-    elif formal_property is None:
-        # No formal property — try harness result if available
-        if harness_result is not None:
-            status = harness_result.get("status", "")
-            if status == HARNESS_REPRODUCED:
-                classification = CLASSIFICATION_RUNTIME_REPRODUCED
-            elif status in (HARNESS_NOT_REPRODUCED, HARNESS_WRONG_EXCEPTION):
-                classification = CLASSIFICATION_RUNTIME_NOT_REPRODUCED
+    elif finding_type == "suspected_bug" and llm_only:
+        classification = CLASSIFICATION_LLM_ONLY
+
+    elif finding_type == "suspected_bug":
+        # Flow B: ESBMC with --function (esbmc_result always set for verifiable findings)
+        if esbmc_result is None or esbmc_result.status == "skipped":
+            if esbmc_direct_result and esbmc_direct_result.status == "violation_found":
+                classification = CLASSIFICATION_ESBMC_NATIVE_BUG
             else:
-                classification = CLASSIFICATION_RUNTIME_INCONCLUSIVE
+                classification = CLASSIFICATION_SKIPPED
+        elif esbmc_result.status == "violation_found" and _esbmc_result_matches_category(esbmc_result.details, finding.category):
+            classification = CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC
+        elif esbmc_result.status == "violation_found":
+            classification = CLASSIFICATION_ESBMC_INCONCLUSIVE
+        elif esbmc_result.status == "no_violation_found":
+            classification = CLASSIFICATION_NOT_CONFIRMED
         else:
-            classification = CLASSIFICATION_SKIPPED
-
-    elif esbmc_result is None or esbmc_result.status == "skipped":
-        # ESBMC instrumented não rodou — checar se ESBMC direto confirmou
-        if esbmc_direct_result and esbmc_direct_result.status == "violation_found":
-            classification = CLASSIFICATION_ESBMC_NATIVE_BUG
-        else:
-            classification = CLASSIFICATION_SKIPPED
-
-    elif esbmc_result.status == "violation_found":
-        classification = CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC
-
-    elif esbmc_result.status == "no_violation_found":
-        classification = CLASSIFICATION_NOT_CONFIRMED
+            # tool_error, inconclusive, timeout — try harness if available
+            if harness_result is not None:
+                status = harness_result.get("status", "")
+                if status == HARNESS_REPRODUCED:
+                    classification = CLASSIFICATION_RUNTIME_REPRODUCED
+                elif status in (HARNESS_NOT_REPRODUCED, HARNESS_WRONG_EXCEPTION):
+                    classification = CLASSIFICATION_RUNTIME_NOT_REPRODUCED
+                else:
+                    classification = CLASSIFICATION_RUNTIME_INCONCLUSIVE
+            else:
+                classification = CLASSIFICATION_ESBMC_INCONCLUSIVE
 
     else:
-        # tool_error, inconclusive, timeout
-        classification = CLASSIFICATION_ESBMC_INCONCLUSIVE
+        classification = CLASSIFICATION_SKIPPED
 
     return FinalResult(
         unit_name=unit_name,
         source_file=source_file,
         finding=finding,
-        formal_property=formal_property,
         esbmc_result=esbmc_result,
         esbmc_direct_result=esbmc_direct_result,
         harness_result=harness_result,
         final_classification=classification,
         interpretation=_interpretation(
-            classification, finding, formal_property, esbmc_result, esbmc_direct_result
+            classification, finding, esbmc_result, esbmc_direct_result
         ),
     )
 
@@ -197,7 +201,7 @@ def make_missed_bug_result(
     source_file: str,
     esbmc_direct_result: ESBMCDirectResult,
 ) -> FinalResult:
-    """Synthetic result for bugs ESBMC direct found but LLM missed entirely."""
+    """Synthetic result for bugs Flow A found but LLM missed entirely."""
     from .models import Finding  # local to avoid circular at module level
 
     synthetic_finding = Finding(
@@ -205,7 +209,7 @@ def make_missed_bug_result(
         stage="esbmc_direct",
         finding_type="suspected_bug",
         category="esbmc_detected",
-        title="Bug detectado pelo ESBMC direto (não reportado pela LLM)",
+        title="Bug detectado pelo Flow A (não reportado pela LLM)",
         explanation=(
             "O ESBMC rodando diretamente no arquivo original detectou uma violação "
             "que não foi levantada pela LLM. Isso pode indicar falso negativo da LLM."
@@ -224,7 +228,6 @@ def make_missed_bug_result(
         unit_name="(esbmc_direct)",
         source_file=source_file,
         finding=synthetic_finding,
-        formal_property=None,
         esbmc_result=None,
         esbmc_direct_result=esbmc_direct_result,
         final_classification=CLASSIFICATION_LLM_MISSED_ESBMC_BUG,
@@ -232,10 +235,28 @@ def make_missed_bug_result(
             CLASSIFICATION_LLM_MISSED_ESBMC_BUG,
             synthetic_finding,
             None,
-            None,
             esbmc_direct_result,
         ),
     )
+
+
+def _esbmc_result_matches_category(details: dict[str, object], expected_category: str) -> bool:
+    text = " ".join(
+        str(details.get(key, ""))
+        for key in ("property_kind", "property_text", "location")
+    )
+    return _category_from_esbmc_property(text) == expected_category
+
+
+def _category_from_esbmc_property(text: str) -> str:
+    normalized = text.lower()
+    if "assertion" in normalized:
+        return "assertion_violation"
+    if "division_by_zero" in normalized or "division by zero" in normalized or "divisor" in normalized:
+        return "division_by_zero"
+    if "out-of-bounds" in normalized or "out of bounds" in normalized or "bounds" in normalized:
+        return "out_of_bounds"
+    return "unknown_esbmc_violation"
 
 
 def make_direct_observation_result(
@@ -248,7 +269,7 @@ def make_direct_observation_result(
         stage="esbmc_direct",
         finding_type="direct_observation",
         category="esbmc_direct",
-        title="Resultado do ESBMC direto",
+        title="Resultado do Flow A",
         explanation=esbmc_direct_result.summary,
         evidence=[esbmc_direct_result.summary],
         verifiable=False,
@@ -264,7 +285,6 @@ def make_direct_observation_result(
         unit_name="(esbmc_direct)",
         source_file=source_file,
         finding=synthetic_finding,
-        formal_property=None,
         esbmc_result=None,
         esbmc_direct_result=esbmc_direct_result,
         final_classification="clean",

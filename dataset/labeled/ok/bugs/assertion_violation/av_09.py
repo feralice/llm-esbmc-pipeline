@@ -3,3 +3,4 @@ def branch_assertion(amount: int, flag: bool) -> int:
         return amount
     assert amount > 0
     return amount
+

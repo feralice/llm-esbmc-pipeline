@@ -5,20 +5,17 @@
 ```mermaid
 sequenceDiagram
     participant CLI as main.py
-    participant FA as Flow A (ESBMC Direct)
+    participant FA as Flow A (ESBMC-only)
     participant PP as Preprocess
     participant LLM as LLM Analyzer
-    participant FM as Formalizer
-    participant IN as Instrumenter
     participant ESBMC as ESBMC
     participant HV as Harness Validator
     participant RPT as Full Report
 
-    CLI->>FA: run_esbmc_direct(arquivo)
-    FA-->>CLI: ESBMCDirectResult (violation_found / no_vcc_generated / ...)
-
     CLI->>PP: preprocess_file(arquivo)
     PP-->>CLI: list[CodeUnit]
+    CLI->>FA: run_esbmc_function_baseline(arquivo, funcoes)
+    FA-->>CLI: ESBMCDirectResult agregado
 
     loop Para cada CodeUnit
         CLI->>LLM: analyzer.analyze(unit)
@@ -26,15 +23,9 @@ sequenceDiagram
 
         loop Para cada Finding
             alt verifiable=true e categoria no escopo
-                CLI->>FM: formalize_finding(unit, finding)
-                alt Propriedade gerada
-                    FM-->>CLI: FormalProperty
-                    CLI->>IN: instrument_unit(unit, prop)
-                    IN-->>CLI: InstrumentationResult
-                    CLI->>ESBMC: run_esbmc(instrumentation)
-                    ESBMC-->>CLI: ESBMCResult
-                else Propriedade não gerada + harness disponível
-                    FM-->>CLI: None
+                CLI->>ESBMC: run_esbmc_on_function(arquivo, unit.name)
+                ESBMC-->>CLI: ESBMCResult
+                alt ESBMC skipped + harness disponível
                     CLI->>HV: validate_harness(source, harness)
                     HV-->>CLI: HarnessValidationResult
                 end
@@ -51,16 +42,17 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    A[arquivo.py] --> B[esbmc --python python3 --unwind 5]
-    B --> C{Saída ESBMC}
-    C -- VERIFICATION FAILED --> VF[violation_found]
-    C -- SUCCESSFUL + VCCs --> NV[no_violation_found]
-    C -- SUCCESSFUL + 0 VCCs --> ZV[no_vcc_generated]
-    C -- ERROR sem VERIFICATION --> TE[tool_error / unsupported_case]
-    C -- Timeout --> TO[timeout]
+    A[arquivo.py] --> B[preprocess_file]
+    B --> C[funções candidatas]
+    C --> D[esbmc --function em cada função]
+    D --> E{Saída agregada}
+    E -- alguma VERIFICATION FAILED --> VF[violation_found]
+    E -- todas sem falha --> NV[no_violation_found]
+    E -- erro/timeout --> TE[tool_error / inconclusive]
+    E -- nenhuma função --> SK[skipped]
 ```
 
-**Limitação:** Arquivos com apenas definições de função (sem chamada top-level) geram 0 VCCs — o ESBMC não chega a verificar o corpo das funções.
+**Observação:** o Flow A atual evita o problema de 0 VCCs em arquivos com apenas definições de função porque chama o ESBMC com `--function` para cada função candidata.
 
 ## Modo `llm-first` (Flow B puro)
 
@@ -73,7 +65,7 @@ flowchart TD
     A[ground_truths/bugs/] --> B[load_ground_truth_cases]
     B --> C[Para cada arquivo + expected_findings]
     C --> D[preprocess_file + analyzer.analyze]
-    D --> E[run_esbmc_direct]
+    D --> E[run_esbmc_function_baseline + run_esbmc_on_function]
     E --> F[match findings vs expected]
     F --> G[EvalCounts: TP, FP, FN]
     G --> H[prf: Precision, Recall, F1]

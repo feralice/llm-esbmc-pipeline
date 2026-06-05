@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import shutil
 from typing import Literal
 
 from .experimental.runtime_harness_validator import validate_harness
@@ -15,13 +14,11 @@ from .models import (
 )
 from .preprocess import preprocess_file
 from .report import consolidate_result, make_direct_observation_result, make_missed_bug_result, write_json_report
-from .verification.esbmc_runner import run_esbmc, run_esbmc_direct
-from .verification.formalizer import formalize_finding
-from .verification.instrumenter import instrument_unit
+from .verification.esbmc_runner import run_esbmc_function_baseline, run_esbmc_on_function
 
 
 # ---------------------------------------------------------------------------
-# Flow A: ESBMC direct only
+# Flow A: ESBMC-only function baseline
 # ---------------------------------------------------------------------------
 
 def run_pipeline_esbmc_direct(
@@ -31,14 +28,16 @@ def run_pipeline_esbmc_direct(
     bound: int = 5,
     timeout_seconds: int = 30,
 ) -> list[ESBMCDirectResult]:
-    """Flow A: run ESBMC directly on every file, no LLM involved."""
+    """Flow A: run ESBMC with --function for each function, no LLM involved."""
     results: list[ESBMCDirectResult] = []
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     for input_path in input_paths:
         file_path = Path(input_path)
-        result = run_esbmc_direct(
-            file_path,
+        units = preprocess_file(file_path)
+        result = run_esbmc_function_baseline(
+            file_path=file_path,
+            function_names=[unit.name for unit in units],
             esbmc_command=esbmc_command,
             bound=bound,
             timeout_seconds=timeout_seconds,
@@ -70,6 +69,7 @@ def run_pipeline(
     anthropic_api_key: str | None = None,
     ollama_base_url: str | None = None,
     esbmc_direct_result: ESBMCDirectResult | None = None,
+    bound: int = 5,
     timeout_seconds: int = 30,
     enable_harness: bool = False,
 ) -> list[FinalResult]:
@@ -85,6 +85,7 @@ def run_pipeline(
         ollama_base_url=ollama_base_url,
         esbmc_direct_results={str(Path(input_path)): esbmc_direct_result}
         if esbmc_direct_result else None,
+        bound=bound,
         timeout_seconds=timeout_seconds,
         enable_harness=enable_harness,
     )
@@ -100,15 +101,15 @@ def run_pipeline_multi(
     anthropic_api_key: str | None = None,
     ollama_base_url: str | None = None,
     esbmc_direct_results: dict[str, ESBMCDirectResult] | None = None,
+    bound: int = 5,
     timeout_seconds: int = 30,
     enable_harness: bool = False,
 ) -> list[FinalResult]:
     """Flow B: LLM-first hybrid for multiple files.
 
     Args:
-        enable_harness: Se True, executa harness runtime como fallback quando o
-            Formalizer não consegue gerar propriedade formal. Desabilitado por padrão
-            na V1 — as métricas do artigo focam em confirmação ESBMC formal.
+        enable_harness: reservado para validação runtime experimental. Desabilitado
+            por padrão na V1 — as métricas do artigo focam em confirmação ESBMC formal.
     """
     analyzer = build_analyzer(
         backend=backend,
@@ -118,7 +119,6 @@ def run_pipeline_multi(
         ollama_base_url=ollama_base_url,
     )
     artifacts_dir = Path(output_dir)
-    instrumented_dir = artifacts_dir / "instrumented"
     _prepare_output_dir(artifacts_dir)
 
     results: list[FinalResult] = []
@@ -130,51 +130,34 @@ def run_pipeline_multi(
         units = preprocess_file(file_path)
         file_results: list[FinalResult] = []
 
-        source_code = file_path.read_text(encoding="utf-8")
-
         for unit in units:
             findings = analyzer.analyze(unit)
             for finding in findings:
-                formal_property = formalize_finding(unit, finding)
                 esbmc_result = None
-                harness_result = None
 
-                if formal_property is not None:
-                    # Primary path: ESBMC formal verification
-                    instrumentation = instrument_unit(unit, formal_property, instrumented_dir)
-                    esbmc_result = run_esbmc(
-                        instrumentation,
-                        esbmc_command=esbmc_command,
-                        timeout_seconds=timeout_seconds,
-                    )
-                elif (
-                    enable_harness
-                    and finding.verifiable
-                    and finding.metadata.get("reproduction_harness")
-                ):
-                    # Fallback experimental: harness runtime para padrões que o Formalizer
-                    # não consegue formalizar. Desabilitado por padrão na V1.
-                    harness_result_obj = validate_harness(
-                        source_code=source_code,
+                if finding.verifiable:
+                    # Flow B: ESBMC with --function, parameters become symbolic automatically
+                    esbmc_result = run_esbmc_on_function(
+                        file_path=file_path,
                         function_name=unit.name,
-                        harness_body=finding.metadata["reproduction_harness"],
-                        expected_exception=finding.metadata.get("expected_exception", ""),
-                        timeout_seconds=min(timeout_seconds, 10.0),
+                        finding_id=finding.id,
+                        category=finding.category,
+                        esbmc_command=esbmc_command,
+                        bound=bound,
+                        timeout_seconds=timeout_seconds,
+                        output_dir=artifacts_dir,
                     )
-                    harness_result = harness_result_obj.to_dict()
 
                 result = consolidate_result(
                     unit_name=unit.qualname,
                     source_file=str(file_path),
                     finding=finding,
-                    formal_property=formal_property,
                     esbmc_result=esbmc_result,
                     esbmc_direct_result=direct,
-                    harness_result=harness_result,
                 )
                 file_results.append(result)
 
-        # Check: did ESBMC direct find a bug that LLM missed completely?
+        # Check: did Flow A find a bug that LLM missed completely?
         if direct and direct.status == "violation_found":
             llm_confirmed = any(
                 r.final_classification in (
@@ -190,6 +173,48 @@ def run_pipeline_multi(
             file_results.append(make_direct_observation_result(str(file_path), direct))
 
         results.extend(file_results)
+
+    write_json_report(results, artifacts_dir / "report.json")
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Flow C: LLM-only (no ESBMC, baseline)
+# ---------------------------------------------------------------------------
+
+def run_pipeline_llm_only(
+    input_paths: list[str | Path],
+    output_dir: str | Path = "artifacts/llm-only",
+    backend: Backend = "openai",
+    llm_model: str | None = None,
+    openai_api_key: str | None = None,
+    anthropic_api_key: str | None = None,
+    ollama_base_url: str | None = None,
+) -> list[FinalResult]:
+    """Flow C: LLM-first without ESBMC confirmation (baseline for comparison)."""
+    analyzer = build_analyzer(
+        backend=backend,
+        llm_model=llm_model,
+        openai_api_key=openai_api_key,
+        anthropic_api_key=anthropic_api_key,
+        ollama_base_url=ollama_base_url,
+    )
+    artifacts_dir = Path(output_dir)
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+
+    results: list[FinalResult] = []
+    for input_path in input_paths:
+        file_path = Path(input_path)
+        for unit in preprocess_file(file_path):
+            for finding in analyzer.analyze(unit):
+                result = consolidate_result(
+                    unit_name=unit.qualname,
+                    source_file=str(file_path),
+                    finding=finding,
+                    esbmc_result=None,
+                    llm_only=True,
+                )
+                results.append(result)
 
     write_json_report(results, artifacts_dir / "report.json")
     return results
@@ -213,18 +238,20 @@ def run_full_pipeline(
     enable_harness: bool = False,
 ) -> list[FinalResult]:
     """
-    Full pipeline: runs Flow A (ESBMC direct) then Flow B (LLM-first) for each file.
-    Combines results so the final JSON has both ESBMC direct and hybrid outcomes.
+    Full pipeline: runs Flow A (ESBMC-only --function) then Flow B (LLM-first) for each file.
+    Combines results so the final JSON has both Flow A and hybrid outcomes.
     """
     artifacts_dir = Path(output_dir)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
-    # Flow A: ESBMC direct on all files
+    # Flow A: ESBMC-only with --function on all discovered functions
     direct_results: dict[str, ESBMCDirectResult] = {}
     for input_path in input_paths:
         file_path = Path(input_path)
-        direct = run_esbmc_direct(
-            file_path,
+        units = preprocess_file(file_path)
+        direct = run_esbmc_function_baseline(
+            file_path=file_path,
+            function_names=[unit.name for unit in units],
             esbmc_command=esbmc_command,
             bound=bound,
             timeout_seconds=timeout_seconds,
@@ -232,7 +259,7 @@ def run_full_pipeline(
         )
         direct_results[str(file_path)] = direct
 
-    # Flow B: LLM-first with ESBMC direct results available for context
+    # Flow B: LLM-first with Flow A results available for context
     results = run_pipeline_multi(
         input_paths=input_paths,
         output_dir=output_dir,
@@ -243,6 +270,7 @@ def run_full_pipeline(
         anthropic_api_key=anthropic_api_key,
         ollama_base_url=ollama_base_url,
         esbmc_direct_results=direct_results,
+        bound=bound,
         timeout_seconds=timeout_seconds,
         enable_harness=enable_harness,
     )
@@ -251,9 +279,6 @@ def run_full_pipeline(
 
 
 def _prepare_output_dir(artifacts_dir: Path) -> None:
-    instrumented_dir = artifacts_dir / "instrumented"
-    if instrumented_dir.exists():
-        shutil.rmtree(instrumented_dir)
     report_path = artifacts_dir / "report.json"
     if report_path.exists():
         report_path.unlink()
