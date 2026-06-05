@@ -148,17 +148,22 @@ def run_pipeline_multi(
                 )
                 file_results.append(result)
 
-        # Check: did Flow A find a bug that LLM missed completely?
+        # Fix 7: check per-function — each Flow A violation not covered by LLM gets its own entry.
         if direct and direct.status == "violation_found":
-            llm_confirmed = any(
-                r.final_classification in (
+            confirmed_functions = {
+                r.finding.metadata.get("function", "")
+                for r in file_results
+                if r.final_classification in (
                     CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC,
                     CLASSIFICATION_ESBMC_NATIVE_BUG,
                 )
-                for r in file_results
-            )
-            if not llm_confirmed:
-                file_results.append(make_missed_bug_result(str(file_path), direct))
+            }
+            for fn_info in direct.details.get("functions", []):
+                if not isinstance(fn_info, dict) or fn_info.get("status") != "violation_found":
+                    continue
+                fn_name = fn_info.get("name", "")
+                if fn_name not in confirmed_functions:
+                    file_results.append(make_missed_bug_result(str(file_path), direct, fn_info))
 
         if direct and not file_results:
             file_results.append(make_direct_observation_result(str(file_path), direct))

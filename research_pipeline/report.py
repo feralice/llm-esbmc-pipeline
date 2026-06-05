@@ -160,16 +160,33 @@ def consolidate_result(
 def make_missed_bug_result(
     source_file: str,
     esbmc_direct_result: ESBMCDirectResult,
+    fn_info: dict | None = None,
 ) -> FinalResult:
-    """Synthetic result for bugs Flow A found but LLM missed entirely."""
+    """Synthetic result for bugs Flow A found but LLM missed entirely.
+
+    fn_info: per-function dict from direct.details["functions"] for precise per-function tracking.
+    """
     from .models import Finding  # local to avoid circular at module level
 
+    fn_name = fn_info.get("name", "") if fn_info else ""
+    prop_kind = str(
+        (fn_info or {}).get("property_kind", "")
+        or esbmc_direct_result.details.get("property_kind", "")
+    )
+    location = str(
+        (fn_info or {}).get("location", "")
+        or esbmc_direct_result.details.get("location", "")
+    )
+    finding_id = f"esbmc_direct_{Path(source_file).stem}"
+    if fn_name:
+        finding_id = f"{finding_id}_{fn_name}"
+
     synthetic_finding = Finding(
-        id=f"esbmc_direct_{Path(source_file).stem}",
+        id=finding_id,
         stage="esbmc_direct",
         finding_type="suspected_bug",
         category="esbmc_detected",
-        title="Bug detectado pelo Flow A (não reportado pela LLM)",
+        title=f"Flow A: bug em {fn_name}" if fn_name else "Bug detectado pelo Flow A (não reportado pela LLM)",
         explanation=(
             "O ESBMC rodando diretamente no arquivo original detectou uma violação "
             "que não foi levantada pela LLM. Isso pode indicar falso negativo da LLM."
@@ -178,8 +195,9 @@ def make_missed_bug_result(
         verifiable=True,
         confidence="high",
         metadata={
-            "expression": str(esbmc_direct_result.details.get("property_kind", "")),
-            "line": str(esbmc_direct_result.details.get("location", "")),
+            "function": fn_name,
+            "expression": prop_kind,
+            "line": location,
             "relative_line": "",
         },
     )
@@ -201,9 +219,11 @@ def make_missed_bug_result(
 
 
 def _esbmc_result_matches_category(details: dict[str, object], expected_category: str) -> bool:
+    # Fix 6: use only property fields, not location (location contains fn names that
+    # could collide with category keywords, e.g. function named "assertion_check").
     text = " ".join(
         str(details.get(key, ""))
-        for key in ("property_kind", "property_text", "location")
+        for key in ("property_kind", "property_text")
     )
     return _category_from_esbmc_property(text) == expected_category
 

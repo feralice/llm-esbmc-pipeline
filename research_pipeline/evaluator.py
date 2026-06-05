@@ -46,11 +46,16 @@ class EvalCounts:
     skipped_not_verifiable: int = 0
 
     # Per-category breakdown: {category: {"tp": int, "fp": int, "fn": int}}
+    # per_category = LLM-only (Flow C) verdicts
+    # per_category_hybrid = hybrid pipeline (Flow B) verdicts
     per_category: dict = None
+    per_category_hybrid: dict = None
 
     def __post_init__(self):
         if self.per_category is None:
             self.per_category = {}
+        if self.per_category_hybrid is None:
+            self.per_category_hybrid = {}
 
     def add_category_tp(self, category: str) -> None:
         self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["tp"] += 1
@@ -61,9 +66,25 @@ class EvalCounts:
     def add_category_fn(self, category: str) -> None:
         self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
 
+    def add_hybrid_category_tp(self, category: str) -> None:
+        self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["tp"] += 1
+
+    def add_hybrid_category_fp(self, category: str) -> None:
+        self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fp"] += 1
+
+    def add_hybrid_category_fn(self, category: str) -> None:
+        self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
+
     def merge_category(self, other: "EvalCounts") -> None:
         for cat, counts in other.per_category.items():
             d = self.per_category.setdefault(cat, {"tp": 0, "fp": 0, "fn": 0})
+            d["tp"] += counts["tp"]
+            d["fp"] += counts["fp"]
+            d["fn"] += counts["fn"]
+
+    def merge_category_hybrid(self, other: "EvalCounts") -> None:
+        for cat, counts in other.per_category_hybrid.items():
+            d = self.per_category_hybrid.setdefault(cat, {"tp": 0, "fp": 0, "fn": 0})
             d["tp"] += counts["tp"]
             d["fp"] += counts["fp"]
             d["fn"] += counts["fn"]
@@ -179,30 +200,20 @@ def _find_match(
     exp: dict,
     already_matched: set[int],
 ) -> int | None:
-    """Return index of the best match for exp in generated, or None.
+    """Return index of the match for exp in generated, or None.
 
-    Prefers category + function match; falls back to category-only when either
-    side is missing function information.
+    Fix 2: strict category + function match only. Both sides always carry
+    function info, so category-only fallback would silently reward wrong-function
+    localization as a true positive.
     """
     cat = exp["category"]
     exp_func = exp.get("function", "")
-
-    # First pass: require both category and function to match (strict)
-    if exp_func:
-        for i, g in enumerate(generated):
-            if i in already_matched:
-                continue
-            g_func = g.metadata.get("function", "")
-            if g.category == cat and g_func and g_func == exp_func:
-                return i
-
-    # Second pass: category-only (covers cases with missing function annotation)
     for i, g in enumerate(generated):
         if i in already_matched:
             continue
-        if g.category == cat:
+        g_func = g.metadata.get("function", "")
+        if g.category == cat and g_func == exp_func:
             return i
-
     return None
 
 
@@ -258,10 +269,11 @@ def evaluate_file(
     bugs            = [f for _, f in bugs_with_units]
     smells          = [f for _, f in unit_findings if not f.verifiable and f.finding_type == "smell_heuristic"]
     hallucinations  = [f for _, f in unit_findings if f.finding_type == "llm_false_positive"]
+    # Fix 5: suspected_bug + verifiable=False = ghost finding — treat as FP.
+    ghost_bugs      = [f for _, f in unit_findings if f.finding_type == "suspected_bug" and not f.verifiable]
 
     exp_bugs   = [e for e in expected if e.get("verifiable") is True]
     is_clean_case = bool(expected) and all(e.get("category") == "clean" for e in expected)
-    # Clean files should produce zero findings; they are negative controls, not smells.
     exp_smells = [e for e in expected if e.get("verifiable") is False and e.get("category") != "clean"]
 
     bug_tp, bug_fp, bug_fn, bug_verdicts         = _match_with_categories(bugs, exp_bugs)
@@ -269,13 +281,13 @@ def evaluate_file(
 
     if is_clean_case:
         bug_tp = bug_fn = smell_tp = smell_fn = 0
-        bug_fp = len(bugs) + len(hallucinations)
+        bug_fp = len(bugs) + len(hallucinations) + len(ghost_bugs)
         smell_fp = len(smells)
-        bug_verdicts = [(f.category, "fp") for f in bugs + hallucinations]
+        bug_verdicts = [(f.category, "fp") for f in bugs + hallucinations + ghost_bugs]
         smell_verdicts = [(f.category, "fp") for f in smells]
     else:
-        bug_fp += len(hallucinations)
-        bug_verdicts.extend((f.category, "fp") for f in hallucinations)
+        bug_fp += len(hallucinations) + len(ghost_bugs)
+        bug_verdicts.extend((f.category, "fp") for f in hallucinations + ghost_bugs)
 
     counts.bug_tp   = bug_tp
     counts.bug_fp   = bug_fp
@@ -296,6 +308,10 @@ def evaluate_file(
 
     # ---- Flow B — ESBMC with --function (symbolic entry point) ----
     esbmc_confirmed_bugs: list[Finding] = []
+    # Fix 8: track functions where ESBMC was inconclusive to exclude from hybrid denominator.
+    inconclusive_bug_functions: set[str] = set()
+    # Fix 9: track inconclusive findings on clean files (they are hidden FPs).
+    inconclusive_findings_for_clean: list[Finding] = []
 
     for unit, bug_finding in bugs_with_units:
         esbmc_result = run_esbmc_on_function(
@@ -313,17 +329,42 @@ def evaluate_file(
             counts.llm_confirmed_by_esbmc += 1
         elif esbmc_result.status == "violation_found":
             counts.esbmc_inconclusive += 1
+            inconclusive_bug_functions.add(bug_finding.metadata.get("function", ""))
+            if is_clean_case:
+                inconclusive_findings_for_clean.append(bug_finding)
         elif esbmc_result.status == "no_violation_found":
             counts.not_confirmed_within_bound += 1
         elif esbmc_result.status == "skipped":
             counts.skipped_not_verifiable += 1
-        else:
+        else:  # timeout, tool_error, inconclusive
             counts.esbmc_inconclusive += 1
+            inconclusive_bug_functions.add(bug_finding.metadata.get("function", ""))
+            if is_clean_case:
+                inconclusive_findings_for_clean.append(bug_finding)
 
-    hybrid_tp, hybrid_fp, hybrid_fn, _ = _match_with_categories(esbmc_confirmed_bugs, exp_bugs)
+    # Fix 8: exclude inconclusive cases from hybrid expected (they're not refuted, not confirmed).
+    exp_bugs_for_hybrid = [
+        e for e in exp_bugs
+        if e.get("function", "") not in inconclusive_bug_functions
+    ]
+    hybrid_tp, hybrid_fp, hybrid_fn, hybrid_verdicts = _match_with_categories(
+        esbmc_confirmed_bugs, exp_bugs_for_hybrid
+    )
+    # Fix 9: on clean files, inconclusive LLM-proposed bugs are hidden FPs for the hybrid pipeline.
     counts.hybrid_bug_tp = hybrid_tp
-    counts.hybrid_bug_fp = hybrid_fp
+    counts.hybrid_bug_fp = hybrid_fp + len(inconclusive_findings_for_clean)
     counts.hybrid_bug_fn = hybrid_fn
+
+    # Fix 4: per_category_hybrid tracks hybrid (Flow B) verdicts, not LLM-only.
+    for cat, verdict in hybrid_verdicts:
+        if verdict == "tp":
+            counts.add_hybrid_category_tp(cat)
+        elif verdict == "fp":
+            counts.add_hybrid_category_fp(cat)
+        elif verdict == "fn":
+            counts.add_hybrid_category_fn(cat)
+    for f in inconclusive_findings_for_clean:
+        counts.add_hybrid_category_fp(f.category)
 
     # ---- Flow A: ESBMC-only function baseline ----
     direct = run_esbmc_function_baseline(
@@ -335,11 +376,12 @@ def evaluate_file(
         output_dir=output_dir,
     )
     flow_a_findings = _flow_a_findings_from_direct(direct)
-    if direct.status not in ("inconclusive", "tool_error", "skipped", "timeout", "unsupported_case", "no_vcc_generated"):
-        a_tp, a_fp, a_fn, _ = _match_with_categories(flow_a_findings, exp_bugs)
-        counts.esbmc_direct_tp = a_tp
-        counts.esbmc_direct_fp = a_fp
-        counts.esbmc_direct_fn = a_fn
+    # Fix 3: always run matching for Flow A (symmetric with Flow B).
+    # Timeout/error → empty flow_a_findings → FN for expected bugs, just like Flow B.
+    a_tp, a_fp, a_fn, _ = _match_with_categories(flow_a_findings, exp_bugs)
+    counts.esbmc_direct_tp = a_tp
+    counts.esbmc_direct_fp = a_fp
+    counts.esbmc_direct_fn = a_fn
 
     if flow_a_findings:
         counts.esbmc_native_bug = len(flow_a_findings)
@@ -405,6 +447,7 @@ def evaluate_model(
         total.esbmc_inconclusive       += c.esbmc_inconclusive
         total.skipped_not_verifiable   += c.skipped_not_verifiable
         total.merge_category(c)
+        total.merge_category_hybrid(c)
 
     return total
 
@@ -424,9 +467,11 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
     for item in direct.details.get("functions", []):
         if not isinstance(item, dict) or item.get("status") != "violation_found":
             continue
+        # Fix 6: use only property fields for category detection (not location/summary
+        # which can contain function names that collide with category keywords).
         property_text = " ".join(
             str(item.get(key, ""))
-            for key in ("property_kind", "summary", "location")
+            for key in ("property_kind",)
         )
         category = _category_from_esbmc_property(property_text)
         findings.append(

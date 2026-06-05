@@ -148,12 +148,16 @@ _FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
     "assertion_violation": [],
 }
 
+# Fix 1: Flow A uses --assign-param-nondet so parameters are symbolic (fair baseline).
+_FLOW_A_BASE_FLAGS: list[str] = ["--assign-param-nondet"]
+
 
 def run_esbmc_on_function(
     file_path: str | Path,
     function_name: str,
     finding_id: str,
     category: str,
+    extra_flags: list[str] | None = None,
     esbmc_command: list[str] | None = None,
     bound: int = 10,
     timeout_seconds: int = 30,
@@ -162,7 +166,9 @@ def run_esbmc_on_function(
     """Flow B: run ESBMC with --function so parameters become symbolic automatically."""
     file_path = Path(file_path).resolve()
     base = list(esbmc_command or ["esbmc", "--python", "python3"])
-    flags = _FLOW_B_CATEGORY_FLAGS.get(category, [])
+    flags = list(_FLOW_B_CATEGORY_FLAGS.get(category, []))
+    if extra_flags:
+        flags.extend(extra_flags)
     command = [*base, "--function", function_name, "--unwind", str(bound), *flags, str(file_path)]
 
     executable = shutil.which(command[0])
@@ -267,6 +273,7 @@ def run_esbmc_function_baseline(
             function_name=function_name,
             finding_id=f"flow_a_{function_name}",
             category="",
+            extra_flags=_FLOW_A_BASE_FLAGS,
             esbmc_command=esbmc_command,
             bound=bound,
             timeout_seconds=timeout_seconds,
