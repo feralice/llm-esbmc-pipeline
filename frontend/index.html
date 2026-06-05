@@ -223,7 +223,7 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
          ondragleave="this.classList.remove('drag-over')">
       <label>
         <div class="zone-title">📈 Benchmark / métricas <span style="font-weight:400;color:#95a5a6">— opcional, aceita vários arquivos</span></div>
-        <div class="zone-hint">benchmark_v1.json — arraste ou clique para comparar modelos</div>
+        <div class="zone-hint">benchmark_*.json — arraste todos os modelos para comparar</div>
         <div id="zone-bm-name" class="zone-loaded" style="display:none"></div>
         <input type="file" id="input-bm" accept=".json" multiple onchange="onInputChange('bm',this)">
       </label>
@@ -818,7 +818,7 @@ function renderBenchmark() {
     </table>` : ''}
 
     <p style="font-size:.76em;color:#95a5a6;margin-top:4px">
-      Bugs formais e smells calculados separadamente. Harness runtime não entra nestas métricas.
+      Bugs formais e smells calculados separadamente.
     </p>
     <p style="margin-top:6px;font-size:.76em;color:#95a5a6">
       Para adicionar mais modelos: arraste múltiplos arquivos benchmark_*.json na zona de benchmark na tela inicial.

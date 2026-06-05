@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
-from .experimental.runtime_harness_validator import validate_harness
 from .llm.backends.factory import Backend, build_analyzer  # noqa: F401 — re-exported
 from .llm.protocols import LLMAnalyzer
 from .models import (
@@ -71,7 +70,6 @@ def run_pipeline(
     esbmc_direct_result: ESBMCDirectResult | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
-    enable_harness: bool = False,
 ) -> list[FinalResult]:
     """Flow B: LLM-first hybrid for a single file."""
     return run_pipeline_multi(
@@ -87,7 +85,6 @@ def run_pipeline(
         if esbmc_direct_result else None,
         bound=bound,
         timeout_seconds=timeout_seconds,
-        enable_harness=enable_harness,
     )
 
 
@@ -103,14 +100,8 @@ def run_pipeline_multi(
     esbmc_direct_results: dict[str, ESBMCDirectResult] | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
-    enable_harness: bool = False,
 ) -> list[FinalResult]:
-    """Flow B: LLM-first hybrid for multiple files.
-
-    Args:
-        enable_harness: reservado para validação runtime experimental. Desabilitado
-            por padrão na V1 — as métricas do artigo focam em confirmação ESBMC formal.
-    """
+    """Flow B: LLM-first hybrid for multiple files."""
     analyzer = build_analyzer(
         backend=backend,
         llm_model=llm_model,
@@ -235,7 +226,6 @@ def run_full_pipeline(
     ollama_base_url: str | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
-    enable_harness: bool = False,
 ) -> list[FinalResult]:
     """
     Full pipeline: runs Flow A (ESBMC-only --function) then Flow B (LLM-first) for each file.
@@ -272,7 +262,6 @@ def run_full_pipeline(
         esbmc_direct_results=direct_results,
         bound=bound,
         timeout_seconds=timeout_seconds,
-        enable_harness=enable_harness,
     )
 
     return results

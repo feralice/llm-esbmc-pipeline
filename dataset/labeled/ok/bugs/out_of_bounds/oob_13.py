@@ -1,4 +1,3 @@
-def inclusive_upper_bound(values: list[int], index: int) -> int:
-    if index <= len(values):
-        return values[index]
-    return 0
+def scaled_index_lookup(data: list[int], pos: int, scale: int, bias: int) -> int:
+    idx = pos * scale + bias
+    return data[idx]

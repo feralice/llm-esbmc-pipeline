@@ -112,10 +112,6 @@ CLASSIFICATION_ESBMC_INCONCLUSIVE      = "esbmc_inconclusive"
 CLASSIFICATION_HEURISTIC_SMELL         = "heuristic_smell_only"
 CLASSIFICATION_SKIPPED                 = "skipped_not_verifiable"
 CLASSIFICATION_OUT_OF_SCOPE            = "out_of_scope_finding"
-# Runtime harness validation (fallback when ESBMC cannot formalize the pattern)
-CLASSIFICATION_RUNTIME_REPRODUCED      = "runtime_reproduced_by_harness"
-CLASSIFICATION_RUNTIME_NOT_REPRODUCED  = "runtime_not_reproduced"
-CLASSIFICATION_RUNTIME_INCONCLUSIVE    = "runtime_inconclusive"
 
 
 @dataclass
@@ -127,9 +123,6 @@ class FinalResult:
     esbmc_direct_result: ESBMCDirectResult | None
     final_classification: str
     interpretation: str
-    # Runtime harness result (dict from HarnessValidationResult.to_dict()), set when
-    # the Formalizer cannot generate a formal property and a harness is used instead.
-    harness_result: dict | None = None
 
     def to_dict(self) -> dict:
         data: dict = {
@@ -140,6 +133,5 @@ class FinalResult:
             "finding": asdict(self.finding),
             "esbmc_result": asdict(self.esbmc_result) if self.esbmc_result else None,
             "esbmc_direct_result": self.esbmc_direct_result.to_dict() if self.esbmc_direct_result else None,
-            "harness_result": self.harness_result,
         }
         return data

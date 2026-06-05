@@ -12,7 +12,6 @@ python src/main.py --mode <modo> [opções]
 | `llm-first` | ❌ | ✅ | ❌ | `report.json` |
 | `full` | ✅ | ✅ | ❌ | `full_report.json` |
 | `benchmark` | ✅ | ✅ | ✅ | métricas no terminal |
-| `esbmc-harness` | experimental | ❌ | ❌ | `esbmc_harness_results.json` |
 
 **Flow A:** ESBMC-only. O pipeline detecta funções via AST e roda ESBMC com `--function <funcao>` em cada função, sem LLM.
 
@@ -111,19 +110,6 @@ python src/main.py --mode benchmark \
 Os arquivos Python ficam em `dataset/labeled/ok/bugs/<categoria>/`.
 
 **Saída:** métricas no terminal — Precision, Recall, F1 por categoria.
-
----
-
-## `esbmc-harness` (experimental)
-
-Gera harnesses automáticos para funções e roda o ESBMC neles. Modo experimental — não é a contribuição principal.
-
-```bash
-python src/main.py --mode esbmc-harness \
-  --input dataset/labeled/ok/bugs \
-  --bound 5 \
-  --timeout 30
-```
 
 ---
 

@@ -10,6 +10,7 @@ from .models import (
     Finding,
 )
 from .preprocess import preprocess_file
+from .report import _category_from_esbmc_property, _esbmc_result_matches_category
 from .verification.esbmc_runner import run_esbmc_function_baseline, run_esbmc_on_function
 
 
@@ -205,6 +206,26 @@ def _find_match(
     return None
 
 
+def _count_llm_missed_flow_a_findings(flow_a_findings: list[Finding], llm_bugs: list[Finding]) -> int:
+    """Count Flow A findings not covered by any LLM verifiable finding."""
+    matched_llm: set[int] = set()
+    missed = 0
+    for flow_a_finding in flow_a_findings:
+        idx = _find_match(
+            llm_bugs,
+            {
+                "category": flow_a_finding.category,
+                "function": flow_a_finding.metadata.get("function", ""),
+            },
+            matched_llm,
+        )
+        if idx is None:
+            missed += 1
+        else:
+            matched_llm.add(idx)
+    return missed
+
+
 def evaluate_file(
     file_path: Path,
     expected: list[dict],
@@ -252,6 +273,9 @@ def evaluate_file(
         smell_fp = len(smells)
         bug_verdicts = [(f.category, "fp") for f in bugs + hallucinations]
         smell_verdicts = [(f.category, "fp") for f in smells]
+    else:
+        bug_fp += len(hallucinations)
+        bug_verdicts.extend((f.category, "fp") for f in hallucinations)
 
     counts.bug_tp   = bug_tp
     counts.bug_fp   = bug_fp
@@ -319,6 +343,7 @@ def evaluate_file(
 
     if flow_a_findings:
         counts.esbmc_native_bug = len(flow_a_findings)
+        counts.llm_missed_esbmc_bug = _count_llm_missed_flow_a_findings(flow_a_findings, bugs)
 
     if verbose:
         _print_detail(file_path.name, bugs, exp_bugs, smells, exp_smells, direct)
@@ -374,6 +399,8 @@ def evaluate_model(
         total.hybrid_bug_fp            += c.hybrid_bug_fp
         total.hybrid_bug_fn            += c.hybrid_bug_fn
         total.llm_confirmed_by_esbmc   += c.llm_confirmed_by_esbmc
+        total.esbmc_native_bug         += c.esbmc_native_bug
+        total.llm_missed_esbmc_bug     += c.llm_missed_esbmc_bug
         total.not_confirmed_within_bound += c.not_confirmed_within_bound
         total.esbmc_inconclusive       += c.esbmc_inconclusive
         total.skipped_not_verifiable   += c.skipped_not_verifiable
@@ -417,25 +444,6 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
             )
         )
     return findings
-
-
-def _esbmc_result_matches_category(details: dict[str, object], expected_category: str) -> bool:
-    text = " ".join(
-        str(details.get(key, ""))
-        for key in ("property_kind", "property_text", "location")
-    )
-    return _category_from_esbmc_property(text) == expected_category
-
-
-def _category_from_esbmc_property(text: str) -> str:
-    normalized = text.lower()
-    if "assertion" in normalized:
-        return "assertion_violation"
-    if "division_by_zero" in normalized or "division by zero" in normalized or "divisor" in normalized:
-        return "division_by_zero"
-    if "out-of-bounds" in normalized or "out of bounds" in normalized or "bounds" in normalized:
-        return "out_of_bounds"
-    return "unknown_esbmc_violation"
 
 
 def hallucination_rate(counts: EvalCounts) -> float:

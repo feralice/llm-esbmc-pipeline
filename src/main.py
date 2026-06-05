@@ -3,7 +3,6 @@ main.py — Pipeline LLM + AST + ESBMC para verificação de bugs em Python.
 
 Modos de execução:
   esbmc-direct  Flow A: ESBMC-only com --function, sem LLM.
-  esbmc-harness Roda ESBMC em harnesses experimentais gerados para funções.
   llm-first     Roda apenas o pipeline LLM + AST + ESBMC --function.
   full          Roda Flow A (ESBMC-only) + Flow B (LLM-first) integrados.
   benchmark     Avalia todos os modelos configurados contra o ground truth.
@@ -36,7 +35,6 @@ from research_pipeline.pipeline import (
 )
 from research_pipeline.evaluator import EvalCounts, evaluate_model, hallucination_rate, prf
 from research_pipeline.full_report import build_full_report, write_full_report
-from research_pipeline.experimental.harness_runner import run_esbmc_harness_pipeline
 
 
 # ---------------------------------------------------------------------------
@@ -51,7 +49,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=["esbmc-direct", "esbmc-harness", "llm-first", "full", "benchmark"],
+        choices=["esbmc-direct", "llm-first", "full", "benchmark"],
         default="full",
         help="Modo de execução. (padrão: full)",
     )
@@ -135,16 +133,6 @@ def build_parser() -> argparse.ArgumentParser:
             "Diretório de ground truth para comparação. "
             "No modo benchmark, pode ser passado aqui em vez de --input. "
             "Exemplo: dataset/labeled/ground_truths/bugs"
-        ),
-    )
-    parser.add_argument(
-        "--enable-harness",
-        action="store_true",
-        default=False,
-        help=(
-            "[Experimental] Habilita validação por harness runtime como fallback "
-            "para achados verificáveis que não passam pela trilha formal principal. "
-            "Desabilitado por padrão na V1 — não entra nas métricas principais."
         ),
     )
     parser.add_argument(
@@ -235,7 +223,6 @@ def _print_full_summary(summary: dict) -> None:
     print(f"  {summary['total_esbmc_direct_violations']:3d}  violações Flow A (ESBMC-only)")
     print(f"  {summary['total_no_vcc_generated']:3d}  arquivos sem função candidata no Flow A")
     print(f"  {summary['total_confirmed_by_esbmc']:3d}  confirmados LLM+ESBMC (formal)")
-    print(f"  {summary.get('total_runtime_reproduced', 0):3d}  reproduzidos por harness (auxiliar)")
     print(f"  {summary['total_llm_false_positives']:3d}  falsos positivos LLM")
     print(f"  {summary['total_smells']:3d}  smells heurísticos")
     print(f"  {summary['total_out_of_scope_findings']:3d}  fora do escopo MVP")
@@ -303,31 +290,6 @@ def mode_esbmc_direct(args: argparse.Namespace) -> int:
     return 0
 
 
-def mode_esbmc_harness(args: argparse.Namespace) -> int:
-    input_paths = _resolve_input_paths(args.input)
-    if not input_paths:
-        print("Nenhum arquivo .py encontrado.", file=sys.stderr)
-        return 1
-
-    output_dir = args.output_dir or _default_output_dir("esbmc-harness")
-    results = run_esbmc_harness_pipeline(
-        input_paths=input_paths,
-        output_dir=output_dir,
-        esbmc_command=args.esbmc_command,
-        bound=args.bound,
-        timeout_seconds=args.timeout,
-    )
-
-    print(f"\nESBMC com harness experimental — {len(results)} harness(es) analisado(s):")
-    for r in results:
-        esbmc = r.esbmc_result
-        print(f"  [{esbmc.status:20s}]  {Path(r.source_file).name}::{r.function}  — {esbmc.summary[:70]}")
-
-    summary_path = Path(output_dir) / "esbmc_harness_results.json"
-    print(f"\nResultados JSON: {summary_path}")
-    return 0
-
-
 def mode_llm_first(args: argparse.Namespace) -> int:
     input_paths = _resolve_input_paths(args.input)
     if not input_paths:
@@ -350,7 +312,6 @@ def mode_llm_first(args: argparse.Namespace) -> int:
         ollama_base_url=args.ollama_base_url,
         bound=args.bound,
         timeout_seconds=args.timeout,
-        enable_harness=getattr(args, "enable_harness", False),
     )
 
     report_path = Path(output_dir) / "report.json"
@@ -379,10 +340,6 @@ def mode_full(args: argparse.Namespace) -> int:
     print(f"  Backend: {backend} / Modelo: {model or '(padrão)'}")
     print(f"  Bound: {args.bound}  |  Timeout: {args.timeout}s")
 
-    enable_harness = getattr(args, "enable_harness", False)
-    if enable_harness:
-        print("  Harness runtime: HABILITADO (experimental)")
-
     results = run_full_pipeline(
         input_paths=input_paths,
         output_dir=output_dir,
@@ -394,7 +351,6 @@ def mode_full(args: argparse.Namespace) -> int:
         ollama_base_url=args.ollama_base_url,
         bound=args.bound,
         timeout_seconds=args.timeout,
-        enable_harness=enable_harness,
     )
 
     report = build_full_report(
@@ -536,7 +492,6 @@ def main() -> int:
 
     dispatch = {
         "esbmc-direct": mode_esbmc_direct,
-        "esbmc-harness": mode_esbmc_harness,
         "llm-first":    mode_llm_first,
         "full":         mode_full,
         "benchmark":    mode_benchmark,

@@ -3,14 +3,14 @@
   "description": "Negative controls for V1: guarded functions. Any bug finding on these files is a false positive.",
   "items": [
     {"id": "clean_01", "file": "clean_01.py", "function": "safe_ratio", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
-    {"id": "clean_02", "file": "clean_02.py", "function": "safe_get", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
+    {"id": "clean_02", "file": "clean_02.py", "function": "safe_difference", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
     {"id": "clean_03", "file": "clean_03.py", "function": "clamp_score", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
     {"id": "clean_04", "file": "clean_04.py", "function": "safe_mod", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
-    {"id": "clean_05", "file": "clean_05.py", "function": "safe_next", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
+    {"id": "clean_05", "file": "clean_05.py", "function": "capped_increment", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
     {"id": "clean_06", "file": "clean_06.py", "function": "guarded_count_ratio", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
-    {"id": "clean_07", "file": "clean_07.py", "function": "guarded_next_value", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
+    {"id": "clean_07", "file": "clean_07.py", "function": "safe_scale", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
     {"id": "clean_08", "file": "clean_08.py", "function": "checked_positive", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
     {"id": "clean_09", "file": "clean_09.py", "function": "guarded_shifted_denominator", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false},
-    {"id": "clean_10", "file": "clean_10.py", "function": "guarded_second", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false}
+    {"id": "clean_10", "file": "clean_10.py", "function": "guarded_average", "expected_category": "clean", "verifiable": false, "expression": "", "line": 0, "expected_type": "", "should_go_to_esbmc": false}
   ]
 }

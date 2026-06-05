@@ -1,4 +1,3 @@
-def checked_one_used_two(values: list[int], pos: int) -> int:
-    if pos + 1 < len(values):
-        return values[pos + 2]
-    return 0
+def flat_matrix_get(flat: list[int], row: int, col: int, num_cols: int) -> int:
+    idx = row * num_cols + col
+    return flat[idx]

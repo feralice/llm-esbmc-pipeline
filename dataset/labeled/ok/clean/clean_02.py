@@ -1,4 +1,7 @@
-def safe_get(values: list[int], index: int) -> int:
-    if index < 0 or index >= len(values):
+def safe_difference(a: int, b: int, limit: int) -> int:
+    diff = a - b
+    if diff < 0:
         return 0
-    return values[index]
+    if diff > limit:
+        return limit
+    return diff

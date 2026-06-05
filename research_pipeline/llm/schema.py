@@ -38,7 +38,6 @@ FINDINGS_JSON_SCHEMA: dict = {
                         "verifiable":           {"type": "boolean"},
                         "confidence":           {"type": "string"},
                         "expected_exception":   {"type": "string"},
-                        "reproduction_harness": {"type": "string"},
                         "metadata": {
                             "type": "object",
                             "additionalProperties": False,
@@ -53,7 +52,7 @@ FINDINGS_JSON_SCHEMA: dict = {
                     "required": [
                         "id", "stage", "finding_type", "category", "title",
                         "explanation", "evidence", "verifiable", "confidence",
-                        "expected_exception", "reproduction_harness", "metadata",
+                        "expected_exception", "metadata",
                     ],
                 },
             }

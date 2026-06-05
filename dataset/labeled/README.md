@@ -20,7 +20,7 @@ This dataset is intentionally controlled, but no longer only a happy-path smoke 
 - Bug cases include obvious bugs, partial guards, off-by-one mistakes, branch-sensitive assertions, and guarded clean controls.
 - Smell cases are heuristic maintainability cases and must not go to ESBMC in V1.
 - No external modules, classes, I/O, async, or dynamic Python features.
-- V1 metrics should use the formal ESBMC path only; do not enable runtime harness fallback for the main results.
+- V1 metrics should use the formal ESBMC path only.
 
 ## Why This Dataset Exists
 

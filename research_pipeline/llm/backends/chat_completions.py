@@ -13,8 +13,8 @@ class ChatCompletionsAnalyzer:
 
     def __init__(
         self,
-        base_url: str = "http://localhost:11434/v1",
-        model: str = "llama3.2",
+        base_url: str = "http://localhost:11434/api/generate",
+        model: str = "qwen2.5-coder:7b",
         api_key: str = "ollama",
         timeout_seconds: int = 120,
     ) -> None:

@@ -3,8 +3,8 @@ from __future__ import annotations
 import ast
 
 from .categories import SUPPORTED_CATEGORIES, VERIFIABLE_OPERATION_KIND
+from ..ast_utils import expression_exists_in_executable_ast
 from ..models import CodeUnit, Finding
-from ..experimental.runtime_harness_validator import expression_exists_in_executable_ast
 
 
 def coerce_findings_payload(payload: dict) -> list[dict]:
@@ -33,9 +33,7 @@ def finding_from_dict(data: dict) -> Finding:
             "expression": str(metadata_raw.get("expression", "")),
             "line": _metadata_int(metadata_raw.get("line")),
             "relative_line": _metadata_int(metadata_raw.get("relative_line")),
-            # Runtime harness fields (populated by LLM for verifiable findings)
             "expected_exception": str(data.get("expected_exception", "")),
-            "reproduction_harness": str(data.get("reproduction_harness", "")),
         },
     )
 
@@ -166,7 +164,7 @@ def _normalize_operation_finding(
         return "suspected_bug", True
 
     # Phase 2: expression exists as an executable AST node but uses an unrecognized pattern
-    # (e.g. list.pop(i) instead of list[i]).  Pass through to the Formalizer/harness layer
+    # (e.g. list.pop(i) instead of list[i]). Pass through to ESBMC --function
     # rather than silently labelling it as an LLM hallucination.
     if expression_exists_in_executable_ast(expression, unit.source):
         if _denominator_is_nonzero_constant(category, expression):

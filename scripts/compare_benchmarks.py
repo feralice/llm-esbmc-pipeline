@@ -12,10 +12,14 @@ import json
 from pathlib import Path
 
 
-def load_reports(directory: Path, suffix: str) -> list[dict]:
+def load_reports(directory: Path) -> list[dict]:
     reports = []
-    for path in sorted(directory.glob(f"benchmark_*_{suffix}.json")):
+    for path in sorted(directory.glob("benchmark_*.json")):
+        if path.name == "benchmark_matrix_manifest.json":
+            continue
         data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or "metrics" not in data:
+            continue
         data["_file"] = path.name
         reports.append(data)
     return reports
@@ -160,29 +164,27 @@ def main() -> None:
         print(f"Diretório não encontrado: {directory}")
         return
 
-    bugs = load_reports(directory, "bugs")
-    smells = load_reports(directory, "smells")
+    reports = load_reports(directory)
 
-    print(f"\nRelatórios carregados: {len(bugs)} bugs, {len(smells)} smells")
+    print(f"\nRelatórios carregados: {len(reports)}")
 
-    if bugs:
-        print_table("Bugs — LLM only",         bugs, "bugs_llm_only",          args.latex)
-        print_table("Bugs — Hybrid (LLM+ESBMC)", bugs, "bugs_hybrid_pipeline",  args.latex)
-        print_table("Flow A — ESBMC-only",  bugs, "esbmc_direct_baseline",  args.latex)
-        print_esbmc_note(bugs)
-        print_per_category(bugs, args.latex)
+    if reports:
+        print_table("Bugs — LLM only",         reports, "bugs_llm_only",          args.latex)
+        print_table("Bugs — Hybrid (LLM+ESBMC)", reports, "bugs_hybrid_pipeline",  args.latex)
+        print_table("Flow A — ESBMC-only",  reports, "esbmc_direct_baseline",  args.latex)
+        print_esbmc_note(reports)
+        print_per_category(reports, args.latex)
 
-    if smells:
-        print_table("Smells — LLM only", smells, "smells", args.latex)
+        print_table("Smells — LLM only", reports, "smells", args.latex)
 
     # resumo de hallucinations
-    if bugs:
+    if reports:
         print(f"\n{'='*70}")
         print("  Hallucination rate (achados inválidos descartados pelo AST validator)")
         print(f"{'='*70}")
         headers = ["Model", "Count", "Rate"]
         rows = []
-        for r in bugs:
+        for r in reports:
             h = r.get("hallucinations", {})
             rows.append([
                 short_name(r.get("model", r["_file"])),

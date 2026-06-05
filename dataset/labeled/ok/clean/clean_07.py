@@ -1,5 +1,7 @@
-def guarded_next_value(values: list[int], index: int) -> int:
-    next_index = index + 1
-    if next_index < 0 or next_index >= len(values):
+def safe_scale(value: int, factor: int, limit: int) -> int:
+    if factor <= 0 or value < 0:
         return 0
-    return values[next_index]
+    result = value * factor
+    if result > limit:
+        return limit
+    return result

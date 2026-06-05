@@ -89,7 +89,7 @@ Load multiple `full_report.json`, `report.json` or benchmark JSON files, mark a 
 
 ## Important V1 Choice
 
-Do not pass `--enable-harness` for the main V1 numbers. The runtime harness is useful future work, but the V1 claim is specifically:
+The V1 claim is specifically:
 
 LLM finding -> AST validation -> ESBMC `--function` -> ESBMC confirmation.
 

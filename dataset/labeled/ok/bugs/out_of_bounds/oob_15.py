@@ -1,3 +1,4 @@
-def shifted_by_length(values: list[int], start: int) -> int:
-    offset = start + len(values)
-    return values[offset]
+def two_pointer_gap(values: list[int], left: int, right: int, gap: int) -> int:
+    a = values[left]
+    b = values[right + gap]
+    return b - a

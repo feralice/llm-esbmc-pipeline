@@ -144,7 +144,7 @@ def _write_direct_log(file_path: Path, combined: str, output_dir: str | Path | N
 
 _FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
     "division_by_zero":    ["--no-bounds-check"],
-    "out_of_bounds":       ["--no-div-by-zero-check"],
+    "out_of_bounds":       ["--no-div-by-zero-check", "--assign-param-nondet"],
     "assertion_violation": [],
 }
 

@@ -22,22 +22,17 @@ from research_pipeline.verification.esbmc_runner import (
     _classify_esbmc_direct_result,
     _extract_generated_vcc_count,
 )
+from research_pipeline import evaluator
+from research_pipeline.ast_utils import expression_exists_in_executable_ast
 from research_pipeline.evaluator import evaluate_file, load_ground_truth_cases
 from research_pipeline.report import consolidate_result
 from research_pipeline.pipeline import run_pipeline
-from research_pipeline.experimental.runtime_harness_validator import (
-    HARNESS_NOT_REPRODUCED,
-    HARNESS_REPRODUCED,
-    HARNESS_UNSAFE,
-    HARNESS_WRONG_EXCEPTION,
-    _match_exception,
-    expression_exists_in_executable_ast,
-    validate_harness,
-)
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.llm.findings import finding_from_dict, normalize_findings
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
-from research_pipeline.models import Finding
+from research_pipeline.llm.backends import openai as openai_backend
+from research_pipeline.llm.backends.openai import OpenAIResponsesAnalyzer
+from research_pipeline.models import ESBMCDirectResult, Finding
 
 
 @_needs_openai
@@ -114,8 +109,21 @@ def test_preprocess_ignores_test_functions_and_annotations(tmp_path: Path) -> No
 
 def test_flow_b_scopes_flags_by_finding_category() -> None:
     assert _FLOW_B_CATEGORY_FLAGS["division_by_zero"] == ["--no-bounds-check"]
-    assert _FLOW_B_CATEGORY_FLAGS["out_of_bounds"] == ["--no-div-by-zero-check"]
+    assert _FLOW_B_CATEGORY_FLAGS["out_of_bounds"] == ["--no-div-by-zero-check", "--assign-param-nondet"]
     assert _FLOW_B_CATEGORY_FLAGS["assertion_violation"] == []
+
+
+def test_openai_timeout_reports_clear_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    analyzer = OpenAIResponsesAnalyzer(api_key="test-key", model="test-model")
+
+    def fake_urlopen(*args, **kwargs):
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(openai_backend.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(openai_backend.time, "sleep", lambda seconds: None)
+
+    with pytest.raises(RuntimeError, match="Timeout ao chamar OpenAI"):
+        analyzer._post_json({"input": []})
 
 
 # ---------------------------------------------------------------------------
@@ -253,6 +261,126 @@ def test_clean_case_with_findings_counts_false_positive(tmp_path: Path) -> None:
     assert counts.smell_fp == 1
 
 
+def test_hallucinated_bug_on_buggy_file_counts_as_llm_false_positive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sample = tmp_path / "buggy.py"
+    sample.write_text("def divide(a: int, b: int) -> int:\n    return a // b\n", encoding="utf-8")
+
+    real_bug = _make_finding("division_by_zero", "a // b")
+    hallucinated_bug = _make_finding("out_of_bounds", "items[i]")
+    hallucinated_bug.finding_type = "llm_false_positive"
+    hallucinated_bug.verifiable = False
+
+    monkeypatch.setattr(evaluator, "run_esbmc_on_function", lambda **kwargs: SimpleNamespace(status="no_violation_found"))
+    monkeypatch.setattr(
+        evaluator,
+        "run_esbmc_function_baseline",
+        lambda **kwargs: ESBMCDirectResult(
+            source_file=str(sample),
+            status="no_violation_found",
+            command=[],
+            returncode=0,
+            summary="no violation",
+            details={"functions": []},
+        ),
+    )
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "divide", "category": "division_by_zero", "verifiable": True}],
+        analyzer=_FakeAnalyzer({"divide": [real_bug, hallucinated_bug]}),
+    )
+
+    assert counts.bug_tp == 1
+    assert counts.bug_fp == 1
+    assert counts.hallucination_count == 1
+    assert counts.per_category["out_of_bounds"]["fp"] == 1
+
+
+def test_flow_a_bug_missed_by_llm_is_counted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    sample = tmp_path / "oob.py"
+    sample.write_text("def read(values, i):\n    return values[i]\n", encoding="utf-8")
+
+    def fake_flow_a(**kwargs):
+        return ESBMCDirectResult(
+            source_file=str(sample),
+            status="violation_found",
+            command=[],
+            returncode=1,
+            summary="violation",
+            details={
+                "functions": [
+                    {
+                        "name": "read",
+                        "status": "violation_found",
+                        "property_kind": "dereference failure",
+                        "summary": "array bounds violated",
+                    }
+                ]
+            },
+        )
+
+    monkeypatch.setattr(evaluator, "run_esbmc_function_baseline", fake_flow_a)
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "read", "category": "out_of_bounds", "verifiable": True}],
+        analyzer=_FakeAnalyzer({}),
+    )
+
+    assert counts.esbmc_native_bug == 1
+    assert counts.llm_missed_esbmc_bug == 1
+
+
+def test_flow_a_bug_reported_by_llm_is_not_counted_as_missed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sample = tmp_path / "oob.py"
+    sample.write_text("def read(values, i):\n    return values[i]\n", encoding="utf-8")
+
+    def fake_flow_a(**kwargs):
+        return ESBMCDirectResult(
+            source_file=str(sample),
+            status="violation_found",
+            command=[],
+            returncode=1,
+            summary="violation",
+            details={
+                "functions": [
+                    {
+                        "name": "read",
+                        "status": "violation_found",
+                        "property_kind": "dereference failure",
+                        "summary": "array bounds violated",
+                    }
+                ]
+            },
+        )
+
+    monkeypatch.setattr(evaluator, "run_esbmc_on_function", lambda **kwargs: SimpleNamespace(status="skipped", details={}))
+    monkeypatch.setattr(evaluator, "run_esbmc_function_baseline", fake_flow_a)
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "read", "category": "out_of_bounds", "verifiable": True}],
+        analyzer=_FakeAnalyzer({"read": [_make_finding("out_of_bounds", "values[i]")]}),
+    )
+
+    assert counts.esbmc_native_bug == 1
+    assert counts.llm_missed_esbmc_bug == 0
+
+
+def test_preprocess_invalid_python_returns_no_units(tmp_path: Path) -> None:
+    sample = tmp_path / "broken.py"
+    sample.write_text("def broken(:\n    pass\n", encoding="utf-8")
+
+    with pytest.warns(RuntimeWarning, match="Skipping invalid Python file"):
+        assert preprocess_file(sample) == []
+
+
 def test_ground_truth_loader_recurses_all_v1_subfolders() -> None:
     cases = load_ground_truth_cases(REPO_ROOT / "dataset" / "labeled" / "ground_truths")
 
@@ -267,10 +395,6 @@ def test_frontend_benchmark_schema_uses_current_keys_with_legacy_fallback() -> N
     assert "metricBlock(data, 'bugs_llm_only', 'bugs')" in html
     assert "metricBlock(data, 'bugs_hybrid_pipeline', 'bugs')" in html
 
-
-# ---------------------------------------------------------------------------
-# Runtime harness validator — testes sem API
-# ---------------------------------------------------------------------------
 
 def _make_finding(category: str, expression: str, verifiable: bool = True) -> Finding:
     return Finding(
@@ -289,82 +413,8 @@ def _make_finding(category: str, expression: str, verifiable: bool = True) -> Fi
             "relative_line": "1",
             "has_guard": "false",
             "expected_exception": "",
-            "reproduction_harness": "",
         },
     )
-
-
-def test_harness_pop_reproduces_index_error() -> None:
-    source = "def f(lst: list, i: int):\n    lst.pop(i)\n"
-    result = validate_harness(source, "f", "f([], 0)", "IndexError")
-    assert result.status == HARNESS_REPRODUCED
-    assert result.exception_type == "IndexError"
-
-
-def test_harness_split_index_reproduces_index_error() -> None:
-    source = 'def f(s: str) -> str:\n    return s.split(";")[1]\n'
-    result = validate_harness(source, "f", 'f("nocolon")', "IndexError")
-    assert result.status == HARNESS_REPRODUCED
-    assert result.exception_type == "IndexError"
-
-
-def test_harness_division_by_zero_reproduces() -> None:
-    source = "def divide(a: int, b: int) -> int:\n    return a // b\n"
-    result = validate_harness(source, "divide", "divide(5, 0)", "ZeroDivisionError")
-    assert result.status == HARNESS_REPRODUCED
-    assert result.exception_type == "ZeroDivisionError"
-
-
-def test_harness_assertion_reproduces() -> None:
-    source = (
-        "def parse(ok: bool) -> str:\n"
-        "    if not ok:\n"
-        "        raise AssertionError('fail')\n"
-        "    return 'ok'\n"
-    )
-    result = validate_harness(source, "parse", "parse(False)", "AssertionError")
-    assert result.status == HARNESS_REPRODUCED
-    assert result.exception_type == "AssertionError"
-
-
-def test_harness_not_reproduced_when_no_exception() -> None:
-    source = "def safe(lst: list, i: int):\n    return lst[i] if 0 <= i < len(lst) else None\n"
-    result = validate_harness(source, "safe", "safe([1, 2, 3], 1)", "IndexError")
-    assert result.status == HARNESS_NOT_REPRODUCED
-
-
-def test_harness_wrong_exception_detected() -> None:
-    source = "def f(d: dict, k: str):\n    return d[k]\n"
-    result = validate_harness(source, "f", 'f({}, "missing")', "IndexError")
-    # KeyError != IndexError → wrong_exception
-    assert result.status == HARNESS_WRONG_EXCEPTION
-    assert result.exception_type == "KeyError"
-
-
-def test_harness_unsafe_import_rejected() -> None:
-    result = validate_harness("def f(): pass", "f", "import os; f()", "")
-    assert result.status == HARNESS_UNSAFE
-
-
-def test_harness_unsafe_eval_rejected() -> None:
-    result = validate_harness("def f(): pass", "f", "eval('1+1')", "")
-    assert result.status == HARNESS_UNSAFE
-
-
-def test_harness_unsafe_while_rejected() -> None:
-    result = validate_harness("def f(): pass", "f", "while True: f()", "")
-    assert result.status == HARNESS_UNSAFE
-
-
-def test_harness_unsafe_open_rejected() -> None:
-    result = validate_harness("def f(): pass", "f", "open('/etc/passwd')", "")
-    assert result.status == HARNESS_UNSAFE
-
-
-def test_harness_clean_code_not_reproduced() -> None:
-    source = "def add(a: int, b: int) -> int:\n    return a + b\n"
-    result = validate_harness(source, "add", "add(1, 2)", "ZeroDivisionError")
-    assert result.status == HARNESS_NOT_REPRODUCED
 
 
 # ---------------------------------------------------------------------------
@@ -460,11 +510,6 @@ def test_finding_from_dict_preserves_line_metadata_as_int() -> None:
 
     assert finding.metadata["line"] == 12
     assert finding.metadata["relative_line"] == 3
-
-
-def test_harness_exception_match_requires_exact_exception() -> None:
-    assert _match_exception("ZeroDivisionError", "ZeroDivisionError") == HARNESS_REPRODUCED
-    assert _match_exception("ZeroDivisionError", "Error") == HARNESS_WRONG_EXCEPTION
 
 
 def test_llm_schema_exposes_only_llm_finding_types() -> None:

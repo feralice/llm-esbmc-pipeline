@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from urllib import error, request
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
@@ -51,25 +52,38 @@ class OpenAIResponsesAnalyzer:
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)
 
-    def _post_json(self, payload: dict) -> dict:
+    def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         body = json.dumps(payload).encode("utf-8")
-        req = request.Request(
-            self.base_url,
-            data=body,
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        try:
-            with request.urlopen(req, timeout=self.timeout_seconds) as response:
-                return json.loads(response.read().decode("utf-8"))
-        except error.HTTPError as exc:
-            details = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
-        except error.URLError as exc:
-            raise RuntimeError(f"Falha de rede ao chamar OpenAI Responses API: {exc.reason}") from exc
+        for attempt in range(_retries):
+            req = request.Request(
+                self.base_url,
+                data=body,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as response:
+                    return json.loads(response.read().decode("utf-8"))
+            except error.HTTPError as exc:
+                if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                details = exc.read().decode("utf-8", errors="replace")
+                raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
+            except error.URLError as exc:
+                if attempt < _retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise RuntimeError(f"Falha de rede ao chamar OpenAI Responses API: {exc.reason}") from exc
+            except TimeoutError as exc:
+                if attempt < _retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise RuntimeError("Timeout ao chamar OpenAI Responses API.") from exc
+        raise RuntimeError("OpenAI API falhou após todas as tentativas de retry.")
 
     def _extract_findings_payload(self, response_data: dict) -> list[dict]:
         if isinstance(response_data.get("output_text"), str):

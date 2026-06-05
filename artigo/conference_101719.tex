@@ -1,0 +1,539 @@
+% ============================================================
+%  Pipeline Híbrido LLM + ESBMC — Qualificação de Mestrado
+%  Esqueleto — Introdução detalhada, demais seções em rascunho
+%  Última atualização: 2026-06-05
+% ============================================================
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% ── Macros de conveniência ───────────────────────────────────
+\newcommand{\esbmc}{\textsc{Esbmc}}
+\newcommand{\flowA}{Flow~A}
+\newcommand{\flowB}{Flow~B}
+\newcommand{\flowC}{Flow~C}
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+% ============================================================
+\begin{document}
+
+\title{Verificação Formal Guiada por LLM para Detecção de Bugs de
+       Runtime em Código Python: Um Pipeline Híbrido com \esbmc{}
+       \thanks{%
+         \todo{Identificar agência de fomento.}}}
+
+\author{%
+  \IEEEauthorblockN{\todo{Nome Completo}}
+  \IEEEauthorblockA{%
+    \textit{\todo{Departamento}}\\
+    \textit{\todo{Universidade}}\\
+    \todo{Cidade, País}\\
+    \todo{e-mail}}
+  \and
+  \IEEEauthorblockN{\todo{Orientador}}
+  \IEEEauthorblockA{%
+    \textit{\todo{Departamento}}\\
+    \textit{\todo{Universidade}}\\
+    \todo{Cidade, País}\\
+    \todo{e-mail}}}
+
+\maketitle
+
+% ── Abstract ────────────────────────────────────────────────
+\begin{abstract}
+A verificação formal de código Python apresenta desafios práticos
+significativos: verificadores baseados em \textit{Bounded Model Checking}
+(BMC) requerem um ponto de entrada explícito para analisar funções
+isoladas, enquanto Modelos de Linguagem de Grande Escala (LLMs) identificam
+bugs com alta revocação mas produzem falsos positivos não verificados.
+Este trabalho propõe um pipeline híbrido de três fluxos que combina análise
+semântica por LLM com verificação formal pelo \esbmc{} para detectar bugs
+de runtime em código Python.
+No \flowB{} (principal), a LLM propõe hipóteses de bug identificando a
+função suspeita e a categoria do defeito; o \esbmc{} as verifica
+formalmente usando o flag \texttt{--function}, que torna os parâmetros da
+função simbólicos sem instrumentação manual.
+O \flowA{} (ESBMC-\textit{only}) e o \flowC{} (LLM-\textit{only}) servem
+como \textit{baselines} para isolar a contribuição de cada componente.
+Avaliamos os três fluxos em um dataset de 70 arquivos Python anotados
+manualmente, cobrindo três categorias de bugs formais
+(\textit{assertion\_violation}, \textit{division\_by\_zero},
+\textit{out\_of\_bounds}) e três categorias de \textit{code smells}.
+\todo{Preencher com resultados obtidos após execução do benchmark.}
+\end{abstract}
+
+\begin{IEEEkeywords}
+verificação formal, bounded model checking, ESBMC, large language model,
+detecção de bugs, Python, pipeline híbrido, análise estática
+\end{IEEEkeywords}
+
+% ============================================================
+\section{Introdução}
+\label{sec:introducao}
+
+% ── 1.1 Contexto ────────────────────────────────────────────
+\subsection{Contexto}
+\label{sec:contexto}
+
+Python consolidou-se como uma das linguagens de programação mais utilizadas
+globalmente, presente em domínios que vão de ciência de dados e aprendizado
+de máquina a desenvolvimento web e automação de infraestrutura
+\todo{citar índice TIOBE/GitHub Octoverse}.
+Apesar de sua produtividade, a natureza dinamicamente tipada da linguagem
+torna a detecção estática de erros de runtime — como
+\texttt{IndexError}, \texttt{ZeroDivisionError} e \texttt{AssertionError}
+— uma tarefa particularmente desafiadora
+\todo{citar trabalho sobre bugs comuns em Python}.
+
+Verificação formal baseada em \textit{Bounded Model Checking} (BMC)
+oferece garantias matemáticas: dado um bound $k$, se nenhuma violação
+de propriedade é encontrada, o programa está livre de erros até
+profundidade $k$~\todo{citar Clarke et al., Biere et al.}.
+O \esbmc{}~\todo{citar ESBMC paper principal} é um verificador BMC maduro
+com suporte a código Python via \texttt{--python python3}, capaz de gerar
+contraexemplos concretos para propriedades como \textit{array bounds},
+divisão por zero e violação de asserções.
+
+Simultaneamente, Modelos de Linguagem de Grande Escala (LLMs) demonstraram
+capacidade de identificar padrões de bugs em código-fonte de forma
+semântica, sem instrumentação~\todo{citar CodeLlama, GPT-4 code review,
+DeepCode}.
+Entretanto, LLMs produzem falsos positivos (\textit{alucinações}): reportam
+bugs em expressões que não existem no código executável, ou classificam
+incorretamente guardas existentes~\todo{citar trabalho sobre alucinações
+em LLM code review}.
+
+% ── 1.2 Problema ────────────────────────────────────────────
+\subsection{Problema}
+\label{sec:problema}
+
+Duas limitações complementares impedem o uso isolado de cada abordagem:
+
+\textbf{Limitação do BMC:} O \esbmc{} e verificadores similares exigem
+um ponto de entrada explícito — tipicamente uma função \texttt{main} ou
+um \textit{harness} instrumentado manualmente — para verificar funções
+de biblioteca isoladas.
+Em bases de código Python reais, funções utilitárias não possuem
+\texttt{main}; construir harnesses por função não escala para análise
+de repositórios.
+O flag \texttt{--function} do \esbmc{} resolve parcialmente esse problema:
+ao especificar \texttt{--function~<nome>}, os parâmetros da função tornam-se
+variáveis simbólicas automaticamente, permitindo verificação sem harness.
+Contudo, o flag requer que o analista saiba \emph{qual} função verificar
+e \emph{qual} propriedade testar — informações que o BMC por si só
+não pode inferir.
+
+\textbf{Limitação da LLM:} LLMs identificam a função suspeita e a
+categoria do potencial bug com alta revocação, mas sem garantia formal.
+Falsos positivos da LLM — reportar bugs em expressões protegidas por
+guardas corretas, ou citar expressões inexistentes — consomem tempo de
+verificação e reduzem a confiança do desenvolvedor.
+
+A Figura~\ref{fig:gap} ilustra a lacuna que ambas as abordagens deixam
+quando operadas de forma independente.
+
+\begin{figure}[ht]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{figs/gap_diagram.pdf}
+  \todo{Inserir diagrama: LLM (alta revocação, sem prova) vs ESBMC
+        (prova formal, sem alvo). Espaço intermediário = pipeline híbrido.}
+  \caption{Lacuna entre análise semântica por LLM e verificação formal
+           por BMC para funções Python isoladas.}
+  \label{fig:gap}
+\end{figure}
+
+% ── 1.3 Motivação / Justificativa ───────────────────────────
+\subsection{Motivação e Justificativa}
+\label{sec:motivacao}
+
+A combinação dessas duas abordagens segue o princípio
+\emph{``LLM Proposes, Formal Tools Dispose''}:
+a LLM atua como oráculo semântico para identificar a função-alvo e
+a hipótese de bug; o \esbmc{} atua como árbitro formal para confirmar
+ou refutar a hipótese com um contraexemplo concreto ou um certificado
+de segurança dentro do bound.
+
+Esta divisão de responsabilidades oferece três vantagens:
+\begin{enumerate}
+  \item \textbf{Escalabilidade da verificação formal:} O \esbmc{} só é
+    invocado para funções e propriedades pré-filtradas pela LLM, reduzindo
+    o espaço de busca.
+  \item \textbf{Eliminação de alucinações:} Findings da LLM que não
+    encontram confirmação formal são explicitamente classificados como
+    \texttt{not\_confirmed\_within\_bound} ou \texttt{llm\_false\_positive},
+    separando suspeitas de provas.
+  \item \textbf{Auditabilidade:} O contraexemplo gerado pelo \esbmc{}
+    constitui evidência reproducível da presença do bug, independente
+    do modelo de linguagem utilizado.
+\end{enumerate}
+
+Adicionalmente, a comparação sistemática dos três fluxos no mesmo dataset
+permite isolar a contribuição de cada componente:
+o \flowA{} (ESBMC-\textit{only}) estabelece o teto alcançável sem
+semântica; o \flowC{} (LLM-\textit{only}) estabelece a linha base sem
+prova formal; o \flowB{} (híbrido) é a proposta principal.
+
+% ── 1.4 Objetivos ───────────────────────────────────────────
+\subsection{Objetivos}
+\label{sec:objetivos}
+
+\textbf{Objetivo geral:} Propor, implementar e avaliar um pipeline
+híbrido que combina análise semântica por LLM com verificação formal
+pelo \esbmc{} para detectar bugs de runtime em funções Python, comparando
+sistematicamente os três fluxos de execução em um dataset anotado.
+
+\textbf{Objetivos específicos:}
+\begin{enumerate}
+  \item[\textbf{OE1.}] Construir um dataset de 70 arquivos Python com
+    anotação manual de ground truth por função, cobrindo três categorias
+    de bugs formalmente verificáveis e três categorias de \textit{code
+    smells} (\S\ref{sec:dataset}).
+  \item[\textbf{OE2.}] Implementar o pipeline de três fluxos
+    (Flow~A / Flow~B / Flow~C) e o framework de avaliação com métricas
+    de precisão, revocação e F1 por fluxo e por categoria
+    (\S\ref{sec:metodo}).
+  \item[\textbf{OE3.}] Responder às seguintes questões de pesquisa:
+    \begin{description}
+      \item[\textbf{RQ1:}] O pipeline híbrido (\flowB{}) alcança F1
+        superior ao \esbmc{}-\textit{only} (\flowA{}) na detecção de
+        bugs formais em Python?
+      \item[\textbf{RQ2:}] O pipeline híbrido (\flowB{}) alcança F1
+        superior ao LLM-\textit{only} (\flowC{}) em precisão formal?
+      \item[\textbf{RQ3:}] Qual categoria de bug (\textit{assertion
+        violation}, \textit{division by zero}, \textit{out of bounds})
+        mais beneficia da combinação LLM + \esbmc{}?
+    \end{description}
+  \item[\textbf{OE4.}] Quantificar a taxa de alucinação da LLM antes
+    e depois da confirmação formal (\S\ref{sec:avaliacao}).
+\end{enumerate}
+
+O restante deste documento está organizado da seguinte forma:
+a Seção~\ref{sec:correlatos} discute os trabalhos relacionados;
+a Seção~\ref{sec:referencial} apresenta o referencial teórico;
+a Seção~\ref{sec:metodo} descreve o método proposto;
+a Seção~\ref{sec:resultados} apresenta os resultados parciais;
+a Seção~\ref{sec:metodologia} detalha o protocolo experimental e
+o cronograma;
+a Seção~\ref{sec:conclusao} conclui o trabalho.
+
+% ============================================================
+\section{Trabalhos Correlatos}
+\label{sec:correlatos}
+
+% ── O que buscar na literatura ──────────────────────────────
+% Grupos a cobrir:
+%   (a) LLM para análise e detecção de bugs em código:
+%       CodeLlama, Copilot, CodeT5, DeepCode, VulBERTa, etc.
+%   (b) LLM + verificação formal (híbridos):
+%       LLM para síntese de invariantes (Houdini+LLM),
+%       LLM para geração de harnesses (FuzzGPT, etc.)
+%       "LLM Proposes, Formal Tools Dispose" (citar se existir)
+%   (c) ESBMC e BMC para Python:
+%       Papers do grupo ESBMC sobre suporte Python,
+%       PyExZ3, Pyre, mypy (análise estática Python)
+%   (d) Datasets de bugs Python:
+%       BugsInPy, PyBugs, etc.
+%
+% Diferencial deste trabalho:
+%   - Usa --function (sem harness manual) para Python
+%   - Compara 3 fluxos sistematicamente no mesmo dataset
+%   - Mede alucinação LLM via validação AST
+
+\todo{Preencher com revisão bibliográfica sistemática.
+      Grupos: LLM code review, LLM+formal, ESBMC Python, datasets.
+      Destacar como o pipeline híbrido com --function se diferencia.}
+
+% ============================================================
+\section{Referencial Teórico}
+\label{sec:referencial}
+
+\subsection{Bounded Model Checking (BMC)}
+\todo{Definir BMC formalmente: fórmula SAT, bound k, contraexemplo.
+      Citar Clarke, Biere, CBMC.}
+
+\subsection{ESBMC e Verificação de Código Python}
+\todo{Descrever flag --function: parâmetros simbólicos automáticos.
+      Limitações: sem len(), subset de Python suportado.
+      Citar papers ESBMC.}
+
+\subsection{Modelos de Linguagem de Grande Escala para Código}
+\todo{GPT-4 / Responses API. Structured outputs (JSON schema).
+      Temperature=0 para reproducibilidade.
+      Conceito de alucinação em code review.}
+
+\subsection{Análise Estática via AST em Python}
+\todo{Papel da validação AST para filtrar falsos positivos da LLM.
+      Módulo ast do Python.}
+
+% ============================================================
+\section{Método Proposto}
+\label{sec:metodo}
+
+% Este seção é 100% derivável do repositório — sem dependência de bib.
+
+\subsection{Visão Geral do Pipeline}
+
+O pipeline é composto por cinco estágios sequenciais, descritos a seguir
+e ilustrados na Figura~\ref{fig:pipeline}:
+
+\begin{enumerate}
+  \item \textbf{Preprocessamento (AST):} extração de \texttt{CodeUnit}
+    por função — parâmetros, operações perigosas (divisões, subscripts,
+    asserts), guardas e métricas de complexidade.
+  \item \textbf{Análise LLM:} para cada \texttt{CodeUnit}, o modelo LLM
+    recebe um prompt estruturado com 8 passos de raciocínio obrigatórios
+    e retorna \texttt{Finding}s em JSON validado por schema.
+  \item \textbf{Validação AST:} findings com \texttt{verifiable=true} têm
+    a expressão reportada verificada no AST executável; expressões
+    ausentes são classificadas como \texttt{llm\_false\_positive}.
+  \item \textbf{Verificação ESBMC (\flowB{}):} findings verificáveis são
+    submetidos ao \esbmc{} com \texttt{--function <nome>} e flags
+    específicos da categoria (Tabela~\ref{tab:flags}).
+  \item \textbf{Consolidação:} cada finding recebe uma classificação
+    final determinística (Tabela~\ref{tab:classificacoes}).
+\end{enumerate}
+
+\begin{figure}[ht]
+  \centering
+  % \includegraphics[width=0.95\columnwidth]{figs/pipeline.pdf}
+  \todo{Inserir diagrama de fluxo do pipeline: AST → LLM → Validação
+        AST → ESBMC --function → Classificação final.}
+  \caption{Arquitetura do pipeline híbrido LLM + \esbmc{}.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Flow A — ESBMC-\textit{Only}}
+
+No \flowA{}, o \esbmc{} é invocado com \texttt{--function~<fn>} para
+cada função extraída pelo preprocessador, sem envolvimento da LLM.
+Os parâmetros tornam-se simbólicos automaticamente; nenhum harness é
+necessário.
+O resultado serve como \textit{baseline} formal — teto de desempenho
+alcançável por BMC sem orientação semântica.
+
+\subsection{Flow B — Pipeline Híbrido (Principal)}
+
+No \flowB{}, a LLM recebe o código da função junto com as operações
+detectadas pelo preprocessador e retorna hipóteses de bug em JSON.
+Para cada hipótese com \texttt{verifiable=true}, o \esbmc{} é invocado
+com \texttt{--function} e os flags da categoria (Tabela~\ref{tab:flags}).
+
+\begin{table}[htbp]
+  \caption{Flags \esbmc{} por categoria de bug no \flowB{}}
+  \label{tab:flags}
+  \begin{center}
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Categoria} & \textbf{Flags adicionais} \\
+      \midrule
+      \texttt{division\_by\_zero}    & \texttt{--no-bounds-check} \\
+      \texttt{out\_of\_bounds}       & \texttt{--no-div-by-zero-check --assign-param-nondet} \\
+      \texttt{assertion\_violation}  & (nenhum) \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsection{Flow C — LLM-\textit{Only} (Baseline Neural)}
+
+O \flowC{} é idêntico ao \flowB{} até a etapa de análise LLM, mas omite
+a verificação pelo \esbmc{}.
+Findings com \texttt{verifiable=true} são classificados como
+\texttt{llm\_only\_suspected}, sem confirmação formal.
+Serve como \textit{baseline} neural — mede a capacidade da LLM antes
+da triagem formal.
+
+\subsection{Classificações Finais}
+
+Cada finding recebe uma classificação determinística descrita na
+Tabela~\ref{tab:classificacoes}.
+
+\begin{table}[htbp]
+  \caption{Classificações finais do pipeline}
+  \label{tab:classificacoes}
+  \begin{center}
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Classificação} & \textbf{Significado} \\
+      \midrule
+      \texttt{llm\_confirmed\_by\_esbmc}   & LLM + \esbmc{} confirmaram (TP híbrido) \\
+      \texttt{esbmc\_native\_bug}           & \flowA{} detectou, LLM não havia apontado \\
+      \texttt{llm\_missed\_esbmc\_bug}      & FN da LLM detectado pelo \flowA{} \\
+      \texttt{not\_confirmed\_within\_bound}& \esbmc{} verificou sem violação no bound \\
+      \texttt{esbmc\_inconclusive}          & Timeout, erro ou resultado ambíguo \\
+      \texttt{llm\_false\_positive}         & Expressão ausente no AST (alucinação) \\
+      \texttt{llm\_only\_suspected}         & \flowC{}: suspeita sem verificação \\
+      \texttt{heuristic\_smell\_only}       & Code smell, sem verificação formal \\
+      \texttt{skipped\_not\_verifiable}     & Fora do escopo do \flowB{} atual \\
+      \texttt{out\_of\_scope\_finding}      & Categoria não suportada na V1 \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsection{Dataset}
+\label{sec:dataset}
+
+O dataset é composto por \todo{N} arquivos Python construídos manualmente,
+distribuídos conforme a Tabela~\ref{tab:dataset}.
+Todos os arquivos foram validados para não conterem chamadas a
+\texttt{len()} (limitação do suporte \esbmc{} a Python).
+O ground truth é anotado em JSON por função, especificando categoria
+esperada, verifiability, e expressão envolvida.
+
+\begin{table}[htbp]
+  \caption{Distribuição do dataset por categoria}
+  \label{tab:dataset}
+  \begin{center}
+    \begin{tabular}{llr}
+      \toprule
+      \textbf{Tipo} & \textbf{Categoria} & \textbf{Arquivos} \\
+      \midrule
+      Bug formal & \texttt{assertion\_violation}  & 15 \\
+      Bug formal & \texttt{division\_by\_zero}    & 15 \\
+      Bug formal & \texttt{out\_of\_bounds}       & 15 \\
+      Controle   & \texttt{clean}                 & 10 \\
+      Smell      & \texttt{complex\_conditional}  & 5  \\
+      Smell      & \texttt{long\_method}          & 5  \\
+      Smell      & \texttt{many\_parameters}      & 5  \\
+      \midrule
+                 & \textbf{Total}                 & \textbf{70} \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsection{Avaliação}
+\label{sec:avaliacao}
+
+Para cada fluxo, calculamos precisão ($P$), revocação ($R$) e $F_1$:
+
+\begin{equation}
+  P = \frac{TP}{TP + FP}, \quad
+  R = \frac{TP}{TP + FN}, \quad
+  F_1 = \frac{2PR}{P + R}
+  \label{eq:prf}
+\end{equation}
+
+Bugs formais e \textit{code smells} são avaliados separadamente.
+Arquivos \texttt{clean} são controles negativos: qualquer finding
+reportado conta como FP.
+A taxa de alucinação é calculada como:
+
+\begin{equation}
+  \text{Hal} = \frac{\texttt{llm\_false\_positive}}
+               {\texttt{bug\_tp} + \texttt{bug\_fp} +
+                \texttt{llm\_false\_positive}}
+  \label{eq:hal}
+\end{equation}
+
+% ============================================================
+\section{Resultados Parciais}
+\label{sec:resultados}
+
+\todo{Esta seção será preenchida após execução do benchmark completo.
+      Rodar: python scripts/smoke\_benchmark.py --model gpt-4.1-nano --n 15 --save-json artifacts/results/flow\_ab\_full.json
+      e o equivalente para Flow C.}
+
+% Estrutura planejada das tabelas de resultados:
+%
+% Tabela A — P/R/F1 por fluxo (Flow A / Flow B / Flow C)
+% Tabela B — F1 por categoria de bug (av / dz / oob) × fluxo
+% Tabela C — Resultados da LLM: confirmed / not confirmed / FP / inconclusive
+% Tabela D — Taxa de alucinação por modelo
+
+% ============================================================
+\section{Metodologia e Cronograma}
+\label{sec:metodologia}
+
+\subsection{Protocolo Experimental}
+
+Os três fluxos são avaliados sobre o mesmo dataset (70 arquivos),
+com os parâmetros fixos: bound $k = 5$, timeout $= 30$s,
+temperatura LLM $= 0$.
+Cada arquivo é processado independentemente; não há contaminação
+cruzada entre fluxos.
+O modelo LLM principal é \todo{gpt-4.1-nano} (ou outro a especificar).
+
+Para comparação entre modelos, o script aceita \texttt{--model} como
+parâmetro, permitindo rodar o mesmo protocolo com modelos diferentes
+e gerar JSONs independentes consolidados no dashboard HTML.
+
+\subsection{Cronograma}
+
+\todo{Inserir tabela de cronograma de atividades restantes:
+      coleta de resultados, revisão bibliográfica, redação, submissão.}
+
+% ============================================================
+\section{Conclusão}
+\label{sec:conclusao}
+
+\todo{Preencher após obtenção dos resultados. Estrutura sugerida:
+      (i) retomar hipótese, (ii) responder RQ1/RQ2/RQ3,
+      (iii) limitações, (iv) trabalhos futuros.}
+
+A abordagem híbrida proposta demonstra que o problema de ponto de entrada
+do BMC em código Python pode ser resolvido sem harness manual, usando
+o flag \texttt{--function} do \esbmc{} direcionado pela LLM.
+A separação em três fluxos independentes (\flowA{}, \flowB{}, \flowC{})
+permite atribuir ganhos de desempenho a cada componente de forma
+controlada.
+O framework de 10 classificações finais e as métricas de alucinação
+oferecem uma visão granular do comportamento do pipeline que vai além
+das métricas agregadas de F1.
+
+% ============================================================
+\section*{Agradecimentos}
+
+\todo{Preencher com agências de fomento e colaboradores.}
+
+% ============================================================
+\begin{thebibliography}{00}
+
+% ── BMC / ESBMC ─────────────────────────────────────────────
+\bibitem{esbmc}
+  \todo{Referência principal do ESBMC.}
+\bibitem{bmc_clarke}
+  \todo{Clarke et al. — Bounded Model Checking.}
+\bibitem{biere_bmc}
+  \todo{Biere et al. — BMC survey.}
+
+% ── LLMs para código ────────────────────────────────────────
+\bibitem{codellama}
+  \todo{CodeLlama / GPT-4 code review paper.}
+\bibitem{llm_bugs}
+  \todo{Trabalho sobre LLM para detecção de bugs.}
+\bibitem{llm_hallucination}
+  \todo{Trabalho sobre alucinações de LLM em code review.}
+
+% ── Híbridos LLM + formal ───────────────────────────────────
+\bibitem{llm_formal_hybrid}
+  \todo{Trabalho sobre combinação LLM + verificação formal.}
+
+% ── Datasets de bugs Python ─────────────────────────────────
+\bibitem{bugsinpy}
+  \todo{BugsInPy ou dataset similar de bugs Python reais.}
+
+% ── Análise estática Python ─────────────────────────────────
+\bibitem{pysa}
+  \todo{Pyre, mypy, Pyflakes ou similar.}
+
+\end{thebibliography}
+
+\end{document}

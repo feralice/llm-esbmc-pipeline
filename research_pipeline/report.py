@@ -13,19 +13,11 @@ from .models import (
     CLASSIFICATION_LLM_ONLY,
     CLASSIFICATION_NOT_CONFIRMED,
     CLASSIFICATION_OUT_OF_SCOPE,
-    CLASSIFICATION_RUNTIME_INCONCLUSIVE,
-    CLASSIFICATION_RUNTIME_NOT_REPRODUCED,
-    CLASSIFICATION_RUNTIME_REPRODUCED,
     CLASSIFICATION_SKIPPED,
     ESBMCDirectResult,
     ESBMCResult,
     FinalResult,
     Finding,
-)
-from .experimental.runtime_harness_validator import (
-    HARNESS_NOT_REPRODUCED,
-    HARNESS_REPRODUCED,
-    HARNESS_WRONG_EXCEPTION,
 )
 
 
@@ -79,26 +71,6 @@ def _interpretation(
             "Existe ao menos um contraexemplo concreto."
         )
 
-    if classification == CLASSIFICATION_RUNTIME_REPRODUCED:
-        exc = finding.metadata.get("expected_exception", "exceção esperada")
-        return (
-            f"Bug '{cat}'{expr_str} levantado pela LLM e reproduzido em runtime. "
-            f"O harness gerou {exc} com as entradas fornecidas. "
-            "Validação via execução controlada (sem verificação formal completa)."
-        )
-
-    if classification == CLASSIFICATION_RUNTIME_NOT_REPRODUCED:
-        return (
-            f"Suspeita de '{cat}'{expr_str} não reproduzida pelo harness de runtime. "
-            "O harness executou sem levantar exceção ou levantou exceção diferente da esperada."
-        )
-
-    if classification == CLASSIFICATION_RUNTIME_INCONCLUSIVE:
-        return (
-            f"Harness de runtime inconclusivo para '{cat}'{expr_str}. "
-            "Possíveis causas: harness rejeitado por segurança, timeout ou erro de execução."
-        )
-
     if classification == CLASSIFICATION_NOT_CONFIRMED:
         return (
             f"Suspeita de '{cat}'{expr_str} não confirmada pelo ESBMC "
@@ -136,7 +108,6 @@ def consolidate_result(
     finding: Finding,
     esbmc_result: ESBMCResult | None,
     esbmc_direct_result: ESBMCDirectResult | None = None,
-    harness_result: dict | None = None,
     llm_only: bool = False,
 ) -> FinalResult:
 
@@ -168,17 +139,7 @@ def consolidate_result(
         elif esbmc_result.status == "no_violation_found":
             classification = CLASSIFICATION_NOT_CONFIRMED
         else:
-            # tool_error, inconclusive, timeout — try harness if available
-            if harness_result is not None:
-                status = harness_result.get("status", "")
-                if status == HARNESS_REPRODUCED:
-                    classification = CLASSIFICATION_RUNTIME_REPRODUCED
-                elif status in (HARNESS_NOT_REPRODUCED, HARNESS_WRONG_EXCEPTION):
-                    classification = CLASSIFICATION_RUNTIME_NOT_REPRODUCED
-                else:
-                    classification = CLASSIFICATION_RUNTIME_INCONCLUSIVE
-            else:
-                classification = CLASSIFICATION_ESBMC_INCONCLUSIVE
+            classification = CLASSIFICATION_ESBMC_INCONCLUSIVE
 
     else:
         classification = CLASSIFICATION_SKIPPED
@@ -189,7 +150,6 @@ def consolidate_result(
         finding=finding,
         esbmc_result=esbmc_result,
         esbmc_direct_result=esbmc_direct_result,
-        harness_result=harness_result,
         final_classification=classification,
         interpretation=_interpretation(
             classification, finding, esbmc_result, esbmc_direct_result
@@ -255,6 +215,8 @@ def _category_from_esbmc_property(text: str) -> str:
     if "division_by_zero" in normalized or "division by zero" in normalized or "divisor" in normalized:
         return "division_by_zero"
     if "out-of-bounds" in normalized or "out of bounds" in normalized or "bounds" in normalized:
+        return "out_of_bounds"
+    if "dereference" in normalized:  # Python list OOB shows as dereference failure in ESBMC
         return "out_of_bounds"
     return "unknown_esbmc_violation"
 

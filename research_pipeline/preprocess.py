@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import warnings
 from pathlib import Path
 
 from .models import CodeUnit, OperationRecord
@@ -164,7 +165,11 @@ def preprocess_file(path: str | Path) -> list[CodeUnit]:
     file_path = Path(path)
     source = file_path.read_text(encoding="utf-8")
     source_lines = source.splitlines()
-    tree = ast.parse(source)
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        warnings.warn(f"Skipping invalid Python file {file_path}: {exc}", RuntimeWarning)
+        return []
     collector = _UnitCollector(source_lines, file_path)
     collector.visit(tree)
     for unit in collector.units:

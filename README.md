@@ -33,6 +33,8 @@ flowchart LR
 
 ## Instalação
 
+**Python:** use Python 3.9+ (`ast.unparse()` é usado no preprocessamento).
+
 ```bash
 git clone <repo>
 cd llm-esbmc-pipeline
@@ -63,7 +65,25 @@ ANTHROPIC_API_KEY=    # para modelo claude-*
 
 ## Como rodar
 
-### Modo `full` — recomendado
+### Benchmark reproduzível da V1
+
+O caminho canônico da V1 para reproduzir métricas do dataset é `src/main.py --mode benchmark`.
+
+```bash
+python src/main.py \
+  --mode benchmark \
+  --input dataset/labeled/ground_truths \
+  --model gpt-5.5-2026-04-23 \
+  --bound 5 \
+  --timeout 30 \
+  --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
+```
+
+Use `TUTORIAL.md` para o passo a passo completo de benchmark.
+
+### CLI geral auxiliar: modo `full`
+
+Os comandos abaixo são úteis para exploração manual e depuração. Para métricas da V1, prefira o benchmark canônico acima.
 
 ```bash
 python src/main.py --mode full \
@@ -74,7 +94,7 @@ python src/main.py --mode full \
   --report reports/json/full_report.json
 ```
 
-### Modo `esbmc-direct` — baseline sem LLM
+### CLI geral auxiliar: `esbmc-direct` — baseline sem LLM
 
 ```bash
 python src/main.py --mode esbmc-direct \
@@ -87,13 +107,14 @@ python src/main.py --mode esbmc-direct \
 
 ```bash
 python src/main.py --mode benchmark \
-  --input dataset/labeled/ground_truths/bugs \
+  --input dataset/labeled/ground_truths \
   --model gpt-5.5-2026-04-23 \
   --bound 5 \
-  --timeout 30
+  --timeout 30 \
+  --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
 ```
 
-### Modo `llm-first` — só Flow B
+### CLI geral auxiliar: modo `llm-first` — só Flow B
 
 ```bash
 python src/main.py --mode llm-first \
@@ -148,14 +169,6 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 | `esbmc_native_bug` | Flow A encontrou sem ajuda da LLM |
 | `llm_missed_esbmc_bug` | ESBMC encontrou bug que a LLM não reportou |
 
-### Trilha runtime (harness auxiliar)
-
-| Classificação | Descrição |
-|---|---|
-| `runtime_reproduced_by_harness` | Execução concreta reproduziu a exceção (**auxiliar**, não é prova formal) |
-| `runtime_not_reproduced` | Harness não reproduziu a exceção esperada |
-| `runtime_inconclusive` | Harness rejeitado, timeout ou erro de execução |
-
 ### Rejeição / heurística
 
 | Classificação | Descrição |
@@ -166,7 +179,7 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 | `out_of_scope_finding` | Categoria fora das 5 aceitas pelo MVP |
 | `no_vcc_generated` | Legado: ESBMC em nível de módulo gerou 0 VCCs |
 
-Veja [`docs/classification.md`](docs/classification.md) para o fluxo de decisão completo.
+Veja [`docs/v1.md`](docs/v1.md) para o escopo e as métricas da V1.
 
 ---
 
@@ -185,8 +198,6 @@ llm-esbmc-pipeline/
 │   │   └── prompts.py             # System prompt e schema JSON
 │   ├── verification/
 │   │   └── esbmc_runner.py        # Flow A/B com --function
-│   ├── experimental/
-│   │   └── runtime_harness_validator.py # Harness runtime experimental
 │   ├── pipeline.py                # Orquestração dos flows
 │   ├── report.py                  # Consolidação e classificação final
 │   ├── full_report.py             # JSON hierárquico por arquivo
@@ -214,13 +225,8 @@ llm-esbmc-pipeline/
 | Documento | Conteúdo |
 |---|---|
 | [`docs/v1.md`](docs/v1.md) | **Escopo V1 — artigo:** fluxo, categorias, classificações, métricas, tabelas |
-| [`docs/v2.md`](docs/v2.md) | **Escopo V2 — trabalho futuro:** harness runtime, validação concreta |
-| [`docs/architecture.md`](docs/architecture.md) | Arquitetura detalhada de cada camada |
-| [`docs/pipeline_flow.md`](docs/pipeline_flow.md) | Diagramas de fluxo por modo |
-| [`docs/classification.md`](docs/classification.md) | Todas as classificações com fluxo de decisão |
 | [`docs/modes.md`](docs/modes.md) | Referência completa dos modos de execução |
-| [`docs/current_limitations.md`](docs/current_limitations.md) | Limitações conhecidas e status |
-| [`frontend/benchmark_notes.html`](frontend/benchmark_notes.html) | Anotador simples para comparar GPT/Claude/Ollama |
+| [`docs/benchmarking.md`](docs/benchmarking.md) | Matriz de modelos e comparação de JSONs |
 
 ---
 

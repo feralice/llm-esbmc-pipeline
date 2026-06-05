@@ -1,4 +1,4 @@
-# Environment / secrets
+# Secrets
 .env
 .env.*
 !.env.example
@@ -7,16 +7,13 @@
 __pycache__/
 *.py[cod]
 *.pyo
-*.pyd
-*.egg-info/
-*.egg
 
 # Virtual environments
 .venv/
 venv/
 env/
 
-# Caches
+# Tool caches
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -26,25 +23,30 @@ env/
 .idea/
 *.swp
 
-# Claude Code
-.claude/
-.codex/
+# Claude Code — settings locais e skills pré-instaladas (não versionar)
+# .claude/commands/ é versionado (skills do projeto)
+.claude/settings.local.json
+.claude/settings.json
+.claude/skills/
+.agents/
+.code-review-graph/
 
-# Scratch / temporários na raiz
+# Codex / MCP — configs locais da sessão de desenvolvimento (não versionar)
+CLAUDE.md
+.mcp.json
+.codex/skills/
+skills-lock.json
+
+# Scratch
 teste.py
 scratch_*.py
 
-# Pipeline outputs — generated at runtime, não versionar
+# Outputs gerados em runtime
 artifacts/
 output/
-archive/outputs/
-reports/json/
 reports/html/
-logs/
+reports/json/
 
 # ESBMC outputs
 *.smt2
 *.goto
-
-# Node (frontend futuro)
-node_modules/

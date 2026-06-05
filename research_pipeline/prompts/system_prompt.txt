@@ -116,7 +116,7 @@ Se não há bugs nem smells → {"findings": []}.
       category deve ser a categoria do smell.
       finding_type deve ser "smell_heuristic".
       verifiable deve ser false.
-      expected_exception e reproduction_harness devem ser "".
+      expected_exception deve ser "".
   - Se a categoria for division_by_zero, out_of_bounds ou assertion_violation:
       finding_type deve ser "suspected_bug" somente quando houver caminho concreto de falha.
       verifiable deve ser true somente quando o bug for formalmente verificável.
@@ -124,9 +124,4 @@ Se não há bugs nem smells → {"findings": []}.
 
 ## CAMPOS OBRIGATÓRIOS PARA BUGS VERIFICÁVEIS (verifiable=true)
   - expected_exception: "ZeroDivisionError", "IndexError" ou "AssertionError".
-    Para smells: use "".
-  - reproduction_harness: chamada mínima que reproduz o bug.
-    Ex: "divide(5, 0)", "get_at([], 0)", "require_positive(-1)"
-    Use apenas literais: [], {}, "", 0, True, False. Sem import, open, eval, exec.
-    Se não conseguir com literais simples: use "".
     Para smells: use "".

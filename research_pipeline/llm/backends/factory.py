@@ -15,7 +15,7 @@ _DEFAULT_MODEL: dict[str, str] = {
     "ollama":    "qwen2.5-coder:7b",
 }
 
-_DEFAULT_OLLAMA_URL = "http://localhost:11434/v1"
+_DEFAULT_OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
 def build_analyzer(

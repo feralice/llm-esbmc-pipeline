@@ -25,9 +25,6 @@ from .models import (
     CLASSIFICATION_LLM_MISSED_ESBMC_BUG,
     CLASSIFICATION_NOT_CONFIRMED,
     CLASSIFICATION_OUT_OF_SCOPE,
-    CLASSIFICATION_RUNTIME_INCONCLUSIVE,
-    CLASSIFICATION_RUNTIME_NOT_REPRODUCED,
-    CLASSIFICATION_RUNTIME_REPRODUCED,
     CLASSIFICATION_SKIPPED,
     ESBMCDirectResult,
     ESBMCResult,
@@ -184,18 +181,12 @@ def _summary_block(file_entries: list[dict]) -> dict:
             1 for lr in all_llm
             if lr["final_classification"] == CLASSIFICATION_OUT_OF_SCOPE
         ),
-        "total_runtime_reproduced": sum(
-            1 for lr in all_llm
-            if lr["final_classification"] == CLASSIFICATION_RUNTIME_REPRODUCED
-        ),
         "total_inconclusive": sum(
             1 for lr in all_llm
             if lr["final_classification"] in (
                 CLASSIFICATION_ESBMC_INCONCLUSIVE,
                 CLASSIFICATION_NOT_CONFIRMED,
                 CLASSIFICATION_SKIPPED,
-                CLASSIFICATION_RUNTIME_NOT_REPRODUCED,
-                CLASSIFICATION_RUNTIME_INCONCLUSIVE,
             )
         ),
     }
@@ -220,12 +211,9 @@ def _classify_file(results: list[FinalResult]) -> str:
         CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC,
         CLASSIFICATION_ESBMC_NATIVE_BUG,
         CLASSIFICATION_LLM_MISSED_ESBMC_BUG,
-        CLASSIFICATION_RUNTIME_REPRODUCED,
         CLASSIFICATION_LLM_FALSE_POSITIVE,
         CLASSIFICATION_NOT_CONFIRMED,
-        CLASSIFICATION_RUNTIME_NOT_REPRODUCED,
         CLASSIFICATION_ESBMC_INCONCLUSIVE,
-        CLASSIFICATION_RUNTIME_INCONCLUSIVE,
         CLASSIFICATION_OUT_OF_SCOPE,
         CLASSIFICATION_HEURISTIC_SMELL,
         CLASSIFICATION_SKIPPED,
@@ -289,10 +277,8 @@ def _finding_to_result(result: FinalResult, model: str | None) -> dict:
         "verifiable": f.verifiable,
         "validation_strategy": validation_strategy,
         "expected_exception": f.metadata.get("expected_exception", ""),
-        "reproduction_harness": f.metadata.get("reproduction_harness", ""),
         "ast_validation": _ast_validation(f),
         "esbmc_function": _esbmc_function_dict(result.esbmc_result),
-        "runtime_validation": result.harness_result,
         "final_classification": cls,
         "interpretation": result.interpretation,
     }
@@ -301,8 +287,6 @@ def _finding_to_result(result: FinalResult, model: str | None) -> dict:
 def _validation_strategy(result: FinalResult) -> str:
     if result.esbmc_result is not None:
         return "esbmc"
-    if result.harness_result is not None:
-        return "runtime_harness"
     if result.finding.finding_type == "smell_heuristic":
         return "heuristic"
     return "skipped"
