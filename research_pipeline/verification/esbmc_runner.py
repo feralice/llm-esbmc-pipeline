@@ -143,9 +143,9 @@ def _write_direct_log(file_path: Path, combined: str, output_dir: str | Path | N
 # ---------------------------------------------------------------------------
 
 _FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
-    "division_by_zero":    ["--no-bounds-check"],
+    "division_by_zero":    ["--no-bounds-check", "--assign-param-nondet"],
     "out_of_bounds":       ["--no-div-by-zero-check", "--assign-param-nondet"],
-    "assertion_violation": [],
+    "assertion_violation": ["--assign-param-nondet"],
 }
 
 # Fix 1: Flow A uses --assign-param-nondet so parameters are symbolic (fair baseline).

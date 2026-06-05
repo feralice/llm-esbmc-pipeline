@@ -37,6 +37,9 @@ class EvalCounts:
     hybrid_bug_fp: int = 0
     hybrid_bug_fn: int = 0
 
+    # Ghost bugs (suspected_bug + verifiable=False) — excluded from hallucination_rate denominator.
+    ghost_bug_count: int = 0
+
     # Combined pipeline outcomes (counts across all verifiable findings)
     llm_confirmed_by_esbmc: int = 0
     esbmc_native_bug: int = 0
@@ -296,6 +299,7 @@ def evaluate_file(
     counts.smell_fp = smell_fp
     counts.smell_fn = smell_fn
     counts.hallucination_count    = len(hallucinations)
+    counts.ghost_bug_count        = len(ghost_bugs)
     counts.skipped_not_verifiable = 0
 
     for cat, verdict in bug_verdicts + smell_verdicts:
@@ -308,10 +312,8 @@ def evaluate_file(
 
     # ---- Flow B — ESBMC with --function (symbolic entry point) ----
     esbmc_confirmed_bugs: list[Finding] = []
-    # Fix 8: track functions where ESBMC was inconclusive to exclude from hybrid denominator.
-    inconclusive_bug_functions: set[str] = set()
-    # Fix 9: track inconclusive findings on clean files (they are hidden FPs).
-    inconclusive_findings_for_clean: list[Finding] = []
+    # Track all inconclusive findings for per-function FP accounting (Fix 8/9 unified).
+    inconclusive_findings: list[Finding] = []
 
     for unit, bug_finding in bugs_with_units:
         esbmc_result = run_esbmc_on_function(
@@ -329,30 +331,31 @@ def evaluate_file(
             counts.llm_confirmed_by_esbmc += 1
         elif esbmc_result.status == "violation_found":
             counts.esbmc_inconclusive += 1
-            inconclusive_bug_functions.add(bug_finding.metadata.get("function", ""))
-            if is_clean_case:
-                inconclusive_findings_for_clean.append(bug_finding)
+            inconclusive_findings.append(bug_finding)
         elif esbmc_result.status == "no_violation_found":
             counts.not_confirmed_within_bound += 1
         elif esbmc_result.status == "skipped":
             counts.skipped_not_verifiable += 1
         else:  # timeout, tool_error, inconclusive
             counts.esbmc_inconclusive += 1
-            inconclusive_bug_functions.add(bug_finding.metadata.get("function", ""))
-            if is_clean_case:
-                inconclusive_findings_for_clean.append(bug_finding)
+            inconclusive_findings.append(bug_finding)
 
-    # Fix 8: exclude inconclusive cases from hybrid expected (they're not refuted, not confirmed).
-    exp_bugs_for_hybrid = [
-        e for e in exp_bugs
-        if e.get("function", "") not in inconclusive_bug_functions
-    ]
+    # Use FULL exp_bugs — no dynamic exclusion.
+    # Timeout on a real bug = FN (the pipeline failed to prove it). This is honest.
     hybrid_tp, hybrid_fp, hybrid_fn, hybrid_verdicts = _match_with_categories(
-        esbmc_confirmed_bugs, exp_bugs_for_hybrid
+        esbmc_confirmed_bugs, exp_bugs
     )
-    # Fix 9: on clean files, inconclusive LLM-proposed bugs are hidden FPs for the hybrid pipeline.
+    # Inconclusive LLM-proposed bugs that have NO matching expected (function, category) are FPs:
+    # the LLM pointed at a clean function, ESBMC couldn't even disprove it — LLM noise.
+    exp_bug_signatures = {(e.get("function", ""), e.get("category", "")) for e in exp_bugs}
+    for f in inconclusive_findings:
+        sig = (f.metadata.get("function", ""), f.category)
+        if sig not in exp_bug_signatures:
+            hybrid_fp += 1
+            counts.add_hybrid_category_fp(f.category)
+
     counts.hybrid_bug_tp = hybrid_tp
-    counts.hybrid_bug_fp = hybrid_fp + len(inconclusive_findings_for_clean)
+    counts.hybrid_bug_fp = hybrid_fp
     counts.hybrid_bug_fn = hybrid_fn
 
     # Fix 4: per_category_hybrid tracks hybrid (Flow B) verdicts, not LLM-only.
@@ -363,8 +366,6 @@ def evaluate_file(
             counts.add_hybrid_category_fp(cat)
         elif verdict == "fn":
             counts.add_hybrid_category_fn(cat)
-    for f in inconclusive_findings_for_clean:
-        counts.add_hybrid_category_fp(f.category)
 
     # ---- Flow A: ESBMC-only function baseline ----
     direct = run_esbmc_function_baseline(
@@ -446,6 +447,7 @@ def evaluate_model(
         total.not_confirmed_within_bound += c.not_confirmed_within_bound
         total.esbmc_inconclusive       += c.esbmc_inconclusive
         total.skipped_not_verifiable   += c.skipped_not_verifiable
+        total.ghost_bug_count          += c.ghost_bug_count
         total.merge_category(c)
         total.merge_category_hybrid(c)
 
@@ -492,9 +494,10 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
 
 
 def hallucination_rate(counts: EvalCounts) -> float:
-    # bug_fp already includes hallucination_count since evaluate_file adds
-    # hallucinations to bug_fp — do not add hallucination_count again.
-    total_verifiable_claims = counts.bug_tp + counts.bug_fp
+    # Denominator = LLM verifiable claims only (bugs + hallucinations).
+    # Exclude ghost_bugs (suspected_bug + verifiable=False) — they inflate bug_fp
+    # but are not true hallucinations (AST didn't reject them outright).
+    total_verifiable_claims = counts.bug_tp + counts.bug_fp - counts.ghost_bug_count
     if total_verifiable_claims == 0:
         return 0.0
     return counts.hallucination_count / total_verifiable_claims

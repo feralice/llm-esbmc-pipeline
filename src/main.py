@@ -254,8 +254,13 @@ def _print_benchmark_table(label: str, counts: EvalCounts) -> None:
     print(f"  Flow A P/R/F1:       {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}")
     print(f"  Alucinações LLM:     {counts.hallucination_count}  (taxa: {hlr:.1%})")
 
+    if counts.per_category_hybrid:
+        print(f"\n  Por categoria (Flow B — híbrido):")
+        for cat, c in sorted(counts.per_category_hybrid.items()):
+            cp, cr, cf1 = prf(c["tp"], c["fp"], c["fn"])
+            print(f"    {cat:<30} P={cp:.2f} R={cr:.2f} F1={cf1:.2f}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")
     if counts.per_category:
-        print(f"\n  Por categoria:")
+        print(f"\n  Por categoria (Flow C — LLM only):")
         for cat, c in sorted(counts.per_category.items()):
             cp, cr, cf1 = prf(c["tp"], c["fp"], c["fn"])
             print(f"    {cat:<30} P={cp:.2f} R={cr:.2f} F1={cf1:.2f}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")
@@ -460,16 +465,23 @@ def mode_benchmark(args: argparse.Namespace) -> int:
                 "count": counts.hallucination_count,
                 "rate": round(hallucination_rate(counts), 4),
             },
-            "per_category": {
+            "per_category_llm": {
                 cat: {
                     "precision": round(prf(c["tp"], c["fp"], c["fn"])[0], 4),
                     "recall":    round(prf(c["tp"], c["fp"], c["fn"])[1], 4),
                     "f1":        round(prf(c["tp"], c["fp"], c["fn"])[2], 4),
-                    "tp": c["tp"],
-                    "fp": c["fp"],
-                    "fn": c["fn"],
+                    "tp": c["tp"], "fp": c["fp"], "fn": c["fn"],
                 }
                 for cat, c in sorted(counts.per_category.items())
+            },
+            "per_category_hybrid": {
+                cat: {
+                    "precision": round(prf(c["tp"], c["fp"], c["fn"])[0], 4),
+                    "recall":    round(prf(c["tp"], c["fp"], c["fn"])[1], 4),
+                    "f1":        round(prf(c["tp"], c["fp"], c["fn"])[2], 4),
+                    "tp": c["tp"], "fp": c["fp"], "fn": c["fn"],
+                }
+                for cat, c in sorted(counts.per_category_hybrid.items())
             },
         }
         report_path_out = Path(report_arg)

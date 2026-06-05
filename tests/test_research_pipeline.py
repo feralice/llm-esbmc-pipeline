@@ -108,9 +108,11 @@ def test_preprocess_ignores_test_functions_and_annotations(tmp_path: Path) -> No
 
 
 def test_flow_b_scopes_flags_by_finding_category() -> None:
-    assert _FLOW_B_CATEGORY_FLAGS["division_by_zero"] == ["--no-bounds-check"]
-    assert _FLOW_B_CATEGORY_FLAGS["out_of_bounds"] == ["--no-div-by-zero-check", "--assign-param-nondet"]
-    assert _FLOW_B_CATEGORY_FLAGS["assertion_violation"] == []
+    assert "--no-bounds-check" in _FLOW_B_CATEGORY_FLAGS["division_by_zero"]
+    assert "--assign-param-nondet" in _FLOW_B_CATEGORY_FLAGS["division_by_zero"]
+    assert "--no-div-by-zero-check" in _FLOW_B_CATEGORY_FLAGS["out_of_bounds"]
+    assert "--assign-param-nondet" in _FLOW_B_CATEGORY_FLAGS["out_of_bounds"]
+    assert "--assign-param-nondet" in _FLOW_B_CATEGORY_FLAGS["assertion_violation"]
 
 
 def test_openai_timeout_reports_clear_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
