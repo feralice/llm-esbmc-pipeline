@@ -32,11 +32,13 @@ from research_pipeline.experimental.runtime_harness_validator import (
     HARNESS_REPRODUCED,
     HARNESS_UNSAFE,
     HARNESS_WRONG_EXCEPTION,
+    _match_exception,
     expression_exists_in_executable_ast,
     validate_harness,
 )
 from research_pipeline.preprocess import preprocess_file
-from research_pipeline.llm.findings import normalize_findings
+from research_pipeline.llm.findings import finding_from_dict, normalize_findings
+from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.models import Finding
 
 
@@ -521,3 +523,121 @@ def test_normalize_true_hallucination_is_false_positive(tmp_path: Path) -> None:
     assert normalized[0].finding_type == "llm_false_positive", (
         "Divisão não existe no código — deve ser llm_false_positive"
     )
+
+
+def test_assertion_violation_wrong_expression_is_false_positive(tmp_path: Path) -> None:
+    sample = tmp_path / "assertion.py"
+    sample.write_text(
+        "def require_amount(amount: int) -> int:\n"
+        "    assert amount > 0\n"
+        "    return amount\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    finding = _make_finding("assertion_violation", "assert flag > 0")
+    normalized = normalize_findings(unit, [finding])
+
+    assert normalized[0].finding_type == "llm_false_positive"
+    assert normalized[0].verifiable is False
+
+
+def test_finding_from_dict_preserves_line_metadata_as_int() -> None:
+    finding = finding_from_dict(
+        {
+            "id": "f1",
+            "finding_type": "suspected_bug",
+            "category": "division_by_zero",
+            "metadata": {
+                "expression": "x / y",
+                "line": 12,
+                "relative_line": "3",
+            },
+        }
+    )
+
+    assert finding.metadata["line"] == 12
+    assert finding.metadata["relative_line"] == 3
+
+
+def test_harness_exception_match_requires_exact_exception() -> None:
+    assert _match_exception("ZeroDivisionError", "ZeroDivisionError") == HARNESS_REPRODUCED
+    assert _match_exception("ZeroDivisionError", "Error") == HARNESS_WRONG_EXCEPTION
+
+
+def test_llm_schema_exposes_only_llm_finding_types() -> None:
+    finding_schema = (
+        FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"]["properties"]
+    )
+
+    assert finding_schema["finding_type"]["enum"] == [
+        "suspected_bug",
+        "smell_heuristic",
+    ]
+    assert finding_schema["metadata"]["properties"]["line"]["type"] == "integer"
+    assert finding_schema["metadata"]["properties"]["relative_line"]["type"] == "integer"
+
+
+def test_constant_nonzero_denominator_is_false_positive(tmp_path: Path) -> None:
+    sample = tmp_path / "const_div.py"
+    sample.write_text(
+        "def compute(x: int, tax_rate: int) -> int:\n"
+        "    return x * tax_rate // 100\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    finding = _make_finding("division_by_zero", "x * tax_rate // 100")
+    normalized = normalize_findings(unit, [finding])
+
+    assert normalized[0].finding_type == "llm_false_positive"
+    assert normalized[0].verifiable is False
+
+
+def test_free_parameter_denominator_is_still_suspected_bug(tmp_path: Path) -> None:
+    sample = tmp_path / "free_div.py"
+    sample.write_text(
+        "def divide(x: int, n: int) -> int:\n"
+        "    return x // n\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    finding = _make_finding("division_by_zero", "x // n")
+    normalized = normalize_findings(unit, [finding])
+
+    assert normalized[0].finding_type == "suspected_bug"
+    assert normalized[0].verifiable is True
+
+
+def test_skipped_not_verifiable_does_not_count_smells(tmp_path: Path) -> None:
+    sample = tmp_path / "smelly.py"
+    sample.write_text(
+        "def long_fn(a: int, b: int, c: int, d: int, e: int) -> int:\n"
+        "    x = a + b\n"
+        "    y = c + d\n"
+        "    return x + y + e\n",
+        encoding="utf-8",
+    )
+    smell = _make_finding("many_parameters", "", verifiable=False)
+    smell.finding_type = "smell_heuristic"
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "long_fn", "category": "many_parameters", "verifiable": False}],
+        analyzer=_FakeAnalyzer({"long_fn": [smell]}),
+    )
+
+    assert counts.skipped_not_verifiable == 0
+    assert counts.smell_tp == 1
+
+
+def test_esbmc_native_bug_is_zero_when_no_violation_found(tmp_path: Path) -> None:
+    sample = tmp_path / "clean.py"
+    sample.write_text("def safe(a: int) -> int:\n    return a\n", encoding="utf-8")
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "safe", "category": "clean", "verifiable": False}],
+        analyzer=_FakeAnalyzer({}),
+    )
+
+    assert counts.esbmc_native_bug == 0

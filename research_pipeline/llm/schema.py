@@ -14,8 +14,24 @@ FINDINGS_JSON_SCHEMA: dict = {
                     "properties": {
                         "id":                   {"type": "string"},
                         "stage":                {"type": "string"},
-                        "finding_type":         {"type": "string"},
-                        "category":             {"type": "string"},
+                        "finding_type": {
+                            "type": "string",
+                            "enum": [
+                                "suspected_bug",
+                                "smell_heuristic"
+                            ],
+                        },
+                        "category": {
+                            "type": "string",
+                            "enum": [
+                                "assertion_violation",
+                                "division_by_zero",
+                                "out_of_bounds",
+                                "long_method",
+                                "many_parameters",
+                                "complex_conditional",
+                            ],
+                        },
                         "title":                {"type": "string"},
                         "explanation":          {"type": "string"},
                         "evidence":             {"type": "array", "items": {"type": "string"}},
@@ -28,8 +44,8 @@ FINDINGS_JSON_SCHEMA: dict = {
                             "additionalProperties": False,
                             "properties": {
                                 "expression":    {"type": "string"},
-                                "line":          {"type": "string"},
-                                "relative_line": {"type": "string"},
+                                "line":          {"type": "integer"},
+                                "relative_line": {"type": "integer"},
                             },
                             "required": ["expression", "line", "relative_line"],
                         },

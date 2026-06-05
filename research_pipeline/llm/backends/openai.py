@@ -32,6 +32,7 @@ class OpenAIResponsesAnalyzer:
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         payload = {
             "model": self.model,
+            "temperature": 0,
             "input": [
                 {
                     "role": "system",

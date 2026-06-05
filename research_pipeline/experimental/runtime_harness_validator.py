@@ -259,8 +259,7 @@ def _match_exception(got: str, expected: str) -> str:
         return HARNESS_NOT_REPRODUCED
     if not expected:
         return HARNESS_REPRODUCED
-    # Normalize: ZeroDivisionError == ZeroDivisionError, also accept partial match
-    if got == expected or got in expected or expected in got:
+    if got == expected:
         return HARNESS_REPRODUCED
     return HARNESS_WRONG_EXCEPTION
 

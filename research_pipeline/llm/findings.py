@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import ast
+
 from .categories import SUPPORTED_CATEGORIES, VERIFIABLE_OPERATION_KIND
 from ..models import CodeUnit, Finding
 from ..experimental.runtime_harness_validator import expression_exists_in_executable_ast
@@ -29,8 +31,8 @@ def finding_from_dict(data: dict) -> Finding:
         confidence=str(data.get("confidence") or "low"),
         metadata={
             "expression": str(metadata_raw.get("expression", "")),
-            "line": str(metadata_raw.get("line", "")),
-            "relative_line": str(metadata_raw.get("relative_line", "")),
+            "line": _metadata_int(metadata_raw.get("line")),
+            "relative_line": _metadata_int(metadata_raw.get("relative_line")),
             # Runtime harness fields (populated by LLM for verifiable findings)
             "expected_exception": str(data.get("expected_exception", "")),
             "reproduction_harness": str(data.get("reproduction_harness", "")),
@@ -72,6 +74,15 @@ def _normalize_evidence(evidence_raw) -> list[str]:
     if isinstance(evidence_raw, list):
         return [str(item) for item in evidence_raw]
     return [str(evidence_raw)]
+
+
+def _metadata_int(value) -> int:
+    if value in (None, ""):
+        return 0
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 def _unique_finding_id(preferred_id: str, fallback_id: str, used_ids: set[str]) -> str:
@@ -124,9 +135,9 @@ def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: s
     )
 
 
-def _normalize_assertion_violation(unit: CodeUnit, metadata: dict[str, str]) -> tuple[str, bool]:
+def _normalize_assertion_violation(unit: CodeUnit, metadata: dict[str, object]) -> tuple[str, bool]:
     metadata["has_guard"] = "false"
-    if _assertion_violation_matches_source(unit, metadata.get("expression", "")):
+    if _assertion_violation_matches_source(unit, str(metadata.get("expression", ""))):
         return "suspected_bug", True
     return "llm_false_positive", False
 
@@ -134,19 +145,22 @@ def _normalize_assertion_violation(unit: CodeUnit, metadata: dict[str, str]) -> 
 def _normalize_operation_finding(
     unit: CodeUnit,
     category: str,
-    metadata: dict[str, str],
+    metadata: dict[str, object],
 ) -> tuple[str, bool]:
     expected_operation_kind = VERIFIABLE_OPERATION_KIND.get(category)
     if expected_operation_kind is None:
         return "smell_heuristic", False
 
-    expression = metadata.get("expression", "")
+    expression = str(metadata.get("expression", ""))
 
     # Phase 1: try exact AST-kind match (fast path, enriches line metadata)
     matched_operation = _find_matching_operation(unit, expected_operation_kind, expression)
     if matched_operation is not None:
-        metadata["line"] = str(matched_operation.line)
-        metadata["relative_line"] = str(matched_operation.relative_line)
+        metadata["line"] = matched_operation.line
+        metadata["relative_line"] = matched_operation.relative_line
+        if _denominator_is_nonzero_constant(category, expression):
+            metadata["has_guard"] = "false"
+            return "llm_false_positive", False
         has_guard = _guard_covers_operation(unit, expression, category)
         metadata["has_guard"] = "true" if has_guard else "false"
         return "suspected_bug", True
@@ -155,6 +169,9 @@ def _normalize_operation_finding(
     # (e.g. list.pop(i) instead of list[i]).  Pass through to the Formalizer/harness layer
     # rather than silently labelling it as an LLM hallucination.
     if expression_exists_in_executable_ast(expression, unit.source):
+        if _denominator_is_nonzero_constant(category, expression):
+            metadata["has_guard"] = "false"
+            return "llm_false_positive", False
         metadata["has_guard"] = "false"
         metadata["ast_unrecognized"] = "true"
         return "suspected_bug", True
@@ -204,8 +221,67 @@ def _bounds_guard_covers_expression(unit: CodeUnit, expression: str) -> bool:
 
 
 def _assertion_violation_matches_source(unit: CodeUnit, expression: str) -> bool:
-    source = unit.source
     expression = expression.strip()
-    if expression and expression in source:
+    if not expression:
+        return False
+
+    source = unit.source
+    if expression in source:
         return True
-    return "raise AssertionError" in source or "assert " in source
+
+    expected = _parse_assertion_expression(expression)
+    if expected is None:
+        return False
+
+    expected_dump = ast.dump(expected)
+    return any(ast.dump(actual) == expected_dump for actual in _assertion_tests(unit.source))
+
+
+def _parse_assertion_expression(expression: str) -> ast.AST | None:
+    try:
+        module = ast.parse(expression)
+    except SyntaxError:
+        try:
+            return ast.parse(expression, mode="eval").body
+        except SyntaxError:
+            return None
+
+    if len(module.body) != 1:
+        return None
+
+    statement = module.body[0]
+    if isinstance(statement, ast.Assert):
+        return statement.test
+    if isinstance(statement, ast.Expr):
+        return statement.value
+    return None
+
+
+def _assertion_tests(source: str) -> list[ast.AST]:
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
+    return [node.test for node in ast.walk(tree) if isinstance(node, ast.Assert)]
+
+
+def _denominator_is_nonzero_constant(category: str, expression: str) -> bool:
+    """Return True if the division denominator is a non-zero literal constant.
+
+    Catches cases like `x // 100` where ZeroDivisionError is impossible.
+    Only applies to division_by_zero; other categories are unaffected.
+    """
+    if category != "division_by_zero":
+        return False
+    try:
+        body = ast.parse(expression, mode="eval").body
+    except SyntaxError:
+        return False
+    if not isinstance(body, ast.BinOp):
+        return False
+    if not isinstance(body.op, (ast.Div, ast.FloorDiv, ast.Mod)):
+        return False
+    right = body.right
+    if not isinstance(right, ast.Constant):
+        return False
+    return right.value != 0

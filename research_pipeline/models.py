@@ -48,7 +48,7 @@ class Finding:
     evidence: list[str]
     verifiable: bool
     confidence: str
-    metadata: dict[str, str] = field(default_factory=dict)
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------

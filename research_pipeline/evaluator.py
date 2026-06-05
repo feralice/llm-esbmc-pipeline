@@ -261,8 +261,8 @@ def evaluate_file(
     counts.smell_tp = smell_tp
     counts.smell_fp = smell_fp
     counts.smell_fn = smell_fn
-    counts.hallucination_count   = len(hallucinations)
-    counts.skipped_not_verifiable = len(smells)
+    counts.hallucination_count    = len(hallucinations)
+    counts.skipped_not_verifiable = 0
 
     for cat, verdict in bug_verdicts + smell_verdicts:
         if verdict == "tp":
@@ -317,6 +317,9 @@ def evaluate_file(
     elif not esbmc_found_bug and has_expected_bug:
         if direct.status not in ("inconclusive", "tool_error", "skipped", "timeout", "unsupported_case", "no_vcc_generated"):
             counts.esbmc_direct_fn = 1
+
+    if esbmc_found_bug:
+        counts.esbmc_native_bug = 1
 
     if verbose:
         _print_detail(file_path.name, bugs, exp_bugs, smells, exp_smells, direct)

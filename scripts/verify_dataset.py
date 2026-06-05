@@ -15,8 +15,10 @@ from typing import Optional
 ROOT = Path(__file__).parent.parent
 BUGS_DIR = ROOT / "dataset/labeled/ok/bugs"
 CLEAN_DIR = ROOT / "dataset/labeled/ok/clean"
+SMELLS_DIR = ROOT / "dataset/labeled/ok/smells"
 GT_BUGS_DIR = ROOT / "dataset/labeled/ground_truths/bugs"
 GT_CLEAN = ROOT / "dataset/labeled/ground_truths/clean/clean.json"
+GT_SMELLS_DIR = ROOT / "dataset/labeled/ground_truths/smells"
 
 STDLIB_MODULES = {
     "math", "os", "sys", "re", "json", "collections", "itertools",
@@ -281,6 +283,37 @@ def verify_clean() -> list[CheckResult]:
     return results
 
 
+def verify_smell_category(category: str) -> list[CheckResult]:
+    gt_path = GT_SMELLS_DIR / f"{category}.json"
+    smell_dir = SMELLS_DIR / category
+    gt = load_json(gt_path)
+    results = []
+
+    for item in gt["items"]:
+        file_path = smell_dir / item["file"]
+        issues = []
+
+        if not file_path.exists():
+            results.append(CheckResult(item["file"], item["id"], False,
+                                       ["Arquivo não encontrado"]))
+            continue
+
+        tree = parse_file(file_path)
+        issues += check_syntax(tree, file_path)
+        if tree is None:
+            results.append(CheckResult(item["file"], item["id"], False, issues))
+            continue
+
+        issues += check_function_exists(tree, item["function"])
+        issues += check_type_hints(tree, item["function"])
+        issues += check_no_toplevel_calls(tree)
+        issues += check_no_external_imports(tree)
+
+        results.append(CheckResult(item["file"], item["id"], len(issues) == 0, issues))
+
+    return results
+
+
 def print_section(title: str, results: list[CheckResult]):
     total = len(results)
     ok = sum(1 for r in results if r.ok)
@@ -307,6 +340,11 @@ def main():
     results = verify_clean()
     fails = print_section("clean", results)
     all_fails += fails
+
+    for cat in ["complex_conditional", "long_method", "many_parameters"]:
+        results = verify_smell_category(cat)
+        fails = print_section(f"smells/{cat}", results)
+        all_fails += fails
 
     print(f"\n{'='*60}")
     if not all_fails:

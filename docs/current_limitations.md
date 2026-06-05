@@ -88,11 +88,67 @@ O harness executa em subprocess isolado mas no mesmo sistema operacional. A vali
 
 ---
 
-## 7. Benchmark: dataset ainda pequeno
+## 7. Casos OOB com propriedade trivialmente falsa
+
+**Impacto:** Baixo nos resultados, mas relevante para interpretação científica.
+
+Alguns casos de `out_of_bounds` usam índices cuja violação é evidente pela própria propriedade gerada.
+Exemplos:
+
+- `values[-4]` gera uma obrigação contendo `0 <= -4`, que é sempre falsa.
+- `values[len(values)]` gera uma obrigação contendo `len(values) < len(values)`, que é sempre falsa.
+
+Nesses casos o ESBMC confirma uma violação real, mas o contraexemplo pode ser pouco informativo porque
+a falha decorre de uma propriedade estaticamente falsa, não de exploração simbólica rica dos inputs.
+
+**Tratamento atual:** manter os casos no dataset como bugs reais e documentar essa limitação.
+
+**Solução futura:** marcar propriedades triviais no `FormalProperty` ou especializar a formalização de
+índices constantes/negativos para explicar melhor o tipo de evidência gerada.
+
+---
+
+## 8. Diferença de configuração entre Flow A e Flow B
+
+**Impacto:** Médio para comparação direta entre os fluxos.
+
+O Flow A (`esbmc-direct`) usa `--unwind {bound}`. O Flow B instrumentado usa `--incremental-bmc`.
+Isso significa que uma diferença entre Flow A e Flow B pode refletir tanto a metodologia quanto a
+configuração do ESBMC.
+
+**Tratamento atual:** os relatórios separam Flow A e Flow B, e o texto experimental deve mencionar a
+diferença.
+
+**Solução futura:** parametrizar o Flow B para usar o mesmo bound do Flow A, ou documentar explicitamente
+que o Flow B é o fluxo principal e não uma comparação controlada de flags.
+
+---
+
+## 9. `skipped_not_verifiable` agrega achados sem obrigação formal
+
+**Impacto:** Baixo no MVP, mas importante para leitura dos relatórios.
+
+`skipped_not_verifiable` significa que o achado não seguiu para ESBMC porque não havia uma obrigação
+formal confiável para aquele item na versão atual do pipeline. Isso pode acontecer em dois grupos:
+
+- smells heurísticos (`complex_conditional`, `long_method`, `many_parameters`), que são intencionalmente
+  não formais;
+- achados de bug que a LLM marcou como não verificáveis ou que ficaram sem expressão/harness suficiente.
+
+**Tratamento atual:** smells devem aparecer como `heuristic_smell_only` quando categorizados corretamente
+pela LLM. `skipped_not_verifiable` fica reservado para itens que não viraram obrigação formal no fluxo.
+
+**Solução futura:** separar explicitamente no relatório os skips por motivo, por exemplo
+`skipped_smell`, `skipped_missing_expression` e `skipped_missing_harness`.
+
+---
+
+## 10. Benchmark: dataset ainda pequeno
 
 **Impacto:** Metodológico — os resultados atuais são sanity check técnico, não experimento final.
 
-O dataset atual tem 6 arquivos (2 por categoria formal). Para resultados estatisticamente válidos, o benchmark final precisa de pelo menos 20-30 exemplos estratificados (com e sem guarda, código limpo, smells).
+O dataset V1 atual tem 70 casos: 45 bugs formais, 10 arquivos clean e 15 smells. Ele é suficiente para
+sanity check técnico e experimento piloto, mas ainda pequeno para generalização estatística ampla.
 
 ---
 
@@ -105,4 +161,7 @@ O dataset atual tem 6 arquivos (2 por categoria formal). Para resultados estatis
 | `str` simbólico | Documentado no código | Baixa para MVP |
 | Harness não é prova formal | Documentado — separado nas classificações | N/A (correto por design) |
 | ESBMC Python limitado | Documentado, erros capturados | N/A (limitação da ferramenta) |
-| Dataset pequeno | Próxima etapa | Alta para experimentos finais |
+| OOB trivialmente falso | Documentado | Baixa |
+| Flags Flow A/Flow B diferentes | Documentado | Média |
+| `skipped_not_verifiable` agregado | Documentado, smells têm classe própria | Baixa para MVP |
+| Dataset pequeno | V1 seed com 70 casos | Alta para experimentos finais |

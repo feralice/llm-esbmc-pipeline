@@ -112,13 +112,27 @@ Se não há bugs nem smells → {"findings": []}.
 
 ## REGRAS DE SAÍDA
   - Retorne APENAS o objeto JSON com a chave "findings". Sem markdown, sem comentários.
+  - finding_type deve ser:
+      - "suspected_bug" para bugs formais com verifiable=true.
+      - "smell_heuristic" para smells com verifiable=false.
   - evidence: trecho EXATO do código (máximo 1 linha por item).
   - explanation: resultado dos passos 3–7 em 3–5 frases.
   - IDs únicos no formato: nomefuncao_categoria_N (ex: calc_division_by_zero_1).
   - metadata.expression: expressão exata envolvida (ex: "lst[i]", "x // n").
-  - metadata.line: linha absoluta no arquivo.
-  - metadata.relative_line: linha relativa ao início da função (1 = primeira linha).
+  - metadata.line: linha absoluta no arquivo, como inteiro.
+  - metadata.relative_line: linha relativa ao início da função (1 = primeira linha), como inteiro.
   - Se não houver problemas: {"findings": []}.
+
+## REGRA DE CLASSIFICAÇÃO BUG VS SMELL
+  - Se a categoria for long_method, many_parameters ou complex_conditional:
+      category deve ser a categoria do smell.
+      finding_type deve ser "smell_heuristic".
+      verifiable deve ser false.
+      expected_exception e reproduction_harness devem ser "".
+  - Se a categoria for division_by_zero, out_of_bounds ou assertion_violation:
+      finding_type deve ser "suspected_bug" somente quando houver caminho concreto de falha.
+      verifiable deve ser true somente quando o bug for formalmente verificável.
+      Se a guarda estiver correta e impedir a falha, NÃO gere finding.
 
 ## CAMPOS OBRIGATÓRIOS PARA BUGS VERIFICÁVEIS (verifiable=true)
   - expected_exception: "ZeroDivisionError", "IndexError" ou "AssertionError".
@@ -222,8 +236,8 @@ Formato:
 ````json
 {
   "path": "{unit.path}",
-  "start_line": "{unit.start_line}",
-  "end_line": "{unit.end_line}",
+  "start_line": {unit.start_line},
+  "end_line": {unit.end_line},
   "parameters": "{unit.parameters}",
   "type_hints": "{unit.type_hints}",
   "metrics": "{unit.metrics}"
@@ -231,4 +245,3 @@ Formato:
 ````
 
 No envio real, esse JSON é produzido por `json.dumps(..., ensure_ascii=False, indent=2)`.
-

@@ -36,7 +36,7 @@ from research_pipeline.pipeline import (
 )
 from research_pipeline.evaluator import EvalCounts, evaluate_model, hallucination_rate, prf
 from research_pipeline.full_report import build_full_report, write_full_report
-from research_pipeline.harness_runner import run_esbmc_harness_pipeline
+from research_pipeline.experimental.harness_runner import run_esbmc_harness_pipeline
 
 
 # ---------------------------------------------------------------------------
