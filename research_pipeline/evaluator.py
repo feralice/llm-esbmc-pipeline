@@ -447,7 +447,9 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
 
 
 def hallucination_rate(counts: EvalCounts) -> float:
-    total_verifiable_claims = counts.bug_tp + counts.bug_fp + counts.hallucination_count
+    # bug_fp already includes hallucination_count since evaluate_file adds
+    # hallucinations to bug_fp — do not add hallucination_count again.
+    total_verifiable_claims = counts.bug_tp + counts.bug_fp
     if total_verifiable_claims == 0:
         return 0.0
     return counts.hallucination_count / total_verifiable_claims

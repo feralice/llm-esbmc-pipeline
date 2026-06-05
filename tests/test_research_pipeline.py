@@ -297,6 +297,10 @@ def test_hallucinated_bug_on_buggy_file_counts_as_llm_false_positive(
     assert counts.bug_fp == 1
     assert counts.hallucination_count == 1
     assert counts.per_category["out_of_bounds"]["fp"] == 1
+    # hallucination_rate denominator = bug_tp + bug_fp (hallucinations already in bug_fp)
+    from research_pipeline.evaluator import hallucination_rate
+    rate = hallucination_rate(counts)
+    assert abs(rate - 0.5) < 1e-9, f"expected 0.5, got {rate}"
 
 
 def test_flow_a_bug_missed_by_llm_is_counted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
