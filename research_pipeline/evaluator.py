@@ -469,11 +469,9 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
     for item in direct.details.get("functions", []):
         if not isinstance(item, dict) or item.get("status") != "violation_found":
             continue
-        # Fix 6: use only property fields for category detection (not location/summary
-        # which can contain function names that collide with category keywords).
         property_text = " ".join(
             str(item.get(key, ""))
-            for key in ("property_kind",)
+            for key in ("property_kind", "property_text")
         )
         category = _category_from_esbmc_property(property_text)
         findings.append(

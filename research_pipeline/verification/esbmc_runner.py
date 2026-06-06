@@ -142,13 +142,14 @@ def _write_direct_log(file_path: Path, combined: str, output_dir: str | Path | N
 # Flow B — ESBMC with --function (symbolic entry point, no instrumentation)
 # ---------------------------------------------------------------------------
 
+# Both Flow A and Flow B use identical flags: symbolic parameters only.
+# No cross-property suppression flags — both flows get the same verification conditions.
 _FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
-    "division_by_zero":    ["--no-bounds-check", "--assign-param-nondet"],
-    "out_of_bounds":       ["--no-div-by-zero-check", "--assign-param-nondet"],
+    "division_by_zero":    ["--assign-param-nondet"],
+    "out_of_bounds":       ["--assign-param-nondet"],
     "assertion_violation": ["--assign-param-nondet"],
 }
 
-# Fix 1: Flow A uses --assign-param-nondet so parameters are symbolic (fair baseline).
 _FLOW_A_BASE_FLAGS: list[str] = ["--assign-param-nondet"]
 
 
