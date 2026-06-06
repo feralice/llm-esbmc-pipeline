@@ -31,6 +31,7 @@ from research_pipeline.preprocess import preprocess_file
 from research_pipeline.llm.findings import finding_from_dict, normalize_findings
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.llm.backends import openai as openai_backend
+from research_pipeline.llm.backends.factory import build_analyzer
 from research_pipeline.llm.backends.openai import OpenAIResponsesAnalyzer
 from research_pipeline.models import ESBMCDirectResult, Finding
 
@@ -110,6 +111,16 @@ def test_preprocess_ignores_test_functions_and_annotations(tmp_path: Path) -> No
 def test_flow_b_scopes_flags_by_finding_category() -> None:
     for category in ("division_by_zero", "out_of_bounds", "assertion_violation"):
         assert "--assign-param-nondet" in _FLOW_B_CATEGORY_FLAGS[category]
+
+
+def test_anthropic_backend_uses_requested_model() -> None:
+    analyzer = build_analyzer(
+        backend="anthropic",
+        llm_model="claude-3-5-sonnet-20241022",
+        anthropic_api_key="test-key",
+    )
+
+    assert analyzer.model == "claude-3-5-sonnet-20241022"
 
 
 def test_openai_timeout_reports_clear_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -237,6 +248,10 @@ def test_clean_case_without_findings_does_not_generate_fn(tmp_path: Path) -> Non
     assert counts.smell_fn == 0
     assert counts.bug_fp == 0
     assert counts.smell_fp == 0
+    assert counts.bug_func_tp == 0
+    assert counts.bug_func_fp == 0
+    assert counts.bug_func_fn == 0
+    assert counts.bug_func_tn == 1
 
 
 def test_clean_case_with_findings_counts_false_positive(tmp_path: Path) -> None:
@@ -258,6 +273,10 @@ def test_clean_case_with_findings_counts_false_positive(tmp_path: Path) -> None:
     assert counts.smell_fn == 0
     assert counts.bug_fp == 1
     assert counts.smell_fp == 1
+    assert counts.bug_func_tp == 0
+    assert counts.bug_func_fp == 1
+    assert counts.bug_func_fn == 0
+    assert counts.bug_func_tn == 0
 
 
 def test_hallucinated_bug_on_buggy_file_counts_as_llm_false_positive(
@@ -294,6 +313,10 @@ def test_hallucinated_bug_on_buggy_file_counts_as_llm_false_positive(
 
     assert counts.bug_tp == 1
     assert counts.bug_fp == 1
+    assert counts.bug_func_tp == 1
+    assert counts.bug_func_fp == 0
+    assert counts.bug_func_fn == 0
+    assert counts.bug_func_tn == 0
     assert counts.hallucination_count == 1
     assert counts.per_category["out_of_bounds"]["fp"] == 1
     # hallucination_rate denominator = bug_tp + bug_fp (hallucinations already in bug_fp)
@@ -578,6 +601,10 @@ def test_skipped_not_verifiable_does_not_count_smells(tmp_path: Path) -> None:
 
     assert counts.skipped_not_verifiable == 0
     assert counts.smell_tp == 1
+    assert counts.bug_func_tp == 0
+    assert counts.bug_func_fp == 0
+    assert counts.bug_func_fn == 0
+    assert counts.bug_func_tn == 0
 
 
 def test_esbmc_native_bug_is_zero_when_no_violation_found(tmp_path: Path) -> None:

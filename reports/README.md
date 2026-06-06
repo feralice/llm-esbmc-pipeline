@@ -1,9 +1,13 @@
-# Reports
+# Relatórios do Benchmark
 
-Use this directory for V1 benchmark and frontend outputs.
+Esta pasta contém os relatórios gerados pelo pipeline em formato JSON.
 
-- `json/`: benchmark and full-pipeline JSON reports.
-- `html/`: generated static HTML reports.
+## Estrutura de Pastas
 
-Do not use archived outputs as paper results. Historical outputs live under
-`archive/outputs/`.
+*   `json/`: Relatórios brutos por execução.
+    *   `v1_benchmark/`: Resultados oficiais dos experimentos com ground truth.
+*   `html/`: Visualizações geradas (se houver scripts de exportação).
+
+## Formato dos Dados
+
+Consulte a [**Referência Oficial do Benchmark V1**](../../docs/benchmark_v1_reference.md) para entender como interpretar os campos `metrics`, `hallucinations` e as classificações finais dos achados.

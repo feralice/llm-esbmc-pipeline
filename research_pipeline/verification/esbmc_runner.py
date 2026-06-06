@@ -9,6 +9,19 @@ from pathlib import Path
 from ..models import ESBMCDirectResult, ESBMCResult
 
 
+def _esbmc_path(file_path: Path) -> Path:
+    """Return path relative to cwd when possible — ESBMC behaves differently with absolute paths."""
+    try:
+        import os
+        # relpath correctly handles absolute/relative mix and returns relative if possible
+        rel = os.path.relpath(str(file_path), os.getcwd())
+        if not rel.startswith(".."):
+            return Path(rel)
+        return file_path
+    except Exception:
+        return file_path
+
+
 # ---------------------------------------------------------------------------
 # Legacy helper — ESBMC on original file at module level
 # ---------------------------------------------------------------------------
@@ -21,8 +34,8 @@ def run_esbmc_direct(
     output_dir: str | Path | None = None,
 ) -> ESBMCDirectResult:
     """Run ESBMC directly on the original Python file (no instrumentation)."""
-    file_path = Path(file_path).resolve()
-    base_command = list(esbmc_command or ["esbmc", "--python", "python3"])
+    file_path = Path(file_path)
+    base_command = list(esbmc_command or ["esbmc"])
 
     # For direct mode use explicit bound (not incremental) for reproducibility
     command = [*base_command, "--unwind", str(bound), str(file_path)]
@@ -160,13 +173,13 @@ def run_esbmc_on_function(
     category: str,
     extra_flags: list[str] | None = None,
     esbmc_command: list[str] | None = None,
-    bound: int = 10,
+    bound: int = 5,
     timeout_seconds: int = 30,
     output_dir: str | Path | None = None,
 ) -> ESBMCResult:
     """Flow B: run ESBMC with --function so parameters become symbolic automatically."""
-    file_path = Path(file_path).resolve()
-    base = list(esbmc_command or ["esbmc", "--python", "python3"])
+    file_path = Path(file_path)
+    base = list(esbmc_command or ["esbmc"])
     flags = list(_FLOW_B_CATEGORY_FLAGS.get(category, []))
     if extra_flags:
         flags.extend(extra_flags)
@@ -241,10 +254,10 @@ def run_esbmc_function_baseline(
     output_dir: str | Path | None = None,
 ) -> ESBMCDirectResult:
     """Flow A: run ESBMC with --function for each function, without LLM guidance."""
-    file_path = Path(file_path).resolve()
+    file_path = Path(file_path)
     unique_names = list(dict.fromkeys(function_names))
     command = [
-        *(esbmc_command or ["esbmc", "--python", "python3"]),
+        *(esbmc_command or ["esbmc"]),
         "--function",
         "<each-function>",
         "--unwind",
@@ -312,6 +325,7 @@ def run_esbmc_function_baseline(
                 "command": result.command,
                 "raw_log_path": result.raw_log_path,
                 "property_kind": result.details.get("property_kind", ""),
+                "property_text": result.details.get("property_text", ""),
                 "location": result.details.get("location", ""),
             }
             for name, result in zip(unique_names, results)

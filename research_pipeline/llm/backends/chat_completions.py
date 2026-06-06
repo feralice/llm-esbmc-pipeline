@@ -13,12 +13,12 @@ class ChatCompletionsAnalyzer:
 
     def __init__(
         self,
-        base_url: str = "http://localhost:11434/api/generate",
+        base_url: str = "http://localhost:11434",
         model: str = "qwen2.5-coder:7b",
         api_key: str = "ollama",
-        timeout_seconds: int = 120,
+        timeout_seconds: int = 300,
     ) -> None:
-        self.base_url = base_url.rstrip("/") + "/chat/completions"
+        self.base_url = base_url.rstrip("/") + "/v1/chat/completions"
         self.model = model
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds

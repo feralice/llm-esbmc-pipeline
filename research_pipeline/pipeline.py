@@ -31,8 +31,10 @@ def run_pipeline_esbmc_direct(
     results: list[ESBMCDirectResult] = []
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    for input_path in input_paths:
+    num_files = len(input_paths)
+    for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
+        print(f"[{i}/{num_files}] Verificando {file_path.name} (ESBMC-direct)...")
         units = preprocess_file(file_path)
         result = run_esbmc_function_baseline(
             file_path=file_path,
@@ -100,6 +102,7 @@ def run_pipeline_multi(
     esbmc_direct_results: dict[str, ESBMCDirectResult] | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
+    llm_timeout_seconds: int = 300,
 ) -> list[FinalResult]:
     """Flow B: LLM-first hybrid for multiple files."""
     analyzer = build_analyzer(
@@ -108,14 +111,17 @@ def run_pipeline_multi(
         openai_api_key=openai_api_key,
         anthropic_api_key=anthropic_api_key,
         ollama_base_url=ollama_base_url,
+        timeout_seconds=llm_timeout_seconds,
     )
     artifacts_dir = Path(output_dir)
     _prepare_output_dir(artifacts_dir)
 
     results: list[FinalResult] = []
 
-    for input_path in input_paths:
+    num_files = len(input_paths)
+    for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
+        print(f"[{i}/{num_files}] Analisando {file_path.name}...")
         direct = (esbmc_direct_results or {}).get(str(file_path))
 
         units = preprocess_file(file_path)
@@ -123,10 +129,16 @@ def run_pipeline_multi(
 
         for unit in units:
             findings = analyzer.analyze(unit)
+            verifiable_findings = [f for f in findings if f.verifiable]
+            num_v = len(verifiable_findings)
+            v_count = 0
+
             for finding in findings:
                 esbmc_result = None
 
                 if finding.verifiable:
+                    v_count += 1
+                    print(f"    - Validando hipótese {v_count}/{num_v}: {finding.category} em {unit.name}...")
                     # Flow B: ESBMC with --function, parameters become symbolic automatically
                     esbmc_result = run_esbmc_on_function(
                         file_path=file_path,
@@ -186,6 +198,7 @@ def run_pipeline_llm_only(
     openai_api_key: str | None = None,
     anthropic_api_key: str | None = None,
     ollama_base_url: str | None = None,
+    timeout_seconds: int = 300,
 ) -> list[FinalResult]:
     """Flow C: LLM-first without ESBMC confirmation (baseline for comparison)."""
     analyzer = build_analyzer(
@@ -194,13 +207,16 @@ def run_pipeline_llm_only(
         openai_api_key=openai_api_key,
         anthropic_api_key=anthropic_api_key,
         ollama_base_url=ollama_base_url,
+        timeout_seconds=timeout_seconds,
     )
     artifacts_dir = Path(output_dir)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     results: list[FinalResult] = []
-    for input_path in input_paths:
+    num_files = len(input_paths)
+    for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
+        print(f"[{i}/{num_files}] Analisando {file_path.name} (LLM-only)...")
         for unit in preprocess_file(file_path):
             for finding in analyzer.analyze(unit):
                 result = consolidate_result(

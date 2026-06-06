@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Roda ESBMC em todos os arquivos do dataset exceto code smells.
 
-Usa os flags corretos por categoria:
-  - assertion_violation : --unwind 5
-  - division_by_zero    : --no-bounds-check --unwind 5
-  - out_of_bounds       : --no-div-by-zero-check --assign-param-nondet --unwind 5
+Usa os flags corretos por categoria (Flow A — uniforme):
+  - assertion_violation : --assign-param-nondet --unwind 5
+  - division_by_zero    : --assign-param-nondet --unwind 5
+  - out_of_bounds       : --assign-param-nondet --unwind 5
   - clean               : --unwind 5 (espera VERIFICATION SUCCESSFUL)
 
 Uso:
@@ -23,9 +23,9 @@ UNWIND = 5
 TIMEOUT = 30
 
 CATEGORY_FLAGS: dict[str, list[str]] = {
-    "assertion_violation": [],
-    "division_by_zero":    ["--no-bounds-check"],
-    "out_of_bounds":       ["--no-div-by-zero-check", "--assign-param-nondet"],
+    "assertion_violation": ["--assign-param-nondet"],
+    "division_by_zero":    ["--assign-param-nondet"],
+    "out_of_bounds":       ["--assign-param-nondet"],
     "clean":               [],
 }
 

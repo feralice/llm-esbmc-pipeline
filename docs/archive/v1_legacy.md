@@ -1,6 +1,8 @@
-﻿# V1 — Escopo do artigo
+# V1 — Escopo do artigo (Legado/Arquivo)
 
 Esta versão é o foco da dissertação. O objetivo é demonstrar que LLMs podem orientar o ESBMC a verificar propriedades em código Python que o BMC sozinho não alcançaria.
+
+*Nota: Este documento foi movido para o arquivo. A fonte oficial de verdade agora é [docs/benchmark_v1_reference.md](../benchmark_v1_reference.md).*
 
 ## Fluxo principal
 

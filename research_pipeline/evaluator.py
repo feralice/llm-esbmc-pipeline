@@ -40,6 +40,22 @@ class EvalCounts:
     # Ghost bugs (suspected_bug + verifiable=False) — excluded from hallucination_rate denominator.
     ghost_bug_count: int = 0
 
+    # Function-level binary bug classification for MCC/accuracy.
+    # Unit: one function = one vote. Only formal bug and clean cases participate;
+    # smell cases are evaluated separately and excluded from bug MCC.
+    bug_func_tp: int = 0
+    bug_func_fp: int = 0
+    bug_func_fn: int = 0
+    bug_func_tn: int = 0
+    hybrid_bug_func_tp: int = 0
+    hybrid_bug_func_fp: int = 0
+    hybrid_bug_func_fn: int = 0
+    hybrid_bug_func_tn: int = 0
+    esbmc_direct_func_tp: int = 0
+    esbmc_direct_func_fp: int = 0
+    esbmc_direct_func_fn: int = 0
+    esbmc_direct_func_tn: int = 0
+
     # Combined pipeline outcomes (counts across all verifiable findings)
     llm_confirmed_by_esbmc: int = 0
     esbmc_native_bug: int = 0
@@ -95,7 +111,6 @@ class EvalCounts:
 
 def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[dict]]]:
     """Load either the legacy ground_truth.json or the new per-category dataset JSONs."""
-    ground_truth_path = ground_truth_path.resolve()
     if ground_truth_path.is_dir():
         return _load_cases_from_dir(ground_truth_path)
 
@@ -257,6 +272,10 @@ def evaluate_file(
         counts.smell_fn = sum(1 for e in expected if e.get("verifiable") is False and e.get("category") != "clean")
         counts.hybrid_bug_fn    = counts.bug_fn
         counts.esbmc_direct_fn  = counts.bug_fn
+        if counts.bug_fn:
+            counts.bug_func_fn = 1
+            counts.hybrid_bug_func_fn = 1
+            counts.esbmc_direct_func_fn = 1
         return counts
 
     # ---- LLM evaluation ----
@@ -301,6 +320,16 @@ def evaluate_file(
     counts.hallucination_count    = len(hallucinations)
     counts.ghost_bug_count        = len(ghost_bugs)
     counts.skipped_not_verifiable = 0
+    if exp_bugs:
+        if bug_tp > 0:
+            counts.bug_func_tp = 1
+        else:
+            counts.bug_func_fn = 1
+    elif is_clean_case:
+        if bug_fp > 0:
+            counts.bug_func_fp = 1
+        else:
+            counts.bug_func_tn = 1
 
     for cat, verdict in bug_verdicts + smell_verdicts:
         if verdict == "tp":
@@ -315,7 +344,9 @@ def evaluate_file(
     # Track all inconclusive findings for per-function FP accounting (Fix 8/9 unified).
     inconclusive_findings: list[Finding] = []
 
-    for unit, bug_finding in bugs_with_units:
+    num_hypotheses = len(bugs_with_units)
+    for j, (unit, bug_finding) in enumerate(bugs_with_units, 1):
+        print(f"    - Validando hipótese {j}/{num_hypotheses}: {bug_finding.category} em {unit.name}...")
         esbmc_result = run_esbmc_on_function(
             file_path=file_path,
             function_name=unit.name,
@@ -357,6 +388,16 @@ def evaluate_file(
     counts.hybrid_bug_tp = hybrid_tp
     counts.hybrid_bug_fp = hybrid_fp
     counts.hybrid_bug_fn = hybrid_fn
+    if exp_bugs:
+        if hybrid_tp > 0:
+            counts.hybrid_bug_func_tp = 1
+        else:
+            counts.hybrid_bug_func_fn = 1
+    elif is_clean_case:
+        if hybrid_fp > 0:
+            counts.hybrid_bug_func_fp = 1
+        else:
+            counts.hybrid_bug_func_tn = 1
 
     # Fix 4: per_category_hybrid tracks hybrid (Flow B) verdicts, not LLM-only.
     for cat, verdict in hybrid_verdicts:
@@ -368,6 +409,7 @@ def evaluate_file(
             counts.add_hybrid_category_fn(cat)
 
     # ---- Flow A: ESBMC-only function baseline ----
+    print(f"    - Executando baseline ESBMC (Flow A)...")
     direct = run_esbmc_function_baseline(
         file_path=file_path,
         function_names=[unit.name for unit in units],
@@ -383,6 +425,16 @@ def evaluate_file(
     counts.esbmc_direct_tp = a_tp
     counts.esbmc_direct_fp = a_fp
     counts.esbmc_direct_fn = a_fn
+    if exp_bugs:
+        if a_tp > 0:
+            counts.esbmc_direct_func_tp = 1
+        else:
+            counts.esbmc_direct_func_fn = 1
+    elif is_clean_case:
+        if a_fp > 0:
+            counts.esbmc_direct_func_fp = 1
+        else:
+            counts.esbmc_direct_func_tn = 1
 
     if flow_a_findings:
         counts.esbmc_native_bug = len(flow_a_findings)
@@ -404,6 +456,7 @@ def evaluate_model(
     esbmc_command: list[str] | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
+    llm_timeout_seconds: int = 300,
     verbose: bool = False,
     output_dir: str | Path | None = None,
 ) -> EvalCounts:
@@ -414,10 +467,13 @@ def evaluate_model(
         anthropic_api_key=anthropic_api_key,
         openai_api_key=openai_api_key,
         ollama_base_url=ollama_base_url,
+        timeout_seconds=llm_timeout_seconds,
     )
 
     total = EvalCounts()
-    for file_path, expected in cases:
+    num_cases = len(cases)
+    for i, (file_path, expected) in enumerate(cases, 1):
+        print(f"[{i}/{num_cases}] Processando {file_path.name}...")
         c = evaluate_file(
             file_path=file_path,
             expected=expected,
@@ -438,9 +494,21 @@ def evaluate_model(
         total.esbmc_direct_tp          += c.esbmc_direct_tp
         total.esbmc_direct_fp          += c.esbmc_direct_fp
         total.esbmc_direct_fn          += c.esbmc_direct_fn
+        total.esbmc_direct_func_tp     += c.esbmc_direct_func_tp
+        total.esbmc_direct_func_fp     += c.esbmc_direct_func_fp
+        total.esbmc_direct_func_fn     += c.esbmc_direct_func_fn
+        total.esbmc_direct_func_tn     += c.esbmc_direct_func_tn
         total.hybrid_bug_tp            += c.hybrid_bug_tp
         total.hybrid_bug_fp            += c.hybrid_bug_fp
         total.hybrid_bug_fn            += c.hybrid_bug_fn
+        total.hybrid_bug_func_tp       += c.hybrid_bug_func_tp
+        total.hybrid_bug_func_fp       += c.hybrid_bug_func_fp
+        total.hybrid_bug_func_fn       += c.hybrid_bug_func_fn
+        total.hybrid_bug_func_tn       += c.hybrid_bug_func_tn
+        total.bug_func_tp              += c.bug_func_tp
+        total.bug_func_fp              += c.bug_func_fp
+        total.bug_func_fn              += c.bug_func_fn
+        total.bug_func_tn              += c.bug_func_tn
         total.llm_confirmed_by_esbmc   += c.llm_confirmed_by_esbmc
         total.esbmc_native_bug         += c.esbmc_native_bug
         total.llm_missed_esbmc_bug     += c.llm_missed_esbmc_bug
@@ -459,6 +527,22 @@ def prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
     r  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0.0
     return p, r, f1
+
+
+def mcc(tp: int, fp: int, fn: int, tn: int) -> float:
+    """Matthews Correlation Coefficient — stable for imbalanced datasets."""
+    import math
+    denom = math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+    if denom == 0:
+        return 0.0
+    return (tp * tn - fp * fn) / denom
+
+
+def accuracy(tp: int, fp: int, fn: int, tn: int) -> float:
+    total = tp + fp + fn + tn
+    if total == 0:
+        return 0.0
+    return (tp + tn) / total
 
 
 def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Finding]:
@@ -499,6 +583,25 @@ def hallucination_rate(counts: EvalCounts) -> float:
     if total_verifiable_claims == 0:
         return 0.0
     return counts.hallucination_count / total_verifiable_claims
+
+
+def formal_confirmation_rate(counts: EvalCounts) -> float:
+    """Share of AST-valid LLM bug hypotheses confirmed by ESBMC in Flow B."""
+    total_formal_attempts = (
+        counts.llm_confirmed_by_esbmc
+        + counts.not_confirmed_within_bound
+        + counts.esbmc_inconclusive
+    )
+    if total_formal_attempts == 0:
+        return 0.0
+    return counts.llm_confirmed_by_esbmc / total_formal_attempts
+
+
+def noise_reduction_rate(counts: EvalCounts) -> float:
+    """Reduction in bug false positives from Flow C to Flow B."""
+    if counts.bug_fp == 0:
+        return 0.0
+    return (counts.bug_fp - counts.hybrid_bug_fp) / counts.bug_fp
 
 
 def _print_detail(

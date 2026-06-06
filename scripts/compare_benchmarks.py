@@ -29,7 +29,7 @@ def short_name(model_label: str) -> str:
     name = model_label.split("/")[-1]
     replacements = {
         "gpt-5.5-2026-04-23": "GPT-5.5",
-        "claude-3-5-sonnet-20241022": "Claude 3.5 Sonnet",
+        "claude-sonnet-4-6": "Claude Sonnet 4.6",
         "qwen2.5-coder:7b": "Qwen2.5-Coder-7B",
         "qwen2.5-coder:32b": "Qwen2.5-Coder-32B",
     }

@@ -236,8 +236,14 @@ def _category_from_esbmc_property(text: str) -> str:
         return "division_by_zero"
     if "out-of-bounds" in normalized or "out of bounds" in normalized or "bounds" in normalized:
         return "out_of_bounds"
-    if "dereference" in normalized:  # Python list OOB shows as dereference failure in ESBMC
+    if "dereference" in normalized:
         return "out_of_bounds"
+    if "indexerror" in normalized:
+        return "out_of_bounds"
+    if "zerodivisionerror" in normalized:
+        return "division_by_zero"
+    if "assertionerror" in normalized:
+        return "assertion_violation"
     return "unknown_esbmc_violation"
 
 

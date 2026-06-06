@@ -7,6 +7,14 @@ Pipeline de pesquisa que combina análise semântica por LLM com verificação f
 
 ---
 
+## Documentação Técnica Oficial
+
+A documentação do projeto foi consolidada em uma única fonte de verdade:
+
+*   [**Referência Oficial do Benchmark V1**](docs/benchmark_v1_reference.md): **LEITURA OBRIGATÓRIA.** Contém toda a especificação de fluxos (A, B, C), métricas (P/R/F1), categorias de bugs e metodologia de matching.
+
+---
+
 ## Como funciona (resumo)
 
 ```mermaid
@@ -15,19 +23,17 @@ flowchart LR
     B --> C[LLM Analyzer]
     C --> D{verifiable?}
     D -- sim --> E[ESBMC --function\nBMC formal]
-    E --> H([full_report.json])
+    E --> H([report.json / benchmark_*.json])
     D -- não → smell --> H
     E -- inconclusivo --> J[resultado documentado]
     J --> H
 ```
 
-**Flow A** (esbmc-direct): ESBMC-only com `--function <funcao>` em cada função detectada, sem LLM.
+**Flow A** (`--mode esbmc-only`): ESBMC-only com `--function <funcao>` em cada função detectada, sem LLM.
 
-**Flow B** (llm-first): LLM identifica hipóteses → AST valida a expressão → ESBMC roda no arquivo original com `--function <funcao>`.
+**Flow B** (`--mode hybrid`): LLM identifica hipóteses → AST valida a expressão → ESBMC roda no arquivo original com `--function <funcao>`.
 
-**Flow C** (llm-only): LLM identifica hipóteses sem chamada ao ESBMC, usado como baseline de qualidade da LLM.
-
-**Modo full**: Flow A + Flow B combinados no mesmo relatório.
+**Flow C** (`--mode llm-only`): LLM identifica hipóteses sem chamada ao ESBMC, usado como baseline de qualidade da LLM.
 
 ---
 
@@ -81,23 +87,22 @@ python src/main.py \
 
 Use `TUTORIAL.md` para o passo a passo completo de benchmark.
 
-### CLI geral auxiliar: modo `full`
+### CLI geral auxiliar: modo `hybrid`
 
 Os comandos abaixo são úteis para exploração manual e depuração. Para métricas da V1, prefira o benchmark canônico acima.
 
 ```bash
-python src/main.py --mode full \
+python src/main.py --mode hybrid \
   --input dataset/labeled/ok/bugs \
   --model gpt-5.5-2026-04-23 \
   --bound 5 \
-  --timeout 30 \
-  --report reports/json/full_report.json
+  --timeout 30
 ```
 
-### CLI geral auxiliar: `esbmc-direct` — baseline sem LLM
+### CLI geral auxiliar: `esbmc-only` — baseline sem LLM
 
 ```bash
-python src/main.py --mode esbmc-direct \
+python src/main.py --mode esbmc-only \
   --input dataset/labeled/ok/bugs \
   --bound 5 \
   --timeout 30
@@ -114,16 +119,15 @@ python src/main.py --mode benchmark \
   --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
 ```
 
-### CLI geral auxiliar: modo `llm-first` — só Flow B
+### CLI geral auxiliar: modo `llm-only` — só Flow C
 
 ```bash
-python src/main.py --mode llm-first \
+python src/main.py --mode llm-only \
   --input dataset/labeled/ok/bugs \
-  --model gpt-5.5-2026-04-23 \
-  --bound 5
+  --model gpt-5.5-2026-04-23
 ```
 
-Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
+Veja [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) para a referência completa.
 
 ---
 
@@ -131,7 +135,7 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 
 | Backend | Alias `--model` | Modelo padrão |
 |---|---|---|
-| OpenAI | `gpt-5.5-2026-04-23`, `gpt-4o`, `gpt-4o-mini`, ... | `gpt-5.5-2026-04-23` |
+| OpenAI | `gpt`, `gpt-5.5-2026-04-23`, `gpt-4o`, ... | `gpt-5.5-2026-04-23` |
 | Anthropic | `claude` | `claude-sonnet-4-6` |
 | Ollama | `qwen2.5-coder:7b`, `llama3.2`, ... | `qwen2.5-coder:7b` |
 
@@ -179,7 +183,26 @@ Veja [`docs/modes.md`](docs/modes.md) para a referência completa.
 | `out_of_scope_finding` | Categoria fora das 5 aceitas pelo MVP |
 | `no_vcc_generated` | Legado: ESBMC em nível de módulo gerou 0 VCCs |
 
-Veja [`docs/v1.md`](docs/v1.md) para o escopo e as métricas da V1.
+Veja a [**Referência Oficial do Benchmark V1**](docs/benchmark_v1_reference.md) para o escopo e as métricas da V1.
+
+---
+
+## Métricas oficiais da V1
+
+O modo `benchmark` calcula P/R/F1 em nível de finding para bugs formais, smells e Flow A. Para bugs formais, `function_accuracy` e `function_mcc` são calculados em nível de função, usando somente casos de bugs formais e controles clean; smells ficam fora desse denominador.
+
+As duas métricas derivadas do fluxo híbrido são:
+
+```text
+Formal Confirmation Rate (FCR) =
+  llm_confirmed_by_esbmc /
+  (llm_confirmed_by_esbmc + not_confirmed_within_bound + esbmc_inconclusive)
+
+Noise Reduction Rate (NRR) =
+  (FP_llm_only - FP_hybrid) / FP_llm_only
+```
+
+FCR mede a fração das hipóteses de bug da LLM, validadas pelo AST e enviadas ao ESBMC, que foram confirmadas formalmente. NRR mede a redução de falsos positivos de bugs do Flow C para o Flow B. Se `FP_llm_only = 0`, NRR é reportada como `0.0` para evitar divisão por zero.
 
 ---
 
@@ -224,9 +247,8 @@ llm-esbmc-pipeline/
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/v1.md`](docs/v1.md) | **Escopo V1 — artigo:** fluxo, categorias, classificações, métricas, tabelas |
-| [`docs/modes.md`](docs/modes.md) | Referência completa dos modos de execução |
-| [`docs/benchmarking.md`](docs/benchmarking.md) | Matriz de modelos e comparação de JSONs |
+| [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) | **Referência Oficial:** fluxos, categorias, classificações, métricas e metodologia |
+| [`TUTORIAL.md`](TUTORIAL.md) | Guia passo a passo para execução de benchmarks |
 
 ---
 
@@ -240,5 +262,5 @@ pytest tests/
 python -c "from research_pipeline.pipeline import run_full_pipeline; print('OK')"
 
 # Flow A: ESBMC-only com --function
-python src/main.py --mode esbmc-direct --input dataset/labeled/ok/bugs --bound 5
+python src/main.py --mode esbmc-only --input dataset/labeled/ok/bugs --bound 5
 ```

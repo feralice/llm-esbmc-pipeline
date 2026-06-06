@@ -15,21 +15,18 @@ cd "$ROOT"
 # --- modelos fixados para reprodutibilidade ---
 MODELS=(
     "gpt-5.5-2026-04-23"
-    "claude-3-5-sonnet-20241022"
+    "claude"
     "qwen2.5-coder:7b"
 )
 
-GT_BUGS="dataset/labeled/ground_truths/bugs"
-GT_SMELLS="dataset/labeled/ground_truths/smells"
+GT="dataset/labeled/ground_truths"
 OUT_DIR="reports/json/v1_benchmark"
 BOUND=5
 TIMEOUT=30
 
-SKIP_SMELLS=false
 DRY_RUN=false
 for arg in "$@"; do
     case $arg in
-        --skip-smells) SKIP_SMELLS=true ;;
         --dry-run)     DRY_RUN=true ;;
     esac
 done
@@ -38,14 +35,12 @@ mkdir -p "$OUT_DIR"
 
 run_benchmark() {
     local model="$1"
-    local gt="$2"
-    local suffix="$3"
     local safe_name
     safe_name=$(echo "$model" | tr ':/-' '_' | tr -s '_')
-    local report="$OUT_DIR/benchmark_${safe_name}_${suffix}.json"
+    local report="$OUT_DIR/benchmark_${safe_name}.json"
 
     echo ""
-    echo ">>> modelo: $model  |  gt: $gt  |  saída: $report"
+    echo ">>> modelo: $model  |  gt: $GT  |  saída: $report"
 
     if $DRY_RUN; then
         echo "    [dry-run] pulando execução"
@@ -54,7 +49,7 @@ run_benchmark() {
 
     python3 src/main.py \
         --mode benchmark \
-        --input "$gt" \
+        --input "$GT" \
         --model "$model" \
         --bound "$BOUND" \
         --timeout "$TIMEOUT" \
@@ -67,21 +62,10 @@ echo "  Modelos: ${MODELS[*]}"
 echo "  Bound: $BOUND  Timeout: ${TIMEOUT}s"
 echo "========================================"
 
-# --- bugs (tabela principal do artigo) ---
-echo ""
-echo "=== BUGS ==="
+# --- benchmark V1 completo: bugs, clean e smells ---
 for model in "${MODELS[@]}"; do
-    run_benchmark "$model" "$GT_BUGS" "bugs"
+    run_benchmark "$model"
 done
-
-# --- smells ---
-if ! $SKIP_SMELLS; then
-    echo ""
-    echo "=== SMELLS ==="
-    for model in "${MODELS[@]}"; do
-        run_benchmark "$model" "$GT_SMELLS" "smells"
-    done
-fi
 
 echo ""
 echo "========================================"
