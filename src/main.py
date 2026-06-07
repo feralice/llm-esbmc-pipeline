@@ -9,9 +9,9 @@ Modos de execução:
 
 Exemplos:
   python src/main.py --mode esbmc-only  --input dataset/labeled --bound 5
-  python src/main.py --mode llm-only    --input dataset/labeled --model gpt-5.5-2026-04-23
-  python src/main.py --mode hybrid      --input dataset/labeled --model gpt-5.5-2026-04-23 --bound 5
-  python src/main.py --mode benchmark   --input dataset/labeled/ground_truths --model gpt-5.5-2026-04-23
+  python src/main.py --mode llm-only    --input dataset/labeled --model gpt-4o
+  python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o --bound 5
+  python src/main.py --mode benchmark   --input dataset/labeled/ground_truths --model gpt-4o
 """
 from __future__ import annotations
 
@@ -83,8 +83,9 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="MODELO",
         help=(
             "Modelo LLM a usar. "
-            "Valores: 'claude' ou nome completo como 'claude-sonnet-4-6', "
-            "'gpt-5.5-2026-04-23', 'qwen2.5-coder:7b'. (padrão: gpt-5.5-2026-04-23)"
+            "Valores: 'gpt', 'claude', 'deepseek' ou nome completo como "
+            "'gpt-4o', 'claude-3-7-sonnet-20250219', 'deepseek-r1:7b'. "
+            "(padrão: gpt-4o)"
         ),
     )
     parser.add_argument(
@@ -203,8 +204,9 @@ def _resolve_model(model: str | None, backend: str) -> str | None:
     if model is None:
         return None
     aliases = {
-        "claude": "claude-sonnet-4-6",
-        "gpt":    "gpt-5.5-2026-04-23",
+        "claude":  "claude-3-7-sonnet-20250219",
+        "gpt":     "gpt-4o",
+        "deepseek": "deepseek-r1:7b",
     }
     return aliases.get(model.lower(), model)
 

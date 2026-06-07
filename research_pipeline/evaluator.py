@@ -598,7 +598,11 @@ def formal_confirmation_rate(counts: EvalCounts) -> float:
 
 
 def noise_reduction_rate(counts: EvalCounts) -> float:
-    """Reduction in bug false positives from Flow C to Flow B."""
+    """Reduction in bug false positives from Flow C to Flow B.
+
+    If Flow C has no false positives, the mathematical ratio is undefined.
+    Reports use 0.0 as an operational JSON convention for that case.
+    """
     if counts.bug_fp == 0:
         return 0.0
     return (counts.bug_fp - counts.hybrid_bug_fp) / counts.bug_fp

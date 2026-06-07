@@ -18,7 +18,7 @@ class AnthropicAnalyzer:
     def __init__(
         self,
         api_key: str | None = None,
-        model: str = "claude-sonnet-4-6",
+        model: str = "claude-3-7-sonnet-20250219",
         timeout_seconds: int = 60,
     ) -> None:
         self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")

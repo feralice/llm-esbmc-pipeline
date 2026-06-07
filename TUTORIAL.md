@@ -33,9 +33,9 @@ python3 -m pytest
 python3 src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-5.5-2026-04-23 \
+  --model gpt-4o \
   --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
+  --report reports/json/v1_benchmark/benchmark_gpt_4o.json
 ```
 
 Saída no terminal mostra P/R/F1 para Flow C (LLM), Flow B (híbrido) e Flow A (ESBMC) separadamente.
@@ -50,9 +50,9 @@ Saída no terminal mostra P/R/F1 para Flow C (LLM), Flow B (híbrido) e Flow A (
 python3 src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-5.5-2026-04-23 \
+  --model gpt-4o \
   --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
+  --report reports/json/v1_benchmark/benchmark_gpt_4o.json
 
 python3 src/main.py \
   --mode benchmark \
@@ -64,16 +64,16 @@ python3 src/main.py \
 python3 src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model qwen2.5-coder:7b \
+  --model deepseek-r1:7b \
   --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_qwen2_5_coder_7b.json
+  --report reports/json/v1_benchmark/benchmark_deepseek_r1_7b.json
 ```
 
 ### Opção B — matriz automática (todos de uma vez)
 
 ```bash
 python3 scripts/run_benchmark_matrix.py \
-  --models gpt-5.5-2026-04-23 claude qwen2.5-coder:7b \
+  --models gpt-4o claude deepseek \
   --ground-truth dataset/labeled/ground_truths \
   --output-dir reports/json/v1_benchmark \
   --bound 5 --timeout 30
@@ -119,7 +119,7 @@ python3 src/main.py \
 python3 src/main.py \
   --mode hybrid \
   --input dataset/labeled/ok/bugs/assertion_violation/av_01.py \
-  --model gpt-5.5-2026-04-23 \
+  --model gpt-4o \
   --bound 5 --timeout 30
 ```
 
@@ -129,7 +129,7 @@ python3 src/main.py \
 python3 src/main.py \
   --mode llm-only \
   --input dataset/labeled/ok/bugs/assertion_violation/av_01.py \
-  --model gpt-5.5-2026-04-23
+  --model gpt-4o
 ```
 
 ---

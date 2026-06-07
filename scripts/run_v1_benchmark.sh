@@ -4,8 +4,8 @@
 #
 # Requer:
 #   OPENAI_API_KEY e ANTHROPIC_API_KEY definidas no ambiente
-#   Ollama rodando: ollama serve  (para qwen2.5-coder:7b)
-#   qwen baixado:   ollama pull qwen2.5-coder:7b
+#   Ollama rodando: ollama serve  (para deepseek-r1:7b)
+#   DeepSeek-R1 baixado: ollama pull deepseek-r1:7b
 
 set -euo pipefail
 
@@ -14,9 +14,9 @@ cd "$ROOT"
 
 # --- modelos fixados para reprodutibilidade ---
 MODELS=(
-    "gpt-5.5-2026-04-23"
+    "gpt-4o"
     "claude"
-    "qwen2.5-coder:7b"
+    "deepseek"
 )
 
 GT="dataset/labeled/ground_truths"

@@ -23,7 +23,7 @@ def safe_model_name(model: str) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run benchmark mode for multiple LLM models.")
-    parser.add_argument("--models", nargs="+", required=True, help="Models to evaluate, e.g. gpt-5.5-2026-04-23 claude qwen2.5-coder:7b")
+    parser.add_argument("--models", nargs="+", required=True, help="Models to evaluate, e.g. gpt-4o claude deepseek")
     parser.add_argument("--ground-truth", default="dataset/labeled/ground_truths")
     parser.add_argument("--output-dir", default="reports/json/benchmarks")
     parser.add_argument("--bound", type=int, default=5)

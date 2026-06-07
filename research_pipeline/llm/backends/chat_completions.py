@@ -14,7 +14,7 @@ class ChatCompletionsAnalyzer:
     def __init__(
         self,
         base_url: str = "http://localhost:11434",
-        model: str = "qwen2.5-coder:7b",
+        model: str = "deepseek-r1:7b",
         api_key: str = "ollama",
         timeout_seconds: int = 300,
     ) -> None:

@@ -10,9 +10,9 @@ from .openai import OpenAIResponsesAnalyzer
 Backend = Literal["openai", "anthropic", "ollama"]
 
 _DEFAULT_MODEL: dict[str, str] = {
-    "openai":    "gpt-5.5-2026-04-23",
-    "anthropic": "claude-sonnet-4-6",
-    "ollama":    "qwen2.5-coder:7b",
+    "openai":    "gpt-4o",
+    "anthropic": "claude-3-7-sonnet-20250219",
+    "ollama":    "deepseek-r1:7b",
 }
 
 _DEFAULT_OLLAMA_URL = "http://localhost:11434"

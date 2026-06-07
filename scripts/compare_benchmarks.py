@@ -28,10 +28,10 @@ def load_reports(directory: Path) -> list[dict]:
 def short_name(model_label: str) -> str:
     name = model_label.split("/")[-1]
     replacements = {
-        "gpt-5.5-2026-04-23": "GPT-5.5",
-        "claude-sonnet-4-6": "Claude Sonnet 4.6",
-        "qwen2.5-coder:7b": "Qwen2.5-Coder-7B",
-        "qwen2.5-coder:32b": "Qwen2.5-Coder-32B",
+        "gpt-4o": "GPT-4o",
+        "claude-3-7-sonnet-20250219": "Claude 3.7 Sonnet",
+        "deepseek-r1:7b": "DeepSeek-R1 Distill-Qwen-7B",
+        "deepseek": "DeepSeek-R1 Distill-Qwen-7B",
     }
     return replacements.get(name, name)
 

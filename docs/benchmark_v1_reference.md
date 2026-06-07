@@ -108,6 +108,9 @@ Calculados de forma padrão:
 *   `Recall = TP / (TP + FN)`
 *   `F1 = 2 * (P * R) / (P + R)`
 
+## Function Accuracy / MCC
+Para bugs formais, `function_accuracy` e `function_mcc` sao calculados no nivel de funcao. A matriz binaria usa somente os 45 casos de bugs formais como positivos e os 10 controles clean como negativos. Os 15 code smells sao avaliados separadamente e ficam fora do denominador do MCC de bugs.
+
 ## Hallucination Rate
 Calculada como: `hallucination_count / total_verifiable_claims`.
 *   `total_verifiable_claims` = TP + FP da LLM (excluindo ghost findings).
@@ -123,7 +126,7 @@ A unidade da FCR e uma hipotese de bug verificavel proposta pela LLM, validada p
 Calculada para bugs formais como:
 *   `NRR = (FP_llm_only - FP_hybrid) / FP_llm_only`
 
-Onde `FP_llm_only` e o numero de falsos positivos de bugs no Flow C, e `FP_hybrid` e o numero de falsos positivos de bugs no Flow B. Se `FP_llm_only = 0`, a NRR e reportada como `0.0` no JSON para evitar divisao por zero. Valores negativos sao possiveis e indicam que o Flow B produziu mais falsos positivos que o Flow C sob as regras do benchmark.
+Onde `FP_llm_only` e o numero de falsos positivos de bugs no Flow C, e `FP_hybrid` e o numero de falsos positivos de bugs no Flow B. Se `FP_llm_only = 0`, a razao e matematicamente indefinida e o JSON reporta `0.0` apenas como convencao operacional para evitar divisao por zero. Valores negativos sao possiveis e indicam que o Flow B produziu mais falsos positivos que o Flow C sob as regras do benchmark.
 
 # Estados Especiais do ESBMC
 

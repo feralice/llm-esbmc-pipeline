@@ -79,10 +79,10 @@ O caminho canônico da V1 para reproduzir métricas do dataset é `src/main.py -
 python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-5.5-2026-04-23 \
+  --model gpt-4o \
   --bound 5 \
   --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
+  --report reports/json/v1_benchmark/benchmark_gpt_4o.json
 ```
 
 Use `TUTORIAL.md` para o passo a passo completo de benchmark.
@@ -94,7 +94,7 @@ Os comandos abaixo são úteis para exploração manual e depuração. Para mét
 ```bash
 python src/main.py --mode hybrid \
   --input dataset/labeled/ok/bugs \
-  --model gpt-5.5-2026-04-23 \
+  --model gpt-4o \
   --bound 5 \
   --timeout 30
 ```
@@ -113,10 +113,10 @@ python src/main.py --mode esbmc-only \
 ```bash
 python src/main.py --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-5.5-2026-04-23 \
+  --model gpt-4o \
   --bound 5 \
   --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_gpt_5_5.json
+  --report reports/json/v1_benchmark/benchmark_gpt_4o.json
 ```
 
 ### CLI geral auxiliar: modo `llm-only` — só Flow C
@@ -124,7 +124,7 @@ python src/main.py --mode benchmark \
 ```bash
 python src/main.py --mode llm-only \
   --input dataset/labeled/ok/bugs \
-  --model gpt-5.5-2026-04-23
+  --model gpt-4o
 ```
 
 Veja [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) para a referência completa.
@@ -135,9 +135,9 @@ Veja [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) para a r
 
 | Backend | Alias `--model` | Modelo padrão |
 |---|---|---|
-| OpenAI | `gpt`, `gpt-5.5-2026-04-23`, `gpt-4o`, ... | `gpt-5.5-2026-04-23` |
-| Anthropic | `claude` | `claude-sonnet-4-6` |
-| Ollama | `qwen2.5-coder:7b`, `llama3.2`, ... | `qwen2.5-coder:7b` |
+| OpenAI | `gpt`, `gpt-4o`, ... | `gpt-4o` |
+| Anthropic | `claude`, `claude-3-7-sonnet-20250219`, ... | `claude-3-7-sonnet-20250219` |
+| Ollama | `deepseek`, `deepseek-r1:7b`, ... | `deepseek-r1:7b` |
 
 ---
 
@@ -189,7 +189,7 @@ Veja a [**Referência Oficial do Benchmark V1**](docs/benchmark_v1_reference.md)
 
 ## Métricas oficiais da V1
 
-O modo `benchmark` calcula P/R/F1 em nível de finding para bugs formais, smells e Flow A. Para bugs formais, `function_accuracy` e `function_mcc` são calculados em nível de função, usando somente casos de bugs formais e controles clean; smells ficam fora desse denominador.
+O modo `benchmark` calcula P/R/F1 em nível de finding para bugs formais, smells e Flow A. Para bugs formais, `function_accuracy` e `function_mcc` são calculados em nível de função, usando somente os 45 casos de bugs formais e os 10 controles clean; os 15 smells ficam fora desse denominador.
 
 As duas métricas derivadas do fluxo híbrido são:
 
@@ -202,7 +202,7 @@ Noise Reduction Rate (NRR) =
   (FP_llm_only - FP_hybrid) / FP_llm_only
 ```
 
-FCR mede a fração das hipóteses de bug da LLM, validadas pelo AST e enviadas ao ESBMC, que foram confirmadas formalmente. NRR mede a redução de falsos positivos de bugs do Flow C para o Flow B. Se `FP_llm_only = 0`, NRR é reportada como `0.0` para evitar divisão por zero.
+FCR mede a fração das hipóteses de bug da LLM, validadas pelo AST e enviadas ao ESBMC, que foram confirmadas formalmente. NRR mede a redução de falsos positivos de bugs do Flow C para o Flow B. Se `FP_llm_only = 0`, a razão é matematicamente indefinida e o JSON reporta `0.0` apenas como convenção operacional para evitar divisão por zero.
 
 ---
 
