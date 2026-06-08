@@ -6,7 +6,7 @@ import time
 from urllib import error, request
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
-from ..prompts import build_user_prompt, load_system_prompt
+from ..prompts import PromptMode, build_user_prompt, load_system_prompt
 from ..schema import FINDINGS_JSON_SCHEMA
 from ...models import CodeUnit, Finding
 
@@ -20,11 +20,13 @@ class OpenAIResponsesAnalyzer:
         model: str = "gpt-4o",
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
+        prompt_mode: PromptMode = "raw",
     ) -> None:
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self.model = model
         self.base_url = base_url
         self.timeout_seconds = timeout_seconds
+        self.prompt_mode = prompt_mode
         if not self.api_key:
             raise ValueError(
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -41,7 +43,7 @@ class OpenAIResponsesAnalyzer:
                 },
                 {
                     "role": "user",
-                    "content": [{"type": "input_text", "text": build_user_prompt(unit)}],
+                    "content": [{"type": "input_text", "text": build_user_prompt(unit, self.prompt_mode)}],
                 },
             ],
             "text": {"format": {"type": "json_schema", **FINDINGS_JSON_SCHEMA}},

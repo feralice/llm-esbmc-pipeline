@@ -189,6 +189,18 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
 
 /* ---- Misc ---- */
 .empty { color: #95a5a6; font-size: .85em; padding: 16px 0; }
+
+.model-summary {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px; margin-bottom: 18px;
+}
+.model-card {
+  background: white; border: 1px solid #e6edf5; border-radius: 10px;
+  padding: 14px 16px; box-shadow: 0 1px 6px rgba(0,0,0,.06);
+}
+.model-card .k { font-size: .72em; color: #7f8c8d; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
+.model-card .v { font-size: 1.25em; color: #2c3e50; font-weight: 800; margin-top: 5px; }
+.model-card .s { font-size: .76em; color: #95a5a6; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -725,6 +737,35 @@ function renderBenchmark() {
   if (!state.bmList.length) { btn.classList.add('hidden'); el.innerHTML = ''; return; }
   btn.classList.remove('hidden');
 
+  const bestHybrid = bestBy(state.bmList, item => metricBlock(item.data, 'bugs_hybrid_pipeline', 'bugs').f1);
+  const bestNrr = bestBy(state.bmList, item => metricBlock(item.data, 'bugs_hybrid_pipeline', 'bugs').noise_reduction_rate);
+  const bestSmell = bestBy(state.bmList, item => metricBlock(item.data, 'smells').f1);
+  const totalHallucinations = state.bmList.reduce((acc, item) => acc + Number(item.data.hallucinations?.count || 0), 0);
+
+  const summaryCards = `
+    <div class="model-summary">
+      <div class="model-card">
+        <div class="k">Modelos carregados</div>
+        <div class="v">${state.bmList.length}</div>
+        <div class="s">benchmarks comparados lado a lado</div>
+      </div>
+      <div class="model-card">
+        <div class="k">Melhor F1 híbrido</div>
+        <div class="v">${bestHybrid ? esc(bestHybrid.label) : '—'}</div>
+        <div class="s">F1=${bestHybrid ? fmt2(bestHybrid.value) : '—'}</div>
+      </div>
+      <div class="model-card">
+        <div class="k">Maior redução de ruído</div>
+        <div class="v">${bestNrr ? esc(bestNrr.label) : '—'}</div>
+        <div class="s">NRR=${bestNrr ? fmtPct(bestNrr.value) : '—'}</div>
+      </div>
+      <div class="model-card">
+        <div class="k">Alucinações estruturais</div>
+        <div class="v">${totalHallucinations}</div>
+        <div class="s">soma nos benchmarks carregados</div>
+      </div>
+    </div>`;
+
   const rows = state.bmList.map(({ name, data }) => {
     const b   = metricBlock(data, 'bugs_llm_only', 'bugs');
     const hyb = metricBlock(data, 'bugs_hybrid_pipeline', 'bugs');
@@ -739,6 +780,8 @@ function renderBenchmark() {
       <td class="num">${fmt2(hyb.precision)}</td>
       <td class="num">${fmt2(hyb.recall)}</td>
       <td class="num"><b>${fmt2(hyb.f1)}</b></td>
+      <td class="num">${fmtPct(hyb.formal_confirmation_rate)}</td>
+      <td class="num">${fmtPct(hyb.noise_reduction_rate)}</td>
       <td class="num">${fmt2(e.f1)}</td>
       <td class="num">${h.count??'—'} <span style="color:#95a5a6;font-size:.8em">(${fmtPct(h.rate)})</span></td>
       <td class="num">${data.bound??'—'}</td>
@@ -778,6 +821,7 @@ function renderBenchmark() {
   ).join('');
 
   el.innerHTML = `
+    ${summaryCards}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <div class="section-title" style="margin:0">Métricas de bugs formais por modelo</div>
       <button onclick="exportCsv()" style="padding:5px 12px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:.8em;font-weight:700">Export CSV</button>
@@ -786,7 +830,7 @@ function renderBenchmark() {
       <tr>
         <th rowspan="2">Modelo</th>
         <th colspan="6" style="text-align:center;border-bottom:1px solid #ddd">LLM (puro)</th>
-        <th colspan="3" style="text-align:center;border-bottom:1px solid #ddd">Híbrido (LLM+ESBMC)</th>
+        <th colspan="5" style="text-align:center;border-bottom:1px solid #ddd">Híbrido (LLM+ESBMC)</th>
         <th rowspan="2" class="num">ESBMC direto F1</th>
         <th rowspan="2" class="num">Alucinações</th>
         <th rowspan="2" class="num">Bound</th>
@@ -795,6 +839,7 @@ function renderBenchmark() {
         <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
         <th class="num">TP</th><th class="num">FP</th><th class="num">FN</th>
         <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
+        <th class="num">FCR</th><th class="num">NRR</th>
       </tr>
       ${rows}
     </table>
@@ -823,6 +868,17 @@ function renderBenchmark() {
     <p style="margin-top:6px;font-size:.76em;color:#95a5a6">
       Para adicionar mais modelos: arraste múltiplos arquivos benchmark_*.json na zona de benchmark na tela inicial.
     </p>`;
+}
+
+function bestBy(items, getter) {
+  let best = null;
+  for (const item of items) {
+    const value = Number(getter(item));
+    if (!Number.isFinite(value)) continue;
+    const label = item.data.model || item.name;
+    if (!best || value > best.value) best = { label, value };
+  }
+  return best;
 }
 
 function exportCsv() {
@@ -889,6 +945,35 @@ function copyJson() {
     document.body.removeChild(ta);
   });
 }
+
+function loadPreloadedData() {
+  const preload = window.__LLM_ESBMC_PRELOADED__;
+  if (!preload) return;
+
+  state.reportData = preload.report || null;
+  state.bmList = (preload.benchmarks || []).map(item => ({
+    name: item.name || item.data?.model || 'benchmark.json',
+    data: item.data,
+  })).filter(item => item.data);
+  state.rawTexts = {};
+  if (state.reportData) state.rawTexts['Relatório principal'] = JSON.stringify(state.reportData, null, 2);
+  for (const item of state.bmList) state.rawTexts[item.name] = JSON.stringify(item.data, null, 2);
+
+  if (!state.reportData && !state.bmList.length) return;
+
+  renderAll();
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  if (!state.reportData && state.bmList.length) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-benchmark').classList.add('active');
+    document.getElementById('btn-benchmark').classList.add('active');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', loadPreloadedData);
 </script>
 </body>
 </html>

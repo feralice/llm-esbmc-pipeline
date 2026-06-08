@@ -36,6 +36,7 @@ from research_pipeline.pipeline import (
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy,
+    compute_bootstrap_cis,
     evaluate_model,
     formal_confirmation_rate,
     hallucination_rate,
@@ -150,6 +151,17 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--prompt-mode",
+        choices=["raw", "ast_hints"],
+        default="raw",
+        dest="prompt_mode",
+        help=(
+            "Modo do prompt LLM. "
+            "raw (padrão): LLM recebe apenas código da função, sem hints de AST. "
+            "ast_hints: injeção de operações pré-extraídas — usar apenas para ablação."
+        ),
+    )
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Mostrar detalhes de cada arquivo durante avaliação.",
@@ -232,7 +244,15 @@ def _print_summary(results) -> None:
 
 
 
-def _print_benchmark_table(label: str, counts: EvalCounts) -> None:
+def _fmt_ci(cis: dict, key: str) -> str:
+    v = cis.get(key)
+    if v is None:
+        return ""
+    return f"  [95% CI: {v[0]:.2f}–{v[1]:.2f}]"
+
+
+def _print_benchmark_table(label: str, counts: EvalCounts, cis: dict | None = None) -> None:
+    cis = cis or {}
     bug_p, bug_r, bug_f1 = prf(counts.bug_tp, counts.bug_fp, counts.bug_fn)
     smell_p, smell_r, smell_f1 = prf(counts.smell_tp, counts.smell_fp, counts.smell_fn)
     esbmc_p, esbmc_r, esbmc_f1 = prf(
@@ -268,22 +288,23 @@ def _print_benchmark_table(label: str, counts: EvalCounts) -> None:
     print(f"\n{'─' * 60}")
     print(f"Modelo: {label}")
     print(f"{'─' * 60}")
-    print(f"  Bug LLM P/R/F1:          {bug_p:.2f} / {bug_r:.2f} / {bug_f1:.2f}")
+    print(f"  Bug LLM P/R/F1:          {bug_p:.2f} / {bug_r:.2f} / {bug_f1:.2f}{_fmt_ci(cis, 'llm_bug_f1')}")
     print(f"    finding TP={counts.bug_tp}  FP={counts.bug_fp}  FN={counts.bug_fn}")
-    print(f"    função Acc/MCC:        {bug_acc:.2f} / {bug_mcc:.2f}")
+    print(f"    função Acc/MCC:        {bug_acc:.2f} / {bug_mcc:.2f}{_fmt_ci(cis, 'llm_bug_mcc')}")
     print(f"    função TP={counts.bug_func_tp}  FP={counts.bug_func_fp}  FN={counts.bug_func_fn}  TN={counts.bug_func_tn}")
-    print(f"  Bug Híbrido P/R/F1:      {hybrid_p:.2f} / {hybrid_r:.2f} / {hybrid_f1:.2f}")
+    print(f"  Bug Híbrido P/R/F1:      {hybrid_p:.2f} / {hybrid_r:.2f} / {hybrid_f1:.2f}{_fmt_ci(cis, 'hybrid_bug_f1')}")
     print(f"    finding TP={counts.hybrid_bug_tp}  FP={counts.hybrid_bug_fp}  FN={counts.hybrid_bug_fn}")
-    print(f"    função Acc/MCC:        {hybrid_acc:.2f} / {hybrid_mcc:.2f}")
+    print(f"    função Acc/MCC:        {hybrid_acc:.2f} / {hybrid_mcc:.2f}{_fmt_ci(cis, 'hybrid_bug_mcc')}")
     print(f"    função TP={counts.hybrid_bug_func_tp}  FP={counts.hybrid_bug_func_fp}  FN={counts.hybrid_bug_func_fn}  TN={counts.hybrid_bug_func_tn}")
     print(f"    confirmados ESBMC={counts.llm_confirmed_by_esbmc}  não confirmados={counts.not_confirmed_within_bound}  inconclusivos={counts.esbmc_inconclusive}")
     print(f"    FCR/NRR:               {fcr:.2f} / {nrr:.2f}")
-    print(f"  Smell P/R/F1:            {smell_p:.2f} / {smell_r:.2f} / {smell_f1:.2f}")
+    print(f"  Smell P/R/F1:            {smell_p:.2f} / {smell_r:.2f} / {smell_f1:.2f}{_fmt_ci(cis, 'smell_f1')}")
     print(f"    TP={counts.smell_tp}  FP={counts.smell_fp}  FN={counts.smell_fn}")
-    print(f"  Flow A P/R/F1:           {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}")
-    print(f"    função Acc/MCC:        {esbmc_acc:.2f} / {esbmc_mcc:.2f}")
+    print(f"  Flow A P/R/F1:           {esbmc_p:.2f} / {esbmc_r:.2f} / {esbmc_f1:.2f}{_fmt_ci(cis, 'esbmc_bug_f1')}")
+    print(f"    função Acc/MCC:        {esbmc_acc:.2f} / {esbmc_mcc:.2f}{_fmt_ci(cis, 'esbmc_bug_mcc')}")
     print(f"    função TP={counts.esbmc_direct_func_tp}  FP={counts.esbmc_direct_func_fp}  FN={counts.esbmc_direct_func_fn}  TN={counts.esbmc_direct_func_tn}")
     print(f"  Alucinações LLM:         {counts.hallucination_count}  (taxa: {hlr:.1%})")
+    print(f"  Fora do escopo LLM:      {counts.out_of_scope_count}")
 
     if counts.per_category_hybrid:
         print(f"\n  Por categoria (Flow B — híbrido):")
@@ -346,6 +367,7 @@ def mode_llm_only(args: argparse.Namespace) -> int:
         anthropic_api_key=anthropic_key,
         ollama_base_url=args.ollama_base_url,
         timeout_seconds=args.llm_timeout,
+        prompt_mode=args.prompt_mode,
     )
 
     report_path = Path(output_dir) / "report.json"
@@ -377,6 +399,7 @@ def mode_hybrid(args: argparse.Namespace) -> int:
         bound=args.bound,
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
+        prompt_mode=args.prompt_mode,
     )
 
     report_path = Path(output_dir) / "report.json"
@@ -402,7 +425,7 @@ def mode_benchmark(args: argparse.Namespace) -> int:
     label = f"{backend}/{model or '(padrão)'}"
     print(f"Benchmark — {label}")
 
-    counts = evaluate_model(
+    counts, cis = evaluate_model(
         ground_truth_path=gt_path,
         backend=backend,
         model=model or "",
@@ -414,9 +437,10 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
         verbose=args.verbose,
+        prompt_mode=args.prompt_mode,
     )
 
-    _print_benchmark_table(label, counts)
+    _print_benchmark_table(label, counts, cis)
 
     report_arg = getattr(args, "report", None)
     if report_arg:
@@ -459,6 +483,7 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         report_data = {
             "model": label,
             "backend": backend,
+            "prompt_mode": args.prompt_mode,
             "ground_truth": str(gt_path.resolve()),
             "bound": args.bound,
             "timeout": args.timeout,
@@ -523,6 +548,9 @@ def mode_benchmark(args: argparse.Namespace) -> int:
                 "count": counts.hallucination_count,
                 "rate": round(hallucination_rate(counts), 4),
             },
+            "out_of_scope_findings": {
+                "count": counts.out_of_scope_count,
+            },
             "per_category_llm": {
                 cat: {
                     "precision": round(prf(c["tp"], c["fp"], c["fn"])[0], 4),
@@ -540,6 +568,10 @@ def mode_benchmark(args: argparse.Namespace) -> int:
                     "tp": c["tp"], "fp": c["fp"], "fn": c["fn"],
                 }
                 for cat, c in sorted(counts.per_category_hybrid.items())
+            },
+            "confidence_intervals_95": {
+                k: [round(lo, 4), round(hi, 4)]
+                for k, (lo, hi) in cis.items()
             },
         }
         report_path_out = Path(report_arg)

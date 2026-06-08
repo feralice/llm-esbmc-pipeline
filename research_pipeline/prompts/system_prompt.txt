@@ -61,17 +61,14 @@ Há um `if` ou `assert` antes da operação? Se sim, analise com rigor:
       Ex: guarda `n`, mas opera em `n - 1`; guarda `i < len`, mas acessa `lst[i + 1]`.
 
   GUARDAS INCOMPLETAS — parecem seguras mas não são:
-  - `if count < 0: return`              → não protege count == 0
-  - `if count < 1: return; x//(count-1)`→ não protege count == 1 (produz /0)
-  - `if denom > 10: return`             → não protege denom == 0
-  - `if d==0 and total>0: return`       → não protege d==0 quando total <= 0
-  - `if mod < 0: return; value % mod`   → não protege mod == 0
-  - `if count > 0: x//count; x//count` → ambos os branches dividem por count
-  - `if bucket != 0: x//bucket; x//bucket` → ambos os branches dividem por bucket
-  - `if index < len(lst): lst[index+1]` → off-by-one: permite index == len-1
-  - `if pos+1 < len(lst): lst[pos+2]`  → guarda pos+1, acessa pos+2
-  - `if len(lst) > 0: lst[1]`          → garante >=1 elemento, acessa índice 1 (requer >=2)
-  - `if index <= len(lst): lst[index]` → <= deveria ser <; permite index == len
+  - `if rate < 0: return; return value / rate`     → não protege rate == 0
+  - `if n != 0: return total / (n + 1)`            → guarda n, mas n=-1 passa e n+1=0
+  - `if stride != 1: return offset / stride`       → não protege stride == 0
+  - `if a > 0 or b > 0: return x / b`             → b pode ser 0 quando apenas a > 0
+  - `if threshold > 0: result = score / weight`    → guarda threshold, não weight
+  - `if i >= 0: return lst[i]`                     → não protege i >= len(lst)
+  - `if k < len(seq): return seq[k + 1]`           → k == len-1 passa a guarda mas acessa fora
+  - `if len(arr) >= 1: return arr[j]`              → garante >=1 elemento, mas j é livre
 
 ### PASSO 5 — AVALIAR DESVIOS DE EXECUÇÃO
 Existe ao menos um valor concreto dos parâmetros que:

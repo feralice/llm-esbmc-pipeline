@@ -8,6 +8,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from build_frontend_report import build_html_report
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -31,6 +33,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--backend", default=None, help="Optional forced backend: openai, anthropic, or ollama")
     parser.add_argument("--ollama-base-url", default=None)
     parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--html-report", default="reports/html/benchmark_dashboard.html",
+                        help="Static dashboard generated after the benchmark matrix")
+    parser.add_argument("--no-html-report", action="store_true",
+                        help="Do not generate the static dashboard")
     return parser
 
 
@@ -83,6 +89,14 @@ def main() -> int:
     manifest_path = out_dir / "benchmark_matrix_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nManifest: {manifest_path}")
+
+    if not args.no_html_report:
+        html_path = build_html_report(
+            benchmark_dir=out_dir,
+            output_path=(ROOT / args.html_report).resolve(),
+        )
+        print(f"Dashboard HTML: {html_path}")
+
     return 1 if any(run["returncode"] != 0 for run in manifest["runs"]) else 0
 
 

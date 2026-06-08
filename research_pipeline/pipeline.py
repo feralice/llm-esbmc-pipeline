@@ -1,23 +1,28 @@
+"""Pipeline executors for the three experimental flows.
+
+src/main.py parses CLI arguments and chooses the mode.
+This module only executes the selected flow:
+
+Flow A: ESBMC-only. It discovers functions and runs ESBMC on each one.
+Flow B: Hybrid. The LLM proposes findings; ESBMC checks verifiable bugs.
+Flow C: LLM-only. The LLM findings are kept without formal confirmation.
+"""
+
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import Literal
 
-from .llm.backends.factory import Backend, build_analyzer  # noqa: F401 — re-exported
-from .llm.protocols import LLMAnalyzer
-from .models import (
-    CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC,
-    CLASSIFICATION_ESBMC_NATIVE_BUG,
-    ESBMCDirectResult,
-    FinalResult,
-)
+from .llm.backends.factory import Backend, build_analyzer  # noqa: F401 - re-exported
+from .llm.prompts import PromptMode
+from .models import ESBMCDirectResult, FinalResult
 from .preprocess import preprocess_file
-from .report import consolidate_result, make_direct_observation_result, make_missed_bug_result, write_json_report
+from .report import consolidate_result, write_json_report
 from .verification.esbmc_runner import run_esbmc_function_baseline, run_esbmc_on_function
 
 
 # ---------------------------------------------------------------------------
-# Flow A: ESBMC-only function baseline
+# Flow A: ESBMC-only
 # ---------------------------------------------------------------------------
 
 def run_pipeline_esbmc_direct(
@@ -27,14 +32,21 @@ def run_pipeline_esbmc_direct(
     bound: int = 5,
     timeout_seconds: int = 30,
 ) -> list[ESBMCDirectResult]:
-    """Flow A: run ESBMC with --function for each function, no LLM involved."""
+    """Flow A: run ESBMC on every discovered function, without using an LLM.
+
+    Input files are first preprocessed only to collect function names. Those names
+    are then passed to ESBMC with --function. No prompt is built and no LLM is
+    called in this flow.
+    """
     results: list[ESBMCDirectResult] = []
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     num_files = len(input_paths)
     for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
-        print(f"[{i}/{num_files}] Verificando {file_path.name} (ESBMC-direct)...")
+        print(f"[{i}/{num_files}] Verificando {file_path.name} (ESBMC-only)...")
+
+        # Preprocessing is used here only to discover function names.
         units = preprocess_file(file_path)
         result = run_esbmc_function_baseline(
             file_path=file_path,
@@ -46,18 +58,16 @@ def run_pipeline_esbmc_direct(
         )
         results.append(result)
 
-    # Save direct results summary
-    import json
     summary_path = Path(output_dir) / "esbmc_direct_results.json"
     summary_path.write_text(
-        json.dumps([r.to_dict() for r in results], indent=2, ensure_ascii=False),
+        json.dumps([result.to_dict() for result in results], indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
     return results
 
 
 # ---------------------------------------------------------------------------
-# Flow B: LLM-first (existing pipeline, now accepts esbmc_direct_result)
+# Flow B: Hybrid, LLM + ESBMC
 # ---------------------------------------------------------------------------
 
 def run_pipeline(
@@ -69,11 +79,15 @@ def run_pipeline(
     openai_api_key: str | None = None,
     anthropic_api_key: str | None = None,
     ollama_base_url: str | None = None,
-    esbmc_direct_result: ESBMCDirectResult | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
+    prompt_mode: PromptMode = "raw",
 ) -> list[FinalResult]:
-    """Flow B: LLM-first hybrid for a single file."""
+    """Flow B: convenience wrapper for analyzing one file.
+
+    The real implementation is run_pipeline_multi(); this helper keeps tests and
+    callers simple when they only have one input file.
+    """
     return run_pipeline_multi(
         input_paths=[input_path],
         output_dir=output_dir,
@@ -83,10 +97,9 @@ def run_pipeline(
         openai_api_key=openai_api_key,
         anthropic_api_key=anthropic_api_key,
         ollama_base_url=ollama_base_url,
-        esbmc_direct_results={str(Path(input_path)): esbmc_direct_result}
-        if esbmc_direct_result else None,
         bound=bound,
         timeout_seconds=timeout_seconds,
+        prompt_mode=prompt_mode,
     )
 
 
@@ -99,12 +112,23 @@ def run_pipeline_multi(
     openai_api_key: str | None = None,
     anthropic_api_key: str | None = None,
     ollama_base_url: str | None = None,
-    esbmc_direct_results: dict[str, ESBMCDirectResult] | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
     llm_timeout_seconds: int = 300,
+    prompt_mode: PromptMode = "raw",
 ) -> list[FinalResult]:
-    """Flow B: LLM-first hybrid for multiple files."""
+    """Flow B: LLM proposes findings; ESBMC checks verifiable bug findings.
+
+    For each Python function:
+    1. preprocess_file() creates a CodeUnit.
+    2. analyzer.analyze() sends that CodeUnit to the LLM.
+    3. Verifiable bug findings are checked with ESBMC.
+    4. report.consolidate_result() turns each finding into a FinalResult.
+
+    The pipeline keeps file_path internally so ESBMC can run on the real file.
+    In prompt_mode="raw", the prompt builder intentionally omits the path from
+    the LLM prompt to avoid dataset-category leakage.
+    """
     analyzer = build_analyzer(
         backend=backend,
         llm_model=llm_model,
@@ -112,6 +136,7 @@ def run_pipeline_multi(
         anthropic_api_key=anthropic_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=llm_timeout_seconds,
+        prompt_mode=prompt_mode,
     )
     artifacts_dir = Path(output_dir)
     _prepare_output_dir(artifacts_dir)
@@ -121,25 +146,28 @@ def run_pipeline_multi(
     num_files = len(input_paths)
     for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
-        print(f"[{i}/{num_files}] Analisando {file_path.name}...")
-        direct = (esbmc_direct_results or {}).get(str(file_path))
+        print(f"[{i}/{num_files}] Analisando {file_path.name} (hybrid)...")
 
+        # Preprocess converts each Python function into a CodeUnit.
         units = preprocess_file(file_path)
-        file_results: list[FinalResult] = []
-
         for unit in units:
+            # The LLM receives one function at a time and returns zero or more findings.
             findings = analyzer.analyze(unit)
-            verifiable_findings = [f for f in findings if f.verifiable]
-            num_v = len(verifiable_findings)
-            v_count = 0
+            verifiable_findings = [finding for finding in findings if finding.verifiable]
+            num_verifiable = len(verifiable_findings)
+            verified_count = 0
 
             for finding in findings:
                 esbmc_result = None
 
                 if finding.verifiable:
-                    v_count += 1
-                    print(f"    - Validando hipótese {v_count}/{num_v}: {finding.category} em {unit.name}...")
-                    # Flow B: ESBMC with --function, parameters become symbolic automatically
+                    verified_count += 1
+                    print(
+                        f"    - Validando hipotese {verified_count}/{num_verifiable}: "
+                        f"{finding.category} em {unit.name}..."
+                    )
+                    # ESBMC needs the real file path and function name. This
+                    # does not mean the LLM saw the file path in raw mode.
                     esbmc_result = run_esbmc_on_function(
                         file_path=file_path,
                         function_name=unit.name,
@@ -156,38 +184,15 @@ def run_pipeline_multi(
                     source_file=str(file_path),
                     finding=finding,
                     esbmc_result=esbmc_result,
-                    esbmc_direct_result=direct,
                 )
-                file_results.append(result)
-
-        # Fix 7: check per-function — each Flow A violation not covered by LLM gets its own entry.
-        if direct and direct.status == "violation_found":
-            confirmed_functions = {
-                r.finding.metadata.get("function", "")
-                for r in file_results
-                if r.final_classification in (
-                    CLASSIFICATION_LLM_CONFIRMED_BY_ESBMC,
-                    CLASSIFICATION_ESBMC_NATIVE_BUG,
-                )
-            }
-            for fn_info in direct.details.get("functions", []):
-                if not isinstance(fn_info, dict) or fn_info.get("status") != "violation_found":
-                    continue
-                fn_name = fn_info.get("name", "")
-                if fn_name not in confirmed_functions:
-                    file_results.append(make_missed_bug_result(str(file_path), direct, fn_info))
-
-        if direct and not file_results:
-            file_results.append(make_direct_observation_result(str(file_path), direct))
-
-        results.extend(file_results)
+                results.append(result)
 
     write_json_report(results, artifacts_dir / "report.json")
     return results
 
 
 # ---------------------------------------------------------------------------
-# Flow C: LLM-only (no ESBMC, baseline)
+# Flow C: LLM-only
 # ---------------------------------------------------------------------------
 
 def run_pipeline_llm_only(
@@ -199,8 +204,14 @@ def run_pipeline_llm_only(
     anthropic_api_key: str | None = None,
     ollama_base_url: str | None = None,
     timeout_seconds: int = 300,
+    prompt_mode: PromptMode = "raw",
 ) -> list[FinalResult]:
-    """Flow C: LLM-first without ESBMC confirmation (baseline for comparison)."""
+    """Flow C: run the LLM only, without ESBMC confirmation.
+
+    This is the neural baseline. It uses the same preprocessing and prompt
+    machinery as Flow B, but every finding is consolidated with llm_only=True
+    and no ESBMC command is executed.
+    """
     analyzer = build_analyzer(
         backend=backend,
         llm_model=llm_model,
@@ -208,6 +219,7 @@ def run_pipeline_llm_only(
         anthropic_api_key=anthropic_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=timeout_seconds,
+        prompt_mode=prompt_mode,
     )
     artifacts_dir = Path(output_dir)
     artifacts_dir.mkdir(parents=True, exist_ok=True)
@@ -217,6 +229,8 @@ def run_pipeline_llm_only(
     for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
         print(f"[{i}/{num_files}] Analisando {file_path.name} (LLM-only)...")
+
+        # Flow C keeps the LLM findings as final suspected results.
         for unit in preprocess_file(file_path):
             for finding in analyzer.analyze(unit):
                 result = consolidate_result(
@@ -232,63 +246,8 @@ def run_pipeline_llm_only(
     return results
 
 
-# ---------------------------------------------------------------------------
-# Full pipeline: Flow A + Flow B combined
-# ---------------------------------------------------------------------------
-
-def run_full_pipeline(
-    input_paths: list[str | Path],
-    output_dir: str | Path = "artifacts/full-pipeline",
-    esbmc_command: list[str] | None = None,
-    backend: Backend = "openai",
-    llm_model: str | None = None,
-    openai_api_key: str | None = None,
-    anthropic_api_key: str | None = None,
-    ollama_base_url: str | None = None,
-    bound: int = 5,
-    timeout_seconds: int = 30,
-) -> list[FinalResult]:
-    """
-    Full pipeline: runs Flow A (ESBMC-only --function) then Flow B (LLM-first) for each file.
-    Combines results so the final JSON has both Flow A and hybrid outcomes.
-    """
-    artifacts_dir = Path(output_dir)
-    artifacts_dir.mkdir(parents=True, exist_ok=True)
-
-    # Flow A: ESBMC-only with --function on all discovered functions
-    direct_results: dict[str, ESBMCDirectResult] = {}
-    for input_path in input_paths:
-        file_path = Path(input_path)
-        units = preprocess_file(file_path)
-        direct = run_esbmc_function_baseline(
-            file_path=file_path,
-            function_names=[unit.name for unit in units],
-            esbmc_command=esbmc_command,
-            bound=bound,
-            timeout_seconds=timeout_seconds,
-            output_dir=artifacts_dir,
-        )
-        direct_results[str(file_path)] = direct
-
-    # Flow B: LLM-first with Flow A results available for context
-    results = run_pipeline_multi(
-        input_paths=input_paths,
-        output_dir=output_dir,
-        esbmc_command=esbmc_command,
-        backend=backend,
-        llm_model=llm_model,
-        openai_api_key=openai_api_key,
-        anthropic_api_key=anthropic_api_key,
-        ollama_base_url=ollama_base_url,
-        esbmc_direct_results=direct_results,
-        bound=bound,
-        timeout_seconds=timeout_seconds,
-    )
-
-    return results
-
-
 def _prepare_output_dir(artifacts_dir: Path) -> None:
+    """Create the output directory and replace the old report.json if present."""
     report_path = artifacts_dir / "report.json"
     if report_path.exists():
         report_path.unlink()

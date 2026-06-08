@@ -29,6 +29,7 @@ from research_pipeline.report import consolidate_result
 from research_pipeline.pipeline import run_pipeline
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.llm.findings import finding_from_dict, normalize_findings
+from research_pipeline.llm.prompts import PromptMode, build_user_prompt
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.llm.backends import openai as openai_backend
 from research_pipeline.llm.backends.factory import build_analyzer
@@ -277,6 +278,24 @@ def test_clean_case_with_findings_counts_false_positive(tmp_path: Path) -> None:
     assert counts.bug_func_fp == 1
     assert counts.bug_func_fn == 0
     assert counts.bug_func_tn == 0
+
+
+def test_out_of_scope_finding_counts_separately(tmp_path: Path) -> None:
+    sample = tmp_path / "clean.py"
+    sample.write_text("def safe_add(a: int, b: int) -> int:\n    return a + b\n", encoding="utf-8")
+    finding = _make_finding("sql_injection", "", verifiable=False)
+    finding.finding_type = "out_of_scope_finding"
+
+    counts = evaluate_file(
+        file_path=sample,
+        expected=[{"function": "safe_add", "category": "clean", "verifiable": False}],
+        analyzer=_FakeAnalyzer({"safe_add": [finding]}),
+    )
+
+    assert counts.out_of_scope_count == 1
+    assert counts.bug_fp == 0
+    assert counts.smell_fp == 0
+    assert counts.bug_func_tn == 1
 
 
 def test_hallucinated_bug_on_buggy_file_counts_as_llm_false_positive(
@@ -618,3 +637,85 @@ def test_esbmc_native_bug_is_zero_when_no_violation_found(tmp_path: Path) -> Non
     )
 
     assert counts.esbmc_native_bug == 0
+
+
+# ---------------------------------------------------------------------------
+# Prompt-mode tests
+# ---------------------------------------------------------------------------
+
+def test_raw_prompt_excludes_ast_operation_hints(tmp_path: Path) -> None:
+    sample = tmp_path / "dz.py"
+    sample.write_text(
+        "def compute_ratio(total: int, count: int) -> int:\n    return total // count\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    prompt = build_user_prompt(unit, prompt_mode="raw")
+
+    assert "OPERAÇÕES DETECTADAS" not in prompt
+    assert "Divisões/módulos" not in prompt
+    assert "Acessos indexados" not in prompt
+    assert "GUARDAS/ASSERTS EXISTENTES" not in prompt
+    assert "operation_count" not in prompt
+    assert "branch_count" not in prompt
+    assert "loop_count" not in prompt
+
+
+def test_raw_prompt_contains_source_and_signature(tmp_path: Path) -> None:
+    sample = tmp_path / "dz.py"
+    sample.write_text(
+        "def compute_ratio(total: int, count: int) -> int:\n    return total // count\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    prompt = build_user_prompt(unit, prompt_mode="raw")
+
+    assert "compute_ratio" in prompt
+    assert "total // count" in prompt
+    assert "line_count" in prompt
+    assert "parameter_count" in prompt
+
+
+def test_ast_hints_prompt_contains_pre_extracted_operations(tmp_path: Path) -> None:
+    sample = tmp_path / "dz.py"
+    sample.write_text(
+        "def compute_ratio(total: int, count: int) -> int:\n    return total // count\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    prompt = build_user_prompt(unit, prompt_mode="ast_hints")
+
+    assert "OPERAÇÕES DETECTADAS" in prompt
+    assert "Divisões/módulos" in prompt
+    assert "total // count" in prompt
+
+
+def test_build_analyzer_default_prompt_mode_is_raw() -> None:
+    analyzer = build_analyzer(
+        backend="anthropic",
+        anthropic_api_key="test-key",
+    )
+    assert analyzer.prompt_mode == "raw"
+
+
+def test_build_analyzer_ast_hints_mode_propagates() -> None:
+    analyzer = build_analyzer(
+        backend="anthropic",
+        anthropic_api_key="test-key",
+        prompt_mode="ast_hints",
+    )
+    assert analyzer.prompt_mode == "ast_hints"
+
+
+def test_raw_is_default_for_build_user_prompt(tmp_path: Path) -> None:
+    sample = tmp_path / "f.py"
+    sample.write_text("def add(a: int, b: int) -> int:\n    return a + b\n", encoding="utf-8")
+    unit = preprocess_file(sample)[0]
+
+    prompt_default = build_user_prompt(unit)
+    prompt_raw     = build_user_prompt(unit, prompt_mode="raw")
+
+    assert prompt_default == prompt_raw

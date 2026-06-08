@@ -47,6 +47,13 @@ output/
 reports/html/
 reports/json/
 
+# Slides, decks e figuras geradas para apresentação
+benchmark_pipeline_slide.pptx
+docs/slides_pipeline_v1*
+docs/pipeline_flow_diagram.png
+scripts/generate_orientadora_deck.py
+scripts/generate_pipeline_pptx.py
+
 # ESBMC outputs
 *.smt2
 *.goto

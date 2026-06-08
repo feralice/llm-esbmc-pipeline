@@ -4,7 +4,7 @@ import json
 from urllib import error, request
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
-from ..prompts import build_user_prompt, load_system_prompt
+from ..prompts import PromptMode, build_user_prompt, load_system_prompt
 from ...models import CodeUnit, Finding
 
 
@@ -17,18 +17,20 @@ class ChatCompletionsAnalyzer:
         model: str = "deepseek-r1:7b",
         api_key: str = "ollama",
         timeout_seconds: int = 300,
+        prompt_mode: PromptMode = "raw",
     ) -> None:
         self.base_url = base_url.rstrip("/") + "/v1/chat/completions"
         self.model = model
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
+        self.prompt_mode = prompt_mode
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         payload = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": load_system_prompt()},
-                {"role": "user", "content": build_user_prompt(unit)},
+                {"role": "user", "content": build_user_prompt(unit, self.prompt_mode)},
             ],
             "response_format": {"type": "json_object"},
             "temperature": 0,

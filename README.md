@@ -80,12 +80,15 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
+  --prompt-mode raw \
   --bound 5 \
   --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt_4o.json
 ```
 
 Use `TUTORIAL.md` para o passo a passo completo de benchmark.
+
+> **`--prompt-mode raw`** (padrão e obrigatório para avaliações científicas): o prompt não inclui o path do arquivo nem operações pré-extraídas pelo AST — evita que o modelo "veja" a categoria do bug pelo nome do diretório ou pelo tipo de operação destacada. Veja [seção de prompt mode](docs/benchmark_v1_reference.md#5-prompt-mode) na referência.
 
 ### CLI geral auxiliar: modo `hybrid`
 
@@ -136,7 +139,7 @@ Veja [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) para a r
 | Backend | Alias `--model` | Modelo padrão |
 |---|---|---|
 | OpenAI | `gpt`, `gpt-4o`, ... | `gpt-4o` |
-| Anthropic | `claude`, `claude-3-7-sonnet-20250219`, ... | `claude-3-7-sonnet-20250219` |
+| Anthropic | `claude`, `claude-sonnet-4-6`, ... | `claude-sonnet-4-6` |
 | Ollama | `deepseek`, `deepseek-r1:7b`, ... | `deepseek-r1:7b` |
 
 ---
@@ -248,6 +251,8 @@ llm-esbmc-pipeline/
 | Documento | Conteúdo |
 |---|---|
 | [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) | **Referência Oficial:** fluxos, categorias, classificações, métricas e metodologia |
+| [`docs/pipeline_walkthrough.md`](docs/pipeline_walkthrough.md) | **Walkthrough:** cada arquivo, cada passo — leitura para entender o pipeline de dentro |
+| [`docs/v2_harness_synthesis.md`](docs/v2_harness_synthesis.md) | **Proposta V2:** LLM-guided harness synthesis/model extraction para código Python complexo |
 | [`TUTORIAL.md`](TUTORIAL.md) | Guia passo a passo para execução de benchmarks |
 
 ---
@@ -259,7 +264,7 @@ llm-esbmc-pipeline/
 pytest tests/
 
 # Smoke test
-python -c "from research_pipeline.pipeline import run_full_pipeline; print('OK')"
+python -c "from research_pipeline.pipeline import run_pipeline_esbmc_direct, run_pipeline_multi, run_pipeline_llm_only; print('OK')"
 
 # Flow A: ESBMC-only com --function
 python src/main.py --mode esbmc-only --input dataset/labeled/ok/bugs --bound 5

@@ -1,6 +1,6 @@
 """full_report.py — Builds the stable per-file JSON report for the hybrid pipeline.
 
-This module takes the flat list[FinalResult] from pipeline.run_full_pipeline()
+This module takes a flat list[FinalResult] from one of the pipeline flows
 and reorganises it into the hierarchical structure expected by the frontend:
 
   experiment → ground_truth → summary → files[]

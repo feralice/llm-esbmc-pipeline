@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import random
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 from .llm.backends.factory import build_analyzer
+from .llm.prompts import PromptMode
 from .models import (
     ESBMCDirectResult,
     Finding,
@@ -26,6 +29,7 @@ class EvalCounts:
 
     # LLM quality
     hallucination_count: int = 0   # findings where LLM claimed verifiable but AST rejected
+    out_of_scope_count: int = 0    # findings whose category is outside the benchmark scope
 
     # Flow A (ESBMC-only --function) vs. ground truth
     esbmc_direct_tp: int = 0
@@ -291,6 +295,7 @@ def evaluate_file(
     bugs            = [f for _, f in bugs_with_units]
     smells          = [f for _, f in unit_findings if not f.verifiable and f.finding_type == "smell_heuristic"]
     hallucinations  = [f for _, f in unit_findings if f.finding_type == "llm_false_positive"]
+    out_of_scope    = [f for _, f in unit_findings if f.finding_type == "out_of_scope_finding"]
     # Fix 5: suspected_bug + verifiable=False = ghost finding — treat as FP.
     ghost_bugs      = [f for _, f in unit_findings if f.finding_type == "suspected_bug" and not f.verifiable]
 
@@ -318,6 +323,7 @@ def evaluate_file(
     counts.smell_fp = smell_fp
     counts.smell_fn = smell_fn
     counts.hallucination_count    = len(hallucinations)
+    counts.out_of_scope_count     = len(out_of_scope)
     counts.ghost_bug_count        = len(ghost_bugs)
     counts.skipped_not_verifiable = 0
     if exp_bugs:
@@ -459,7 +465,9 @@ def evaluate_model(
     llm_timeout_seconds: int = 300,
     verbose: bool = False,
     output_dir: str | Path | None = None,
-) -> EvalCounts:
+    prompt_mode: PromptMode = "raw",
+    n_bootstrap: int = 2000,
+) -> tuple[EvalCounts, dict[str, tuple[float, float]]]:
     cases = load_ground_truth_cases(ground_truth_path)
     analyzer = build_analyzer(
         backend=backend,
@@ -468,9 +476,11 @@ def evaluate_model(
         openai_api_key=openai_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=llm_timeout_seconds,
+        prompt_mode=prompt_mode,
     )
 
     total = EvalCounts()
+    case_list: list[EvalCounts] = []
     num_cases = len(cases)
     for i, (file_path, expected) in enumerate(cases, 1):
         print(f"[{i}/{num_cases}] Processando {file_path.name}...")
@@ -484,6 +494,7 @@ def evaluate_model(
             verbose=verbose,
             output_dir=output_dir,
         )
+        case_list.append(c)
         total.bug_tp   += c.bug_tp
         total.bug_fp   += c.bug_fp
         total.bug_fn   += c.bug_fn
@@ -491,6 +502,7 @@ def evaluate_model(
         total.smell_fp += c.smell_fp
         total.smell_fn += c.smell_fn
         total.hallucination_count      += c.hallucination_count
+        total.out_of_scope_count       += c.out_of_scope_count
         total.esbmc_direct_tp          += c.esbmc_direct_tp
         total.esbmc_direct_fp          += c.esbmc_direct_fp
         total.esbmc_direct_fn          += c.esbmc_direct_fn
@@ -519,7 +531,8 @@ def evaluate_model(
         total.merge_category(c)
         total.merge_category_hybrid(c)
 
-    return total
+    cis = compute_bootstrap_cis(case_list, n_bootstrap=n_bootstrap) if n_bootstrap > 0 else {}
+    return total, cis
 
 
 def prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
@@ -606,6 +619,105 @@ def noise_reduction_rate(counts: EvalCounts) -> float:
     if counts.bug_fp == 0:
         return 0.0
     return (counts.bug_fp - counts.hybrid_bug_fp) / counts.bug_fp
+
+
+# ---------------------------------------------------------------------------
+# Bootstrap confidence intervals
+# ---------------------------------------------------------------------------
+
+def _accumulate(cases: list[EvalCounts]) -> EvalCounts:
+    """Sum a list of per-case EvalCounts into one aggregate."""
+    total = EvalCounts()
+    for c in cases:
+        total.bug_tp                     += c.bug_tp
+        total.bug_fp                     += c.bug_fp
+        total.bug_fn                     += c.bug_fn
+        total.smell_tp                   += c.smell_tp
+        total.smell_fp                   += c.smell_fp
+        total.smell_fn                   += c.smell_fn
+        total.hallucination_count        += c.hallucination_count
+        total.out_of_scope_count         += c.out_of_scope_count
+        total.esbmc_direct_tp            += c.esbmc_direct_tp
+        total.esbmc_direct_fp            += c.esbmc_direct_fp
+        total.esbmc_direct_fn            += c.esbmc_direct_fn
+        total.esbmc_direct_func_tp       += c.esbmc_direct_func_tp
+        total.esbmc_direct_func_fp       += c.esbmc_direct_func_fp
+        total.esbmc_direct_func_fn       += c.esbmc_direct_func_fn
+        total.esbmc_direct_func_tn       += c.esbmc_direct_func_tn
+        total.hybrid_bug_tp              += c.hybrid_bug_tp
+        total.hybrid_bug_fp              += c.hybrid_bug_fp
+        total.hybrid_bug_fn              += c.hybrid_bug_fn
+        total.hybrid_bug_func_tp         += c.hybrid_bug_func_tp
+        total.hybrid_bug_func_fp         += c.hybrid_bug_func_fp
+        total.hybrid_bug_func_fn         += c.hybrid_bug_func_fn
+        total.hybrid_bug_func_tn         += c.hybrid_bug_func_tn
+        total.bug_func_tp                += c.bug_func_tp
+        total.bug_func_fp                += c.bug_func_fp
+        total.bug_func_fn                += c.bug_func_fn
+        total.bug_func_tn                += c.bug_func_tn
+        total.llm_confirmed_by_esbmc     += c.llm_confirmed_by_esbmc
+        total.esbmc_native_bug           += c.esbmc_native_bug
+        total.llm_missed_esbmc_bug       += c.llm_missed_esbmc_bug
+        total.not_confirmed_within_bound += c.not_confirmed_within_bound
+        total.esbmc_inconclusive         += c.esbmc_inconclusive
+        total.skipped_not_verifiable     += c.skipped_not_verifiable
+        total.ghost_bug_count            += c.ghost_bug_count
+        total.merge_category(c)
+        total.merge_category_hybrid(c)
+    return total
+
+
+def bootstrap_ci(
+    case_counts: list[EvalCounts],
+    metric_fn: Callable[[EvalCounts], float],
+    n_bootstrap: int = 2000,
+    confidence: float = 0.95,
+    seed: int = 42,
+) -> tuple[float, float]:
+    """Percentile bootstrap CI for a scalar metric computed on resampled case-level EvalCounts."""
+    rng = random.Random(seed)
+    n = len(case_counts)
+    samples: list[float] = []
+    for _ in range(n_bootstrap):
+        resample = [rng.choice(case_counts) for _ in range(n)]
+        samples.append(metric_fn(_accumulate(resample)))
+    samples.sort()
+    alpha = (1.0 - confidence) / 2.0
+    lo = samples[int(alpha * n_bootstrap)]
+    hi = samples[min(int((1.0 - alpha) * n_bootstrap), n_bootstrap - 1)]
+    return lo, hi
+
+
+_BOOTSTRAP_METRICS: dict[str, Callable[[EvalCounts], float]] = {
+    "llm_bug_precision":    lambda c: prf(c.bug_tp, c.bug_fp, c.bug_fn)[0],
+    "llm_bug_recall":       lambda c: prf(c.bug_tp, c.bug_fp, c.bug_fn)[1],
+    "llm_bug_f1":           lambda c: prf(c.bug_tp, c.bug_fp, c.bug_fn)[2],
+    "llm_bug_mcc":          lambda c: mcc(c.bug_func_tp, c.bug_func_fp, c.bug_func_fn, c.bug_func_tn),
+    "hybrid_bug_precision": lambda c: prf(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)[0],
+    "hybrid_bug_recall":    lambda c: prf(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)[1],
+    "hybrid_bug_f1":        lambda c: prf(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)[2],
+    "hybrid_bug_mcc":       lambda c: mcc(c.hybrid_bug_func_tp, c.hybrid_bug_func_fp, c.hybrid_bug_func_fn, c.hybrid_bug_func_tn),
+    "esbmc_bug_precision":  lambda c: prf(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)[0],
+    "esbmc_bug_recall":     lambda c: prf(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)[1],
+    "esbmc_bug_f1":         lambda c: prf(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)[2],
+    "esbmc_bug_mcc":        lambda c: mcc(c.esbmc_direct_func_tp, c.esbmc_direct_func_fp, c.esbmc_direct_func_fn, c.esbmc_direct_func_tn),
+    "smell_precision":      lambda c: prf(c.smell_tp, c.smell_fp, c.smell_fn)[0],
+    "smell_recall":         lambda c: prf(c.smell_tp, c.smell_fp, c.smell_fn)[1],
+    "smell_f1":             lambda c: prf(c.smell_tp, c.smell_fp, c.smell_fn)[2],
+}
+
+
+def compute_bootstrap_cis(
+    case_counts: list[EvalCounts],
+    n_bootstrap: int = 2000,
+    confidence: float = 0.95,
+    seed: int = 42,
+) -> dict[str, tuple[float, float]]:
+    """Compute percentile bootstrap CIs for all standard metrics. Returns {metric: (lo, hi)}."""
+    return {
+        name: bootstrap_ci(case_counts, fn, n_bootstrap=n_bootstrap, confidence=confidence, seed=seed)
+        for name, fn in _BOOTSTRAP_METRICS.items()
+    }
 
 
 def _print_detail(

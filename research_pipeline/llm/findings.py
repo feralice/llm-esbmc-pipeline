@@ -1,20 +1,37 @@
 from __future__ import annotations
 
 import ast
+import json
 
 from .categories import SUPPORTED_CATEGORIES, VERIFIABLE_OPERATION_KIND
 from ..ast_utils import expression_exists_in_executable_ast
 from ..models import CodeUnit, Finding
 
+"""Utilities for turning raw LLM JSON into normalized Finding objects.
+
+The LLM response is not trusted directly. This module:
+
+1. extracts the `findings` list from the JSON payload;
+2. converts each dict into the project's Finding dataclass;
+3. rejects categories outside the benchmark scope;
+4. checks whether verifiable bug claims refer to executable code;
+5. marks structural hallucinations as llm_false_positive.
+
+It does not prove bugs. It only decides whether a finding is well-formed and
+eligible for later ESBMC checking.
+"""
+
 
 def coerce_findings_payload(payload: dict) -> list[dict]:
+    """Return payload["findings"] or fail if the LLM used the wrong shape."""
     findings = payload.get("findings")
     if not isinstance(findings, list):
-        raise RuntimeError("JSON da LLM não contém a chave 'findings' no formato esperado.")
+        raise RuntimeError("JSON da LLM nao contem a chave 'findings' no formato esperado.")
     return findings
 
 
 def finding_from_dict(data: dict) -> Finding:
+    """Convert one raw finding dictionary from the LLM into a Finding object."""
     metadata_raw = data.get("metadata", {})
     if not isinstance(metadata_raw, dict):
         metadata_raw = {}
@@ -39,6 +56,12 @@ def finding_from_dict(data: dict) -> Finding:
 
 
 def normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]:
+    """Normalize LLM findings for one CodeUnit.
+
+    Supported categories are checked against the function source. Unsupported
+    categories become out_of_scope_finding and are counted separately by the
+    benchmark, not mixed into bug/smell precision and recall.
+    """
     normalized: list[Finding] = []
     seen_ids: set[str] = set()
     for index, finding in enumerate(findings, start=1):
@@ -57,16 +80,26 @@ def normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]
 
 
 def strip_markdown_json(text: str) -> str:
+    """Strip markdown fences and trailing prose around a JSON response."""
     text = text.strip()
     if text.startswith("```"):
         lines = text.splitlines()[1:]
         if lines and lines[-1].strip() == "```":
             lines = lines[:-1]
         text = "\n".join(lines).strip()
+
+    # Some models append explanations after valid JSON. Keep only the first
+    # complete JSON value when possible.
+    try:
+        _, end = json.JSONDecoder().raw_decode(text)
+        text = text[:end]
+    except json.JSONDecodeError:
+        pass
     return text
 
 
 def _normalize_evidence(evidence_raw) -> list[str]:
+    """Normalize evidence to a list of strings."""
     if isinstance(evidence_raw, str):
         return [evidence_raw]
     if isinstance(evidence_raw, list):
@@ -75,6 +108,7 @@ def _normalize_evidence(evidence_raw) -> list[str]:
 
 
 def _metadata_int(value) -> int:
+    """Convert optional metadata line values to an int, using 0 when absent."""
     if value in (None, ""):
         return 0
     try:
@@ -84,6 +118,7 @@ def _metadata_int(value) -> int:
 
 
 def _unique_finding_id(preferred_id: str, fallback_id: str, used_ids: set[str]) -> str:
+    """Return a stable unique id for one finding within a CodeUnit."""
     candidate_id = preferred_id.strip() or fallback_id
     if candidate_id in used_ids:
         candidate_id = f"{candidate_id}:{len(used_ids) + 1}"
@@ -92,6 +127,7 @@ def _unique_finding_id(preferred_id: str, fallback_id: str, used_ids: set[str]) 
 
 
 def _out_of_scope_finding(finding: Finding, finding_id: str) -> Finding:
+    """Mark a supported-shape finding whose category is outside benchmark scope."""
     metadata = dict(finding.metadata)
     metadata["original_category"] = finding.category
     metadata["has_guard"] = "false"
@@ -110,12 +146,15 @@ def _out_of_scope_finding(finding: Finding, finding_id: str) -> Finding:
 
 
 def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: str) -> Finding:
+    """Normalize a finding whose category is inside the benchmark scope."""
     metadata = dict(finding.metadata)
     finding_type = finding.finding_type
     verifiable = finding.verifiable
 
+    # assertion_violation is checked by matching assert-like source syntax.
     if verifiable and finding.category == "assertion_violation":
         finding_type, verifiable = _normalize_assertion_violation(unit, metadata)
+    # division_by_zero and out_of_bounds are checked against operations from preprocessing.
     elif verifiable:
         finding_type, verifiable = _normalize_operation_finding(unit, finding.category, metadata)
 
@@ -134,6 +173,7 @@ def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: s
 
 
 def _normalize_assertion_violation(unit: CodeUnit, metadata: dict[str, object]) -> tuple[str, bool]:
+    """Accept assertion_violation only when the reported assert exists in source."""
     metadata["has_guard"] = "false"
     if _assertion_violation_matches_source(unit, str(metadata.get("expression", ""))):
         return "suspected_bug", True
@@ -145,13 +185,19 @@ def _normalize_operation_finding(
     category: str,
     metadata: dict[str, object],
 ) -> tuple[str, bool]:
+    """Normalize verifiable operation-based bug claims.
+
+    This handles division_by_zero and out_of_bounds. The goal is structural
+    validation: does the LLM's expression correspond to executable code?
+    """
     expected_operation_kind = VERIFIABLE_OPERATION_KIND.get(category)
     if expected_operation_kind is None:
         return "smell_heuristic", False
 
     expression = str(metadata.get("expression", ""))
 
-    # Phase 1: try exact AST-kind match (fast path, enriches line metadata)
+    # Phase 1: exact match against operations extracted by preprocess.py.
+    # This is the preferred path because it also gives us line metadata.
     matched_operation = _find_matching_operation(unit, expected_operation_kind, expression)
     if matched_operation is not None:
         metadata["line"] = matched_operation.line
@@ -163,9 +209,9 @@ def _normalize_operation_finding(
         metadata["has_guard"] = "true" if has_guard else "false"
         return "suspected_bug", True
 
-    # Phase 2: expression exists as an executable AST node but uses an unrecognized pattern
-    # (e.g. list.pop(i) instead of list[i]). Pass through to ESBMC --function
-    # rather than silently labelling it as an LLM hallucination.
+    # Phase 2: the expression exists in the AST, but preprocess.py did not
+    # classify it as the expected operation kind. Keep it verifiable instead
+    # of treating it as hallucination.
     if expression_exists_in_executable_ast(expression, unit.source):
         if _denominator_is_nonzero_constant(category, expression):
             metadata["has_guard"] = "false"
@@ -174,12 +220,13 @@ def _normalize_operation_finding(
         metadata["ast_unrecognized"] = "true"
         return "suspected_bug", True
 
-    # Phase 3: expression genuinely does not exist in the executable code — real hallucination.
+    # Phase 3: the expression genuinely does not occur in executable code.
     metadata["has_guard"] = "false"
     return "llm_false_positive", False
 
 
 def _find_matching_operation(unit: CodeUnit, expected_kind: str, expression: str):
+    """Find an AST-extracted operation matching kind and optional expression."""
     return next(
         (
             operation
@@ -192,6 +239,10 @@ def _find_matching_operation(unit: CodeUnit, expected_kind: str, expression: str
 
 
 def _guard_covers_operation(unit: CodeUnit, expression: str, category: str) -> bool:
+    """Return whether a guard mentions the risky operand/index.
+
+    This is metadata only. It does not prove safety and does not block ESBMC.
+    """
     if not unit.guards or not expression:
         return False
     if category == "division_by_zero":
@@ -202,6 +253,7 @@ def _guard_covers_operation(unit: CodeUnit, expression: str, category: str) -> b
 
 
 def _division_guard_covers_expression(unit: CodeUnit, expression: str) -> bool:
+    """Heuristically check whether a guard mentions the division denominator."""
     for operator in ("//", "/", "%"):
         if operator in expression:
             denominator = expression.split(operator, 1)[-1].strip()
@@ -210,6 +262,7 @@ def _division_guard_covers_expression(unit: CodeUnit, expression: str) -> bool:
 
 
 def _bounds_guard_covers_expression(unit: CodeUnit, expression: str) -> bool:
+    """Heuristically check whether a guard mentions the subscript index."""
     start = expression.find("[")
     end = expression.rfind("]")
     if not 0 <= start < end:
@@ -219,6 +272,7 @@ def _bounds_guard_covers_expression(unit: CodeUnit, expression: str) -> bool:
 
 
 def _assertion_violation_matches_source(unit: CodeUnit, expression: str) -> bool:
+    """Return True when an assertion expression is present in the function."""
     expression = expression.strip()
     if not expression:
         return False
@@ -236,6 +290,7 @@ def _assertion_violation_matches_source(unit: CodeUnit, expression: str) -> bool
 
 
 def _parse_assertion_expression(expression: str) -> ast.AST | None:
+    """Parse either `assert condition` or bare `condition` into an AST node."""
     try:
         module = ast.parse(expression)
     except SyntaxError:
@@ -256,6 +311,7 @@ def _parse_assertion_expression(expression: str) -> ast.AST | None:
 
 
 def _assertion_tests(source: str) -> list[ast.AST]:
+    """Extract assert test expressions from source."""
     try:
         tree = ast.parse(source)
     except SyntaxError:
