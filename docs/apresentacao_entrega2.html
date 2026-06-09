@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline V1: LLM + ESBMC — Apresentação</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;background:#0d1b2a}
+
+/* ── Slide Container ── */
+#deck{position:relative;width:100%;height:100%}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:48px 64px;animation:fadeIn .35s ease}
+.slide.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── Cover slide ── */
+.slide-cover{background:linear-gradient(135deg,#0f2744 0%,#1B3A5C 60%,#1e4d6b 100%)}
+.cover-tag{color:#4db87a;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-weight:600}
+.cover-title{color:#fff;font-size:52px;font-weight:800;line-height:1.15;margin-bottom:16px;text-align:center}
+.cover-sub{color:#a8c4d8;font-size:20px;margin-bottom:40px;text-align:center;max-width:700px;line-height:1.5}
+.cover-divider{width:80px;height:3px;background:linear-gradient(90deg,#4db87a,#2d9e5f);margin:0 auto 32px;border-radius:2px}
+.cover-meta{color:#7fa8c0;font-size:15px;text-align:center;line-height:1.8}
+
+/* ── Content slides ── */
+.slide-content{background:#fff;align-items:flex-start;padding:44px 64px}
+.slide-title{color:#0f2744;font-size:32px;font-weight:800;margin-bottom:6px}
+.slide-sub{color:#2d7a5a;font-size:16px;font-weight:600;margin-bottom:0}
+.title-line{width:100%;height:2px;background:linear-gradient(90deg,#0f2744 60%,#4db87a);margin:12px 0 28px;border-radius:2px}
+
+/* ── Boxes ── */
+.box{background:#f0f5fb;border-radius:10px;padding:24px 28px;width:100%}
+.box-green{background:#eaf6ef;border-left:4px solid #2d7a5a}
+.box-navy{background:#edf0f7;border-left:4px solid #1B3A5C}
+.box-warn{background:#fff8e8;border-left:4px solid #e0a020}
+.box-red{background:#fdf0f0;border-left:4px solid #c0392b}
+
+/* ── Lists ── */
+ul.sl{list-style:none;padding:0}
+ul.sl li{padding:7px 0 7px 22px;position:relative;font-size:17px;color:#2c3e50;line-height:1.5}
+ul.sl li::before{content:'';position:absolute;left:0;top:16px;width:8px;height:8px;border-radius:50%;background:#2d7a5a}
+ul.sl.navy li::before{background:#1B3A5C}
+ul.sl.red li::before{background:#c0392b}
+ul.sl li strong{color:#0f2744}
+
+/* ── Grid ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%}
+
+/* ── Flow badges ── */
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge-a{background:#dbeafe;color:#1e40af}
+.badge-b{background:#fef3c7;color:#92400e}
+.badge-c{background:#ede9fe;color:#5b21b6}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-red{background:#fee2e2;color:#991b1b}
+
+/* ── Flow card ── */
+.flow-card{border-radius:10px;padding:20px 22px;border:2px solid transparent}
+.flow-a{background:#eff6ff;border-color:#3b82f6}
+.flow-b{background:#fffbeb;border-color:#f59e0b}
+.flow-c{background:#f5f3ff;border-color:#8b5cf6}
+.flow-card h3{font-size:17px;font-weight:700;margin-bottom:6px}
+.flow-a h3{color:#1e40af}
+.flow-b h3{color:#92400e}
+.flow-c h3{color:#5b21b6}
+.flow-card p{font-size:14px;color:#4b5563;line-height:1.5}
+
+/* ── Pipeline steps ── */
+.steps{display:flex;flex-direction:column;gap:10px;width:100%}
+.step{display:flex;align-items:flex-start;gap:16px;background:#f8fafc;border-radius:8px;padding:14px 18px}
+.step-num{min-width:34px;height:34px;border-radius:50%;background:#1B3A5C;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-body h4{font-size:15px;font-weight:700;color:#0f2744;margin-bottom:2px}
+.step-body p{font-size:13.5px;color:#4b5563;line-height:1.4}
+
+/* ── Metric cards ── */
+.metric-card{background:#f8fafc;border-radius:10px;padding:18px;border:1px solid #e2e8f0}
+.metric-card h4{font-size:14px;color:#1B3A5C;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.metric-formula{font-family:monospace;background:#1B3A5C;color:#4db87a;padding:6px 10px;border-radius:6px;font-size:13px;margin:6px 0}
+.metric-card p{font-size:13px;color:#6b7280;line-height:1.5}
+
+/* ── Table ── */
+table.results{width:100%;border-collapse:collapse;font-size:13px}
+table.results th{background:#1B3A5C;color:#fff;padding:8px 10px;text-align:center;font-weight:600}
+table.results td{padding:8px 10px;text-align:center;border-bottom:1px solid #e5e7eb;color:#374151}
+table.results tr:nth-child(even) td{background:#f8fafc}
+table.results .model-name{text-align:left;font-weight:600;color:#0f2744}
+table.results .highlight{background:#d1fae5!important;font-weight:700;color:#065f46}
+table.results .subhead th{background:#374151;font-size:11px;padding:5px 8px}
+
+/* ── Category pills ── */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%}
+.cat-box{border-radius:10px;padding:18px 16px}
+.cat-box h3{font-size:16px;font-weight:700;margin-bottom:10px}
+.cat-box ul{list-style:none;padding:0}
+.cat-box ul li{font-size:14px;color:#374151;padding:3px 0 3px 16px;position:relative}
+.cat-box ul li::before{content:'•';position:absolute;left:0}
+.cat-bugs{background:#fef9f0;border:2px solid #f59e0b}
+.cat-bugs h3{color:#92400e}
+.cat-smells{background:#eff6ff;border:2px solid #3b82f6}
+.cat-smells h3{color:#1e40af}
+.cat-clean{background:#f0fdf4;border:2px solid #22c55e}
+.cat-clean h3{color:#15803d}
+
+/* ── Number highlight ── */
+.big-num{font-size:42px;font-weight:900;line-height:1}
+.big-label{font-size:12px;color:#6b7280;margin-top:4px}
+.stat-row{display:flex;gap:24px;justify-content:center;width:100%;margin:16px 0}
+.stat-box{text-align:center;padding:16px 20px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0}
+
+/* ── Navigation ── */
+#nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:rgba(15,39,68,.85);backdrop-filter:blur(8px);padding:10px 20px;border-radius:30px;z-index:100}
+#nav button{background:none;border:none;color:#a8c4d8;font-size:20px;cursor:pointer;padding:2px 8px;border-radius:6px;transition:.2s}
+#nav button:hover{background:rgba(77,184,122,.25);color:#4db87a}
+#slide-info{color:#7fa8c0;font-size:13px;min-width:60px;text-align:center}
+
+/* ── Progress bar ── */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2d7a5a,#4db87a);transition:width .3s ease;z-index:200}
+
+/* ── Slide number badge ── */
+.slide-num-badge{position:fixed;top:14px;right:20px;color:#7fa8c0;font-size:12px;font-weight:600;letter-spacing:1px;background:rgba(15,39,68,.7);padding:4px 10px;border-radius:10px;z-index:100}
+
+/* ── Tag label ── */
+.tag-label{font-size:12px;font-weight:700;color:#2d7a5a;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+
+/* ── Speaker note ── */
+.note{margin-top:16px;padding:10px 14px;background:#fffef0;border-left:3px solid #e0a020;border-radius:0 6px 6px 0;font-size:12.5px;color:#78716c;font-style:italic}
+
+/* ── Emphasis quote ── */
+.quote-box{background:linear-gradient(135deg,#0f2744,#1B3A5C);color:#fff;border-radius:12px;padding:24px 28px;text-align:center;width:100%}
+.quote-box p{font-size:20px;font-weight:600;line-height:1.5;color:#e2eef6}
+.quote-box em{color:#4db87a;font-style:normal}
+
+/* dark slide variant */
+.slide-dark{background:linear-gradient(135deg,#0f2744 0%,#1B3A5C 100%)}
+.slide-dark .slide-title{color:#e2eef6}
+.slide-dark .slide-sub{color:#4db87a}
+.slide-dark .title-line{background:linear-gradient(90deg,#4db87a 60%,rgba(77,184,122,0))}
+.slide-dark .box{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1)}
+.slide-dark ul.sl li{color:#c5d9e8}
+.slide-dark ul.sl li::before{background:#4db87a}
+.slide-dark ul.sl li strong{color:#e2eef6}
+.slide-dark .tag-label{color:#4db87a}
+.slide-dark .note{background:rgba(255,255,255,.07);border-color:#4db87a;color:#a8c4d8}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="slide-num-badge" id="snb">1 / 16</div>
+<div id="deck">
+
+<!-- ═══════════════ SLIDE 1 — CAPA ═══════════════ -->
+<div class="slide slide-cover active">
+  <div class="cover-tag">Verificação Formal — Entrega 2</div>
+  <div class="cover-title">Pipeline V1<br>LLM + ESBMC</div>
+  <div class="cover-divider"></div>
+  <div class="cover-sub">Verificação formal orientada por LLMs<br>para detecção de bugs em funções Python</div>
+  <div class="cover-meta">
+    Fernanda Alice Farias Duarte<br>
+    Disciplina de Verificação Formal
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 2 — AGENDA ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Roteiro</div>
+  <div class="slide-title">O que vou apresentar hoje</div>
+  <div class="slide-sub">Visão rápida da estrutura da apresentação</div>
+  <div class="title-line"></div>
+  <div class="grid2" style="margin-top:4px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="step">
+        <div class="step-num" style="background:#374151">1</div>
+        <div class="step-body"><h4>Recap — Problema e Motivação</h4><p>Revisão rápida do que foi apresentado na Entrega 1</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#374151">2</div>
+        <div class="step-body"><h4>Design Experimental</h4><p>3 fluxos comparados, pergunta de pesquisa, objetivo</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#374151">3</div>
+        <div class="step-body"><h4>Pipeline Híbrido em Detalhe</h4><p>Como LLM + AST + ESBMC se encadeiam</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#374151">4</div>
+        <div class="step-body"><h4>Dataset V1</h4><p>70 funções, categorias, ground truth</p></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="step">
+        <div class="step-num" style="background:#374151">5</div>
+        <div class="step-body"><h4>Métricas de Avaliação</h4><p>Precision, Recall, F1, MCC, FCR, NRR</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#374151">6</div>
+        <div class="step-body"><h4>Modelos LLM</h4><p>GPT-4o, DeepSeek-R1, Qwen2.5-Coder</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#374151">7</div>
+        <div class="step-body"><h4>Resultados</h4><p>Bugs formais, code smells, comparativo</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#374151">8</div>
+        <div class="step-body"><h4>Limitações e Próximos Passos</h4><p>O que já sabemos que precisa melhorar</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="note">💬 Tempo estimado: 12–15 min. Slides navegáveis com → / ← ou clique nos botões.</div>
+</div>
+
+<!-- ═══════════════ SLIDE 3 — RECAP MOTIVAÇÃO ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Recap — Entrega 1</div>
+  <div class="slide-title">Problema e Motivação</div>
+  <div class="slide-sub">Por que combinar LLMs e verificação formal?</div>
+  <div class="title-line"></div>
+  <div class="grid2" style="gap:24px">
+    <div>
+      <div class="box box-navy" style="margin-bottom:14px">
+        <p style="font-size:14px;font-weight:700;color:#1B3A5C;margin-bottom:8px">O que LLMs fazem bem</p>
+        <ul class="sl">
+          <li>Identificam <strong>padrões suspeitos</strong> no código</li>
+          <li>Analisam semântica e contexto</li>
+          <li>Rápidos e escaláveis</li>
+        </ul>
+      </div>
+      <div class="box box-red">
+        <p style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">Problema dos LLMs</p>
+        <ul class="sl red">
+          <li>Geram <strong>alucinações e falsos positivos</strong></li>
+          <li>Confundem <strong>bugs executáveis</strong> com <strong>code smells</strong></li>
+          <li>Resultados variam por modelo e prompt</li>
+          <li>Sem garantia formal de correção</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="box box-green">
+        <p style="font-size:14px;font-weight:700;color:#2d7a5a;margin-bottom:8px">O que o ESBMC oferece</p>
+        <ul class="sl">
+          <li>Verificação <strong>formal e determinística</strong></li>
+          <li>Contraexemplos concretos para bugs</li>
+          <li>Sem falsos positivos para bugs verificáveis</li>
+          <li>F1 = <strong>1.00</strong> para as categorias suportadas</li>
+        </ul>
+      </div>
+      <div class="quote-box" style="padding:18px 20px">
+        <p style="font-size:16px">Ideia central: usar a <em>LLM como guia inteligente</em> para o ESBMC, e o <em>ESBMC como filtro formal</em> das suspeitas da LLM</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 4 — PERGUNTA + OBJETIVO ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Pesquisa</div>
+  <div class="slide-title">Pergunta de Pesquisa e Objetivo</div>
+  <div class="title-line"></div>
+  <div style="display:flex;flex-direction:column;gap:18px;width:100%">
+    <div class="box" style="background:#f0f5fb;border:none">
+      <p style="font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Problema central</p>
+      <ul class="sl navy">
+        <li>LLMs produzem <strong>resultados diferentes</strong> dependendo do modelo e do prompt</li>
+        <li>Bugs e code smells têm <strong>características estruturais semelhantes</strong> — difíceis de diferenciar</li>
+        <li>Nem toda suspeita levantada pela LLM corresponde a uma <strong>falha real executável</strong></li>
+      </ul>
+    </div>
+    <div class="quote-box">
+      <p>Como combinar LLMs e verificação formal para <em>aumentar a confiabilidade</em> da análise automática de código Python?</p>
+    </div>
+    <div class="box box-green">
+      <p style="font-size:13px;font-weight:700;color:#2d7a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Objetivo geral</p>
+      <p style="font-size:16px;color:#1a3326">Desenvolver e avaliar um <strong>pipeline híbrido</strong> que combine LLMs e ESBMC-Python para análise automática de funções Python, medindo o impacto de cada componente sobre a qualidade dos resultados.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 5 — TRÊS FLUXOS ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Design experimental</div>
+  <div class="slide-title">Três Fluxos Experimentais</div>
+  <div class="slide-sub">Todos comparados contra o mesmo ground truth</div>
+  <div class="title-line"></div>
+  <div style="display:flex;flex-direction:column;gap:14px;width:100%">
+    <div class="flow-card flow-a">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3>Flow A — ESBMC-only</h3>
+        <span class="badge badge-a">Baseline Formal</span>
+      </div>
+      <p>O código Python é enviado <strong>diretamente ao ESBMC</strong>, sem participação de LLM. Serve como teto superior para bugs formais — determinístico, sem falsos positivos, mas cego a code smells.</p>
+    </div>
+    <div class="flow-card flow-b">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3>Flow B — Híbrido (LLM + ESBMC)</h3>
+        <span class="badge badge-b">Abordagem Principal</span>
+      </div>
+      <p>LLM analisa a função e levanta hipóteses → AST valida as referências estruturais → findings verificáveis são enviados ao ESBMC → ESBMC confirma ou rejeita cada hipótese formalmente.</p>
+    </div>
+    <div class="flow-card flow-c">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3>Flow C — LLM-only</h3>
+        <span class="badge badge-c">Baseline Neural</span>
+      </div>
+      <p>A LLM analisa a função <strong>sem validação formal</strong>. Avalia tanto bugs quanto code smells. Mede o custo de não ter verificação — o quanto de ruído a LLM sozinha produz.</p>
+    </div>
+    <div class="note">💬 Perguntas que cada fluxo responde: A → "ESBMC sozinho é suficiente?", B → "A LLM melhora o ESBMC? O ESBMC filtra a LLM?", C → "Qual é o custo de usar só LLM?"</div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 6 — PIPELINE HÍBRIDO ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Flow B — Detalhamento</div>
+  <div class="slide-title">Pipeline Híbrido Passo a Passo</div>
+  <div class="title-line"></div>
+  <div class="grid2" style="gap:18px;align-items:start">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body"><h4>Entrada: CodeUnit</h4><p>Código-fonte da função + assinatura + metadados mínimos (sem categoria, sem ground truth)</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body"><h4>LLM analisa via Prompt de 8 passos</h4><p>Modelo recebe a função e produz hipóteses: tipo de problema, linha suspeita, justificativa</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body"><h4>AST valida as referências</h4><p>O Python AST verifica se as linhas/variáveis citadas pela LLM realmente existem na estrutura do código</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body"><h4>Triagem: verificável vs. não verificável</h4><p>Findings formais (division_by_zero, out_of_bounds, assertion_violation) → ESBMC. Code smells → classificados diretamente.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body"><h4>ESBMC confirma ou rejeita</h4><p>Gera contraexemplo concreto (FALHA) ou prova de segurança (SAFE) para cada hipótese verificável</p></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:14px;font-weight:700;color:#0f2744;margin-bottom:2px">Categorias de saída</div>
+      <div class="box box-green"><strong>Bug verificável</strong> — LLM apontou + ESBMC confirmou com contraexemplo</div>
+      <div class="box box-navy" style="margin-top:4px"><strong>Code smell</strong> — LLM identificou problema estrutural não verificável pelo ESBMC</div>
+      <div class="box box-warn" style="margin-top:4px"><strong>Falso positivo</strong> — LLM apontou bug, mas ESBMC retornou SAFE</div>
+      <div class="box box-red" style="margin-top:4px"><strong>Out-of-scope</strong> — Finding não pode ser verificado formalmente nem classificado como smell padrão</div>
+      <div class="note" style="margin-top:8px">💬 O NRR (Noise Reduction Rate) mede exatamente quantos falsos positivos da LLM o ESBMC consegue eliminar nessa triagem.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 7 — PROMPT DA LLM ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Metodologia</div>
+  <div class="slide-title">Prompt da LLM — Design Cuidadoso</div>
+  <div class="slide-sub">O que a LLM vê e o que ela NÃO vê</div>
+  <div class="title-line"></div>
+  <div class="grid2" style="gap:20px;align-items:start">
+    <div class="box box-green">
+      <p style="font-size:14px;font-weight:700;color:#2d7a5a;margin-bottom:12px">✅ Fornecido à LLM</p>
+      <ul class="sl">
+        <li><strong>Código-fonte</strong> completo da função</li>
+        <li><strong>Assinatura</strong> (nome, parâmetros, tipos)</li>
+        <li><strong>Metadados mínimos</strong> (ex: nome do arquivo)</li>
+      </ul>
+      <div style="margin-top:14px;padding:12px;background:#d1fae5;border-radius:8px;font-size:13px;color:#065f46">
+        <strong>Prompt estruturado em 8 passos</strong> orienta a LLM a raciocinar sistematicamente: identificar variáveis críticas, condições perigosas, linha suspeita, tipo de bug e justificativa.
+      </div>
+    </div>
+    <div class="box box-red">
+      <p style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:12px">🚫 Ocultado da LLM</p>
+      <ul class="sl red">
+        <li><strong>Categoria do dataset</strong> (ex: "division_by_zero") — evita viés por rótulo</li>
+        <li><strong>Ground truth</strong> — a LLM não sabe se a função tem bug</li>
+        <li><strong>Operações AST pré-extraídas</strong> — análise parte do zero</li>
+      </ul>
+      <div style="margin-top:14px;padding:12px;background:#fee2e2;border-radius:8px;font-size:13px;color:#991b1b">
+        <strong>Por quê?</strong> Simular análise cega e realista — como seria em produção, sem saber de antemão o que procurar.
+      </div>
+    </div>
+  </div>
+  <div class="box" style="margin-top:16px;background:#f8fafc">
+    <p style="font-size:15px;color:#374151">
+      <strong>Impacto do design do prompt:</strong> O mesmo código analisado com prompts diferentes produz resultados diferentes. O prompt de 8 passos foi desenvolvido para forçar raciocínio estruturado antes da conclusão final — reduzindo alucinações superficiais.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 8 — DATASET V1 ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Dataset</div>
+  <div class="slide-title">Dataset V1 — 70 Funções Python</div>
+  <div class="slide-sub">Construído manualmente para compatibilidade com ESBMC-Python</div>
+  <div class="title-line"></div>
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="big-num" style="color:#1B3A5C">70</div>
+      <div class="big-label">funções no total</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-num" style="color:#d97706">45</div>
+      <div class="big-label">bugs formais</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-num" style="color:#3b82f6">15</div>
+      <div class="big-label">code smells</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-num" style="color:#22c55e">10</div>
+      <div class="big-label">funções clean</div>
+    </div>
+  </div>
+  <div class="cat-grid" style="margin-top:12px">
+    <div class="cat-box cat-bugs">
+      <h3>Bugs Formais (45)</h3>
+      <ul>
+        <li>15 × <strong>division_by_zero</strong></li>
+        <li>15 × <strong>out_of_bounds</strong></li>
+        <li>15 × <strong>assertion_violation</strong></li>
+      </ul>
+      <p style="font-size:12px;color:#78350f;margin-top:8px">Verificáveis pelo ESBMC via contraexemplo</p>
+    </div>
+    <div class="cat-box cat-smells">
+      <h3>Code Smells (15)</h3>
+      <ul>
+        <li>5 × <strong>long_method</strong></li>
+        <li>5 × <strong>many_parameters</strong></li>
+        <li>5 × <strong>complex_conditional</strong></li>
+      </ul>
+      <p style="font-size:12px;color:#1e3a8a;margin-top:8px">Não enviados ao ESBMC — só LLM</p>
+    </div>
+    <div class="cat-box cat-clean">
+      <h3>Clean (10)</h3>
+      <ul>
+        <li>Sem bugs formais</li>
+        <li>Sem code smells</li>
+      </ul>
+      <p style="font-size:12px;color:#14532d;margin-top:8px">Grupo de controle para medir FP</p>
+    </div>
+  </div>
+  <div class="note" style="margin-top:12px">💬 Dataset construído manualmente porque o ESBMC-Python exige que o código seja simples o suficiente para ser verificado — projetos reais têm dependências externas que o modelo checker não consegue resolver.</div>
+</div>
+
+<!-- ═══════════════ SLIDE 9 — MÉTRICAS ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Avaliação</div>
+  <div class="slide-title">Métricas de Avaliação</div>
+  <div class="slide-sub">Finding-level + Function-level + Híbridas</div>
+  <div class="title-line"></div>
+  <div class="grid3" style="gap:12px">
+    <div class="metric-card">
+      <h4>📐 Precision</h4>
+      <div class="metric-formula">TP / (TP + FP)</div>
+      <p>Dos bugs apontados, quantos estavam corretos? Alta precision = poucos alarmes falsos.</p>
+    </div>
+    <div class="metric-card">
+      <h4>🔍 Recall</h4>
+      <div class="metric-formula">TP / (TP + FN)</div>
+      <p>Dos bugs reais existentes, quantos foram encontrados? Alto recall = poucos bugs perdidos.</p>
+    </div>
+    <div class="metric-card">
+      <h4>⚖️ F1-Score</h4>
+      <div class="metric-formula">2 × P × R / (P + R)</div>
+      <p>Média harmônica entre Precision e Recall. Equilíbrio entre não errar e não perder.</p>
+    </div>
+    <div class="metric-card">
+      <h4>🎯 MCC</h4>
+      <div class="metric-formula">Matthews Corr. Coef.</div>
+      <p>Considera TP, FP, FN e TN. Melhor que Accuracy quando o dataset é desbalanceado (o nosso é).</p>
+    </div>
+    <div class="metric-card">
+      <h4>✅ FCR</h4>
+      <div class="metric-formula">confirmados / tentativas</div>
+      <p><strong>Formal Confirmation Rate.</strong> Mede a qualidade das hipóteses da LLM — quantas sobrevivem ao ESBMC.</p>
+    </div>
+    <div class="metric-card">
+      <h4>🔕 NRR</h4>
+      <div class="metric-formula">(FP_LLM − FP_Hybrid) / FP_LLM</div>
+      <p><strong>Noise Reduction Rate.</strong> Mede quanto ruído (FP) o ESBMC elimina em relação ao LLM puro.</p>
+    </div>
+  </div>
+  <div class="box" style="margin-top:14px;background:#f8fafc;padding:12px 16px">
+    <p style="font-size:14px;color:#374151"><strong>FCR alto</strong> = LLM produz hipóteses precisas. <strong>NRR alto</strong> = ESBMC elimina muito ruído da LLM. Os dois juntos mostram o valor real do pipeline híbrido.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 10 — MODELOS LLM ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Experimentação</div>
+  <div class="slide-title">Modelos LLM Testados na V1</div>
+  <div class="slide-sub">3 modelos rodaram no pipeline completo</div>
+  <div class="title-line"></div>
+  <div style="display:flex;flex-direction:column;gap:12px;width:100%">
+    <div class="step">
+      <div class="step-num" style="background:#10a37f;font-size:13px">GPT</div>
+      <div class="step-body">
+        <h4>openai/gpt-4o — Baseline Comercial</h4>
+        <p>Modelo de referência para análise de código. Alto contexto, forte em raciocínio. Testado via API OpenAI. Representa o estado da arte comercial para análise de código.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:#6366f1;font-size:12px">DS</div>
+      <div class="step-body">
+        <h4>ollama/deepseek-r1:7b — Raciocínio Estruturado</h4>
+        <p>Modelo com cadeia de raciocínio explícita (chain-of-thought embutido). Execução local via Ollama. Interessante para ver se o raciocínio mais passo-a-passo ajuda na detecção.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:#f59e0b;font-size:12px">QW</div>
+      <div class="step-body">
+        <h4>ollama/qwen2.5-coder:7b — Especialista em Código</h4>
+        <p>Modelo fine-tuned especificamente para código. Execução local via Ollama. Testado para ver se especialização em código melhora detecção de bugs vs. modelo generalista.</p>
+      </div>
+    </div>
+    <div class="box box-warn" style="margin-top:4px">
+      <p style="font-size:14px;color:#78350f"><strong>Claude Sonnet</strong> foi considerado mas não incluído nos resultados V1. Todos os modelos locais (DeepSeek, Qwen) rodam com Ollama — sem custo por token, reproduzíveis localmente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 11 — RESULTADOS BUGS ═══════════════ -->
+<div class="slide slide-content" style="padding:36px 52px">
+  <div class="tag-label">Resultados</div>
+  <div class="slide-title">Resultados — Bugs Formais</div>
+  <div class="slide-sub">LLM puro vs. Híbrido (LLM+ESBMC) vs. ESBMC direto</div>
+  <div class="title-line" style="margin-bottom:16px"></div>
+  <table class="results" style="margin-bottom:14px">
+    <thead>
+      <tr>
+        <th rowspan="2" style="text-align:left;min-width:160px">Modelo</th>
+        <th colspan="3" style="background:#5b21b6">LLM Puro (Flow C)</th>
+        <th colspan="5" style="background:#92400e">Híbrido (Flow B)</th>
+        <th style="background:#065f46">ESBMC</th>
+        <th style="background:#374151">Aluc.</th>
+      </tr>
+      <tr class="subhead">
+        <th>Prec.</th><th>Rec.</th><th>F1</th>
+        <th>Prec.</th><th>Rec.</th><th>F1</th><th>FCR</th><th>NRR</th>
+        <th style="background:#065f46">F1</th>
+        <th style="background:#374151">#</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="model-name">DeepSeek-R1:7b</td>
+        <td>0.75</td><td>0.53</td><td>0.62</td>
+        <td>0.96</td><td>0.53</td><td class="highlight">0.69</td>
+        <td>96.0%</td><td>87.5%</td>
+        <td style="font-weight:700;color:#065f46">1.00</td>
+        <td style="color:#c0392b">7</td>
+      </tr>
+      <tr>
+        <td class="model-name">GPT-4o ⭐</td>
+        <td>0.80</td><td>0.98</td><td>0.88</td>
+        <td>0.92</td><td>0.98</td><td class="highlight">0.95</td>
+        <td>87.0%</td><td>63.6%</td>
+        <td style="font-weight:700;color:#065f46">1.00</td>
+        <td style="color:#c0392b">1</td>
+      </tr>
+      <tr>
+        <td class="model-name">Qwen2.5-Coder:7b</td>
+        <td>0.61</td><td>0.73</td><td>0.67</td>
+        <td>0.97</td><td>0.73</td><td class="highlight">0.84</td>
+        <td>85.0%</td><td style="background:#d1fae5;font-weight:700;color:#065f46">95.2%</td>
+        <td style="font-weight:700;color:#065f46">1.00</td>
+        <td style="color:#c0392b">13</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="grid3" style="gap:12px;margin-top:2px">
+    <div class="box" style="background:#eff6ff;padding:12px 14px">
+      <p style="font-size:13px;color:#1e40af"><strong>GPT-4o melhor F1 híbrido</strong><br>0.88 → 0.95 com ESBMC. Já era bom, ficou ótimo.</p>
+    </div>
+    <div class="box" style="background:#f0fdf4;padding:12px 14px">
+      <p style="font-size:13px;color:#065f46"><strong>Qwen maior NRR: 95.2%</strong><br>Produzia muitos FPs — ESBMC eliminou quase todos.</p>
+    </div>
+    <div class="box" style="background:#fef3c7;padding:12px 14px">
+      <p style="font-size:13px;color:#92400e"><strong>ESBMC direto = F1 1.00</strong><br>Mas só para bugs formais. Não detecta smells.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 12 — RESULTADOS CODE SMELLS ═══════════════ -->
+<div class="slide slide-content" style="padding:36px 52px">
+  <div class="tag-label">Resultados</div>
+  <div class="slide-title">Resultados — Code Smells</div>
+  <div class="slide-sub">Flow C (LLM-only) — ESBMC não verifica smells</div>
+  <div class="title-line" style="margin-bottom:16px"></div>
+  <table class="results" style="margin-bottom:16px">
+    <thead>
+      <tr>
+        <th style="text-align:left">Modelo</th>
+        <th>Precision</th><th>Recall</th><th>F1</th>
+        <th>TP</th><th>FP</th><th>FN</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="model-name">DeepSeek-R1:7b</td>
+        <td>0.50</td><td>0.21</td><td>0.30</td>
+        <td>3</td><td>3</td><td>11</td>
+      </tr>
+      <tr>
+        <td class="model-name">GPT-4o ⭐</td>
+        <td class="highlight">0.92</td><td class="highlight">0.73</td><td class="highlight">0.81</td>
+        <td class="highlight">11</td><td>1</td><td>4</td>
+      </tr>
+      <tr>
+        <td class="model-name">Qwen2.5-Coder:7b</td>
+        <td style="color:#c0392b;font-weight:700">0.13</td><td>1.00</td><td>0.24</td>
+        <td>15</td><td style="color:#c0392b;font-weight:700">97</td><td>0</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="grid2" style="gap:14px">
+    <div>
+      <div class="box box-green" style="margin-bottom:12px">
+        <p style="font-size:14px"><strong>GPT-4o</strong> domina em smells: F1=0.81, Precision=0.92. Detectou 11 de 15 smells reais com apenas 1 falso positivo.</p>
+      </div>
+      <div class="box box-red">
+        <p style="font-size:14px"><strong>Qwen tem Recall=1.00</strong>... mas gerou <strong>97 falsos positivos</strong>! Classificou praticamente tudo como smell. Precision miserável de 0.13.</p>
+      </div>
+    </div>
+    <div class="quote-box" style="height:100%">
+      <p style="font-size:17px">Os smells confirmam a hipótese central: <em>LLMs sem validação formal geram muito ruído</em>. A diferença entre modelos é enorme para smells.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 13 — ANÁLISE GERAL ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Análise</div>
+  <div class="slide-title">O que os Resultados nos Dizem</div>
+  <div class="title-line"></div>
+  <div style="display:flex;flex-direction:column;gap:14px;width:100%">
+    <div class="grid2" style="gap:14px">
+      <div class="box box-green">
+        <p style="font-size:14px;font-weight:700;color:#2d7a5a;margin-bottom:8px">Validação formal sempre ajuda</p>
+        <ul class="sl">
+          <li>Precision aumentou em <strong>todos</strong> os modelos após ESBMC</li>
+          <li>DeepSeek: 0.75 → <strong>0.96</strong></li>
+          <li>Qwen: 0.61 → <strong>0.97</strong></li>
+          <li>GPT-4o: 0.80 → <strong>0.92</strong></li>
+        </ul>
+      </div>
+      <div class="box box-navy">
+        <p style="font-size:14px;font-weight:700;color:#1B3A5C;margin-bottom:8px">Recall se mantém após ESBMC</p>
+        <ul class="sl navy">
+          <li>Recall não cai: o ESBMC só <strong>filtra FPs</strong>, não perde TPs</li>
+          <li>GPT-4o mantém Recall=0.98 no híbrido</li>
+          <li>Isso é crucial: nenhum bug real é perdido na filtragem</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid2" style="gap:14px">
+      <div class="box box-warn">
+        <p style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px">Alucinações estruturais: 21 total</p>
+        <ul class="sl">
+          <li>DeepSeek: <strong>7</strong> alucinações (21.9% dos findings)</li>
+          <li>Qwen: <strong>13</strong> alucinações (24.5%) — mais propenso</li>
+          <li>GPT-4o: apenas <strong>1</strong> (1.8%) — bem calibrado</li>
+          <li>O AST elimina essas antes de chegar ao ESBMC</li>
+        </ul>
+      </div>
+      <div class="box box-red">
+        <p style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">Smells são mais difíceis</p>
+        <ul class="sl red">
+          <li>Sem validação formal, qualidade depende <strong>muito</strong> do modelo</li>
+          <li>Qwen: Recall=1.00 mas Precision=0.13 (inútil em produção)</li>
+          <li>DeepSeek: F1=0.30 — não confiável para smells</li>
+          <li>Apenas GPT-4o tem desempenho aceitável (F1=0.81)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 14 — LIMITAÇÕES ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Honestidade científica</div>
+  <div class="slide-title">Limitações da V1</div>
+  <div class="title-line"></div>
+  <div class="grid2" style="gap:20px;align-items:start">
+    <div>
+      <div class="box box-warn" style="margin-bottom:14px">
+        <p style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:10px">Limitações do Dataset</p>
+        <ul class="sl">
+          <li>Apenas <strong>70 funções</strong> — pequeno para conclusões robustas</li>
+          <li>Construído <strong>manualmente</strong> — viés de construção</li>
+          <li>Apenas <strong>3 categorias</strong> de bugs formais</li>
+          <li>Apenas <strong>3 categorias</strong> de code smells</li>
+          <li>Não avalia <strong>projetos Python completos</strong> — só funções isoladas</li>
+        </ul>
+      </div>
+      <div class="box box-red">
+        <p style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:10px">Limitações dos Modelos</p>
+        <ul class="sl red">
+          <li>Resultados <strong>variam por modelo</strong> — não generalizáveis</li>
+          <li>Mesmo modelo pode produzir <strong>respostas diferentes</strong> para o mesmo código (temperatura)</li>
+          <li>Modelos locais (7b) limitados em capacidade de raciocínio</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="box box-navy">
+        <p style="font-size:14px;font-weight:700;color:#1B3A5C;margin-bottom:10px">Limitações do ESBMC-Python</p>
+        <ul class="sl navy">
+          <li>Só verifica <strong>código Python simples</strong> sem dependências externas</li>
+          <li>Não escala para projetos reais com libs de terceiros</li>
+          <li>F1=1.00 no benchmark é artefato da construção manual do dataset</li>
+        </ul>
+      </div>
+      <div class="quote-box">
+        <p style="font-size:15px">Essas limitações são <em>conhecidas e documentadas</em> — fazem parte do design V1. A V2 foi planejada para endereçar cada uma delas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 15 — PRÓXIMOS PASSOS ═══════════════ -->
+<div class="slide slide-content">
+  <div class="tag-label">Roadmap</div>
+  <div class="slide-title">Próximos Passos — V2</div>
+  <div class="slide-sub">O que vem depois desta entrega</div>
+  <div class="title-line"></div>
+  <div class="grid2" style="gap:18px;align-items:start">
+    <div>
+      <div class="step" style="margin-bottom:10px">
+        <div class="step-num">1</div>
+        <div class="step-body"><h4>Dataset maior e mais diverso</h4><p>Expandir para 200+ funções, mais categorias de bugs (null dereference, integer overflow, race conditions), smells mais complexos</p></div>
+      </div>
+      <div class="step" style="margin-bottom:10px">
+        <div class="step-num">2</div>
+        <div class="step-body"><h4>Funções de projetos reais</h4><p>Extrair funções de repositórios públicos Python — não só funções sintéticas. Aumenta validade ecológica.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body"><h4>Mais modelos — incluindo Claude Sonnet</h4><p>Ampliar benchmark para comparação mais robusta entre modelos open-source e comerciais</p></div>
+      </div>
+    </div>
+    <div>
+      <div class="step" style="margin-bottom:10px">
+        <div class="step-num">4</div>
+        <div class="step-body"><h4>Refinamento do prompt</h4><p>Testar variantes do prompt (chain-of-thought explícito, few-shot examples) para reduzir alucinações estruturais</p></div>
+      </div>
+      <div class="step" style="margin-bottom:10px">
+        <div class="step-num">5</div>
+        <div class="step-body"><h4>Análise de consistência</h4><p>Rodar cada modelo múltiplas vezes no mesmo código para medir variância intra-modelo</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body"><h4>Paper / artigo final</h4><p>Consolidar resultados em artigo científico com metodologia reproduzível</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SLIDE 16 — CONCLUSÃO ═══════════════ -->
+<div class="slide slide-cover">
+  <div class="cover-tag">Conclusão</div>
+  <div class="cover-title" style="font-size:38px;max-width:800px">Pipeline Híbrido funciona — e os números provam</div>
+  <div class="cover-divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:760px;margin-bottom:28px">
+    <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:16px;text-align:center">
+      <div style="font-size:36px;font-weight:900;color:#4db87a">+0.17</div>
+      <div style="font-size:13px;color:#a8c4d8;margin-top:4px">melhora de F1 (GPT-4o: 0.88→0.95, Qwen: 0.67→0.84)</div>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:16px;text-align:center">
+      <div style="font-size:36px;font-weight:900;color:#4db87a">95.2%</div>
+      <div style="font-size:13px;color:#a8c4d8;margin-top:4px">redução de falsos positivos (Qwen + ESBMC)</div>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:16px;text-align:center">
+      <div style="font-size:36px;font-weight:900;color:#4db87a">96%</div>
+      <div style="font-size:13px;color:#a8c4d8;margin-top:4px">FCR do DeepSeek — hipóteses formais quase sempre confirmadas</div>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:16px;text-align:center">
+      <div style="font-size:36px;font-weight:900;color:#4db87a">F1=1.0</div>
+      <div style="font-size:13px;color:#a8c4d8;margin-top:4px">ESBMC direto — teto perfeito para bugs verificáveis</div>
+    </div>
+  </div>
+  <div class="cover-meta" style="color:#7fa8c0">
+    Fernanda Alice Farias Duarte — Disciplina de Verificação Formal<br>
+    <span style="color:#4db87a;font-size:13px">github.com/feralice/llm-esbmc-pipeline</span>
+  </div>
+</div>
+
+</div><!-- #deck -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button id="btn-prev" title="Anterior (←)">&#8592;</button>
+  <span id="slide-info">1 / 16</span>
+  <button id="btn-next" title="Próximo (→)">&#8594;</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const info=document.getElementById('slide-info');
+const snb=document.getElementById('snb');
+const prog=document.getElementById('progress');
+let cur=0;
+const total=slides.length;
+
+function go(n){
+  slides[cur].classList.remove('active');
+  cur=Math.max(0,Math.min(total-1,n));
+  slides[cur].classList.add('active');
+  const label=(cur+1)+' / '+total;
+  info.textContent=label;
+  snb.textContent=label;
+  prog.style.width=((cur+1)/total*100)+'%';
+}
+
+document.getElementById('btn-next').onclick=()=>go(cur+1);
+document.getElementById('btn-prev').onclick=()=>go(cur-1);
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);
+  if(e.key==='Home')go(0);
+  if(e.key==='End')go(total-1);
+});
+
+// touch swipe
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50){dx<0?go(cur+1):go(cur-1);}
+});
+
+go(0);
+</script>
+</body>
+</html>
