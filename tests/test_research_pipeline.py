@@ -566,8 +566,9 @@ def test_llm_schema_exposes_only_llm_finding_types() -> None:
         "suspected_bug",
         "smell_heuristic",
     ]
-    assert finding_schema["metadata"]["properties"]["line"]["type"] == "integer"
-    assert finding_schema["metadata"]["properties"]["relative_line"]["type"] == "integer"
+    assert "expression" in finding_schema["metadata"]["properties"]
+    assert "line" not in finding_schema["metadata"]["properties"]
+    assert "relative_line" not in finding_schema["metadata"]["properties"]
 
 
 def test_constant_nonzero_denominator_is_false_positive(tmp_path: Path) -> None:

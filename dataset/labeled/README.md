@@ -29,21 +29,19 @@ ESBMC's Python frontend verifies reachable executable code. Library-style functi
 ## Suggested Commands
 
 ```bash
-python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
+# Validate dataset with ESBMC only (no LLM)
+python scripts/run_esbmc_dataset.py
 
+# Run benchmark for a model
 python src/main.py --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model gpt-5.5-2026-04-23 \
-  --bound 5 \
-  --timeout 30 \
-  --report reports/json/benchmarks/benchmark_gpt-5.5.json
+  --model gpt-4o \
+  --prompt-mode raw \
+  --bound 5 --timeout 30 \
+  --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 
-python scripts/run_benchmark_matrix.py \
-  --models gpt-5.5-2026-04-23 claude qwen2.5-coder:7b \
-  --ground-truth dataset/labeled/ground_truths \
-  --bound 5 \
-  --timeout 30 \
-  --output-dir reports/json/benchmarks
+# Compare results across models
+python scripts/compare_benchmarks.py --dir reports/json/v1_benchmark
 ```
 
-See `docs/benchmarking.md` for the full repeatable flow and frontend instructions.
+See [`TUTORIAL.md`](../../TUTORIAL.md) for all V1 model commands and [`docs/benchmark_v1_reference.md`](../../docs/benchmark_v1_reference.md) for the full methodology.

@@ -1,0 +1,210 @@
+{
+  "model": "ollama/qwen2.5-coder:7b",
+  "backend": "ollama",
+  "prompt_mode": "raw",
+  "ground_truth": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/labeled/ground_truths",
+  "bound": 5,
+  "timeout": 30,
+  "metrics": {
+    "bugs_llm_only": {
+      "precision": 0.6111,
+      "recall": 0.7333,
+      "f1": 0.6667,
+      "tp": 33,
+      "fp": 21,
+      "fn": 12,
+      "function_accuracy": 0.6364,
+      "function_mcc": -0.059,
+      "function_tp": 33,
+      "function_fp": 8,
+      "function_fn": 12,
+      "function_tn": 2
+    },
+    "bugs_hybrid_pipeline": {
+      "precision": 0.9706,
+      "recall": 0.7333,
+      "f1": 0.8354,
+      "tp": 33,
+      "fp": 1,
+      "fn": 12,
+      "function_accuracy": 0.7818,
+      "function_mcc": 0.5774,
+      "function_tp": 33,
+      "function_fp": 0,
+      "function_fn": 12,
+      "function_tn": 10,
+      "llm_confirmed_by_esbmc": 34,
+      "not_confirmed_within_bound": 6,
+      "esbmc_inconclusive": 0,
+      "formal_confirmation_rate": 0.85,
+      "noise_reduction_rate": 0.9524
+    },
+    "smells": {
+      "precision": 0.1339,
+      "recall": 1.0,
+      "f1": 0.2362,
+      "tp": 15,
+      "fp": 97,
+      "fn": 0
+    },
+    "esbmc_direct_baseline": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 45,
+      "fp": 0,
+      "fn": 0,
+      "function_accuracy": 1.0,
+      "function_mcc": 1.0,
+      "function_tp": 45,
+      "function_fp": 0,
+      "function_fn": 0,
+      "function_tn": 10
+    }
+  },
+  "hallucinations": {
+    "count": 13,
+    "rate": 0.2453
+  },
+  "out_of_scope_findings": {
+    "count": 0
+  },
+  "per_category_llm": {
+    "assertion_violation": {
+      "precision": 0.8235,
+      "recall": 0.9333,
+      "f1": 0.875,
+      "tp": 14,
+      "fp": 3,
+      "fn": 1
+    },
+    "complex_conditional": {
+      "precision": 0.1389,
+      "recall": 1.0,
+      "f1": 0.2439,
+      "tp": 5,
+      "fp": 31,
+      "fn": 0
+    },
+    "division_by_zero": {
+      "precision": 0.6522,
+      "recall": 1.0,
+      "f1": 0.7895,
+      "tp": 15,
+      "fp": 8,
+      "fn": 0
+    },
+    "long_method": {
+      "precision": 0.1852,
+      "recall": 1.0,
+      "f1": 0.3125,
+      "tp": 5,
+      "fp": 22,
+      "fn": 0
+    },
+    "many_parameters": {
+      "precision": 0.102,
+      "recall": 1.0,
+      "f1": 0.1852,
+      "tp": 5,
+      "fp": 44,
+      "fn": 0
+    },
+    "out_of_bounds": {
+      "precision": 0.2857,
+      "recall": 0.2667,
+      "f1": 0.2759,
+      "tp": 4,
+      "fp": 10,
+      "fn": 11
+    }
+  },
+  "per_category_hybrid": {
+    "assertion_violation": {
+      "precision": 1.0,
+      "recall": 0.9333,
+      "f1": 0.9655,
+      "tp": 14,
+      "fp": 0,
+      "fn": 1
+    },
+    "division_by_zero": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 15,
+      "fp": 0,
+      "fn": 0
+    },
+    "out_of_bounds": {
+      "precision": 0.8,
+      "recall": 0.2667,
+      "f1": 0.4,
+      "tp": 4,
+      "fp": 1,
+      "fn": 11
+    }
+  },
+  "confidence_intervals_95": {
+    "llm_bug_precision": [
+      0.4815,
+      0.7414
+    ],
+    "llm_bug_recall": [
+      0.6,
+      0.8605
+    ],
+    "llm_bug_f1": [
+      0.5435,
+      0.7879
+    ],
+    "llm_bug_mcc": [
+      -0.2681,
+      0.2165
+    ],
+    "hybrid_bug_precision": [
+      0.9062,
+      1.0
+    ],
+    "hybrid_bug_recall": [
+      0.6,
+      0.8605
+    ],
+    "hybrid_bug_f1": [
+      0.7368,
+      0.9157
+    ],
+    "hybrid_bug_mcc": [
+      0.411,
+      0.746
+    ],
+    "esbmc_bug_precision": [
+      1.0,
+      1.0
+    ],
+    "esbmc_bug_recall": [
+      1.0,
+      1.0
+    ],
+    "esbmc_bug_f1": [
+      1.0,
+      1.0
+    ],
+    "esbmc_bug_mcc": [
+      1.0,
+      1.0
+    ],
+    "smell_precision": [
+      0.0777,
+      0.1981
+    ],
+    "smell_recall": [
+      1.0,
+      1.0
+    ],
+    "smell_f1": [
+      0.1441,
+      0.3307
+    ]
+  }
+}

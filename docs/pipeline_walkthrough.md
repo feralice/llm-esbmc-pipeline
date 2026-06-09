@@ -100,16 +100,19 @@ Inclui operações pré-extraídas pelo AST (divisões encontradas, subscripts, 
 
 ## Passo 2b — `research_pipeline/prompts/system_prompt.txt`
 
-**O que faz:** instrui a LLM sobre seu papel, taxonomia de categorias e formato de saída.
+**O que faz:** instrui a LLM sobre papel, taxonomia e raciocínio antes de gerar o JSON.
 
-**Conteúdo principal:**
-1. Papel: analisar funções Python para pipeline LLM+ESBMC
-2. Taxonomia fechada: `division_by_zero`, `out_of_bounds`, `assertion_violation`, 3 smells
-3. Formato JSON obrigatório de saída com campos específicos
-4. Exemplos de guardas incompletas (código que parece protegido mas não é)
-5. Quando marcar `verifiable: true` vs `false`
+**Estratégia:** role + Chain-of-Thought próprio do projeto. Substituiu um prompt de 8 passos procedurais que sobrecarregava modelos 7B. Referência conceitual: Tamberg & Bahsi (IEEE Access 2025).
 
-**Mudança de 2026-06-07:** exemplos de guardas trocados — os anteriores usavam variáveis `count`, `bucket`, `index` quasi-idênticas aos arquivos do dataset (leakage por familiaridade de padrão).
+**Conteúdo:**
+1. **Role:** especialista em segurança Python em pipeline híbrido LLM+ESBMC
+2. **Taxonomia:** bugs formais (`verifiable=true`) vs. code smells (`verifiable=false`)
+3. **4 perguntas CoT** a aplicar antes de gerar o JSON:
+   - O operando é controlado por parâmetro livre?
+   - Existe guarda que bloqueia EXATAMENTE o valor problemático em TODOS os caminhos?
+   - A exceção é capturada por try/except?
+   - Existe valor concreto que passa pela guarda E causa a falha?
+4. **Spec de output:** JSON sem markdown, `true`/`false` minúsculos
 
 ---
 
@@ -127,7 +130,11 @@ Usa a Messages API da Anthropic. Funciona com `claude-sonnet-4-6`, etc.
 
 ### `chat_completions.py` — ChatCompletionsAnalyzer
 
-Formato OpenAI-compat. Usado para Ollama local: `deepseek-r1:7b`, `llama3`, etc.
+Formato OpenAI-compat. Usado para Ollama local: `deepseek-r1:7b`, `qwen2.5-coder:7b`, etc.
+
+**Limitação:** Ollama usa `json_object` (sem schema enforcement). GPT-4o usa `strict json_schema`. Modelos locais podem gerar campos fora do schema — o parser normaliza com defaults.
+
+**Timeout:** modelos de raciocínio como DeepSeek-R1 podem levar vários minutos por função. Use `--llm-timeout 600`. `TimeoutError` é capturado e re-tentado até 3 vezes antes de pular o arquivo.
 
 ### `factory.py` — build_analyzer()
 
@@ -141,22 +148,27 @@ Detecta o backend automaticamente pelo nome do modelo e retorna o objeto correto
 - `temperature=0` — respostas determinísticas, reproduzíveis
 - Retry com backoff exponencial em 429/500/502/503/504
 
-**A LLM retorna JSON assim:**
+**Schema de output (5 campos obrigatórios):**
 ```json
 {
   "findings": [
     {
-      "id": "dz_compute_ratio",
       "finding_type": "suspected_bug",
       "category": "division_by_zero",
+      "explanation": "count pode ser zero se passado como parâmetro livre",
       "verifiable": true,
-      "metadata": {"expression": "total // count", "line": 2}
+      "metadata": {"expression": "total // count"}
     }
   ]
 }
 ```
 
-**`strip_markdown_json` (em `findings.py`):** Claude e DeepSeek às vezes retornam o JSON dentro de ` ```json ... ``` ` e/ou com texto explicativo depois. Esta função remove as fences markdown e usa `json.JSONDecoder().raw_decode()` para parar no final do primeiro objeto JSON e descartar o resto.
+Campos opcionais (`id`, `title`, `evidence`, `confidence`) são aceitos com defaults se ausentes. O schema foi simplificado de 12 para 5 campos obrigatórios para reduzir carga cognitiva em modelos 7B.
+
+**`strip_markdown_json` (em `findings.py`):** trata três problemas comuns antes de parsear:
+1. Remove blocos `<think>...</think>` de reasoning models (DeepSeek-R1)
+2. Substitui literais Python (`True`/`False`/`None`) por JSON válido (`true`/`false`/`null`)
+3. Remove fences markdown e usa `raw_decode()` para descartar texto após o JSON
 
 ---
 
@@ -253,6 +265,10 @@ Flow A (ESBMC):     esbmc_direct_tp, esbmc_direct_fp, esbmc_direct_fn
 Nível de função:    bug_func_tp/fp/fn/tn  (para MCC)
 Eventos:            hallucination_count, llm_confirmed_by_esbmc, etc.
 ```
+
+### Retry por arquivo
+
+Cada arquivo tem até 3 tentativas (`_MAX_RETRIES = 3`). Se todas falharem por timeout/rede, o arquivo é pulado com aviso `WARN` no terminal. O benchmark continua — sem crash por arquivo problemático.
 
 ### Bootstrap 95% CIs
 

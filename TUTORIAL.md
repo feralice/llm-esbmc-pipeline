@@ -5,11 +5,10 @@
 ## Pré-requisitos
 
 ```bash
-cd /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc
-source .env 
-which esbmc
+source .env          # Linux/macOS  |  no Windows: carregue as variáveis manualmente
+where esbmc          # verificar se ESBMC está no PATH
 esbmc --version
-python3 -m pytest
+python -m pytest
 ```
 
 ---
@@ -30,63 +29,73 @@ python3 -m pytest
 ## 1. Benchmark completo (Flow A + B + C em um comando)
 
 ```bash
-python3 src/main.py \
+python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
+  --prompt-mode raw \
   --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_gpt_4o.json
+  --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 ```
 
 Saída no terminal mostra P/R/F1 para Flow C (LLM), Flow B (híbrido) e Flow A (ESBMC) separadamente.
+
+> **`--prompt-mode raw` é obrigatório** em avaliações científicas. Sem ele o prompt vaza operações pré-extraídas que dão dica do tipo de bug.
 
 ---
 
 ## 2. Comparar vários LLMs
 
-### Opção A — um por vez (controle total)
+### Modelos V1 (um por vez)
 
 ```bash
-python3 src/main.py \
+# GPT-4o
+python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
+  --prompt-mode raw \
   --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_gpt_4o.json
+  --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 
-python3 src/main.py \
+# Claude Sonnet 4.6
+python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
-  --model claude \
+  --model claude-sonnet-4-6 \
+  --prompt-mode raw \
   --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_claude_sonnet_4_6.json
+  --report reports/json/v1_benchmark/benchmark_claude-sonnet-4-6.json
 
-python3 src/main.py \
+# DeepSeek-R1 7b (Ollama local — llm-timeout maior)
+python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model deepseek-r1:7b \
-  --bound 5 --timeout 30 \
-  --report reports/json/v1_benchmark/benchmark_deepseek_r1_7b.json
-```
+  --prompt-mode raw \
+  --bound 5 --timeout 30 --llm-timeout 600 \
+  --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
 
-### Opção B — matriz automática (todos de uma vez)
-
-```bash
-python3 scripts/run_benchmark_matrix.py \
-  --models gpt-4o claude deepseek \
-  --ground-truth dataset/labeled/ground_truths \
-  --output-dir reports/json/v1_benchmark \
-  --bound 5 --timeout 30
+# Qwen2.5-Coder 7b (Ollama local)
+python src/main.py \
+  --mode benchmark \
+  --input dataset/labeled/ground_truths \
+  --model qwen2.5-coder:7b \
+  --prompt-mode raw \
+  --bound 5 --timeout 30 --llm-timeout 600 \
+  --report reports/json/v1_benchmark/benchmark_qwen2.5-coder-7b.json
 ```
 
 Gera `reports/json/v1_benchmark/benchmark_<modelo>.json` para cada modelo.
+
+> **`--llm-timeout 600`** é necessário para modelos locais Ollama. Reasoning models como DeepSeek-R1 podem levar vários minutos por função — o padrão (300 s) costuma causar timeout em funções mais complexas.
 
 ---
 
 ## 3. Comparar resultados
 
 ```bash
-python3 scripts/compare_benchmarks.py --dir reports/json/v1_benchmark
+python scripts/compare_benchmarks.py --dir reports/json/v1_benchmark
 ```
 
 ---
@@ -106,7 +115,7 @@ Arrastar todos os arquivos `reports/json/v1_benchmark/benchmark_*.json` → aba 
 ### Flow A — só ESBMC (sem LLM, sem métricas de ground truth)
 
 ```bash
-python3 src/main.py \
+python src/main.py \
   --mode esbmc-only \
   --input dataset/labeled/ok/bugs \
   --output-dir artifacts/results/flow_a \
@@ -116,7 +125,7 @@ python3 src/main.py \
 ### Flow B — LLM + ESBMC em arquivo(s) individual(is)
 
 ```bash
-python3 src/main.py \
+python src/main.py \
   --mode hybrid \
   --input dataset/labeled/ok/bugs/assertion_violation/av_01.py \
   --model gpt-4o \
@@ -126,7 +135,7 @@ python3 src/main.py \
 ### Flow C — só LLM (sem ESBMC)
 
 ```bash
-python3 src/main.py \
+python src/main.py \
   --mode llm-only \
   --input dataset/labeled/ok/bugs/assertion_violation/av_01.py \
   --model gpt-4o
@@ -137,9 +146,9 @@ python3 src/main.py \
 ## Validar dataset sem LLM
 
 ```bash
-python3 scripts/verify_dataset.py
-python3 scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
-python3 scripts/run_esbmc_dataset.py
+python scripts/verify_dataset.py
+python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
+python scripts/run_esbmc_dataset.py
 ```
 
 ---
@@ -147,5 +156,5 @@ python3 scripts/run_esbmc_dataset.py
 ## Testes
 
 ```bash
-python3 -m pytest
+python -m pytest
 ```

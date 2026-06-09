@@ -81,7 +81,18 @@ def normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]
 
 def strip_markdown_json(text: str) -> str:
     """Strip markdown fences and trailing prose around a JSON response."""
+    import re
     text = text.strip()
+
+    # DeepSeek-R1 and other reasoning models wrap output in <think>...</think>.
+    # Remove all such blocks before attempting JSON extraction.
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+    # Some models output Python literals instead of JSON booleans/null.
+    text = re.sub(r'\bTrue\b', 'true', text)
+    text = re.sub(r'\bFalse\b', 'false', text)
+    text = re.sub(r'\bNone\b', 'null', text)
+
     if text.startswith("```"):
         lines = text.splitlines()[1:]
         if lines and lines[-1].strip() == "```":
@@ -275,7 +286,9 @@ def _assertion_violation_matches_source(unit: CodeUnit, expression: str) -> bool
     """Return True when an assertion expression is present in the function."""
     expression = expression.strip()
     if not expression:
-        return False
+        # Model identified the category but didn't provide the expression.
+        # Accept if the function contains any assert at all.
+        return bool(_assertion_tests(unit.source))
 
     source = unit.source
     if expression in source:

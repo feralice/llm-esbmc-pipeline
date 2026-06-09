@@ -108,11 +108,38 @@ arquivo.py
 
 ---
 
-## 5. Prompt Mode
+## 5. Estratégia de Prompt
 
-### `raw` (padrão — usado em todas as avaliações científicas)
+### System prompt — role + CoT
 
-O modelo recebe apenas o código-fonte da função e metadados mínimos:
+O system prompt (`research_pipeline/prompts/system_prompt.txt`) segue a estratégia **role + Chain-of-Thought** própria do projeto, com referências conceituais em práticas de prompting estruturado para análise de código (Tamberg & Bahsi, IEEE Access 2025):
+
+1. **Role:** especialista em segurança de código Python num pipeline híbrido LLM+ESBMC
+2. **Taxonomia explícita:** bugs formais (`verifiable=true`) vs. code smells (`verifiable=false`)
+3. **4 perguntas de raciocínio** que o modelo deve aplicar antes de gerar o JSON:
+   - O operando é controlado por parâmetro livre?
+   - Existe guarda que bloqueia EXATAMENTE o valor problemático em TODOS os caminhos?
+   - A exceção é capturada por try/except?
+   - Existe valor concreto que passa pela guarda E causa a falha?
+4. **Output:** `{"findings": [...]}` — sem markdown, booleanos JSON (`true`/`false`)
+
+### Schema de output (simplificado — 5 campos obrigatórios)
+
+```json
+{
+  "finding_type": "suspected_bug | smell_heuristic | llm_false_positive",
+  "category": "division_by_zero | out_of_bounds | assertion_violation | long_method | many_parameters | complex_conditional",
+  "explanation": "raciocínio textual",
+  "verifiable": true,
+  "metadata": { "expression": "x / y" }
+}
+```
+
+Campos opcionais (`id`, `title`, `evidence`, `confidence`) são aceitos pelo parser com defaults se ausentes.
+
+### Prompt mode: `raw` (padrão — todas as avaliações científicas)
+
+O user prompt envia apenas o código-fonte da função e metadados mínimos:
 
 ```
 Analise a função 'compute_ratio' para o pipeline LLM + ESBMC.
@@ -133,17 +160,11 @@ METADADOS DA FUNÇÃO:
 }
 ```
 
-**Importante:** O campo `path` foi removido intencionalmente — ele exporia o nome da categoria via estrutura de diretórios (ex: `bugs/division_by_zero/dz_01.py` vaza o rótulo).
+**O campo `path` é excluído intencionalmente** — exporia a categoria via estrutura de diretórios (`bugs/division_by_zero/dz_01.py` vaza o rótulo).
 
-### `ast_hints` (ablação apenas)
+### Prompt mode: `ast_hints` (ablação apenas)
 
-Modo legado que injeta operações pré-extraídas pelo AST antes de enviar ao LLM:
-- Divisões detectadas com linha e expressão
-- Subscripts detectados
-- Guardas/asserts existentes
-- Métricas derivadas: `operation_count`, `branch_count`, `loop_count`
-
-**Não usar em avaliações principais.** Comparar `raw` vs `ast_hints` é uma contribuição científica: mede o quanto o pre-processamento AST inflava artificialmente as métricas.
+Injeta operações pré-extraídas pelo AST (divisões, subscripts, guardas, métricas derivadas). **Não usar em avaliações principais.** Comparar `raw` vs `ast_hints` mede o quanto o pré-processamento AST inflava artificialmente as métricas.
 
 ---
 

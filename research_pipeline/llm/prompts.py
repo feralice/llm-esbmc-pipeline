@@ -27,17 +27,11 @@ PromptMode = Literal["raw", "ast_hints"]
 # reason about dangerous operations and guards, but in raw mode the model must
 # infer them from the source code itself.
 _REASONING_STEPS = (
-    "Execute os 8 passos obrigatórios antes de gerar o JSON:\n"
-    "1. Inventário de parâmetros (livres vs. derivados)\n"
-    "2. Inventário de operações perigosas (divisões, subscripts, asserts)\n"
-    "3. Mapeamento: qual parâmetro controla cada operação?\n"
-    "4. Valor problemático: que valor concreto causa a falha?\n"
-    "5. Fluxo de execução: existe caminho que leva esse valor até a operação?\n"
-    "6. Guarda: ela bloqueia EXATAMENTE o valor problematico em TODOS os caminhos?\n"
-    "7. Smells: long_method, many_parameters (>=5), complex_conditional?\n"
-    "8. Veredicto: gere o JSON com findings.\n\n"
-    "No campo `explanation` de cada finding, documente os resultados dos passos 3-7.\n"
-    "Responda SOMENTE com JSON válido no schema solicitado."
+    "Aplique o raciocínio do system prompt (itens 1-4) para cada operação perigosa encontrada.\n"
+    "Independentemente de haver bugs, avalie também se a função apresenta smells: "
+    "long_method (função longa), many_parameters (>= 5 parâmetros), complex_conditional (condições compostas/aninhadas). "
+    "Smells detectados devem entrar no array findings como finding_type='smell_heuristic', verifiable=false.\n"
+    "Responda SOMENTE com JSON válido (use true/false minúsculos), sem markdown."
 )
 
 

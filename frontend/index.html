@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LLM+ESBMC — Análise V1</title>
+<title>LLM+ESBMC Análise V1</title>
+<link rel="stylesheet" href="style.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #f0f2f5; color: #2c3e50; min-height: 100vh; font-size: 14px;
@@ -67,7 +67,7 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
 .tab-btn.hidden { display: none; }
 .nav-meta { margin-left: auto; font-size: .75em; color: #95a5a6; white-space: nowrap; }
 
-.tab-panel { display: none; padding: 22px; max-width: 1100px; margin: 0 auto; }
+.tab-panel { display: none; padding: 22px; max-width: 1280px; margin: 0 auto; }
 .tab-panel.active { display: block; }
 
 /* ---- Stats grid ---- */
@@ -96,13 +96,43 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
 }
 .data-table th {
   background: #2c3e50; color: white; padding: 9px 13px;
-  text-align: left; font-size: .78em; white-space: nowrap;
+  text-align: left; font-size: .78em; white-space: nowrap; line-height: 1.25;
+  cursor: default;
 }
-.data-table td { padding: 8px 13px; border-bottom: 1px solid #f0f2f5; font-size: .84em; }
+#tooltip {
+  position: fixed; display: none; z-index: 9999; pointer-events: none;
+  background: #1a1a2e; color: #fff; font-size: .82em; line-height: 1.5;
+  padding: 8px 11px; border-radius: 7px; max-width: 230px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4); white-space: normal;
+}
+.data-table td { padding: 8px 13px; border-bottom: 1px solid #f0f2f5; font-size: .84em; line-height: 1.35; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: #f8f9fa; }
-.num { text-align: right; font-variant-numeric: tabular-nums; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .center { text-align: center; }
+.table-scroll {
+  width: 100%; overflow-x: auto; margin-bottom: 22px;
+  border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.07);
+}
+.table-scroll .data-table { margin-bottom: 0; box-shadow: none; border-radius: 0; }
+.benchmark-table { min-width: 820px; table-layout: fixed; width: 100%; }
+.benchmark-table th, .benchmark-table td { vertical-align: middle; text-align: center; padding: 9px 10px; }
+.benchmark-table th:first-child, .benchmark-table td:first-child { text-align: left; width: 200px; }
+.benchmark-table .model-name { display: block; overflow-wrap: anywhere; line-height: 1.3; font-size:.9em; }
+.benchmark-table .group-llm  { background: #1a252f; }
+.benchmark-table .group-hyb  { background: #1e5f8e; }
+.benchmark-table .group-misc { background: #2c3e50; }
+.compact-table { min-width: 560px; table-layout: fixed; width: 100%; }
+.compact-table th, .compact-table td { text-align: center; padding: 9px 10px; }
+.compact-table th:first-child, .compact-table td:first-child { text-align: left; width: 200px; }
+.val-hi  { color: #27ae60; font-weight: 700; }
+.val-mid { color: #e67e22; font-weight: 700; }
+.val-lo  { color: #e74c3c; font-weight: 700; }
+.val-pct { font-size: .82em; color: #7f8c8d; }
+.category-matrix { min-width: 760px; table-layout: fixed; }
+.category-matrix th { text-align: center; white-space: normal; }
+.category-matrix th:first-child { text-align: left; }
+.category-matrix th:first-child, .category-matrix td:first-child { width: 210px; }
 
 /* ---- Badge ---- */
 .badge {
@@ -191,23 +221,26 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
 .empty { color: #95a5a6; font-size: .85em; padding: 16px 0; }
 
 .model-summary {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 12px; margin-bottom: 18px;
 }
 .model-card {
   background: white; border: 1px solid #e6edf5; border-radius: 10px;
   padding: 14px 16px; box-shadow: 0 1px 6px rgba(0,0,0,.06);
+  min-height: 104px; display: flex; flex-direction: column; justify-content: center;
 }
 .model-card .k { font-size: .72em; color: #7f8c8d; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
-.model-card .v { font-size: 1.25em; color: #2c3e50; font-weight: 800; margin-top: 5px; }
+.model-card .v { font-size: 1.18em; color: #2c3e50; font-weight: 800; margin-top: 5px; overflow-wrap: anywhere; line-height: 1.25; }
 .model-card .s { font-size: .76em; color: #95a5a6; margin-top: 4px; }
 </style>
 </head>
 <body>
 
+<div id="tooltip"></div>
+
 <header>
   <div>
-    <h1>🔍 LLM + ESBMC — Análise V1</h1>
+    <h1>LLM + ESBMC Análise V1</h1>
     <div class="sub">Visualizador de resultados · apenas leitura · sem alteração de classificações</div>
   </div>
 </header>
@@ -222,8 +255,8 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
          ondragover="event.preventDefault();this.classList.add('drag-over')"
          ondragleave="this.classList.remove('drag-over')">
       <label>
-        <div class="zone-title">📊 Relatório de análise</div>
-        <div class="zone-hint">full_report.json · report.json — arraste ou clique</div>
+        <div class="zone-title">Relatório de análise</div>
+        <div class="zone-hint">full_report.json · report.json, arraste ou clique</div>
         <div id="zone-report-name" class="zone-loaded" style="display:none"></div>
         <input type="file" id="input-report" accept=".json" onchange="onInputChange('report',this)">
       </label>
@@ -234,8 +267,8 @@ header .sub { font-size: .78em; opacity: .7; margin-top: 3px; }
          ondragover="event.preventDefault();this.classList.add('drag-over')"
          ondragleave="this.classList.remove('drag-over')">
       <label>
-        <div class="zone-title">📈 Benchmark / métricas <span style="font-weight:400;color:#95a5a6">— opcional, aceita vários arquivos</span></div>
-        <div class="zone-hint">benchmark_*.json — arraste todos os modelos para comparar</div>
+        <div class="zone-title">Benchmark / métricas <span style="font-weight:400;color:#95a5a6">opcional, aceita vários arquivos</span></div>
+        <div class="zone-hint">benchmark_*.json, arraste todos os modelos para comparar</div>
         <div id="zone-bm-name" class="zone-loaded" style="display:none"></div>
         <input type="file" id="input-bm" accept=".json" multiple onchange="onInputChange('bm',this)">
       </label>
@@ -504,8 +537,24 @@ function showTab(btn, name) {
   btn.classList.add('active');
 }
 
+function activateTab(name) {
+  const btn = document.querySelector(`.tab-btn[data-tab="${name}"]`);
+  if (btn && !btn.classList.contains('hidden')) showTab(btn, name);
+}
+
+function updateVisibleTabs() {
+  const hasReport = !!state.reportData;
+  const hasBenchmarks = state.bmList.length > 0;
+  for (const name of ['dashboard', 'categories', 'files']) {
+    document.querySelector(`.tab-btn[data-tab="${name}"]`)?.classList.toggle('hidden', !hasReport);
+  }
+  document.getElementById('btn-benchmark')?.classList.toggle('hidden', !hasBenchmarks);
+  activateTab(hasReport ? 'dashboard' : (hasBenchmarks ? 'benchmark' : 'json'));
+}
+
 // =================== RENDER ALL ===================
 function renderAll() {
+  updateVisibleTabs();
   renderDashboard();
   renderCategories();
   renderFiles();
@@ -738,9 +787,16 @@ function renderBenchmark() {
   btn.classList.remove('hidden');
 
   const bestHybrid = bestBy(state.bmList, item => metricBlock(item.data, 'bugs_hybrid_pipeline', 'bugs').f1);
-  const bestNrr = bestBy(state.bmList, item => metricBlock(item.data, 'bugs_hybrid_pipeline', 'bugs').noise_reduction_rate);
-  const bestSmell = bestBy(state.bmList, item => metricBlock(item.data, 'smells').f1);
+  const bestNrr    = bestBy(state.bmList, item => metricBlock(item.data, 'bugs_hybrid_pipeline', 'bugs').noise_reduction_rate);
+  const bestSmell  = bestBy(state.bmList, item => metricBlock(item.data, 'smells').f1);
   const totalHallucinations = state.bmList.reduce((acc, item) => acc + Number(item.data.hallucinations?.count || 0), 0);
+
+  // color helper
+  function cv(v)    { return (v == null || isNaN(v)) ? 'n/a' : fmt2(v); }
+  function cvMcc(v) { return (v == null || isNaN(v)) ? 'n/a' : fmt2(v); }
+  function cvFcr(v) { return (v == null || isNaN(v)) ? 'n/a' : fmtPct(v); }
+  function cvNrr(v) { return (v == null || isNaN(v)) ? 'n/a' : fmtPct(v); }
+  function cvPct(v) { return (v == null || isNaN(v)) ? 'n/a' : fmtPct(v); }
 
   const summaryCards = `
     <div class="model-summary">
@@ -751,121 +807,172 @@ function renderBenchmark() {
       </div>
       <div class="model-card">
         <div class="k">Melhor F1 híbrido</div>
-        <div class="v">${bestHybrid ? esc(bestHybrid.label) : '—'}</div>
-        <div class="s">F1=${bestHybrid ? fmt2(bestHybrid.value) : '—'}</div>
+        <div class="v" style="font-size:.95em">${bestHybrid ? esc(bestHybrid.label) : '—'}</div>
+        <div class="s">F1 = ${bestHybrid ? fmt2(bestHybrid.value) : '—'}</div>
+      </div>
+      <div class="model-card">
+        <div class="k">Melhor F1 smells</div>
+        <div class="v" style="font-size:.95em">${bestSmell ? esc(bestSmell.label) : '—'}</div>
+        <div class="s">F1 = ${bestSmell ? fmt2(bestSmell.value) : '—'}</div>
       </div>
       <div class="model-card">
         <div class="k">Maior redução de ruído</div>
-        <div class="v">${bestNrr ? esc(bestNrr.label) : '—'}</div>
-        <div class="s">NRR=${bestNrr ? fmtPct(bestNrr.value) : '—'}</div>
+        <div class="v" style="font-size:.95em">${bestNrr ? esc(bestNrr.label) : '—'}</div>
+        <div class="s">NRR = ${bestNrr ? fmtPct(bestNrr.value) : '—'}</div>
       </div>
       <div class="model-card">
-        <div class="k">Alucinações estruturais</div>
+        <div class="k">Alucinações (total)</div>
         <div class="v">${totalHallucinations}</div>
-        <div class="s">soma nos benchmarks carregados</div>
+        <div class="s">soma nos benchmarks</div>
       </div>
     </div>`;
 
-  const rows = state.bmList.map(({ name, data }) => {
+  // ── Tabela 1: Bugs formais ──
+  const bugRows = state.bmList.map(({ name, data }) => {
     const b   = metricBlock(data, 'bugs_llm_only', 'bugs');
     const hyb = metricBlock(data, 'bugs_hybrid_pipeline', 'bugs');
     const e   = metricBlock(data, 'esbmc_direct_baseline');
     const h   = data.hallucinations || {};
+    const ci  = data.confidence_intervals_95 || {};
+    const ciHybF1 = ci.hybrid_bug_f1 ? `<div class="val-pct">[${fmt2(ci.hybrid_bug_f1[0])}, ${fmt2(ci.hybrid_bug_f1[1])}]</div>` : '';
+    const ciLlmF1 = ci.llm_bug_f1   ? `<div class="val-pct">[${fmt2(ci.llm_bug_f1[0])}, ${fmt2(ci.llm_bug_f1[1])}]</div>` : '';
     return `<tr>
       <td><b>${esc(data.model || name)}</b></td>
-      <td class="num">${fmt2(b.precision)}</td>
-      <td class="num">${fmt2(b.recall)}</td>
-      <td class="num"><b>${fmt2(b.f1)}</b></td>
-      <td class="num">${b.tp??'—'}</td><td class="num">${b.fp??'—'}</td><td class="num">${b.fn??'—'}</td>
-      <td class="num">${fmt2(hyb.precision)}</td>
-      <td class="num">${fmt2(hyb.recall)}</td>
-      <td class="num"><b>${fmt2(hyb.f1)}</b></td>
-      <td class="num">${fmtPct(hyb.formal_confirmation_rate)}</td>
-      <td class="num">${fmtPct(hyb.noise_reduction_rate)}</td>
-      <td class="num">${fmt2(e.f1)}</td>
-      <td class="num">${h.count??'—'} <span style="color:#95a5a6;font-size:.8em">(${fmtPct(h.rate)})</span></td>
-      <td class="num">${data.bound??'—'}</td>
+      <td>${cv(b.f1)}<br>${ciLlmF1}</td>
+      <td>${cv(b.precision)}</td>
+      <td>${cv(b.recall)}</td>
+      <td>${cvMcc(b.function_mcc)}</td>
+      <td style="color:#7f8c8d;font-size:.82em">${b.tp??'?'} / ${b.fp??'?'} / ${b.fn??'?'}<br><span class="val-pct">TN: ${b.function_tn??'?'}</span></td>
+      <td>${cv(hyb.f1)}<br>${ciHybF1}</td>
+      <td>${cv(hyb.precision)}</td>
+      <td>${cv(hyb.recall)}</td>
+      <td>${cvMcc(hyb.function_mcc)}</td>
+      <td style="color:#7f8c8d;font-size:.82em">${hyb.tp??'?'} / ${hyb.fp??'?'} / ${hyb.fn??'?'}<br><span class="val-pct">TN: ${hyb.function_tn??'?'}</span></td>
+      <td>${cvFcr(hyb.formal_confirmation_rate)}</td>
+      <td>${cvNrr(hyb.noise_reduction_rate)}</td>
+      <td>${cv(e.f1)}</td>
+      <td>${h.count??'?'} <span class="val-pct">(${fmtPct(h.rate)})</span></td>
     </tr>`;
   }).join('');
 
+  // ── Tabela 2: Smells ──
   const smellRows = state.bmList.map(({ name, data }) => {
-    const s = data.metrics?.smells || {};
+    const s  = data.metrics?.smells || {};
+    const ci = data.confidence_intervals_95 || {};
+    const ciF1 = ci.smell_f1 ? `<div class="val-pct">[${fmt2(ci.smell_f1[0])}, ${fmt2(ci.smell_f1[1])}]</div>` : '';
     return `<tr>
       <td><b>${esc(data.model || name)}</b></td>
-      <td class="num">${fmt2(s.precision)}</td>
-      <td class="num">${fmt2(s.recall)}</td>
-      <td class="num"><b>${fmt2(s.f1)}</b></td>
-      <td class="num">${s.tp??'—'}</td><td class="num">${s.fp??'—'}</td><td class="num">${s.fn??'—'}</td>
+      <td>${cv(s.f1)}<br>${ciF1}</td>
+      <td>${cv(s.precision)}</td>
+      <td>${cv(s.recall)}</td>
+      <td style="color:#7f8c8d;font-size:.82em">${s.tp??'?'} / ${s.fp??'?'} / ${s.fn??'?'}</td>
     </tr>`;
   }).join('');
 
-  // Per-category table — collect all categories across all benchmarks
+  // ── Tabela 3: Por categoria ──
   const allCats = new Set();
   state.bmList.forEach(({ data }) => {
-    if (data.per_category) Object.keys(data.per_category).forEach(c => allCats.add(c));
+    if (data.per_category_llm)    Object.keys(data.per_category_llm).forEach(c => allCats.add(c));
+    if (data.per_category_hybrid) Object.keys(data.per_category_hybrid).forEach(c => allCats.add(c));
+    if (data.per_category)        Object.keys(data.per_category).forEach(c => allCats.add(c));
   });
-  const catRows = Array.from(allCats).sort().map(cat => {
-    const cells = state.bmList.map(({ data }) => {
-      const c = data.per_category?.[cat];
-      if (!c) return `<td colspan="3" class="center" style="color:#bbb">—</td>`;
-      return `<td class="num">${fmt2(c.precision)}</td><td class="num">${fmt2(c.recall)}</td><td class="num"><b>${fmt2(c.f1)}</b></td>`;
-    }).join('');
-    return `<tr><td><code>${esc(cat)}</code></td>${cells}</tr>`;
-  }).join('');
+  const bugCats   = ['assertion_violation','division_by_zero','out_of_bounds'];
+  const smellCats = ['complex_conditional','long_method','many_parameters'];
+  const sortedCats = [
+    ...bugCats.filter(c => allCats.has(c)),
+    ...smellCats.filter(c => allCats.has(c)),
+    ...[...allCats].filter(c => !bugCats.includes(c) && !smellCats.includes(c)).sort()
+  ];
 
-  const modelHeaders = state.bmList.map(({ data, name }) =>
-    `<th colspan="3" style="text-align:center">${esc(data.model || name)}</th>`
+  const modelHeadersCat = state.bmList.map(({ data, name }) =>
+    `<th colspan="4" style="text-align:center;background:#1e5f8e">${esc(data.model || name)}</th>`
   ).join('');
-  const metricHeaders = state.bmList.map(() =>
-    `<th class="num">P</th><th class="num">R</th><th class="num">F1</th>`
+  const subHeadersCat = state.bmList.map(() =>
+    `<th>F1</th><th>P</th><th>R</th><th style="font-size:.75em">TP/FP/FN</th>`
   ).join('');
+
+  const catRows = sortedCats.map(cat => {
+    const isBug   = bugCats.includes(cat);
+    const isSmell = smellCats.includes(cat);
+    const tag = isBug ? `<span style="background:#e74c3c;color:white;border-radius:4px;padding:1px 5px;font-size:.7em">bug</span>`
+              : isSmell ? `<span style="background:#3498db;color:white;border-radius:4px;padding:1px 5px;font-size:.7em">smell</span>` : '';
+    const cells = state.bmList.map(({ data }) => {
+      const llm = data.per_category_llm?.[cat] || data.per_category?.[cat];
+      if (!llm) return `<td colspan="4" style="color:#bbb;text-align:center">n/a</td>`;
+      return `<td>${cv(llm.f1)}</td><td style="font-size:.82em">${fmt2(llm.precision)}</td><td style="font-size:.82em">${fmt2(llm.recall)}</td><td style="color:#7f8c8d;font-size:.78em">${llm.tp??'?'}/${llm.fp??'?'}/${llm.fn??'?'}</td>`;
+    }).join('');
+    return `<tr><td><code>${esc(cat)}</code> ${tag}</td>${cells}</tr>`;
+  }).join('');
 
   el.innerHTML = `
     ${summaryCards}
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-      <div class="section-title" style="margin:0">Métricas de bugs formais por modelo</div>
-      <button onclick="exportCsv()" style="padding:5px 12px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:.8em;font-weight:700">Export CSV</button>
-    </div>
-    <table class="data-table">
-      <tr>
-        <th rowspan="2">Modelo</th>
-        <th colspan="6" style="text-align:center;border-bottom:1px solid #ddd">LLM (puro)</th>
-        <th colspan="5" style="text-align:center;border-bottom:1px solid #ddd">Híbrido (LLM+ESBMC)</th>
-        <th rowspan="2" class="num">ESBMC direto F1</th>
-        <th rowspan="2" class="num">Alucinações</th>
-        <th rowspan="2" class="num">Bound</th>
-      </tr>
-      <tr>
-        <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
-        <th class="num">TP</th><th class="num">FP</th><th class="num">FN</th>
-        <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
-        <th class="num">FCR</th><th class="num">NRR</th>
-      </tr>
-      ${rows}
-    </table>
 
-    <div class="section-title">Métricas de smells por modelo</div>
-    <table class="data-table">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;margin-top:4px">
+      <div class="section-title" style="margin:0">Bugs formais por modelo</div>
+      <button onclick="exportCsv()" style="padding:5px 14px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:.8em;font-weight:700">Export CSV</button>
+    </div>
+    <div class="table-scroll">
+    <table class="data-table benchmark-table">
+      <thead>
       <tr>
-        <th>Modelo</th>
-        <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
-        <th class="num">TP</th><th class="num">FP</th><th class="num">FN</th>
+        <th rowspan="2" style="text-align:left;width:170px">Modelo</th>
+        <th colspan="5" style="text-align:center;background:#1a252f" data-tip="Resultado da LLM sozinha, sem verificacao formal">Flow C: LLM puro</th>
+        <th colspan="7" style="text-align:center;background:#1e5f8e" data-tip="LLM propõe o bug, ESBMC confirma formalmente">Flow B: Híbrido (LLM + ESBMC)</th>
+        <th rowspan="2" style="background:#2c3e50;font-size:.82em" data-tip="ESBMC rodando sozinho, sem LLM. F1 = média harmônica de precisão e recall">Flow A<br>ESBMC F1</th>
+        <th rowspan="2" style="background:#2c3e50;font-size:.82em" data-tip="Quantas vezes a LLM citou uma expressão que não existe no código (detectado pelo AST)">Alucinações</th>
       </tr>
-      ${smellRows}
+      <tr>
+        <th data-tip="F1: média harmônica entre precisão e recall. Valor abaixo = intervalo de confiança 95%">F1</th>
+        <th data-tip="Precisão: dos bugs apontados, quantos eram reais. Alta precisão = poucos falsos alarmes">P</th>
+        <th data-tip="Recall: dos bugs reais, quantos foram encontrados. Alto recall = poucos bugs perdidos">R</th>
+        <th data-tip="MCC: avalia classificacao considerando TP, FP, FN e TN. Mais justo que accuracy em datasets desbalanceados">MCC</th>
+        <th style="font-size:.75em" data-tip="TP = bug encontrado corretamente. FP = falso alarme. FN = bug perdido. TN = função clean classificada corretamente">TP/FP/FN<br>TN clean</th>
+        <th data-tip="F1 do pipeline híbrido. Valor abaixo = intervalo de confiança 95%">F1</th>
+        <th data-tip="Precisão do pipeline híbrido após confirmação pelo ESBMC">P</th>
+        <th data-tip="Recall do pipeline híbrido">R</th>
+        <th data-tip="MCC do pipeline híbrido">MCC</th>
+        <th style="font-size:.75em" data-tip="TP = bug confirmado pelo ESBMC. FP = falso alarme restante. FN = bug perdido. TN = função clean correta">TP/FP/FN<br>TN clean</th>
+        <th data-tip="FCR: das hipoteses enviadas ao ESBMC, quantas foram confirmadas. Verde >= 70%, laranja >= 40%, vermelho abaixo disso">FCR</th>
+        <th data-tip="NRR: redução de falsos positivos vs LLM puro. Verde >= 50% redução, laranja >= 30%, vermelho abaixo disso">NRR</th>
+      </tr>
+      </thead>
+      <tbody>${bugRows}</tbody>
     </table>
+    </div>
+
+    <div class="section-title" style="margin-top:24px">Code Smells por modelo (Flow C)</div>
+    <div class="table-scroll">
+    <table class="data-table compact-table">
+      <thead><tr>
+        <th style="text-align:left;width:200px">Modelo</th>
+        <th data-tip="F1: média harmônica entre precisão e recall para detecção de smells">F1</th>
+        <th data-tip="Precisão: dos smells apontados, quantos eram reais">Precision</th>
+        <th data-tip="Recall: dos smells reais, quantos foram encontrados">Recall</th>
+        <th style="font-size:.78em" data-tip="TP = smell correto. FP = falso alarme. FN = smell não detectado">TP / FP / FN</th>
+      </tr></thead>
+      <tbody>${smellRows}</tbody>
+    </table>
+    </div>
 
     ${catRows ? `
-    <div class="section-title">Por categoria</div>
-    <table class="data-table">
-      <tr><th rowspan="2">Categoria</th>${modelHeaders}</tr>
-      <tr>${metricHeaders}</tr>
-      ${catRows}
-    </table>` : ''}
+    <div class="section-title" style="margin-top:24px">Por categoria (Flow C)</div>
+    <div class="table-scroll">
+    <table class="data-table category-matrix">
+      <thead>
+      <tr><th rowspan="2" style="text-align:left">Categoria</th>${modelHeadersCat}</tr>
+      <tr>${subHeadersCat}</tr>
+      </thead>
+      <tbody>${catRows}</tbody>
+    </table>
+    </div>` : ''}
 
-    <p style="font-size:.76em;color:#95a5a6;margin-top:4px">
-      Bugs formais e smells calculados separadamente.
+    <p style="font-size:.76em;color:#95a5a6;margin-top:12px">
+      Verde = F1 acima de 0.8 &nbsp; Laranja = acima de 0.5 &nbsp; Vermelho = abaixo de 0.5 &nbsp;
+      IC = intervalo de confiança 95% bootstrap &nbsp;
+      TN = funções clean classificadas corretamente &nbsp;
+      FCR = taxa de confirmação formal &nbsp; NRR = redução de falsos positivos
     </p>
-    <p style="margin-top:6px;font-size:.76em;color:#95a5a6">
+    <p style="margin-top:4px;font-size:.76em;color:#95a5a6">
       Para adicionar mais modelos: arraste múltiplos arquivos benchmark_*.json na zona de benchmark na tela inicial.
     </p>`;
 }
@@ -974,6 +1081,29 @@ function loadPreloadedData() {
 }
 
 window.addEventListener('DOMContentLoaded', loadPreloadedData);
+</script>
+<script>
+(function() {
+  const tip = document.getElementById('tooltip');
+  document.addEventListener('mouseover', function(e) {
+    const el = e.target.closest('[data-tip]');
+    if (!el) { tip.style.display = 'none'; return; }
+    tip.textContent = el.dataset.tip;
+    tip.style.display = 'block';
+  });
+  document.addEventListener('mouseout', function(e) {
+    if (!e.target.closest('[data-tip]')) tip.style.display = 'none';
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (tip.style.display === 'none') return;
+    const x = e.clientX + 14;
+    const y = e.clientY - 10;
+    const tw = tip.offsetWidth;
+    const th = tip.offsetHeight;
+    tip.style.left = (x + tw > window.innerWidth ? e.clientX - tw - 14 : x) + 'px';
+    tip.style.top  = (y + th > window.innerHeight ? e.clientY - th - 10 : y) + 'px';
+  });
+})();
 </script>
 </body>
 </html>

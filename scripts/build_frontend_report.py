@@ -40,7 +40,11 @@ def build_html_report(
         "benchmarks": _collect_benchmark_reports(benchmark_dir),
     }
     if report_path and report_path.exists():
-        payload["report"] = _load_json(report_path)
+        report_data = _load_json(report_path)
+        if isinstance(report_data, dict) and "metrics" in report_data:
+            payload["benchmarks"].append({"name": report_path.name, "data": report_data})
+        else:
+            payload["report"] = report_data
 
     html = FRONTEND_TEMPLATE.read_text(encoding="utf-8")
     preload = (

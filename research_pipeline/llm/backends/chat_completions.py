@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
+import logging
 from urllib import error, request
+
+logger = logging.getLogger(__name__)
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
 from ..prompts import PromptMode, build_user_prompt, load_system_prompt
@@ -13,13 +16,13 @@ class ChatCompletionsAnalyzer:
 
     def __init__(
         self,
-        base_url: str = "http://localhost:11434",
+        base_url: str = "http://localhost:11434/v1",
         model: str = "deepseek-r1:7b",
         api_key: str = "ollama",
         timeout_seconds: int = 300,
         prompt_mode: PromptMode = "raw",
     ) -> None:
-        self.base_url = base_url.rstrip("/") + "/v1/chat/completions"
+        self.base_url = base_url.rstrip("/") + "/chat/completions"
         self.model = model
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
@@ -58,6 +61,11 @@ class ChatCompletionsAnalyzer:
         except error.HTTPError as exc:
             details = exc.read().decode("utf-8", errors="replace")
             raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
+        except TimeoutError as exc:
+            raise RuntimeError(
+                f"Timeout ({self.timeout_seconds}s) ao chamar {self.base_url}. "
+                "Aumente --llm-timeout ou verifique se Ollama está respondendo."
+            ) from exc
         except error.URLError as exc:
             raise RuntimeError(
                 f"Falha de rede ao chamar {self.base_url}: {exc.reason}\n"
@@ -69,6 +77,10 @@ class ChatCompletionsAnalyzer:
         if choices:
             content = choices[0].get("message", {}).get("content", "")
             if content:
-                parsed = json.loads(strip_markdown_json(content))
-                return coerce_findings_payload(parsed)
-        raise RuntimeError("Resposta da API não contém conteúdo JSON analisável.")
+                try:
+                    parsed = json.loads(strip_markdown_json(content))
+                    return coerce_findings_payload(parsed)
+                except (json.JSONDecodeError, RuntimeError) as exc:
+                    logger.warning("JSON parse failed for model %s: %s | raw: %.200s", self.model, exc, content)
+                    return []
+        return []

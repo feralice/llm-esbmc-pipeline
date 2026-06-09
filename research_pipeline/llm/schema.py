@@ -12,8 +12,6 @@ FINDINGS_JSON_SCHEMA: dict = {
                     "type": "object",
                     "additionalProperties": False,
                     "properties": {
-                        "id":                   {"type": "string"},
-                        "stage":                {"type": "string"},
                         "finding_type": {
                             "type": "string",
                             "enum": [
@@ -32,27 +30,20 @@ FINDINGS_JSON_SCHEMA: dict = {
                                 "complex_conditional",
                             ],
                         },
-                        "title":                {"type": "string"},
-                        "explanation":          {"type": "string"},
-                        "evidence":             {"type": "array", "items": {"type": "string"}},
-                        "verifiable":           {"type": "boolean"},
-                        "confidence":           {"type": "string"},
-                        "expected_exception":   {"type": "string"},
+                        "explanation": {"type": "string"},
+                        "verifiable":  {"type": "boolean"},
                         "metadata": {
                             "type": "object",
                             "additionalProperties": False,
                             "properties": {
-                                "expression":    {"type": "string"},
-                                "line":          {"type": "integer"},
-                                "relative_line": {"type": "integer"},
+                                "expression": {"type": "string"},
                             },
-                            "required": ["expression", "line", "relative_line"],
+                            "required": ["expression"],
                         },
                     },
                     "required": [
-                        "id", "stage", "finding_type", "category", "title",
-                        "explanation", "evidence", "verifiable", "confidence",
-                        "expected_exception", "metadata",
+                        "finding_type", "category", "explanation",
+                        "verifiable", "metadata",
                     ],
                 },
             }

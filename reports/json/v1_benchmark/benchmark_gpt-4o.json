@@ -1,0 +1,210 @@
+{
+  "model": "openai/gpt-4o",
+  "backend": "openai",
+  "prompt_mode": "raw",
+  "ground_truth": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/labeled/ground_truths",
+  "bound": 5,
+  "timeout": 30,
+  "metrics": {
+    "bugs_llm_only": {
+      "precision": 0.8,
+      "recall": 0.9778,
+      "f1": 0.88,
+      "tp": 44,
+      "fp": 11,
+      "fn": 1,
+      "function_accuracy": 0.8727,
+      "function_mcc": 0.5068,
+      "function_tp": 44,
+      "function_fp": 6,
+      "function_fn": 1,
+      "function_tn": 4
+    },
+    "bugs_hybrid_pipeline": {
+      "precision": 0.9167,
+      "recall": 0.9778,
+      "f1": 0.9462,
+      "tp": 44,
+      "fp": 4,
+      "fn": 1,
+      "function_accuracy": 0.9818,
+      "function_mcc": 0.9428,
+      "function_tp": 44,
+      "function_fp": 0,
+      "function_fn": 1,
+      "function_tn": 10,
+      "llm_confirmed_by_esbmc": 47,
+      "not_confirmed_within_bound": 6,
+      "esbmc_inconclusive": 1,
+      "formal_confirmation_rate": 0.8704,
+      "noise_reduction_rate": 0.6364
+    },
+    "smells": {
+      "precision": 0.9167,
+      "recall": 0.7333,
+      "f1": 0.8148,
+      "tp": 11,
+      "fp": 1,
+      "fn": 4
+    },
+    "esbmc_direct_baseline": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 45,
+      "fp": 0,
+      "fn": 0,
+      "function_accuracy": 1.0,
+      "function_mcc": 1.0,
+      "function_tp": 45,
+      "function_fp": 0,
+      "function_fn": 0,
+      "function_tn": 10
+    }
+  },
+  "hallucinations": {
+    "count": 1,
+    "rate": 0.0182
+  },
+  "out_of_scope_findings": {
+    "count": 0
+  },
+  "per_category_llm": {
+    "assertion_violation": {
+      "precision": 0.875,
+      "recall": 0.9333,
+      "f1": 0.9032,
+      "tp": 14,
+      "fp": 2,
+      "fn": 1
+    },
+    "complex_conditional": {
+      "precision": 0.8333,
+      "recall": 1.0,
+      "f1": 0.9091,
+      "tp": 5,
+      "fp": 1,
+      "fn": 0
+    },
+    "division_by_zero": {
+      "precision": 0.7143,
+      "recall": 1.0,
+      "f1": 0.8333,
+      "tp": 15,
+      "fp": 6,
+      "fn": 0
+    },
+    "long_method": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "tp": 1,
+      "fp": 0,
+      "fn": 4
+    },
+    "many_parameters": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "out_of_bounds": {
+      "precision": 0.8333,
+      "recall": 1.0,
+      "f1": 0.9091,
+      "tp": 15,
+      "fp": 3,
+      "fn": 0
+    }
+  },
+  "per_category_hybrid": {
+    "assertion_violation": {
+      "precision": 1.0,
+      "recall": 0.9333,
+      "f1": 0.9655,
+      "tp": 14,
+      "fp": 0,
+      "fn": 1
+    },
+    "division_by_zero": {
+      "precision": 0.9375,
+      "recall": 1.0,
+      "f1": 0.9677,
+      "tp": 15,
+      "fp": 1,
+      "fn": 0
+    },
+    "out_of_bounds": {
+      "precision": 0.8333,
+      "recall": 1.0,
+      "f1": 0.9091,
+      "tp": 15,
+      "fp": 3,
+      "fn": 0
+    }
+  },
+  "confidence_intervals_95": {
+    "llm_bug_precision": [
+      0.7,
+      0.9
+    ],
+    "llm_bug_recall": [
+      0.9286,
+      1.0
+    ],
+    "llm_bug_f1": [
+      0.8148,
+      0.9388
+    ],
+    "llm_bug_mcc": [
+      0.1281,
+      0.7702
+    ],
+    "hybrid_bug_precision": [
+      0.84,
+      0.98
+    ],
+    "hybrid_bug_recall": [
+      0.9286,
+      1.0
+    ],
+    "hybrid_bug_f1": [
+      0.9,
+      0.9885
+    ],
+    "hybrid_bug_mcc": [
+      0.8117,
+      1.0
+    ],
+    "esbmc_bug_precision": [
+      1.0,
+      1.0
+    ],
+    "esbmc_bug_recall": [
+      1.0,
+      1.0
+    ],
+    "esbmc_bug_f1": [
+      1.0,
+      1.0
+    ],
+    "esbmc_bug_mcc": [
+      1.0,
+      1.0
+    ],
+    "smell_precision": [
+      0.7143,
+      1.0
+    ],
+    "smell_recall": [
+      0.5,
+      0.9375
+    ],
+    "smell_f1": [
+      0.5926,
+      0.9655
+    ]
+  }
+}

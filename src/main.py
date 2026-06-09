@@ -91,7 +91,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--backend",
-        choices=["openai", "anthropic", "ollama"],
+        choices=["openai", "anthropic", "ollama", "google"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
     )
@@ -126,6 +126,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--openai-api-key",
+        default=None,
+    )
+    parser.add_argument(
+        "--google-api-key",
         default=None,
     )
     parser.add_argument(
@@ -207,6 +211,8 @@ def _infer_backend(model: str | None) -> str:
     m = model.lower()
     if "claude" in m:
         return "anthropic"
+    if "gemini" in m:
+        return "google"
     if any(x in m for x in ("gpt", "o1", "o3", "o4")):
         return "openai"
     return "ollama"
@@ -218,15 +224,17 @@ def _resolve_model(model: str | None, backend: str) -> str | None:
     aliases = {
         "claude":  "claude-3-7-sonnet-20250219",
         "gpt":     "gpt-4o",
+        "gemini":  "gemini-3.1-flash-lite",
         "deepseek": "deepseek-r1:7b",
     }
     return aliases.get(model.lower(), model)
 
 
-def _resolve_keys(args: argparse.Namespace) -> tuple[str | None, str | None]:
+def _resolve_keys(args: argparse.Namespace) -> tuple[str | None, str | None, str | None]:
     anthropic_key = args.anthropic_api_key or os.environ.get("ANTHROPIC_API_KEY")
     openai_key    = args.openai_api_key    or os.environ.get("OPENAI_API_KEY")
-    return anthropic_key, openai_key
+    google_key    = args.google_api_key    or os.environ.get("GEMINI_API_KEY")
+    return anthropic_key, openai_key, google_key
 
 
 def _default_output_dir(mode: str) -> str:
@@ -355,7 +363,7 @@ def mode_llm_only(args: argparse.Namespace) -> int:
 
     backend = args.backend or _infer_backend(args.model)
     model   = _resolve_model(args.model, backend)
-    anthropic_key, openai_key = _resolve_keys(args)
+    anthropic_key, openai_key, google_key = _resolve_keys(args)
     output_dir = args.output_dir or _default_output_dir("llm-only")
 
     results = run_pipeline_llm_only(
@@ -365,6 +373,7 @@ def mode_llm_only(args: argparse.Namespace) -> int:
         llm_model=model,
         openai_api_key=openai_key,
         anthropic_api_key=anthropic_key,
+        google_api_key=google_key,
         ollama_base_url=args.ollama_base_url,
         timeout_seconds=args.llm_timeout,
         prompt_mode=args.prompt_mode,
@@ -384,7 +393,7 @@ def mode_hybrid(args: argparse.Namespace) -> int:
 
     backend = args.backend or _infer_backend(args.model)
     model   = _resolve_model(args.model, backend)
-    anthropic_key, openai_key = _resolve_keys(args)
+    anthropic_key, openai_key, google_key = _resolve_keys(args)
     output_dir = args.output_dir or _default_output_dir("hybrid")
 
     results = run_pipeline_multi(
@@ -395,6 +404,7 @@ def mode_hybrid(args: argparse.Namespace) -> int:
         llm_model=model,
         openai_api_key=openai_key,
         anthropic_api_key=anthropic_key,
+        google_api_key=google_key,
         ollama_base_url=args.ollama_base_url,
         bound=args.bound,
         timeout_seconds=args.timeout,
@@ -420,7 +430,7 @@ def mode_benchmark(args: argparse.Namespace) -> int:
 
     backend = args.backend or _infer_backend(args.model)
     model   = _resolve_model(args.model, backend)
-    anthropic_key, openai_key = _resolve_keys(args)
+    anthropic_key, openai_key, google_key = _resolve_keys(args)
 
     label = f"{backend}/{model or '(padrão)'}"
     print(f"Benchmark — {label}")
@@ -431,6 +441,7 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         model=model or "",
         anthropic_api_key=anthropic_key,
         openai_api_key=openai_key,
+        google_api_key=google_key,
         ollama_base_url=args.ollama_base_url,
         esbmc_command=args.esbmc_command,
         bound=args.bound,

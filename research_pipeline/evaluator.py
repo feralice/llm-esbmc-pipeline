@@ -458,6 +458,7 @@ def evaluate_model(
     model: str,
     anthropic_api_key: str | None = None,
     openai_api_key: str | None = None,
+    google_api_key: str | None = None,
     ollama_base_url: str | None = None,
     esbmc_command: list[str] | None = None,
     bound: int = 5,
@@ -474,6 +475,7 @@ def evaluate_model(
         llm_model=model,
         anthropic_api_key=anthropic_api_key,
         openai_api_key=openai_api_key,
+        google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=llm_timeout_seconds,
         prompt_mode=prompt_mode,
@@ -482,18 +484,30 @@ def evaluate_model(
     total = EvalCounts()
     case_list: list[EvalCounts] = []
     num_cases = len(cases)
+    _MAX_RETRIES = 3
     for i, (file_path, expected) in enumerate(cases, 1):
         print(f"[{i}/{num_cases}] Processando {file_path.name}...")
-        c = evaluate_file(
-            file_path=file_path,
-            expected=expected,
-            analyzer=analyzer,
-            esbmc_command=esbmc_command,
-            bound=bound,
-            timeout_seconds=timeout_seconds,
-            verbose=verbose,
-            output_dir=output_dir,
-        )
+        last_exc: Exception | None = None
+        for attempt in range(1, _MAX_RETRIES + 1):
+            try:
+                c = evaluate_file(
+                    file_path=file_path,
+                    expected=expected,
+                    analyzer=analyzer,
+                    esbmc_command=esbmc_command,
+                    bound=bound,
+                    timeout_seconds=timeout_seconds,
+                    verbose=verbose,
+                    output_dir=output_dir,
+                )
+                last_exc = None
+                break
+            except (RuntimeError, OSError) as exc:
+                last_exc = exc
+                print(f"  Tentativa {attempt}/{_MAX_RETRIES} falhou: {exc}", flush=True)
+        if last_exc is not None:
+            print(f"  WARN: {file_path.name} falhou após {_MAX_RETRIES} tentativas — pulando. Erro: {last_exc}", flush=True)
+            continue
         case_list.append(c)
         total.bug_tp   += c.bug_tp
         total.bug_fp   += c.bug_fp
