@@ -1,0 +1,1 @@
+cd /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc && set -a && source .env && set +a && source .venv/bin/activate && python --version && echo env_ok

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from urllib import error, request
 
 logger = logging.getLogger(__name__)
@@ -21,14 +22,18 @@ class ChatCompletionsAnalyzer:
         api_key: str = "ollama",
         timeout_seconds: int = 300,
         prompt_mode: PromptMode = "raw",
+        request_delay: float = 0.0,
     ) -> None:
         self.base_url = base_url.rstrip("/") + "/chat/completions"
         self.model = model
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
         self.prompt_mode = prompt_mode
+        self.request_delay = request_delay
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
+        if self.request_delay > 0:
+            time.sleep(self.request_delay)
         payload = {
             "model": self.model,
             "messages": [
@@ -44,33 +49,42 @@ class ChatCompletionsAnalyzer:
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)
 
-    def _post_json(self, payload: dict) -> dict:
+    def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         body = json.dumps(payload).encode("utf-8")
-        req = request.Request(
-            self.base_url,
-            data=body,
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        try:
-            with request.urlopen(req, timeout=self.timeout_seconds) as response:
-                return json.loads(response.read().decode("utf-8"))
-        except error.HTTPError as exc:
-            details = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
-        except TimeoutError as exc:
-            raise RuntimeError(
-                f"Timeout ({self.timeout_seconds}s) ao chamar {self.base_url}. "
-                "Aumente --llm-timeout ou verifique se Ollama está respondendo."
-            ) from exc
-        except error.URLError as exc:
-            raise RuntimeError(
-                f"Falha de rede ao chamar {self.base_url}: {exc.reason}\n"
-                "Verifique se o Ollama está rodando com: ollama serve"
-            ) from exc
+        for attempt in range(_retries):
+            req = request.Request(
+                self.base_url,
+                data=body,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as response:
+                    return json.loads(response.read().decode("utf-8"))
+            except error.HTTPError as exc:
+                if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
+                    sleep_time = 45 if exc.code == 429 else 2 ** (attempt + 2)
+                    time.sleep(sleep_time)
+                    continue
+                details = exc.read().decode("utf-8", errors="replace")
+                raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
+            except TimeoutError as exc:
+                if attempt < _retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise RuntimeError(
+                    f"Timeout ({self.timeout_seconds}s) ao chamar {self.base_url}. "
+                    "Aumente --llm-timeout ou verifique se Ollama está respondendo."
+                ) from exc
+            except error.URLError as exc:
+                raise RuntimeError(
+                    f"Falha de rede ao chamar {self.base_url}: {exc.reason}\n"
+                    "Verifique se o Ollama está rodando com: ollama serve"
+                ) from exc
+        raise RuntimeError("API Chat Completions falhou após todas as tentativas.")
 
     def _extract_findings_payload(self, response_data: dict) -> list[dict]:
         choices = response_data.get("choices", [])

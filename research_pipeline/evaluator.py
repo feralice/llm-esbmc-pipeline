@@ -136,8 +136,12 @@ def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[di
 
 
 def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
-    """Load dataset JSONs recursively from a ground_truths directory or category dir."""
-    cases: list[tuple[Path, list[dict]]] = []
+    """Load dataset JSONs recursively from a ground_truths directory or category dir.
+
+    Multiple ground-truth items for the same source file are grouped into a
+    single case so the file is only sent to the LLM once.
+    """
+    grouped: dict[Path, list[dict]] = {}
     for json_path in sorted(directory.rglob("*.json")):
         payload = json.loads(json_path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict) or "items" not in payload:
@@ -147,8 +151,9 @@ def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
         for item in payload.get("items", []):
             if not isinstance(item, dict) or not item.get("file"):
                 continue
-            cases.append((_source_path_for_item(source_root, category, item), [_expected_from_dataset_item(item)]))
-    return cases
+            src = _source_path_for_item(source_root, category, item)
+            grouped.setdefault(src, []).append(_expected_from_dataset_item(item))
+    return [(path, expected) for path, expected in grouped.items()]
 
 
 def _infer_source_root_for_ground_truth_dir(ground_truth_dir: Path) -> Path:
@@ -303,7 +308,23 @@ def evaluate_file(
     is_clean_case = bool(expected) and all(e.get("category") == "clean" for e in expected)
     exp_smells = [e for e in expected if e.get("verifiable") is False and e.get("category") != "clean"]
 
-    bug_tp, bug_fp, bug_fn, bug_verdicts         = _match_with_categories(bugs, exp_bugs)
+    # Deduplicate bugs by (function, category): cap to max(expected_count, 1)
+    # so multiple distinct bugs of the same type in the same function are kept
+    # when the ground truth expects them, but excess over-reporting is suppressed.
+    from collections import Counter as _Counter
+    _exp_count = _Counter(
+        (e.get("function", ""), e.get("category", "")) for e in exp_bugs
+    )
+    _seen_count: dict[tuple, int] = {}
+    bugs_deduped: list = []
+    for f in bugs:
+        key = (f.metadata.get("function", ""), f.category)
+        allowed = max(_exp_count.get(key, 0), 1)
+        if _seen_count.get(key, 0) < allowed:
+            _seen_count[key] = _seen_count.get(key, 0) + 1
+            bugs_deduped.append(f)
+
+    bug_tp, bug_fp, bug_fn, bug_verdicts         = _match_with_categories(bugs_deduped, exp_bugs)
     smell_tp, smell_fp, smell_fn, smell_verdicts = _match_with_categories(smells, exp_smells)
 
     if is_clean_case:
@@ -427,7 +448,11 @@ def evaluate_file(
     flow_a_findings = _flow_a_findings_from_direct(direct)
     # Fix 3: always run matching for Flow A (symmetric with Flow B).
     # Timeout/error → empty flow_a_findings → FN for expected bugs, just like Flow B.
-    a_tp, a_fp, a_fn, _ = _match_with_categories(flow_a_findings, exp_bugs)
+    # Expand findings so multi-instance ground truth entries (same function/category)
+    # are all counted as TP when ESBMC confirms a violation — ESBMC stops at the first
+    # violation per run, so one confirmation covers all instances of that bug.
+    flow_a_findings_expanded = _expand_flow_a_findings(flow_a_findings, exp_bugs)
+    a_tp, a_fp, a_fn, _ = _match_with_categories(flow_a_findings_expanded, exp_bugs)
     counts.esbmc_direct_tp = a_tp
     counts.esbmc_direct_fp = a_fp
     counts.esbmc_direct_fn = a_fn
@@ -449,7 +474,72 @@ def evaluate_file(
     if verbose:
         _print_detail(file_path.name, bugs, exp_bugs, smells, exp_smells, direct)
 
+    if output_dir:
+        _save_per_file_result(
+            output_dir=Path(output_dir),
+            file_name=file_path.name,
+            bugs=bugs,
+            exp_bugs=exp_bugs,
+            smells=smells,
+            exp_smells=exp_smells,
+            bug_verdicts=bug_verdicts,
+            smell_verdicts=smell_verdicts,
+        )
+
     return counts
+
+
+def _save_per_file_result(
+    output_dir: Path,
+    file_name: str,
+    bugs: list,
+    exp_bugs: list[dict],
+    smells: list,
+    exp_smells: list[dict],
+    bug_verdicts: list[tuple],
+    smell_verdicts: list[tuple],
+) -> None:
+    import json as _json
+    output_dir.mkdir(parents=True, exist_ok=True)
+    stem = Path(file_name).stem
+    out: dict = {
+        "file": file_name,
+        "expected_bugs": [
+            {"function": e.get("function", ""), "category": e.get("category", "")}
+            for e in exp_bugs
+        ],
+        "generated_bugs": [
+            {
+                "function": f.metadata.get("function", ""),
+                "category": f.category,
+                "expression": getattr(f, "expression", ""),
+                "line": f.metadata.get("line"),
+                "confidence": getattr(f, "confidence", ""),
+            }
+            for f in bugs
+        ],
+        "expected_smells": [
+            {"function": e.get("function", ""), "category": e.get("category", "")}
+            for e in exp_smells
+        ],
+        "generated_smells": [
+            {
+                "function": f.metadata.get("function", ""),
+                "category": f.category,
+            }
+            for f in smells
+        ],
+        "bug_verdicts": [{"category": c, "verdict": v} for c, v in bug_verdicts],
+        "smell_verdicts": [{"category": c, "verdict": v} for c, v in smell_verdicts],
+        "errors": {
+            "bug_fp": [{"category": c, "verdict": v} for c, v in bug_verdicts if v == "fp"],
+            "bug_fn": [{"category": c, "verdict": v} for c, v in bug_verdicts if v == "fn"],
+            "smell_fp": [{"category": c, "verdict": v} for c, v in smell_verdicts if v == "fp"],
+            "smell_fn": [{"category": c, "verdict": v} for c, v in smell_verdicts if v == "fn"],
+        },
+    }
+    out_path = output_dir / f"{stem}_eval.json"
+    out_path.write_text(_json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def evaluate_model(
@@ -570,6 +660,29 @@ def accuracy(tp: int, fp: int, fn: int, tn: int) -> float:
     if total == 0:
         return 0.0
     return (tp + tn) / total
+
+
+def _expand_flow_a_findings(
+    flow_a_findings: list[Finding],
+    exp_bugs: list[dict],
+) -> list[Finding]:
+    """Expand Flow A findings to cover multi-instance ground truth entries.
+
+    ESBMC stops at the first violation per function. When the ground truth has N
+    instances for the same (function, category), one ESBMC confirmation counts as
+    N TPs — the function is confirmed buggy regardless of how many instances exist.
+    """
+    from collections import Counter
+    exp_counts: Counter = Counter(
+        (e.get("function", ""), e["category"]) for e in exp_bugs
+    )
+    expanded: list[Finding] = []
+    for finding in flow_a_findings:
+        key = (finding.metadata.get("function", ""), finding.category)
+        n = exp_counts.get(key, 1)
+        for _ in range(n):
+            expanded.append(finding)
+    return expanded
 
 
 def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Finding]:

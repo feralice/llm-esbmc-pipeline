@@ -17,7 +17,7 @@ class OpenAIResponsesAnalyzer:
     def __init__(
         self,
         api_key: str | None = None,
-        model: str = "gpt-4o",
+        model: str = "gpt-5.5",
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
         prompt_mode: PromptMode = "raw",
@@ -35,7 +35,6 @@ class OpenAIResponsesAnalyzer:
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         payload = {
             "model": self.model,
-            "temperature": 0,
             "input": [
                 {
                     "role": "system",

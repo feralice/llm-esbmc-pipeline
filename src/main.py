@@ -85,8 +85,8 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Modelo LLM a usar. "
             "Valores: 'gpt', 'claude', 'deepseek' ou nome completo como "
-            "'gpt-4o', 'claude-3-7-sonnet-20250219', 'deepseek-r1:7b'. "
-            "(padrão: gpt-4o)"
+            "'gpt-5.5', 'claude-opus-4-8', 'deepseek-r1:7b'. "
+            "(padrão: gpt-5.5)"
         ),
     )
     parser.add_argument(
@@ -222,9 +222,9 @@ def _resolve_model(model: str | None, backend: str) -> str | None:
     if model is None:
         return None
     aliases = {
-        "claude":  "claude-3-7-sonnet-20250219",
-        "gpt":     "gpt-4o",
-        "gemini":  "gemini-3.1-flash-lite",
+        "claude":  "claude-opus-4-8",
+        "gpt":     "gpt-5.5",
+        "gemini":  "gemini-2.5-flash",
         "deepseek": "deepseek-r1:7b",
     }
     return aliases.get(model.lower(), model)
@@ -435,6 +435,11 @@ def mode_benchmark(args: argparse.Namespace) -> int:
     label = f"{backend}/{model or '(padrão)'}"
     print(f"Benchmark — {label}")
 
+    report_arg = getattr(args, "report", None)
+    per_file_dir: Path | None = None
+    if report_arg:
+        per_file_dir = Path(report_arg).parent / "per_file" / Path(report_arg).stem.removeprefix("benchmark_")
+
     counts, cis = evaluate_model(
         ground_truth_path=gt_path,
         backend=backend,
@@ -448,12 +453,12 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
         verbose=args.verbose,
+        output_dir=per_file_dir,
         prompt_mode=args.prompt_mode,
     )
 
     _print_benchmark_table(label, counts, cis)
 
-    report_arg = getattr(args, "report", None)
     if report_arg:
         bug_p, bug_r, bug_f1 = prf(counts.bug_tp, counts.bug_fp, counts.bug_fn)
         smell_p, smell_r, smell_f1 = prf(counts.smell_tp, counts.smell_fp, counts.smell_fn)

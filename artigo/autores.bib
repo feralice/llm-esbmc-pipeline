@@ -1,0 +1,298 @@
+% ============================================================
+% Bibliografia base - LLMs, Vulnerability Detection, BMC, ESBMC e Code Smells
+% Gerado para o projeto de mestrado
+% ============================================================
+
+% ------------------------------------------------------------
+% Popularidade, adoção de IA e contexto geral
+% ------------------------------------------------------------
+
+@misc{tiobe2026,
+  author       = {{TIOBE Index}},
+  title        = {{TIOBE Index for January 2026}},
+  year         = {2026},
+  url          = {https://www.tiobe.com/tiobe-index/},
+  note         = {Accessed: 2026}
+}
+
+@article{dakhel2023,
+  author       = {Arghavan Moradi Dakhel and Vahid Majdinasab and Amin Nikanjam and Foutse Khomh and Michel C. Desmarais and Zhen Ming Jiang},
+  title        = {{GitHub Copilot AI Pair Programmer: Asset or Liability?}},
+  journal      = {Journal of Systems and Software},
+  volume       = {203},
+  pages        = {111734},
+  year         = {2023},
+  doi          = {10.1016/j.jss.2023.111734}
+}
+
+@article{guo2025,
+  author       = {Daya Guo and Dejian Yang and Haowei Zhang and Junxiao Song and Ruoyu Zhang and Runxin Xu and Qihao Zhu and Shirong Ma and Peiyi Wang and Xiao Bi and others},
+  title        = {{DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning}},
+  journal      = {arXiv preprint arXiv:2501.12948},
+  year         = {2025},
+  eprint       = {2501.12948},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CL}
+}
+
+% ------------------------------------------------------------
+% Surveys e revisões sobre LLMs para vulnerabilidades
+% ------------------------------------------------------------
+
+@article{kaniewski2025,
+  author       = {Sabrina Kaniewski and Fabian Schmidt and Markus Enzweiler and Michael Menth and Tobias Heer},
+  title        = {{A Systematic Literature Review on Detecting Software Vulnerabilities with Large Language Models}},
+  journal      = {arXiv preprint arXiv:2507.22659},
+  year         = {2025},
+  eprint       = {2507.22659},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+@article{zhou2024,
+  author       = {Xin Zhou and Sicong Cao and Xiaobing Sun and David Lo},
+  title        = {{Large Language Model for Vulnerability Detection and Repair: Literature Review and the Road Ahead}},
+  journal      = {arXiv preprint arXiv:2404.02525},
+  year         = {2024},
+  eprint       = {2404.02525},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+@article{tihanyi2025,
+  author       = {Norbert Tihanyi and Tamas Bisztray and Mohamed Amine Ferrag and Bilel Cherif and Richard A. Dubniczky and Ridhi Jain and Lucas C. Cordeiro},
+  title        = {{Vulnerability Detection: From Formal Verification to Large Language Models and Hybrid Approaches: A Comprehensive Overview}},
+  journal      = {arXiv preprint arXiv:2503.10784},
+  year         = {2025},
+  eprint       = {2503.10784},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+% ------------------------------------------------------------
+% Benchmarks e avaliação de LLMs para vulnerabilidades
+% ------------------------------------------------------------
+
+@article{ding2025,
+  author       = {Yangruibo Ding and Yanjun Fu and Omniyyah Ibrahim and Chawin Sitawarin and Xinyun Chen and Basel Alomair and David Wagner and Baishakhi Ray and Yizheng Chen},
+  title        = {{Vulnerability Detection with Code Language Models: How Far Are We?}},
+  journal      = {arXiv preprint arXiv:2403.18624},
+  year         = {2024},
+  eprint       = {2403.18624},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE},
+  note         = {Also known as PrimeVul}
+}
+
+@article{ullah2024,
+  author       = {Saad Ullah and Mingji Han and Saurabh Pujar and Hammond Pearce and Ayse Coskun and Gianluca Stringhini},
+  title        = {{LLMs Cannot Reliably Identify and Reason About Security Vulnerabilities (Yet?): A Comprehensive Evaluation, Framework, and Benchmarks}},
+  journal      = {arXiv preprint arXiv:2312.12575},
+  year         = {2024},
+  eprint       = {2312.12575},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CR}
+}
+
+@article{tamberg2025,
+  author       = {Karl Tamberg and Hayretdin Bahsi},
+  title        = {{Harnessing Large Language Models for Software Vulnerability Detection: A Comprehensive Benchmarking Study}},
+  journal      = {arXiv preprint arXiv:2405.15614},
+  year         = {2024},
+  eprint       = {2405.15614},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CR}
+}
+
+@article{li2026,
+  author       = {Yue Li and Xiao Li and Hao Wu and Minghui Xu and Yue Zhang and Xiuzhen Cheng and Fengyuan Xu and Sheng Zhong},
+  title        = {{Everything You Wanted to Know About LLM-Based Vulnerability Detection But Were Afraid to Ask}},
+  journal      = {arXiv preprint arXiv:2504.13474},
+  year         = {2025},
+  eprint       = {2504.13474},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CR}
+}
+
+@article{liu2024vuldetectbench,
+  author       = {Yu Liu and Lang Gao and Mingxin Yang and Yu Xie and Ping Chen and Xiaojin Zhang and Wei Chen},
+  title        = {{VulDetectBench: Evaluating the Deep Capability of Vulnerability Detection with Large Language Models}},
+  journal      = {arXiv preprint arXiv:2406.07595},
+  year         = {2024},
+  eprint       = {2406.07595},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CR}
+}
+
+@inproceedings{dozono2026,
+  author       = {Kohei Dozono and Tiago E. Gasiba and Andrea Stocco},
+  title        = {{Large Language Models for Secure Code Assessment: A Multi-Language Empirical Study}},
+  booktitle    = {Proceedings of the 7th International Workshop on Deep Learning for Testing and Testing for Deep Learning (DeepTest 2026)},
+  year         = {2026},
+  publisher    = {ACM},
+  doi          = {10.1145/3786154.3788584},
+  note         = {arXiv:2408.06428}
+}
+
+% ------------------------------------------------------------
+% Base formal, BMC, SMT e ESBMC
+% ------------------------------------------------------------
+
+@inproceedings{biere1999,
+  author       = {Armin Biere and Alessandro Cimatti and Edmund Clarke and Yunshan Zhu},
+  title        = {{Symbolic Model Checking without BDDs}},
+  booktitle    = {Proceedings of the 5th International Conference on Tools and Algorithms for the Construction and Analysis of Systems (TACAS)},
+  pages        = {193--207},
+  year         = {1999},
+  publisher    = {Springer}
+}
+
+@article{cordeiro2012,
+  author       = {Lucas C. Cordeiro and Bernd Fischer and Jo{\~a}o Marques-Silva},
+  title        = {{SMT-Based Bounded Model Checking for Embedded ANSI-C Software}},
+  journal      = {IEEE Transactions on Software Engineering},
+  volume       = {38},
+  number       = {4},
+  pages        = {957--974},
+  year         = {2012},
+  doi          = {10.1109/TSE.2011.59}
+}
+
+@article{menezes2023,
+  author       = {Rafael Menezes and Mohannad Aldughaim and Bruno Farias and Xianzhiyu Li and Edoardo Manino and Fedor Shmarov and Kunjian Song and Franz Brau{\ss}e and Mikhail R. Gadelha and Norbert Tihanyi and Konstantin Korovin and Lucas C. Cordeiro},
+  title        = {{ESBMC v7.4: Harnessing the Power of Intervals}},
+  journal      = {arXiv preprint arXiv:2312.14746},
+  year         = {2023},
+  eprint       = {2312.14746},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+@inproceedings{farias2024,
+  author       = {Bruno Farias and Rafael Menezes and Eddie B. de Lima Filho and Youcheng Sun and Lucas C. Cordeiro},
+  title        = {{ESBMC-Python: A Bounded Model Checker for Python Programs}},
+  booktitle    = {Proceedings of the 33rd ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA)},
+  pages        = {1836--1840},
+  year         = {2024},
+  publisher    = {ACM}
+}
+
+% ------------------------------------------------------------
+% Abordagens híbridas: LLM + Verificação Formal/BMC
+% ------------------------------------------------------------
+
+@article{tihanyi2024selfhealing,
+  author       = {Norbert Tihanyi and Ridhi Jain and Mohamed Amine Ferrag and Yiannis Charalambous and Youcheng Sun and Lucas C. Cordeiro},
+  title        = {{A New Era in Software Security: Towards Self-Healing Software via Large Language Models and Formal Verification}},
+  journal      = {arXiv preprint arXiv:2305.14752},
+  year         = {2024},
+  eprint       = {2305.14752},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+@inproceedings{pirzada2024,
+  author       = {Muhammad A. A. Pirzada and Ahmed Bhayat and Lucas C. Cordeiro and Giles Reger},
+  title        = {{LLM-Generated Invariants for Bounded Model Checking Without Loop Unrolling}},
+  booktitle    = {Proceedings of the 39th IEEE/ACM International Conference on Automated Software Engineering (ASE)},
+  year         = {2024},
+  publisher    = {ACM},
+  doi          = {10.1145/3691620.3695512}
+}
+
+@article{shivaji2026,
+  author       = {Shivkumar Shivaji and Klaus Havelund and Natalia Lobakhina and Lucas C. Cordeiro and Alessandro Pinto},
+  title        = {{LLM-Assisted Translation and Bounded Model Checking of Python Code}},
+  journal      = {Preprint},
+  year         = {2026},
+  note         = {Also referred to as EVA}
+}
+
+@article{orvalho2025,
+  author       = {Pedro Orvalho and Marta Kwiatkowska},
+  title        = {{PyVeritas: On Verifying Python via LLM-Based Transpilation and Bounded Model Checking for C}},
+  journal      = {arXiv preprint arXiv:2508.08171},
+  year         = {2025},
+  eprint       = {2508.08171},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+% ------------------------------------------------------------
+% Code smells, defeitos e qualidade de código
+% ------------------------------------------------------------
+
+@inproceedings{santos2023,
+  author       = {Geanderson Santos and Amanda Santana and Gustavo Vale and Eduardo Figueiredo},
+  title        = {{Yet Another Model! A Study on Model's Similarities for Defect and Code Smells}},
+  booktitle    = {Proceedings of the International Conference on Fundamental Approaches to Software Engineering (FASE)},
+  year         = {2023},
+  publisher    = {Springer}
+}
+
+@article{souza2026,
+  author       = {Saymon Souza and Amanda Santana and Eduardo Figueiredo and Igor Muzetti Pereira and Jo{\~a}o Eduardo Montandon and Lionel Briand},
+  title        = {{Beyond Strict Rules: Assessing the Effectiveness of Large Language Models for Code Smell Detection}},
+  journal      = {arXiv preprint arXiv:2601.09873},
+  year         = {2026},
+  eprint       = {2601.09873},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE}
+}
+
+@article{benchmark_smells2024,
+  author       = {Ahmed R. Sadik and Siddhata Govind},
+  title        = {{Benchmarking LLM for Code Smells Detection: OpenAI GPT-4.0 vs DeepSeek-V3}},
+  journal      = {arXiv preprint arXiv:2504.16027},
+  year         = {2025},
+  eprint       = {2504.16027},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.SE},
+  note         = {Preprint accepted at EASE 2025}
+}
+
+@inproceedings{brown2023,
+  author       = {Reuben Brown and Des Greer},
+  title        = {{Software Code Smells and Defects: An Empirical Investigation}},
+  booktitle    = {Proceedings of the 18th International Conference on Evaluation of Novel Approaches to Software Engineering (ENASE)},
+  pages        = {570--580},
+  year         = {2023},
+  publisher    = {SCITEPRESS},
+  doi          = {10.5220/0011974500003464}
+}
+
+% ------------------------------------------------------------
+% Verificação formal e refutação de falsos positivos
+% ------------------------------------------------------------
+
+@inproceedings{gadelha2019smt,
+  title        = {{SMT-based refutation of spurious bug reports in the clang static analyzer}},
+  author       = {Gadelha, Mikhail Y. R. and Steffinlongo, Enrico and Cordeiro, Lucas C. and Fischer, Bernd and Nicole, Denis A.},
+  booktitle    = {Proceedings of the 41st International Conference on Software Engineering: Companion Proceedings},
+  pages        = {11--14},
+  year         = {2019},
+  organization = {IEEE/ACM}
+}
+
+@inproceedings{gadelha2018esbmc,
+  title        = {{ESBMC 5.0: an industrial-strength C model checker}},
+  author       = {Gadelha, Mikhail R. and Monteiro, Felipe R. and Morse, Jeremy and Cordeiro, Lucas C. and Fischer, Bernd and Nicole, Denis A.},
+  booktitle    = {Proceedings of the 33rd ACM/IEEE International Conference on Automated Software Engineering},
+  pages        = {888--891},
+  year         = {2018},
+  organization = {ACM}
+}
+
+% ------------------------------------------------------------
+% Datasets
+% ------------------------------------------------------------
+
+@inproceedings{bugsinpy,
+  author       = {Ratnadira Widyasari and Sheng Qin Sim and Camellia Lok and Haodi Qi and Jack Phan and Qijin Tay and Constance Tan and Fiona Wee and Jodie Ethelda Tan and Yuheng Yieh and Brian Goh and Ferdian Thung and Hong Jin Kang and Thong Hoang and David Lo and Eng Lieh Ouh},
+  title        = {{BugsInPy: A Database of Existing Bugs in Python Programs to Enable Controlled Testing and Debugging Studies}},
+  booktitle    = {Proceedings of the 28th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE)},
+  pages        = {1556--1560},
+  year         = {2020},
+  publisher    = {ACM},
+  doi          = {10.1145/3368089.3417943}
+}

@@ -1,0 +1,48 @@
+{
+  "file": "av_07.py",
+  "expected_bugs": [
+    {
+      "function": "upper_limit_check",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "upper_limit_check",
+      "category": "assertion_violation",
+      "expression": "",
+      "line": 0,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "upper_limit_check",
+      "category": "complex_conditional"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

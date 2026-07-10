@@ -1,0 +1,48 @@
+{
+  "file": "dz_12.py",
+  "expected_bugs": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "division_by_zero",
+      "expression": "",
+      "line": 4,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "many_parameters"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

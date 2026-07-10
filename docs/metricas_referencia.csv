@@ -1,0 +1,19 @@
+Grupo,Métrica,Fórmula,O que conta como unidade,Pergunta em português simples,Alto significa,Baixo significa
+BUGS — por finding,Precision,TP / (TP + FP),cada finding reportado,quando acusou bug — estava certo?,poucos alarmes falsos,muitos alarmes falsos
+BUGS — por finding,Recall,TP / (TP + FN),cada bug real no dataset,dos bugs reais — quantos achou?,encontra a maioria dos bugs,perde muitos bugs
+BUGS — por finding,F1,2·P·R / (P+R),—,equilíbrio entre precision e recall,bom nos dois,ruim em pelo menos um
+BUGS — por função,MCC,fórmula com TP+FP+FN+TN,cada função (sim/não tem bug),discrimina bem funções bugadas vs. limpas?,classificação confiável,próximo de aleatório
+BUGS — por função,Accuracy,(TP+TN) / total,cada função (sim/não tem bug),% de funções classificadas certo,maioria certa,maioria errada
+SMELLS — por finding,Precision (smell),TP / (TP + FP),cada smell reportado,quando acusou smell — estava certo?,poucos falsos,muitos falsos
+SMELLS — por finding,Recall (smell),TP / (TP + FN),cada smell real no dataset,dos smells reais — quantos achou?,encontra a maioria,perde muitos
+SMELLS — por finding,F1 (smell),2·P·R / (P+R),—,equilíbrio precision/recall de smells,bom nos dois,ruim em pelo menos um
+PIPELINE — qualidade LLM,Hallucination Rate,alucinações / claims verificáveis,cada finding com verifiable=true,LLM inventou expressões que não existem no código?,pouco confiável,muito confiável
+PIPELINE — Flow B,FCR (Formal Confirmation Rate),confirmados_ESBMC / tentativas_ESBMC,cada hipótese enviada ao ESBMC,das suspeitas que chegaram ao ESBMC — quantas viraram prova?,LLM levanta boas hipóteses,LLM manda muita coisa fraca
+PIPELINE — comparação flows,NRR (Noise Reduction Rate),(FP_LLM - FP_hibrido) / FP_LLM,FPs do Flow C vs Flow B,o ESBMC reduziu quantos % dos falsos positivos da LLM?,ESBMC filtra bem,ESBMC pouco efetivo como filtro
+REFERÊNCIA — o que é TP,TP — Verdadeiro Positivo,—,—,bug existe E pipeline reportou,—,—
+REFERÊNCIA — o que é FP,FP — Falso Positivo,—,—,bug NÃO existe MAS pipeline reportou (alarme falso),—,—
+REFERÊNCIA — o que é FN,FN — Falso Negativo,—,—,bug existe MAS pipeline NÃO reportou (perdeu),—,—
+REFERÊNCIA — o que é TN,TN — Verdadeiro Negativo,—,—,bug NÃO existe E pipeline silenciou (só existe por função),—,—
+REFERÊNCIA — flows,Flow A,—,ESBMC sem LLM,baseline formal: ESBMC sozinho acha bugs?,—,—
+REFERÊNCIA — flows,Flow B,—,LLM + ESBMC,híbrido: LLM levanta hipótese → ESBMC confirma,—,—
+REFERÊNCIA — flows,Flow C,—,LLM sozinha,LLM sozinha acha bugs sem verificação formal?,—,—

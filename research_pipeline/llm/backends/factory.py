@@ -11,10 +11,10 @@ from .openai import OpenAIResponsesAnalyzer
 Backend = Literal["openai", "anthropic", "ollama", "google"]
 
 _DEFAULT_MODEL: dict[str, str] = {
-    "openai":    "gpt-4o",
-    "anthropic": "claude-sonnet-4-6",
+    "openai":    "gpt-5.5",
+    "anthropic": "claude-opus-4-8",
     "ollama":    "deepseek-r1:7b",
-    "google":    "gemini-3.1-flash-lite",
+    "google":    "gemini-2.5-flash",
 }
 
 _DEFAULT_OLLAMA_URL = "http://localhost:11434/v1"
@@ -60,5 +60,6 @@ def build_analyzer(
             api_key=google_api_key or "",
             timeout_seconds=timeout_seconds,
             prompt_mode=prompt_mode,
+            request_delay=4.0,
         )
     raise ValueError(f"Backend desconhecido: {backend!r}. Use 'openai', 'anthropic', 'ollama' ou 'google'.")

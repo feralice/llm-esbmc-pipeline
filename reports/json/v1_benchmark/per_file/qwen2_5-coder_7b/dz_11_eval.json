@@ -1,0 +1,72 @@
+{
+  "file": "dz_11.py",
+  "expected_bugs": [
+    {
+      "function": "shifted_step_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "shifted_step_ratio",
+      "category": "division_by_zero",
+      "expression": "",
+      "line": 3,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "shifted_step_ratio",
+      "category": "long_method"
+    },
+    {
+      "function": "shifted_step_ratio",
+      "category": "many_parameters"
+    },
+    {
+      "function": "shifted_step_ratio",
+      "category": "complex_conditional"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

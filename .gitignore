@@ -44,8 +44,10 @@ scratch_*.py
 # Outputs gerados em runtime
 artifacts/
 output/
+outputs/
 reports/html/
 artigos_estudo/
+/benchmark_run.log
 
 # ESBMC outputs
 *.smt2

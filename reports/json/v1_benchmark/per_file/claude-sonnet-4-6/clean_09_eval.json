@@ -1,0 +1,33 @@
+{
+  "file": "clean_09.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "guarded_shifted_denominator",
+      "category": "division_by_zero",
+      "expression": "",
+      "line": 4,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,46 @@
+Warning: mypy not found on PATH; type checking will be skipped.
+  Install with: pip install mypy  or  pipx install mypy
+ESBMC version 8.3.0 64-bit x86_64 linux
+
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing dataset/labeled/ok/bugs/division_by_zero/dz_11.py
+Converting
+Generating GOTO Program
+GOTO program creation time: 1.521s
+GOTO program processing time: 0.009s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Symex completed in: 0.001s (75 assignments)
+Caching time: 0.000s (removed 0 assertions)
+Slicing time: 0.000s (removed 72 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (3 assignments)
+No solver specified; defaulting to z3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.8.12
+Runtime decision procedure: 0.001s
+Building error trace
+
+[Counterexample]
+
+
+State 1 file dataset/labeled/ok/bugs/division_by_zero/dz_11.py line 1 column 0 thread 0
+----------------------------------------------------
+  step = -1 (11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111)
+
+State 2 file dataset/labeled/ok/bugs/division_by_zero/dz_11.py line 2 column 4 function shifted_step_ratio thread 0
+----------------------------------------------------
+  adjusted = 0 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 3 file dataset/labeled/ok/bugs/division_by_zero/dz_11.py line 3 column 4 function shifted_step_ratio thread 0
+----------------------------------------------------
+Violated property:
+  file dataset/labeled/ok/bugs/division_by_zero/dz_11.py line 3 column 4 function shifted_step_ratio
+  division by zero
+  CWE: CWE-369
+  adjusted != 0
+
+
+VERIFICATION FAILED
+
+Bug found (k = 1)

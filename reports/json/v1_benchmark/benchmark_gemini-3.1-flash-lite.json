@@ -7,11 +7,11 @@
   "timeout": 30,
   "metrics": {
     "bugs_llm_only": {
-      "precision": 0.8776,
-      "recall": 0.9556,
-      "f1": 0.9149,
-      "tp": 43,
-      "fp": 6,
+      "precision": 0.9388,
+      "recall": 0.9583,
+      "f1": 0.9485,
+      "tp": 46,
+      "fp": 3,
       "fn": 2,
       "function_accuracy": 0.9455,
       "function_mcc": 0.825,
@@ -21,11 +21,11 @@
       "function_tn": 9
     },
     "bugs_hybrid_pipeline": {
-      "precision": 0.9149,
-      "recall": 0.9556,
-      "f1": 0.9348,
-      "tp": 43,
-      "fp": 4,
+      "precision": 0.9787,
+      "recall": 0.9583,
+      "f1": 0.9684,
+      "tp": 46,
+      "fp": 1,
       "fn": 2,
       "function_accuracy": 0.9636,
       "function_mcc": 0.8924,
@@ -37,7 +37,7 @@
       "not_confirmed_within_bound": 1,
       "esbmc_inconclusive": 1,
       "formal_confirmation_rate": 0.9583,
-      "noise_reduction_rate": 0.3333
+      "noise_reduction_rate": 0.6667
     },
     "smells": {
       "precision": 1.0,
@@ -49,11 +49,11 @@
     },
     "esbmc_direct_baseline": {
       "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
+      "recall": 0.9375,
+      "f1": 0.9677,
       "tp": 45,
       "fp": 0,
-      "fn": 0,
+      "fn": 3,
       "function_accuracy": 1.0,
       "function_mcc": 1.0,
       "function_tp": 45,
@@ -111,11 +111,11 @@
       "fn": 0
     },
     "out_of_bounds": {
-      "precision": 0.8333,
+      "precision": 1.0,
       "recall": 1.0,
-      "f1": 0.9091,
-      "tp": 15,
-      "fp": 3,
+      "f1": 1.0,
+      "tp": 18,
+      "fp": 0,
       "fn": 0
     }
   },
@@ -137,42 +137,42 @@
       "fn": 0
     },
     "out_of_bounds": {
-      "precision": 0.8333,
+      "precision": 1.0,
       "recall": 1.0,
-      "f1": 0.9091,
-      "tp": 15,
-      "fp": 3,
+      "f1": 1.0,
+      "tp": 18,
+      "fp": 0,
       "fn": 0
     }
   },
   "confidence_intervals_95": {
     "llm_bug_precision": [
-      0.7885,
-      0.9583
+      0.8627,
+      1.0
     ],
     "llm_bug_recall": [
-      0.8889,
+      0.8958,
       1.0
     ],
     "llm_bug_f1": [
-      0.8571,
-      0.9663
+      0.898,
+      0.9892
     ],
     "llm_bug_mcc": [
       0.5943,
       1.0
     ],
     "hybrid_bug_precision": [
-      0.8372,
-      0.9796
+      0.9286,
+      1.0
     ],
     "hybrid_bug_recall": [
-      0.8889,
+      0.8958,
       1.0
     ],
     "hybrid_bug_f1": [
-      0.8824,
-      0.9787
+      0.9286,
+      1.0
     ],
     "hybrid_bug_mcc": [
       0.7347,
@@ -183,11 +183,11 @@
       1.0
     ],
     "esbmc_bug_recall": [
-      1.0,
+      0.8727,
       1.0
     ],
     "esbmc_bug_f1": [
-      1.0,
+      0.932,
       1.0
     ],
     "esbmc_bug_mcc": [

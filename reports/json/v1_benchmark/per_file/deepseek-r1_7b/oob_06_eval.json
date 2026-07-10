@@ -1,0 +1,51 @@
+{
+  "file": "oob_06.py",
+  "expected_bugs": [
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "fn"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fn"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "out_of_bounds",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [
+      {
+        "category": "out_of_bounds",
+        "verdict": "fn"
+      },
+      {
+        "category": "out_of_bounds",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

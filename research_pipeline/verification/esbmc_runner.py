@@ -37,8 +37,7 @@ def run_esbmc_direct(
     file_path = Path(file_path)
     base_command = list(esbmc_command or ["esbmc"])
 
-    # For direct mode use explicit bound (not incremental) for reproducibility
-    command = [*base_command, "--unwind", str(bound), str(file_path)]
+    command = [*base_command, "--incremental-bmc", str(file_path)]
 
     executable = shutil.which(command[0])
     if executable is None:
@@ -183,7 +182,7 @@ def run_esbmc_on_function(
     flags = list(_FLOW_B_CATEGORY_FLAGS.get(category, []))
     if extra_flags:
         flags.extend(extra_flags)
-    command = [*base, "--function", function_name, "--unwind", str(bound), *flags, str(file_path)]
+    command = [*base, "--function", function_name, "--incremental-bmc", *flags, str(file_path)]
 
     executable = shutil.which(command[0])
     if executable is None:
@@ -260,8 +259,7 @@ def run_esbmc_function_baseline(
         *(esbmc_command or ["esbmc"]),
         "--function",
         "<each-function>",
-        "--unwind",
-        str(bound),
+        "--incremental-bmc",
         str(file_path),
     ]
 

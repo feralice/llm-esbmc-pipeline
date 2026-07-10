@@ -1,0 +1,51 @@
+<svg width="840" height="450" viewBox="0 0 840 450" xmlns="http://www.w3.org/2000/svg" style="background:#F8F9FA">
+<rect x="0" y="0" width="840" height="450" rx="0" fill="#F8F9FA" stroke="none" stroke-width="1.5"/>
+<text x="420" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1A252F" font-family="Arial, Helvetica, sans-serif">Pipeline LLM + ESBMC</text>
+<text x="420" y="60" text-anchor="middle" font-size="12" font-weight="normal" fill="#666" font-family="Arial, Helvetica, sans-serif">Comparação de três estratégias para detecção de bugs em Python</text>
+<rect x="160" y="74" width="520" height="44" rx="8" fill="#EBF3FB" stroke="#2471A3" stroke-width="1.8"/>
+<text x="420" y="92" text-anchor="middle" font-size="9" font-weight="bold" fill="#2471A3" font-family="Arial, Helvetica, sans-serif">Entrada</text>
+<text x="420" y="108" text-anchor="middle" font-size="11" font-weight="normal" fill="#1A5276" font-family="Arial, Helvetica, sans-serif">70 funções Python  ·  45 bugs formais  ·  15 code smells  ·  10 clean</text>
+<line x1="215" y1="118" x2="215" y2="146" stroke="#2471A3" stroke-width="1.8"/><polygon points="215,155 210,146 220,146" fill="#2471A3"/>
+<line x1="420" y1="118" x2="420" y2="146" stroke="#2471A3" stroke-width="1.8"/><polygon points="420,155 415,146 425,146" fill="#2471A3"/>
+<line x1="625" y1="118" x2="625" y2="146" stroke="#2471A3" stroke-width="1.8"/><polygon points="625,155 620,146 630,146" fill="#2471A3"/>
+<rect x="9" y="161" width="228" height="198" rx="10" fill="#0002" stroke="none" stroke-width="1.5"/>
+<rect x="6" y="158" width="228" height="198" rx="10" fill="#E9F7EF" stroke="#1E8449" stroke-width="1.8"/>
+<rect x="6" y="158" width="228" height="38" rx="10" fill="#1E8449"/>
+<rect x="6" y="176" width="228" height="20" fill="#1E8449"/>
+<text x="120" y="183" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial, Helvetica, sans-serif">Flow A  —  ESBMC puro</text>
+<line x1="20" y1="198" x2="220" y2="198" stroke="#1E8449" stroke-width="0.8" opacity="0.4"/>
+<text x="120" y="218" text-anchor="middle" font-size="13" font-weight="bold" fill="#1E8449" font-family="Arial, Helvetica, sans-serif">ESBMC verifica diretamente</text>
+<text x="120" y="238" text-anchor="middle" font-size="11" font-weight="normal" fill="#555" font-family="Arial, Helvetica, sans-serif">sem nenhuma dica da LLM</text>
+<text x="120" y="256" text-anchor="middle" font-size="8" font-weight="normal" fill="#fff" font-family="Arial, Helvetica, sans-serif"></text>
+<text x="120" y="271" text-anchor="middle" font-size="11" font-weight="bold" fill="#C0392B" font-family="Arial, Helvetica, sans-serif">→  esbmc_native_bug</text>
+<text x="120" y="289" text-anchor="middle" font-size="10" font-weight="normal" fill="#888" font-family="Arial, Helvetica, sans-serif">→  not_confirmed</text>
+<rect x="309" y="161" width="228" height="198" rx="10" fill="#0002" stroke="none" stroke-width="1.5"/>
+<rect x="306" y="158" width="228" height="198" rx="10" fill="#FEF5E7" stroke="#CA6F1E" stroke-width="1.8"/>
+<rect x="306" y="158" width="228" height="38" rx="10" fill="#CA6F1E"/>
+<rect x="306" y="176" width="228" height="20" fill="#CA6F1E"/>
+<text x="420" y="183" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial, Helvetica, sans-serif">Flow B  —  LLM + ESBMC</text>
+<line x1="320" y1="198" x2="520" y2="198" stroke="#CA6F1E" stroke-width="0.8" opacity="0.4"/>
+<text x="420" y="218" text-anchor="middle" font-size="13" font-weight="bold" fill="#CA6F1E" font-family="Arial, Helvetica, sans-serif">LLM sugere a categoria do bug</text>
+<text x="420" y="238" text-anchor="middle" font-size="11" font-weight="normal" fill="#555" font-family="Arial, Helvetica, sans-serif">ESBMC confirma formalmente</text>
+<text x="420" y="256" text-anchor="middle" font-size="8" font-weight="normal" fill="#fff" font-family="Arial, Helvetica, sans-serif"></text>
+<text x="420" y="271" text-anchor="middle" font-size="11" font-weight="bold" fill="#1E8449" font-family="Arial, Helvetica, sans-serif">bugs formais  →  ESBMC</text>
+<text x="420" y="289" text-anchor="middle" font-size="11" font-weight="bold" fill="#8E44AD" font-family="Arial, Helvetica, sans-serif">code smells   →  heurística</text>
+<rect x="609" y="161" width="228" height="198" rx="10" fill="#0002" stroke="none" stroke-width="1.5"/>
+<rect x="606" y="158" width="228" height="198" rx="10" fill="#F5EEF8" stroke="#7D3C98" stroke-width="1.8"/>
+<rect x="606" y="158" width="228" height="38" rx="10" fill="#7D3C98"/>
+<rect x="606" y="176" width="228" height="20" fill="#7D3C98"/>
+<text x="720" y="183" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial, Helvetica, sans-serif">Flow C  —  LLM puro</text>
+<line x1="620" y1="198" x2="820" y2="198" stroke="#7D3C98" stroke-width="0.8" opacity="0.4"/>
+<text x="720" y="218" text-anchor="middle" font-size="13" font-weight="bold" fill="#7D3C98" font-family="Arial, Helvetica, sans-serif">LLM sugere a categoria do bug</text>
+<text x="720" y="238" text-anchor="middle" font-size="11" font-weight="normal" fill="#555" font-family="Arial, Helvetica, sans-serif">sem verificação formal</text>
+<text x="720" y="256" text-anchor="middle" font-size="8" font-weight="normal" fill="#fff" font-family="Arial, Helvetica, sans-serif"></text>
+<text x="720" y="271" text-anchor="middle" font-size="11" font-weight="bold" fill="#B7950B" font-family="Arial, Helvetica, sans-serif">→  llm_only_suspected</text>
+<text x="720" y="289" text-anchor="middle" font-size="11" font-weight="bold" fill="#8E44AD" font-family="Arial, Helvetica, sans-serif">→  heuristic_smell_only</text>
+<line x1="120" y1="356" x2="120" y2="391" stroke="#1E8449" stroke-width="1.8"/><polygon points="120,400 115,391 125,391" fill="#1E8449"/>
+<line x1="420" y1="356" x2="420" y2="391" stroke="#CA6F1E" stroke-width="1.8"/><polygon points="420,400 415,391 425,391" fill="#CA6F1E"/>
+<line x1="720" y1="356" x2="720" y2="391" stroke="#7D3C98" stroke-width="1.8"/><polygon points="720,400 715,391 725,391" fill="#7D3C98"/>
+<line x1="120" y1="372" x2="720" y2="372" stroke="#bbb" stroke-width="1.3" stroke-dasharray="4,3"/>
+<rect x="140" y="402" width="560" height="56" rx="9" fill="#EBF3FB" stroke="#1A5276" stroke-width="2"/>
+<text x="420" y="426" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A5276" font-family="Arial, Helvetica, sans-serif">Avaliação contra ground truth</text>
+<text x="420" y="446" text-anchor="middle" font-size="10.5" font-weight="normal" fill="#1A5276" font-family="Arial, Helvetica, sans-serif">Precision  ·  Recall  ·  F1  ·  MCC  ·  FCR  ·  NRR   (bootstrap CI 95%)</text>
+</svg>

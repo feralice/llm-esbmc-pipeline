@@ -1,0 +1,231 @@
+========================================================
+ANÁLISE DO SLIDE: o que falta, o que está duplicado,
+onde colocar gráficos e conteúdo do slide faltando
+Arquivo: 1fIXx4UDHu4EaJOPhR16YgZJH0yfEOPW9HQNaGSLY1Ec
+========================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROBLEMAS ENCONTRADOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEMA 1 — SLIDE FALTANDO (crítico)
+O roteiro lista "4. BMC e ESBMC-Python" mas esse slide NÃO EXISTE.
+Vai direto de Trabalhos Correlatos para Pipeline.
+Precisa criar esse slide (conteúdo completo abaixo).
+
+PROBLEMA 2 — SLIDE DUPLICADO
+"Discussão: 4 descobertas centrais" aparece DUAS VEZES:
+  - Uma vez antes dos slides de Flow C/B (resumida)
+  - Uma vez depois dos slides de Flow C/B (mais detalhada)
+Manter só a segunda (mais detalhada), remover a primeira.
+
+PROBLEMA 3 — ORDEM ESTRANHA
+Os slides estão nessa ordem atual:
+  Síntese visual → Gráfico F1 → F1 antes/depois → TRN →
+  AST Alucinações → out_of_bounds → smells →
+  Discussão → Flow C tabela → Flow B tabela → TRN tabela →
+  Categoria bug → smells tabela → Discussão (2a vez) → Limitações → Conclusão
+
+Ordem CORRETA sugerida:
+  1. Título
+  2. Roteiro
+  3. Contexto
+  4. Problema
+  5. RQ e objetivos
+  6. Trabalhos correlatos
+  [NOVO] BMC e ESBMC-Python
+  7. Pipeline
+  8. Fluxos A/B/C
+  9. Dataset
+  10. Modelos
+  11. Métricas
+  12. Flow C tabela completa    ← mover para cá
+  13. Flow B tabela completa    ← mover para cá
+  14. TRN tabela                ← mover para cá
+  15. AST alucinações
+  16. Categorias de bug
+  17. out_of_bounds (crítico)
+  18. Code smells tabela
+  19. Code smells por categoria
+  20. Discussão RQs (manter só a detalhada)
+  21. Limitações
+  22. Conclusão
+
+PROBLEMA 4 — GRÁFICO ASCII NO SLIDE "Gráfico dos resultados"
+O slide atual usa barras feitas com █. Substituir pelas imagens reais.
+Ver seção "onde colocar gráficos" abaixo.
+
+PROBLEMA 5 — TCF não aparece em nenhuma tabela dos slides
+A tabela Flow B no artigo tem coluna TCF. Os slides mostram só TRN.
+Adicionar TCF na tabela do Flow B (ver conteúdo abaixo).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ONDE COLOCAR CADA GRÁFICO (pasta docs/slides_assets/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+diagrama_pipeline.png
+  → Slide "Pipeline híbrido proposto"
+  → Substitui ou complementa a lista de etapas
+
+diagrama_fluxos.png
+  → Slide "Três fluxos de avaliação"
+  → Coloca ao lado do texto dos 3 fluxos
+
+diagrama_metricas.png
+  → Slide "Métricas: o que cada uma mede"
+  → Lado direito do slide (matriz de confusão + fórmulas)
+
+grafico_f1_flowC_vs_flowB.png
+  → Slide "Resultado principal: F1 antes e depois do ESBMC"
+  → Substitui a tabela de texto por gráfico visual
+
+grafico_FP_reducao_TRN.png
+  → Slide "Redução de ruído: falsos positivos eliminados"
+  → Substitui ou complementa a tabela de TRN
+
+grafico_out_of_bounds.png
+  → Slide "Categoria crítica: out_of_bounds"
+  → Coloca abaixo do texto explicativo
+
+grafico_smells_f1.png
+  → Slide "Code smells: comportamento diferente dos bugs"
+  → Coloca ao lado da tabela de smells
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLIDE FALTANDO — BMC E ESBMC-PYTHON
+(inserir após "Trabalhos correlatos", antes do "Pipeline")
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TÍTULO: Referencial teórico: BMC e ESBMC-Python
+
+Bounded Model Checking (BMC):
+- Verifica propriedades dentro de um limite finito k de execução.
+- Traduz programa + negação da propriedade em fórmula lógica: C ∧ ¬P
+  (C = restrições do programa · P = propriedade de segurança)
+- SAT → solver SMT encontra contraexemplo concreto → BUG CONFIRMADO
+- UNSAT → sem violação dentro do limite k
+
+Fluxo interno do ESBMC-Python:
+  Código Python
+    → Parser gera AST
+    → Inferência de tipos
+    → Representação GOTO
+    → Forma SSA
+    → Fórmula SMT
+    → Solver
+
+Flags usadas neste trabalho:
+  --function            verifica só a função indicada pelo modelo
+  --assign-param-nondet entradas = valores desconhecidos (simbólico)
+  --incremental-bmc     limite cresce gradualmente (mais eficiente)
+
+Saídas:
+  VERIFICATION FAILED + contraexemplo  →  bug confirmado (VP)
+  VERIFICATION SUCCESSFUL              →  suspeita refutada (FP eliminado)
+  Timeout                              →  inconclusivo
+
+Referências: Biere et al. (1999); Cordeiro et al. (2012);
+Gadelha et al. (2018); Farias et al. (2024).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLIDE A CORRIGIR — FLOW B (adicionar TCF)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tabela correta com TCF e TRN:
+
+Modelo        VP  FP  FN     P      R      F1    TCF    TRN
+─────────────────────────────────────────────────────────────
+GPT-5.5       48   0   0  1,000  1,000  1,000  1,000    ---
+Claude        48   1   0  0,980  1,000  0,990  0,960  0,750
+Gemini        46   1   2  0,979  0,958  0,968  0,958  0,667
+DeepSeek      27   0  21  1,000  0,563  0,720  0,964  1,000
+Qwen          34   0  14  1,000  0,708  0,829  0,850  1,000
+
+TCF = das hipóteses enviadas ao ESBMC, quantas foram confirmadas?
+TRN = proporção dos FPs do Flow C eliminados no Flow B.
+--- = TRN indefinida: GPT-5.5 já tinha FP=0 no Flow C.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLIDE A MELHORAR — CATEGORIAS DE BUG
+(adicionar tabelas detalhadas)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O slide atual só tem texto. Substituir por tabelas lado a lado:
+
+ASSERTION_VIOLATION — 15 instâncias (mais fácil)
+Flow B:
+  GPT-5.5: VP=15  FP=0  F1=1,000
+  Claude:  VP=15  FP=0  F1=1,000
+  Gemini:  VP=13  FP=0  F1=0,929
+  DeepSeek:VP=11  FP=0  F1=0,846
+  Qwen:    VP=14  FP=0  F1=0,966
+Por que é fácil: instrução assert aparece explicitamente no código.
+
+DIVISION_BY_ZERO — 15 instâncias
+Flow B:
+  GPT-5.5: VP=15  FP=0  F1=1,000
+  Claude:  VP=15  FP=1  F1=0,968
+  Gemini:  VP=15  FP=1  F1=0,968
+  DeepSeek:VP=9   FP=0  F1=0,750
+  Qwen:    VP=15  FP=0  F1=1,000  ← ESBMC eliminou 8 FPs do Flow C
+
+OUT_OF_BOUNDS — 18 instâncias (mais difícil)
+[IMAGEM: grafico_out_of_bounds.png]
+Flow B:
+  GPT-5.5: VP=18  F1=1,000
+  Claude:  VP=18  F1=1,000
+  Gemini:  VP=18  F1=1,000
+  DeepSeek:VP=7   F1=0,560  (perdeu 11/18)
+  Qwen:    VP=5   F1=0,435  (perdeu 13/18)
+Por que é difícil: exige raciocínio sobre índice + tamanho de lista.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLIDE A MELHORAR — CODE SMELLS POR CATEGORIA
+(adicionar tabela detalhada que já está no artigo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Categoria        Claude  GPT-5.5  Gemini   Por quê
+─────────────────────────────────────────────────────────────
+many_parameters  F1=1,000  1,000   1,000   critério contável
+complex_cond.    F1=1,000  0,909   0,000   gemini não detectou
+long_method      F1=0,000  0,000   0,000   NENHUM detectou
+
+Explicação long_method:
+Funções longas mas bem nomeadas e coesas não ativam
+o padrão de smell com o prompting atual.
+Necessário filtro heurístico específico ou prompt dedicado.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESUMO DO QUE FAZER NOS SLIDES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. CRIAR slide "BMC e ESBMC-Python" (conteúdo acima)
+   → inserir após "Trabalhos correlatos"
+
+2. REMOVER slide "Discussão: quatro descobertas centrais" duplicado
+   → manter só o segundo (mais detalhado)
+
+3. REORDENAR slides conforme ordem sugerida acima
+
+4. SUBSTITUIR gráfico ASCII (█) pelas imagens reais:
+   → grafico_f1_flowC_vs_flowB.png no slide de F1 antes/depois
+   → grafico_FP_reducao_TRN.png no slide de TRN
+
+5. ADICIONAR TCF na tabela do Flow B
+
+6. EXPANDIR slide de categorias com tabelas por categoria
+
+7. EXPANDIR slide de smells com tabela por categoria (many/long/complex)
+
+8. INSERIR imagens nos slides sugeridos acima
+
+========================================================
+FIM DA ANÁLISE
+========================================================

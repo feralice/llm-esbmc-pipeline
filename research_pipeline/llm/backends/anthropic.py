@@ -19,7 +19,7 @@ class AnthropicAnalyzer:
     def __init__(
         self,
         api_key: str | None = None,
-        model: str = "claude-3-7-sonnet-20250219",
+        model: str = "claude-opus-4-8",
         timeout_seconds: int = 60,
         prompt_mode: PromptMode = "raw",
     ) -> None:
@@ -36,7 +36,6 @@ class AnthropicAnalyzer:
         payload = {
             "model": self.model,
             "max_tokens": 4096,
-            "temperature": 0,
             "system": load_system_prompt(),
             "messages": [
                 {"role": "user", "content": build_user_prompt(unit, self.prompt_mode)},

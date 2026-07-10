@@ -1,0 +1,72 @@
+{
+  "file": "av_11.py",
+  "expected_bugs": [
+    {
+      "function": "score_lower_bound",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "score_lower_bound",
+      "category": "assertion_violation",
+      "expression": "",
+      "line": 0,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "score_lower_bound",
+      "category": "long_method"
+    },
+    {
+      "function": "score_lower_bound",
+      "category": "many_parameters"
+    },
+    {
+      "function": "score_lower_bound",
+      "category": "complex_conditional"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}
