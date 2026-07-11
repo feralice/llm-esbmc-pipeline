@@ -1,0 +1,11 @@
+{
+  "category": "complex_conditional",
+  "description": "V1 smell controls: functions with dense boolean conditions and nested decision logic.",
+  "items": [
+    {"id": "cc_01", "file": "cc_01.py", "function": "can_apply_discount", "expected_category": "complex_conditional", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "cc_02", "file": "cc_02.py", "function": "route_request", "expected_category": "complex_conditional", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "cc_03", "file": "cc_03.py", "function": "should_alert", "expected_category": "complex_conditional", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "cc_04", "file": "cc_04.py", "function": "is_valid_transition", "expected_category": "complex_conditional", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false},
+    {"id": "cc_05", "file": "cc_05.py", "function": "choose_strategy", "expected_category": "complex_conditional", "verifiable": false, "expression": "", "line": 1, "expected_type": "smell", "should_go_to_esbmc": false}
+  ]
+}

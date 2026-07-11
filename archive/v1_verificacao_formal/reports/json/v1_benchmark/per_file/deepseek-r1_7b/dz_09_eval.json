@@ -1,0 +1,30 @@
+{
+  "file": "dz_09.py",
+  "expected_bugs": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fn"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

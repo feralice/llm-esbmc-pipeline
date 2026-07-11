@@ -1,0 +1,30 @@
+{
+  "file": "lm_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "classify_order",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fn"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": [
+      {
+        "category": "long_method",
+        "verdict": "fn"
+      }
+    ]
+  }
+}

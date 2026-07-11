@@ -1,0 +1,30 @@
+{
+  "file": "mp_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "register_event",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "register_event",
+      "category": "many_parameters"
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

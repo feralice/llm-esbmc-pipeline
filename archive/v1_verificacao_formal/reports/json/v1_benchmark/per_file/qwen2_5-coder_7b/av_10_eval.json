@@ -1,0 +1,48 @@
+{
+  "file": "av_10.py",
+  "expected_bugs": [
+    {
+      "function": "nonzero_total",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "nonzero_total",
+      "category": "assertion_violation",
+      "expression": "",
+      "line": 0,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "nonzero_total",
+      "category": "many_parameters"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

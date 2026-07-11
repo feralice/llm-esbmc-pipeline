@@ -1,0 +1,64 @@
+{
+  "file": "clean_07.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "safe_scale",
+      "category": "long_method"
+    },
+    {
+      "function": "safe_scale",
+      "category": "many_parameters"
+    },
+    {
+      "function": "safe_scale",
+      "category": "complex_conditional"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

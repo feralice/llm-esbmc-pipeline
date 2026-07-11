@@ -1,0 +1,33 @@
+{
+  "file": "dz_03.py",
+  "expected_bugs": [
+    {
+      "function": "average_with_extra",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "average_with_extra",
+      "category": "division_by_zero",
+      "expression": "",
+      "line": 2,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

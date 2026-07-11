@@ -1,0 +1,30 @@
+{
+  "file": "mp_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fn"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": [
+      {
+        "category": "many_parameters",
+        "verdict": "fn"
+      }
+    ]
+  }
+}

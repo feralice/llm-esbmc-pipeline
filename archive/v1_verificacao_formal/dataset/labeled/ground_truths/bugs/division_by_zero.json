@@ -1,0 +1,21 @@
+{
+  "category": "division_by_zero",
+  "description": "V1 dataset: typed library-style Python functions with obvious and guard-sensitive division-by-zero obligations.",
+  "items": [
+    {"id": "dz_01", "file": "dz_01.py", "function": "compute_ratio", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // count", "line": 2, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_02", "file": "dz_02.py", "function": "percentage", "expected_category": "division_by_zero", "verifiable": true, "expression": "part * 100 // whole", "line": 2, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_03", "file": "dz_03.py", "function": "average_with_extra", "expected_category": "division_by_zero", "verifiable": true, "expression": "(total + extra) // extra", "line": 2, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_04", "file": "dz_04.py", "function": "normalize_mod", "expected_category": "division_by_zero", "verifiable": true, "expression": "value % scale", "line": 2, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_05", "file": "dz_05.py", "function": "bucket_limit", "expected_category": "division_by_zero", "verifiable": true, "expression": "limit // (bucket - 1)", "line": 2, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_06", "file": "dz_06.py", "function": "guarded_negative_only", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // count", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_07", "file": "dz_07.py", "function": "off_by_one_denominator", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // (count - 1)", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_08", "file": "dz_08.py", "function": "guarded_large_denominator", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // denominator", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_09", "file": "dz_09.py", "function": "conditional_zero_guard", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // divisor", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_10", "file": "dz_10.py", "function": "range_width_ratio", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // width", "line": 3, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_11", "file": "dz_11.py", "function": "shifted_step_ratio", "expected_category": "division_by_zero", "verifiable": true, "expression": "size // adjusted", "line": 3, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_12", "file": "dz_12.py", "function": "modulo_non_negative_only", "expected_category": "division_by_zero", "verifiable": true, "expression": "value % mod", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_13", "file": "dz_13.py", "function": "positive_branch_ratio", "expected_category": "division_by_zero", "verifiable": true, "expression": "total // count", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_14", "file": "dz_14.py", "function": "high_low_scale", "expected_category": "division_by_zero", "verifiable": true, "expression": "100 // denom", "line": 3, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true},
+    {"id": "dz_15", "file": "dz_15.py", "function": "alternate_bucket", "expected_category": "division_by_zero", "verifiable": true, "expression": "limit // bucket", "line": 4, "expected_type": "ZeroDivisionError", "should_go_to_esbmc": true}
+  ]
+}

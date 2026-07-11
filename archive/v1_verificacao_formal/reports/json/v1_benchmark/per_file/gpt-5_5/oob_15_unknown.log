@@ -1,0 +1,53 @@
+Warning: mypy not found on PATH; type checking will be skipped.
+  Install with: pip install mypy  or  pipx install mypy
+ESBMC version 8.3.0 64-bit x86_64 linux
+
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing dataset/labeled/ok/bugs/out_of_bounds/oob_15.py
+Converting
+Generating GOTO Program
+GOTO program creation time: 1.651s
+GOTO program processing time: 0.008s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Symex completed in: 0.001s (135 assignments)
+Caching time: 0.000s (removed 8 assertions)
+Slicing time: 0.001s (removed 76 assignments)
+Generated 48 VCC(s), 24 remaining after simplification (51 assignments)
+No solver specified; defaulting to z3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Z3 v4.8.12
+Runtime decision procedure: 0.054s
+Building error trace
+
+[Counterexample]
+
+
+State 1 file dataset/labeled/ok/bugs/out_of_bounds/oob_15.py line 1 column 0 thread 0
+----------------------------------------------------
+  values = 0
+
+State 2 file dataset/labeled/ok/bugs/out_of_bounds/oob_15.py line 1 column 0 thread 0
+----------------------------------------------------
+  left = 289356281410486272 (00000100 00000100 00000000 00000001 00111111 00000000 00000000 00000000)
+
+State 3 file dataset/labeled/ok/bugs/out_of_bounds/oob_15.py line 1 column 0 thread 0
+----------------------------------------------------
+  right = -9006694857805135831 (10000011 00000001 11001010 10111111 00010000 00110000 00000000 00101001)
+
+State 4 file dataset/labeled/ok/bugs/out_of_bounds/oob_15.py line 1 column 0 thread 0
+----------------------------------------------------
+  gap = 15218444595101748 (00000000 00110110 00010001 00011000 01000000 00100000 00000000 00110100)
+
+State 12 file dataset/labeled/ok/bugs/out_of_bounds/oob_15.py line 2 column 4 function two_pointer_gap thread 0
+----------------------------------------------------
+Violated property:
+  file dataset/labeled/ok/bugs/out_of_bounds/oob_15.py line 2 column 4 function two_pointer_gap
+  dereference failure: invalid pointer
+  CWE: CWE-416, CWE-822, CWE-824, CWE-908
+
+
+VERIFICATION FAILED
+
+Bug found (k = 1)

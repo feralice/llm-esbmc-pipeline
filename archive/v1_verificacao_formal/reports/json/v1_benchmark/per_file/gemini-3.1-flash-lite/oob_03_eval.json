@@ -1,0 +1,33 @@
+{
+  "file": "oob_03.py",
+  "expected_bugs": [
+    {
+      "function": "get_previous",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "get_previous",
+      "category": "out_of_bounds",
+      "expression": "",
+      "line": 2,
+      "confidence": "low"
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}
