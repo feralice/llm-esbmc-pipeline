@@ -1,8 +1,0 @@
-Warning: mypy not found on PATH; type checking will be skipped.
-  Install with: pip install mypy  or  pipx install mypy
-
-Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
-Parsing dataset/labeled/ok/smells/long_method/lm_01.py
-Converting
-terminate called after throwing an instance of 'nlohmann::json_abi_v3_11_3::detail::type_error'
-  what():  [json.exception.type_error.305] cannot use operator[] with a string argument with null
