@@ -132,7 +132,7 @@ def _unique_finding_id(preferred_id: str, fallback_id: str, used_ids: set[str]) 
     """Return a stable unique id for one finding within a CodeUnit."""
     candidate_id = preferred_id.strip() or fallback_id
     if candidate_id in used_ids:
-        candidate_id = f"{candidate_id}:{len(used_ids) + 1}"
+        candidate_id = f"{candidate_id}_{len(used_ids) + 1}"
     used_ids.add(candidate_id)
     return candidate_id
 

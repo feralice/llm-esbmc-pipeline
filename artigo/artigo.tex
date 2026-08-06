@@ -200,21 +200,23 @@ O relatório final consolida os \textit{code smells} produzidos pelo modelo de l
 \section{Avaliação Preliminar}
 \subsection{Configuração Experimental}
 
-O \textit{dataset} utilizado é composto por 70 funções Python, construídas
-manualmente pelos autores para conter, de forma controlada, um bug ou
-\textit{code smell} por categoria: 45 contêm bugs executáveis (15 por
-categoria, totalizando 48 instâncias de defeito, já que
-\textit{out-of-bounds} pode ocorrer mais de uma vez por função), 15 contêm
-\textit{code smells} (5 por categoria) e 10 são funções limpas, usadas como
-controle negativo. O rótulo correto de cada função (\textit{ground truth})
-foi anotado manualmente pelos autores em arquivos JSON, com base no
-defeito ou \textit{code smell} intencionalmente inserido na construção da
-função. Esse rótulo manual é independente do ESBMC-Python, que foi
-utilizado apenas para uma verificação complementar de sanidade (Flow A):
-a execução direta do verificador sobre cada arquivo confirmou que todas as
-48 instâncias de defeito anotadas eram de fato alcançáveis e foram
-identificadas pelo verificador (P=R=F1=1,000), sem influenciar a
-categoria atribuída manualmente a cada rótulo.
+O \textit{dataset} utilizado é composto por 70 funções Python: 45 contêm bugs
+executáveis (15 por categoria, totalizando 48 instâncias de defeito,
+já que \textit{out-of-bounds} pode ocorrer mais de uma vez por
+função), 15 contêm \textit{code smells} (5 por categoria) e 10 são
+funções limpas, usadas como controle negativo.
+
+Todas as 70 funções (bugs, \textit{code smells} e funções limpas) foram
+geradas com auxílio de um modelo de linguagem (Claude) e revisadas
+manualmente pelos autores. Os bugs foram construídos iterativamente com o
+ESBMC-Python, executado sobre cada função (Flow A) até confirmar a
+violação esperada; o rótulo de categoria foi então atribuído manualmente.
+As 48 instâncias de defeito eram todas alcançáveis e foram identificadas
+pelo verificador (P=R=F1=1,000). Os \textit{code smells} foram construídos
+para violar limiares de complexidade da literatura de refatoração de
+Fowler et al.~\cite{fowler1999refactoring} (ex.: número de parâmetros,
+extensão do método, profundidade de condicionais), verificados
+manualmente.
 
 Foram comparados três fluxos de execução:
 \textbf{Flow A}, execução direta do ESBMC-Python, utilizada apenas para
@@ -387,16 +389,15 @@ modelos locais (SLMs), consolidando a arquitetura orientada à precisão
 discutida na Seção~\ref{sec:resultados}.
 
 
-Este trabalho apresenta um estudo preliminar, restrito a um \textit{dataset} controlado: como limitação, as 70 funções Python que o compõem foram construídas manualmente e contêm um conjunto restrito de categorias de bugs e \textit{code smells}. Além disso, as funções analisadas são relativamente curtas e isoladas, não representando toda a complexidade encontrada em projetos reais. Embora todas as instâncias de bugs tenham sido validadas formalmente pelo ESBMC-Python, a avaliação em bases maiores e compostas por código de produção é necessária para ampliar a validade externa dos resultados, conforme discutido por Ding et al.~\cite{ding2025primevul}; trabalhos futuros pretendem justamente estender essa avaliação a projetos Python reais, conforme detalhado a seguir. Além disso, este trabalho não inclui uma comparação experimental direta com abordagens baseadas em tradução, como EVA e PyVeritas, ficando essa análise como trabalho futuro.
-
-Como o ESBMC-Python apenas confirma hipóteses já geradas pela LLM, a revocação do \textit{pipeline} está limitada à revocação da triagem inicial (Seção~\ref{sec:resultados}). Estratégias para melhorar a revocação sem comprometer a precisão obtida incluem: solicitar múltiplas amostras da mesma função ao modelo de linguagem e agregar os achados (aumentando a chance de identificar defeitos não reportados em uma única passagem); utilizar o próprio ESBMC-Python para gerar hipóteses adicionais de forma independente da LLM, em vez de apenas confirmar as hipóteses recebidas; e empregar \textit{prompts} complementares direcionados a categorias específicas de bugs. Essas estratégias não foram avaliadas neste trabalho e ficam como direção de pesquisa futura.
+Como limitação, este estudo foi avaliado em um \textit{dataset} composto por 70 funções Python, geradas com auxílio de um modelo de linguagem e revisadas manualmente pelos autores, contendo um conjunto restrito de categorias de bugs e \textit{code smells}. Além disso, as funções analisadas são relativamente curtas e isoladas, não representando toda a complexidade encontrada em projetos reais. Embora todas as instâncias de bugs tenham sido validadas formalmente pelo ESBMC-Python, a avaliação em bases maiores e compostas por código de produção é necessária para ampliar a validade externa dos resultados, conforme discutido por Ding et al.~\cite{ding2025primevul}. Além disso, este trabalho não inclui uma comparação experimental direta com abordagens baseadas em tradução, como EVA e PyVeritas, ficando essa análise como trabalho futuro.
 
 
-Como trabalhos futuros, pretende-se ampliar o \textit{dataset} com funções extraídas de projetos Python reais para avaliar a generalização do \textit{pipeline}~\cite{ding2025primevul}. Também se pretende expandir o conjunto de categorias de bugs verificáveis e \textit{code smells}, avaliar modelos de linguagem adicionais e investigar a geração automática de artefatos de verificação, como \textit{harnesses}, asserções e contratos, para aumentar o grau de automação do processo de verificação formal~\cite{shivaji2026eva,tihanyi2025vulnerability}. Dado o comportamento distinto observado entre bugs executáveis e \textit{code smells} (Seção~\ref{sec:resultados}), planeja-se também conduzir estudos separados, um com foco na identificação de defeitos e outro na identificação de \textit{code smells}, cada um com métricas e critérios de avaliação próprios à natureza da tarefa. Por fim, pretende-se investigar sistematicamente o comportamento de modelos pagos (via API) em comparação a modelos gratuitos e executados localmente, de modo a quantificar o grau de melhoria proporcionado pelos modelos pagos e até que ponto o \textit{pipeline} híbrido reduz essa diferença.
+Como trabalhos futuros, pretende-se ampliar o \textit{dataset} com funções extraídas de projetos Python reais para avaliar a generalização do \textit{pipeline}~\cite{ding2025primevul}. Também se pretende expandir o conjunto de categorias de bugs verificáveis e \textit{code smells}, avaliar modelos de linguagem adicionais e investigar a geração automática de artefatos de verificação, como \textit{harnesses}, asserções e contratos, para aumentar o grau de automação do processo de verificação formal~\cite{shivaji2026eva,tihanyi2025vulnerability}.
 
 \section*{Disponibilidade de Artefatos}
 
 O código-fonte do \textit{pipeline}, o template completo do prompt utilizado na etapa \textit{Analyzer} e o \textit{dataset} rotulado estão disponíveis em \url{https://github.com/feralice/llm-esbmc-pipeline/tree/ise2026-artifacts/ise2026_artifacts}.
+
 
 
 
