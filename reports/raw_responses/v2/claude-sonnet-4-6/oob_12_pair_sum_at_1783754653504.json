@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "pair_sum_at",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_12.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusRPFc6rSZfQSe6PJqC",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O parâmetro livre 'i' controla o índice de acesso 'values[i]'. Não há nenhuma guarda visível no código que restrinja 'i' ao intervalo [0, len(values)-1], portanto valores negativos ou maiores/iguais ao comprimento da lista podem causar IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[i]\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso 'values[i + j]' é controlado pelos parâmetros livres 'i' e 'j'. Mesmo que 'i' fosse válido, a soma 'i + j' pode exceder 'len(values)-1' ou resultar em índice negativo, pois não há guarda que restrinja o valor combinado de 'i + j' ao intervalo válido.\",\n      \"metadata\": {\n        \"expression\": \"values[i + j]\",\n        \"line\": 3\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1395,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 337,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

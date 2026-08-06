@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "capped_increment",
+  "file": "dataset/labeled/ok/clean/clean_05.py",
+  "raw_response": {
+    "id": "chatcmpl-595",
+    "object": "chat.completion",
+    "created": 1783764462,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'value >= cap' é controlada por parâmetros livres. Não há guarda visível antes do uso, nem try/except que engloba diretamente a operação.\",\n      \"metadata\": {\n        \"expression\": \"if value >= cap:\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 2 parâmetros, o que é considerado um número razoável e não exige a aplicação de smells.\",\n      \"metadata\": {\n        \"expression\": \"def capped_increment(value: int, cap: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 4 linhas de código, o que é considerado uma função curta e não exige a aplicação de smells.\",\n      \"metadata\": {\n        \"expression\": \"def capped_increment(value: int, cap: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'value >= cap' é simples e não exige a aplicação de smells.\",\n      \"metadata\": {\n        \"expression\": \"if value >= cap:\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1190,
+      "completion_tokens": 392,
+      "total_tokens": 1582
+    }
+  }
+}

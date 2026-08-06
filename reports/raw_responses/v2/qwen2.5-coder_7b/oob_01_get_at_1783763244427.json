@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "get_at",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_01.py",
+  "raw_response": {
+    "id": "chatcmpl-597",
+    "object": "chat.completion",
+    "created": 1783763244,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice 'index' pode ser maior ou igual ao comprimento de 'values', causando um IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[index]\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem dois parâmetros, o que não é considerado um smell. No entanto, a presença de muitos parâmetros pode indicar uma função com responsabilidades demais.\",\n      \"metadata\": {\n        \"expression\": \"def get_at(values: list[int], index: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1179,
+      "completion_tokens": 202,
+      "total_tokens": 1381
+    }
+  }
+}

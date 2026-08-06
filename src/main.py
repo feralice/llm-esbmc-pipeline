@@ -8,9 +8,9 @@ Modos de execução:
   benchmark   Roda os três fluxos (A+B+C) e calcula P/R/F1 vs ground truth.
 
 Exemplos:
-  python src/main.py --mode esbmc-only  --input dataset/labeled --bound 5
+  python src/main.py --mode esbmc-only  --input dataset/labeled
   python src/main.py --mode llm-only    --input dataset/labeled --model gpt-4o
-  python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o --bound 5
+  python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o
   python src/main.py --mode benchmark   --input dataset/labeled/ground_truths --model gpt-4o
 """
 from __future__ import annotations
@@ -94,12 +94,6 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["openai", "anthropic", "ollama", "google"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
-    )
-    parser.add_argument(
-        "--bound",
-        type=int,
-        default=5,
-        help="Bound de unwinding para o ESBMC. (padrão: 5)",
     )
     parser.add_argument(
         "--timeout",
@@ -342,7 +336,6 @@ def mode_esbmc_only(args: argparse.Namespace) -> int:
         input_paths=input_paths,
         output_dir=output_dir,
         esbmc_command=args.esbmc_command,
-        bound=args.bound,
         timeout_seconds=args.timeout,
     )
 
@@ -406,7 +399,6 @@ def mode_hybrid(args: argparse.Namespace) -> int:
         anthropic_api_key=anthropic_key,
         google_api_key=google_key,
         ollama_base_url=args.ollama_base_url,
-        bound=args.bound,
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
         prompt_mode=args.prompt_mode,
@@ -449,7 +441,6 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         google_api_key=google_key,
         ollama_base_url=args.ollama_base_url,
         esbmc_command=args.esbmc_command,
-        bound=args.bound,
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
         verbose=args.verbose,
@@ -501,7 +492,6 @@ def mode_benchmark(args: argparse.Namespace) -> int:
             "backend": backend,
             "prompt_mode": args.prompt_mode,
             "ground_truth": str(gt_path.resolve()),
-            "bound": args.bound,
             "timeout": args.timeout,
             "metrics": {
                 "bugs_llm_only": {

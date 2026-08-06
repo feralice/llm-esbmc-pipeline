@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "is_valid_transition",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_04.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccusddu1ayJnBQKpnyW71",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A expressão de retorno combina múltiplas condições compostas com operadores 'and', 'or' e 'in', tornando a lógica difícil de ler e raciocinar sobre em uma única linha. A combinação de três cláusulas OR cada uma com condições AND representa complexidade condicional elevada.\",\n      \"metadata\": {\n        \"expression\": \"def is_valid_transition(state: int, target: int, locked: bool, admin: bool) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1435,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 187,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

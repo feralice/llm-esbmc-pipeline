@@ -1,0 +1,50 @@
+{
+  "file": "oob_12.py",
+  "expected_bugs": [
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds",
+      "expression": "values[i]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O parâmetro livre 'i' controla o índice de acesso 'values[i]'. Não há nenhuma guarda visível no código que restrinja 'i' ao intervalo [0, len(values)-1], portanto valores negativos ou maiores/iguais ao comprimento da lista podem causar IndexError."
+    },
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds",
+      "expression": "values[i + j]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O acesso 'values[i + j]' é controlado pelos parâmetros livres 'i' e 'j'. Mesmo que 'i' fosse válido, a soma 'i + j' pode exceder 'len(values)-1' ou resultar em índice negativo, pois não há guarda que restrinja o valor combinado de 'i + j' ao intervalo válido."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

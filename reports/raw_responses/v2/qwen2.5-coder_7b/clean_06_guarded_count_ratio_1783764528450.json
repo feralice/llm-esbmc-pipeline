@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "guarded_count_ratio",
+  "file": "dataset/labeled/ok/clean/clean_06.py",
+  "raw_response": {
+    "id": "chatcmpl-692",
+    "object": "chat.completion",
+    "created": 1783764528,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A divisão 'total // count' pode causar ZeroDivisionError se 'count' for zero, que não é verificado por uma guarda antes da operação.\",\n      \"metadata\": {\n        \"expression\": \"total // count\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 4 linhas de código, o que não classifica como longa.\",\n      \"metadata\": {\n        \"expression\": \"def guarded_count_ratio(total: int, count: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 2 parâmetros, o que não classifica como excessivo.\",\n      \"metadata\": {\n        \"expression\": \"def guarded_count_ratio(total: int, count: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'if count <= 0' é simples e não aninhada.\",\n      \"metadata\": {\n        \"expression\": \"if count <= 0:\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1192,
+      "completion_tokens": 363,
+      "total_tokens": 1555
+    }
+  }
+}

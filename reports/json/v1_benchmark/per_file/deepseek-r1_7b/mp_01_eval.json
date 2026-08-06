@@ -1,0 +1,34 @@
+{
+  "file": "mp_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "create_user_record",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "create_user_record",
+      "category": "many_parameters",
+      "expression": "parameters",
+      "line": 0,
+      "confidence": "low",
+      "explanation": "A função possui 6 parâmetros, o que ultrapassa o número considerado 'muitos' para um método. Isso pode levar a complexidade de uso e manutenção maior."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

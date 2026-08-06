@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "pair_sum_at",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_12.py",
+  "raw_response": {
+    "id": "chatcmpl-33",
+    "object": "chat.completion",
+    "created": 1783763917,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice 'i + j' pode ser maior que o comprimento da lista 'values', levando a um IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[i + j]\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 3 parâmetros, o que não é considerado muito alto. No entanto, a presença de três parâmetros pode indicar uma função com responsabilidades demais.\",\n      \"metadata\": {\n        \"expression\": \"def pair_sum_at(values: list[int], i: int, j: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1211,
+      "completion_tokens": 212,
+      "total_tokens": 1423
+    }
+  }
+}

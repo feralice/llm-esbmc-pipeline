@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "choose_strategy",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_05.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"The function uses complex boolean logic with multiple nested conditions and logical operators (and/or) in the if-statements, which reduces readability and maintainability.\",\n      \"metadata\": {\n        \"expression\": \"if (urgent and retries < 2) or (cached and size < 100) or (size > 1000 and retries == 0):\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPi6W+V1f9DTliPbfUhhlpqYhPOuXMqKHdaOUtNSwHS2satFVpJ5Y27CSgTKqe"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754906,
+    "id": "mfBRap6dOOnkz7IP-KWR-A0",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 1267,
+      "total_tokens": 1413
+    }
+  }
+}

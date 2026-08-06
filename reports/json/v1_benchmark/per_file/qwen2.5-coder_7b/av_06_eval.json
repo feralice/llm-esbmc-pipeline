@@ -1,0 +1,53 @@
+{
+  "file": "av_06.py",
+  "expected_bugs": [
+    {
+      "function": "guarded_but_too_weak",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "guarded_but_too_weak",
+      "category": "assertion_violation",
+      "expression": "assert x > 10",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição 'x > 10' é controlada por parâmetro livre (x). A guarda 'if x >= 0' não garante que 'x > 10' seja sempre verdadeiro, pois 'x' pode ser igual a 10. Isso pode levar a uma AssertionError quando 'x' for igual a 10."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "guarded_but_too_weak",
+      "category": "complex_conditional",
+      "expression": "if x >= 0:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função contém uma condição composta ('if x >= 0'). Embora não seja extremamente complexa, ela pode ser considerada como tal devido à sua simplicidade. A função também tem apenas um parâmetro, o que não é um problema em si, mas a presença de uma única condição pode sugerir uma complexidade oculta."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

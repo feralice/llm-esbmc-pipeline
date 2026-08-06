@@ -1,0 +1,34 @@
+{
+  "file": "mp_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters",
+      "expression": "def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 6 parâmetros (excluindo self/cls), o que ultrapassa o limiar de 5 parâmetros considerado excessivo. Isso pode dificultar a leitura, manutenção e testabilidade da função."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "require_positive",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_01.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A função utiliza um assert para validar o parâmetro livre 'x'. Como o valor de 'x' não possui restrições externas, a condição 'x > 0' pode ser falsa, resultando em um AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"assert x > 0\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP4SwPCHXo8xhNU0I9YTeZWYb8jTdMUX5ie6T4XaBh9srDEZrjcSf9o7JcgFN9"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754063,
+    "id": "T-1RavO-CoiFz7IPsfaDuQw",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 130,
+      "prompt_tokens": 1146,
+      "total_tokens": 1276
+    }
+  }
+}

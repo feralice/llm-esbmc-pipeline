@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "process_pizza_order",
+  "file": "dataset/labeled/ok/smells/long_method/lm_01.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"The function contains 40 lines of code, which is relatively long for a single logic block, making it harder to maintain and test.\",\n      \"metadata\": {\n        \"expression\": \"def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPmkLhrNo8y5SPxz91D6uvTNwjYjiUZk/ozE3nlMeFyvvK17T7tmlB8FT3Oh/I"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754916,
+    "id": "pPBRatvIDLewqtsPyPfRWA",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 139,
+      "prompt_tokens": 1490,
+      "total_tokens": 1629
+    }
+  }
+}

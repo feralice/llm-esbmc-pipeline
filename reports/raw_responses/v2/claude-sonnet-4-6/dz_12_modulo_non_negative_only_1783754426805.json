@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "modulo_non_negative_only",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_12.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccus8rA8yXBBm5t3qQYFm",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O operando 'mod' é um parâmetro livre sem restrição de constante. A guarda 'if mod < 0' apenas impede valores negativos, mas não bloqueia mod == 0. Quando mod == 0, a operação 'value % mod' lança ZeroDivisionError. A operação não está coberta por try/except.\",\n      \"metadata\": {\n        \"expression\": \"value % mod\",\n        \"line\": 4\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1373,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 172,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

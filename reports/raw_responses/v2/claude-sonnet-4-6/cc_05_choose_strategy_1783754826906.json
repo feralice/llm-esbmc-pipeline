@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "choose_strategy",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_05.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcuseKHMHy4RRCbjk5krR",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função apresenta condicionais compostas com múltiplos operadores lógicos (and, or, not) combinados em expressões longas. A primeira condição possui três subcláusulas unidas por 'or', cada uma com 'and', tornando a lógica difícil de ler e manter.\",\n      \"metadata\": {\n        \"expression\": \"def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1456,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 180,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

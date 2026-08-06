@@ -1,0 +1,34 @@
+{
+  "file": "mp_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "register_event",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "register_event",
+      "category": "many_parameters",
+      "expression": "def register_event(day: int, month: int, year: int, hour: int, minute: int, second: int, code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 7 parâmetros (day, month, year, hour, minute, second, code), o que excede o limiar de 5 parâmetros considerado excessivo. Isso dificulta a legibilidade e o uso da função, sugerindo que um objeto de data/hora poderia encapsular esses valores."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

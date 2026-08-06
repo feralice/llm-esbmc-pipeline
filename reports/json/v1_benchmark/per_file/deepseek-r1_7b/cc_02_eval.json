@@ -1,0 +1,30 @@
+{
+  "file": "cc_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "evaluate_access",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fn"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fn"
+      }
+    ]
+  }
+}

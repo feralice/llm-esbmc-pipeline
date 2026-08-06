@@ -1,0 +1,48 @@
+{
+  "file": "lm_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "finalize_detailed_order",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "finalize_detailed_order",
+      "category": "many_parameters",
+      "expression": "def finalize_detailed_order(pizza_type: int, size: int, extra_cheese: bool, has_contact_info: bool, has_discount_code: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A assinatura possui 5 parâmetros livres, não contando self/cls. Isso atinge o limite informado para many_parameters (>= 5), sugerindo que a função pode estar recebendo responsabilidades ou dados demais diretamente pela interface."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fn"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": [
+      {
+        "category": "long_method",
+        "verdict": "fn"
+      }
+    ]
+  }
+}

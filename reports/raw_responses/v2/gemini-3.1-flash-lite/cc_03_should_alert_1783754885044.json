@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "should_alert",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_03.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": []\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPhJJBwZyO5B6PA7GlSg963mRnfuFnbXsJRWOMFbeNoxKpQ//zlMPN3/b3473E"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754884,
+    "id": "hPBRavbiH7ezmtkPj6PIgAg",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 9,
+      "prompt_tokens": 1234,
+      "total_tokens": 1243
+    }
+  }
+}

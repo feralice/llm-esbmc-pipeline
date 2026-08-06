@@ -1,0 +1,53 @@
+{
+  "file": "oob_03.py",
+  "expected_bugs": [
+    {
+      "function": "get_previous",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "get_previous",
+      "category": "out_of_bounds",
+      "expression": "values[pos - 1]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A expressão 'pos - 1' pode causar um IndexError se pos for igual a 0, pois isso resultaria em um índice negativo."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "get_previous",
+      "category": "many_parameters",
+      "expression": "def get_previous(values: list[int], pos: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem dois parâmetros, o que não é considerado muito longo ou com muitos parâmetros."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

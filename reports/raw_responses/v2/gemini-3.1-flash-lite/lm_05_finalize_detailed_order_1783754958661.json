@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "finalize_detailed_order",
+  "file": "dataset/labeled/ok/smells/long_method/lm_05.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função recebe 5 parâmetros, o que excede o limite recomendado para manter a legibilidade e a manutenibilidade do código.\",\n      \"metadata\": {\n        \"expression\": \"def finalize_detailed_order(pizza_type: int, size: int, extra_cheese: bool, has_contact_info: bool, has_discount_code: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP4EgzlEwwQYyx88LMqYl4CL/bJHFWztTM7r8atTJCrQ9SXKvC1SFSkCTbyMBd"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754958,
+    "id": "zfBRao62Majqz7IPg-LGqAo",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 1481,
+      "total_tokens": 1627
+    }
+  }
+}

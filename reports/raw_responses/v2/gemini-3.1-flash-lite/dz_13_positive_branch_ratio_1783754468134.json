@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "positive_branch_ratio",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_13.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A operação 'total // count' na linha 4 é executada quando 'count' é menor ou igual a zero. Como 'count' é um parâmetro livre, o valor zero causará um ZeroDivisionError, e não há tratamento de exceção ou guarda efetiva para este caminho.\",\n      \"metadata\": {\n        \"expression\": \"total // count\",\n        \"line\": 4\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP4M4OyiFO7UFzJCPiLG63m+oUoONctdoTBrardWjOV2sDF4N2i3sMYTmck1SN"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754467,
+    "id": "4-5RaqLDC9mVmtkP4fq3SA",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 143,
+      "prompt_tokens": 1176,
+      "total_tokens": 1319
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "file": "cc_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "evaluate_access",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "evaluate_access",
+      "category": "complex_conditional",
+      "expression": "if active: if verified: if role >= level: if level > 5: return role > 8 else: return true else: return false else: return false",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui uma condição complexa com múltiplos níveis de aninhamento. A verificação formal (ESBMC) pode ser necessária para garantir a corretude da lógica."
+    },
+    {
+      "function": "evaluate_access",
+      "category": "many_parameters",
+      "expression": "def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 4 parâmetros, o que pode ser considerado um número excessivo. A verificação formal (ESBMC) pode ser necessária para garantir a corretude da lógica."
+    },
+    {
+      "function": "evaluate_access",
+      "category": "long_method",
+      "expression": "def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 9 linhas de código executável (ignorando comentários e linhas em branco), o que pode ser considerado uma função longa. A verificação formal (ESBMC) pode ser necessária para garantir a corretude da lógica."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

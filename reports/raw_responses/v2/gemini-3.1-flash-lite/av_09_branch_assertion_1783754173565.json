@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "branch_assertion",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_09.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"The assertion 'amount > 0' depends directly on the free parameter 'amount'. If 'flag' is false and 'amount' is less than or equal to 0, the assertion will fail, and there is no try/except block to handle it.\",\n      \"metadata\": {\n        \"expression\": \"assert amount > 0\",\n        \"line\": 4\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPi3HrmSkDFQtmexgXbzZq4ixfFwJvAtDNIcriJa0nW7ysV2saxkEQlryqQ9Di"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754173,
+    "id": "vO1RauyVH9-EqtsPuKLpwAQ",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 137,
+      "prompt_tokens": 1172,
+      "total_tokens": 1309
+    }
+  }
+}

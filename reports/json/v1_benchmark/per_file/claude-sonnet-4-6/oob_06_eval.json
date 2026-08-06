@@ -1,0 +1,50 @@
+{
+  "file": "oob_06.py",
+  "expected_bugs": [
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds",
+      "expression": "values[peak - delta]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O índice 'peak - delta' é calculado a partir dos parâmetros livres 'peak' e 'delta', sem nenhuma guarda ou validação anterior. Se 'peak - delta' for negativo ou maior que len(values)-1, ocorrerá IndexError. Não há try/except cobrindo esta operação."
+    },
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds",
+      "expression": "values[peak + delta]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O índice 'peak + delta' é calculado a partir dos parâmetros livres 'peak' e 'delta', sem nenhuma guarda ou validação anterior. Se 'peak + delta' for maior que len(values)-1 ou negativo, ocorrerá IndexError. Não há try/except cobrindo esta operação."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

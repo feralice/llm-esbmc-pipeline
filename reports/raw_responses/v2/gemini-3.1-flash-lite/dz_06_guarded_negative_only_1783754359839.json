@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "guarded_negative_only",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_06.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"The variable 'count' is a free parameter used as a divisor in 'total // count'. Although there is a guard 'if count < 0', it does not prevent 'count' from being zero, which will trigger a ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"total // count\",\n        \"line\": 4\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPnoiNoAxrzXsZEzAdiTtdTXeDBdL8O6erB5I5FbFUybzPjuMQdGnf5tb9oWCX"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754359,
+    "id": "du5Rau2-NqfjqtsPqv2W8QM",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 133,
+      "prompt_tokens": 1176,
+      "total_tokens": 1309
+    }
+  }
+}

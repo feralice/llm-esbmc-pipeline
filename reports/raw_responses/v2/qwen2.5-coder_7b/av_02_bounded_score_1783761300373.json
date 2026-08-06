@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "bounded_score",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_02.py",
+  "raw_response": {
+    "id": "chatcmpl-604",
+    "object": "chat.completion",
+    "created": 1783761300,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A condição 'score <= 100' pode ser violada se o valor de 'score' for maior que 100, levantando uma AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"assert score <= 100\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 3 linhas de código, o que não classifica como longa.\",\n      \"metadata\": {\n        \"expression\": \"def bounded_score(score: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas um parâmetro, o que não classifica como com muitos parâmetros.\",\n      \"metadata\": {\n        \"expression\": \"def bounded_score(score: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função não contém condições compostas ou aninhadas.\",\n      \"metadata\": {\n        \"expression\": \"def bounded_score(score: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1170,
+      "completion_tokens": 363,
+      "total_tokens": 1533
+    }
+  }
+}

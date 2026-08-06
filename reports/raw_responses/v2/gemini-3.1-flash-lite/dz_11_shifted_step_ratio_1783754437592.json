@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "shifted_step_ratio",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_11.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"The variable 'adjusted' is calculated as 'step + 1'. If 'step' is -1, 'adjusted' becomes 0, causing a ZeroDivisionError during the division operation. There are no guards or try/except blocks to prevent this.\",\n      \"metadata\": {\n        \"expression\": \"size // adjusted\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPAFcST90flmG5nTPlR4hmYZuG0pYEdSBDyrOjMUvOaEsgScjDyehMmLguTah4"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754437,
+    "id": "xO5RatSbLoTgz7IPx7W00AY",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 135,
+      "prompt_tokens": 1170,
+      "total_tokens": 1305
+    }
+  }
+}

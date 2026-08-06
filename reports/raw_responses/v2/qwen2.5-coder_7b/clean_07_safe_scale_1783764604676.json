@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "safe_scale",
+  "file": "dataset/labeled/ok/clean/clean_07.py",
+  "raw_response": {
+    "id": "chatcmpl-712",
+    "object": "chat.completion",
+    "created": 1783764604,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": false,\n      \"explanation\": \"A variável 'factor' pode ser zero, o que causaria uma divisão por zero.\",\n      \"metadata\": {\n        \"expression\": \"value * factor\",\n        \"line\": 4\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 7 linhas de código, considerando apenas as linhas executáveis. Embora não seja extremamente longa, pode ser considerada um pouco extensa para uma função simples.\",\n      \"metadata\": {\n        \"expression\": \"def safe_scale(value: int, factor: int, limit: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 3 parâmetros, o que é considerado um número razoável. Não há necessidade de mais parâmetros para essa função.\",\n      \"metadata\": {\n        \"expression\": \"def safe_scale(value: int, factor: int, limit: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'if factor <= 0 or value < 0' é simples e não apresenta complexidade aninhada ou composta.\",\n      \"metadata\": {\n        \"expression\": \"if factor <= 0 or value < 0:\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1225,
+      "completion_tokens": 407,
+      "total_tokens": 1632
+    }
+  }
+}

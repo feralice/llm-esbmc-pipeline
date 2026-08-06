@@ -1,0 +1,34 @@
+{
+  "file": "oob_02.py",
+  "expected_bugs": [
+    {
+      "function": "get_next",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "get_next",
+      "category": "out_of_bounds",
+      "expression": "pos + 1",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O acesso ao índice pos + 1 pode ultrapassar o tamanho da lista values, causando IndexError. Não há guarda visível como if ou assert para verificar os limites de pos. O operador é controlado pelo parâmetro livre pos, que não está restringido a um intervalo específico."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

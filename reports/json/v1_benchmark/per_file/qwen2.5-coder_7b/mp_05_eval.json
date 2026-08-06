@@ -1,0 +1,51 @@
+{
+  "file": "mp_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "register_event",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "register_event",
+      "category": "many_parameters",
+      "expression": "def register_event(day: int, month: int, year: int, hour: int, minute: int, second: int, code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função register_event possui 7 parâmetros, o que pode ser considerado um número excessivo."
+    },
+    {
+      "function": "register_event",
+      "category": "long_method",
+      "expression": "def register_event(day: int, month: int, year: int, hour: int, minute: int, second: int, code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função register_event contém apenas uma linha de código executável, o que pode ser considerado um método muito longo."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

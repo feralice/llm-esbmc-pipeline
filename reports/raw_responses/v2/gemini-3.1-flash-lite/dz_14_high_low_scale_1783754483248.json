@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "high_low_scale",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_14.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A variável 'denom' é calculada como 'high - low'. Se 'high' for igual a 'low', 'denom' será zero, causando um ZeroDivisionError na operação de divisão inteira. Não há verificações de segurança ou blocos try/except para prevenir este caso.\",\n      \"metadata\": {\n        \"expression\": \"100 // denom\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPLLjNrCxEO0fkMVr1Y27M8xfgdMBJRAfzJUtT/zJfuRRPOCr45cUl0wWin05V"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754483,
+    "id": "8u5RatmWFcGUmtkP2t2ysQ4",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 144,
+      "prompt_tokens": 1172,
+      "total_tokens": 1316
+    }
+  }
+}

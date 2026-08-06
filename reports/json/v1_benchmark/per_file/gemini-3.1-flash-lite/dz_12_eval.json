@@ -1,0 +1,34 @@
+{
+  "file": "dz_12.py",
+  "expected_bugs": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "division_by_zero",
+      "expression": "value % mod",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A operação de módulo 'value % mod' utiliza o parâmetro 'mod' como divisor. Embora exista uma verificação 'if mod < 0', não há proteção contra o caso em que 'mod' é igual a 0, o que causará um ZeroDivisionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

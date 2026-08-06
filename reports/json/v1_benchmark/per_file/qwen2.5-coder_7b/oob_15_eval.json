@@ -1,0 +1,79 @@
+{
+  "file": "oob_15.py",
+  "expected_bugs": [
+    {
+      "function": "two_pointer_gap",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "two_pointer_gap",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "two_pointer_gap",
+      "category": "division_by_zero",
+      "expression": "values[right + gap]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O operando 'right + gap' pode ser negativo, resultando em uma divisão por zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "two_pointer_gap",
+      "category": "many_parameters",
+      "expression": "def two_pointer_gap(values: list[int], left: int, right: int, gap: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 4 parâmetros, o que pode ser considerado um número excessivo."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "fn"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fn"
+    },
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [
+      {
+        "category": "out_of_bounds",
+        "verdict": "fn"
+      },
+      {
+        "category": "out_of_bounds",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

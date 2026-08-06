@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "modulo_non_negative_only",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_12.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A operação de módulo 'value % mod' utiliza o parâmetro 'mod' como divisor. Embora exista uma verificação 'if mod < 0', não há proteção contra o caso em que 'mod' é igual a 0, o que causará um ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"value % mod\",\n        \"line\": 4\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPQYTEbiVY/AOiQ7wxB+BjMD3okMmuuS0R8VXlktKtnRNFSQ+YcV1cqrx9isib"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754452,
+    "id": "0-5RavmQHJGlmtkPmfrw2Ac",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 140,
+      "prompt_tokens": 1178,
+      "total_tokens": 1318
+    }
+  }
+}

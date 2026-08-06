@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "get_at",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_01.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"The parameter 'index' is used to access the list 'values' without any bounds checking. Since 'index' is a free parameter, it can be negative or greater than or equal to the length of the list, potentially causing an IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[index]\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPxkbec4xy9oI+jsq354MQqfnRgWtscDTvKhwxDTkCCHmF6aR2m1TH0b/8O3dO"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754513,
+    "id": "Ee9RarT1CaS3qtsP-L2X4Qk",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 132,
+      "prompt_tokens": 1163,
+      "total_tokens": 1295
+    }
+  }
+}

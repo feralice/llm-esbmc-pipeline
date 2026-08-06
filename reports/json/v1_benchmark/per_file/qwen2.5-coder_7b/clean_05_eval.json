@@ -1,0 +1,76 @@
+{
+  "file": "clean_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "capped_increment",
+      "category": "many_parameters",
+      "expression": "def capped_increment(value: int, cap: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 2 parâmetros, o que é considerado um número razoável e não exige a aplicação de smells."
+    },
+    {
+      "function": "capped_increment",
+      "category": "long_method",
+      "expression": "def capped_increment(value: int, cap: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que é considerado uma função curta e não exige a aplicação de smells."
+    },
+    {
+      "function": "capped_increment",
+      "category": "complex_conditional",
+      "expression": "if value >= cap:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'value >= cap' é simples e não exige a aplicação de smells."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

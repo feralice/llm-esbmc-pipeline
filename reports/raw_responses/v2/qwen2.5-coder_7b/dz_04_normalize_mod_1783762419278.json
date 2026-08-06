@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "normalize_mod",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_04.py",
+  "raw_response": {
+    "id": "chatcmpl-371",
+    "object": "chat.completion",
+    "created": 1783762419,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O operando 'scale' é controlado por parâmetro livre e não há guarda visível para verificar se ele é zero antes do uso. Isso pode levar a uma divisão por zero, resultando em um ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"value % scale\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas dois parâmetros, o que não é considerado excessivo. A assinatura da função é 'def normalize_mod(value: int, scale: int) -> int:', onde 'value' e 'scale' são os únicos parâmetros.\",\n      \"metadata\": {\n        \"expression\": \"def normalize_mod(value: int, scale: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1178,
+      "completion_tokens": 245,
+      "total_tokens": 1423
+    }
+  }
+}

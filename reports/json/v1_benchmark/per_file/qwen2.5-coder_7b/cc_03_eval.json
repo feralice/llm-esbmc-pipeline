@@ -1,0 +1,58 @@
+{
+  "file": "cc_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "should_alert",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "should_alert",
+      "category": "many_parameters",
+      "expression": "def should_alert(cpu: int, memory: int, disk: int, degraded: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 4 parâmetros, o que pode indicar uma complexidade desnecessária."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fn"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fn"
+      }
+    ]
+  }
+}

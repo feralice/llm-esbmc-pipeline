@@ -1,0 +1,85 @@
+{
+  "file": "av_15.py",
+  "expected_bugs": [
+    {
+      "function": "strict_percent",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "strict_percent",
+      "category": "assertion_violation",
+      "expression": "assert percent > 0 and percent < 100",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'percent > 0 and percent < 100' pode ser violada se o valor de 'percent' for passado como parâmetro livre. Não há uma guarda visível antes do uso que garanta a validade da condição."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "strict_percent",
+      "category": "long_method",
+      "expression": "def strict_percent(percent: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código, o que não classifica como longa. A função também possui apenas um parâmetro, o que não é excessivo."
+    },
+    {
+      "function": "strict_percent",
+      "category": "many_parameters",
+      "expression": "def strict_percent(percent: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, o que não é excessivo."
+    },
+    {
+      "function": "strict_percent",
+      "category": "complex_conditional",
+      "expression": "assert percent > 0 and percent < 100",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'percent > 0 and percent < 100' é simples e não aninhada."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

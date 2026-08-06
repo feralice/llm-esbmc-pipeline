@@ -1,0 +1,34 @@
+{
+  "file": "oob_10.py",
+  "expected_bugs": [
+    {
+      "function": "branch_slot",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "branch_slot",
+      "category": "out_of_bounds",
+      "expression": "values[idx]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O acesso indexado usa `idx`, que é derivado do parâmetro livre `flag`, e também depende do tamanho de `values`, parâmetro livre sem restrição visível. Há uma atribuição anterior que limita `idx` a 3 ou 0, mas não há guarda verificando que `values` possui tamanho suficiente para esses índices. A operação não está envolvida por try/except, portanto é um candidato a IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "update_position",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_03.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 7 parâmetros, o que excede o limite recomendado de 5, tornando a assinatura complexa e difícil de manter.\",\n      \"metadata\": {\n        \"expression\": \"def update_position(x: int, y: int, z: int, vx: int, vy: int, vz: int, dt: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPAENUF3ZezAjp4E9qT39u6GMVp5LmZnfJshMBSbbkCu6DQhX51N7VfPUU6uq9"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754987,
+    "id": "6_BRatmWFpGlmtkPmfrw2Ac",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 141,
+      "prompt_tokens": 1257,
+      "total_tokens": 1398
+    }
+  }
+}

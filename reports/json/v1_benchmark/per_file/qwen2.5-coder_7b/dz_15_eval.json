@@ -1,0 +1,85 @@
+{
+  "file": "dz_15.py",
+  "expected_bugs": [
+    {
+      "function": "alternate_bucket",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "alternate_bucket",
+      "category": "division_by_zero",
+      "expression": "limit // bucket",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A divisão 'limit // bucket' pode causar ZeroDivisionError se 'bucket' for zero, que é um parâmetro livre sem restrição de constante."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "alternate_bucket",
+      "category": "long_method",
+      "expression": "def alternate_bucket(limit: int, bucket: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "alternate_bucket",
+      "category": "many_parameters",
+      "expression": "def alternate_bucket(limit: int, bucket: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 2 parâmetros, o que não classifica como com muitos parâmetros."
+    },
+    {
+      "function": "alternate_bucket",
+      "category": "complex_conditional",
+      "expression": "def alternate_bucket(limit: int, bucket: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições complexas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

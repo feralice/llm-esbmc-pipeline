@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "format_metric",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_04.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcuskmufJrJPWXW2fEQvC",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 6 parâmetros (excluindo self/cls), o que ultrapassa o limiar de 5 parâmetros considerado excessivo. Isso pode dificultar a leitura, manutenção e testabilidade da função.\",\n      \"metadata\": {\n        \"expression\": \"def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1474,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 175,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

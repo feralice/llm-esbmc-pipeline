@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "create_user_record",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_01.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccusio4oa9HXk8iGU3Cx4",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 6 parâmetros (excluindo self/cls), o que ultrapassa o limiar de 5 e indica excesso de parâmetros na assinatura. Isso pode dificultar a legibilidade e manutenção do código.\",\n      \"metadata\": {\n        \"expression\": \"def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1447,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 179,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

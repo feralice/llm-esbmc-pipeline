@@ -1,0 +1,34 @@
+{
+  "file": "cc_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "evaluate_access",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "evaluate_access",
+      "category": "complex_conditional",
+      "expression": "def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função usa uma cadeia de condicionais aninhadas em vários níveis para decidir o acesso. Embora cada condição seja simples, o aninhamento de active, verified, role >= level e level > 5 aumenta a complexidade de leitura e manutenção."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

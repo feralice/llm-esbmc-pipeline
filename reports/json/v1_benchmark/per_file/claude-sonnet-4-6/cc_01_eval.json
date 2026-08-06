@@ -1,0 +1,34 @@
+{
+  "file": "cc_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "can_apply_discount",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "can_apply_discount",
+      "category": "complex_conditional",
+      "expression": "def can_apply_discount(age: int, purchases: int, member: bool, blocked: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A expressão de retorno combina dois grupos de condições unidos por OR, cada grupo contendo múltiplas sub-condições com AND e NOT, resultando em uma lógica composta que pode ser difícil de ler e manter."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

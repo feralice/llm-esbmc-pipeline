@@ -1,0 +1,93 @@
+{
+  "file": "mp_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "format_metric",
+      "category": "long_method",
+      "expression": "",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 10 linhas de código, o que pode ser considerado longa."
+    },
+    {
+      "function": "format_metric",
+      "category": "many_parameters",
+      "expression": "",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 6 parâmetros, o que pode ser considerado excessivo."
+    },
+    {
+      "function": "format_metric",
+      "category": "complex_conditional",
+      "expression": "",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém condições aninhadas, o que pode ser considerado complexo."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fp"
+    },
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      },
+      {
+        "category": "out_of_bounds",
+        "verdict": "fp"
+      },
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

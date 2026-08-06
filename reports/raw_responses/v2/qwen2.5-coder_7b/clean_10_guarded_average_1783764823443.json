@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "guarded_average",
+  "file": "dataset/labeled/ok/clean/clean_10.py",
+  "raw_response": {
+    "id": "chatcmpl-500",
+    "object": "chat.completion",
+    "created": 1783764823,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A divisão (a + b) // 2 pode causar ZeroDivisionError se a ou b for zero, embora haja uma guarda parcial que verifica se a e b são negativos.\",\n      \"metadata\": {\n        \"expression\": \"(a + b) // 2\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas dois parâmetros, o que não é considerado um smell.\",\n      \"metadata\": {\n        \"expression\": \"def guarded_average(a: int, b: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas três linhas de código executável, o que não é considerado um smell.\",\n      \"metadata\": {\n        \"expression\": \"def guarded_average(a: int, b: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição if a < 0 or b < 0 é simples e não aninhada, o que não é considerado um smell.\",\n      \"metadata\": {\n        \"expression\": \"if a < 0 or b < 0:\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1200,
+      "completion_tokens": 390,
+      "total_tokens": 1590
+    }
+  }
+}

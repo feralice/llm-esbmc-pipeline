@@ -1,0 +1,51 @@
+{
+  "file": "mp_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters",
+      "expression": "def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A assinatura possui 6 parâmetros livres e não há self/cls a excluir da contagem. Isso atende ao critério de many_parameters informado (>= 5 parâmetros), podendo indicar interface excessivamente ampla."
+    },
+    {
+      "function": "format_metric",
+      "category": "complex_conditional",
+      "expression": "def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém uma condição composta com operador lógico 'or' em 'value < minimum or value > maximum'. Embora simples, ela se enquadra no critério solicitado de condições compostas/aninhadas para avaliação como smell."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

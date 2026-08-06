@@ -1,0 +1,15 @@
+{
+  "file": "clean_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

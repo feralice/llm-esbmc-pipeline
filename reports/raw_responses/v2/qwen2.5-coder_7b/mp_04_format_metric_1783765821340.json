@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "format_metric",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_04.py",
+  "raw_response": {
+    "id": "chatcmpl-975",
+    "object": "chat.completion",
+    "created": 1783765821,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": false,\n      \"explanation\": \"A função não contém divisões, então não há risco de ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"\",\n        \"line\": 0\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": false,\n      \"explanation\": \"A função não contém acessos indexados, então não há risco de IndexError.\",\n      \"metadata\": {\n        \"expression\": \"\",\n        \"line\": 0\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": false,\n      \"explanation\": \"A função não contém asserts, então não há risco de AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"\",\n        \"line\": 0\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 10 linhas de código, o que pode ser considerado longa.\",\n      \"metadata\": {\n        \"expression\": \"\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 6 parâmetros, o que pode ser considerado excessivo.\",\n      \"metadata\": {\n        \"expression\": \"\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém condições aninhadas, o que pode ser considerado complexo.\",\n      \"metadata\": {\n        \"expression\": \"\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1286,
+      "completion_tokens": 451,
+      "total_tokens": 1737
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "strict_percent",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_15.py",
+  "raw_response": {
+    "id": "chatcmpl-150",
+    "object": "chat.completion",
+    "created": 1783762211,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A condição 'percent > 0 and percent < 100' pode ser violada se o valor de 'percent' for passado como parâmetro livre. Não há uma guarda visível antes do uso que garanta a validade da condição.\",\n      \"metadata\": {\n        \"expression\": \"assert percent > 0 and percent < 100\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 3 linhas de código, o que não classifica como longa. A função também possui apenas um parâmetro, o que não é excessivo.\",\n      \"metadata\": {\n        \"expression\": \"def strict_percent(percent: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas um parâmetro, o que não é excessivo.\",\n      \"metadata\": {\n        \"expression\": \"def strict_percent(percent: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'percent > 0 and percent < 100' é simples e não aninhada.\",\n      \"metadata\": {\n        \"expression\": \"assert percent > 0 and percent < 100\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1175,
+      "completion_tokens": 412,
+      "total_tokens": 1587
+    }
+  }
+}

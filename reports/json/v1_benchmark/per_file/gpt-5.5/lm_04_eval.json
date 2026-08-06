@@ -1,0 +1,51 @@
+{
+  "file": "lm_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "tally_customer_complaints",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "tally_customer_complaints",
+      "category": "long_method",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 36 linhas no trecho informado e contém uma sequência longa e repetitiva de verificações e acumulações para reclamações e severidade. Isso sugere que o método pode estar assumindo lógica demais ou poderia ser simplificado por uma estrutura de dados/mapeamento."
+    },
+    {
+      "function": "tally_customer_complaints",
+      "category": "many_parameters",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A assinatura recebe 6 parâmetros livres, excedendo o limiar solicitado de >= 5 parâmetros. Isso pode dificultar a legibilidade e aumentar a chance de chamadas incorretas."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

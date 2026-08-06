@@ -52,4 +52,7 @@ artigos_estudo/
 # ESBMC outputs
 *.smt2
 *.goto
+
+# Export curado pra ferramentas externas (NotebookLM etc) — cópias, não fonte
+notebooklm_sources/
 defesa_python_llm_esbmc_v5_metricas_legendas (1).pdf

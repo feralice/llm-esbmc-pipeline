@@ -1,0 +1,50 @@
+{
+  "file": "oob_12.py",
+  "expected_bugs": [
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds",
+      "expression": "values[i]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O acesso values[i] utiliza o parâmetro livre 'i' como índice sem qualquer verificação de limites (bounds checking) ou tratamento de exceções, podendo causar IndexError se 'i' estiver fora do intervalo válido da lista."
+    },
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds",
+      "expression": "values[i + j]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O acesso values[i + j] utiliza uma expressão aritmética baseada em parâmetros livres 'i' e 'j' sem validação, o que pode resultar em um índice fora dos limites da lista, causando IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

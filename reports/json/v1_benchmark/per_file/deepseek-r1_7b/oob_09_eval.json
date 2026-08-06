@@ -1,0 +1,58 @@
+{
+  "file": "oob_09.py",
+  "expected_bugs": [
+    {
+      "function": "flat_matrix_get",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "flat_matrix_get",
+      "category": "many_parameters",
+      "expression": "def f(a, b, c, d, e):",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui quatro parâmetros, o que pode ser considerado um número suficiente de parâmetros para a funcionalidade implementada. No entanto, um número maior pode indicar uma complexidade excessiva."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "fn"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "out_of_bounds",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [
+      {
+        "category": "out_of_bounds",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

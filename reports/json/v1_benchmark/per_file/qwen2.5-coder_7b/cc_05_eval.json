@@ -1,0 +1,77 @@
+{
+  "file": "cc_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional",
+      "expression": "(urgent and retries < 2) or (cached and size < 100) or (size > 1000 and retries == 0)",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função possui uma condição complexa com múltiplos níveis de aninhamento e combinações de operadores lógicos."
+    },
+    {
+      "function": "choose_strategy",
+      "category": "many_parameters",
+      "expression": "def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 4 parâmetros, o que pode ser considerado um número excessivo para uma única função."
+    },
+    {
+      "function": "choose_strategy",
+      "category": "long_method",
+      "expression": "def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém apenas 6 linhas de código, o que não é considerado longo. No entanto, a complexidade da lógica pode levar a um método mais longo do que seria ideal."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "file": "av_11.py",
+  "expected_bugs": [
+    {
+      "function": "score_lower_bound",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "score_lower_bound",
+      "category": "assertion_violation",
+      "expression": "assert score >= 0",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição 'score >= 0' pode ser violada se 'score' for um valor negativo, que é permitido pela entrada do usuário. Não há uma guarda visível antes do uso da assertiva para verificar se 'score' é não-negativo."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "score_lower_bound",
+      "category": "complex_conditional",
+      "expression": "if score < 100:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função contém uma condição simples 'if score < 100' seguida por uma assertiva. Embora não seja complexa, a presença de uma assertiva dentro de um if pode indicar uma lógica condicional mais complexa do que é显见的。"
+    },
+    {
+      "function": "score_lower_bound",
+      "category": "long_method",
+      "expression": "def score_lower_bound(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não é considerado longa. No entanto, a presença de uma assertiva dentro de um if pode indicar uma lógica condicional mais complexa do que é显见的。"
+    },
+    {
+      "function": "score_lower_bound",
+      "category": "many_parameters",
+      "expression": "def score_lower_bound(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, o que não é considerado excessivo. No entanto, a presença de uma assertiva dentro de um if pode indicar uma lógica condicional mais complexa do que é显见的。"
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

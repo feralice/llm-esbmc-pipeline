@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "format_metric",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_04.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"The function accepts 6 parameters, which exceeds the recommended threshold of 5, potentially reducing readability and maintainability.\",\n      \"metadata\": {\n        \"expression\": \"def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPxtK9sMEkd/ulx1Azakp1wtvkZUeISTlbS9THqhg90v13MQ+sIzjE0MAorPCm"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754998,
+    "id": "9fBRaobgMtK6qtsPnZz4GA",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 132,
+      "prompt_tokens": 1283,
+      "total_tokens": 1415
+    }
+  }
+}

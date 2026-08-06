@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "evaluate_access",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_02.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"The function contains four levels of nested conditional statements, which increases cognitive complexity and makes the logic harder to maintain.\",\n      \"metadata\": {\n        \"expression\": \"def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPNzIyIzqLBe+z7dHM7KhDbl+Dbo7l3s3GC+upnCYlSTPqvO5T/rTmpNPlFCqt"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754874,
+    "id": "efBRao7XL-CyqtsP7P2VuAE",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 123,
+      "prompt_tokens": 1236,
+      "total_tokens": 1359
+    }
+  }
+}

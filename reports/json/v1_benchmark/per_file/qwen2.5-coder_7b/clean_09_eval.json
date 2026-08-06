@@ -1,0 +1,85 @@
+{
+  "file": "clean_09.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "guarded_shifted_denominator",
+      "category": "division_by_zero",
+      "expression": "total // (count - 1)",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O operando 'count - 1' pode ser zero quando 'count' é igual a 1, o que leva a uma divisão por zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "guarded_shifted_denominator",
+      "category": "long_method",
+      "expression": "def guarded_shifted_denominator(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "guarded_shifted_denominator",
+      "category": "many_parameters",
+      "expression": "def guarded_shifted_denominator(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 2 parâmetros, o que não classifica como excessivo."
+    },
+    {
+      "function": "guarded_shifted_denominator",
+      "category": "complex_conditional",
+      "expression": "if count == 1:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'if count == 1' é simples e não aninhada."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

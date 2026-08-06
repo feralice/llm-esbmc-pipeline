@@ -1,0 +1,85 @@
+{
+  "file": "dz_02.py",
+  "expected_bugs": [
+    {
+      "function": "percentage",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "percentage",
+      "category": "division_by_zero",
+      "expression": "part * 100 // whole",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O operando 'whole' é controlado por parâmetro livre e não há guarda visível antes do uso. A divisão por zero pode ocorrer se 'whole' for zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "percentage",
+      "category": "long_method",
+      "expression": "def percentage(part: int, whole: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas duas linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "percentage",
+      "category": "many_parameters",
+      "expression": "def percentage(part: int, whole: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem dois parâmetros, o que não classifica como um número excessivo de parâmetros."
+    },
+    {
+      "function": "percentage",
+      "category": "complex_conditional",
+      "expression": "def percentage(part: int, whole: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

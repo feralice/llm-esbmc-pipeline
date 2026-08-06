@@ -567,7 +567,7 @@ def test_llm_schema_exposes_only_llm_finding_types() -> None:
         "smell_heuristic",
     ]
     assert "expression" in finding_schema["metadata"]["properties"]
-    assert "line" not in finding_schema["metadata"]["properties"]
+    assert "line" in finding_schema["metadata"]["properties"]
     assert "relative_line" not in finding_schema["metadata"]["properties"]
 
 

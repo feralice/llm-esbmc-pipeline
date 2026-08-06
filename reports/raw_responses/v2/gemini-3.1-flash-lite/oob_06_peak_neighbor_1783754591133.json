@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "peak_neighbor",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_06.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice 'peak - delta' é derivado de parâmetros livres e não possui verificação de limites antes do acesso à lista 'values', podendo causar IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[peak - delta]\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice 'peak + delta' é derivado de parâmetros livres e não possui verificação de limites antes do acesso à lista 'values', podendo causar IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[peak + delta]\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP5C8rD6IeQpdPHwAz6Y1eDXGs5jKcS915QPDtJufURPV+NTKY+7KzzFstkVJW"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754590,
+    "id": "Xu9RatWdB9y1qtsP57TdmQk",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 222,
+      "prompt_tokens": 1203,
+      "total_tokens": 1425
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "strided_fetch",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_11.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusQN5tPWSzN9N2dPY6G",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice `idx` é calculado como `base + stride * steps`, onde todos os três parâmetros são livres (sem restrição de constante). Não há nenhuma guarda verificando se `idx` está no intervalo `[0, len(data)-1]` antes do acesso `data[idx]`. O índice pode ser negativo, zero, ou maior que o comprimento da lista, causando IndexError.\",\n      \"metadata\": {\n        \"expression\": \"data[idx]\",\n        \"line\": 3\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1402,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 186,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

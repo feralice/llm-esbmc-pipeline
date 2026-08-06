@@ -1,0 +1,85 @@
+{
+  "file": "dz_11.py",
+  "expected_bugs": [
+    {
+      "function": "shifted_step_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "shifted_step_ratio",
+      "category": "division_by_zero",
+      "expression": "size // adjusted",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O operando 'adjusted' pode ser zero se 'step' for -1, o que causaria uma divisão por zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "shifted_step_ratio",
+      "category": "long_method",
+      "expression": "def shifted_step_ratio(size: int, step: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "shifted_step_ratio",
+      "category": "many_parameters",
+      "expression": "def shifted_step_ratio(size: int, step: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 2 parâmetros, o que não classifica como com muitos parâmetros."
+    },
+    {
+      "function": "shifted_step_ratio",
+      "category": "complex_conditional",
+      "expression": "def shifted_step_ratio(size: int, step: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

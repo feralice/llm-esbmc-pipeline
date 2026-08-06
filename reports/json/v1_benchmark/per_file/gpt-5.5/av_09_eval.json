@@ -1,0 +1,34 @@
+{
+  "file": "av_09.py",
+  "expected_bugs": [
+    {
+      "function": "branch_assertion",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "branch_assertion",
+      "category": "assertion_violation",
+      "expression": "assert amount > 0",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A condição do assert depende de 'amount', que é um parâmetro livre da função. Há uma guarda de fluxo anterior em 'if flag:' que retorna quando flag é verdadeiro, mas no ramo em que flag é falso a execução alcança o assert sem uma restrição visível que garanta 'amount > 0'. A operação não está envolvida por try/except que capture AssertionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

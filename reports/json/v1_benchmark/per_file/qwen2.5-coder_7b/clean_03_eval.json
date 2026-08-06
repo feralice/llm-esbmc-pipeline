@@ -1,0 +1,85 @@
+{
+  "file": "clean_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "clamp_score",
+      "category": "assertion_violation",
+      "expression": "assert score >= 0 and score <= 100",
+      "line": 5,
+      "confidence": "low",
+      "explanation": "A condição 'score >= 0 and score <= 100' é redundante porque já foi verificada nos dois if anteriores. O uso de assert aqui pode levantar AssertionError se a função for chamada com um valor fora do intervalo [0, 100]."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "clamp_score",
+      "category": "long_method",
+      "expression": "def clamp_score(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 7 linhas de código, o que não classifica como longa. No entanto, ela contém uma condição assert complexa e dois if's, o que pode indicar um método com responsabilidades demais."
+    },
+    {
+      "function": "clamp_score",
+      "category": "many_parameters",
+      "expression": "def clamp_score(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, o que não classifica como excessivo. No entanto, a presença de uma condição assert complexa pode indicar que a função está assumindo responsabilidades demais."
+    },
+    {
+      "function": "clamp_score",
+      "category": "complex_conditional",
+      "expression": "assert score >= 0 and score <= 100",
+      "line": 5,
+      "confidence": "low",
+      "explanation": "A condição 'score >= 0 and score <= 100' é considerada complexa devido à sua composição. No entanto, isso não é um problema em si, apenas uma indicação de que a função pode estar assumindo responsabilidades demais."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "doubled_index",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_08.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso ao índice 'values[slot]' depende do parâmetro 'index' multiplicado por 2. Não há verificação de limites (bounds checking) para garantir que 'index * 2' esteja dentro do intervalo válido da lista, tornando-o suscetível a IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[slot]\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPMafC+nyJo0muT6yHagoPzsFV0yOrMN1K0M0/BVZD0q9wopMhpgfraC10e+Ij"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754627,
+    "id": "g-9Rat4vqKzPsg_ZgO_oCA",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 140,
+      "prompt_tokens": 1172,
+      "total_tokens": 1312
+    }
+  }
+}

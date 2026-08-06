@@ -1,0 +1,69 @@
+{
+  "file": "clean_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "safe_mod",
+      "category": "division_by_zero",
+      "expression": "scale == 0",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "When 'scale' is zero, the function returns 'value' instead of raising a ZeroDivisionError. This skips handling division by zero which should be avoided."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "safe_mod",
+      "category": "many_parameters",
+      "expression": "value, scale",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function has two parameters, which is within the limit."
+    },
+    {
+      "function": "safe_mod",
+      "category": "complex_conditional",
+      "expression": "if scale == 0",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "The conditional is simple and not complex."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

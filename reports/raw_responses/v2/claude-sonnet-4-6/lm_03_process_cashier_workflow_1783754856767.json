@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "process_cashier_workflow",
+  "file": "dataset/labeled/ok/smells/long_method/lm_03.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusgVgV8aqYPj1UddC3W",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 37 linhas no total com aproximadamente 30 linhas de código executável, gerenciando múltiplas responsabilidades: cálculo de pedido, estado do chef, estado do cliente, entrega e recibo. Isso indica um método que assume responsabilidades demais.\",\n      \"metadata\": {\n        \"expression\": \"def process_cashier_workflow(order_code: int, chef_busy: bool, customer_upset: bool, distance: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1628,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 182,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

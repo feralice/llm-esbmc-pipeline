@@ -1,0 +1,85 @@
+{
+  "file": "av_12.py",
+  "expected_bugs": [
+    {
+      "function": "even_count",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "even_count",
+      "category": "assertion_violation",
+      "expression": "assert count % 2 == 0",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'count % 2 == 0' pode ser falsa, levando a um AssertionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "even_count",
+      "category": "long_method",
+      "expression": "def even_count(count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "even_count",
+      "category": "many_parameters",
+      "expression": "def even_count(count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, o que não classifica como com muitos parâmetros."
+    },
+    {
+      "function": "even_count",
+      "category": "complex_conditional",
+      "expression": "def even_count(count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

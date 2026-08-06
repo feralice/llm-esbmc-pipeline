@@ -1,0 +1,51 @@
+{
+  "file": "mp_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters",
+      "expression": "def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 6 parâmetros, incluindo self/cls (se aplicável), o que pode indicar uma assinatura de método excessivamente complexa."
+    },
+    {
+      "function": "calculate_quote",
+      "category": "long_method",
+      "expression": "def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 5 linhas de código, mas a complexidade do cálculo pode levar a um método considerado longo."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

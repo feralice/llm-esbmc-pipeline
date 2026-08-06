@@ -1,0 +1,34 @@
+{
+  "file": "av_14.py",
+  "expected_bugs": [
+    {
+      "function": "increasing_bounds",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "increasing_bounds",
+      "category": "assertion_violation",
+      "expression": "assert low < high",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição do assert depende diretamente dos parâmetros livres low e high. Não há guarda anterior visível que restrinja esses parâmetros para garantir low < high. A operação não está envolvida por try/except, portanto uma entrada com low >= high pode alcançar AssertionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

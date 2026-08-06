@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "update_position",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_03.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccusk19rmkQG6mKsASEST",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 7 parâmetros (x, y, z, vx, vy, vz, dt), o que excede o limiar de 5 parâmetros considerado excessivo. Isso dificulta a legibilidade e manutenção do código; um objeto ou estrutura de dados poderia encapsular esses valores.\",\n      \"metadata\": {\n        \"expression\": \"def update_position(x: int, y: int, z: int, vx: int, vy: int, vz: int, dt: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1462,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 202,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "off_by_one_denominator",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_07.py",
+  "raw_response": {
+    "id": "chatcmpl-484",
+    "object": "chat.completion",
+    "created": 1783762607,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O denominador 'count - 1' pode ser zero se 'count' for igual a 1, o que causará uma divisão por zero.\",\n      \"metadata\": {\n        \"expression\": \"total // (count - 1)\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'if count < 1' é simples e não apresenta complexidade aninhada ou composta.\",\n      \"metadata\": {\n        \"expression\": \"if count < 1:\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas dois parâmetros, o que não atende ao critério de '>= 5 parâmetros'.\",\n      \"metadata\": {\n        \"expression\": \"def off_by_one_denominator(total: int, count: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas três linhas de código executável (ignorando a linha de definição), o que não atende ao critério de 'função longa'.\",\n      \"metadata\": {\n        \"expression\": \"def off_by_one_denominator(total: int, count: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1200,
+      "completion_tokens": 402,
+      "total_tokens": 1602
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "file": "mp_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "create_user_record",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "create_user_record",
+      "category": "many_parameters",
+      "expression": "def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 6 parâmetros (excluindo self/cls), o que ultrapassa o limiar de 5 e indica excesso de parâmetros na assinatura. Isso pode dificultar a legibilidade e manutenção do código."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

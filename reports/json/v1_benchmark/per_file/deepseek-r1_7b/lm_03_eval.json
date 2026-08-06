@@ -1,0 +1,34 @@
+{
+  "file": "lm_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_cashier_workflow",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_cashier_workflow",
+      "category": "long_method",
+      "expression": "def process_cashier_workflow(order_code: int, chef_busy: bool, customer_upset: bool, distance: int) -> int",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function 'process_cashier_workflow' is considered long due to its length and complexity, which could be addressed by breaking it into smaller methods for better readability."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

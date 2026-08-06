@@ -1,585 +1,512 @@
-\documentclass[conference]{IEEEtran}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
-\usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
-\usepackage{url}
-\usepackage{booktabs}
-\usepackage{multirow}
+%tirar o anonymous dps
+\documentclass[sigconf]{acmart}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
 
-\usepackage[hidelinks]{hyperref}
+\acmConference[ISE 2026]{5th Brazilian Workshop on Intelligent Software Engineering}{September 11, 2026}{São Paulo, SP, Brazil}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+%% Using the option "anonymous" will produce "Anonymous Author(s)"
+%% for double-anonymized review. Upon acceptance, remove this option
+%% and set the authors' names and affiliations using the corresponding
+%% commands.
 
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+%% CBSoft uses an ACM-like format without the ACM Reference block.
+%% The following warning from acmart can be safely ignored:
+%% "ACM reference format is mandatory for papers over one page."
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{} % 
+
+\setcopyright{none}
+
+
+\AtBeginDocument{
+    \providecommand\BibTeX{{Bib\TeX}}
+}
 
 \begin{document}
 
-\title{Detecção de Defeitos em Python via Modelos de Linguagem e Verificação Formal: Um Estudo Experimental}
 
-\author{
-\IEEEauthorblockN{Fernanda Alice Farias Duarte}
-\IEEEauthorblockA{
-\textit{Programa de Pós-Graduação em Informática, disciplina de Verificação Formal} \\
-\textit{Universidade Federal do Amazonas} \\
-Manaus, Brasil \\
-fernanda.duarte@icomp.ufam.edu.br
+
+
+
+%%pensar em um titulo melhor depois 
+\title{Um pipeline híbrido para detecção inteligente e confiável de bugs e code smells em Python}
+
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+
+
+
+%%%%
+\author{Fernanda Alice Duarte}
+\affiliation{
+  \institution{Instituto de Computação (Icomp) - Universidade Federal do Amazonas (UFAM)}
+  \city{Manaus}
+  \country{Brasil}
 }
+\email{fernanda.duarte@icomp.ufam.edu.br}
+
+\author{Rosiane de Freitas}
+\affiliation{
+  \institution{Instituto de Computação (Icomp) - Universidade Federal do Amazonas (UFAM)}
+  \city{Manaus}
+  \country{Brasil}
 }
+\email{rosiane@icomp.ufam.edu.br}
 
-\maketitle
+\author{Lucas C. Cordeiro}
+\affiliation{
+  \institution{University of Manchester}
+  \city{Manchester}
+  \country{UK}
+}
+\email{lucas.cordeiro@manchester.ac.uk}
 
+%% By default, the full list of authors will be used on the page
+%% headers. This list is often too long and will overlap
+%% other information printed in the page headers.
+%% This command allows the author to define a more concise list
+%% of authors' names for this purpose.
+\renewcommand{\shortauthors}{Duarte et al.}
+
+\renewcommand{\shorttitle}{Pipeline Híbrido LLM+ESBMC-Python}
+
+%% Artigo escrito em português: usar os cabeçalhos em português.
+\renewcommand\abstractname{Resumo}
+\renewcommand\keywordsname{Palavras-chave}
+\renewcommand\refname{Referências}
+
+%%revisar o resumo
 \begin{abstract}
-Detectar vulnerabilidades em código Python de forma confiável é difícil: modelos de linguagem são flexíveis, mas produzem falsos positivos; verificadores formais como o ESBMC-Python são precisos, mas custosos e limitados em escopo. Modelos de linguagem identificam padrões associados a defeitos com baixo custo, mas produzem alucinações e falsos positivos sem garantias formais, enquanto verificadores formais oferecem contraexemplos concretos, porém sem capacidade própria de triagem ou de distinção entre bugs executáveis e \textit{code smells}. Este trabalho propõe um pipeline híbrido composto por cinco etapas (Preprocess, LLM Analyzer, AST Validation, ESBMC e Report), no qual o modelo de linguagem gera hipóteses de defeitos, uma etapa de validação por AST filtra alucinações e apenas bugs verificáveis (divisão por zero, acesso fora dos limites e violação de asserção) são confirmados pelo ESBMC-Python, enquanto \textit{code smells} (método longo, excesso de parâmetros e condicional complexo) seguem direto para o relatório final. A proposta foi avaliada em um \textit{dataset} de 70 casos com \textit{ground truth} anotado manualmente, comparando três fluxos (somente ESBMC, somente modelo e híbrido) em cinco modelos de linguagem, sendo três de grande porte (LLMs) acessados via API e dois de pequeno porte (SLMs) executados localmente. Os resultados mostram que a confirmação formal reduz consistentemente os falsos positivos em todos os modelos, com ganhos mais expressivos para modelos locais de menor porte. A principal contribuição é demonstrar que combinar triagem heurística por modelo de linguagem com confirmação formal direta em Python aumenta a confiabilidade da detecção automática de defeitos e permite diferenciar, de forma sistemática, falhas executáveis de problemas de qualidade de código.
+Python é uma das linguagens mais utilizadas atualmente, mas sua natureza dinâmica dificulta a aplicação de verificação formal. O ESBMC-Python, um verificador formal baseado em \textit{bounded model checking}, verifica diretamente programas Python, ao contrário de abordagens como EVA e PyVeritas, que traduzem o código para C antes da verificação, introduzindo uma etapa adicional de tradução sujeita a perda de fidelidade semântica. Paralelamente, modelos de linguagem (LLMs e SLMs) apoiam a revisão de código, ainda que sujeitos a falsos positivos e alucinações. Este trabalho propõe um pipeline híbrido em que um modelo de linguagem realiza a triagem inicial de funções em Python; uma etapa de validação estrutural via AST descarta achados que não correspondem a expressões reais do código, e o ESBMC-Python confirma formalmente apenas os bugs verificáveis, restrito a três categorias de bugs e três categorias de \textit{code smells}. Uma avaliação preliminar em um dataset de 70 funções em Python, comparando cinco modelos (três via API e dois locais via Ollama), mostra que o pipeline híbrido eleva a precisão de todos os modelos avaliados para entre 0,977 e 1,000 no Flow B, com Taxa de Redução de Ruído entre 0,500 e 1,000 em relação ao uso isolado da LLM, sendo o ganho mais expressivo nos modelos locais. A validação por AST também filtra alucinações estruturais observadas exclusivamente nos modelos locais. Os resultados indicam que a abordagem é orientada ao aumento de precisão e não de revocação.
 \end{abstract}
 
-\begin{IEEEkeywords}
-large language models, bounded model checking, formal verification, Python, software vulnerabilities, code smells
-\end{IEEEkeywords}
+%% Keywords. The author(s) should pick words that accurately describe
+%% the presented work. Separate the keywords with commas.
+\keywords{verificação formal, modelos de linguagem, IA generativa, ESBMC, detecção de falhas, Python, code smells}
+
+%% This command processes the author, affiliation, and title
+%% information and builds the first part of the formatted document.
+%% "frenchspacing" avoids an additional space after a period at the end of a sentence.
+\frenchspacing
+\maketitle
 
 \section{Introdução}
 
-\subsection{Contexto}
+Python é amplamente empregado no desenvolvimento de aplicações em diferentes domínios \cite{tiobe2026}. Com a crescente adoção da linguagem, torna-se cada vez mais importante avaliar a qualidade do código produzido, não apenas em termos de estilo e manutenibilidade, mas também quanto à presença de bugs capazes de comprometer seu comportamento.
 
-Segundo o índice TIOBE de janeiro de 2026 \cite{tiobe2026}, Python ocupa a primeira posição entre as linguagens de programação mais utilizadas na atualidade. Sua popularidade se deve à simplicidade da linguagem e à ampla adoção em diferentes áreas, como desenvolvimento web, ciência de dados, inteligência artificial, entre outras. Como consequência, cresce também a necessidade de técnicas capazes de identificar defeitos, vulnerabilidades e problemas de qualidade em programas dessa linguagem.
+Entretanto, a natureza dinâmica do Python dificulta análises mais precisas e a aplicação de técnicas de verificação formal. Nesse contexto, o ESBMC-Python introduziu suporte à verificação de programas Python por meio de \textit{bounded model checking} (BMC), técnica que explora sistematicamente todos os caminhos de execução do programa até um limite finito de passos, verificando se alguma propriedade é violada e produzindo um contraexemplo concreto quando isso ocorre~\cite{farias2024esbmcpython}. Essa análise permite detectar propriedades como violações de asserções, erros aritméticos e acessos inválidos.
 
-Entretanto, características da própria linguagem Python, como a tipagem dinâmica, dificultam a análise automática do código e a verificação precisa de determinadas propriedades por técnicas tradicionais de análise estática \cite{farias2024}.
+Paralelamente, modelos de linguagem têm sido cada vez mais utilizados para apoiar atividades de revisão e análise de código. Embora apresentem resultados promissores na identificação de possíveis defeitos, esses modelos ainda podem produzir falsos positivos, respostas inconsistentes e justificativas incorretas, especialmente em cenários mais próximos de aplicações reais~\cite{ullah2024secllmholmes,ding2025primevul}.
 
+Por outro lado, a aplicação da verificação formal em larga escala em projetos maiores pode apresentar limitações de escalabilidade. O EVA, por exemplo, foi avaliado em programas de 15 a 50 linhas, com tempo médio de verificação entre 45 e 60 segundos por programa e uma média de 6,8 ferramentas invocadas por execução, refletindo o custo computacional e a necessidade de selecionar e preparar os trechos de código que serão analisados~\cite{shivaji2026eva}.
 
-Nesse contexto, os Modelos de Linguagem para Código (\textit{Code Language Models}, Code LMs) vêm sendo utilizados em diversas tarefas de engenharia de software, incluindo geração e revisão de código, depuração, detecção de vulnerabilidades e análise da qualidade do código \cite{ullah2024,kaniewski2025,zhou2024}.
+Diante desse cenário, a contribuição deste trabalho é um pipeline híbrido no qual um modelo de linguagem realiza a triagem inicial de funções Python, classificando potenciais bugs e code smells; uma etapa de validação estrutural verifica a consistência das hipóteses geradas; e o ESBMC-Python confirma formalmente apenas os bugs verificáveis. Este trabalho é guiado por duas questões de pesquisa: (RQ1) o pipeline híbrido aumenta a precisão da triagem realizada por modelos de linguagem sem alterar sua revocação? (RQ2) a validação estrutural por AST reduz alucinações estruturais, sobretudo em modelos locais (SLMs)? Como antecipação dos resultados, a avaliação preliminar mostra que o pipeline eleva a precisão de todos os cinco modelos avaliados para entre 0,977 e 1,000 no Flow B, com Taxa de Redução de Ruído entre 0,500 e 1,000 em relação ao uso isolado da LLM.
 
+\section{Trabalhos Relacionados}
+ O ESBMC-Python permite verificar diretamente programas em Python anotados com tipos, eliminando a necessidade de tradução para outra linguagem~\cite{farias2024esbmcpython}. Em contraste, o PyVeritas utiliza uma LLM para transpilar o código Python para C e, posteriormente, realiza a verificação com o CBMC~\cite{orvalho2025pyveritas}. De forma semelhante, o EVA emprega uma LLM para traduzir programas Python para C antes da análise pelo ESBMC tradicional~\cite{shivaji2026eva}. Diferentemente dessas abordagens, este trabalho visa utilizar a LLM apenas para a triagem inicial de possíveis defeitos, preservando o código Python original para a verificação direta pelo ESBMC-Python.
 
-Em paralelo, surgiu o ESBMC-Python \cite{farias2024}, que tornou possível aplicar técnicas de verificação formal diretamente a programas Python, produzindo contraexemplos concretos quando uma violação é detectada.
+Embora modelos de linguagem apresentem resultados promissores na análise
+de código, eles ainda podem produzir falsos positivos, respostas
+inconsistentes e justificativas incorretas~\cite{ullah2024secllmholmes,ding2025primevul}. Por outro lado, a verificação formal baseada em Bounded Model Checking pode confirmar ou refutar propriedades do programa dentro dos limites de verificação considerados, produzindo contraexemplos quando uma violação é encontrada, embora apresente desafios relacionados ao custo computacional e à escalabilidade. Nesse contexto, Tihanyi et al.~\cite{tihanyi2025vulnerability} defendem abordagens híbridas que exploram a alta cobertura proporcionada pelas LLMs juntamente com a confiabilidade oferecida pela verificação formal.
 
+Além da detecção de bugs executáveis, modelos de linguagem também vêm sendo empregados na identificação de \textit{code smells}. Santos et al.~\cite{santos2023yetanothermodel} identificaram atributos estruturais compartilhados por modelos de predição de defeitos e de diferentes \textit{code smells}, especialmente relacionados à complexidade, à documentação e ao tamanho. Complementarmente, Souza et al.~\cite{souza2026beyondstrictrules} observam que o desempenho das LLMs varia conforme o tipo de \textit{code smell} analisado. Paralelamente, modelos menores (\textit{Small Language Models}, SLMs) vêm sendo avaliados em tarefas de engenharia de software: Gheyi et al.~\cite{gheyi2025slms} avaliam especificamente a eficácia de SLMs na detecção de bugs de refatoração e observam desempenho fortemente dependente do modelo e da tarefa, uma instabilidade também observada nos modelos locais deste trabalho (Seção~\ref{sec:resultados}). Essa distinção orienta o tratamento diferenciado do pipeline: bugs são hipóteses candidatas à confirmação formal, e \textit{code smells} ficam sujeitos ao julgamento do modelo, sem verificação executável equivalente.
 
 
-\subsection{Problema}
 
-Apesar dos avanços recentes, os modelos de linguagem para código ainda apresentam limitações quando são utilizados na análise automática de código. Seus resultados podem variar bastante de acordo com o modelo escolhido, a estratégia de \textit{prompting} e o contexto fornecido durante a análise, podendo produzir alucinações, inconsistências e falsos positivos \cite{ullah2024,tihanyi2025}. Como consequência, os resultados produzidos por esses modelos devem ser interpretados como hipóteses de defeitos ou vulnerabilidades, e não como confirmações de sua ocorrência, exigindo mecanismos adicionais de validação.
 
 
+\section{Pipeline Híbrido}
 
+O \textit{pipeline} proposto recebe como entrada uma função Python e produz um relatório contendo bugs verificáveis confirmados formalmente e \textit{code smells} identificados pelo modelo de linguagem. Conforme ilustrado na Figura~\ref{fig:pipeline}, a arquitetura é composta por cinco etapas: \textit{Preprocessing}, \textit{Analyzer}, \textit{AST Validation}, ESBMC-Python e \textit{Final Report}. Após a etapa de análise pelo modelo de linguagem, os achados são separados em dois fluxos: hipóteses de bugs verificáveis são submetidas à validação estrutural por AST e, posteriormente, ao ESBMC-Python para confirmação formal, enquanto \textit{code smells} seguem diretamente para o relatório final.
 
-Avaliações experimentais confirmam essas limitações \cite{ding2025,ullah2024}, reforçando a necessidade de mecanismos adicionais capazes de validar ou refutar as suspeitas identificadas.
+Nesta avaliação preliminar, o \textit{pipeline} foi restrito a seis categorias: três bugs verificáveis formalmente (\textit{division by zero}, \textit{out-of-bounds access} e \textit{assertion violation}) e três \textit{code smells} amplamente reconhecidos na literatura de refatoração~\cite{fowler1999refactoring} (\textit{long method}, \textit{many parameters} e \textit{complex conditional}).
 
 
-Nesse contexto, a verificação formal pode atuar como um mecanismo de confirmação para defeitos que possam ser expressos como propriedades verificáveis do programa. Entretanto, essa abordagem não se aplica diretamente a todos os problemas identificados durante uma revisão de código, especialmente aos \textit{code smells}, que representam problemas de qualidade e manutenibilidade, e não necessariamente violações executáveis de propriedades de segurança. Essa diferença torna necessária a distinção entre bugs executáveis, passíveis de confirmação formal, e \textit{code smells}, que devem ser analisados e reportados por outros critérios.
 
 
-Embora sejam conceitos distintos, bugs executáveis e \textit{code smells} podem ser sinalizados por características semelhantes do código, como estruturas condicionais complexas, métodos extensos ou baixa clareza estrutural. Por essa razão, sua diferenciação pode ser difícil para abordagens baseadas exclusivamente em reconhecimento de padrões \cite{santos2023,souza2026}.
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[
+      node distance=2.4mm and 2.8mm,
+      box/.style={
+          rectangle,
+          draw,
+          rounded corners,
+          align=center,
+          minimum width=2.2cm,
+          minimum height=4.5mm,
+          font=\scriptsize,
+          inner sep=1.5pt
+      },
+      arr/.style={-{Latex[length=1.5mm]}}
+    ]
+    \node[box] (input) {\textit{Python Code}};
+    \node[box, below=2.4mm of input] (pre) {\textit{Preprocessing}};
+    \node[box, below=2.4mm of pre] (llm) {\textit{Analyzer}};
+    \node[box, below left=2.2mm and 3.2mm of llm]
+      (smell) {\textit{Code Smells}};
+    \node[box, below right=2.2mm and 3.2mm of llm]
+      (bug) {\textit{Verifiable Bugs}};
+    \node[box, below=2.4mm of bug]
+      (ast) {\textit{AST Validation}};
+    \node[box, below=2.5mm of ast]
+      (esbmc) {ESBMC-Python};
+    % Centraliza horizontalmente o relatório entre os dois fluxos,
+    % posicionando-o abaixo do ESBMC-Python.
+    \coordinate (reportpos) at
+      ($(smell.south)!0.5!(esbmc.south)+(0,-7.8mm)$);
+    \node[box] (report) at (reportpos)
+      {\textit{Final Report}};
+    \draw[arr] (input) -- (pre);
+    \draw[arr] (pre) -- (llm);
+    \draw[arr] (llm) -| (smell);
+    \draw[arr] (llm) -| (bug);
+    \draw[arr] (bug) -- (ast);
+    \draw[arr] (ast) -- (esbmc);
+    \draw[arr] (smell.south) |- (report.west);
+    \draw[arr] (esbmc.south) |- (report.east);
+  \end{tikzpicture}
+  \caption{Pipeline híbrido proposto para análise de funções Python. O fluxo é composto por cinco etapas: (1) \textit{Preprocessing}, (2) \textit{Analyzer}, (3) \textit{AST Validation}, (4) ESBMC-Python e (5) \textit{Final Report}. Após a etapa \textit{Analyzer}, achados classificados como \textit{code smells} seguem diretamente para o relatório final. Hipóteses de bugs verificáveis passam pela \textit{AST Validation}, responsável por eliminar alucinações estruturais, antes da confirmação formal pelo ESBMC-Python.}
+  \label{fig:pipeline}
+\end{figure}
 
 
+\textbf{\textit{Preprocessing}.}
+O arquivo \texttt{.py} é convertido em uma Árvore Sintática Abstrata (\textit{Abstract Syntax Tree} -- AST) por meio do módulo \texttt{ast} da linguagem Python. Cada função é representada por um objeto da classe \emph{CodeUnit}, que organiza parâmetros, anotações de tipo, operações, laços e condicionais. Essa representação constitui a entrada das etapas subsequentes.
 
-Embora trabalhos recentes indiquem que abordagens híbridas possam explorar a complementaridade entre modelos de linguagem para código e verificação formal \cite{tihanyi2025}, ainda existem poucos estudos que investigam essa integração especificamente para programas Python, sobretudo na validação de defeitos identificados por esses modelos e na distinção entre bugs executáveis e \textit{code smells}. Dessa forma, permanece em aberto a investigação de métodos capazes de aumentar a confiabilidade da análise automática de código em Python por meio da combinação dessas abordagens.
+\textbf{\textit{Analyzer}.}
+Cada \emph{CodeUnit} é enviado ao modelo de linguagem por meio de um \textit{prompt} estruturado com \textit{persona prompting} (especialista em segurança de código Python) e \emph{Chain-of-Thought} (CoT), técnicas que auxiliam na mitigação de alucinações e na organização do processo de raciocínio~\cite{ullah2024secllmholmes,souza2026beyondstrictrules,tihanyi2025vulnerability}. O modelo produz uma saída em \textit{schema} JSON contendo a categoria identificada, a expressão correspondente, a flag \texttt{verifiable} e uma justificativa sucinta. Hipóteses classificadas como bugs verificáveis são encaminhadas para a etapa de \textit{AST Validation}, enquanto \textit{code smells} seguem diretamente para o \textit{Final Report}.
 
-Diante desse cenário, surge a seguinte questão de estudo:
+\textbf{\textit{AST Validation}.}
+A etapa de \textit{AST Validation} é aplicada apenas às hipóteses de bugs verificáveis. Para bugs de divisão por zero e acesso fora dos limites, a validação verifica inicialmente se a categoria prevista corresponde ao tipo de operação identificado na AST e se a expressão normalizada coincide com a operação extraída; quando há múltiplas ocorrências equivalentes, a linha informada é utilizada apenas para desempate. Caso essa correspondência não seja encontrada, uma segunda verificação busca a expressão normalizada entre nós executáveis da AST, como chamadas de função, operações binárias, acessos indexados, comparações e acessos a atributos. Para violações de asserção, a hipótese é aceita quando a expressão reportada corresponde textualmente ao código da função ou quando sua estrutura na AST coincide com a condição de uma instrução \texttt{assert}. Hipóteses sem correspondência estrutural são classificadas como alucinações estruturais e removidas do fluxo~\cite{khati2026forge}.
 
-\textit{Como combinar modelos de linguagem para código e verificação formal para aumentar a confiabilidade da detecção automática de defeitos em programas Python, reduzindo falsos positivos e diferenciando bugs executáveis de \textit{code smells}?}
+\textbf{ESBMC-Python.}
+Apenas hipóteses que passaram pela \textit{AST Validation} são submetidas ao ESBMC-Python. O \textit{pipeline} executa o verificador utilizando as opções \texttt{--function}, \texttt{--incremental-bmc} e \texttt{--assign-param-nondet}, que restringem a análise à função indicada, realizam a verificação incremental e consideram os parâmetros da função como entradas não determinísticas, respectivamente. O \textit{timeout} é configurado como parâmetro do \textit{pipeline} (30 segundos nos experimentos deste trabalho) e aplicado externamente a cada execução do ESBMC-Python. Caso esse limite seja excedido, a hipótese é registrada como inconclusiva. A hipótese é confirmada apenas quando o ESBMC-Python identifica uma violação correspondente à categoria prevista pelo modelo de linguagem.
 
+\textbf{\textit{Final Report}.}
+O relatório final consolida os \textit{code smells} produzidos pelo modelo de linguagem, os bugs verificáveis confirmados pelo ESBMC-Python, o resultado da validação estrutural e o rótulo de \textit{ground truth} do \textit{dataset}. Os resultados são exportados em formato \textit{JSON} e utilizados para o cálculo das métricas apresentadas na próxima seção.
 
 
 
-\subsection{Motivação e Justificativa}
 
-O surgimento do ESBMC-Python tornou viável a aplicação de técnicas de verificação formal diretamente a programas Python, criando a oportunidade de investigar abordagens híbridas que combinem análise baseada em modelos de linguagem e verificação formal \cite{farias2024,tihanyi2025}.
 
-Nessa abordagem, os modelos de linguagem atuam como geradores de hipóteses, sinalizando trechos suspeitos de conter bugs executáveis e \textit{code smells}. A verificação formal é então direcionada apenas às hipóteses de bugs passíveis de formalização, permitindo confirmar ou refutar essas suspeitas por meio de contraexemplos quando uma violação é encontrada \cite{shivaji2026}. Assim, a verificação formal é aplicada apenas aos trechos que o modelo identifica como possivelmente defeituosos, em vez de analisar todo o código.
- \cite{tihanyi2025}.
 
 
-Além de investigar uma abordagem ainda pouco explorada para programas Python, este trabalho busca reduzir o esforço necessário para analisar os relatórios produzidos pelos modelos, aumentar a confiança nos bugs reportados e apoiar a diferenciação entre falhas executáveis e problemas de qualidade de código \cite{santos2023,souza2026}. Assim, a proposta explora a complementaridade entre a capacidade de triagem dos modelos de linguagem e o rigor da verificação formal.
-
-
-
-\textbf{Objetivo Geral}
-
-Desenvolver e avaliar um pipeline híbrido que combine modelos de linguagem e verificação formal para detectar bugs executáveis e \textit{code smells} em programas Python, aumentando a confiabilidade dos resultados e reduzindo falsos positivos.
-
-\textbf{Objetivos Específicos}
-
-\begin{itemize}
-
-\item Construir um \textit{dataset} de funções Python com bugs executáveis, \textit{code smells} e casos limpos. Para cada função, será criado um arquivo JSON com os rótulos corretos, denominado \textit{ground truth}, indicando a presença ou ausência de defeitos e suas respectivas categorias.
-
-
-\item Comparar cinco modelos de linguagem (LLMs e SLMs) na identificação de bugs verificáveis e \textit{code smells}, diferenciando-os de funções sem defeitos.
-
-\item Fazer uma etapa de validação por AST para verificar se os problemas apontados pelo modelo realmente existem no código antes da confirmação formal.
-
-
-\item Integrar o ESBMC-Python como confirmador formal das hipóteses de bug, restringindo sua execução apenas aos casos sinalizados pelo modelo como verificáveis.
-
-\item Comparar o fluxo híbrido (Flow B) com a análise exclusiva por modelo de linguagem (Flow C), usando o ESBMC direto (Flow A) como instrumento de validação do \textit{dataset}.
-
-\item Avaliar o impacto da confirmação formal na redução de falsos positivos, por meio das métricas de Precisão, Revocação, F1, TCF e TRN, detalhadas nas seções seguintes.
-
-\end{itemize}
-
-
-\section{Trabalhos Correlatos}
-
-Nesta seção, são apresentados trabalhos relacionados ao uso de modelos de linguagem na análise de código, à verificação formal de programas Python e à combinação dessas duas abordagens. Também são discutidas as diferenças e relações entre bugs e \textit{code smells}.
-
-
-
-\subsection{Modelos de Linguagem na Análise de Código: Capacidades e Limitações}
-
-Embora modelos de linguagem tenham apresentado bons resultados em tarefas relacionadas a código, ainda enfrentam dificuldades na detecção de vulnerabilidades reais. O benchmark PrimeVul \cite{ding2025} mostrou que o desempenho desses modelos diminui quando avaliados em vulnerabilidades de códigos de projetos reais, atingindo F1-Score de apenas 3{,}09\%. Estudos também indicam que esses modelos podem ser influenciados por algumas características do código, como renomeações de variáveis, o que pode gerar achados inconsistentes e falsos positivos \cite{ullah2024}.
-
-Outros estudos indicam que parte desse baixo desempenho pode estar relacionada à falta de contexto durante a análise \cite{li2026}. Quando informações adicionais sobre a execução e o fluxo de dados são fornecidas, modelos de raciocínio, como o DeepSeek-R1, apresentam resultados melhores, com F1 próximo de 0{,}6 em avaliações mais rigorosas. Ainda assim, esses modelos podem revisar uma análise inicialmente correta e chegar a uma conclusão incorreta após raciocínio excessivo.
-
-Assim, embora modelos de linguagem sejam úteis para a triagem inicial e para identificar padrões no código, seus resultados devem ser tratados como hipóteses, e não como confirmações de defeitos.
-
-\subsection{Verificação de Programas Python: Direta vs.\ Transpilação}
-
-A verificação formal de programas Python tem sido tratada principalmente de duas formas. O ESBMC-Python \cite{farias2024} permite verificar programas Python diretamente, sem necessidade de tradução para outra linguagem de programação (detalhes na Seção~\ref{sec:esbmc-python}).
-
-Por outro lado, sistemas como EVA \cite{shivaji2026} e PyVeritas \cite{orvalho2025} utilizam modelos de linguagem para traduzir programas Python para C e, em seguida, aplicam verificadores formais sobre o código traduzido. Essa estratégia permite reutilizar ferramentas de verificação já consolidadas para C, mas pode introduzir diferenças entre o comportamento do programa original e o código gerado.
-
-
-A técnica de \textit{Bounded Model Checking} (BMC) \cite{biere1999}, utilizada pelo ESBMC, verifica propriedades dentro de um limite finito de execução. Para isso, o programa e a propriedade analisada são traduzidos em uma fórmula lógica resolvida por um \textit{solver} SMT.
-
-\subsection{Integração entre Modelos de Linguagem e Verificação Formal}
-
-O uso de modelos de linguagem junto à verificação formal tem sido investigado como forma de apoiar a análise automática de programas \cite{tihanyi2025}. Nessa abordagem, o modelo de linguagem pode gerar hipóteses, especificações, asserções ou invariantes, enquanto o verificador formal avalia se essas propriedades são satisfeitas pelo programa e produz contraexemplos quando encontra uma violação.
-
-O sistema PropertyGPT, por exemplo, utiliza modelos de linguagem para gerar propriedades formais destinadas à análise de contratos inteligentes, isto é, programas executados automaticamente em plataformas de blockchain, como Ethereum. Dessa forma, o sistema busca identificar vulnerabilidades nesse tipo de aplicação \cite{tihanyi2025}.
-
-O trabalho EVA \cite{shivaji2026} aplica essa ideia a programas Python por meio de um orquestrador que coordena ferramentas de análise e traduz Python para C antes da verificação. Seus resultados mostram que a verificação formal pode confirmar falhas que não são identificadas de forma confiável apenas pela análise do modelo de linguagem, especialmente em situações influenciadas pelas diferenças entre a semântica de Python e C.
-
-\subsection{A Relação entre Bugs e \textit{Code Smells}}
-
-A distinção entre falhas executáveis e problemas de qualidade de código é um desafio relevante na análise automática de programas. Santos et al.\ \cite{santos2023} identificaram associações entre bugs e \textit{code smells}, mostrando que essas categorias podem compartilhar características estruturais semelhantes. Essa sobreposição ajuda a explicar por que modelos de linguagem podem confundir falhas executáveis com problemas de manutenibilidade.
-
-Estudos comparativos também mostram que modelos de linguagem conseguem identificar alguns \textit{smells} estruturais mais objetivos, como \textit{Long Method} e \textit{Large Class}, mas apresentam resultados mais variáveis em categorias que dependem de maior interpretação do contexto \cite{souza2026}.
-
-
-\subsection{Posicionamento da Proposta}
-
-Em síntese, o ESBMC-Python \cite{farias2024} fornece infraestrutura para a verificação formal direta de programas Python, mas, isoladamente, não realiza uma triagem inicial do código nem trata problemas de qualidade, como \textit{code smells}. Por outro lado, trabalhos que utilizam modelos de linguagem para detectar vulnerabilidades e \textit{smells} \cite{ding2025,li2026,souza2026} ampliam a capacidade de triagem, mas seus resultados permanecem heurísticos.
-
-O trabalho EVA \cite{shivaji2026} é o mais próximo desta proposta, pois combina modelos de linguagem e verificação formal para programas Python. Contudo, depende da tradução do código Python para C antes da verificação e foi avaliado em um conjunto próprio de 23 programas.
-
-A proposta deste trabalho utiliza modelos de linguagem para apontar possíveis problemas no código e distingue dois fluxos de tratamento. Bugs executáveis que podem ser expressos como propriedades verificáveis seguem para confirmação pelo ESBMC-Python. Já os \textit{code smells} não passam por confirmação formal, pois representam problemas de qualidade e manutenção do código. Nesses casos, o relatório mantém a identificação feita pelo modelo, junto com a explicação e uma possível sugestão de refatoração.
-
-
-Além disso, a proposta inclui uma etapa de validação por AST antes da verificação formal, para filtrar achados que não correspondem à estrutura do código. O trabalho também compara três abordagens: análise apenas com modelos de linguagem, verificação formal isolada e o fluxo híbrido. Essa comparação utiliza Precisão, Revocação e F1-Score como métricas principais, complementadas por Acurácia, MCC, TCF e TRN, detalhadas na Seção~\ref{sec:metricas}. Por fim, o \textit{ground truth} é definido separadamente das saídas do pipeline, permitindo avaliar de forma mais clara se a confirmação formal contribui para reduzir falsos positivos.
-
-
-
-\section{Referencial Teórico}
-
-\subsection{Bounded Model Checking e Resolvedores SMT}
-
-O \textit{Bounded Model Checking} (BMC) é uma técnica de verificação formal que explora o espaço de estados de um sistema até um limite finito $k$ \cite{biere1999}. O processo consiste em traduzir o programa e a negação da propriedade desejada em uma fórmula lógica. Se a fórmula for satisfatível (\textbf{SAT}), o resolvedor SMT (\textit{Satisfiability Modulo Theories}) produz um contraexemplo concreto que demonstra uma violação da propriedade. Caso seja insatisfatível (\textbf{UNSAT}), não foi encontrada violação dentro do limite analisado.
-
-Os resolvedores SMT estendem a verificação booleana tradicional ao permitir o uso de teorias como aritmética, vetores de bits e arranjos. Essa característica torna o BMC útil para encontrar bugs que se manifestam em execuções curtas e violações em casos extremos. Entretanto, a ausência de violações até o limite $k$ não garante que o programa esteja livre de falhas em execuções mais longas.
-
-\subsection{O Motor de Verificação ESBMC-Python}
-\label{sec:esbmc-python}
-
-O ESBMC \cite{cordeiro2012} é um verificador baseado em BMC e em resolvedores SMT, capaz de detectar automaticamente violações como divisão por zero, acesso fora dos limites e falhas de asserção, produzindo contraexemplos concretos. Sua extensão para Python, denominada ESBMC-Python \cite{farias2024}, permite verificar programas escritos diretamente nessa linguagem.
-
-Para isso, o ESBMC-Python utiliza o \textit{parser} da linguagem para gerar a Árvore Sintática Abstrata (\textit{Abstract Syntax Tree}, AST) do programa. Em seguida, realiza inferência de tipos a partir das anotações e do uso das variáveis, traduzindo o código para a representação intermediária GOTO utilizada pelo ESBMC. A partir disso, o programa passa pela conversão para a forma SSA (\textit{Static Single Assignment}) e pela geração de uma fórmula lógica submetida a um \textit{solver} SMT. Essa fórmula pode ser representada como $C \land \neg P$, em que $C$ corresponde às restrições do programa e $P$ à propriedade de segurança analisada.
-
-No presente trabalho, o ESBMC-Python é utilizado como etapa de confirmação formal. Apenas hipóteses de bugs classificadas como verificáveis (\texttt{verifiable=true}) pelo modelo de linguagem e validadas pela etapa de AST são encaminhadas para verificação formal.
-
-\subsection{Modelos de Linguagem para Código}
-
-Modelos de linguagem para código são redes neurais baseadas na arquitetura \textit{Transformer}, treinadas sobre grandes volumes de texto e código-fonte. Esses modelos podem interpretar e gerar código em diferentes linguagens de programação \cite{dakhel2023}. No contexto da análise de software, podem apoiar a triagem de bases de código e identificar padrões associados a vulnerabilidades ou \textit{code smells}.
-
-Entretanto, seus resultados são heurísticos e não oferecem garantias formais sobre o comportamento do programa. Por isso, podem produzir alucinações, isto é, afirmações sobre o código que não correspondem à sua estrutura ou comportamento real \cite{ullah2024,ding2025}.
-
-Neste trabalho, são avaliados modelos de grande porte (\textit{Large Language Models}, LLMs) acessados via API e modelos de pequeno porte (\textit{Small Language Models}, SLMs) executados localmente via Ollama. Essa escolha permite comparar diferentes perfis de custo, latência e qualidade de triagem.
-
-\subsection{Bugs, Vulnerabilidades e \textit{Code Smells}}
-
-Para fins deste trabalho, adota-se uma distinção entre bugs, vulnerabilidades e \textit{code smells}. Um \textit{bug} é um defeito que se manifesta como violação do comportamento esperado durante a execução, como uma divisão por zero, um acesso fora dos limites de uma estrutura de dados ou a violação de uma asserção explícita.
-
-Uma vulnerabilidade corresponde a um bug, ou a uma classe de bugs, cuja exploração pode comprometer propriedades de segurança do sistema, como confidencialidade, integridade ou disponibilidade.
-
-Um \textit{code smell} é um indicador de possível problema de qualidade ou manutenibilidade que não representa necessariamente uma falha executável imediata \cite{souza2026}. Exemplos incluem métodos excessivamente longos (\textit{long method}), listas de parâmetros extensas (\textit{many parameters}) e condicionais com complexidade lógica elevada (\textit{complex conditional}).
-
-
-
-
-\section{Método Proposto}
-
-\subsection{Visão Geral do Pipeline}
-\label{sec:pipeline-overview}
-
-O pipeline tem cinco etapas sequenciais: \textit{Preprocess}, \textit{LLM Analyzer}, \textit{AST Validation}, \textit{ESBMC} e \textit{Report}.
-
-\textbf{Preprocess:} cada arquivo Python do dataset é carregado e processado individualmente. O módulo \texttt{ast} da linguagem converte o código em uma Árvore Sintática Abstrata (AST), que representa a estrutura do programa de forma organizada: quais funções existem, quais variáveis são usadas, quais operações são realizadas e onde cada elemento aparece. A AST extraída nesta etapa é usada internamente na etapa de AST Validation para checar as hipóteses do modelo, mas não é enviada ao modelo durante a análise. Pois incluir a AST no \textit{prompt} pode revelar ao modelo a estrutura exata de operações do código, introduzindo viés nos resultados.
-
-\textbf{LLM Analyzer:} o código-fonte e metadados básicos da função (nome, parâmetros, anotações de tipo, número de linhas) são enviados ao modelo via \textit{prompt} estruturado com \textit{Chain-of-Thought} (CoT), técnica em que o modelo é instruído a raciocinar passo a passo antes de emitir um veredito, o que reduz erros em tarefas de análise \cite{li2026}. O \textit{prompt} do sistema define as seis categorias aceitas pelo pipeline (\texttt{division\_by\_zero}, \texttt{out\_of\_bounds} e \texttt{assertion\_violation} para bugs; \texttt{long\_method}, \texttt{many\_parameters} e \texttt{complex\_conditional} para \textit{code smells}, detalhadas na Seção~\ref{sec:dataset}) . O modelo é instruído a retornar exclusivamente um JSON válido com um schema fixo: para cada hipótese, o JSON inclui o tipo do achado (\texttt{suspected\_bug} ou \texttt{smell\_heuristic}), a categoria, a flag \texttt{verifiable}, uma explicação do raciocínio e a expressão exata identificada no código. A saída é processada por um \textit{parser} estruturado com extração via regex como alternativa, garantindo que respostas malformadas não interrompam o pipeline.
-
-\textbf{AST Validation:} Verifica se a expressão reportada pelo modelo realmente existe no código da função analisada. A validação ocorre em três fases. Na primeira, a expressão é comparada diretamente contra as operações extraídas pela etapa de Preprocess (subscripts para \texttt{out\_of\_bounds}, divisões para \texttt{division\_by\_zero}): se houver correspondência exata, a hipótese é confirmada e recebe os metadados de linha. Na segunda fase, caso a expressão não tenha sido encontrada na fase anterior, ela é normalizada via AST (\texttt{ast.unparse}) e buscada nos nós executáveis do código-fonte; isso tolera diferenças superficiais de formatação, mas ainda exige que a expressão exista literalmente no código. Para \texttt{assertion\_violation}, a validação compara a expressão reportada com as instruções \texttt{assert} presentes na função, por correspondência de texto ou de nós AST. Se nenhuma das fases confirmar a expressão, a hipótese é marcada como alucinação (\texttt{llm\_false\_positive}) e descartada, evitando que o ESBMC seja invocado sobre suposições sem base no código real.
-
-\textbf{Bifurcação:} após a AST Validation, o pipeline se divide em dois caminhos. \textit{Code smells} e bugs com \texttt{verifiable=false} seguem diretamente para o \textit{Report} com o veredito e a recomendação do modelo. Isso evita invocar o ESBMC sobre problemas que não têm natureza verificável formalmente, reduzindo o custo computacional. Apenas bugs com \texttt{verifiable=true} e validados pela AST seguem para a etapa de verificação formal.
-
-\textbf{ESBMC:} o verificador é executado diretamente sobre o arquivo Python original, sem nenhuma modificação no código. A flag \texttt{{-}{-}function} indica ao ESBMC qual função verificar, com base na função identificada pelo modelo. A flag \texttt{{-}{-}assign-param-nondet} faz com que todos os parâmetros de entrada sejam tratados como valores desconhecidos: o ESBMC explora simbolicamente todas as combinações possíveis de entrada, sem precisar de casos de teste escritos manualmente. A flag \texttt{{-}{-}incremental-bmc} ativa o modo de verificação incremental, em que o limite de execução começa em um valor pequeno e aumenta gradualmente a cada iteração, permitindo encontrar violações com o menor limite possível e tornando a verificação mais eficiente do que fixar um valor único desde o início. As propriedades verificadas, divisão por zero, acesso fora dos limites de listas e violação de asserções, são checadas nativamente pelo verificador. Se encontrar uma situação que viola alguma dessas propriedades, o ESBMC retorna \texttt{VERIFICATION FAILED} junto com um contraexemplo concreto mostrando os valores que disparam o bug. Caso não encontre violação, retorna \texttt{VERIFICATION SUCCESSFUL}. A chamada gerada pelo pipeline para cada hipótese de bug segue o formato:
-
-\begin{verbatim}
-esbmc --function <nome_da_funcao> \
-      --incremental-bmc \
-      --assign-param-nondet \
-      <arquivo.py>
-\end{verbatim}
-
-\textbf{Report:} consolida, por função, o veredito do modelo, o resultado do ESBMC (quando aplicável) e o rótulo do \textit{ground truth}, calculando as métricas por categoria e por modelo para os três fluxos. Os resultados são exportados em JSON e podem ser visualizados em um \textit{frontend} HTML estático gerado pelo pipeline.
-
-\subsection{Fluxos de Avaliação}
-
-A verificação formal via BMC pode demandar alto custo computacional e ser difícil de aplicar em bases de código maiores. À medida que a complexidade do programa cresce, o número de estados a serem analisados também aumenta, elevando o tempo necessário para a verificação \cite{tihanyi2025,cordeiro2012}. Além disso, em projetos reais, a aplicação da verificação formal pode exigir um trabalho prévio de preparação. Isso envolve selecionar e preparar funções ou trechos específicos do código, além de definir as propriedades ou asserções que devem ser verificadas. Esse trabalho torna mais difícil analisar diretamente todos os arquivos de um repositório grande. Shivaji et al.\ \cite{shivaji2026} reportam tempos de 35--50 segundos por função para a verificação formal, enquanto uma triagem por modelo de linguagem pode ocorrer em 2--10 segundos. Dessa forma, utilizar modelos de linguagem como etapa inicial permite direcionar o ESBMC apenas para funções ou trechos com indícios de bugs verificáveis, em vez de aplicar a verificação formal sobre todo o código. Essa escolha reduz o número de casos que precisam ser preparados e analisados, tornando o uso da verificação formal mais viável na prática \cite{kaniewski2025}.
-
-
-O pipeline tem três modos de execução, chamados de fluxos:
-
-\textbf{Flow A (ESBMC direto):} o ESBMC é executado diretamente sobre cada função, sem nenhuma triagem prévia por modelo de linguagem. Neste trabalho, esse fluxo foi utilizado para validar o \textit{dataset}, confirmando que os bugs anotados no \textit{ground truth} são de fato disparáveis pelo verificador. 
-
-
-\textbf{Flow B (Híbrido):} o modelo faz a triagem inicial, a AST Validation filtra alucinações, e o ESBMC confirma ou refuta cada hipótese de bug verificável. É o fluxo principal da proposta.
-
-\textbf{Flow C (Somente Modelo):} usa apenas o veredito do modelo de linguagem, após a AST Validation, sem confirmação formal. Serve para isolar o ganho específico da etapa de verificação.
-
-A comparação principal é entre Flow~C e Flow~B: Flow~C mostra o que o modelo reporta sozinho; Flow~B mostra o efeito da combinação com o ESBMC, principalmente a redução de falsos positivos.
-
-\subsection{Dataset e Categorias Avaliadas}
-\label{sec:dataset}
-
-O conjunto de dados (V1) é composto por 70 casos, cada um correspondendo a uma \textbf{função Python isolada}. Os casos são distribuídos entre 45 funções com \textit{bugs} executáveis (15 por categoria de bug), 10 controles limpos (funções corretas, sem defeitos, utilizadas para avaliar a taxa de falsos positivos) e 15 funções com \textit{code smells} (5 por categoria). É importante notar que o \textit{ground truth} registra instâncias de bug individualmente: três funções da categoria \texttt{out\_of\_bounds} contêm dois acessos inválidos distintos cada uma, totalizando 18 instâncias nessa categoria e 48 instâncias de bug no total. Por isso, nas tabelas de resultados, o número de verdadeiros positivos (VP) pode superar 15 nessa categoria — cada instância corretamente identificada conta como um VP separado.
-
-São consideradas três categorias de \textit{bugs} verificáveis por ESBMC: \texttt{division\_by\_zero} (divisão por zero), \texttt{out\_of\_bounds} (acesso fora dos limites de uma estrutura indexável) e \texttt{assertion\_violation} (violação de uma asserção explícita no código). São consideradas também três categorias heurísticas de \textit{code smells}, definidas por critérios estruturais objetivos: \texttt{long\_method} (métodos com 20 ou mais linhas executáveis), \texttt{many\_parameters} (funções com 5 ou mais parâmetros, excluindo \texttt{self}/\texttt{cls}) e \texttt{complex\_conditional} (condicionais com 3 ou mais operadores lógicos). A avaliação por categoria, além da avaliação global, permite identificar quais tipos de defeito são mais ou menos acessíveis a cada modelo, informação relevante para guiar a seleção de modelos em cenários reais.
-
-O \textit{ground truth} é o conjunto de rótulos corretos definidos manualmente para cada caso do dataset, indicando o tipo real de defeito presente (ou a ausência de defeito). 
-
-Um passo crítico da construção do dataset é a \textbf{validação pelo ESBMC}: cada função anotada como contendo um bug verificável é submetida ao ESBMC-Python para confirmar que o defeito é disparável. Todos os 45 arquivos de bug foram confirmados com \texttt{VERIFICATION FAILED}, com o tipo de violação correspondendo à categoria anotada no \textit{ground truth}. 
-
-\subsection{Modelos e Configurações Experimentais}
-
-Cinco modelos foram selecionados para representar diferentes perfis de uso: \texttt{claude-sonnet-4-6} (Anthropic, via API), \texttt{gemini-3.1-flash-lite} (Google, via API), \texttt{gpt-5.5} (OpenAI, via API), \texttt{deepseek-r1:7b} e \texttt{qwen2.5-coder:7b} (modelos de pequeno porte e código aberto, executados localmente via Ollama). O mesmo \textit{prompt} foi utilizado para todos os modelos, sem ajustes específicos por modelo, caracterizando uma avaliação \textit{cross-model}. A temperatura foi configurada como 0 para Gemini, DeepSeek e Qwen. Para Claude e GPT-5.5, esse parâmetro não estava disponível nas respectivas APIs.
-
-Os modelos locais (DeepSeek e Qwen) foram executados em uma máquina com processador Intel Core i7-12700H (12ª geração), 16\,GB de RAM e sem GPU dedicada, utilizando inferência apenas por CPU via Ollama.
-
-
-\subsection{Métricas de Avaliação}
+\section{Avaliação Preliminar}
+\subsection{Configuração Experimental}
+
+O dataset utilizado é composto por 70 funções Python: 45 contêm bugs
+executáveis (15 por categoria, totalizando 48 instâncias de defeito,
+já que \textit{out-of-bounds} pode ocorrer mais de uma vez por
+função), 15 contêm \textit{code smells} (5 por categoria) e 10 são
+funções limpas, usadas como controle negativo. O rótulo correto de
+cada função (\textit{ground truth}) foi anotado manualmente em arquivos
+JSON e validado por meio da execução direta do ESBMC-Python sobre cada
+arquivo (Flow A), confirmando que todas as 48 instâncias de defeito
+eram alcançáveis e foram identificadas pelo verificador
+(P=R=F1=1,000).
+
+Foram comparados três fluxos de execução:
+\textbf{Flow A}, execução direta do ESBMC-Python, utilizada apenas para
+validar o dataset; \textbf{Flow B}, pipeline híbrido proposto, composto
+pela triagem do modelo de linguagem, validação estrutural por AST e
+confirmação formal pelo ESBMC-Python; e \textbf{Flow C}, uso isolado do
+modelo de linguagem, sem confirmação formal. O Flow A não é tratado
+como abordagem concorrente, sendo empregado apenas como teste de
+sanidade para verificar a alcançabilidade dos defeitos anotados. Embora
+o mesmo verificador seja utilizado no Flow A e no Flow B, essa
+circularidade é mitigada porque o Flow A confirma apenas a
+alcançabilidade dos defeitos, enquanto os rótulos de categoria foram
+atribuídos manualmente e são independentes do verificador. Os Flows B e
+C reutilizam exatamente a mesma saída do modelo de linguagem para cada
+função.
+
+O estudo utiliza cinco modelos: três acessados via API (gpt-5.5,
+claude-sonnet-4-6 e gemini-3.1-flash-lite) e dois modelos locais
+executados via Ollama (deepseek-r1:7b e qwen2.5-coder:7b). A seleção
+buscou representar diferentes famílias de modelos empregadas em estudos
+recentes de engenharia de software, incluindo modelos proprietários
+(OpenAI, Anthropic e Google) e modelos abertos executáveis
+localmente~\cite{ullah2024secllmholmes,ding2025primevul}. O qwen2.5-coder:7b foi incluído por sua especialização em código,
+enquanto o deepseek-r1:7b representa uma família recente avaliada em
+análise de qualidade de código~\cite{orvalho2025pyveritas,souza2026beyondstrictrules}. Neste trabalho, SLM refere-se a
+esses dois modelos locais de aproximadamente 7 bilhões de parâmetros.
+
+A temperatura foi configurada como 0, quando disponível, para aumentar
+o determinismo e a reprodutibilidade dos experimentos, conforme
+trabalhos anteriores~\cite{ullah2024secllmholmes,orvalho2025pyveritas}. Apenas gpt-5.5 e claude-sonnet-4-6 utilizaram APIs pagas.
+
+% Os experimentos foram executados com o ESBMC-Python versão 8.3.0. Os
+% modelos locais foram executados com Ollama versão 0.30.5 via WSL2, em uma
+% máquina com GPU NVIDIA RTX 3060 Laptop (6GB VRAM) e até 15GB de RAM
+% disponíveis para o processo dentro do WSL2.
+
+
+
+\subsection{Métricas}
 \label{sec:metricas}
 
-Para cada função, o modelo pode gerar uma ou mais suspeitas de defeito. As métricas são calculadas em dois níveis, que respondem a perguntas diferentes:
+Precisão (P), Revocação (R) e F1 são calculados por achado
+(\textit{finding-level})~\cite{ding2025primevul}, por fornecerem medidas
+complementares da qualidade das predições: P avalia a confiabilidade dos
+achados, R mede a cobertura dos defeitos e F1 sintetiza o equilíbrio entre
+ambas. Cada instância esperada no \textit{ground truth} é comparada aos
+achados gerados, casando por função e categoria, sem reutilizar
+instâncias já casadas, de modo que múltiplas ocorrências da mesma
+categoria em uma função (por exemplo, dois \textit{out-of-bounds})
+contam como Verdadeiros Positivos (TPs) separados quando o modelo reporta
+achados distintos para cada uma. Um achado sem correspondência no
+\textit{ground truth} conta como Falso Positivo (FP), enquanto uma
+instância esperada não identificada conta como Falso Negativo (FN).
+Funções limpas não têm instâncias esperadas e só podem contribuir com FP
+nesse cômputo.
 
-\begin{itemize}
-\item \textbf{Por suspeita:} cada suspeita reportada pelo modelo é avaliada individualmente. Esse nível permite medir quantas suspeitas estavam corretas e quantas eram falsos positivos. Por exemplo, se o modelo reporta duas suspeitas para uma função e apenas uma corresponde ao \textit{ground truth}, são contabilizados um VP e um FP.
+Acurácia (Acc) e o Coeficiente de Correlação de Matthews (MCC) são
+calculados por função (com bug vs. limpa), complementando a avaliação por
+achado ao medir a capacidade do pipeline de distinguir funções com bugs
+de funções limpas: uma função com bug conta como TP se o modelo confirmou
+ao menos um achado nela (FN caso contrário); uma função limpa conta como
+Verdadeiro Negativo (TN) se nenhum achado foi confirmado nela (FP caso
+contrário). O MCC é adotado por considerar os quatro quadrantes de forma
+mais robusta em datasets desbalanceados (45 funções com bug contra 10
+limpas)~\cite{ding2025primevul}. As 15 funções contendo apenas
+\textit{code smells} são excluídas desse cálculo, pois não pertencem nem
+à classe de bugs nem aos controles negativos. Acc, MCC, FCR e NRR
+aplicam-se apenas a bugs formais; para \textit{code smells}, que não são
+submetidos ao ESBMC-Python, reportam-se apenas P, R e F1.
 
-\item \textbf{Por função:} cada função é avaliada como um todo: o modelo acertou ou errou ao classificar aquela função como bugada ou limpa, sem considerar categoria ou expressão específica. Esse nível é necessário para calcular métricas que dependem de verdadeiros negativos (TN): quando o modelo não reporta defeitos em uma função limpa, esse resultado é considerado um acerto.
-\end{itemize}
-
-No nível de suspeita, não há uma forma direta de contabilizar verdadeiros negativos, pois não é possível enumerar todas as suspeitas que o modelo deixou de reportar corretamente. Por isso, Precisão, Revocação e F1-Score são calculadas por suspeita. Já Acurácia e MCC, que dependem de TN em suas fórmulas, são calculadas por função.
-
-Os resultados possíveis são:
-
-\begin{itemize}
-\item \textbf{Verdadeiro Positivo (VP)}: o modelo reportou uma suspeita que corresponde a um defeito presente no \textit{ground truth}.
-\item \textbf{Falso Positivo (FP)}: o modelo reportou uma suspeita que não corresponde a nenhum defeito presente no \textit{ground truth}. Hipóteses descartadas pela AST Validation como alucinações também são contabilizadas como FP.
-\item \textbf{Falso Negativo (FN)}: existe um defeito no \textit{ground truth}, mas o modelo não o reportou.
-\item \textbf{Verdadeiro Negativo (TN)}: a função está limpa e o modelo não reportou defeitos. Contabilizada apenas no nível de função e apenas para bugs — o dataset não contém funções rotuladas como ``sem \textit{smell}'', portanto TN não se aplica a \textit{code smells}.
-\item \textbf{Alucinação (Aluc.)}: hipótese reportada pelo modelo que referencia uma variável ou operação inexistente no código, detectada pela AST Validation. Aplicável apenas a bugs, pois a AST Validation não verifica hipóteses de \textit{code smells}. Contabilizada separadamente como diagnóstico da qualidade do modelo, mas também incluída no FP para fins de cálculo de precisão.
-\end{itemize}
+\textbf{FCR} (\textit{Formal Confirmation Rate}) é a razão entre
+hipóteses verificáveis confirmadas pelo ESBMC-Python e o total de
+hipóteses submetidas ao verificador após a AST Validation, incluindo
+casos não confirmados e classificações divergentes. \textbf{NRR}
+(\textit{Noise Reduction Rate}) mede a redução percentual de falsos
+positivos do Flow C para o Flow B: NRR $=1{,}000$ indica eliminação total
+do ruído da LLM; quando não há falsos positivos no Flow C, a razão é
+indefinida e reportada como N/A.
 
 
-A escolha das métricas é fundamentada pela literatura e pelas necessidades específicas do pipeline híbrido. Precisão, Revocação e F1-Score são o padrão em benchmarks de detecção de defeitos com modelos de linguagem \cite{ding2025,li2026}. Acurácia e MCC são adotadas porque o \textit{dataset} é desbalanceado (mais funções com bugs do que limpas): Ding et al.\ \cite{ding2025} alertam que a acurácia isolada pode ser enganosa nesse cenário, enquanto o MCC considera todos os quadrantes da matriz de confusão e é mais robusto. A TCF e a TRN são métricas específicas para pipelines híbridos, onde a verificação formal atua como árbitro das hipóteses heurísticas \cite{tihanyi2025,shivaji2026}; a TRN em particular quantifica a redução de falsos positivos, lacuna identificada na literatura de refutação de bugs espúrios via SMT \cite{gadelha2019smt}. A separação em dois níveis (achado e função) e a exclusão de \textit{smells} das métricas formais derivam da distinção estrutural entre bugs verificáveis e problemas de qualidade \cite{santos2023}.
 
-As três métricas a seguir se aplicam tanto a bugs quanto a \textit{code smells}, calculadas ao nível de achado.
+\subsection{Resultados e Discussão}
+\label{sec:resultados}
 
-A \textbf{Precisão} ($P$) responde: dos defeitos que o modelo acusou, quantos realmente existiam?
-\begin{equation}
-P = \frac{VP}{VP + FP}
-\end{equation}
-Alta precisão significa poucos alarmes falsos. Baixa precisão significa que o modelo acusa muita coisa que não é defeito.
+A Tabela~\ref{tab:results} compara o desempenho do Flow C (somente o modelo de linguagem) e do Flow B (pipeline híbrido) para detecção de bugs. Os três modelos acessados por API já apresentam elevado desempenho no Flow C (F1 entre 0,935 e 0,980), enquanto os modelos locais obtêm F1 entre 0,652 e 0,730 devido ao maior número de falsos positivos. Esse resultado é consistente com estudos anteriores sobre a variabilidade entre modelos~\cite{ullah2024secllmholmes,ding2025primevul}.
 
-A \textbf{Revocação} ($R$) responde: dos defeitos reais existentes no dataset, quantos o modelo encontrou?
-\begin{equation}
-R = \frac{VP}{VP + FN}
-\end{equation}
-Alta revocação significa que o modelo encontrou a maioria dos bugs. Baixa revocação significa que perdeu muitos.
+O pipeline beneficiou todos os modelos de forma proporcional ao número de falsos positivos produzidos no Flow C. O ESBMC-Python elimina quase todos os falsos positivos do qwen2.5-coder:7b (NRR = 0,960) e todos os do deepseek-r1:7b (NRR = 1,000), elevando suas precisões para 0,977 e 1,000, respectivamente, no Flow B. Entre os modelos de API, GPT-5.5 e Gemini eliminam todos os falsos positivos remanescentes (NRR = 1,000 para ambos, com precisão de 1,000 no Flow B), enquanto Claude Sonnet apresenta ganho mais modesto (NRR = 0,500). Esses resultados fornecem evidência empírica, no contexto de programas Python, para o paradigma híbrido discutido por Tihanyi et al.~\cite{tihanyi2025vulnerability}, ao quantificar a redução de falsos positivos obtida pela combinação entre modelos de linguagem e verificação formal.
 
-O \textbf{F1-Score} combina precisão e revocação em um único valor, penalizando quando qualquer uma das duas é baixa \cite{ding2025}:
-\begin{equation}
-F1 = 2 \cdot \frac{P \cdot R}{P + R}
-\end{equation}
-É útil para comparar modelos com diferentes trocas entre precisão e revocação.
 
-As quatro métricas a seguir são específicas para bugs. Para \textit{code smells}, o ESBMC não é aplicado, portanto TCF e TRN não são calculadas; Acc e MCC também não se aplicam a smells porque o dataset não tem funções limpas rotuladas como ``sem smell''.
+O ganho observado nas métricas por função acompanha o nível inicial de ruído de cada modelo. O caso mais expressivo é o qwen2.5-coder:7b, cujo MCC evolui de $-0{,}132$ no Flow C para 0,807 no Flow B. O deepseek-r1:7b também apresenta melhora substancial, passando de 0,346 para 0,498. O GPT-5.5 evolui de MCC = 0,594 no Flow C para MCC = 1,000 no Flow B, e o Claude Sonnet de MCC = 0,938 para MCC = 1,000, sugerindo ganhos adicionais mesmo para modelos de alta precisão,
+resultado que deve ser ponderado devido ao dataset reduzido (N=55), que torna o MCC sensível a casos de fronteira.
 
-A \textbf{Taxa de Confirmação Formal (TCF)} mede a qualidade das hipóteses que o modelo envia ao ESBMC. A LLM encaminha tanto bugs reais quanto falsos positivos para verificação; o ESBMC confirma os reais (\texttt{VERIFICATION FAILED}) e rejeita os falsos (\texttt{VERIFICATION SUCCESSFUL}). Sendo $C$ o número de hipóteses confirmadas e $N$ o número rejeitadas ou inconclusivas:
-\begin{equation}
-TCF = \frac{C}{C + N}
-\end{equation}
-Alta TCF indica que o modelo encaminha principalmente hipóteses reais. Baixa TCF indica que envia muitos falsos positivos ao verificador.
+A diferença entre modelos de API e locais também diminui do Flow C para o Flow B. Em Flow C, qwen2.5-coder:7b (F1 = 0,730) fica bem abaixo de gemini-3.1-flash-lite (F1 = 0,935); em Flow B, essa distância cai para apenas 0,022 (0,923 contra 0,945), aproximando qwen2.5-coder:7b (melhor modelo local) de gemini-3.1-flash-lite (modelo de API com menor F1 no Flow C). O deepseek-r1:7b, com F1 = 0,769 no Flow B, segue como o modelo de desempenho mais baixo do grupo.
 
-A \textbf{Taxa de Redução de Ruído (TRN)} responde: o ESBMC eliminou qual proporção dos falsos positivos que o modelo tinha sozinho?
-\begin{equation}
-TRN = \frac{FP_C - FP_B}{FP_C}
-\end{equation}
-onde $FP_C$ e $FP_B$ são os falsos positivos nos Flows C e B. TRN\,=\,1{,}000 indica que o ESBMC eliminou todos os FPs do modelo; TRN\,=\,0 indica que não eliminou nenhum. Quando $FP_C = 0$, a TRN é indefinida.
 
-A \textbf{Acurácia por Função (Acc)} e o \textbf{Coeficiente de Correlação de Matthews (MCC)} são calculados ao nível de função, onde cada função é classificada como positiva (contém bug) ou negativa (limpa). O subscrito $f$ indica contagens por função.
-
-A Acurácia responde: qual proporção de funções foi classificada corretamente?
-\begin{equation}
-\text{Acc} = \frac{VP_f + TN_f}{VP_f + FP_f + FN_f + TN_f}
-\end{equation}
-Alta acurácia significa que o modelo acertou a maioria das funções. Porém, como o dataset tem mais funções com bugs (45) do que limpas (10), a acurácia pode ser enganosa: um modelo que acusa bug em tudo teria acurácia de 82\% sem ser útil.
-
-O MCC corrige esse problema avaliando o desempenho mesmo com classes desbalanceadas:
-\begin{equation}
-\text{MCC} = \frac{VP_f \cdot TN_f - FP_f \cdot FN_f}{\sqrt{(VP_f+FP_f)(VP_f+FN_f)(TN_f+FP_f)(TN_f+FN_f)}}
-\end{equation}
-Seu valor vai de $-1$ a $+1$: $+1$ é classificação perfeita, $0$ equivale a chutar aleatoriamente, e valores negativos indicam que o modelo é pior que o aleatório.
-
-\section{Resultados}
-
-O benchmark V1 foi executado sobre 70 funções Python (45 com bugs, 15 com \textit{code smells} e 10 limpas) com cinco modelos divididos em dois grupos:
-
-\begin{itemize}
-\item \textbf{Modelos de API} (\texttt{gpt-5.5}, \texttt{claude-sonnet-4-6}, \texttt{gemini-3.1-flash-lite}): modelos grandes acessados remotamente via API, com maior capacidade de raciocínio.
-\item \textbf{Modelos locais} (\texttt{deepseek-r1:7b}, \texttt{qwen2.5-coder:7b}): modelos menores executados localmente via Ollama, sem custo de API mas com menor capacidade.
-\end{itemize}
-
-Para cada modelo são reportadas métricas no Flow~C (somente modelo de linguagem, sem verificação formal) e no Flow~B (híbrido: modelo + ESBMC). O Flow~A (ESBMC direto, sem modelo) foi executado separadamente para validação do \textit{dataset}, confirmando todos os 45 arquivos de bug com \texttt{VERIFICATION FAILED} (P\,=\,1{,}000, R\,=\,1{,}000, F1\,=\,1{,}000).
-
-\subsection{Resultados Globais por Modelo}
-
-A Tabela~\ref{tab:bugs-llm} apresenta as métricas para o Flow~C (somente modelo de linguagem) e a Tabela~\ref{tab:bugs-hybrid} para o Flow~B (híbrido). A coluna ``Aluc.'' indica o número de alucinações detectadas pela AST Validation, ou seja, hipóteses do modelo que referenciam construções inexistentes na AST real do programa.
-
-\begin{table*}[htbp]
-\caption{Detecção de bugs no Flow C (somente modelo de linguagem)}
-\label{tab:bugs-llm}
-\begin{center}
-\begin{tabular}{lrrrrrrrrr}
+\begin{table}[htb]
+\caption{Flow C (somente LLM) vs. Flow B (pipeline híbrido). R é idêntico nos dois flows, pois o pipeline só confirma hipóteses já geradas pela LLM.}
+\label{tab:results}
+\centering
+\scriptsize
+\begin{tabular}{lcccccccc}
 \toprule
-\textbf{Modelo} & \textbf{VP} & \textbf{FP} & \textbf{FN} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{Acc} & \textbf{MCC} & \textbf{Aluc.} \\
+Modelo & R & P$_C$ & F1$_C$ & P$_B$ & F1$_B$ & Acc$_B$ & MCC$_B$ & FCR/NRR \\
 \midrule
-gpt-5.5               & 48 &  0 &  0 & 1{,}000 & 1{,}000 & 1{,}000 & 1{,}000 &  1{,}000 & 0  \\
-claude-sonnet-4-6     & 48 &  4 &  0 & 0{,}923 & 1{,}000 & 0{,}960 & 0{,}982 &  0{,}938 & 1  \\
-gemini-3.1-flash-lite & 46 &  3 &  2 & 0{,}939 & 0{,}958 & 0{,}949 & 0{,}946 &  0{,}825 & 1  \\
-deepseek-r1:7b        & 27 &  8 & 21 & 0{,}771 & 0{,}563 & 0{,}651 & 0{,}654 &  0{,}386 & 7  \\
-qwen2.5-coder:7b      & 34 & 20 & 14 & 0{,}630 & 0{,}708 & 0{,}667 & 0{,}636 & -0{,}059 & 13 \\
+gpt-5.5 & 1,000 & 0,889 & 0,941 & 1,000 & 1,000 & 1,000 & 1,000 & 0,889 / 1,000 \\
+claude-sonnet-4-6 & 1,000 & 0,960 & 0,980 & 0,980 & 0,990 & 1,000 & 1,000 & 0,960 / 0,500 \\
+gemini-3.1-flash-lite & 0,896 & 0,977 & 0,935 & 1,000 & 0,945 & 0,909 & 0,770 & 0,977 / 1,000 \\
+qwen2.5-coder:7b & 0,875 & 0,627 & 0,730 & 0,977 & 0,923 & 0,927 & 0,807 & 0,857 / 0,960 \\
+deepseek-r1:7b & 0,625 & 0,682 & 0,652 & 1,000 & 0,769 & 0,709 & 0,498 & 0,909 / 1,000 \\
 \bottomrule
 \end{tabular}
-\end{center}
-\end{table*}
+\end{table}
 
-\begin{table*}[htbp]
-\caption{Detecção de bugs no Flow B (Modelo de Linguagem + ESBMC)}
-\label{tab:bugs-hybrid}
-\begin{center}
-\begin{tabular}{lrrrrrrrrrr}
-\toprule
-\textbf{Modelo} & \textbf{VP} & \textbf{FP} & \textbf{FN} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{Acc} & \textbf{MCC} & \textbf{TCF} & \textbf{TRN} \\
-\midrule
-gpt-5.5               & 48 & 0 &  0 & 1{,}000 & 1{,}000 & 1{,}000 & 1{,}000 & 1{,}000 & 1{,}000 & N/A   \\
-claude-sonnet-4-6     & 48 & 1 &  0 & 0{,}980 & 1{,}000 & 0{,}990 & 1{,}000 & 1{,}000 & 0{,}960 & 0{,}750 \\
-gemini-3.1-flash-lite & 46 & 1 &  2 & 0{,}979 & 0{,}958 & 0{,}968 & 0{,}964 & 0{,}892 & 0{,}958 & 0{,}667 \\
-deepseek-r1:7b        & 27 & 0 & 21 & 1{,}000 & 0{,}563 & 0{,}720 & 0{,}673 & 0{,}463 & 0{,}964 & 1{,}000 \\
-qwen2.5-coder:7b      & 34 & 0 & 14 & 1{,}000 & 0{,}708 & 0{,}829 & 0{,}782 & 0{,}577 & 0{,}850 & 1{,}000 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table*}
+A AST Validation complementa a verificação formal ao filtrar alucinações estruturais. A taxa de alucinação corresponde à razão entre o número de achados rejeitados pela AST Validation e o número total de achados verificáveis propostos pelo modelo antes dessa etapa. Os três modelos de API (gpt-5.5, claude-sonnet-4-6 e gemini-3.1-flash-lite) não apresentaram alucinações, enquanto deepseek-r1:7b atingiu 25,00\% (11 achados rejeitados) e qwen2.5-coder:7b atingiu 10,91\% (6 achados rejeitados). Esses casos ocorrem quando o modelo reporta expressões inexistentes no código, como \texttt{assert x > 0} para uma função que continha \texttt{assert value < limit}. Como cada função foi analisada em uma chamada independente, sem histórico entre as requisições, esses casos não resultam de compartilhamento de contexto entre arquivos no pipeline. Assim, a AST elimina inconsistências sintáticas, enquanto o ESBMC-Python descarta hipóteses semanticamente incorretas sobre expressões válidas.
 
-\noindent\textit{Acc} e \textit{MCC}: calculados por função (positiva = tem bug, negativa = limpa). \textit{TCF}: proporção de hipóteses confirmadas pelo ESBMC. \textit{TRN}: proporção de falsos positivos do Flow~C eliminados no Flow~B. N/A: TRN indefinida pois o modelo já tinha FP\,=\,0 no Flow~C.
+Entre as categorias de bugs, os modelos locais seguem menos consistentes mesmo após a validação formal, com quedas isoladas em uma categoria específica: o deepseek-r1:7b cai para F1 = 0,696 em \textit{division by zero} contra F1 $\geq$ 0,968 em \textit{out-of-bounds} e \textit{assertion violation}, uma queda de ao menos 0,272; o qwen2.5-coder:7b cai para F1 = 0,800 em \textit{out-of-bounds} contra F1 $\geq$ 0,968 nas outras duas categorias, uma queda de ao menos 0,168. Os modelos de API não apresentam essa oscilação: seus F1$_B$ agregados (Tabela~\ref{tab:results}) permanecem entre 0,945 e 1,000, sem categoria isolada de baixo desempenho. Essas categorias exigem raciocínio sobre restrições de índices, valores de denominador e diferentes caminhos de execução, reduzindo a eficácia de modelos que dependem predominantemente de padrões sintáticos. Esse resultado é compatível com evidências de que o desempenho de modelos de código diminui em cenários que exigem distinções semânticas mais rigorosas e avaliações menos simplificadas~\cite{ding2025primevul}. O pipeline não recupera esses casos: o ESBMC-Python confirma ou descarta hipóteses já geradas pela LLM, mas não gera novas hipóteses, de modo que erros de raciocínio semântico do modelo (achados ausentes ou de categoria incorreta) permanecem como FN mesmo após a validação formal.
 
-Os modelos de API superaram amplamente os modelos locais. O \texttt{gpt-5.5} foi o único a atingir desempenho perfeito (F1\,=\,1{,}000) já sem o ESBMC, sem gerar alarmes falsos nem perder nenhum bug real. O \texttt{claude-sonnet-4-6} encontrou todas as 48 instâncias de bug mas gerou 4 alarmes falsos no Flow~C; com o ESBMC, esse número caiu para 1, elevando o F1 para 0{,}990. O \texttt{gemini-3.1-flash-lite} perdeu 2 instâncias e gerou 3 FPs no Flow~C; o ESBMC reduziu para 1 FP (F1\,=\,0{,}968).
 
-Os modelos locais tiveram desempenho inferior. O \texttt{deepseek-r1:7b} encontrou apenas 27 das 48 instâncias de bug (perdeu 21) e gerou 8 FPs. O ESBMC eliminou todos os 8 FPs, mas os 21 bugs perdidos são irrecuperáveis, pois o modelo simplesmente não os identificou. O \texttt{qwen2.5-coder:7b} encontrou 34 bugs mas gerou 20 FPs, o maior número de alarmes falsos; seu MCC negativo no Flow~C (${-}0{,}059$) indica desempenho abaixo do acaso nessa configuração. O ESBMC eliminou todos os 20 FPs, elevando a precisão de 0{,}630 para 1{,}000, mas os 14 bugs perdidos permaneceram sem detecção.
 
-\subsection{Resultados por Categoria de Bug}
-
-As Tabelas~\ref{tab:cat-llm} e~\ref{tab:cat-hybrid} detalham o desempenho por categoria de bug nos modos Flow~C e Flow~B, respectivamente. As categorias \texttt{assertion\_violation} e \texttt{division\_by\_zero} possuem 15 instâncias no \textit{ground truth}, enquanto \texttt{out\_of\_bounds} possui 18 instâncias distribuídas em 15 funções.
-
-\begin{table*}[htbp]
-\caption{Detecção por categoria de bug no Flow C (somente modelo de linguagem)}
-\label{tab:cat-llm}
-\begin{center}
-\begin{tabular}{llrrrrr}
-\toprule
-\textbf{Categoria} & \textbf{Modelo} & \textbf{VP} & \textbf{FP} & \textbf{FN} & \textbf{P} & \textbf{F1} \\
-\midrule
-\multirow{5}{*}{\texttt{assertion\_violation}}
-  & gpt-5.5               & 15 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & claude-sonnet-4-6     & 15 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & gemini-3.1-flash-lite & 13 & 0 &  2 & 1{,}000 & 0{,}929 \\
-  & deepseek-r1:7b        & 11 & 1 &  4 & 0{,}917 & 0{,}815 \\
-  & qwen2.5-coder:7b      & 14 & 3 &  1 & 0{,}824 & 0{,}875 \\
-\midrule
-\multirow{5}{*}{\texttt{division\_by\_zero}}
-  & gpt-5.5               & 15 &  0 &  0 & 1{,}000 & 1{,}000 \\
-  & claude-sonnet-4-6     & 15 &  4 &  0 & 0{,}789 & 0{,}882 \\
-  & gemini-3.1-flash-lite & 15 &  3 &  0 & 0{,}833 & 0{,}909 \\
-  & deepseek-r1:7b        &  9 &  4 &  6 & 0{,}692 & 0{,}643 \\
-  & qwen2.5-coder:7b      & 15 &  8 &  0 & 0{,}652 & 0{,}789 \\
-\midrule
-\multirow{5}{*}{\texttt{out\_of\_bounds}}
-  & gpt-5.5               & 18 &  0 &  0 & 1{,}000 & 1{,}000 \\
-  & claude-sonnet-4-6     & 18 &  0 &  0 & 1{,}000 & 1{,}000 \\
-  & gemini-3.1-flash-lite & 18 &  0 &  0 & 1{,}000 & 1{,}000 \\
-  & deepseek-r1:7b        &  7 &  3 & 11 & 0{,}700 & 0{,}500 \\
-  & qwen2.5-coder:7b      &  5 &  9 & 13 & 0{,}357 & 0{,}313 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table*}
-
-\begin{table*}[htbp]
-\caption{Detecção por categoria de bug no Flow B (Modelo de Linguagem + ESBMC)}
-\label{tab:cat-hybrid}
-\begin{center}
-\begin{tabular}{llrrrrr}
-\toprule
-\textbf{Categoria} & \textbf{Modelo} & \textbf{VP} & \textbf{FP} & \textbf{FN} & \textbf{P} & \textbf{F1} \\
-\midrule
-\multirow{5}{*}{\texttt{assertion\_violation}}
-  & gpt-5.5               & 15 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & claude-sonnet-4-6     & 15 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & gemini-3.1-flash-lite & 13 & 0 &  2 & 1{,}000 & 0{,}929 \\
-  & deepseek-r1:7b        & 11 & 0 &  4 & 1{,}000 & 0{,}846 \\
-  & qwen2.5-coder:7b      & 14 & 0 &  1 & 1{,}000 & 0{,}966 \\
-\midrule
-\multirow{5}{*}{\texttt{division\_by\_zero}}
-  & gpt-5.5               & 15 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & claude-sonnet-4-6     & 15 & 1 &  0 & 0{,}938 & 0{,}968 \\
-  & gemini-3.1-flash-lite & 15 & 1 &  0 & 0{,}938 & 0{,}968 \\
-  & deepseek-r1:7b        &  9 & 0 &  6 & 1{,}000 & 0{,}750 \\
-  & qwen2.5-coder:7b      & 15 & 0 &  0 & 1{,}000 & 1{,}000 \\
-\midrule
-\multirow{5}{*}{\texttt{out\_of\_bounds}}
-  & gpt-5.5               & 18 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & claude-sonnet-4-6     & 18 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & gemini-3.1-flash-lite & 18 & 0 &  0 & 1{,}000 & 1{,}000 \\
-  & deepseek-r1:7b        &  7 & 0 & 11 & 1{,}000 & 0{,}560 \\
-  & qwen2.5-coder:7b      &  5 & 0 & 13 & 1{,}000 & 0{,}435 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table*}
-
-\textbf{assertion\_violation} é a categoria mais fácil. Todos os modelos de API acertam 100\% das acusações (P\,=\,1{,}000) já no Flow~C. Os modelos locais têm alguns erros de precisão no Flow~C, mas o ESBMC corrige: no Flow~B todos atingem P\,=\,1{,}000. Violações de asserção são detectáveis porque o código contém uma instrução explícita (\texttt{assert}) que o modelo consegue identificar visualmente.
-
-\textbf{division\_by\_zero} tem desempenho mediano no Flow~C mas melhora bastante com o ESBMC. O \texttt{claude-sonnet-4-6} e o \texttt{gemini-3.1-flash-lite} encontram todos os 15 casos mas geram FPs que o ESBMC reduz. O \texttt{qwen2.5-coder:7b} também encontra todos os 15 mas gerou 8 FPs; o ESBMC eliminou todos, resultando em F1\,=\,1{,}000 no Flow~B.
-
-\textbf{out\_of\_bounds} é a categoria mais difícil. Os três modelos de API encontram todos os 18 casos (R\,=\,1{,}000) tanto no Flow~C quanto no Flow~B. Já os modelos locais falham gravemente: o \texttt{deepseek-r1:7b} encontrou apenas 7 dos 18 e o \texttt{qwen2.5-coder:7b} apenas 5, bugs perdidos que o ESBMC não pode recuperar. Essa dificuldade é esperada: acessos fora dos limites dependem de raciocínio sobre índices e tamanhos, o que exige maior capacidade de compreensão do código.
-
-\subsection{Resultados para Code Smells}
-
-A Tabela~\ref{tab:smells} apresenta os resultados para detecção de \textit{code smells} (15 casos, sendo 5 por categoria). O Flow~B não aplica ESBMC a \textit{smells}, portanto os resultados são idênticos ao Flow~C para essa dimensão.
-
-\begin{table*}[htbp]
-\caption{Detecção de \textit{code smells} (Flow~C igual ao Flow~B)}
+\begin{table}[h]
+\caption{Detecção de \textit{code smells} por categoria (F1).}
 \label{tab:smells}
-\begin{center}
-\begin{tabular}{lrrrrrr}
+\centering
+\footnotesize
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Modelo} & \textbf{VP} & \textbf{FP} & \textbf{FN} & \textbf{P} & \textbf{R} & \textbf{F1} \\
+Categoria & gpt-5.5 & Claude & Gemini & Qwen & DeepSeek \\
 \midrule
-gpt-5.5               & 10 &  1 &  5 & 0{,}909 & 0{,}667 & 0{,}769 \\
-claude-sonnet-4-6     & 10 &  0 &  5 & 1{,}000 & 0{,}667 & 0{,}800 \\
-gemini-3.1-flash-lite &  5 &  0 & 10 & 1{,}000 & 0{,}333 & 0{,}500 \\
-deepseek-r1:7b        &  0 &  0 & 15 & 0{,}000 & 0{,}000 & 0{,}000 \\
-qwen2.5-coder:7b      & 15 & 95 &  0 & 0{,}136 & 1{,}000 & 0{,}240 \\
+complex\_conditional & 0,667 & 0,909 & 0,750 & 0,140 & 0,000 \\
+long\_method & 0,571 & 1,000 & 0,889 & 0,170 & 0,500 \\
+many\_parameters & 0,769 & 0,769 & 0,769 & 0,139 & 0,667 \\
 \bottomrule
 \end{tabular}
-\end{center}
-\end{table*}
+\end{table}
 
-O \texttt{claude-sonnet-4-6} tem o melhor F1 para \textit{smells} (0{,}800), com precisão perfeita e R\,=\,0{,}667. O \texttt{gpt-5.5} fica logo atrás (F1\,=\,0{,}769), com 1 FP e mesma revocação. O \texttt{gemini-3.1-flash-lite} não emite FPs mas falha em detectar a maioria (R\,=\,0{,}333, F1\,=\,0{,}500). O \texttt{qwen2.5-coder:7b} detecta todos os 15 casos reais mas gera 95 FPs, tornando sua precisão inviável (P\,=\,0{,}136). O \texttt{deepseek-r1:7b} não detecta nenhum \textit{smell} (F1\,=\,0{,}000).
+Para \textit{code smells}, observa-se um comportamento distinto daquele
+encontrado para bugs executáveis. Como cada categoria contém apenas cinco
+exemplos, diferenças de um único acerto ou erro produzem variações
+expressivas nas métricas, o que limita a generalização dessa análise. A
+categoria \textit{long method} apresentou a maior variação entre os modelos
+de API (F1 entre 0,571 no gpt-5.5 e 1,000 no Claude), enquanto os modelos
+locais permaneceram consistentemente mais fracos nas três categorias
+(F1 $\leq$ 0,667). Diferentemente dos bugs confirmados pelo ESBMC-Python,
+\textit{code smells} representam propriedades relacionadas à
+manutenibilidade e à qualidade do código, não possuindo uma definição formal
+executável. Esse resultado está de acordo com Souza et
+al.~\cite{souza2026beyondstrictrules}, que relatam elevada variabilidade
+entre diferentes categorias de \textit{code smells}.
 
-A Tabela~\ref{tab:smells-cat} detalha o desempenho por tipo de \textit{smell} para os três modelos de maior F1 em smells (\texttt{claude-sonnet-4-6}, \texttt{gpt-5.5} e \texttt{gemini-3.1-flash-lite}).
+O caso mais extremo de ruído foi observado em qwen2.5-coder:7b para detecção de \textit{code smells}. Embora o modelo identifique 14 dos 15 casos presentes no dataset (recall = 0,933), ele produz 158 falsos positivos, resultando em precisão de apenas 0,081. Como o ESBMC-Python não verifica propriedades de manutenibilidade, esses achados seguem diretamente para o relatório final após a validação estrutural. Esse resultado evidencia que, embora a abordagem híbrida seja altamente eficaz para bugs executáveis, ainda é necessária uma estratégia complementar para reduzir o ruído na detecção de \textit{code smells}. Essa observação também reforça os resultados de Santos et al.~\cite{santos2023yetanothermodel}, que mostram que, apesar das similaridades estruturais entre bugs e \textit{code smells}, ambas as tarefas apresentam desafios distintos.
 
-\begin{table*}[htbp]
-\caption{Detecção por categoria de smell para os três modelos de maior desempenho}
-\label{tab:smells-cat}
-\begin{center}
-\begin{tabular}{llrrrr}
-\toprule
-\textbf{Categoria} & \textbf{Modelo} & \textbf{VP} & \textbf{FP} & \textbf{FN} & \textbf{F1} \\
-\midrule
-\multirow{3}{*}{\texttt{complex\_conditional}}
-  & claude-sonnet-4-6     & 5 & 0 & 0 & 1{,}000 \\
-  & gpt-5.5               & 5 & 1 & 0 & 0{,}909 \\
-  & gemini-3.1-flash-lite & 0 & 0 & 5 & 0{,}000 \\
-\midrule
-\multirow{3}{*}{\texttt{long\_method}}
-  & claude-sonnet-4-6     & 0 & 0 & 5 & 0{,}000 \\
-  & gpt-5.5               & 0 & 0 & 5 & 0{,}000 \\
-  & gemini-3.1-flash-lite & 0 & 0 & 5 & 0{,}000 \\
-\midrule
-\multirow{3}{*}{\texttt{many\_parameters}}
-  & claude-sonnet-4-6     & 5 & 0 & 0 & 1{,}000 \\
-  & gpt-5.5               & 5 & 0 & 0 & 1{,}000 \\
-  & gemini-3.1-flash-lite & 5 & 0 & 0 & 1{,}000 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table*}
-
-Os três modelos detectam \texttt{many\_parameters} com precisão perfeita (F1\,=\,1{,}000). O \texttt{long\_method} é a categoria mais difícil: nenhum dos três detectou nenhum caso. Para \texttt{complex\_conditional}, o \texttt{claude-sonnet-4-6} obteve F1\,=\,1{,}000, o \texttt{gpt-5.5} ficou próximo (F1\,=\,0{,}909, com 1 FP), e o \texttt{gemini-3.1-flash-lite} não detectou nenhum caso.
-
-\subsection{Discussão dos Resultados}
-
-Os resultados confirmam quatro hipóteses centrais e revelam limitações que orientam trabalhos futuros.
-
-\textbf{RQ1 — A verificação formal reduz os falsos positivos sem afetar a revocação.} Em todos os cinco modelos, o ESBMC reduziu FPs sem criar novos FNs. Isso é estrutural: o verificador só age sobre hipóteses que o modelo já reportou, então elimina FPs mas nunca recupera FNs. O ganho foi maior para os SLMs: \texttt{qwen2.5-coder:7b} eliminou 100\% de seus 20 FPs (TRN\,=\,1{,}000) e \texttt{deepseek-r1:7b} eliminou 100\% de seus 8 FPs. Para os modelos de API, o ganho foi menor: \texttt{claude-sonnet-4-6} reduziu FPs de 4 para 1 (TRN\,=\,0{,}750) e \texttt{gemini-3.1-flash-lite} de 3 para 1 (TRN\,=\,0{,}667). O \texttt{gpt-5.5} já não tinha FPs no Flow~C, então o TRN é indefinido. Isso corrobora Tihanyi et al.\ \cite{tihanyi2025}: o híbrido compensa especificamente a tendência a falsos positivos dos modelos.
-
-\textbf{RQ2 — A taxa de alucinação separa modelos de API de modelos locais.} A AST Validation capturou muito mais alucinações nos SLMs locais: \texttt{deepseek-r1:7b} produziu 7 referências inválidas e \texttt{qwen2.5-coder:7b} produziu 13, contra 0 para \texttt{gpt-5.5} e 1 para cada um dos modelos de API restantes. Isso reflete diferenças de capacidade de raciocínio sobre código entre modelos de grande e pequeno porte, alinhadas com Ding et al.\ \cite{ding2025}. A AST Validation é especialmente crítica quando se usam SLMs locais.
-
-\textbf{RQ3 — O ESBMC não compensa lacunas de revocação do modelo.} A diferença entre Flow~B e Flow~C é só de precisão: o ESBMC elimina FPs mas não recupera FNs. O \texttt{deepseek-r1:7b} ilustra esse limite: mesmo com TCF\,=\,0{,}964 e zero FPs no Flow~B, o F1 (0{,}720) fica abaixo dos modelos de API por causa dos 21 FNs irrecuperáveis. A categoria mais afetada é \texttt{out\_of\_bounds}: os SLMs locais detectam apenas 7 e 5 dos 18 casos (R\,=\,0{,}389 e 0{,}278), enquanto todos os modelos de API atingem R\,=\,1{,}000. Isso é consistente com Li et al.\ \cite{li2026}: modelos menores falham em bugs comportamentais complexos.
-
-\textbf{RQ4 — \textit{Code smells} precisam de estratégias complementares.} O \texttt{many\_parameters} é detectado com precisão por todos os melhores modelos (F1\,=\,1{,}000), pois tem critério estrutural objetivo. Já o \texttt{long\_method} não foi detectado por nenhum dos três melhores modelos, sugerindo que funções longas mas coesas não ativam o padrão de \textit{smell} no \textit{prompting} usado. O \texttt{qwen2.5-coder:7b} tem \textit{over-reporting} severo (95 FPs em 15 casos reais, P\,=\,0{,}136), corroborando Souza et al.\ \cite{souza2026}. Como o ESBMC não cobre \textit{smells}, esses FPs não são corrigíveis, o que evidencia a necessidade de um filtro específico para \textit{smells} em versões futuras.
-
-\textbf{Flow A como referência de validação do dataset.} O Flow~A confirmou todos os bugs com P\,=\,R\,=\,F1\,=\,1{,}000, o que era esperado: o dataset foi construído precisamente com o auxílio do ESBMC, e esse fluxo serve para atestar que os defeitos anotados são de fato disparáveis pelo verificador. A comparação relevante é entre Flow~B e Flow~C: o quanto a verificação formal agrega sobre a análise isolada do modelo.
-
-\section{Metodologia}
-
-\subsection{Etapas Metodológicas}
-
-A pesquisa foi organizada nas etapas a seguir:
-
-\begin{itemize}
-    \item \textbf{Revisão da literatura} (concluída): cerca de 25 artigos em seis eixos: análise estática (SAST), verificação formal/BMC, modelos de linguagem para engenharia de software, detecção de bugs baseada em modelos de linguagem, abordagens híbridas e benchmarks.
-
-    \item \textbf{Definição da arquitetura} (concluída): cinco etapas do pipeline, três modos de execução, categorias de bugs e smells, seis categorias de defeitos (três de bug e três de \textit{code smell}).
-
-    \item \textbf{Implementação} (concluída): todas as etapas, incluindo a validação por tolerância da AST para filtrar alucinações em funções nativas do Python.
-
-    \item \textbf{Curadoria do dataset} (concluída): construção manual de 70 funções Python distribuídas em seis categorias, sendo três de bugs executáveis (\texttt{division\_by\_zero}, \texttt{out\_of\_bounds} e \texttt{assertion\_violation}) e três de \textit{code smells} (\texttt{long\_method}, \texttt{many\_parameters} e \texttt{complex\_conditional}), além de 10 funções limpas como controle. O \textit{ground truth} foi anotado manualmente para cada função, indicando o tipo e a categoria do defeito presente. Cada função anotada como contendo um bug verificável foi submetida ao ESBMC-Python para confirmar que o defeito é disparável dentro do limite de execução configurado; todos os 45 casos foram confirmados com \texttt{VERIFICATION FAILED}.
-
-    \item \textbf{Execução dos experimentos} (concluída): Flows A, B e C sobre o \textit{dataset} V1 com cinco modelos.
-
-    \item \textbf{Análise dos resultados} (concluída): P/R/F1 por categoria e modelo, TCF e TRN.
-
-    \item \textbf{Escrita e revisão do relatório} (concluída): redação do artigo com descrição do pipeline, análise dos resultados e comparação com trabalhos correlatos.
-\end{itemize}
+Por fim, os resultados mostram que o pipeline proposto deve ser interpretado como uma arquitetura orientada ao aumento da precisão e não da revocação. Como o ESBMC-Python apenas confirma hipóteses previamente geradas pelo modelo de linguagem, defeitos não identificados no Flow C permanecem como falsos negativos no Flow B. Em contrapartida, a combinação entre AST Validation e verificação formal reduz sistematicamente diferentes tipos de falsos positivos, aumentando a confiabilidade das predições sem alterar a capacidade original de detecção do modelo.
 
 
 
-\section{Conclusão}
-
-Este trabalho propôs e avaliou um pipeline híbrido que combina modelos de linguagem e o ESBMC-Python para detectar bugs executáveis e \textit{code smells} em programas Python.
-
-Os resultados mostram que a confirmação formal reduz consistentemente os falsos positivos em todos os modelos. O \texttt{gpt-5.5} obteve F1 perfeito (1{,}000) já no modo somente-modelo. Entre os demais, o \texttt{claude-sonnet-4-6} teve o melhor F1 híbrido (0{,}990). O \texttt{qwen2.5-coder:7b} mostrou o maior ganho relativo de precisão com o ESBMC, passando de 0{,}630 para 1{,}000. Os resultados também confirmam que o ESBMC não recupera falsos negativos, e que \textit{code smells} precisam de filtros complementares.
-
-Em relação ao EVA \cite{shivaji2026}, a proposta se diferencia em quatro pontos: verifica Python diretamente, sem traduzir para C; filtra alucinações via AST antes da verificação formal; trata \textit{code smells} separadamente; e usa seis categorias de classificação com métricas de P/R/F1 sobre um \textit{dataset} construído e validado manualmente.
-
-Como próximos passos, pretende-se expandir o \textit{dataset} para uma versão V2, incluir avaliação estatística via \textit{bootstrap} e investigar estratégias de filtragem específicas para \textit{code smells}, com a possibilidade de usar os contraexemplos do ESBMC para validar o comportamento do código Python original.
 
 
-\renewcommand{\refname}{Referências}
-\bibliographystyle{IEEEtran}
-\bibliography{references}
+\section{Conclusão e Trabalhos Futuros}
 
+
+
+Este trabalho apresentou um pipeline híbrido que combina modelos de linguagem (LLMs e SLMs), validação estrutural por meio da Árvore Sintática Abstrata (AST) e verificação formal com ESBMC-Python para a detecção de bugs executáveis e \textit{code smells} em funções Python.
+
+Os resultados preliminares indicam que as três etapas do pipeline
+desempenham papéis complementares~\cite{tihanyi2025vulnerability}: a
+validação por AST filtra alucinações estruturais~\cite{khati2026forge},
+enquanto o ESBMC-Python reduz o ruído da LLM de forma mais acentuada
+exatamente onde a triagem isolada era menos confiável, isto é, nos
+modelos locais (SLMs), consolidando a arquitetura orientada à precisão
+discutida na Seção~\ref{sec:resultados}.
+
+
+Como limitação, este estudo foi avaliado em um dataset composto por 70 funções Python, construídas manualmente e contendo um conjunto restrito de categorias de bugs e code smells. Além disso, as funções analisadas são relativamente curtas e isoladas, não representando toda a complexidade encontrada em projetos reais. Embora todas as instâncias de bugs tenham sido validadas formalmente pelo ESBMC-Python, a avaliação em bases maiores e compostas por código de produção é necessária para ampliar a validade externa dos resultados, conforme discutido por Ding et al.~\cite{ding2025primevul}. Além disso, este trabalho não inclui uma comparação experimental direta com abordagens baseadas em tradução, como EVA e PyVeritas, ficando essa análise como trabalho futuro.
+
+
+Como trabalhos futuros, pretende-se ampliar o dataset com funções extraídas de projetos Python reais para avaliar a generalização do pipeline~\cite{ding2025primevul}. Também se pretende expandir o conjunto de categorias de bugs verificáveis e \textit{code smells}, avaliar modelos de linguagem adicionais e investigar a geração automática de artefatos de verificação, como \textit{harnesses}, asserções e contratos, para aumentar o grau de automação do processo de verificação formal~\cite{shivaji2026eva,tihanyi2025vulnerability}.
+
+\section*{Disponibilidade de Artefatos}
+
+O código-fonte do pipeline, o template completo do prompt utilizado na etapa \textit{Analyzer} e o dataset rotulado estão disponíveis em \url{https://github.com/feralice/llm-esbmc-pipeline/tree/ise2026-artifacts/ise2026_artifacts}.
+
+
+
+
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample-base}
 \end{document}
+
+% ============================================================
+% CBSoft ACM-like Template – Author Checklist
+% ============================================================
+%
+% 1. Remove CCS Concepts
+%    - Remove the CCSXML block and \ccsdesc commands.
+%
+% 2. Remove ACM footer
+%    Use the command \renewcommand\footnotetextcopyrightpermission[1]{}
+%
+% 3. Remove ACM Reference Format
+%    Use the commands \setcopyright{none} and 
+%    \settopmatter{printacmref=false}
+%
+% 4. Short title must not exceed column width
+%    Use the command 
+%    \renewcommand{\shorttitle}{The Name of the Title Is Hope}
+%
+% 5. Include authors' surnames in the page headers (even pages)
+%    - The author names in the page header (at the top of the page)
+%      must not exceed the column width
+%    - This list must contain only the authors' surnames
+%    - Suggestion: use "Surname et al." for more than two authors with the
+%      command \renewcommand{\shortauthors}{Surname1stAuthor et al.}
+%
+% 6. Author format below title:
+%    \author{FirstName Surname}
+%    \affiliation{
+%      \institution{Department, Institution}
+%      \city{City}
+%      \country{Country}}
+%    \email{email@email.com}
+%
+% 7. Verify all author emails are included
+%    - Check font consistency
+%
+% 8. All numbered section and subsection titles must follow the same
+%    capitalization style: the first letter of each word in the title 
+%    must be capitalized (Title Case).
+%
+% 9. Artifact Availability (check CFP)
+%    - Not numbered -- use \section*{Artifact Availability}
+%    - Placed after Conclusion and before Acknowledgments
+%    - In Portuguese, use \section*{Disponibilidade de Artefatos}
+%
+% 10. Abstract
+%     - Single paragraph
+%     - Papers written in Portuguese must use "Resumo" instead of "Abstract"
+%       with the command \renewcommand\abstractname{Resumo}
+%
+% 11. Keywords
+%     - Comma-separated, first letter capitalized
+%     - Papers written in Portuguese must use "Palavras-chave" instead of
+%       "Keywords" with the command 
+%       \renewcommand\keywordsname{Palavras-chave}
+%
+% 12. References
+%     - Not numbered -- already enforced by the template
+%     - Papers written in Portuguese must use "Referências" instead of
+%       "References" with the command \renewcommand\refname{Referências}
+%
+% 13. Acknowledgements
+%     - Optional section
+%     - Not numbered -- use \section*{Acknowledgements}
+%     - In Portuguese, use \section*{Agradecimentos}
+%
+% 14. Remove received/revised/accepted dates
+%
+% 15. Figure captions must appear below figures
+%
+% 16. Verify the symposium name in the page header
+%    - Use English, even if the paper is written in Portuguese
+%    - Select the correct event according to the track
+%    - Use Arabic ordinal numbers, not Roman
+%
+%    SBES (Research, Education, IIER, Tools, Industry)
+%    \acmConference[SBES 2026]{40th Brazilian Symposium on Software Engineering}{September 8--12, 2026}{São Paulo, SP, Brazil}
+%
+%    SBLP
+%    \acmConference[SBLP 2026]{30th Brazilian Symposium on Programming Languages}{September 8--12, 2026}{São Paulo, SP, Brazil}
+%
+%    SBCARS
+%    \acmConference[SBCARS 2026]{20th Brazilian Symposium on Software Components, Architectures, and Reuse}{September 8--12, 2026}{São Paulo, SP, Brazil}
+%
+%    SAST
+%    \acmConference[SAST 2026]{11st Brazilian Symposium on Systematic and Automated Software Testing}{September 8--12, 2026}{São Paulo, SP, Brazil}
+%
+%    Workshops
+%    \acmConference[Workshop Acronym 2026]{Workshop Full Name}{Workshop Date}{São Paulo, SP, Brazil}
+%
+%
+% 17. Remove colored author names, citations, and links
+%
+% 18. Camera-ready only:
+%     Do not use the "review" or "anonymous" modes in the 
+%     \documentclass command
+%
+% 19. SBES Tools Track papers must include a demo video link at the end of
+%     the abstract
+%     Example:
+%     \begin{abstract}
+%     <abstract text> \newline
+%     \textbf{Demo video:} <video link>
+%     \end{abstract}
+%
+% 20. SBES Industry Track papers must not include author biographies
+%
+% ============================================================
+
+\endinput
+
+

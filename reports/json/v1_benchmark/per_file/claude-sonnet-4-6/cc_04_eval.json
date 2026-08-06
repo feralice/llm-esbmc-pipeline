@@ -1,0 +1,34 @@
+{
+  "file": "cc_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "is_valid_transition",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "is_valid_transition",
+      "category": "complex_conditional",
+      "expression": "def is_valid_transition(state: int, target: int, locked: bool, admin: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A expressão de retorno combina múltiplas condições compostas com operadores 'and', 'or' e 'in', tornando a lógica difícil de ler e raciocinar sobre em uma única linha. A combinação de três cláusulas OR cada uma com condições AND representa complexidade condicional elevada."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

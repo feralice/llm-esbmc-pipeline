@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "evaluate_access",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_02.py",
+  "raw_response": {
+    "id": "chatcmpl-754",
+    "object": "chat.completion",
+    "created": 1783764964,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'level > 5' é controlada por parâmetro livre (level). Não há guarda visível antes do uso que garanta que level seja maior que 5. A exceção AssertionError pode ser alcançável se level for menor ou igual a 5.\",\n      \"metadata\": {\n        \"expression\": \"assert level > 5\",\n        \"line\": 6\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui uma condição complexa com múltiplos níveis de aninhamento. A verificação formal (ESBMC) pode ser necessária para garantir a corretude da lógica.\",\n      \"metadata\": {\n        \"expression\": \"if active: if verified: if role >= level: if level > 5: return role > 8 else: return True else: return False else: return False\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 4 parâmetros, o que pode ser considerado um número excessivo. A verificação formal (ESBMC) pode ser necessária para garantir a corretude da lógica.\",\n      \"metadata\": {\n        \"expression\": \"def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 9 linhas de código executável (ignorando comentários e linhas em branco), o que pode ser considerado uma função longa. A verificação formal (ESBMC) pode ser necessária para garantir a corretude da lógica.\",\n      \"metadata\": {\n        \"expression\": \"def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1248,
+      "completion_tokens": 526,
+      "total_tokens": 1774
+    }
+  }
+}

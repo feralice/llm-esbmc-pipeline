@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "nonzero_positive",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_13.py",
+  "raw_response": {
+    "id": "chatcmpl-507",
+    "object": "chat.completion",
+    "created": 1783762066,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A condição 'value > 0' pode ser falsa se 'value' for zero, levando a um AssertionError. O valor de 'value' é controlado por parâmetro livre e não há guarda visível antes do uso.\",\n      \"metadata\": {\n        \"expression\": \"assert value > 0\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 4 linhas de código, o que não classifica como longa. A função também não possui muitos parâmetros nem condições complexas.\",\n      \"metadata\": {\n        \"expression\": \"def nonzero_positive(value: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1176,
+      "completion_tokens": 224,
+      "total_tokens": 1400
+    }
+  }
+}

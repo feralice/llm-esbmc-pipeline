@@ -28,7 +28,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--models", nargs="+", required=True, help="Models to evaluate, e.g. gpt-4o claude deepseek")
     parser.add_argument("--ground-truth", default="dataset/labeled/ground_truths")
     parser.add_argument("--output-dir", default="reports/json/benchmarks")
-    parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=30)
     parser.add_argument("--backend", default=None, help="Optional forced backend: openai, anthropic, or ollama")
     parser.add_argument("--ollama-base-url", default=None)
@@ -48,7 +47,6 @@ def main() -> int:
     manifest = {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "ground_truth": str((ROOT / args.ground_truth).resolve()),
-        "bound": args.bound,
         "timeout": args.timeout,
         "runs": [],
     }
@@ -61,7 +59,6 @@ def main() -> int:
             "--mode", "benchmark",
             "--input", args.ground_truth,
             "--model", model,
-            "--bound", str(args.bound),
             "--timeout", str(args.timeout),
             "--report", str(report_path),
         ]

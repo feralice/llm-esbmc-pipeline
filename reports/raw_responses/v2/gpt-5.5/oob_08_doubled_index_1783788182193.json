@@ -1,0 +1,173 @@
+{
+  "model": "gpt-5.5",
+  "function": "doubled_index",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_08.py",
+  "raw_response": {
+    "id": "resp_0db4cd9543e183de006a527292e78081a096e76506a19313a9",
+    "object": "response",
+    "created_at": 1783788178,
+    "status": "completed",
+    "background": false,
+    "billing": {
+      "payer": "developer"
+    },
+    "completed_at": 1783788181,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "incomplete_details": null,
+    "instructions": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "model": "gpt-5.5-2026-04-23",
+    "moderation": null,
+    "output": [
+      {
+        "id": "rs_0db4cd9543e183de006a527293728c81a0a839901d7b4e006a",
+        "type": "reasoning",
+        "content": [],
+        "summary": []
+      },
+      {
+        "id": "msg_0db4cd9543e183de006a527294475481a08370c0fe1ce33809",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\"findings\":[{\"finding_type\":\"suspected_bug\",\"category\":\"out_of_bounds\",\"explanation\":\"O acesso indexado usa `slot`, que é calculado a partir do parâmetro livre `index`, e a lista `values` também vem de parâmetro livre. Não há guarda visível antes do acesso verificando se `slot` está no intervalo válido de `values`. A operação não está envolvida por try/except que capture diretamente um possível IndexError.\",\"verifiable\":true,\"metadata\":{\"expression\":\"values[slot]\",\"line\":3}}]}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "medium",
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "store": true,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "description": null,
+        "name": "pipeline_findings",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "finding_type": {
+                    "type": "string",
+                    "enum": [
+                      "suspected_bug",
+                      "smell_heuristic"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "assertion_violation",
+                      "division_by_zero",
+                      "out_of_bounds",
+                      "long_method",
+                      "many_parameters",
+                      "complex_conditional"
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string"
+                  },
+                  "verifiable": {
+                    "type": "boolean"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "line": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "expression",
+                      "line"
+                    ]
+                  }
+                },
+                "required": [
+                  "finding_type",
+                  "category",
+                  "explanation",
+                  "verifiable",
+                  "metadata"
+                ]
+              }
+            }
+          },
+          "required": [
+            "findings"
+          ]
+        },
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 1210,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 192,
+      "output_tokens_details": {
+        "reasoning_tokens": 67
+      },
+      "total_tokens": 1402
+    },
+    "user": null,
+    "metadata": {}
+  }
+}

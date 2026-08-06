@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "conditional_zero_guard",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_09.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccus5gkWo7pcgwajq9CSe",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O parâmetro 'divisor' é livre (sem restrição de constante). A guarda 'if divisor == 0 and total > 0' cobre apenas o caso onde divisor == 0 E total > 0, retornando antes da divisão. Porém, quando divisor == 0 e total <= 0 (ex.: total == 0 ou total < 0), a condição do if é falsa e a execução atinge 'total // divisor', causando ZeroDivisionError. A operação não está envolvida por try/except.\",\n      \"metadata\": {\n        \"expression\": \"total // divisor\",\n        \"line\": 4\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1378,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 225,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

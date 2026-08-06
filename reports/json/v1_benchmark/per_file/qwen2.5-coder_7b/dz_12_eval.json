@@ -1,0 +1,85 @@
+{
+  "file": "dz_12.py",
+  "expected_bugs": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "division_by_zero",
+      "expression": "value % mod",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A operação 'value % mod' pode causar ZeroDivisionError se 'mod' for zero. O parâmetro 'mod' é livre e não há guarda visível para garantir que ele não seja zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "modulo_non_negative_only",
+      "category": "many_parameters",
+      "expression": "def modulo_non_negative_only(value: int, mod: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 2 parâmetros, o que não é considerado excessivo. A assinatura da função é 'def modulo_non_negative_only(value: int, mod: int) -> int:', onde 'value' e 'mod' são os únicos parâmetros."
+    },
+    {
+      "function": "modulo_non_negative_only",
+      "category": "long_method",
+      "expression": "def modulo_non_negative_only(value: int, mod: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não é considerado longo. A assinatura da função é 'def modulo_non_negative_only(value: int, mod: int) -> int:', onde cada linha contém uma operação ou uma condição."
+    },
+    {
+      "function": "modulo_non_negative_only",
+      "category": "complex_conditional",
+      "expression": "if mod < 0:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função contém uma condição simples 'if mod < 0:', que não é considerada complexa. A assinatura da função é 'def modulo_non_negative_only(value: int, mod: int) -> int:', onde a única condição é uma comparação de igualdade."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

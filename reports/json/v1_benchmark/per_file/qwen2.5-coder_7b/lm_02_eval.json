@@ -1,0 +1,67 @@
+{
+  "file": "lm_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "long_method",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função process_customer_profile tem 38 linhas de código, o que pode indicar uma complexidade desnecessária."
+    },
+    {
+      "function": "process_customer_profile",
+      "category": "many_parameters",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função process_customer_profile tem 5 parâmetros, o que pode indicar uma complexidade desnecessária."
+    },
+    {
+      "function": "process_customer_profile",
+      "category": "complex_conditional",
+      "expression": "if name_code > 0 and address_code > 0 and phone_code > 0 and email_code > 0:",
+      "line": 7,
+      "confidence": "low",
+      "explanation": "A função possui condições complexas e aninhadas, como 'if name_code > 0 and address_code > 0 and phone_code > 0 and email_code > 0', o que pode dificultar a manutenção e leitura do código."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

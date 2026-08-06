@@ -1,0 +1,34 @@
+{
+  "file": "av_15.py",
+  "expected_bugs": [
+    {
+      "function": "strict_percent",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "strict_percent",
+      "category": "assertion_violation",
+      "expression": "assert percent > 0 and percent < 100",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O parâmetro 'percent' é livre (sem restrição de constante vinda de fora da função). O assert verifica 'percent > 0 and percent < 100', mas qualquer chamada com percent <= 0 ou percent >= 100 fará o assert falhar, levantando AssertionError. Não há try/except cobrindo a operação."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

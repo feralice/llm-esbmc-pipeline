@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "register_event",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_05.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"The function register_event accepts 7 parameters, which exceeds the recommended threshold of 5 parameters for maintainability and readability.\",\n      \"metadata\": {\n        \"expression\": \"def register_event(day: int, month: int, year: int, hour: int, minute: int, second: int, code: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPtdnhdnQMJLywb2y1G4iY5Uzs5HxDM+f8rojPmaBCCHP/enrPu0HOsLWdeLsi"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783755008,
+    "id": "__BRaq_ONO-1qtsPyLvEqAo",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 138,
+      "prompt_tokens": 1263,
+      "total_tokens": 1401
+    }
+  }
+}

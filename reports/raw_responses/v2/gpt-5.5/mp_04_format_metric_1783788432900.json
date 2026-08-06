@@ -1,0 +1,173 @@
+{
+  "model": "gpt-5.5",
+  "function": "format_metric",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_04.py",
+  "raw_response": {
+    "id": "resp_0e96457409fe0da5006a52738ad6ec819dba2c04b9e74a998c",
+    "object": "response",
+    "created_at": 1783788426,
+    "status": "completed",
+    "background": false,
+    "billing": {
+      "payer": "developer"
+    },
+    "completed_at": 1783788432,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "incomplete_details": null,
+    "instructions": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "model": "gpt-5.5-2026-04-23",
+    "moderation": null,
+    "output": [
+      {
+        "id": "rs_0e96457409fe0da5006a52738b4fd0819dad91b9d0f59d1941",
+        "type": "reasoning",
+        "content": [],
+        "summary": []
+      },
+      {
+        "id": "msg_0e96457409fe0da5006a52738e4ae0819db4d760d87982b284",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\"findings\":[{\"finding_type\":\"smell_heuristic\",\"category\":\"many_parameters\",\"explanation\":\"A assinatura possui 6 parâmetros livres e não há self/cls a excluir da contagem. Isso atende ao critério de many_parameters informado (>= 5 parâmetros), podendo indicar interface excessivamente ampla.\",\"verifiable\":false,\"metadata\":{\"expression\":\"def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:\",\"line\":1}},{\"finding_type\":\"smell_heuristic\",\"category\":\"complex_conditional\",\"explanation\":\"A função contém uma condição composta com operador lógico 'or' em 'value < minimum or value > maximum'. Embora simples, ela se enquadra no critério solicitado de condições compostas/aninhadas para avaliação como smell.\",\"verifiable\":false,\"metadata\":{\"expression\":\"def format_metric(value: int, minimum: int, maximum: int, warn: int, critical: int, enabled: bool) -> str:\",\"line\":1}}]}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "medium",
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "store": true,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "description": null,
+        "name": "pipeline_findings",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "finding_type": {
+                    "type": "string",
+                    "enum": [
+                      "suspected_bug",
+                      "smell_heuristic"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "assertion_violation",
+                      "division_by_zero",
+                      "out_of_bounds",
+                      "long_method",
+                      "many_parameters",
+                      "complex_conditional"
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string"
+                  },
+                  "verifiable": {
+                    "type": "boolean"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "line": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "expression",
+                      "line"
+                    ]
+                  }
+                },
+                "required": [
+                  "finding_type",
+                  "category",
+                  "explanation",
+                  "verifiable",
+                  "metadata"
+                ]
+              }
+            }
+          },
+          "required": [
+            "findings"
+          ]
+        },
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 1304,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 440,
+      "output_tokens_details": {
+        "reasoning_tokens": 213
+      },
+      "total_tokens": 1744
+    },
+    "user": null,
+    "metadata": {}
+  }
+}

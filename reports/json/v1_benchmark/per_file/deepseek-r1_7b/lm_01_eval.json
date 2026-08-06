@@ -1,0 +1,51 @@
+{
+  "file": "lm_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_pizza_order",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_pizza_order",
+      "category": "long_method",
+      "expression": "def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function 'process_pizza_order' is quite long and may have excessive responsibility."
+    },
+    {
+      "function": "process_pizza_order",
+      "category": "complex_conditional",
+      "expression": "if pizza_type == 1:\n    status += 10\nelif pizza_type == 2:\n    status += 15\nelse:\n    status += 5",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "The function contains multiple nested conditional statements which can complicate the code and increase the risk of errors."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

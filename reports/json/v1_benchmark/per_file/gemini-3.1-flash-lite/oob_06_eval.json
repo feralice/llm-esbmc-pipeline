@@ -1,0 +1,50 @@
+{
+  "file": "oob_06.py",
+  "expected_bugs": [
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds",
+      "expression": "values[peak - delta]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O índice 'peak - delta' é derivado de parâmetros livres e não possui verificação de limites antes do acesso à lista 'values', podendo causar IndexError."
+    },
+    {
+      "function": "peak_neighbor",
+      "category": "out_of_bounds",
+      "expression": "values[peak + delta]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O índice 'peak + delta' é derivado de parâmetros livres e não possui verificação de limites antes do acesso à lista 'values', podendo causar IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "file": "dz_14.py",
+  "expected_bugs": [
+    {
+      "function": "high_low_scale",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "high_low_scale",
+      "category": "division_by_zero",
+      "expression": "100 // denom",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A divisão inteira usa o denominador 'denom', calculado como high - low, e ambos os valores vêm de parâmetros livres. Não há guarda visível antes do uso verificando se high - low é diferente de zero. A operação não está envolvida por try/except, portanto é um candidato plausível a ZeroDivisionError quando high == low."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

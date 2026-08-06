@@ -1,0 +1,85 @@
+{
+  "file": "oob_14.py",
+  "expected_bugs": [
+    {
+      "function": "fixed_negative_far",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "fixed_negative_far",
+      "category": "out_of_bounds",
+      "expression": "values[-4]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O acesso indexado 'values[-4]' pode causar IndexError se a lista 'values' tiver menos de 4 elementos."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "fixed_negative_far",
+      "category": "long_method",
+      "expression": "def fixed_negative_far(values: list[int]) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas uma linha de código executável, então não é considerada longa."
+    },
+    {
+      "function": "fixed_negative_far",
+      "category": "many_parameters",
+      "expression": "def fixed_negative_far(values: list[int]) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, então não é considerada com muitos parâmetros."
+    },
+    {
+      "function": "fixed_negative_far",
+      "category": "complex_conditional",
+      "expression": "def fixed_negative_far(values: list[int]) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "guarded_shifted_denominator",
+  "file": "dataset/labeled/ok/clean/clean_09.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A operação de divisão utiliza o denominador (count - 1), que é controlado pelo parâmetro livre 'count'. Se 'count' for igual a 1, o denominador torna-se zero, causando um ZeroDivisionError, e a guarda existente verifica apenas se 'count == 1' para retornar, mas não impede a execução da divisão caso 'count' seja 1 em caminhos não previstos ou se a lógica for alterada.\",\n      \"metadata\": {\n        \"expression\": \"total // (count - 1)\",\n        \"line\": 4\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPCbhDBcLU3mUgzmCT1eqHc1bV2O3KiEHyFgGi5q3Gz6YCiZu5rfKQgth++nee"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754844,
+    "id": "W_BRaq3hF8DVz7IPj9iWmQs",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 177,
+      "prompt_tokens": 1180,
+      "total_tokens": 1357
+    }
+  }
+}

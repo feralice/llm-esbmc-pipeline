@@ -1,0 +1,85 @@
+{
+  "file": "av_02.py",
+  "expected_bugs": [
+    {
+      "function": "bounded_score",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "bounded_score",
+      "category": "assertion_violation",
+      "expression": "assert score <= 100",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'score <= 100' pode ser violada se o valor de 'score' for maior que 100, levantando uma AssertionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "bounded_score",
+      "category": "long_method",
+      "expression": "def bounded_score(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "bounded_score",
+      "category": "many_parameters",
+      "expression": "def bounded_score(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, o que não classifica como com muitos parâmetros."
+    },
+    {
+      "function": "bounded_score",
+      "category": "complex_conditional",
+      "expression": "def bounded_score(score: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

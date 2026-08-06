@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "is_valid_transition",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_04.py",
+  "raw_response": {
+    "id": "chatcmpl-314",
+    "object": "chat.completion",
+    "created": 1783765079,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'target >= 0' pode ser falsa quando 'admin' é True, o que levanta uma AssertionError se essa condição for verificada em um contexto onde 'target' não é garantido a ser um número inteiro.\",\n      \"metadata\": {\n        \"expression\": \"assert target >= 0\",\n        \"line\": 4\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém uma condição complexa com múltiplos caminhos de decisão, o que pode dificultar a leitura e manutenção do código.\",\n      \"metadata\": {\n        \"expression\": \"(state == 0 and target in [1, 2]) or (state == 1 and target == 2) or (admin and target >= 0)\",\n        \"line\": 4\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 4 parâmetros, o que pode indicar uma assinatura de método complexa e potencialmente difícil de entender.\",\n      \"metadata\": {\n        \"expression\": \"def is_valid_transition(state: int, target: int, locked: bool, admin: bool) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1252,
+      "completion_tokens": 360,
+      "total_tokens": 1612
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "increasing_bounds",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_14.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": []\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPxpPftt4qzLfjXQ2ZWhNgtvEM4vYNxBtiqk2O9HZPogICUX/KVS9fmvcF3dA2"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754255,
+    "id": "Du5RatDxLYiFz7IPsfaDuQw",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 9,
+      "prompt_tokens": 1164,
+      "total_tokens": 1173
+    }
+  }
+}

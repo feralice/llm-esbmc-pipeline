@@ -1,0 +1,50 @@
+{
+  "file": "oob_15.py",
+  "expected_bugs": [
+    {
+      "function": "two_pointer_gap",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "two_pointer_gap",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "two_pointer_gap",
+      "category": "out_of_bounds",
+      "expression": "values[left]",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O acesso values[left] utiliza o parâmetro 'left' que não possui restrições de valor, podendo resultar em um índice fora dos limites da lista. Não há verificação de limites ou tratamento de exceção no código."
+    },
+    {
+      "function": "two_pointer_gap",
+      "category": "out_of_bounds",
+      "expression": "values[right + gap]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O acesso values[right + gap] utiliza a soma de dois parâmetros livres, o que pode facilmente exceder o tamanho da lista. Não há guardas ou blocos try/except para prevenir um IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

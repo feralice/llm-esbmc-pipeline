@@ -1,0 +1,85 @@
+{
+  "file": "av_07.py",
+  "expected_bugs": [
+    {
+      "function": "upper_limit_check",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "upper_limit_check",
+      "category": "assertion_violation",
+      "expression": "assert value < limit",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição 'value < limit' é controlada por parâmetro livre. Não há guarda visível antes do uso que garanta a validade da condição."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "upper_limit_check",
+      "category": "complex_conditional",
+      "expression": "if limit > 0:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função contém uma condição simples 'if limit > 0', que não é muito aninhada ou composta."
+    },
+    {
+      "function": "upper_limit_check",
+      "category": "many_parameters",
+      "expression": "def upper_limit_check(value: int, limit: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas dois parâmetros, que é considerado um número razoável."
+    },
+    {
+      "function": "upper_limit_check",
+      "category": "long_method",
+      "expression": "def upper_limit_check(value: int, limit: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas três linhas de código executável (ignorando a linha de definição), que é considerado um tamanho adequado."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}
