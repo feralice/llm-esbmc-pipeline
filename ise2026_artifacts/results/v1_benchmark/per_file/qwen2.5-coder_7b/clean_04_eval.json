@@ -1,0 +1,85 @@
+{
+  "file": "clean_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "safe_mod",
+      "category": "division_by_zero",
+      "expression": "value % scale",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A operação 'value % scale' pode causar ZeroDivisionError se 'scale' for zero, que é um parâmetro livre."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "safe_mod",
+      "category": "many_parameters",
+      "expression": "def safe_mod(value: int, scale: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 2 parâmetros, o que não é considerado excessivo. A assinatura da função é 'def safe_mod(value: int, scale: int) -> int:'."
+    },
+    {
+      "function": "safe_mod",
+      "category": "long_method",
+      "expression": "def safe_mod(value: int, scale: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código executável, o que não é considerado longo. A assinatura da função é 'def safe_mod(value: int, scale: int) -> int:'."
+    },
+    {
+      "function": "safe_mod",
+      "category": "complex_conditional",
+      "expression": "if scale == 0:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função contém uma condição simples 'if scale == 0:', o que não é considerado complexo. A assinatura da função é 'def safe_mod(value: int, scale: int) -> int:'."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

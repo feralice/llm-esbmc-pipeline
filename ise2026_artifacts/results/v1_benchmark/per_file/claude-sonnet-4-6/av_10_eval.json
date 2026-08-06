@@ -1,0 +1,34 @@
+{
+  "file": "av_10.py",
+  "expected_bugs": [
+    {
+      "function": "nonzero_total",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "nonzero_total",
+      "category": "assertion_violation",
+      "expression": "assert total != 0",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O parâmetro 'total' é livre (sem restrição de constante imposta pelo chamador). Se total == 0 for passado, a asserção 'assert total != 0' será falsa e levantará AssertionError. Não há guarda anterior nem try/except cobrindo a operação."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

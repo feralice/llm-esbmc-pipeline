@@ -1,0 +1,42 @@
+{
+  "file": "dz_13.py",
+  "expected_bugs": [
+    {
+      "function": "positive_branch_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "positive_branch_ratio",
+      "category": "division_by_zero",
+      "expression": "total // count",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O denominador `count` em `total // count` é controlado por parâmetro livre. Há uma guarda visível antes do uso (`if count > 0`), que verifica o próprio `count`, mas a operação não está dentro de um try/except que capture ZeroDivisionError. Portanto, é um candidato formal para verificação."
+    },
+    {
+      "function": "positive_branch_ratio",
+      "category": "division_by_zero",
+      "expression": "total // count",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O denominador `count` em `total // count` é controlado por parâmetro livre. A operação ocorre no caminho após `if count > 0` não retornar, o que não envolve try/except cobrindo a divisão. Portanto, `count` pode ser sinalizado como candidato a zero para verificação formal."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

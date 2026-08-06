@@ -1,0 +1,85 @@
+{
+  "file": "dz_09.py",
+  "expected_bugs": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "division_by_zero",
+      "expression": "total // divisor",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O operando 'divisor' é controlado por parâmetro livre (sem restrição de constante). Não há guarda visível no código antes do uso para verificar se 'divisor' não é zero. A exceção ZeroDivisionError pode ocorrer quando 'divisor' for zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "complex_conditional",
+      "expression": "if divisor == 0 and total > 0:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função possui uma condição complexa com dois operadores lógicos ('and' e '=='). Embora não seja um bug formal, a complexidade pode dificultar a leitura e manutenção do código."
+    },
+    {
+      "function": "conditional_zero_guard",
+      "category": "many_parameters",
+      "expression": "def conditional_zero_guard(total: int, divisor: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui dois parâmetros, o que não é considerado excessivo. No entanto, para consistência com a definição de smell, esta condição foi incluída."
+    },
+    {
+      "function": "conditional_zero_guard",
+      "category": "long_method",
+      "expression": "def conditional_zero_guard(total: int, divisor: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas três linhas de código (incluindo a linha de definição), o que não é considerado longo. No entanto, para consistência com a definição de smell, esta condição foi incluída."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

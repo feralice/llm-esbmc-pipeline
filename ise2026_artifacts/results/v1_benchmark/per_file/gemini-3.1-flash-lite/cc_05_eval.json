@@ -1,0 +1,34 @@
+{
+  "file": "cc_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional",
+      "expression": "if (urgent and retries < 2) or (cached and size < 100) or (size > 1000 and retries == 0):",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "The function uses complex boolean logic with multiple nested conditions and logical operators (and/or) in the if-statements, which reduces readability and maintainability."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

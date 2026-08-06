@@ -1,0 +1,85 @@
+{
+  "file": "dz_07.py",
+  "expected_bugs": [
+    {
+      "function": "off_by_one_denominator",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "off_by_one_denominator",
+      "category": "division_by_zero",
+      "expression": "total // (count - 1)",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O denominador 'count - 1' pode ser zero se 'count' for igual a 1, o que causará uma divisão por zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "off_by_one_denominator",
+      "category": "complex_conditional",
+      "expression": "if count < 1:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'if count < 1' é simples e não apresenta complexidade aninhada ou composta."
+    },
+    {
+      "function": "off_by_one_denominator",
+      "category": "many_parameters",
+      "expression": "def off_by_one_denominator(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas dois parâmetros, o que não atende ao critério de '>= 5 parâmetros'."
+    },
+    {
+      "function": "off_by_one_denominator",
+      "category": "long_method",
+      "expression": "def off_by_one_denominator(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas três linhas de código executável (ignorando a linha de definição), o que não atende ao critério de 'função longa'."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

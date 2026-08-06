@@ -1,0 +1,34 @@
+{
+  "file": "av_12.py",
+  "expected_bugs": [
+    {
+      "function": "even_count",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "even_count",
+      "category": "assertion_violation",
+      "expression": "assert count % 2 == 0",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O parâmetro 'count' é livre (sem restrição de constante) e a condição 'count % 2 == 0' pode ser falsa para qualquer valor ímpar de 'count'. Não há guarda prévia que restrinja 'count' a valores pares antes do assert. A operação não está protegida por try/except, portanto a AssertionError pode ser disparada."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

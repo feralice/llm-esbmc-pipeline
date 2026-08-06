@@ -1,0 +1,67 @@
+{
+  "file": "lm_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "many_parameters",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 5 parâmetros (name_code, address_code, phone_code, email_code, complaint_code), atingindo o limiar para o smell many_parameters. Isso pode indicar que a função deveria receber um objeto/estrutura de dados em vez de múltiplos parâmetros individuais."
+    },
+    {
+      "function": "process_customer_profile",
+      "category": "long_method",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 38 linhas no total, com aproximadamente 30 linhas de código executável, assumindo múltiplas responsabilidades: cálculo de score baseado em códigos, aplicação de promoções, cálculo de loyalty points, tratamento de reclamações e lógica de encadeamento de bônus. Isso caracteriza um método longo que poderia ser decomposto em funções menores."
+    },
+    {
+      "function": "process_customer_profile",
+      "category": "complex_conditional",
+      "expression": "if name_code > 0 and address_code > 0 and phone_code > 0 and email_code > 0:",
+      "line": 11,
+      "confidence": "low",
+      "explanation": "A condição na linha 11 combina quatro comparações com operadores 'and' (name_code > 0 and address_code > 0 and phone_code > 0 and email_code > 0), formando uma expressão composta complexa. Além disso, há uma cadeia de elif para complaint_code e condicionais encadeadas para chained/middleman, aumentando a complexidade ciclomática da função."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

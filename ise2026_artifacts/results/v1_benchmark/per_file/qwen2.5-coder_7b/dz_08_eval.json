@@ -1,0 +1,69 @@
+{
+  "file": "dz_08.py",
+  "expected_bugs": [
+    {
+      "function": "guarded_large_denominator",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "guarded_large_denominator",
+      "category": "division_by_zero",
+      "expression": "total // denominator",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O operando 'denominator' é controlado por parâmetro livre e não há guarda visível para garantir que ele não seja zero. Além disso, a divisão inteira 'total // denominator' pode causar ZeroDivisionError se 'denominator' for zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "guarded_large_denominator",
+      "category": "long_method",
+      "expression": "def guarded_large_denominator(total: int, denominator: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não classifica como longa. A função também possui apenas 2 parâmetros, abaixo do limite para ser considerada com muitos parâmetros."
+    },
+    {
+      "function": "guarded_large_denominator",
+      "category": "complex_conditional",
+      "expression": "if denominator > 10:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'if denominator > 10' é simples e não apresenta complexidade aninhada ou composta."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

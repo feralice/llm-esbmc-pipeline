@@ -1,0 +1,85 @@
+{
+  "file": "av_09.py",
+  "expected_bugs": [
+    {
+      "function": "branch_assertion",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "branch_assertion",
+      "category": "assertion_violation",
+      "expression": "assert amount > 0",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição 'amount > 0' é controlada por parâmetro livre (flag). Não há guarda visível antes do uso. A exceção AssertionError pode ser alcançável se flag for false e amount for zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "branch_assertion",
+      "category": "complex_conditional",
+      "expression": "if flag: return amount; assert amount > 0",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém uma condição aninhada (if-assert). Embora não seja complexa em termos de lógica, a presença de assert dentro de um if pode indicar uma complexidade oculta."
+    },
+    {
+      "function": "branch_assertion",
+      "category": "many_parameters",
+      "expression": "def branch_assertion(amount: int, flag: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas dois parâmetros, o que não é considerado excessivo. No entanto, a presença de um único parâmetro booleano pode indicar uma complexidade oculta."
+    },
+    {
+      "function": "branch_assertion",
+      "category": "long_method",
+      "expression": "def branch_assertion(amount: int, flag: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas cinco linhas de código, o que não é considerado longo. No entanto, a presença de uma condição aninhada e um assert pode indicar uma complexidade oculta."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

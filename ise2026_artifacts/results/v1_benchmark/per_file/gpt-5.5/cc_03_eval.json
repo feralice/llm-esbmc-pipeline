@@ -1,0 +1,34 @@
+{
+  "file": "cc_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "should_alert",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "should_alert",
+      "category": "complex_conditional",
+      "expression": "def should_alert(cpu: int, memory: int, disk: int, degraded: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém divisões, acessos indexados, assert ou raise AssertionError, portanto não há bugs formais a reportar. Como smell, a expressão de retorno combina múltiplas condições com vários operadores and/or, tornando a lógica condicional composta e potencialmente mais difícil de manter."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

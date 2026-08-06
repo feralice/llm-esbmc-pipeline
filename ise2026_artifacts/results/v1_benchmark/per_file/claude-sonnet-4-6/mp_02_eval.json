@@ -1,0 +1,34 @@
+{
+  "file": "mp_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters",
+      "expression": "def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 6 parâmetros (base, tax, fee, discount, region, priority), o que excede o limiar de 5 parâmetros considerado excessivo. Isso dificulta a legibilidade e manutenção do código."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

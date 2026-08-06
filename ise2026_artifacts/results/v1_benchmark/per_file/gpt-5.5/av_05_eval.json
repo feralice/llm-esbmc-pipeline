@@ -1,0 +1,53 @@
+{
+  "file": "av_05.py",
+  "expected_bugs": [
+    {
+      "function": "valid_percent",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "valid_percent",
+      "category": "assertion_violation",
+      "expression": "assert percent >= 0 and percent <= 100",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição do assert depende diretamente do parâmetro livre percent, que vem de fora sem restrição constante. Há uma guarda visível no próprio assert verificando percent >= 0 and percent <= 100, mas ela pode falhar para valores fora desse intervalo. Não há try/except envolvendo o assert, portanto a falha alcançável resultaria em AssertionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "valid_percent",
+      "category": "complex_conditional",
+      "expression": "def valid_percent(percent: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém uma condição composta no assert usando operador lógico and. Embora seja curta e simples, a regra de smell solicita avaliar condições compostas/aninhadas, e esta condição combina duas comparações."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

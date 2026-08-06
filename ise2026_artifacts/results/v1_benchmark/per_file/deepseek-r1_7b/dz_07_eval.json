@@ -1,0 +1,34 @@
+{
+  "file": "dz_07.py",
+  "expected_bugs": [
+    {
+      "function": "off_by_one_denominator",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "off_by_one_denominator",
+      "category": "division_by_zero",
+      "expression": "count - 1",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O operador de divisão // pode causar ZeroDivisionError quando (count - 1) é zero, ou seja, quando count = 1. O parâmetro livre 'count' não está restringido a valores maiores que 1, o que pode levar à divisão por zero."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

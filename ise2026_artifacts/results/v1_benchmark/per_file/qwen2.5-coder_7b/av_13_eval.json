@@ -1,0 +1,53 @@
+{
+  "file": "av_13.py",
+  "expected_bugs": [
+    {
+      "function": "nonzero_positive",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "nonzero_positive",
+      "category": "assertion_violation",
+      "expression": "assert value > 0",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição 'value > 0' pode ser falsa se 'value' for zero, levando a um AssertionError. O valor de 'value' é controlado por parâmetro livre e não há guarda visível antes do uso."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "nonzero_positive",
+      "category": "long_method",
+      "expression": "def nonzero_positive(value: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não classifica como longa. A função também não possui muitos parâmetros nem condições complexas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

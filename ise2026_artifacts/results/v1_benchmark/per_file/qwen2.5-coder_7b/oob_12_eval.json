@@ -1,0 +1,66 @@
+{
+  "file": "oob_12.py",
+  "expected_bugs": [
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds"
+    },
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "pair_sum_at",
+      "category": "out_of_bounds",
+      "expression": "values[i + j]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O índice 'i + j' pode ser maior que o comprimento da lista 'values', levando a um IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "pair_sum_at",
+      "category": "many_parameters",
+      "expression": "def pair_sum_at(values: list[int], i: int, j: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 3 parâmetros, o que não é considerado muito alto. No entanto, a presença de três parâmetros pode indicar uma função com responsabilidades demais."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fn"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [
+      {
+        "category": "out_of_bounds",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

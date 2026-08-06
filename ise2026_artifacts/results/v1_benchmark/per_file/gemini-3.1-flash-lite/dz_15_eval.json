@@ -1,0 +1,34 @@
+{
+  "file": "dz_15.py",
+  "expected_bugs": [
+    {
+      "function": "alternate_bucket",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "alternate_bucket",
+      "category": "division_by_zero",
+      "expression": "limit // bucket",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A operação 'limit // bucket' na linha 3 é executada quando bucket é 0, pois a guarda 'if bucket != 0' apenas protege o caminho do 'if', mas o 'else' implícito (ou o retorno após o if) não impede a divisão por zero se o fluxo atingir a linha 4."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

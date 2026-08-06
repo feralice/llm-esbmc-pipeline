@@ -1,0 +1,85 @@
+{
+  "file": "clean_08.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "checked_positive",
+      "category": "assertion_violation",
+      "expression": "assert x > 0",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição 'x > 0' no assert é controlada por parâmetro livre (x). Não há guarda visível antes do uso que garanta a veracidade da condição. A exceção AssertionError pode ser alcançável."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "checked_positive",
+      "category": "long_method",
+      "expression": "def checked_positive(x: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 5 linhas de código, o que não classifica como longa. No entanto, ela contém uma condição assert e um return, o que pode indicar complexidade oculta."
+    },
+    {
+      "function": "checked_positive",
+      "category": "many_parameters",
+      "expression": "def checked_positive(x: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas um parâmetro, o que não classifica como excessivo. No entanto, a presença de uma condição assert pode indicar complexidade oculta."
+    },
+    {
+      "function": "checked_positive",
+      "category": "complex_conditional",
+      "expression": "assert x > 0",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A função contém uma condição assert, que pode ser considerada complexa em comparação com uma simples verificação de igualdade."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

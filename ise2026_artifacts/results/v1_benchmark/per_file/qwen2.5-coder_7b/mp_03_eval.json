@@ -1,0 +1,51 @@
+{
+  "file": "mp_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "update_position",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "update_position",
+      "category": "many_parameters",
+      "expression": "def update_position(x: int, y: int, z: int, vx: int, vy: int, vz: int, dt: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 7 parâmetros, o que pode indicar uma assinatura de método com muitos argumentos."
+    },
+    {
+      "function": "update_position",
+      "category": "long_method",
+      "expression": "def update_position(x: int, y: int, z: int, vx: int, vy: int, vz: int, dt: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém apenas uma linha de código executável, o que pode indicar que ela não está seguindo as melhores práticas de design."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

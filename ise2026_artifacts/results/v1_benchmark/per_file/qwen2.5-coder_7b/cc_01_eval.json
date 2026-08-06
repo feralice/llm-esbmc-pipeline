@@ -1,0 +1,51 @@
+{
+  "file": "cc_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "can_apply_discount",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "can_apply_discount",
+      "category": "many_parameters",
+      "expression": "def can_apply_discount(age: int, purchases: int, member: bool, blocked: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 4 parâmetros, o que pode ser considerado um número excessivo para uma única operação."
+    },
+    {
+      "function": "can_apply_discount",
+      "category": "complex_conditional",
+      "expression": "return (member and purchases > 5 and not blocked) or (age > 65 and purchases > 1 and not blocked)",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A função contém uma condição complexa com dois caminhos possíveis, o que pode dificultar a leitura e manutenção do código."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

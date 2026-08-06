@@ -1,0 +1,77 @@
+{
+  "file": "lm_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_pizza_order",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_pizza_order",
+      "category": "long_method",
+      "expression": "def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 40 linhas de código, o que pode indicar uma complexidade excessiva."
+    },
+    {
+      "function": "process_pizza_order",
+      "category": "many_parameters",
+      "expression": "def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 4 parâmetros, o que pode indicar uma complexidade excessiva."
+    },
+    {
+      "function": "process_pizza_order",
+      "category": "complex_conditional",
+      "expression": "def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém várias condições aninhadas e compostas, o que pode indicar uma complexidade excessiva."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

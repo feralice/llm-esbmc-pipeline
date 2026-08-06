@@ -1,0 +1,34 @@
+{
+  "file": "clean_09.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "guarded_shifted_denominator",
+      "category": "division_by_zero",
+      "expression": "total // (count - 1)",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A operação de divisão utiliza o denominador (count - 1), que é controlado pelo parâmetro livre 'count'. Se 'count' for igual a 1, o denominador torna-se zero, causando um ZeroDivisionError, e a guarda existente verifica apenas se 'count == 1' para retornar, mas não impede a execução da divisão caso 'count' seja 1 em caminhos não previstos ou se a lógica for alterada."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "file": "lm_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_pizza_order",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_pizza_order",
+      "category": "long_method",
+      "expression": "def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function contains 40 lines of code, which is relatively long for a single logic block, making it harder to maintain and test."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

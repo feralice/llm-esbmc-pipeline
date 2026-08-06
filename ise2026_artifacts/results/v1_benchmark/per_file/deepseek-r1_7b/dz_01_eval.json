@@ -1,0 +1,39 @@
+{
+  "file": "dz_01.py",
+  "expected_bugs": [
+    {
+      "function": "compute_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fn"
+    },
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

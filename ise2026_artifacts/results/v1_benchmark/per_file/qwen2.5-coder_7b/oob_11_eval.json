@@ -1,0 +1,53 @@
+{
+  "file": "oob_11.py",
+  "expected_bugs": [
+    {
+      "function": "strided_fetch",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "strided_fetch",
+      "category": "out_of_bounds",
+      "expression": "data[idx]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O índice 'idx' é calculado como 'base + stride * steps'. Se 'steps' for muito grande, 'idx' pode ultrapassar o limite superior da lista 'data', levando a um IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "strided_fetch",
+      "category": "many_parameters",
+      "expression": "def strided_fetch(data: list[int], base: int, stride: int, steps: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função 'strided_fetch' possui 4 parâmetros, o que pode ser considerado um número excessivo para uma única operação."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

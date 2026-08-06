@@ -1,0 +1,53 @@
+{
+  "file": "dz_04.py",
+  "expected_bugs": [
+    {
+      "function": "normalize_mod",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "normalize_mod",
+      "category": "division_by_zero",
+      "expression": "value % scale",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O operando 'scale' é controlado por parâmetro livre e não há guarda visível para verificar se ele é zero antes do uso. Isso pode levar a uma divisão por zero, resultando em um ZeroDivisionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "normalize_mod",
+      "category": "many_parameters",
+      "expression": "def normalize_mod(value: int, scale: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas dois parâmetros, o que não é considerado excessivo. A assinatura da função é 'def normalize_mod(value: int, scale: int) -> int:', onde 'value' e 'scale' são os únicos parâmetros."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

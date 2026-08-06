@@ -1,0 +1,30 @@
+{
+  "file": "av_03.py",
+  "expected_bugs": [
+    {
+      "function": "non_negative_balance",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fn"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fn"
+      }
+    ],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

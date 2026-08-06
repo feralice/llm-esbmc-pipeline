@@ -1,0 +1,64 @@
+{
+  "file": "lm_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "many_parameters",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A assinatura possui 5 parâmetros livres, sem contar self/cls. Isso atinge o critério fornecido para many_parameters (>= 5 parâmetros), indicando uma interface potencialmente extensa demais."
+    },
+    {
+      "function": "process_customer_profile",
+      "category": "complex_conditional",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém condição composta combinando vários parâmetros com operadores and, especialmente na checagem conjunta de name_code, address_code, phone_code e email_code. Esse tipo de condicional composto pode dificultar leitura e manutenção."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fn"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": [
+      {
+        "category": "long_method",
+        "verdict": "fn"
+      }
+    ]
+  }
+}

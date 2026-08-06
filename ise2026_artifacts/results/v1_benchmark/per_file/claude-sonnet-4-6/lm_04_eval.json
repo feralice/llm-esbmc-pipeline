@@ -1,0 +1,51 @@
+{
+  "file": "lm_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "tally_customer_complaints",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "tally_customer_complaints",
+      "category": "many_parameters",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 6 parâmetros (cold, late, wrong_order, burnt, little_cheese, undercooked), o que excede o limite recomendado de 4-5 parâmetros e dificulta a legibilidade e manutenção. Seria mais adequado agrupar esses parâmetros em uma estrutura de dados como um dataclass ou dict."
+    },
+    {
+      "function": "tally_customer_complaints",
+      "category": "long_method",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 36 linhas no total com aproximadamente 28 linhas de código executável, realizando múltiplas responsabilidades distintas: contagem de reclamações, cálculo de severidade, cálculo de score total e aplicação de bônus. Essas responsabilidades poderiam ser extraídas em funções separadas."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

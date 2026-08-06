@@ -1,0 +1,53 @@
+{
+  "file": "dz_01.py",
+  "expected_bugs": [
+    {
+      "function": "compute_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "compute_ratio",
+      "category": "division_by_zero",
+      "expression": "total // count",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "O operando 'count' é controlado por parâmetro livre e não há guarda visível antes do uso para verificar se ele é zero. Isso pode levar a uma divisão por zero, resultando em um ZeroDivisionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "compute_ratio",
+      "category": "many_parameters",
+      "expression": "def compute_ratio(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 2 parâmetros, o que não é considerado excessivo. No entanto, a presença de dois parâmetros pode indicar uma complexidade desnecessária."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

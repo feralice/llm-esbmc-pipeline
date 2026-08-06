@@ -1,0 +1,34 @@
+{
+  "file": "dz_13.py",
+  "expected_bugs": [
+    {
+      "function": "positive_branch_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "positive_branch_ratio",
+      "category": "division_by_zero",
+      "expression": "total // count",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O parâmetro 'count' é livre (sem restrição de constante). Na linha 4, o caminho 'return total // count' é executado quando count <= 0, o que inclui count == 0, causando ZeroDivisionError. A guarda 'if count > 0' na linha 2 apenas protege a linha 3 (ramo positivo), mas o ramo else na linha 4 executa a mesma divisão sem qualquer proteção quando count <= 0. Não há try/except cobrindo a operação."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

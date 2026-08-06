@@ -1,0 +1,34 @@
+{
+  "file": "cc_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional",
+      "expression": "def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém divisões, acessos indexados, asserts ou raise AssertionError, portanto não há operações perigosas formais a reportar. Como smell, há condições compostas com múltiplos operadores booleanos and/or em mais de um if, o que pode dificultar a leitura e manutenção da lógica de decisão."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

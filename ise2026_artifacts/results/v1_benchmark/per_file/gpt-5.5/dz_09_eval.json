@@ -1,0 +1,53 @@
+{
+  "file": "dz_09.py",
+  "expected_bugs": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "division_by_zero",
+      "expression": "total // divisor",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "O denominador em `total // divisor` é controlado pelo parâmetro livre `divisor`. Há uma guarda anterior (`if divisor == 0 and total > 0`) que retorna apenas em uma condição específica envolvendo `divisor` e `total`, mas a operação de divisão não está diretamente coberta por try/except. Portanto, é um candidato plausível a divisão por zero para verificação formal."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "conditional_zero_guard",
+      "category": "complex_conditional",
+      "expression": "def conditional_zero_guard(total: int, divisor: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém uma condição composta com operador lógico `and` (`divisor == 0 and total > 0`). Embora curta, ela combina múltiplos predicados na mesma decisão, caracterizando uma condição composta conforme o critério de smell solicitado."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

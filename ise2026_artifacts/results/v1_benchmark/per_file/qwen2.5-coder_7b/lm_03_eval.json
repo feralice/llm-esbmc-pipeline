@@ -1,0 +1,85 @@
+{
+  "file": "lm_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_cashier_workflow",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_cashier_workflow",
+      "category": "long_method",
+      "expression": "def process_cashier_workflow(order_code: int, chef_busy: bool, customer_upset: bool, distance: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 37 linhas de código, o que pode ser considerado longa. Ela realiza várias verificações e ajustes condicionais, aumentando a complexidade."
+    },
+    {
+      "function": "process_cashier_workflow",
+      "category": "many_parameters",
+      "expression": "def process_cashier_workflow(order_code: int, chef_busy: bool, customer_upset: bool, distance: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem 4 parâmetros, o que é considerado aceitável. Não há um número excessivo de parâmetros."
+    },
+    {
+      "function": "process_cashier_workflow",
+      "category": "complex_conditional",
+      "expression": "if distance <= 5:",
+      "line": 24,
+      "confidence": "low",
+      "explanation": "A função contém várias condições aninhadas e compostas, o que pode aumentar a complexidade do código. No entanto, isso não é considerado um problema em si."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    },
+    {
+      "category": "out_of_bounds",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      },
+      {
+        "category": "out_of_bounds",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

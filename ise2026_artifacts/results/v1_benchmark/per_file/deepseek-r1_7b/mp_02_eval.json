@@ -1,0 +1,70 @@
+{
+  "file": "mp_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "calculate_quote",
+      "category": "assertion_violation",
+      "expression": "total - discount",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "There is a potential for assertion violation if the return value (total - discount) could be negative. There's no assert statement to check this condition."
+    }
+  ],
+  "expected_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters",
+      "expression": "base, tax, fee, discount, region, priority",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A function with six parameters may be considered as having many_parameters. The parameters are base, tax, fee, discount, region, and priority."
+    },
+    {
+      "function": "calculate_quote",
+      "category": "many_parameters",
+      "expression": "base, tax, fee, discount, region, priority",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "The function has six parameters which may be considered excessive."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

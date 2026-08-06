@@ -1,0 +1,61 @@
+{
+  "file": "cc_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "is_valid_transition",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "is_valid_transition",
+      "category": "complex_conditional",
+      "expression": "(state == 0 and target in [1, 2]) or (state == 1 and target == 2) or (admin and target >= 0)",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A função contém uma condição complexa com múltiplos caminhos de decisão, o que pode dificultar a leitura e manutenção do código."
+    },
+    {
+      "function": "is_valid_transition",
+      "category": "many_parameters",
+      "expression": "def is_valid_transition(state: int, target: int, locked: bool, admin: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 4 parâmetros, o que pode indicar uma assinatura de método complexa e potencialmente difícil de entender."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "file": "cc_05.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "choose_strategy",
+      "category": "complex_conditional",
+      "expression": "def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função apresenta condicionais compostas com múltiplos operadores lógicos (and, or, not) combinados em expressões longas. A primeira condição possui três subcláusulas unidas por 'or', cada uma com 'and', tornando a lógica difícil de ler e manter."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

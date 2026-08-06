@@ -1,0 +1,34 @@
+{
+  "file": "cc_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "is_valid_transition",
+      "category": "complex_conditional"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "is_valid_transition",
+      "category": "complex_conditional",
+      "expression": "def is_valid_transition(state: int, target: int, locked: bool, admin: bool) -> bool:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função utiliza uma expressão booleana composta com múltiplos operadores lógicos (and/or) que avaliam diferentes estados e permissões, tornando a lógica de transição difícil de manter e testar."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

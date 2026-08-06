@@ -1,0 +1,34 @@
+{
+  "file": "clean_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "clamp_score",
+      "category": "assertion_violation",
+      "expression": "assert score >= 0 and score <= 100",
+      "line": 5,
+      "confidence": "low",
+      "explanation": "A condição do assert depende diretamente do parâmetro livre score. Antes do assert há guardas visíveis que retornam 0 se score < 0 e 100 se score > 100, mas a condição assert score >= 0 and score <= 100 ainda é controlada pelo parâmetro. Não há try/except envolvendo diretamente o assert, portanto é um candidato a verificação formal de AssertionError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "assertion_violation",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

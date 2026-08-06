@@ -1,0 +1,53 @@
+{
+  "file": "av_15.py",
+  "expected_bugs": [
+    {
+      "function": "strict_percent",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "strict_percent",
+      "category": "assertion_violation",
+      "expression": "assert percent > 0 and percent < 100",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição do assert depende diretamente do parâmetro livre percent. Há uma guarda visível na própria condição do assert, mas ela pode ser falsa para valores de entrada fora do intervalo 1..99, tornando alcançável uma AssertionError. Não há try/except envolvendo o assert que capture essa exceção."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "strict_percent",
+      "category": "complex_conditional",
+      "expression": "def strict_percent(percent: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A condição do assert é composta por duas comparações combinadas com and. Embora simples, é uma condição composta conforme o critério de complex_conditional solicitado."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

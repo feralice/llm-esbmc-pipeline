@@ -21,6 +21,10 @@ Conteúdo:
 - `dataset/labeled/` — dataset rotulado utilizado na avaliação (70 funções
   Python): `ok/` contém o código-fonte das funções (`bugs/`, `smells/`,
   `clean/`), `ground_truths/` contém as anotações manuais correspondentes.
+- `results/v1_benchmark/` — logs e relatórios brutos do experimento (v1)
+  reportado no artigo: um `benchmark_<modelo>.json` por modelo, agregando
+  as métricas, e `per_file/<modelo>/` com a avaliação e os logs de execução
+  do ESBMC-Python por função individual.
 
 ## Como reproduzir
 
@@ -28,12 +32,21 @@ Conteúdo:
    execução) está no repositório principal, em `research_pipeline/`.
 2. O dataset completo está em `dataset/labeled/` no repositório principal;
    a cópia aqui é somente para referência e empacotamento do artefato.
-3. Os relatórios da avaliação preliminar (Flow A/B/C, por modelo e por
-   arquivo) estão em `reports/json/v1_benchmark/` no repositório principal.
+3. Os relatórios e logs brutos da avaliação preliminar (Flow A/B/C, por
+   modelo e por arquivo) estão em `results/v1_benchmark/` nesta pasta, e
+   também em `reports/json/v1_benchmark/` no repositório principal.
 4. Para reexecutar a triagem por LLM, a validação estrutural por AST e a
    confirmação formal via ESBMC-Python, utilize `pipeline.py` apontando para
    os arquivos de `dataset/labeled/ok/`, comparando a saída contra
    `dataset/labeled/ground_truths/` por meio de `evaluator.py`.
+
+## Ambiente de execução
+
+Os experimentos foram executados com o ESBMC-Python versão 8.3.0. Os
+modelos locais (deepseek-r1:7b e qwen2.5-coder:7b) foram executados via
+Ollama versão 0.30.5, sob WSL2, em uma máquina com GPU NVIDIA RTX 3060
+Laptop (6GB VRAM) e até 15GB de RAM disponíveis para o processo dentro do
+WSL2.
 
 ## Escopo
 

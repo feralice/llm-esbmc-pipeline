@@ -1,0 +1,51 @@
+{
+  "file": "lm_02.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_customer_profile",
+      "category": "many_parameters",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function accepts 5 parameters, which exceeds the recommended threshold for maintainability and readability."
+    },
+    {
+      "function": "process_customer_profile",
+      "category": "long_method",
+      "expression": "def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function contains 38 lines of code, which is relatively long for a single logic block, suggesting it could be decomposed into smaller helper functions."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

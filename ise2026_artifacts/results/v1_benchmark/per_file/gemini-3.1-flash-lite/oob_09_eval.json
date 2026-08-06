@@ -1,0 +1,34 @@
+{
+  "file": "oob_09.py",
+  "expected_bugs": [
+    {
+      "function": "flat_matrix_get",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "flat_matrix_get",
+      "category": "out_of_bounds",
+      "expression": "flat[idx]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O índice 'idx' é calculado a partir dos parâmetros 'row', 'col' e 'num_cols', que são livres. Não há verificação de limites (bounds checking) antes do acesso à lista 'flat', permitindo que um índice negativo ou maior que o tamanho da lista cause um IndexError."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

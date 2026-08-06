@@ -1,0 +1,34 @@
+{
+  "file": "dz_10.py",
+  "expected_bugs": [
+    {
+      "function": "range_width_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "range_width_ratio",
+      "category": "division_by_zero",
+      "expression": "right - left",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A divisão por zero pode ocorrer se width for zero, ou seja, quando left e right forem iguais. Não há try/except que engloba a operação de divisão, portanto, não é protegida."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

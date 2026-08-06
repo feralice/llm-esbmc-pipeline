@@ -1,0 +1,67 @@
+{
+  "file": "lm_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "tally_customer_complaints",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "tally_customer_complaints",
+      "category": "long_method",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tally_customer_complaints tem mais de 5 parâmetros e contém 36 linhas de código, o que pode indicar uma função longa."
+    },
+    {
+      "function": "tally_customer_complaints",
+      "category": "many_parameters",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tally_customer_complaints tem 6 parâmetros, o que pode indicar um número excessivo de parâmetros."
+    },
+    {
+      "function": "tally_customer_complaints",
+      "category": "complex_conditional",
+      "expression": "def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tally_customer_complaints contém várias condições aninhadas e compostas, o que pode indicar uma complexidade condicional."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

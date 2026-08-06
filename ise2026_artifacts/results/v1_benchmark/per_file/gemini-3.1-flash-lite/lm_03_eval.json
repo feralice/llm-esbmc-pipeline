@@ -1,0 +1,34 @@
+{
+  "file": "lm_03.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "process_cashier_workflow",
+      "category": "long_method"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "process_cashier_workflow",
+      "category": "long_method",
+      "expression": "def process_cashier_workflow(order_code: int, chef_busy: bool, customer_upset: bool, distance: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function contains 37 lines of code, which is relatively long for a single workflow processing function, potentially violating the single responsibility principle."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "tp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "file": "av_07.py",
+  "expected_bugs": [
+    {
+      "function": "upper_limit_check",
+      "category": "assertion_violation"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "upper_limit_check",
+      "category": "assertion_violation",
+      "expression": "assert value < limit",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A condição do assert usa os parâmetros livres value e limit, portanto pode ser controlada externamente. Há uma guarda visível antes do assert, `if limit > 0:`, que restringe apenas o caminho em que a asserção é executada, mas a condição `value < limit` ainda depende dos parâmetros. Não há try/except envolvendo diretamente o assert, então é um candidato a AssertionError verificável."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [],
+  "bug_verdicts": [
+    {
+      "category": "assertion_violation",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [],
+    "smell_fn": []
+  }
+}

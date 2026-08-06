@@ -1,0 +1,51 @@
+{
+  "file": "mp_04.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "format_metric",
+      "category": "many_parameters",
+      "expression": "value, minimum, maximum, warn, critical, enabled",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A function with six parameters may be considered complex and could benefit from being split into smaller functions."
+    },
+    {
+      "function": "format_metric",
+      "category": "complex_conditional",
+      "expression": "if not enabled:\n    if value >= critical:\n    if value >= warn:\n    if value < minimum or value > maximum:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "The function has multiple nested conditional statements which can make it harder to read and maintain."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

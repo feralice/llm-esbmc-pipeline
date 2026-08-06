@@ -1,0 +1,85 @@
+{
+  "file": "clean_06.py",
+  "expected_bugs": [],
+  "generated_bugs": [
+    {
+      "function": "guarded_count_ratio",
+      "category": "division_by_zero",
+      "expression": "total // count",
+      "line": 4,
+      "confidence": "low",
+      "explanation": "A divisão 'total // count' pode causar ZeroDivisionError se 'count' for zero, que não é verificado por uma guarda antes da operação."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "guarded_count_ratio",
+      "category": "long_method",
+      "expression": "def guarded_count_ratio(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 4 linhas de código, o que não classifica como longa."
+    },
+    {
+      "function": "guarded_count_ratio",
+      "category": "many_parameters",
+      "expression": "def guarded_count_ratio(total: int, count: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 2 parâmetros, o que não classifica como excessivo."
+    },
+    {
+      "function": "guarded_count_ratio",
+      "category": "complex_conditional",
+      "expression": "if count <= 0:",
+      "line": 2,
+      "confidence": "low",
+      "explanation": "A condição 'if count <= 0' é simples e não aninhada."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "fp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [
+      {
+        "category": "division_by_zero",
+        "verdict": "fp"
+      }
+    ],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

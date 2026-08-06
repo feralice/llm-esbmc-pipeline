@@ -1,0 +1,85 @@
+{
+  "file": "dz_10.py",
+  "expected_bugs": [
+    {
+      "function": "range_width_ratio",
+      "category": "division_by_zero"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "range_width_ratio",
+      "category": "division_by_zero",
+      "expression": "total // width",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "A divisão 'total // width' pode causar ZeroDivisionError se 'width' for zero, que ocorre quando 'left' é igual a 'right'. Não há guarda visível para verificar se 'width' não é zero antes da operação."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "range_width_ratio",
+      "category": "long_method",
+      "expression": "def range_width_ratio(total: int, left: int, right: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código, o que não classifica como longa. A assinatura da função contém 3 parâmetros, o que também não é considerado excessivo."
+    },
+    {
+      "function": "range_width_ratio",
+      "category": "many_parameters",
+      "expression": "def range_width_ratio(total: int, left: int, right: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 parâmetros, o que não é considerado excessivo."
+    },
+    {
+      "function": "range_width_ratio",
+      "category": "complex_conditional",
+      "expression": "def range_width_ratio(total: int, left: int, right: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "division_by_zero",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

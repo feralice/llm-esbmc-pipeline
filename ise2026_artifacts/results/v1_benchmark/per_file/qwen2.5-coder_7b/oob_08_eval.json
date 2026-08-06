@@ -1,0 +1,85 @@
+{
+  "file": "oob_08.py",
+  "expected_bugs": [
+    {
+      "function": "doubled_index",
+      "category": "out_of_bounds"
+    }
+  ],
+  "generated_bugs": [
+    {
+      "function": "doubled_index",
+      "category": "out_of_bounds",
+      "expression": "values[slot]",
+      "line": 3,
+      "confidence": "low",
+      "explanation": "O índice 'slot' é calculado como 'index * 2', que pode resultar em um valor fora dos limites da lista 'values'. Não há uma guarda visível para verificar se 'slot' está dentro do intervalo [0, len(values)-1]."
+    }
+  ],
+  "expected_smells": [],
+  "generated_smells": [
+    {
+      "function": "doubled_index",
+      "category": "long_method",
+      "expression": "def doubled_index(values: list[int], index: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 3 linhas de código, o que não classifica como longa. A assinatura da função contém 2 parâmetros, o que também não é considerado excessivo."
+    },
+    {
+      "function": "doubled_index",
+      "category": "many_parameters",
+      "expression": "def doubled_index(values: list[int], index: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função tem apenas 2 parâmetros, o que não é considerado excessivo."
+    },
+    {
+      "function": "doubled_index",
+      "category": "complex_conditional",
+      "expression": "def doubled_index(values: list[int], index: int) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função não contém condições compostas ou aninhadas."
+    }
+  ],
+  "bug_verdicts": [
+    {
+      "category": "out_of_bounds",
+      "verdict": "tp"
+    }
+  ],
+  "smell_verdicts": [
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    },
+    {
+      "category": "many_parameters",
+      "verdict": "fp"
+    },
+    {
+      "category": "complex_conditional",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      },
+      {
+        "category": "many_parameters",
+        "verdict": "fp"
+      },
+      {
+        "category": "complex_conditional",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "file": "mp_01.py",
+  "expected_bugs": [],
+  "generated_bugs": [],
+  "expected_smells": [
+    {
+      "function": "create_user_record",
+      "category": "many_parameters"
+    }
+  ],
+  "generated_smells": [
+    {
+      "function": "create_user_record",
+      "category": "many_parameters",
+      "expression": "def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função possui 6 parâmetros, o que pode indicar uma assinatura de método excessivamente complexa."
+    },
+    {
+      "function": "create_user_record",
+      "category": "long_method",
+      "expression": "def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:",
+      "line": 1,
+      "confidence": "low",
+      "explanation": "A função contém apenas uma linha de código executável, o que pode indicar um método muito longo."
+    }
+  ],
+  "bug_verdicts": [],
+  "smell_verdicts": [
+    {
+      "category": "many_parameters",
+      "verdict": "tp"
+    },
+    {
+      "category": "long_method",
+      "verdict": "fp"
+    }
+  ],
+  "errors": {
+    "bug_fp": [],
+    "bug_fn": [],
+    "smell_fp": [
+      {
+        "category": "long_method",
+        "verdict": "fp"
+      }
+    ],
+    "smell_fn": []
+  }
+}
