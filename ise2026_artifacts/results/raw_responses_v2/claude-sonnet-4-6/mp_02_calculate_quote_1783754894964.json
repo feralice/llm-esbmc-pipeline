@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "calculate_quote",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_02.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusjPai2zeornvkpMkWa",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 6 parâmetros (base, tax, fee, discount, region, priority), o que excede o limiar de 5 parâmetros considerado excessivo. Isso dificulta a legibilidade e manutenção do código.\",\n      \"metadata\": {\n        \"expression\": \"def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1441,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 174,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

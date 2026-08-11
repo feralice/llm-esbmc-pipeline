@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "checked_positive",
+  "file": "dataset/labeled/ok/clean/clean_08.py",
+  "raw_response": {
+    "id": "chatcmpl-686",
+    "object": "chat.completion",
+    "created": 1783764681,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A condição 'x > 0' no assert é controlada por parâmetro livre (x). Não há guarda visível antes do uso que garanta a veracidade da condição. A exceção AssertionError pode ser alcançável.\",\n      \"metadata\": {\n        \"expression\": \"assert x > 0\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 5 linhas de código, o que não classifica como longa. No entanto, ela contém uma condição assert e um return, o que pode indicar complexidade oculta.\",\n      \"metadata\": {\n        \"expression\": \"def checked_positive(x: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas um parâmetro, o que não classifica como excessivo. No entanto, a presença de uma condição assert pode indicar complexidade oculta.\",\n      \"metadata\": {\n        \"expression\": \"def checked_positive(x: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém uma condição assert, que pode ser considerada complexa em comparação com uma simples verificação de igualdade.\",\n      \"metadata\": {\n        \"expression\": \"assert x > 0\",\n        \"line\": 3\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1180,
+      "completion_tokens": 428,
+      "total_tokens": 1608
+    }
+  }
+}

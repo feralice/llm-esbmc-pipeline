@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "alternate_bucket",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_15.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusBuxgA24KrNCsCAwsw",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O parâmetro 'bucket' é livre (sem restrição de constante). O bloco 'if bucket != 0' protege o primeiro 'return limit // bucket', mas o segundo 'return limit // bucket' na linha 4 é alcançado exatamente quando bucket == 0, pois está no branch else implícito. Isso causa ZeroDivisionError garantido quando bucket é zero. Não há try/except cobrindo a operação.\",\n      \"metadata\": {\n        \"expression\": \"limit // bucket\",\n        \"line\": 4\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1365,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 194,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

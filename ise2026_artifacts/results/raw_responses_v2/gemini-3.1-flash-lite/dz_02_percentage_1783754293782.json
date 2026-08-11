@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "percentage",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_02.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"The parameter 'whole' is used as a divisor in the expression 'part * 100 // whole'. Since 'whole' is a free parameter and there is no check to ensure it is non-zero, a ZeroDivisionError can occur if 'whole' is 0.\",\n      \"metadata\": {\n        \"expression\": \"part * 100 // whole\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPO40vwbsIrlM00ABzht5iWhQc3vJSlJ31nFQDysVQpuxGGWkxIVJ+VDFMcB/O"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754293,
+    "id": "NO5Rao7-N5yVmtkP4eD3sA8",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 1159,
+      "total_tokens": 1305
+    }
+  }
+}

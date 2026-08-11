@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "register_event",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_05.py",
+  "raw_response": {
+    "id": "chatcmpl-271",
+    "object": "chat.completion",
+    "created": 1783765869,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função register_event possui 7 parâmetros, o que pode ser considerado um número excessivo.\",\n      \"metadata\": {\n        \"expression\": \"def register_event(day: int, month: int, year: int, hour: int, minute: int, second: int, code: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função register_event contém apenas uma linha de código executável, o que pode ser considerado um método muito longo.\",\n      \"metadata\": {\n        \"expression\": \"def register_event(day: int, month: int, year: int, hour: int, minute: int, second: int, code: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1273,
+      "completion_tokens": 237,
+      "total_tokens": 1510
+    }
+  }
+}

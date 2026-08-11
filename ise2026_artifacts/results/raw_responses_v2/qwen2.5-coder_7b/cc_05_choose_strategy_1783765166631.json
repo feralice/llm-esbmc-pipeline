@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "choose_strategy",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_05.py",
+  "raw_response": {
+    "id": "chatcmpl-245",
+    "object": "chat.completion",
+    "created": 1783765166,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição 'retries > 5 and size < 500' pode ser alcançada com retries = 6 e size = 499, o que levanta um AssertionError se a função não lidar adequadamente com essa situação.\",\n      \"metadata\": {\n        \"expression\": \"(retries > 5 and size < 500)\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui uma condição complexa com múltiplos níveis de aninhamento e combinações de operadores lógicos.\",\n      \"metadata\": {\n        \"expression\": \"(urgent and retries < 2) or (cached and size < 100) or (size > 1000 and retries == 0)\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 4 parâmetros, o que pode ser considerado um número excessivo para uma única função.\",\n      \"metadata\": {\n        \"expression\": \"def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém apenas 6 linhas de código, o que não é considerado longo. No entanto, a complexidade da lógica pode levar a um método mais longo do que seria ideal.\",\n      \"metadata\": {\n        \"expression\": \"def choose_strategy(size: int, retries: int, cached: bool, urgent: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1278,
+      "completion_tokens": 477,
+      "total_tokens": 1755
+    }
+  }
+}

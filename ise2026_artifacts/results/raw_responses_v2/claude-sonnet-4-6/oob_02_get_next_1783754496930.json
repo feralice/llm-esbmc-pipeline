@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "get_next",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_02.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusDxcj1JgjJek4hihP1",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice usado é `pos + 1`, onde `pos` é um parâmetro livre sem nenhuma restrição ou guarda visível no código. Se `pos` for igual a `len(values) - 1` ou maior, o acesso `values[pos + 1]` resultará em IndexError. Além disso, se `pos` for negativo e `pos + 1` resultar em índice válido negativo, o comportamento pode ser inesperado. Não há try/except cobrindo a operação.\",\n      \"metadata\": {\n        \"expression\": \"values[pos + 1]\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1360,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 215,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

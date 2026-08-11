@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "branch_slot",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_10.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso a 'values[idx]' depende do parâmetro 'values', que pode ser uma lista vazia ou com tamanho insuficiente (menor que 4), causando um IndexError. Não há verificação de tamanho da lista antes do acesso indexado.\",\n      \"metadata\": {\n        \"expression\": \"values[idx]\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPOIA3fEVAq7Z1Dubwtpr92fWhsGS7Zuvj6MFTNhRaIVocVu0NdYuk24lmmBRu"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754659,
+    "id": "o-9RauPJC_q5qtsP-vXQoQc",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 134,
+      "prompt_tokens": 1174,
+      "total_tokens": 1308
+    }
+  }
+}

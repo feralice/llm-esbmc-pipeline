@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "off_by_one_denominator",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_07.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A expressão 'count - 1' pode resultar em zero se 'count' for igual a 1. Embora exista uma guarda 'if count < 1', ela não impede que o valor 1 passe para a operação de divisão, causando um ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"total // (count - 1)\",\n        \"line\": 4\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPGtpRkMQO3CyF+n2pDfCVVACiyE2jk8higW/CG5GLsHL5zDOy+DFU7cRE8q6/"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754375,
+    "id": "h-5RatfUAZGlmtkPmfrw2Ac",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 141,
+      "prompt_tokens": 1184,
+      "total_tokens": 1325
+    }
+  }
+}

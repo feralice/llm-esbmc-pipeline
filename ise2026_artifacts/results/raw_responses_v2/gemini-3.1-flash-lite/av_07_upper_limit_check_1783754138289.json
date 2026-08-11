@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "upper_limit_check",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_07.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"The assertion 'value < limit' is controlled by the free parameters 'value' and 'limit'. Although there is a guard 'if limit > 0', it does not prevent the assertion from failing if 'value >= limit' when 'limit > 0'.\",\n      \"metadata\": {\n        \"expression\": \"assert value < limit\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPPqD898KLA+HKE6Sn/ksTJTDLlNZHrF5dTRqbCC3EE1UBxpKx3gt+jFaiSrZF"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754138,
+    "id": "me1RapuWFe-1qtsPyLvEqAo",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 137,
+      "prompt_tokens": 1174,
+      "total_tokens": 1311
+    }
+  }
+}

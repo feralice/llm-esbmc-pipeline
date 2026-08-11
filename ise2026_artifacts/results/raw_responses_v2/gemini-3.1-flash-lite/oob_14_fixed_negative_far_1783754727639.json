@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "fixed_negative_far",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_14.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso ao índice negativo -4 depende diretamente do tamanho da lista fornecida como parâmetro livre. Se a lista contiver menos de 4 elementos, a operação causará um IndexError, e não há verificação de tamanho ou tratamento de exceção no código.\",\n      \"metadata\": {\n        \"expression\": \"values[-4]\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPOy9U0bdu5xCnFDuCd6BO86SFzYtvEZxEW0JA/Fuav39EpzFyy26v/JN0PfK9"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754727,
+    "id": "5u9Rat7jLd-EqtsPuKLpwAQ",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 136,
+      "prompt_tokens": 1150,
+      "total_tokens": 1286
+    }
+  }
+}

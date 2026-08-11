@@ -1,0 +1,173 @@
+{
+  "model": "gpt-5.5",
+  "function": "tally_customer_complaints",
+  "file": "dataset/labeled/ok/smells/long_method/lm_04.py",
+  "raw_response": {
+    "id": "resp_0878dd32f8e67299006a52736845f0819d9fb77568622ac944",
+    "object": "response",
+    "created_at": 1783788392,
+    "status": "completed",
+    "background": false,
+    "billing": {
+      "payer": "developer"
+    },
+    "completed_at": 1783788399,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "incomplete_details": null,
+    "instructions": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "model": "gpt-5.5-2026-04-23",
+    "moderation": null,
+    "output": [
+      {
+        "id": "rs_0878dd32f8e67299006a527368de04819db726fa701e0533dc",
+        "type": "reasoning",
+        "content": [],
+        "summary": []
+      },
+      {
+        "id": "msg_0878dd32f8e67299006a52736d4264819d8a67c508780ebcad",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\"findings\":[{\"finding_type\":\"smell_heuristic\",\"category\":\"long_method\",\"explanation\":\"A função possui 36 linhas no trecho informado e contém uma sequência longa e repetitiva de verificações e acumulações para reclamações e severidade. Isso sugere que o método pode estar assumindo lógica demais ou poderia ser simplificado por uma estrutura de dados/mapeamento.\",\"verifiable\":false,\"metadata\":{\"expression\":\"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\"line\":1}},{\"finding_type\":\"smell_heuristic\",\"category\":\"many_parameters\",\"explanation\":\"A assinatura recebe 6 parâmetros livres, excedendo o limiar solicitado de >= 5 parâmetros. Isso pode dificultar a legibilidade e aumentar a chance de chamadas incorretas.\",\"verifiable\":false,\"metadata\":{\"expression\":\"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\"line\":1}}]}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "medium",
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "store": true,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "description": null,
+        "name": "pipeline_findings",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "finding_type": {
+                    "type": "string",
+                    "enum": [
+                      "suspected_bug",
+                      "smell_heuristic"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "assertion_violation",
+                      "division_by_zero",
+                      "out_of_bounds",
+                      "long_method",
+                      "many_parameters",
+                      "complex_conditional"
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string"
+                  },
+                  "verifiable": {
+                    "type": "boolean"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "line": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "expression",
+                      "line"
+                    ]
+                  }
+                },
+                "required": [
+                  "finding_type",
+                  "category",
+                  "explanation",
+                  "verifiable",
+                  "metadata"
+                ]
+              }
+            }
+          },
+          "required": [
+            "findings"
+          ]
+        },
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 1482,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 542,
+      "output_tokens_details": {
+        "reasoning_tokens": 291
+      },
+      "total_tokens": 2024
+    },
+    "user": null,
+    "metadata": {}
+  }
+}

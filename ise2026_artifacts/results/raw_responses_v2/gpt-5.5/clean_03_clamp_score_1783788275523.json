@@ -1,0 +1,173 @@
+{
+  "model": "gpt-5.5",
+  "function": "clamp_score",
+  "file": "dataset/labeled/ok/clean/clean_03.py",
+  "raw_response": {
+    "id": "resp_02ea015f7eb73ea4006a5272ee572081a19c389d7d157d4f92",
+    "object": "response",
+    "created_at": 1783788270,
+    "status": "completed",
+    "background": false,
+    "billing": {
+      "payer": "developer"
+    },
+    "completed_at": 1783788275,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "incomplete_details": null,
+    "instructions": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "model": "gpt-5.5-2026-04-23",
+    "moderation": null,
+    "output": [
+      {
+        "id": "rs_02ea015f7eb73ea4006a5272eeddf881a19ee49491471f26c8",
+        "type": "reasoning",
+        "content": [],
+        "summary": []
+      },
+      {
+        "id": "msg_02ea015f7eb73ea4006a5272f1a01481a1bd1f81ad0d5154a9",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\"findings\":[{\"finding_type\":\"suspected_bug\",\"category\":\"assertion_violation\",\"explanation\":\"A condição do assert depende diretamente do parâmetro livre score. Antes do assert há guardas visíveis que retornam 0 se score < 0 e 100 se score > 100, mas a condição assert score >= 0 and score <= 100 ainda é controlada pelo parâmetro. Não há try/except envolvendo diretamente o assert, portanto é um candidato a verificação formal de AssertionError.\",\"verifiable\":true,\"metadata\":{\"expression\":\"assert score >= 0 and score <= 100\",\"line\":5}}]}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "medium",
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "store": true,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "description": null,
+        "name": "pipeline_findings",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "finding_type": {
+                    "type": "string",
+                    "enum": [
+                      "suspected_bug",
+                      "smell_heuristic"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "assertion_violation",
+                      "division_by_zero",
+                      "out_of_bounds",
+                      "long_method",
+                      "many_parameters",
+                      "complex_conditional"
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string"
+                  },
+                  "verifiable": {
+                    "type": "boolean"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "line": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "expression",
+                      "line"
+                    ]
+                  }
+                },
+                "required": [
+                  "finding_type",
+                  "category",
+                  "explanation",
+                  "verifiable",
+                  "metadata"
+                ]
+              }
+            }
+          },
+          "required": [
+            "findings"
+          ]
+        },
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 1218,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 350,
+      "output_tokens_details": {
+        "reasoning_tokens": 210
+      },
+      "total_tokens": 1568
+    },
+    "user": null,
+    "metadata": {}
+  }
+}

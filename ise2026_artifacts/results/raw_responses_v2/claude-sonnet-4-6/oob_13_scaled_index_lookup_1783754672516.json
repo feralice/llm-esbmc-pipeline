@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "scaled_index_lookup",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_13.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusSwVNS3sBemJmmWcYK",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice `idx` é calculado como `pos * scale + bias`, onde `pos`, `scale` e `bias` são todos parâmetros livres sem qualquer restrição ou guarda visível no código. O resultado pode ser negativo, zero, ou maior/igual a `len(data)`, causando IndexError. Não há try/except cobrindo o acesso a `data[idx]`.\",\n      \"metadata\": {\n        \"expression\": \"data[idx]\",\n        \"line\": 3\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1404,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 181,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

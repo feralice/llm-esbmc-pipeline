@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "even_count",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_12.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A função utiliza um assert para validar se o parâmetro 'count' é par. Como 'count' é um parâmetro livre, o assert pode falhar se um número ímpar for fornecido, resultando em um AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"assert count % 2 == 0\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPz4g53AZvOTI1S2+Lv5L2OBFM9lirzr0boCp45o64snYa7iAes309TQxf+67G"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754222,
+    "id": "7u1RasSGCePCqtsPlprAmAw",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 135,
+      "prompt_tokens": 1149,
+      "total_tokens": 1284
+    }
+  }
+}

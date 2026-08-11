@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "can_apply_discount",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_01.py",
+  "raw_response": {
+    "id": "chatcmpl-850",
+    "object": "chat.completion",
+    "created": 1783764870,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 4 parâmetros, o que pode ser considerado um número excessivo para uma única operação.\",\n      \"metadata\": {\n        \"expression\": \"def can_apply_discount(age: int, purchases: int, member: bool, blocked: bool) -> bool:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém uma condição complexa com dois caminhos possíveis, o que pode dificultar a leitura e manutenção do código.\",\n      \"metadata\": {\n        \"expression\": \"return (member and purchases > 5 and not blocked) or (age > 65 and purchases > 1 and not blocked)\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1235,
+      "completion_tokens": 231,
+      "total_tokens": 1466
+    }
+  }
+}

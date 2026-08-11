@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "guarded_but_too_weak",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_06.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"The assertion 'x > 10' is controlled by the free parameter 'x'. Although there is a guard 'x >= 0', it does not prevent 'x' from being in the range [0, 10], which would trigger an AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"assert x > 10\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPr4xOUrts4w7iJQnn03Rurte+kDPrZ7qztk5gzqY0LLs6EfXFQytGl5+YjA2l"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754120,
+    "id": "h-1Rar7xKZekqtsPiZXT2QM",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 139,
+      "prompt_tokens": 1164,
+      "total_tokens": 1303
+    }
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "model": "gpt-5.5",
+  "function": "shifted_step_ratio",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_11.py",
+  "raw_response": {
+    "id": "resp_0b3b07ddef24ec6f006a52722561f881a2ac0aa7f20ae47e22",
+    "object": "response",
+    "created_at": 1783788069,
+    "status": "completed",
+    "background": false,
+    "billing": {
+      "payer": "developer"
+    },
+    "completed_at": 1783788072,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "incomplete_details": null,
+    "instructions": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "model": "gpt-5.5-2026-04-23",
+    "moderation": null,
+    "output": [
+      {
+        "id": "rs_0b3b07ddef24ec6f006a527225dde481a2bcb344bb381e5efb",
+        "type": "reasoning",
+        "content": [],
+        "summary": []
+      },
+      {
+        "id": "msg_0b3b07ddef24ec6f006a527226db4481a2bb3a48ded8f17edf",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\"findings\":[{\"finding_type\":\"suspected_bug\",\"category\":\"division_by_zero\",\"explanation\":\"O denominador da divisão inteira é `adjusted`, calculado a partir do parâmetro livre `step` como `step + 1`, portanto pode assumir valor zero quando `step == -1`. Não há guarda visível antes do uso verificando que `adjusted` é diferente de zero, e a operação não está envolvida por try/except que capture a exceção.\",\"verifiable\":true,\"metadata\":{\"expression\":\"size // adjusted\",\"line\":3}}]}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "medium",
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "store": true,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "description": null,
+        "name": "pipeline_findings",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "finding_type": {
+                    "type": "string",
+                    "enum": [
+                      "suspected_bug",
+                      "smell_heuristic"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "assertion_violation",
+                      "division_by_zero",
+                      "out_of_bounds",
+                      "long_method",
+                      "many_parameters",
+                      "complex_conditional"
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string"
+                  },
+                  "verifiable": {
+                    "type": "boolean"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "line": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "expression",
+                      "line"
+                    ]
+                  }
+                },
+                "required": [
+                  "finding_type",
+                  "category",
+                  "explanation",
+                  "verifiable",
+                  "metadata"
+                ]
+              }
+            }
+          },
+          "required": [
+            "findings"
+          ]
+        },
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 1209,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 201,
+      "output_tokens_details": {
+        "reasoning_tokens": 73
+      },
+      "total_tokens": 1410
+    },
+    "user": null,
+    "metadata": {}
+  }
+}

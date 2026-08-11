@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "calculate_quote",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_02.py",
+  "raw_response": {
+    "id": "chatcmpl-707",
+    "object": "chat.completion",
+    "created": 1783765687,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 6 parâmetros, incluindo self/cls (se aplicável), o que pode indicar uma assinatura de método excessivamente complexa.\",\n      \"metadata\": {\n        \"expression\": \"def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas 5 linhas de código, mas a complexidade do cálculo pode levar a um método considerado longo.\",\n      \"metadata\": {\n        \"expression\": \"def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1260,
+      "completion_tokens": 247,
+      "total_tokens": 1507
+    }
+  }
+}

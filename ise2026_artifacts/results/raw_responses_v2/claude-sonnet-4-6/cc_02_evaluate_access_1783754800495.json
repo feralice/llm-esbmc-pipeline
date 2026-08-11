@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "evaluate_access",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_02.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcuscMPnxutSvWgbmCX4V",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui quatro níveis de aninhamento de condicionais (if active → if verified → if role >= level → if level > 5), tornando o fluxo de controle difícil de seguir e manter. Cada caminho retorna False ou True de forma dispersa, aumentando a complexidade cognitiva.\",\n      \"metadata\": {\n        \"expression\": \"def evaluate_access(active: bool, verified: bool, role: int, level: int) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1428,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 180,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

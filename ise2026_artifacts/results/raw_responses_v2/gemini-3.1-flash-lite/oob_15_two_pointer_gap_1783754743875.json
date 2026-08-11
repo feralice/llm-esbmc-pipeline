@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "two_pointer_gap",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_15.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso values[left] utiliza o parâmetro 'left' que não possui restrições de valor, podendo resultar em um índice fora dos limites da lista. Não há verificação de limites ou tratamento de exceção no código.\",\n      \"metadata\": {\n        \"expression\": \"values[left]\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso values[right + gap] utiliza a soma de dois parâmetros livres, o que pode facilmente exceder o tamanho da lista. Não há guardas ou blocos try/except para prevenir um IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[right + gap]\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP78GoPlmIfChN0CK/PqcGbajT4xiUedowp62HdL6jC7PC9gulSw6jkCZSFEoT"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754743,
+    "id": "9u9Rari0KICzqtsPpr2W0Q0",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 245,
+      "prompt_tokens": 1218,
+      "total_tokens": 1463
+    }
+  }
+}

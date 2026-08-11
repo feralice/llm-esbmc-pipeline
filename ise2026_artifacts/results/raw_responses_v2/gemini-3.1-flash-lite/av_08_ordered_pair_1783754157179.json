@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "ordered_pair",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_08.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A função utiliza um assert para validar a relação entre os parâmetros 'left' e 'right'. Como os parâmetros são livres, o assert pode falhar se 'left' for maior que 'right', disparando um AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"assert left <= right\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP15KkwAQpmKu4UtOYSBMcGSlfoDYLRGGulUnOGNTyxohz3r/jGwPjKIRSL1fp"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754157,
+    "id": "rO1Raqu8ELraqtsPjYmP2A8",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 1164,
+      "total_tokens": 1292
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "should_alert",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_03.py",
+  "raw_response": {
+    "id": "chatcmpl-996",
+    "object": "chat.completion",
+    "created": 1783765011,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A condição do método é muito aninhada e complexa, o que pode dificultar a verificação formal.\",\n      \"metadata\": {\n        \"expression\": \"(cpu > 90 and memory > 80) or (disk > 95 and degraded) or (cpu > 70 and memory > 70 and disk > 70)\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 4 parâmetros, o que pode indicar uma complexidade desnecessária.\",\n      \"metadata\": {\n        \"expression\": \"def should_alert(cpu: int, memory: int, disk: int, degraded: bool) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1249,
+      "completion_tokens": 231,
+      "total_tokens": 1480
+    }
+  }
+}

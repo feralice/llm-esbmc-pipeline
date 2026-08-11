@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "nonzero_total",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_10.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccurpxf4SXKLnGeLVcXXY",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"O parâmetro 'total' é livre (sem restrição de constante imposta pelo chamador). Se total == 0 for passado, a asserção 'assert total != 0' será falsa e levantará AssertionError. Não há guarda anterior nem try/except cobrindo a operação.\",\n      \"metadata\": {\n        \"expression\": \"assert total != 0\",\n        \"line\": 2\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1343,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 161,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

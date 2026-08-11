@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "threshold_gap",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_04.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"The assertion 'value < threshold' depends on free parameters 'value' and 'threshold'. If the input 'value' is greater than or equal to 'threshold', the assertion will fail, raising an AssertionError.\",\n      \"metadata\": {\n        \"expression\": \"assert value < threshold\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPqS39CyR8+1sj/qL7rUDZTn8d6J0gtx/xuHL7G1JEZtEQNTDTIRZe07mv3vSm"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754092,
+    "id": "bO1RasbJEOPCqtsPlprAmAw",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 125,
+      "prompt_tokens": 1164,
+      "total_tokens": 1289
+    }
+  }
+}

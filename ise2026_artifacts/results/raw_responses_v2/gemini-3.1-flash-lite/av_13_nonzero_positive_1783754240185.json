@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "nonzero_positive",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_13.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"O parâmetro 'value' é livre e a asserção 'value > 0' é alcançável com valores negativos (ex: -1), o que causará um AssertionError. Não há tratamento de exceção para esta asserção.\",\n      \"metadata\": {\n        \"expression\": \"assert value > 0\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPOrWqDU6tyHSvsCRWxaRAA7J54izDVJOBNpao/MlBvrb0vFpL1BBq95EeY0Dg"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754240,
+    "id": "_-1RapaoE4vBqtsPoPuHkAI",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 135,
+      "prompt_tokens": 1154,
+      "total_tokens": 1289
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "capped_increment",
+  "file": "dataset/labeled/ok/clean/clean_05.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": []\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPJPECdSvEQI49l3pN10Pdsqj4Gl1/lHwxuSCPdYRg6UI/ihdDMrVwiNHCA+zv"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754803,
+    "id": "MvBRaoSmK6OkmtkP1MOjgA0",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 9,
+      "prompt_tokens": 1170,
+      "total_tokens": 1179
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "bucket_limit",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_05.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A operação de divisão utiliza o denominador (bucket - 1), que é controlado pelo parâmetro livre 'bucket'. Se 'bucket' for igual a 1, o denominador torna-se zero, causando um ZeroDivisionError. Não há verificações ou blocos try/except para prevenir este caso.\",\n      \"metadata\": {\n        \"expression\": \"limit // (bucket - 1)\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPFQTA1fM7NKWxzO8xI1FQ4seb48iXchwiBfAavMZdo+jSXqZrV0Y5hc783JsK"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754343,
+    "id": "Zu5RaqDyKuK2qtsPqv_hwQk",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 148,
+      "prompt_tokens": 1163,
+      "total_tokens": 1311
+    }
+  }
+}

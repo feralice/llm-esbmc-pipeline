@@ -25,6 +25,10 @@ Conteúdo:
   reportado no artigo: um `benchmark_<modelo>.json` por modelo, agregando
   as métricas, e `per_file/<modelo>/` com a avaliação e os logs de execução
   do ESBMC-Python por função individual.
+- `results/raw_responses_v2/` — respostas brutas da API/Ollama por modelo e
+  por função (350 arquivos `.json`), incluindo o `findings` retornado
+  pela LLM na etapa *Analyzer* (categoria, expressão, flag `verifiable` e
+  justificativa) antes da validação estrutural por AST.
 
 ## Como reproduzir
 

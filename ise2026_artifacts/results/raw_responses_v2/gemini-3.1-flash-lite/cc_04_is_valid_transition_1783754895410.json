@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "is_valid_transition",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_04.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função utiliza uma expressão booleana composta com múltiplos operadores lógicos (and/or) que avaliam diferentes estados e permissões, tornando a lógica de transição difícil de manter e testar.\",\n      \"metadata\": {\n        \"expression\": \"def is_valid_transition(state: int, target: int, locked: bool, admin: bool) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPbPU6pcMe/TLcDJyswOl1R5esgPc1sNUDFp0+gq1k1NkixNxB+MIP0tWY/YWy"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754895,
+    "id": "jvBRao_XF6isz7IP2YDv6Ag",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 144,
+      "prompt_tokens": 1240,
+      "total_tokens": 1384
+    }
+  }
+}

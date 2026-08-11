@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "process_customer_profile",
+  "file": "dataset/labeled/ok/smells/long_method/lm_02.py",
+  "raw_response": {
+    "id": "chatcmpl-142",
+    "object": "chat.completion",
+    "created": 1783765325,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função process_customer_profile tem 38 linhas de código, o que pode indicar uma complexidade desnecessária.\",\n      \"metadata\": {\n        \"expression\": \"def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função process_customer_profile tem 5 parâmetros, o que pode indicar uma complexidade desnecessária.\",\n      \"metadata\": {\n        \"expression\": \"def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui condições complexas e aninhadas, como 'if name_code > 0 and address_code > 0 and phone_code > 0 and email_code > 0', o que pode dificultar a manutenção e leitura do código.\",\n      \"metadata\": {\n        \"expression\": \"if name_code > 0 and address_code > 0 and phone_code > 0 and email_code > 0:\",\n        \"line\": 7\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1509,
+      "completion_tokens": 370,
+      "total_tokens": 1879
+    }
+  }
+}

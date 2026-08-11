@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "finalize_detailed_order",
+  "file": "dataset/labeled/ok/smells/long_method/lm_05.py",
+  "raw_response": {
+    "id": "chatcmpl-188",
+    "object": "chat.completion",
+    "created": 1783765590,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A divisão 'loyalty_points = total // 4' pode causar ZeroDivisionError se 'total' for zero.\",\n      \"metadata\": {\n        \"expression\": \"total // 4\",\n        \"line\": 27\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 35 linhas de código, o que pode indicar uma complexidade excessiva.\",\n      \"metadata\": {\n        \"expression\": \"def finalize_detailed_order(pizza_type: int, size: int, extra_cheese: bool, has_contact_info: bool, has_discount_code: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 5 parâmetros, o que pode indicar uma complexidade excessiva.\",\n      \"metadata\": {\n        \"expression\": \"def finalize_detailed_order(pizza_type: int, size: int, extra_cheese: bool, has_contact_info: bool, has_discount_code: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém várias condições aninhadas e compostas, o que pode indicar uma complexidade excessiva.\",\n      \"metadata\": {\n        \"expression\": \"def finalize_detailed_order(pizza_type: int, size: int, extra_cheese: bool, has_contact_info: bool, has_discount_code: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1454,
+      "completion_tokens": 438,
+      "total_tokens": 1892
+    }
+  }
+}

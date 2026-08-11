@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "pair_sum_at",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_12.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso values[i] utiliza o parâmetro livre 'i' como índice sem qualquer verificação de limites (bounds checking) ou tratamento de exceções, podendo causar IndexError se 'i' estiver fora do intervalo válido da lista.\",\n      \"metadata\": {\n        \"expression\": \"values[i]\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso values[i + j] utiliza uma expressão aritmética baseada em parâmetros livres 'i' e 'j' sem validação, o que pode resultar em um índice fora dos limites da lista, causando IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[i + j]\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPOQ8HIeCv5isou4qe8Js6Je9JhudIM0KZZ3gaWvtIysSG6cGA9YfCdI/pJop7"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754690,
+    "id": "we9Ravf-LZO9qtsPhYi2wQI",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 248,
+      "prompt_tokens": 1201,
+      "total_tokens": 1449
+    }
+  }
+}

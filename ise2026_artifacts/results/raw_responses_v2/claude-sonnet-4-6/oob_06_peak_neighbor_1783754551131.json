@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "peak_neighbor",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_06.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011CcusHvAVSj7M1KGhvtrq3",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice 'peak - delta' é calculado a partir dos parâmetros livres 'peak' e 'delta', sem nenhuma guarda ou validação anterior. Se 'peak - delta' for negativo ou maior que len(values)-1, ocorrerá IndexError. Não há try/except cobrindo esta operação.\",\n      \"metadata\": {\n        \"expression\": \"values[peak - delta]\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O índice 'peak + delta' é calculado a partir dos parâmetros livres 'peak' e 'delta', sem nenhuma guarda ou validação anterior. Se 'peak + delta' for maior que len(values)-1 ou negativo, ocorrerá IndexError. Não há try/except cobrindo esta operação.\",\n      \"metadata\": {\n        \"expression\": \"values[peak + delta]\",\n        \"line\": 3\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1397,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 322,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

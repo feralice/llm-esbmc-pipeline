@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "process_customer_profile",
+  "file": "dataset/labeled/ok/smells/long_method/lm_02.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"The function accepts 5 parameters, which exceeds the recommended threshold for maintainability and readability.\",\n      \"metadata\": {\n        \"expression\": \"def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"The function contains 38 lines of code, which is relatively long for a single logic block, suggesting it could be decomposed into smaller helper functions.\",\n      \"metadata\": {\n        \"expression\": \"def process_customer_profile(name_code: int, address_code: int, phone_code: int, email_code: int, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPtrMG1fekEOqQku8DMq2sp78YutI6YBdn/2BH4z1XN9MDZjtbvHebRJq5HvAx"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754927,
+    "id": "rvBRaoa3Dt-xqtsPtpbM8Q0",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 270,
+      "prompt_tokens": 1547,
+      "total_tokens": 1817
+    }
+  }
+}

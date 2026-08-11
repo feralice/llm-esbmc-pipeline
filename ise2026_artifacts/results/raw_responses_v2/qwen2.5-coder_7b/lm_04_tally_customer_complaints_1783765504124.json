@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "tally_customer_complaints",
+  "file": "dataset/labeled/ok/smells/long_method/lm_04.py",
+  "raw_response": {
+    "id": "chatcmpl-452",
+    "object": "chat.completion",
+    "created": 1783765504,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tally_customer_complaints tem mais de 5 parâmetros e contém 36 linhas de código, o que pode indicar uma função longa.\",\n      \"metadata\": {\n        \"expression\": \"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tally_customer_complaints tem 6 parâmetros, o que pode indicar um número excessivo de parâmetros.\",\n      \"metadata\": {\n        \"expression\": \"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tally_customer_complaints contém várias condições aninhadas e compostas, o que pode indicar uma complexidade condicional.\",\n      \"metadata\": {\n        \"expression\": \"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1461,
+      "completion_tokens": 384,
+      "total_tokens": 1845
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "branch_assertion",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_09.py",
+  "raw_response": {
+    "id": "chatcmpl-646",
+    "object": "chat.completion",
+    "created": 1783761798,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"A condição 'amount > 0' é controlada por parâmetro livre (flag). Não há guarda visível antes do uso. A exceção AssertionError pode ser alcançável se flag for False e amount for zero.\",\n      \"metadata\": {\n        \"expression\": \"assert amount > 0\",\n        \"line\": 3\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém uma condição aninhada (if-assert). Embora não seja complexa em termos de lógica, a presença de assert dentro de um if pode indicar uma complexidade oculta.\",\n      \"metadata\": {\n        \"expression\": \"if flag: return amount; assert amount > 0\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas dois parâmetros, o que não é considerado excessivo. No entanto, a presença de um único parâmetro booleano pode indicar uma complexidade oculta.\",\n      \"metadata\": {\n        \"expression\": \"def branch_assertion(amount: int, flag: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas cinco linhas de código, o que não é considerado longo. No entanto, a presença de uma condição aninhada e um assert pode indicar uma complexidade oculta.\",\n      \"metadata\": {\n        \"expression\": \"def branch_assertion(amount: int, flag: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1193,
+      "completion_tokens": 459,
+      "total_tokens": 1652
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "should_alert",
+  "file": "dataset/labeled/ok/smells/complex_conditional/cc_03.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccusd1NK7iQshJJD1SgoV",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A expressão de retorno combina três grupos de condições compostas ligados por operadores 'or' e 'and', resultando em uma lógica booleana de difícil leitura e manutenção sem decomposição em variáveis intermediárias ou funções auxiliares.\",\n      \"metadata\": {\n        \"expression\": \"def should_alert(cpu: int, memory: int, disk: int, degraded: bool) -> bool:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1427,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 174,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

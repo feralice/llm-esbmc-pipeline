@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "tally_customer_complaints",
+  "file": "dataset/labeled/ok/smells/long_method/lm_04.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função recebe 6 parâmetros booleanos, o que excede o limite recomendado de 5 parâmetros, tornando a assinatura complexa e difícil de manter.\",\n      \"metadata\": {\n        \"expression\": \"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 36 linhas de código, o que é considerado excessivo para uma lógica de cálculo simples, sugerindo a necessidade de refatoração em métodos menores.\",\n      \"metadata\": {\n        \"expression\": \"def tally_customer_complaints(cold: bool, late: bool, wrong_order: bool, burnt: bool, little_cheese: bool, undercooked: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPXsUgBwluIGwtpV9Za7s9CE+dUL7YiQzgsaTSaFGIZbN5+FooOFUUx47Zvecl"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754948,
+    "id": "w_BRar3XEsuIz7IPvJ6RgAg",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 288,
+      "prompt_tokens": 1485,
+      "total_tokens": 1773
+    }
+  }
+}

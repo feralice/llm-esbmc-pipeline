@@ -1,0 +1,32 @@
+{
+  "model": "claude-sonnet-4-6",
+  "function": "off_by_one_denominator",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_07.py",
+  "raw_response": {
+    "model": "claude-sonnet-4-6",
+    "id": "msg_011Ccus3YUsjEpnn853kBgU9",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O denominador da divisão inteira é `count - 1`, controlado pelo parâmetro livre `count`. A guarda `if count < 1` bloqueia valores menores que 1, mas quando `count == 1` a condição é falsa (1 não é menor que 1) e a execução prossegue para `total // (count - 1)`, resultando em `total // 0`, o que causa ZeroDivisionError. A operação não está envolvida em try/except.\",\n      \"metadata\": {\n        \"expression\": \"total // (count - 1)\",\n        \"line\": 4\n      }\n    }\n  ]\n}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "stop_details": null,
+    "usage": {
+      "input_tokens": 1379,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 210,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  }
+}

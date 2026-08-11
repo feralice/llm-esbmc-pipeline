@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "get_previous",
+  "file": "dataset/labeled/ok/bugs/out_of_bounds/oob_03.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"out_of_bounds\",\n      \"verifiable\": true,\n      \"explanation\": \"O acesso ao índice 'pos - 1' depende diretamente do parâmetro livre 'pos'. Não há verificações de limites (guardas) para garantir que 'pos - 1' esteja dentro do intervalo válido da lista 'values', podendo causar IndexError.\",\n      \"metadata\": {\n        \"expression\": \"values[pos - 1]\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPF6LO2JETmm+RdZtdbyDw9C0GiL115g0Y18aemFM+JylRtyROrb2K0F1ifvR7"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754543,
+    "id": "Lu9RatzMFafjqtsPqv2W8QM",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 138,
+      "prompt_tokens": 1166,
+      "total_tokens": 1304
+    }
+  }
+}

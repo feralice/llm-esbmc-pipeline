@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "compute_ratio",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_01.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A operação de divisão inteira (//) utiliza o parâmetro 'count' como denominador. Como 'count' é um parâmetro livre sem restrições ou verificações de valor, ele pode ser zero, resultando em um ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"total // count\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP0Nm2TucRei2A7/VnDZif0xQ683S8SccE3C3/OWtuggUrDltBJ9LsjlSVbsrW"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754277,
+    "id": "JO5Ras-rIvq5qtsPsPnQoQc",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 134,
+      "prompt_tokens": 1158,
+      "total_tokens": 1292
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "score_lower_bound",
+  "file": "dataset/labeled/ok/bugs/assertion_violation/av_11.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"assertion_violation\",\n      \"verifiable\": true,\n      \"explanation\": \"The assertion 'score >= 0' is reachable if 'score' is a negative integer, as the condition 'score < 100' would be true for any negative value. Since 'score' is a free parameter, this assertion can be violated.\",\n      \"metadata\": {\n        \"expression\": \"assert score >= 0\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPf/Jw5ldDaMSZsxAtkkF0qLwab+1AVRrILPRvKt2x6SEa7BIfCrI9pJKdDHtT"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754205,
+    "id": "3e1RasqFBt-xqtsPtpbM8Q0",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 137,
+      "prompt_tokens": 1160,
+      "total_tokens": 1297
+    }
+  }
+}

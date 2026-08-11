@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "create_user_record",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_01.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 6 parâmetros, o que excede o limite recomendado de 5 parâmetros, tornando a assinatura complexa e difícil de manter.\",\n      \"metadata\": {\n        \"expression\": \"def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP+Iz8QY0ErO/H0xigBsJmKJew0CE+QCGKFqkq2eiZPRHg3FyiQQM37XzJY12y"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754968,
+    "id": "1_BRavbfJtGUmtkP3rKYyA0",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 142,
+      "prompt_tokens": 1253,
+      "total_tokens": 1395
+    }
+  }
+}

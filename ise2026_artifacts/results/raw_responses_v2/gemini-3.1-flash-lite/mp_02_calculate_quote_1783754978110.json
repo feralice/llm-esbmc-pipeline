@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "calculate_quote",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_02.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 6 parâmetros, o que excede o limite recomendado de 5 parâmetros, tornando a assinatura complexa e difícil de manter.\",\n      \"metadata\": {\n        \"expression\": \"def calculate_quote(base: int, tax: int, fee: int, discount: int, region: int, priority: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPsHHXWCDTH41PUhOZ5LbAriGxsKa6BFiz9RJZWC3oJcLMVRoBwhyYGpQXPren"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754977,
+    "id": "4fBRaqXXFOWsqtsP_KjGiAk",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 138,
+      "prompt_tokens": 1249,
+      "total_tokens": 1387
+    }
+  }
+}

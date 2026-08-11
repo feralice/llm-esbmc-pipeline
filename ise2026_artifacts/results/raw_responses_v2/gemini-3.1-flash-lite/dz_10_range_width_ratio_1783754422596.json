@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "range_width_ratio",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_10.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A variável 'width' é calculada como 'right - left'. Se 'right' for igual a 'left', 'width' será zero, causando uma ZeroDivisionError na operação de divisão inteira. Não há verificações de segurança ou tratamento de exceções para este caso.\",\n      \"metadata\": {\n        \"expression\": \"total // width\",\n        \"line\": 3\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIP6xZEA+8MQ+IiogPBPbe5oUGOOJs1/kFKdNLzV0t4nSv4B9SES31nHUw4G1lH"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754422,
+    "id": "te5RauzsJ4vBqtsPoPuHkAI",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 140,
+      "prompt_tokens": 1186,
+      "total_tokens": 1326
+    }
+  }
+}

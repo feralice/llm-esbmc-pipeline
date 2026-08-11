@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "process_cashier_workflow",
+  "file": "dataset/labeled/ok/smells/long_method/lm_03.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"The function contains 37 lines of code, which is relatively long for a single workflow processing function, potentially violating the single responsibility principle.\",\n      \"metadata\": {\n        \"expression\": \"def process_cashier_workflow(order_code: int, chef_busy: bool, customer_upset: bool, distance: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPzG9FuiCsBaRDtiqqnN64MUl8gDfDGrs1o/a6MY4tcndHI3wp4i7IE/D2zWjs"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754937,
+    "id": "uPBRasuAHeCyqtsP7P2VuAE",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 139,
+      "prompt_tokens": 1441,
+      "total_tokens": 1580
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "process_pizza_order",
+  "file": "dataset/labeled/ok/smells/long_method/lm_01.py",
+  "raw_response": {
+    "id": "chatcmpl-731",
+    "object": "chat.completion",
+    "created": 1783765248,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A divisão 'status // 10' pode causar ZeroDivisionError se 'status' for zero.\",\n      \"metadata\": {\n        \"expression\": \"status // 10\",\n        \"line\": 34\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 40 linhas de código, o que pode indicar uma complexidade excessiva.\",\n      \"metadata\": {\n        \"expression\": \"def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem 4 parâmetros, o que pode indicar uma complexidade excessiva.\",\n      \"metadata\": {\n        \"expression\": \"def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém várias condições aninhadas e compostas, o que pode indicar uma complexidade excessiva.\",\n      \"metadata\": {\n        \"expression\": \"def process_pizza_order(pizza_type: int, size: int, has_discount_code: bool, complaint_code: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1465,
+      "completion_tokens": 415,
+      "total_tokens": 1880
+    }
+  }
+}

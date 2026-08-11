@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "update_position",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_03.py",
+  "raw_response": {
+    "id": "chatcmpl-72",
+    "object": "chat.completion",
+    "created": 1783765737,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 7 parâmetros, o que pode indicar uma assinatura de método com muitos argumentos.\",\n      \"metadata\": {\n        \"expression\": \"def update_position(x: int, y: int, z: int, vx: int, vy: int, vz: int, dt: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém apenas uma linha de código executável, o que pode indicar que ela não está seguindo as melhores práticas de design.\",\n      \"metadata\": {\n        \"expression\": \"def update_position(x: int, y: int, z: int, vx: int, vy: int, vz: int, dt: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1269,
+      "completion_tokens": 245,
+      "total_tokens": 1514
+    }
+  }
+}

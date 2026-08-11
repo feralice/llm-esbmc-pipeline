@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "percentage",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_02.py",
+  "raw_response": {
+    "id": "chatcmpl-408",
+    "object": "chat.completion",
+    "created": 1783762327,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"O operando 'whole' é controlado por parâmetro livre e não há guarda visível antes do uso. A divisão por zero pode ocorrer se 'whole' for zero.\",\n      \"metadata\": {\n        \"expression\": \"part * 100 // whole\",\n        \"line\": 2\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem apenas duas linhas de código, o que não classifica como longa.\",\n      \"metadata\": {\n        \"expression\": \"def percentage(part: int, whole: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função tem dois parâmetros, o que não classifica como um número excessivo de parâmetros.\",\n      \"metadata\": {\n        \"expression\": \"def percentage(part: int, whole: int) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"complex_conditional\",\n      \"verifiable\": false,\n      \"explanation\": \"A função não contém condições compostas ou aninhadas.\",\n      \"metadata\": {\n        \"expression\": \"def percentage(part: int, whole: int) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1181,
+      "completion_tokens": 374,
+      "total_tokens": 1555
+    }
+  }
+}

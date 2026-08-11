@@ -1,0 +1,31 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "function": "average_with_extra",
+  "file": "dataset/labeled/ok/bugs/division_by_zero/dz_03.py",
+  "raw_response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"suspected_bug\",\n      \"category\": \"division_by_zero\",\n      \"verifiable\": true,\n      \"explanation\": \"A operação de divisão inteira utiliza o parâmetro 'extra' como denominador. Como 'extra' é um parâmetro livre sem restrições ou verificações de valor, ele pode ser zero, causando um ZeroDivisionError.\",\n      \"metadata\": {\n        \"expression\": \"(total + extra) // extra\",\n        \"line\": 2\n      }\n    }\n  ]\n}",
+          "extra_content": {
+            "google": {
+              "thought_signature": "EjQKMgERTTIPeOZ/tcixoN630jhDNpg0MlnJQ7RhSW9j1oedV0q2dDUivZZUrFNrEhZtvudC"
+            }
+          },
+          "role": "assistant"
+        }
+      }
+    ],
+    "created": 1783754311,
+    "id": "Re5Rau-YBPHoz7IPsJOwyA4",
+    "model": "gemini-3.1-flash-lite",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 132,
+      "prompt_tokens": 1166,
+      "total_tokens": 1298
+    }
+  }
+}

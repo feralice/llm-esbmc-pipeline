@@ -1,0 +1,27 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "function": "create_user_record",
+  "file": "dataset/labeled/ok/smells/many_parameters/mp_01.py",
+  "raw_response": {
+    "id": "chatcmpl-851",
+    "object": "chat.completion",
+    "created": 1783765637,
+    "model": "qwen2.5-coder:7b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"findings\": [\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"many_parameters\",\n      \"verifiable\": false,\n      \"explanation\": \"A função possui 6 parâmetros, o que pode indicar uma assinatura de método excessivamente complexa.\",\n      \"metadata\": {\n        \"expression\": \"def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:\",\n        \"line\": 1\n      }\n    },\n    {\n      \"finding_type\": \"smell_heuristic\",\n      \"category\": \"long_method\",\n      \"verifiable\": false,\n      \"explanation\": \"A função contém apenas uma linha de código executável, o que pode indicar um método muito longo.\",\n      \"metadata\": {\n        \"expression\": \"def create_user_record(user_id: int, age: int, score: int, region: int, role: int, active: bool) -> int:\",\n        \"line\": 1\n      }\n    }\n  ]\n}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1258,
+      "completion_tokens": 233,
+      "total_tokens": 1491
+    }
+  }
+}
