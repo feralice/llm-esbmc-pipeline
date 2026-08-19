@@ -23,13 +23,11 @@ env/
 .idea/
 *.swp
 
-# Claude Code — settings locais e skills pré-instaladas (não versionar)
-# .claude/commands/ é versionado (skills do projeto)
-.claude/settings.local.json
-.claude/settings.json
-.claude/skills/
+# Claude Code / Codex — tooling local, não faz parte do projeto de pesquisa
+.claude/
 .agents/
 .code-review-graph/
+.github/
 
 # Codex / MCP — configs locais da sessão de desenvolvimento (não versionar)
 CLAUDE.md
@@ -41,10 +39,10 @@ skills-lock.json
 teste.py
 scratch_*.py
 
-# Outputs gerados em runtime
-artifacts/
-output/
-outputs/
+# Outputs gerados em runtime (só a raiz — não pegar archive/**/artifacts/, que é dado real arquivado)
+/artifacts/
+/output/
+/outputs/
 reports/html/
 artigos_estudo/
 /benchmark_run.log

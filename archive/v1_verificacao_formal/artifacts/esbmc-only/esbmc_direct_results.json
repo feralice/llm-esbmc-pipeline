@@ -1,0 +1,2892 @@
+[
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_01.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: require_positive.",
+    "time_seconds": 8.114,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "require_positive",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion x > 0 (x > 0). Local: require_positive, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "require_positive",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_01_flow_a_require_positive.log",
+          "property_kind": "assertion x > 0",
+          "property_text": "x > 0",
+          "location": "require_positive, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "require_positive"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_02.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: bounded_score.",
+    "time_seconds": 4.846,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "bounded_score",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion score <= 100 (score <= 100). Local: bounded_score, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "bounded_score",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_02_flow_a_bounded_score.log",
+          "property_kind": "assertion score <= 100",
+          "property_text": "score <= 100",
+          "location": "bounded_score, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "bounded_score"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_03.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: non_negative_balance.",
+    "time_seconds": 4.719,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "non_negative_balance",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion balance >= 0 (balance >= 0). Local: non_negative_balance, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "non_negative_balance",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_03_flow_a_non_negative_balance.log",
+          "property_kind": "assertion balance >= 0",
+          "property_text": "balance >= 0",
+          "location": "non_negative_balance, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "non_negative_balance"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_04.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: threshold_gap.",
+    "time_seconds": 4.769,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "threshold_gap",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion value < threshold (value < threshold). Local: threshold_gap, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "threshold_gap",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_04_flow_a_threshold_gap.log",
+          "property_kind": "assertion value < threshold",
+          "property_text": "value < threshold",
+          "location": "threshold_gap, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "threshold_gap"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_05.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: valid_percent.",
+    "time_seconds": 4.778,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "valid_percent",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion percent >= 0 && percent <= 100 (percent >= 0 && percent <= 100). Local: valid_percent, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "valid_percent",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_05_flow_a_valid_percent.log",
+          "property_kind": "assertion percent >= 0 && percent <= 100",
+          "property_text": "percent >= 0 && percent <= 100",
+          "location": "valid_percent, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "valid_percent"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_06.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_06.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: guarded_but_too_weak.",
+    "time_seconds": 4.841,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "guarded_but_too_weak",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion x > 10 (x > 10). Local: guarded_but_too_weak, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "guarded_but_too_weak",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_06.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_06_flow_a_guarded_but_too_weak.log",
+          "property_kind": "assertion x > 10",
+          "property_text": "x > 10",
+          "location": "guarded_but_too_weak, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "guarded_but_too_weak"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_07.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_07.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: upper_limit_check.",
+    "time_seconds": 4.805,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "upper_limit_check",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion value < limit (value < limit). Local: upper_limit_check, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "upper_limit_check",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_07.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_07_flow_a_upper_limit_check.log",
+          "property_kind": "assertion value < limit",
+          "property_text": "value < limit",
+          "location": "upper_limit_check, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "upper_limit_check"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_08.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_08.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: ordered_pair.",
+    "time_seconds": 4.676,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "ordered_pair",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion left <= right (left <= right). Local: ordered_pair, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "ordered_pair",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_08.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_08_flow_a_ordered_pair.log",
+          "property_kind": "assertion left <= right",
+          "property_text": "left <= right",
+          "location": "ordered_pair, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "ordered_pair"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_09.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_09.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: branch_assertion.",
+    "time_seconds": 4.385,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "branch_assertion",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion amount > 0 (amount > 0). Local: branch_assertion, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "branch_assertion",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_09.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_09_flow_a_branch_assertion.log",
+          "property_kind": "assertion amount > 0",
+          "property_text": "amount > 0",
+          "location": "branch_assertion, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "branch_assertion"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_10.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_10.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: nonzero_total.",
+    "time_seconds": 4.768,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "nonzero_total",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion total != 0 (total != 0). Local: nonzero_total, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "nonzero_total",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_10.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_10_flow_a_nonzero_total.log",
+          "property_kind": "assertion total != 0",
+          "property_text": "total != 0",
+          "location": "nonzero_total, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "nonzero_total"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_11.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_11.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: score_lower_bound.",
+    "time_seconds": 4.883,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "score_lower_bound",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion score >= 0 (score >= 0). Local: score_lower_bound, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "score_lower_bound",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_11.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_11_flow_a_score_lower_bound.log",
+          "property_kind": "assertion score >= 0",
+          "property_text": "score >= 0",
+          "location": "score_lower_bound, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "score_lower_bound"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_12.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_12.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: even_count.",
+    "time_seconds": 4.645,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "even_count",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion count % 2 == 0 (count % 2 == 0). Local: even_count, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "even_count",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_12.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_12_flow_a_even_count.log",
+          "property_kind": "assertion count % 2 == 0",
+          "property_text": "count % 2 == 0",
+          "location": "even_count, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "even_count"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_13.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_13.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: nonzero_positive.",
+    "time_seconds": 4.829,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "nonzero_positive",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion value > 0 (value > 0). Local: nonzero_positive, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "nonzero_positive",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_13.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_13_flow_a_nonzero_positive.log",
+          "property_kind": "assertion value > 0",
+          "property_text": "value > 0",
+          "location": "nonzero_positive, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "nonzero_positive"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_14.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_14.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: increasing_bounds.",
+    "time_seconds": 4.415,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "increasing_bounds",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion low < high (low < high). Local: increasing_bounds, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "increasing_bounds",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_14.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_14_flow_a_increasing_bounds.log",
+          "property_kind": "assertion low < high",
+          "property_text": "low < high",
+          "location": "increasing_bounds, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "increasing_bounds"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_15.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/assertion_violation/av_15.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: strict_percent.",
+    "time_seconds": 4.682,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "strict_percent",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: assertion percent > 0 && percent < 100 (percent > 0 && percent < 100). Local: strict_percent, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "strict_percent",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/assertion_violation/av_15.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/av_15_flow_a_strict_percent.log",
+          "property_kind": "assertion percent > 0 && percent < 100",
+          "property_text": "percent > 0 && percent < 100",
+          "location": "strict_percent, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "strict_percent"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_01.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: compute_ratio.",
+    "time_seconds": 4.577,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "compute_ratio",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: compute_ratio, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "compute_ratio",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_01_flow_a_compute_ratio.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "compute_ratio, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "compute_ratio"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_02.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: percentage.",
+    "time_seconds": 4.823,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "percentage",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: percentage, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "percentage",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_02_flow_a_percentage.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "percentage, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "percentage"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_03.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: average_with_extra.",
+    "time_seconds": 4.958,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "average_with_extra",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: average_with_extra, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "average_with_extra",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_03_flow_a_average_with_extra.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "average_with_extra, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "average_with_extra"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_04.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: normalize_mod.",
+    "time_seconds": 5.106,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "normalize_mod",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: normalize_mod, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "normalize_mod",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_04_flow_a_normalize_mod.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "normalize_mod, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "normalize_mod"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_05.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: bucket_limit.",
+    "time_seconds": 4.806,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "bucket_limit",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: bucket_limit, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "bucket_limit",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_05_flow_a_bucket_limit.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "bucket_limit, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "bucket_limit"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_06.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_06.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: guarded_negative_only.",
+    "time_seconds": 4.843,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "guarded_negative_only",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: guarded_negative_only, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "guarded_negative_only",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_06.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_06_flow_a_guarded_negative_only.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "guarded_negative_only, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "guarded_negative_only"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_07.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_07.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: off_by_one_denominator.",
+    "time_seconds": 5.06,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "off_by_one_denominator",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: off_by_one_denominator, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "off_by_one_denominator",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_07.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_07_flow_a_off_by_one_denominator.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "off_by_one_denominator, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "off_by_one_denominator"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_08.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_08.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: guarded_large_denominator.",
+    "time_seconds": 4.769,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "guarded_large_denominator",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: guarded_large_denominator, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "guarded_large_denominator",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_08.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_08_flow_a_guarded_large_denominator.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "guarded_large_denominator, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "guarded_large_denominator"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_09.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_09.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: conditional_zero_guard.",
+    "time_seconds": 5.016,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "conditional_zero_guard",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: conditional_zero_guard, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "conditional_zero_guard",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_09.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_09_flow_a_conditional_zero_guard.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "conditional_zero_guard, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "conditional_zero_guard"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_10.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_10.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: range_width_ratio.",
+    "time_seconds": 5.01,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "range_width_ratio",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: range_width_ratio, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "range_width_ratio",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_10.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_10_flow_a_range_width_ratio.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "range_width_ratio, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "range_width_ratio"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_11.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_11.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: shifted_step_ratio.",
+    "time_seconds": 4.679,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "shifted_step_ratio",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: shifted_step_ratio, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "shifted_step_ratio",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_11.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_11_flow_a_shifted_step_ratio.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "shifted_step_ratio, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "shifted_step_ratio"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_12.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_12.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: modulo_non_negative_only.",
+    "time_seconds": 4.878,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "modulo_non_negative_only",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: modulo_non_negative_only, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "modulo_non_negative_only",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_12.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_12_flow_a_modulo_non_negative_only.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "modulo_non_negative_only, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "modulo_non_negative_only"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_13.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_13.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: positive_branch_ratio.",
+    "time_seconds": 4.894,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "positive_branch_ratio",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: positive_branch_ratio, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "positive_branch_ratio",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_13.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_13_flow_a_positive_branch_ratio.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "positive_branch_ratio, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "positive_branch_ratio"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_14.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_14.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: high_low_scale.",
+    "time_seconds": 4.959,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "high_low_scale",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: high_low_scale, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "high_low_scale",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_14.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_14_flow_a_high_low_scale.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "high_low_scale, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "high_low_scale"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/division_by_zero/dz_15.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/division_by_zero/dz_15.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: alternate_bucket.",
+    "time_seconds": 5.075,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "alternate_bucket",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: division by zero (CWE: CWE-369). Local: alternate_bucket, linha 4.",
+          "command": [
+            "esbmc",
+            "--function",
+            "alternate_bucket",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/division_by_zero/dz_15.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/dz_15_flow_a_alternate_bucket.log",
+          "property_kind": "division by zero",
+          "property_text": "CWE: CWE-369",
+          "location": "alternate_bucket, linha 4"
+        }
+      ],
+      "violating_functions": [
+        "alternate_bucket"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_01.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: get_at.",
+    "time_seconds": 4.861,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "get_at",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "get_at",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_01_flow_a_get_at.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "get_at"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_02.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: get_next.",
+    "time_seconds": 4.946,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "get_next",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "get_next",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_02_flow_a_get_next.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "get_next"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_03.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: get_previous.",
+    "time_seconds": 4.814,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "get_previous",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "get_previous",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_03_flow_a_get_previous.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "get_previous"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_04.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: get_third_from.",
+    "time_seconds": 4.768,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "get_third_from",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "get_third_from",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_04_flow_a_get_third_from.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "get_third_from"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_05.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: choose_slot.",
+    "time_seconds": 5.033,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "choose_slot",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "choose_slot",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_05_flow_a_choose_slot.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "choose_slot"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_06.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_06.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: peak_neighbor.",
+    "time_seconds": 4.658,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "peak_neighbor",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: invalid pointer (CWE: CWE-416, CWE-822, CWE-824, CWE-908). Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "peak_neighbor",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_06.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_06_flow_a_peak_neighbor.log",
+          "property_kind": "dereference failure: invalid pointer",
+          "property_text": "CWE: CWE-416, CWE-822, CWE-824, CWE-908",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "peak_neighbor"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_07.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_07.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: lower_bound_only.",
+    "time_seconds": 4.907,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "lower_bound_only",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: invalid pointer (CWE: CWE-416, CWE-822, CWE-824, CWE-908). Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "lower_bound_only",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_07.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_07_flow_a_lower_bound_only.log",
+          "property_kind": "dereference failure: invalid pointer",
+          "property_text": "CWE: CWE-416, CWE-822, CWE-824, CWE-908",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "lower_bound_only"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_08.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_08.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: doubled_index.",
+    "time_seconds": 5.056,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "doubled_index",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: invalid pointer (CWE: CWE-416, CWE-822, CWE-824, CWE-908). Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "doubled_index",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_08.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_08_flow_a_doubled_index.log",
+          "property_kind": "dereference failure: invalid pointer",
+          "property_text": "CWE: CWE-416, CWE-822, CWE-824, CWE-908",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "doubled_index"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_09.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_09.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: flat_matrix_get.",
+    "time_seconds": 4.969,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "flat_matrix_get",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "flat_matrix_get",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_09.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_09_flow_a_flat_matrix_get.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "flat_matrix_get"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_10.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_10.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: branch_slot.",
+    "time_seconds": 4.753,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "branch_slot",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: invalid pointer (CWE: CWE-416, CWE-822, CWE-824, CWE-908). Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "branch_slot",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_10.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_10_flow_a_branch_slot.log",
+          "property_kind": "dereference failure: invalid pointer",
+          "property_text": "CWE: CWE-416, CWE-822, CWE-824, CWE-908",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "branch_slot"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_11.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_11.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: strided_fetch.",
+    "time_seconds": 5.023,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "strided_fetch",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: invalid pointer (CWE: CWE-416, CWE-822, CWE-824, CWE-908). Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "strided_fetch",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_11.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_11_flow_a_strided_fetch.log",
+          "property_kind": "dereference failure: invalid pointer",
+          "property_text": "CWE: CWE-416, CWE-822, CWE-824, CWE-908",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "strided_fetch"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_12.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_12.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: pair_sum_at.",
+    "time_seconds": 5.103,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "pair_sum_at",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "pair_sum_at",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_12.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_12_flow_a_pair_sum_at.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "pair_sum_at"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_13.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_13.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: scaled_index_lookup.",
+    "time_seconds": 4.975,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "scaled_index_lookup",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: scaled_index_lookup, linha 3.",
+          "command": [
+            "esbmc",
+            "--function",
+            "scaled_index_lookup",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_13.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_13_flow_a_scaled_index_lookup.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "scaled_index_lookup, linha 3"
+        }
+      ],
+      "violating_functions": [
+        "scaled_index_lookup"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_14.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_14.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: fixed_negative_far.",
+    "time_seconds": 4.867,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "fixed_negative_far",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: Incorrect alignment when accessing data object. Local: __ESBMC_list_size, linha 61.",
+          "command": [
+            "esbmc",
+            "--function",
+            "fixed_negative_far",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_14.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_14_flow_a_fixed_negative_far.log",
+          "property_kind": "dereference failure: Incorrect alignment when accessing data object",
+          "property_text": "",
+          "location": "__ESBMC_list_size, linha 61"
+        }
+      ],
+      "violating_functions": [
+        "fixed_negative_far"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/bugs/out_of_bounds/oob_15.py",
+    "status": "violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/bugs/out_of_bounds/oob_15.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A encontrou violação em função candidata: two_pointer_gap.",
+    "time_seconds": 5.107,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "two_pointer_gap",
+          "status": "violation_found",
+          "summary": "ESBMC encontrou violação: dereference failure: invalid pointer (CWE: CWE-416, CWE-822, CWE-824, CWE-908). Local: two_pointer_gap, linha 2.",
+          "command": [
+            "esbmc",
+            "--function",
+            "two_pointer_gap",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/bugs/out_of_bounds/oob_15.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/oob_15_flow_a_two_pointer_gap.log",
+          "property_kind": "dereference failure: invalid pointer",
+          "property_text": "CWE: CWE-416, CWE-822, CWE-824, CWE-908",
+          "location": "two_pointer_gap, linha 2"
+        }
+      ],
+      "violating_functions": [
+        "two_pointer_gap"
+      ]
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_01.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.795,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "safe_ratio",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "safe_ratio",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_01_flow_a_safe_ratio.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_02.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.677,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "safe_difference",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "safe_difference",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_02_flow_a_safe_difference.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_03.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 5.082,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "clamp_score",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "clamp_score",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_03_flow_a_clamp_score.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_04.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.397,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "safe_mod",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "safe_mod",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_04_flow_a_safe_mod.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_05.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 5.01,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "capped_increment",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "capped_increment",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_05_flow_a_capped_increment.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_06.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_06.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.781,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "guarded_count_ratio",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "guarded_count_ratio",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_06.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_06_flow_a_guarded_count_ratio.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_07.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_07.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.635,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "safe_scale",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "safe_scale",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_07.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_07_flow_a_safe_scale.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_08.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_08.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.549,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "checked_positive",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "checked_positive",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_08.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_08_flow_a_checked_positive.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_09.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_09.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.663,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "guarded_shifted_denominator",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "guarded_shifted_denominator",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_09.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_09_flow_a_guarded_shifted_denominator.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/clean/clean_10.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/clean/clean_10.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.639,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "guarded_average",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "guarded_average",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/clean/clean_10.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/clean_10_flow_a_guarded_average.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/complex_conditional/cc_01.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/complex_conditional/cc_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.741,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "can_apply_discount",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "can_apply_discount",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/complex_conditional/cc_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/cc_01_flow_a_can_apply_discount.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/complex_conditional/cc_02.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/complex_conditional/cc_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.68,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "route_request",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "route_request",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/complex_conditional/cc_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/cc_02_flow_a_route_request.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/complex_conditional/cc_03.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/complex_conditional/cc_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.806,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "should_alert",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "should_alert",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/complex_conditional/cc_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/cc_03_flow_a_should_alert.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/complex_conditional/cc_04.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/complex_conditional/cc_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.996,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "is_valid_transition",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "is_valid_transition",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/complex_conditional/cc_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/cc_04_flow_a_is_valid_transition.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/complex_conditional/cc_05.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/complex_conditional/cc_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.784,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "choose_strategy",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "choose_strategy",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/complex_conditional/cc_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/cc_05_flow_a_choose_strategy.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/long_method/lm_01.py",
+    "status": "inconclusive",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/long_method/lm_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A retornou resultado inconclusivo nas funções candidatas.",
+    "time_seconds": 5.427,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "summarize_invoice",
+          "status": "inconclusive",
+          "summary": "Resultado inconclusivo da verificação formal.",
+          "command": [
+            "esbmc",
+            "--function",
+            "summarize_invoice",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/long_method/lm_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/lm_01_flow_a_summarize_invoice.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/long_method/lm_02.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/long_method/lm_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.664,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "classify_order",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "classify_order",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/long_method/lm_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/lm_02_flow_a_classify_order.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/long_method/lm_03.py",
+    "status": "inconclusive",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/long_method/lm_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A retornou resultado inconclusivo nas funções candidatas.",
+    "time_seconds": 5.481,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "normalize_scores",
+          "status": "inconclusive",
+          "summary": "Resultado inconclusivo da verificação formal.",
+          "command": [
+            "esbmc",
+            "--function",
+            "normalize_scores",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/long_method/lm_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/lm_03_flow_a_normalize_scores.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/long_method/lm_04.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/long_method/lm_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.119,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "build_status",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "build_status",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/long_method/lm_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/lm_04_flow_a_build_status.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/long_method/lm_05.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/long_method/lm_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.277,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "compute_shipping",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "compute_shipping",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/long_method/lm_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/lm_05_flow_a_compute_shipping.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/many_parameters/mp_01.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/many_parameters/mp_01.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.544,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "create_user_record",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "create_user_record",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/many_parameters/mp_01.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/mp_01_flow_a_create_user_record.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/many_parameters/mp_02.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/many_parameters/mp_02.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.443,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "calculate_quote",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "calculate_quote",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/many_parameters/mp_02.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/mp_02_flow_a_calculate_quote.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/many_parameters/mp_03.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/many_parameters/mp_03.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.696,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "update_position",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "update_position",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/many_parameters/mp_03.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/mp_03_flow_a_update_position.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/many_parameters/mp_04.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/many_parameters/mp_04.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.315,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "format_metric",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "format_metric",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/many_parameters/mp_04.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/mp_04_flow_a_format_metric.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  },
+  {
+    "source_file": "dataset/labeled/ok/smells/many_parameters/mp_05.py",
+    "status": "no_violation_found",
+    "command": [
+      "esbmc",
+      "--function",
+      "<each-function>",
+      "--incremental-bmc",
+      "dataset/labeled/ok/smells/many_parameters/mp_05.py"
+    ],
+    "returncode": null,
+    "summary": "ESBMC Flow A verificou 1 função(ões) com --function sem violação no bound.",
+    "time_seconds": 4.728,
+    "details": {
+      "mode": "function_baseline",
+      "bound": 5,
+      "function_count": 1,
+      "functions": [
+        {
+          "name": "register_event",
+          "status": "no_violation_found",
+          "summary": "ESBMC não encontrou violação no escopo analisado.",
+          "command": [
+            "esbmc",
+            "--function",
+            "register_event",
+            "--incremental-bmc",
+            "--assign-param-nondet",
+            "dataset/labeled/ok/smells/many_parameters/mp_05.py"
+          ],
+          "raw_log_path": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/esbmc-only/mp_05_flow_a_register_event.log",
+          "property_kind": "",
+          "property_text": "",
+          "location": ""
+        }
+      ],
+      "violating_functions": []
+    },
+    "raw_log_path": ""
+  }
+]

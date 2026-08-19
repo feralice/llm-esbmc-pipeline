@@ -1,0 +1,28 @@
+[
+  {
+    "unit_name": "require_positive",
+    "source_file": "dataset/labeled/ok/bugs/assertion_violation/av_01.py",
+    "final_classification": "llm_only_suspected",
+    "interpretation": "Bug 'assertion_violation' (assert x > 0) suspeito pela LLM (Flow C — sem verificação formal). Não foi executada confirmação via ESBMC.",
+    "finding": {
+      "id": "unknown",
+      "stage": "llm_analysis",
+      "finding_type": "suspected_bug",
+      "category": "assertion_violation",
+      "title": "",
+      "explanation": "O parâmetro 'x' é livre e não possui restrições de valor antes da asserção. Se 'x' for menor ou igual a zero, a condição 'x > 0' falhará, disparando um AssertionError.",
+      "evidence": [],
+      "verifiable": true,
+      "confidence": "low",
+      "metadata": {
+        "expression": "assert x > 0",
+        "line": 0,
+        "relative_line": 0,
+        "expected_exception": "",
+        "has_guard": "false"
+      }
+    },
+    "esbmc_result": null,
+    "esbmc_direct_result": null
+  }
+]
