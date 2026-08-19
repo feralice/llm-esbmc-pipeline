@@ -90,6 +90,17 @@ Gera `reports/json/v1_benchmark/benchmark_<modelo>.json` para cada modelo.
 
 > **`--llm-timeout 600`** é necessário para modelos locais Ollama. Reasoning models como DeepSeek-R1 podem levar vários minutos por função — o padrão (300 s) costuma causar timeout em funções mais complexas.
 
+### Atalho: todos de uma vez
+
+```bash
+bash scripts/run_all_benchmarks.sh
+```
+
+Roda os 5 modelos (Gemini com fallback entre versões, Claude e GPT em paralelo; Qwen e
+DeepSeek sequenciais via Ollama, já que dividem a mesma GPU). Logs individuais em
+`logs/benchmark/<modelo>.log`, JSONs em `reports/json/v1_benchmark/`. Variáveis de ambiente
+`GROUND_TRUTH`, `OUT_DIR`, `BOUND`, `TIMEOUT`, `LLM_TIMEOUT` sobrescrevem os padrões.
+
 ---
 
 ## 3. Comparar resultados
@@ -148,7 +159,6 @@ python src/main.py \
 ```bash
 python scripts/verify_dataset.py
 python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
-python scripts/run_esbmc_dataset.py
 ```
 
 ---
