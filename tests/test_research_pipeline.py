@@ -468,22 +468,64 @@ def _make_finding(category: str, expression: str, verifiable: bool = True) -> Fi
 
 def test_expression_exists_in_executable_ast_subscript(tmp_path: Path) -> None:
     source = "def f(lst, i):\n    return lst[i]\n"
-    assert expression_exists_in_executable_ast("lst[i]", source) is True
+    assert expression_exists_in_executable_ast("lst[i]", source, "out_of_bounds") is True
 
 
 def test_expression_exists_in_executable_ast_pop(tmp_path: Path) -> None:
     source = "def f(lst, i):\n    lst.pop(i)\n"
-    assert expression_exists_in_executable_ast("lst.pop(i)", source) is True
+    assert expression_exists_in_executable_ast("lst.pop(i)", source, "out_of_bounds") is True
 
 
 def test_expression_not_in_comment(tmp_path: Path) -> None:
     source = "def f(lst, i):\n    # lst[i] would be risky\n    return lst\n"
-    assert expression_exists_in_executable_ast("lst[i]", source) is False
+    assert expression_exists_in_executable_ast("lst[i]", source, "out_of_bounds") is False
 
 
 def test_expression_not_in_string_literal(tmp_path: Path) -> None:
     source = 'def f(lst, i):\n    msg = "lst[i]"\n    return lst\n'
-    assert expression_exists_in_executable_ast("lst[i]", source) is False
+    assert expression_exists_in_executable_ast("lst[i]", source, "out_of_bounds") is False
+
+
+def test_expression_exists_in_executable_ast_wrong_category(tmp_path: Path) -> None:
+    """A Subscript match must not count for division_by_zero (item #26: no generic node match)."""
+    source = "def f(lst, i):\n    return lst[i]\n"
+    assert expression_exists_in_executable_ast("lst[i]", source, "division_by_zero") is False
+
+
+def test_expression_exists_in_executable_ast_assertion(tmp_path: Path) -> None:
+    source = "def f(x):\n    assert x > 0\n"
+    assert expression_exists_in_executable_ast("x > 0", source, "assertion_violation") is True
+
+
+def test_expression_exists_in_executable_ast_assertion_not_whole_statement(tmp_path: Path) -> None:
+    """Matching must compare node.test, not the full `assert ...` statement text."""
+    source = "def f(x):\n    assert x > 0\n"
+    assert expression_exists_in_executable_ast("assert x > 0", source, "assertion_violation") is False
+
+
+def test_expression_exists_in_executable_ast_line_grounding(tmp_path: Path) -> None:
+    """A repeated expression far from the LLM-reported line must not ground the claim."""
+    source = (
+        "def f(a, b):\n"
+        "    if b != 0:\n"
+        "        safe = a / b\n"
+        "    return a / b\n"
+    )
+    # relative line 4 is the real (unguarded) occurrence the LLM meant.
+    assert (
+        expression_exists_in_executable_ast("a / b", source, "division_by_zero", 4)
+        is True
+    )
+    # relative line 10 does not exist near any occurrence of "a / b".
+    assert (
+        expression_exists_in_executable_ast("a / b", source, "division_by_zero", 10)
+        is False
+    )
+    # no line given (0) keeps the old behavior: match anywhere in the function.
+    assert (
+        expression_exists_in_executable_ast("a / b", source, "division_by_zero", 0)
+        is True
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -537,6 +579,27 @@ def test_assertion_violation_wrong_expression_is_false_positive(tmp_path: Path) 
 
     assert normalized[0].finding_type == "llm_false_positive"
     assert normalized[0].verifiable is False
+
+
+def test_assertion_violation_no_real_assert_is_false_positive(tmp_path: Path) -> None:
+    """The expression text matches a comment/if, but no real assert exists (item #26)."""
+    sample = tmp_path / "assertion.py"
+    sample.write_text(
+        "def f(x: int) -> bool:\n"
+        "    # x > 0 seria bom garantir aqui\n"
+        "    if x > 0:\n"
+        "        return True\n"
+        "    return False\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    finding = _make_finding("assertion_violation", "x > 0")
+    normalized = normalize_findings(unit, [finding])
+
+    assert normalized[0].finding_type == "llm_false_positive", (
+        "nao ha assert de verdade no arquivo, so texto parecido em comentario/if"
+    )
 
 
 def test_finding_from_dict_preserves_line_metadata_as_int() -> None:

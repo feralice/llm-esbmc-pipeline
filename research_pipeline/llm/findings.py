@@ -223,7 +223,8 @@ def _normalize_operation_finding(
     # Phase 2: the expression exists in the AST, but preprocess.py did not
     # classify it as the expected operation kind. Keep it verifiable instead
     # of treating it as hallucination.
-    if expression_exists_in_executable_ast(expression, unit.source):
+    expected_relative_line = int(metadata.get("relative_line") or 0)
+    if expression_exists_in_executable_ast(expression, unit.source, category, expected_relative_line):
         if _denominator_is_nonzero_constant(category, expression):
             metadata["has_guard"] = "false"
             return "llm_false_positive", False
@@ -289,10 +290,6 @@ def _assertion_violation_matches_source(unit: CodeUnit, expression: str) -> bool
         # Model identified the category but didn't provide the expression.
         # Accept if the function contains any assert at all.
         return bool(_assertion_tests(unit.source))
-
-    source = unit.source
-    if expression in source:
-        return True
 
     expected = _parse_assertion_expression(expression)
     if expected is None:
