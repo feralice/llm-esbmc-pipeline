@@ -164,6 +164,7 @@ def run_pipeline_multi(
     _prepare_output_dir(artifacts_dir)
 
     results: list[FinalResult] = []
+    errors: list[dict] = []
 
     num_files = len(input_paths)
     for i, input_path in enumerate(input_paths, 1):
@@ -176,7 +177,18 @@ def run_pipeline_multi(
         units = preprocess_file(file_path)
         for unit in units:
             # The LLM receives one function at a time and returns zero or more findings.
-            findings = analyzer.analyze(unit)
+            try:
+                findings = analyzer.analyze(unit)
+            except Exception as exc:
+                # A single unit failing (e.g. LLM backend exhausted its retries)
+                # must not discard every result already collected in this run.
+                print(f"    ERRO ao analisar {unit.qualname}: {exc}. Caso pulado, resultados anteriores preservados.")
+                errors.append({"unit": unit.qualname, "source_file": str(file_path), "error": str(exc)})
+                (artifacts_dir / "errors.json").write_text(
+                    json.dumps(errors, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
+                continue
+
             verifiable_findings = [finding for finding in findings if finding.verifiable]
             num_verifiable = len(verifiable_findings)
             verified_count = 0
@@ -224,7 +236,11 @@ def run_pipeline_multi(
                 )
                 results.append(result)
 
-    write_json_report(results, artifacts_dir / "report.json")
+            # Persist after every unit, not only at the end: a crash later in the
+            # run (network error, a case that exhausts every retry) must not cost
+            # the results already collected for prior units.
+            write_json_report(results, artifacts_dir / "report.json")
+
     return results
 
 
@@ -264,6 +280,7 @@ def run_pipeline_llm_only(
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     results: list[FinalResult] = []
+    errors: list[dict] = []
     num_files = len(input_paths)
     for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
@@ -271,7 +288,17 @@ def run_pipeline_llm_only(
 
         # Flow C keeps the LLM findings as final suspected results.
         for unit in preprocess_file(file_path):
-            for finding in analyzer.analyze(unit):
+            try:
+                findings = analyzer.analyze(unit)
+            except Exception as exc:
+                print(f"    ERRO ao analisar {unit.qualname}: {exc}. Caso pulado, resultados anteriores preservados.")
+                errors.append({"unit": unit.qualname, "source_file": str(file_path), "error": str(exc)})
+                (artifacts_dir / "errors.json").write_text(
+                    json.dumps(errors, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
+                continue
+
+            for finding in findings:
                 result = consolidate_result(
                     unit_name=unit.qualname,
                     source_file=str(file_path),
@@ -281,7 +308,9 @@ def run_pipeline_llm_only(
                 )
                 results.append(result)
 
-    write_json_report(results, artifacts_dir / "report.json")
+            # Persist after every unit, not only at the end (see Flow B for why).
+            write_json_report(results, artifacts_dir / "report.json")
+
     return results
 
 
