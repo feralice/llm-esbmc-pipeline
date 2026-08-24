@@ -120,6 +120,8 @@ def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[di
 
     payload = json.loads(ground_truth_path.read_text(encoding="utf-8"))
     if isinstance(payload, dict) and "items" in payload:
+        if _is_flat_multilabel_dataset(payload, ground_truth_path):
+            return _load_flat_multilabel_cases(payload, ground_truth_path.parent / "bugs")
         source_root = _infer_source_root_for_ground_truth_dir(ground_truth_path.parent)
         category = str(payload.get("category") or ground_truth_path.stem)
         return [
@@ -181,6 +183,34 @@ def _expected_from_dataset_item(item: dict) -> dict:
         "expected_type": item.get("expected_type", ""),
         "should_go_to_esbmc": bool(item.get("should_go_to_esbmc", False)),
     }
+
+
+def _is_flat_multilabel_dataset(payload: dict, ground_truth_path: Path) -> bool:
+    """Return whether this is the V2 flat ``bugs/`` + category-list layout."""
+    items = payload.get("items", [])
+    return (
+        (ground_truth_path.parent / "bugs").is_dir()
+        and isinstance(items, list)
+        and any(isinstance(item, dict) and isinstance(item.get("categories"), list) for item in items)
+    )
+
+
+def _load_flat_multilabel_cases(payload: dict, source_root: Path) -> list[tuple[Path, list[dict]]]:
+    """Load V2 items, expanding each category tag into one expected finding."""
+    grouped: dict[Path, list[dict]] = {}
+    for item in payload.get("items", []):
+        if not isinstance(item, dict) or not item.get("file"):
+            continue
+        categories = item.get("categories", [])
+        if not isinstance(categories, list) or not categories:
+            continue
+        source = source_root / str(item["file"])
+        expected = grouped.setdefault(source, [])
+        for category in categories:
+            entry = _expected_from_dataset_item(item)
+            entry["category"] = str(category)
+            expected.append(entry)
+    return sorted(grouped.items(), key=lambda case: str(case[0]))
 
 
 def _match(generated: list[Finding], expected: list[dict]) -> tuple[int, int, int]:
@@ -484,6 +514,7 @@ def evaluate_file(
             exp_smells=exp_smells,
             bug_verdicts=bug_verdicts,
             smell_verdicts=smell_verdicts,
+            rejected_findings=hallucinations,
         )
 
     return counts
@@ -498,6 +529,7 @@ def _save_per_file_result(
     exp_smells: list[dict],
     bug_verdicts: list[tuple],
     smell_verdicts: list[tuple],
+    rejected_findings: list,
 ) -> None:
     import json as _json
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -537,6 +569,18 @@ def _save_per_file_result(
             "smell_fp": [{"category": c, "verdict": v} for c, v in smell_verdicts if v == "fp"],
             "smell_fn": [{"category": c, "verdict": v} for c, v in smell_verdicts if v == "fn"],
         },
+        "ast_rejections": [
+            {
+                "function": f.metadata.get("function", ""),
+                "category": f.category,
+                "expression": f.metadata.get("expression", ""),
+                "line": f.metadata.get("line", 0),
+                "reason": f.metadata.get("ast_rejection_reason", "unknown"),
+                "candidate_expressions": f.metadata.get("ast_candidates", []),
+                "matching_lines": f.metadata.get("ast_matching_lines", []),
+            }
+            for f in rejected_findings
+        ],
     }
     out_path = output_dir / f"{stem}_eval.json"
     out_path.write_text(_json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -636,6 +680,12 @@ def evaluate_model(
         total.merge_category_hybrid(c)
 
     cis = compute_bootstrap_cis(case_list, n_bootstrap=n_bootstrap) if n_bootstrap > 0 else {}
+    if output_dir and hasattr(analyzer, "telemetry_events"):
+        from .llm.telemetry import write_telemetry
+        write_telemetry(
+            analyzer.telemetry_events,
+            Path(output_dir) / "llm_telemetry.json",
+        )
     return total, cis
 
 

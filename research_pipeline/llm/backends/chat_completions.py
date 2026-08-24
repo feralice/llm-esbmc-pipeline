@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
 from ..prompts import PromptMode, build_user_prompt, load_system_prompt
 from ...models import CodeUnit, Finding
+from ..telemetry import response_event
 
 
 class ChatCompletionsAnalyzer:
@@ -30,6 +31,7 @@ class ChatCompletionsAnalyzer:
         self.timeout_seconds = timeout_seconds
         self.prompt_mode = prompt_mode
         self.request_delay = request_delay
+        self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         if self.request_delay > 0:
@@ -44,7 +46,19 @@ class ChatCompletionsAnalyzer:
             "temperature": 0,
             "stream": False,
         }
-        raw_response = self._post_json(payload)
+        started = time.monotonic()
+        try:
+            raw_response = self._post_json(payload)
+        except Exception as exc:
+            self.telemetry_events.append(response_event(
+                provider="chat_completions", requested_model=self.model,
+                duration_seconds=time.monotonic() - started, error=exc,
+            ))
+            raise
+        self.telemetry_events.append(response_event(
+            provider="chat_completions", requested_model=self.model,
+            duration_seconds=time.monotonic() - started, response=raw_response,
+        ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)

@@ -118,10 +118,11 @@
         "source_file": "thefuck/rules/git_diff_staged.py",
         "source_function": "get_new_command"
       },
-      "abstraction_notes": "Verbatim string logic, no stubbing: buggy version appends '--staged' at the very end via string concatenation; fixed version inserts it right after 'diff' via .replace(). Modeled as a buggy/correct function pair with a concrete literal command that has trailing args after 'diff', where the two placements produce different strings.",
+      "abstraction_notes": "Verbatim string logic, no stubbing: buggy version appends '--staged' at the very end via string concatenation; fixed version inserts it right after 'diff' via .replace(). Modeled as a buggy/correct function pair with a concrete literal command that has trailing args after 'diff', where the two placements produce different strings. [AUDITADO 2026-08-23] BROKEN at default settings: default --unwind 6/--timeout 20s hits ESBMC's own string-model unwinding assertion (strncmp/strncmp/python str_concat internals), not the real assert -- a false VERIFICATION FAILED that does NOT demonstrate the claimed bug. Retested up to --unwind 40 --timeout 60s: still times out before reaching the real assert (same solver-cost class as the already-documented tqdm/9 and matplotlib.log rejections). Needs a much longer timeout or a lighter string-comparison harness to actually confirm this bug; do not cite this item's ESBMC result as confirmed until re-verified. [FIXED 2026-08-24: --incremental-bmc confirms the real property, no longer a false confirmation.]",
       "categories": [
         "assertion_violation"
-      ]
+      ],
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
     },
     {
       "id": "av_real_07",
@@ -228,7 +229,7 @@
         "source_file": "tornado/http1connection.py",
         "source_function": "HTTP1Connection._read_body"
       },
-      "abstraction_notes": "Verbatim string logic, no stubbing: buggy case-sensitive comparison `headers.get(\"Transfer-Encoding\") == \"chunked\"` misses real-world 'Chunked'/'CHUNKED' header values; fixed version lowercases first. Concrete literal 'Chunked' demonstrates the divergence.",
+      "abstraction_notes": "Verbatim string logic, no stubbing: buggy case-sensitive comparison `headers.get(\"Transfer-Encoding\") == \"chunked\"` misses real-world 'Chunked'/'CHUNKED' header values; fixed version lowercases first. Concrete literal 'Chunked' demonstrates the divergence. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 40. Usar esse valor ao reproduzir.]",
       "categories": [
         "assertion_violation"
       ]
@@ -248,7 +249,7 @@
         "source_file": "thefuck/rules/php_s.py",
         "source_function": "match"
       },
-      "abstraction_notes": "Verbatim string logic, no stubbing: buggy version only matches the literal substring 'php -s', missing commands where other flags separate 'php' from '-s' (e.g. 'php -d foo -s bar'); fixed version checks for the bare ' -s ' flag token anywhere. Concrete literal script demonstrates the divergence.",
+      "abstraction_notes": "Verbatim string logic, no stubbing: buggy version only matches the literal substring 'php -s', missing commands where other flags separate 'php' from '-s' (e.g. 'php -d foo -s bar'); fixed version checks for the bare ' -s ' flag token anywhere. Concrete literal script demonstrates the divergence. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 40. Usar esse valor ao reproduzir.]",
       "categories": [
         "assertion_violation"
       ]
@@ -268,7 +269,7 @@
         "source_file": "thefuck/rules/git_push.py",
         "source_function": "match"
       },
-      "abstraction_notes": "Verbatim string logic, no stubbing: buggy check fires on any occurrence of the bare substring 'set-upstream' in git's stderr, even in an unrelated message; fixed version requires the full 'git push --set-upstream' phrase that git actually prints. Concrete literal output demonstrates the divergence.",
+      "abstraction_notes": "Verbatim string logic, no stubbing: buggy check fires on any occurrence of the bare substring 'set-upstream' in git's stderr, even in an unrelated message; fixed version requires the full 'git push --set-upstream' phrase that git actually prints. Concrete literal output demonstrates the divergence. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 60. Usar esse valor ao reproduzir.]",
       "categories": [
         "assertion_violation"
       ]
@@ -276,7 +277,7 @@
     {
       "id": "av_real_14",
       "file": "av_real_14.py",
-      "function": "get_new_command",
+      "function": "get_new_command_buggy",
       "verifiable": true,
       "expression": "'open http://' + script[5:]",
       "line": 2,
@@ -288,15 +289,16 @@
         "source_file": "thefuck/rules/open.py",
         "source_function": "get_new_command"
       },
-      "abstraction_notes": "Old code sliced off a fixed 5 chars ('open '); new code does script.replace('open ', 'open http://') which replaces every occurrence, not just the prefix. Modeled as buggy/correct string-function pair; deterministic literal 'open open google.com' makes the two diverge (slice only handles the first occurrence, replace rewrites both).",
+      "abstraction_notes": "Old code sliced off a fixed 5 chars ('open '); new code does script.replace('open ', 'open http://') which replaces every occurrence, not just the prefix. Modeled as buggy/correct string-function pair; deterministic literal 'open open google.com' makes the two diverge (slice only handles the first occurrence, replace rewrites both). [AUDITADO 2026-08-23] BROKEN at default settings: default --unwind 6/--timeout 20s hits ESBMC's own string-model unwinding assertion (__python_strnlen_bounded/strncmp internals), not the real assert -- a false VERIFICATION FAILED that does NOT demonstrate the claimed bug. Retested up to --unwind 40 --timeout 60s: still times out before reaching the real assert. Needs a much longer timeout or a lighter string-comparison harness; do not cite this item's ESBMC result as confirmed until re-verified. [FIXED 2026-08-24: --incremental-bmc confirms the real property, no longer a false confirmation.]",
       "categories": [
         "assertion_violation"
-      ]
+      ],
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
     },
     {
       "id": "av_real_15",
       "file": "av_real_15.py",
-      "function": "gunzip",
+      "function": "gunzip_buggy",
       "verifiable": true,
       "expression": "output += f.extrabuf",
       "line": 2,
@@ -308,7 +310,7 @@
         "source_file": "scrapy/utils/gz.py",
         "source_function": "gunzip"
       },
-      "abstraction_notes": "Old code appended the whole extrabuf; fix slices to only the trailing extrasize bytes (extrabuf[-extrasize:]), since extrabuf can contain stale bytes beyond the real chunk boundary. Modeled as buggy/correct string-slice pair with literal inputs.",
+      "abstraction_notes": "Old code appended the whole extrabuf; fix slices to only the trailing extrasize bytes (extrabuf[-extrasize:]), since extrabuf can contain stale bytes beyond the real chunk boundary. Modeled as buggy/correct string-slice pair with literal inputs. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 40. Usar esse valor ao reproduzir.]",
       "categories": [
         "assertion_violation"
       ]
@@ -316,7 +318,7 @@
     {
       "id": "av_real_17",
       "file": "av_real_17.py",
-      "function": "unified_strdate",
+      "function": "unified_strdate_buggy",
       "verifiable": true,
       "expression": "return compat_str(upload_date)",
       "line": 2,
@@ -337,7 +339,7 @@
     {
       "id": "av_real_19",
       "file": "av_real_19.py",
-      "function": "_make_getset_interval (else branch)",
+      "function": "make_interval_buggy",
       "verifiable": true,
       "expression": "max(vmin, vmax, oldmax)",
       "line": 2,
@@ -357,7 +359,7 @@
     {
       "id": "av_real_20",
       "file": "av_real_20.py",
-      "function": "advance_column",
+      "function": "advance_column_buggy",
       "verifiable": true,
       "expression": "current_column += 1",
       "line": 2,
@@ -478,28 +480,6 @@
         "source_function": "Request._set_url"
       },
       "abstraction_notes": "URL reduced to three boolean predicates (has_colon, has_dslash, starts_data) standing in for the actual string tests (':' in url, '://' in url, url.startswith('data:')); has_dslash implies has_colon is the only real invariant tying them together, encoded via __ESBMC_assume.",
-      "categories": [
-        "invalid_precondition"
-      ]
-    },
-    {
-      "id": "ip_real_02",
-      "file": "ip_real_02.py",
-      "function": "buggy_raises",
-      "verifiable": true,
-      "expression": "b == c",
-      "line": 17,
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "tornado",
-        "bugsinpy_id": 14,
-        "buggy_commit": "81ee310adcd905fbdf7c98d9fb6ef0c5a46026c2",
-        "fixed_commit": "1d02ed606f1c52636462633d009bdcbaac644331",
-        "source_file": "tornado/ioloop.py",
-        "source_function": "IOLoop.__init__"
-      },
-      "abstraction_notes": "IOLoop.current(instance=False) is None reduced to a bare bool (current_is_none); the make_current branch is isolated since that's where the inverted condition lives, the make_current-is-None branch (unaffected by the bug) is omitted.",
       "categories": [
         "invalid_precondition"
       ]
@@ -739,7 +719,7 @@
         "buggy_commit": "a8420fc681c5423d072978f00eab4d0645057d16",
         "fixed_commit": "db529031a1e1a6e951826aba0b7d0b18f05cd4c7",
         "source_file": "tornado/web.py",
-        "source_function": "StaticFileHandler (range-satisfiability check)"
+        "source_function": "StaticFileHandler.get"
       },
       "abstraction_notes": "HTTP Range header handling reduced to int/bool arithmetic on start/end/size; the real bug is an ordering issue (negative-start clamping ran after the satisfiability check instead of before) plus a missing start>=end check, both preserved verbatim in the buggy/correct function pair.",
       "categories": [
@@ -845,7 +825,9 @@
         "commit_hash": "f329964223eeb29e7788b1a9d615b525148fec96",
         "parent_commit": "9810279c20030954e2f1ed2cf5f1d34b98c6b07f",
         "source_file": "src/croniter/croniter.py",
-        "source_function": "expand_from_start_time (MONTH_FIELD branch)"
+        "source_function": "croniter.expand",
+        "buggy_commit": "9810279c20030954e2f1ed2cf5f1d34b98c6b07f",
+        "fixed_commit": "f329964223eeb29e7788b1a9d615b525148fec96"
       },
       "abstraction_notes": "Pure int arithmetic, no datetime needed: `month % step` returns 0 (invalid month) whenever month is an exact multiple of step; fix is `((month-1) % step) + 1`. Confirmed month=12,step=4: buggy=0, correct=4.",
       "categories": [
@@ -916,7 +898,8 @@
       "abstraction_notes": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError.",
       "categories": [
         "invalid_precondition"
-      ]
+      ],
+      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)"
     },
     {
       "id": "ip_real_22",
@@ -941,7 +924,7 @@
     {
       "id": "ip_real_23",
       "file": "ip_real_23.py",
-      "function": "build_params_str",
+      "function": "build_params_str_buggy",
       "verifiable": true,
       "expression": "if params[param_name].significant:",
       "line": 3,
@@ -961,7 +944,7 @@
     {
       "id": "ip_real_24",
       "file": "ip_real_24.py",
-      "function": "in_workers",
+      "function": "in_workers_buggy",
       "verifiable": true,
       "expression": "assistant or worker in task.workers",
       "line": 2,
@@ -971,7 +954,7 @@
         "project": "luigi",
         "bugsinpy_id": 31,
         "source_file": "luigi/scheduler.py",
-        "source_function": "CentralPlannerScheduler.get_running_task_ids"
+        "source_function": "CentralPlannerScheduler.get_work"
       },
       "abstraction_notes": "Old code short-circuited truthily for any assistant regardless of whether it actually had workers assigned to the task; fix requires assistant AND a non-empty task.workers set. Modeled as a pure bool-logic pair.",
       "categories": [
@@ -981,7 +964,7 @@
     {
       "id": "ip_real_25",
       "file": "ip_real_25.py",
-      "function": "get_necessary_tasks (membership check)",
+      "function": "is_necessary_buggy",
       "verifiable": true,
       "expression": "task.status not in (DONE, DISABLED)",
       "line": 2,
@@ -1001,7 +984,7 @@
     {
       "id": "ip_real_26",
       "file": "ip_real_26.py",
-      "function": "reschedule_guard",
+      "function": "allow_reschedule_buggy",
       "verifiable": true,
       "expression": "task.status in (RUNNING, BATCH_RUNNING) and status == PENDING",
       "line": 2,
@@ -1021,7 +1004,7 @@
     {
       "id": "ip_real_27",
       "file": "ip_real_27.py",
-      "function": "compute_chunking",
+      "function": "compute_chunking_buggy",
       "verifiable": true,
       "expression": "\"Transfer-Encoding\" not in headers",
       "line": 2,
@@ -1031,7 +1014,7 @@
         "project": "tornado",
         "bugsinpy_id": 2,
         "source_file": "tornado/http1connection.py",
-        "source_function": "HTTP1Connection._write_headers"
+        "source_function": "HTTP1Connection.write_headers"
       },
       "abstraction_notes": "Old code disabled chunked-transfer whenever ANY Transfer-Encoding header was present; fix allows it through when the header's value is specifically 'chunked'. Modeled as a bool-predicate pair.",
       "categories": [
@@ -1041,7 +1024,7 @@
     {
       "id": "ip_real_28",
       "file": "ip_real_28.py",
-      "function": "make_current_guard",
+      "function": "should_raise_buggy",
       "verifiable": true,
       "expression": "if IOLoop.current(instance=False) is None:",
       "line": 2,
@@ -1054,46 +1037,6 @@
         "source_function": "IOLoop.initialize"
       },
       "abstraction_notes": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair.",
-      "categories": [
-        "invalid_precondition"
-      ]
-    },
-    {
-      "id": "ip_real_29",
-      "file": "ip_real_29.py",
-      "function": "TimeseriesGenerator.__len__",
-      "verifiable": true,
-      "expression": "(self.end_index - self.start_index) / (self.batch_size * self.stride)",
-      "line": 5,
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "keras",
-        "bugsinpy_id": 28,
-        "source_file": "keras/preprocessing/sequence.py",
-        "source_function": "TimeseriesGenerator.__len__"
-      },
-      "abstraction_notes": "Off-by-one: the index range is inclusive of end_index, so the numerator needs +1 to count the right number of batches; the numpy np.ceil(...) call itself is replaced with math.ceil() over plain ints since the bug is pure integer arithmetic, no array/tensor semantics involved.",
-      "categories": [
-        "invalid_precondition"
-      ]
-    },
-    {
-      "id": "ip_real_30",
-      "file": "ip_real_30.py",
-      "function": "range_unsatisfiable",
-      "verifiable": true,
-      "expression": "(start is not None and start >= size) or end == 0",
-      "line": 2,
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "tornado",
-        "bugsinpy_id": 4,
-        "source_file": "tornado/web.py",
-        "source_function": "StaticFileHandler._get_cacheable_headers (range check)"
-      },
-      "abstraction_notes": "Old check never rejected a byte-range where start >= end (an invalid RFC 7233 byte-range-spec); fix adds that case to the unsatisfiable-range test. Modeled as a bool-predicate pair over the range bounds.",
       "categories": [
         "invalid_precondition"
       ]
@@ -1130,9 +1073,11 @@
       "provenance": {
         "project": "parse",
         "repo_url": "https://github.com/r1chardj0n3s/parse",
-        "commit_hash": "4cf2b44bcb22c1d6a4d693694f7d5ecff5ff84d7",
         "source_file": "parse.py",
-        "source_function": "date_convert"
+        "source_function": "date_convert",
+        "buggy_commit": "95856f4e1e8bb36fc2858c4d2e81a369ff925f21",
+        "fixed_commit": "4cf2b44bcb22c1d6a4d693694f7d5ecff5ff84d7",
+        "_correction_note": "commit_hash was originally the FIX commit itself (\"fix bug in PM time overflow closes issue #16\"); corrected to use its parent as buggy_commit."
       },
       "abstraction_notes": "Real code added 12 to the hour for PM times with no upper-bound check; when hour was already 12 (12 PM), the result (24) is out of datetime's valid 0..23 range (real GitHub issue #16). Fix subtracts 24 and rolls the day over when the sum exceeds 23. Modeled as pure int arithmetic, sidestepping the actual datetime.py operational model entirely (not yet confirmed to validate hour range) by asserting the 0..23 invariant directly.",
       "categories": [
@@ -1173,7 +1118,8 @@
         "project": "httpie",
         "bugsinpy_id": 3,
         "source_file": "httpie/sessions.py",
-        "source_function": "Session.remove_cookies"
+        "source_function": "Session.update_headers",
+        "_correction_note": "source_function was recorded as remove_cookies, which does not exist in the file at the buggy commit; corrected to update_headers (verified against the real fix diff)."
       },
       "abstraction_notes": "ESBMC-Python does not model bytes/str .decode(), so the None-attribute-access crash is made explicit via assert on the precondition it actually depends on (value is not None) rather than by calling .decode() directly. The real loop calls value.decode('utf8') unconditionally on every stored header value; httpie represents an explicitly-unset header as value=None.",
       "categories": [
@@ -1193,7 +1139,7 @@
         "project": "tqdm",
         "bugsinpy_id": 4,
         "source_file": "tqdm/_tqdm.py",
-        "source_function": "tqdm.__init__"
+        "source_function": "tqdm.format_meter"
       },
       "abstraction_notes": "Reduced tqdm's `total *= unit_scale` to its scalar core. `total` defaults to None when the wrapped iterable has no __len__; the real code only guards `unit_scale not in (True, 1)` before scaling, not total's nullness. Real caller precondition (unit_scale already filtered to exclude True/1) preserved via __ESBMC_assume.",
       "categories": [
@@ -1564,7 +1510,8 @@
         "project": "inflect",
         "commit_hash": "f799157f68d5e7e1c59b5f8ecd51530c4b6e20a5",
         "source_file": "inflect.py",
-        "source_function": "engine.number_to_words"
+        "source_function": "engine.numwords",
+        "_correction_note": "source_function was recorded as number_to_words, which does not exist; corrected to numwords (verified against the real fix diff, line 2101 falls inside it)."
       },
       "abstraction_notes": "num.endswith(decimal) is called unconditionally; when the caller passes decimal=None, str.endswith(None) raises TypeError.",
       "categories": [
@@ -1584,7 +1531,7 @@
         "project": "jmespath.py",
         "commit_hash": "8f14a303bf9c953e1762c116c446542d68e1ab5d",
         "source_file": "jmespath/ast.py",
-        "source_function": "_Projection.multi_get"
+        "source_function": "_Projection.get_index"
       },
       "abstraction_notes": "Function builds a matches list, then only returns inside `if matches:` with no else -- when matches is empty, implicitly returns None instead of []. Real GitHub issue #18. Verified via ESBMC's missing-return-statement detection (120 VCCs generated, 26 after simplification).",
       "categories": [
@@ -1716,66 +1663,6 @@
       ]
     },
     {
-      "id": "oob_real_06",
-      "file": "oob_real_06.py",
-      "function": "is_stash_command",
-      "verifiable": true,
-      "expression": "parts[1]",
-      "line": 5,
-      "expected_type": "IndexError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "thefuck",
-        "bugsinpy_id": 21,
-        "source_file": "thefuck/rules/git_fix_stash.py",
-        "source_function": "match"
-      },
-      "abstraction_notes": "Verbatim: script.split()[1] on a script with fewer than 2 tokens (e.g. bare 'git') raises IndexError; real fix adds a length guard before indexing. Faithful to real code, str.split() is natively modeled.",
-      "categories": [
-        "out_of_bounds"
-      ]
-    },
-    {
-      "id": "oob_real_07",
-      "file": "oob_real_07.py",
-      "function": "realise_first",
-      "verifiable": true,
-      "expression": "cached[0]",
-      "line": 4,
-      "expected_type": "IndexError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "thefuck",
-        "bugsinpy_id": 22,
-        "source_file": "thefuck/types.py",
-        "source_function": "SortedCorrectedCommandsSequence._realise"
-      },
-      "abstraction_notes": "Verbatim: self._cached[0] indexed unconditionally after the generator is realised; real fix guards with `if self._cached:`. Reproduced directly with an empty list literal, no stubbing needed.",
-      "categories": [
-        "out_of_bounds"
-      ]
-    },
-    {
-      "id": "oob_real_08",
-      "file": "oob_real_08.py",
-      "function": "ensure_trailing_newline",
-      "verifiable": true,
-      "expression": "src_txt[-1]",
-      "line": 4,
-      "expected_type": "IndexError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "black",
-        "bugsinpy_id": 17,
-        "source_file": "black.py",
-        "source_function": "decode_bytes / lib2to3_parse"
-      },
-      "abstraction_notes": "Verbatim: src_txt[-1] on an empty string raises IndexError when decode_bytes() returns an empty source (e.g. an empty file); real fix uses the slice src_txt[-1:]. Same bug family as oob_real_05 (a different hunk of the same BugsInPy patch), reproduced directly with an empty string literal.",
-      "categories": [
-        "out_of_bounds"
-      ]
-    },
-    {
       "id": "oob_real_09",
       "file": "oob_real_09.py",
       "function": "parse_minute_second",
@@ -1812,7 +1699,7 @@
         "source_file": "tabulate/__init__.py",
         "source_function": "_wrap_text_to_colwidths"
       },
-      "abstraction_notes": "list_of_lists[0] accessed unconditionally to infer column count; empty input list raises IndexError. Real GitHub issue #180, upstream regression test.",
+      "abstraction_notes": "list_of_lists[0] accessed unconditionally to infer column count; empty input list raises IndexError. Real GitHub issue #180, upstream regression test. [AUDITADO 2026-08-23: default --timeout 20s da falso timeout, nao chega no contraexemplo. Confirmado real com --timeout 60s (mesmo --unwind 6). Usar timeout maior ao reproduzir.]",
       "categories": [
         "out_of_bounds"
       ]
@@ -1982,7 +1869,7 @@
         "source_file": "luigi/contrib/hive.py",
         "source_function": "HiveCommandClient.table_exists"
       },
-      "abstraction_notes": "Function body kept verbatim. main() fixes stdout/table to the real caller's actual precondition (Hive's own output is already lowercase, the caller's table name may be mixed-case) and asserts the correct semantics (table should be found); the buggy case-sensitive check violates that assertion.",
+      "abstraction_notes": "Function body kept verbatim. main() fixes stdout/table to the real caller's actual precondition (Hive's own output is already lowercase, the caller's table name may be mixed-case) and asserts the correct semantics (table should be found); the buggy case-sensitive check violates that assertion. AUDIT 2026-08-23: default --unwind 6 gives a spurious 'unwinding assertion loop 103' (string-comparison internal loop bound too small), not the real property -- needs --unwind >=60 to reach the actual 'assertion result' violation. Verified at --unwind 60.",
       "categories": [
         "type_mismatch"
       ]
@@ -2175,10 +2062,11 @@
         "source_file": "tqdm/_tqdm.py",
         "source_function": "tqdm.format_meter"
       },
-      "abstraction_notes": "Reduced to the two string variables that actually carry the bug: stale l_bar/r_bar vs. freshly split l_bar_user/r_bar_user. nondet strings via input() (256-char nondet model per README) with __ESBMC_assume(l_bar != l_bar_user) encoding the real trigger condition (a custom bar_format differs from the default template). Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED, 397 VCC(s) generated, 219 remaining after simplification.",
+      "abstraction_notes": "Reduced to the two string variables that actually carry the bug: stale l_bar/r_bar vs. freshly split l_bar_user/r_bar_user. nondet strings via input() (256-char nondet model per README) with __ESBMC_assume(l_bar != l_bar_user) encoding the real trigger condition (a custom bar_format differs from the default template). Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED, 397 VCC(s) generated, 219 remaining after simplification. AUDIT 2026-08-23 - BROKEN: at --unwind 6 this only reaches a spurious 'unwinding assertion loop 101' (4x input()-modeled nondet strings up to 256 chars each), not the real 'assertion result == l_bar_user + r_bar_user' property. Tried --unwind up to 260 (16473 VCCs, 9074 after simplification) -- did not finish solving within 150s. This item's current VERIFICATION FAILED does NOT demonstrate the claimed bug; it is a false confirmation at the stated --unwind 6. Needs either a much longer solver timeout budget, or rewriting the harness with bounded string lengths (__ESBMC_assume len(...) <= small N) before it can be trusted as confirmed. [FIXED 2026-08-24: --incremental-bmc confirms the real property, no longer a false confirmation.]",
       "categories": [
         "variable_misuse"
-      ]
+      ],
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
     },
     {
       "id": "vm_real_02",
@@ -2199,6 +2087,163 @@
       "abstraction_notes": "skey is only bound inside `for skey, svalue in s.items(): ...`; when the schema dict s is empty that loop body never runs, so the later `elif type(skey) is not Optional:` references skey before it was ever assigned -> UnboundLocalError. skey_assigned models whether the loop ran (equivalent to s being non-empty); the assert isolates that real crash trigger. Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED.",
       "categories": [
         "variable_misuse"
+      ]
+    },
+    {
+      "id": "io_real_01",
+      "file": "io_real_01.py",
+      "function": "nonsingular_magnitude",
+      "verifiable": true,
+      "expression": "numpy_int8_abs(vmin)",
+      "line": 13,
+      "expected_type": "fixed_width_integer_wraparound",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "matplotlib",
+        "bugsinpy_id": "16/17",
+        "buggy_commit": "89ff308306bafac22647c050a42141f040210216",
+        "fixed_commit": "5d99e151be80bcb0b3b6d081fd3038330f573d94",
+        "source_file": "lib/matplotlib/transforms.py",
+        "source_function": "nonsingular"
+      },
+      "abstraction_notes": "The two BugsInPy IDs refer to the same underlying fix. The real pre-fix code applies abs() before converting fixed-width NumPy integers to float, so abs(np.int8(-128)) wraps to -128. ESBMC-Python does not support the np.int8 constructor, therefore numpy_int8_abs models signed 8-bit two's-complement abs explicitly while keeping the real -128..127 domain. The property magnitude >= 0 fails at the genuine boundary value; the real fix's float conversion removes this wraparound. This is confirmation on a scalar abstraction, not a claim that ordinary Python int overflows.",
+      "categories": [
+        "integer_overflow"
+      ]
+    },
+    {
+      "id": "ir_real_01",
+      "file": "ir_real_01.py",
+      "function": "gamma",
+      "categories": [
+        "incorrect_result"
+      ],
+      "verifiable": true,
+      "expression": "sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
+      "line": 26,
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "esbmc",
+        "repo_url": "https://github.com/esbmc/esbmc",
+        "buggy_commit": "d432ae5ddf5ece697b51610aa9f677412ef7aee1^",
+        "fixed_commit": "d432ae5ddf5ece697b51610aa9f677412ef7aee1",
+        "source_file": "src/python-frontend/models/math.py",
+        "source_function": "gamma / lgamma"
+      },
+      "abstraction_notes": "ESBMC's own math.gamma/lgamma Lanczos branch used a local pi_const = 3.14153 (wrong in the 5th decimal place) instead of the accurate module pi, skewing every non-integer gamma()/lgamma() result by ~1.8e-5. Harness inlines the exact pre-fix function body plus its _lanczos_sum helper; sqrt/pow/exp/log come from the real (unaffected) math module. AUDIT 2026-08-23: default --unwind 6 gives a spurious 'unwinding assertion loop 47' (math.pow/exp internal series), not the real property -- needs --unwind >=12 to reach the actual precision assertion. Verified at --unwind 12."
+    },
+    {
+      "id": "ir_real_02",
+      "file": "ir_real_02.py",
+      "function": "module-level constants",
+      "categories": [
+        "incorrect_result"
+      ],
+      "verifiable": true,
+      "expression": "pi: float = 3.14153",
+      "line": 1,
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "esbmc",
+        "repo_url": "https://github.com/esbmc/esbmc",
+        "buggy_commit": "2e99e3c8bdaf8e1bfbdcf923ee1e6253f00fc3d6^",
+        "fixed_commit": "2e99e3c8bdaf8e1bfbdcf923ee1e6253f00fc3d6",
+        "source_file": "src/python-frontend/models/math.py",
+        "source_function": "module-level pi/e/tau constants"
+      },
+      "abstraction_notes": "ESBMC's own math.py hardcoded pi/e/tau to 5-6 significant digits instead of full double precision, skewing every computation that used them. Harness reproduces the exact literal values from the pre-fix module."
+    },
+    {
+      "id": "ir_real_03",
+      "file": "ir_real_03.py",
+      "function": "try_match_char_class_range",
+      "categories": [
+        "incorrect_result"
+      ],
+      "verifiable": true,
+      "expression": "if pattern_len != 7:",
+      "line": 3,
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "esbmc",
+        "repo_url": "https://github.com/esbmc/esbmc",
+        "buggy_commit": "d8ad5349c15f6a13f6ff05b08d62c1bb2f0d88ff^",
+        "fixed_commit": "d8ad5349c15f6a13f6ff05b08d62c1bb2f0d88ff",
+        "source_file": "src/python-frontend/models/re.py",
+        "source_function": "try_match_char_class_range"
+      },
+      "abstraction_notes": "ESBMC's own re.py recognizer for '[x-y]+'/'[x-y]*' patterns checked pattern_len != 7, an off-by-one (a real 6-character pattern like '[a-z]+' never matches that guard), and also computed string_len as len(string) - 1. Harness is the pre-fix function verbatim, called directly with a real 6-char pattern."
+    },
+    {
+      "id": "ir_real_05",
+      "file": "ir_real_05.py",
+      "function": "string_to_int",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "verifiable": true,
+      "expression": "alpha_len = len(alphabet)",
+      "line": 19,
+      "expected_type": null,
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "shortuuid",
+        "repo_url": "https://github.com/skorokithakis/shortuuid",
+        "commit_hash": "496cddf186b6598ebebe7be5c99c0715e7fc5ab5",
+        "issue_ref": "#115",
+        "source_file": "shortuuid/main.py",
+        "source_function": "string_to_int"
+      },
+      "abstraction_notes": "Reduced to a 2-digit scalar decode using alphabet_len/alphabet_index_len as the two candidate radixes and two digit values; no string/dict iteration needed since the bug is purely which length is used as alpha_len."
+    },
+    {
+      "id": "nm_real_23",
+      "file": "nm_real_23.py",
+      "function": "Markdown._html_class_str_from_tag",
+      "categories": [
+        "none_misuse"
+      ],
+      "verifiable": true,
+      "expression": "if tag in html_classes_from_tag:",
+      "line": 12,
+      "expected_type": "TypeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "python-markdown2",
+        "repo_url": "https://github.com/trentm/python-markdown2",
+        "commit_hash": "3c53c6aed381ac284d3fb25945ce709a99c83195",
+        "issue_ref": "#391",
+        "source_file": "lib/markdown2.py",
+        "source_function": "Markdown._html_class_str_from_tag"
+      },
+      "abstraction_notes": "html_classes_from_tag (self.extras['html-classes']) reduced to a bool flag since ESBMC-Python's `in` on None isn't the modeled crash path; assert makes the real None-unguarded TypeError explicit and checkable."
+    },
+    {
+      "id": "dz_real_04",
+      "file": "dz_real_04.py",
+      "function": "interpolate_step_ratio",
+      "verifiable": true,
+      "expression": "(h_src - wdw_size) / step_size",
+      "line": 15,
+      "expected_type": "ZeroDivisionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "nki-samples",
+        "repo_url": "https://github.com/aws-neuron/nki-samples",
+        "source_file": "contributed/interpolate_bilinear_fwd.py",
+        "source_function": "interpolate_bilinear_2x_fwd",
+        "buggy_commit": "a87aaa44f7b26241bdb152af8838e287669c3947",
+        "fixed_commit": "d631c8815da107186164d5bfd62c7ed0825eca90",
+        "issue_url": "https://github.com/aws-neuron/nki-samples/issues/125",
+        "pr_url": "https://github.com/aws-neuron/nki-samples/pull/126"
+      },
+      "abstraction_notes": "Isolated the scalar step_size computation from an NKI hardware kernel (tensor/tile ops, out of ESBMC-Python's scope, left untouched in detection/). Real caller precondition (h_src > 0, chunk_size > 0, default chunk_size=10) preserved via __ESBMC_assume; no lower bound of 2 on chunk_size existed pre-fix, so chunk_size == 1 collapses step_size to 0. Manual assert added because ESBMC-Python's `/` lowers to ieee_div and is not covered by the default division-by-zero check. Issue #125 filed by Lucas Cordeiro (formal verification researcher), fixed by PR #126 (assert chunk_size >= 2). Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED, counterexample chunk_size=1.",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
       ]
     }
   ]

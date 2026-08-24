@@ -3,11 +3,11 @@ Warning: mypy not found on PATH; type checking will be skipped.
 ESBMC version 8.3.0 64-bit x86_64 linux
 
 Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
-Parsing /tmp/pytest-of-fernanda/pytest-2/test_skipped_not_verifiable_do0/smelly.py
+Parsing /tmp/pytest-of-fernanda/pytest-18/test_skipped_not_verifiable_do0/smelly.py
 Converting
 Generating GOTO Program
-GOTO program creation time: 1.589s
-GOTO program processing time: 0.008s
+GOTO program creation time: 2.426s
+GOTO program processing time: 0.009s
 Checking base case, k = 1
 Starting Bounded Model Checking
 Symex completed in: 0.001s (81 assignments)
@@ -18,10 +18,10 @@ BMC program time: 0.001s
 No bug has been found in the base case
 Checking forward condition, k = 1
 Starting Bounded Model Checking
-Symex completed in: 0.000s (81 assignments)
+Symex completed in: 0.001s (81 assignments)
 Slicing time: 0.000s (removed 81 assignments)
 Generated 0 VCC(s), 0 remaining after simplification (0 assignments)
-BMC program time: 0.000s
+BMC program time: 0.001s
 
 VERIFICATION SUCCESSFUL
 

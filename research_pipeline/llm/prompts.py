@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import ast
 import json
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from ..models import CodeUnit
+from ..smell_policy import load_smell_thresholds
 from .schema import FINDINGS_JSON_SCHEMA  # noqa: F401 - re-exported for backward compatibility
 
 """Prompt builders for the LLM analysis step.
@@ -26,13 +28,18 @@ PromptMode = Literal["raw", "ast_hints"]
 # Fixed reasoning checklist appended to both prompt modes. It asks the model to
 # reason about dangerous operations and guards, but in raw mode the model must
 # infer them from the source code itself.
-_REASONING_STEPS = (
-    "Aplique o raciocínio do system prompt (itens 1-4) para cada operação perigosa encontrada.\n"
-    "Independentemente de haver bugs, avalie também se a função apresenta smells: "
-    "long_method (função longa), many_parameters (>= 5 parâmetros), complex_conditional (condições compostas/aninhadas). "
-    "Smells detectados devem entrar no array findings como finding_type='smell_heuristic', verifiable=false.\n"
-    "Responda SOMENTE com JSON válido (use true/false minúsculos), sem markdown."
-)
+def _reasoning_steps() -> str:
+    policy = load_smell_thresholds()
+    return (
+        "Aplique o raciocínio do system prompt (itens 1-5) para cada operação perigosa encontrada.\n"
+        "Independentemente de haver bugs, aplique os limiares operacionais: "
+        f"long_method (>={policy['long_method_min_executable_lines']} linhas executáveis), "
+        f"many_parameters (>={policy['many_parameters_min']} parâmetros, excluindo self/cls), "
+        "complex_conditional "
+        f"(>={policy['complex_conditional_min_boolean_operators']} operadores and/or em uma condição). "
+        "Smells detectados devem entrar no array findings como finding_type='smell_heuristic', verifiable=false.\n"
+        "Responda SOMENTE com JSON válido (use true/false minúsculos), sem markdown."
+    )
 
 
 @lru_cache(maxsize=1)
@@ -61,12 +68,12 @@ def build_user_prompt(unit: CodeUnit, prompt_mode: PromptMode = "raw") -> str:
 def _build_raw_prompt(unit: CodeUnit) -> str:
     """Build the leakage-resistant prompt used in main experiments."""
     return (
-        f"Analise a função '{unit.qualname}' para o pipeline LLM + ESBMC.\n\n"
+        "Analise a função 'target_function' para o pipeline LLM + ESBMC.\n\n"
         "CÓDIGO DA FUNÇÃO:\n"
-        f"```python\n{unit.source}\n```\n\n"
+        f"```python\n{_source_for_llm(unit)}\n```\n\n"
         "METADADOS DA FUNÇÃO:\n"
         f"{json.dumps(_function_metadata_raw(unit), ensure_ascii=False, indent=2)}\n\n"
-        + _REASONING_STEPS
+        + _reasoning_steps()
     )
 
 
@@ -75,17 +82,17 @@ def _build_ast_hints_prompt(unit: CodeUnit) -> str:
     divisions  = [op for op in unit.operations if op.kind == "division"]
     subscripts = [op for op in unit.operations if op.kind == "subscript"]
     return (
-        f"Analise a função '{unit.qualname}' para o pipeline LLM + ESBMC.\n\n"
+        "Analise a função 'target_function' para o pipeline LLM + ESBMC.\n\n"
         "OPERAÇÕES DETECTADAS PELA ANÁLISE ESTÁTICA:\n"
         f"  Divisões/módulos (/, //, %):\n{_format_operations(divisions)}\n"
         f"  Acessos indexados (subscripts):\n{_format_operations(subscripts)}\n\n"
         f"  Asserts/AssertionError:\n{_format_assertions(unit)}\n\n"
         f"GUARDAS/ASSERTS EXISTENTES:\n{_format_guards(unit)}\n\n"
         "CÓDIGO DA FUNÇÃO:\n"
-        f"```python\n{unit.source}\n```\n\n"
+        f"```python\n{_source_for_llm(unit)}\n```\n\n"
         "METADADOS DA FUNÇÃO:\n"
         f"{json.dumps(_function_metadata(unit), ensure_ascii=False, indent=2)}\n\n"
-        + _REASONING_STEPS
+        + _reasoning_steps()
     )
 
 
@@ -145,3 +152,31 @@ def _function_metadata_raw(unit: CodeUnit) -> dict:
             "parameter_count": unit.metrics.get("parameter_count", 0),
         },
     }
+
+
+def _source_for_llm(unit: CodeUnit) -> str:
+    """Return a semantics-preserving, label-resistant copy for prompting.
+
+    Comments and docstrings can describe the known bug in benchmark harnesses;
+    the target function name may also contain labels such as ``buggy``. The AST
+    used for grounding remains the original source. Only the prompt copy is
+    sanitized.
+    """
+    try:
+        tree = ast.parse(unit.source)
+    except SyntaxError:
+        return unit.source
+    if not tree.body or not isinstance(tree.body[0], (ast.FunctionDef, ast.AsyncFunctionDef)):
+        return unit.source
+    function = tree.body[0]
+    original_name = function.name
+    function.name = "target_function"
+    if function.body and isinstance(function.body[0], ast.Expr):
+        value = function.body[0].value
+        if isinstance(value, ast.Constant) and isinstance(value.value, str):
+            function.body.pop(0)
+    for node in ast.walk(function):
+        if isinstance(node, ast.Name) and node.id == original_name:
+            node.id = "target_function"
+    ast.fix_missing_locations(tree)
+    return ast.unparse(function)

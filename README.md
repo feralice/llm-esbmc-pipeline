@@ -270,5 +270,5 @@ python -m pytest tests/test_research_pipeline.py -q
 | Documento | Conteúdo |
 |---|---|
 | [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) | Especificação completa: fluxos, flags ESBMC, métricas, metodologia |
-| [`docs/pipeline_walkthrough.md`](docs/pipeline_walkthrough.md) | Walkthrough arquivo por arquivo do pipeline |
+| [`docs/pipeline_walkthrough_v1.md`](docs/pipeline_walkthrough_v1.md) | Walkthrough arquivo por arquivo do pipeline (V1) |
 | [`docs/v2_harness_synthesis.md`](docs/v2_harness_synthesis.md) | Proposta de trabalho futuro: síntese de harnesses guiada por LLM |

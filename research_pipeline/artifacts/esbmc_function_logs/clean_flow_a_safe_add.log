@@ -3,11 +3,11 @@ Warning: mypy not found on PATH; type checking will be skipped.
 ESBMC version 8.3.0 64-bit x86_64 linux
 
 Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
-Parsing /tmp/pytest-of-fernanda/pytest-2/test_out_of_scope_finding_coun0/clean.py
+Parsing /tmp/pytest-of-fernanda/pytest-18/test_out_of_scope_finding_coun0/clean.py
 Converting
 Generating GOTO Program
-GOTO program creation time: 1.644s
-GOTO program processing time: 0.008s
+GOTO program creation time: 2.146s
+GOTO program processing time: 0.013s
 Checking base case, k = 1
 Starting Bounded Model Checking
 Symex completed in: 0.001s (73 assignments)

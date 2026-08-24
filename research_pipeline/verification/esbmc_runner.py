@@ -160,6 +160,11 @@ _FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
     "division_by_zero":    ["--assign-param-nondet"],
     "out_of_bounds":       ["--assign-param-nondet"],
     "assertion_violation": ["--assign-param-nondet"],
+    "none_misuse":         ["--assign-param-nondet"],
+    "type_mismatch":       ["--assign-param-nondet"],
+    "invalid_precondition": ["--assign-param-nondet"],
+    "variable_misuse":     ["--assign-param-nondet"],
+    "integer_overflow":    ["--assign-param-nondet", "--overflow-check"],
 }
 
 _FLOW_A_BASE_FLAGS: list[str] = ["--assign-param-nondet"]

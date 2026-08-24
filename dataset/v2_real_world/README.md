@@ -12,7 +12,7 @@ Reorganized from the original per-category-folder shape (kept in git history if 
 single flat structure, since several bugs genuinely fit more than one category and a folder-per-
 category layout forces a single primary label per file:
 
-- `bugs/` — every confirmed item's `.py` harness in one flat folder (105 files, no subfolders)
+- `bugs/` — every confirmed item's `.py` harness in one flat folder (106 files, no subfolders)
 - `ground_truths.json` — one file for all items, with a `provenance` block per item linking back to
   the real project/commit, `abstraction_notes`, and a `categories` field (a **list**, not a single
   string) — most items have one category, a small number genuinely have two (see Method below)
@@ -50,18 +50,17 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
    (only when the real defect is a silent wrong-value bug modeled the buggy/correct way, not a raised
    `IndexError`) and `none_misuse`↔`variable_misuse` (only when state genuinely leaks/is stale across
    iterations, the same shape as `vm_real_01`/`vm_real_02`, not just "a None involved somewhere").
-   10 of 105 items got a second tag; the other 95 stayed single-category on purpose.
+   10 of 106 items got a second tag; the other 96 stayed single-category on purpose.
 
 ## Findings worth keeping for the write-up
 
-- **`integer_overflow` stays empty, confirmed by direct probe, not guesswork**: the only two BugsInPy
-  candidates for this category (`matplotlib/16` and `matplotlib/17`) are the identical patch
-  (`lib/matplotlib/transforms.py::nonsingular`, same diff, two different BugsInPy bug IDs) fixing
-  `abs()` wraparound on a fixed-width numpy dtype (`abs(np.int8(-128)) == -128`). Probed directly:
-  `np.int8(-128)` as a scalar constructor is `ERROR: Unsupported NumPy function call: int8`, and
-  `np.abs()` on an `np.array(..., dtype=np.int8)` hits `ERROR: Z3 error operator is applied to
-  arguments of the wrong sort` mid-solve — neither produces a VCC-based counterexample, so this bug
-  shape isn't representable yet, not merely hard to abstract. Both candidates dropped.
+- **`integer_overflow` has one scalar-abstraction case**: `matplotlib/16` and `matplotlib/17` refer
+  to the same underlying patch in `transforms.py::nonsingular`, so they count as one bug rather than
+  two independent observations. The real trigger is fixed-width NumPy arithmetic
+  (`abs(np.int8(-128)) == -128`). Direct `np.int8` remains unsupported by ESBMC-Python; `io_real_01`
+  therefore models signed 8-bit two's-complement `abs` explicitly and preserves the real int8 input
+  domain. Its counterexample is evidence on that scalar abstraction, not evidence that ordinary
+  Python `int` overflows (Python integers have arbitrary precision).
 - **A new small category, `variable_misuse`**: `tqdm/8` (stale `l_bar`/`r_bar` formatted instead of
   the freshly split `l_bar_user`/`r_bar_user`, silently ignoring a custom `bar_format`) doesn't fit
   any of the six existing categories — it's not a missing precondition, type confusion, or None
@@ -333,11 +332,50 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
 
 ## Status
 
-105 items total (95 single-category, 10 multi-category — see Method §7), by primary category:
-3 division_by_zero, 16 out_of_bounds, 19 assertion_violation, 22 none_misuse, 10 type_mismatch,
-33 invalid_precondition, 2 variable_misuse. Layout is now flat (`bugs/*.py` + one `ground_truths.json`
-with a `categories` list per item) rather than one folder/file per category — recount taken directly
-from `ground_truths.json`, the sole authoritative source now that the per-category files are gone.
+105 items total, by primary category (recount taken directly from `ground_truths.json`, the sole
+authoritative source): 3 division_by_zero, 16 out_of_bounds, 19 assertion_violation, 23 none_misuse,
+10 type_mismatch, 34 invalid_precondition, 2 variable_misuse, 1 integer_overflow, 5 incorrect_result.
+Layout is flat (`bugs/*.py` + `detection/*.py` + one `ground_truths.json` with a `categories` list
+per item) rather than one folder/file per category.
+
+Went 105 → 100 in an earlier pass (5 pairs found to be the exact same real bug mined twice under
+different IDs, deduplicated), then 100 → 103 adding a new source (ESBMC's own history, see below),
+then 103 → 105 with a stricter issue-linked pass (see "Human-validated sources" below).
+
+**Human-validated sources.** Fernanda asked for the provenance breakdown to be explicit: of the
+105 items, 76 come from BugsInPy (peer-reviewed academic curation — Widyasari et al., ESEC/FSE
+2020), 15 from fresh GitHub mining where the fix commit references a real issue number (someone
+external reported the bug before the fix — `issue_ref` is set in `provenance` for these), 3 from
+ESBMC's own history (real commits, real regressions, but internal — no external reporter), and 11
+accepted on commit-message-and-diff reading alone (no independent human confirmation beyond the
+mining agent's own judgment — these are the ones a stricter future pass should either upgrade with
+a found issue reference or flag with lower confidence in any citation of "N human-validated bugs").
+The 2 newest issue-linked items: `ir_real_05` (shortuuid, wrong decode radix when `alphabet_index`
+is passed, issue #115) and `nm_real_23` (python-markdown2, `TypeError` on `tag in
+html_classes_from_tag` when that's explicitly `None`, issue #391). A third candidate this pass,
+`humanize`'s `apnumber(0)` off-by-one (issue #72), triggered a live ESBMC crash on tuple-of-string
+indexing (`compute_pointer_offset, unexpected irep`) and was dropped from the dataset — a real
+ESBMC bug worth its own report, not a dataset defect.
+
+**New source: ESBMC's own git history (`incorrect_result`, 3 items).** `src/python-frontend/models/*.py`
+is real Python source too, and its own fix history has genuine wrong-result bugs, not just BugsInPy/GitHub
+projects: `ir_real_01`/`ir_real_02` are the `math.gamma`/`lgamma` Lanczos branch and the module-level
+`pi`/`e`/`tau` constants both using a hand-typed, imprecise `pi_const` before #5963/#3583 fixed them;
+`ir_real_03` is `re.py`'s `[x-y]+`/`[x-y]*` recognizer checking `pattern_len != 7` (off-by-one — a real
+6-character pattern like `[a-z]+` never matches) before #d8ad5349c1. None of these crash or raise; they're
+"incorrect_result" because ESBMC silently computed/verified the wrong value, closer to `assertion_violation`'s
+shape than to a crash-category, but the property being violated is a real mathematical/string-length fact,
+not a project-specific precondition, hence the new category label. `provenance.project == "esbmc"` for all
+three, distinguishing them from the BugsInPy/GitHub-sourced items.
+
+Two other ESBMC-history candidates were tried and dropped, not because they were false — because the
+underlying frontend gap has since been fixed by unrelated later work, so they no longer reproduce on the
+current build: `int.from_bytes(signed=True)`'s negative-indexing crash (negative list indexing is now
+supported) and `random.randrange`'s `None`-as-`0` confusion (None now has proper type distinction from
+int per this repo's `src/python-frontend/README.md`). A third, `int.from_bytes`'s wrong-byte-for-big-endian
+value bug once the crash was worked around, hit an unrelated live Z3 encoding crash (`Sorts
+struct_type_pointer_struct and (_ BitVec 64) are incompatible`) — worth a `esbmc-verifier`-style report on
+its own, not folded into this dataset.
 
 **Final cleanup pass over `candidates_phase1.json`'s last ~23 unresolved candidates**: 7 confirmed
 -- `oob_real_15` (youtube-dl/6, near-verbatim `dict['begin']` KeyError vs. the fixed `.get()`),

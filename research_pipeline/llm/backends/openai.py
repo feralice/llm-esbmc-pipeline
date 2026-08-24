@@ -8,6 +8,7 @@ from urllib import error, request
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import PromptMode, build_user_prompt, load_system_prompt
 from ..schema import FINDINGS_JSON_SCHEMA
+from ..telemetry import response_event
 from ...models import CodeUnit, Finding
 
 
@@ -31,6 +32,7 @@ class OpenAIResponsesAnalyzer:
             raise ValueError(
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
             )
+        self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         payload = {
@@ -48,7 +50,19 @@ class OpenAIResponsesAnalyzer:
             "text": {"format": {"type": "json_schema", **FINDINGS_JSON_SCHEMA}},
         }
 
-        raw_response = self._post_json(payload)
+        started = time.monotonic()
+        try:
+            raw_response = self._post_json(payload)
+        except Exception as exc:
+            self.telemetry_events.append(response_event(
+                provider="openai", requested_model=self.model,
+                duration_seconds=time.monotonic() - started, error=exc,
+            ))
+            raise
+        self.telemetry_events.append(response_event(
+            provider="openai", requested_model=self.model,
+            duration_seconds=time.monotonic() - started, response=raw_response,
+        ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)

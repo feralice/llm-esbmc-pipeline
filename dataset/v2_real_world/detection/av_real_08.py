@@ -1,0 +1,6 @@
+class Settings(dict):
+    def update(self, **kwargs):
+        """Returns new settings with new values from `kwargs`."""
+        conf = dict(self)
+        conf.update(kwargs)
+        return Settings(conf)

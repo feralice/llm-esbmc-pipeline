@@ -8,18 +8,23 @@ Reporte apenas quando parâmetro livre (sem restrição de constante) pode causa
 - division_by_zero: denominador de /, //, % pode ser zero → ZeroDivisionError
 - out_of_bounds: índice de lst[i] pode sair de [0, len(lst)-1] → IndexError
 - assertion_violation: assert cond alcançável com cond falso, ou raise AssertionError alcançável → AssertionError
+- none_misuse: None alcança operação que exige valor concreto (atributo, chamada, len, aritmética etc.)
+- type_mismatch: valor de tipo incompatível alcança uma operação ou chamada e causa falha ou resultado semanticamente errado
+- invalid_precondition: função aceita entrada/estado fora do domínio exigido e isso causa falha ou resultado incorreto por ausência de validação
+- variable_misuse: variável errada, obsoleta ou de outra iteração é lida no lugar da variável correta
+- integer_overflow: aritmética de largura fixa ultrapassa seu intervalo e sofre wraparound; não reporte para int Python comum, que tem precisão arbitrária
 
 ## CODE SMELLS (verifiable=false)
 
-- long_method: função excessivamente longa
-- many_parameters: >= 5 parâmetros
-- complex_conditional: condições muito aninhadas ou compostas
+- long_method: aplique o limiar operacional informado no prompt da função
+- many_parameters: aplique o limiar operacional informado, excluindo self e cls
+- complex_conditional: aplique o limiar operacional de operadores and/or informado
 
-Não use nenhuma outra categoria além das 6 acima.
+Não use nenhuma outra categoria além das 11 acima (8 bugs formais e 3 smells).
 
 ## RACIOCÍNIO — pense passo a passo antes de gerar o JSON
 
-Para cada divisão, acesso indexado ou assert encontrado, responda:
+Para cada possível bug encontrado, responda:
 
 1. O operando é controlado por parâmetro livre? (livre = vem de fora sem restrição de constante)
 2. Existe guarda que bloqueia EXATAMENTE o valor problemático em TODOS os caminhos?
@@ -27,6 +32,7 @@ Para cada divisão, acesso indexado ou assert encontrado, responda:
    `if a > 0 or b > 0` não impede `b=0` quando só `a>0`.
 3. A exceção é capturada por try/except? Se sim, não reporte como bug.
 4. Existe valor concreto dos parâmetros que passa pela guarda E causa a falha?
+5. A expressão reportada existe literalmente no código e representa o mecanismo da categoria escolhida?
 
 Reporte bug apenas se a resposta ao item 4 for sim.
 Para smells, avalie a função como um todo (não operação por operação).
@@ -37,10 +43,10 @@ Para smells, avalie a função como um todo (não operação por operação).
   "findings": [
     {
       "finding_type": "suspected_bug" | "smell_heuristic",
-      "category": "<uma das 6 categorias>",
+      "category": "<uma das 11 categorias>",
       "verifiable": true | false,
-      "explanation": "<raciocínio dos itens 1-4 em 2-4 frases>",
-      "metadata": {"expression": "<expressão exata: 'x // n', 'lst[i]', 'assert x > 0'>"}
+      "explanation": "<raciocínio dos itens 1-5 em 2-4 frases>",
+      "metadata": {"expression": "<expressão ou statement exato copiado do código>"}
     }
   ]
 }

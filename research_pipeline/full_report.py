@@ -320,8 +320,12 @@ def _ast_validation(finding: Finding) -> dict:
     if ft == "llm_false_positive":
         return {
             "valid": False,
-            "reason": "Operação não encontrada no AST — possível alucinação da LLM.",
+            "reason": finding.metadata.get(
+                "ast_rejection_reason", "expression_not_found"
+            ),
             "has_guard": False,
+            "candidate_expressions": finding.metadata.get("ast_candidates", []),
+            "matching_lines": finding.metadata.get("ast_matching_lines", []),
         }
     if ft == "smell_heuristic":
         return {

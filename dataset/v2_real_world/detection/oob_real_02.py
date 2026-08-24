@@ -1,0 +1,4 @@
+@git_support
+def match(command):
+    return (command.script.split()[1] == 'stash'
+            and 'usage:' in command.stderr)

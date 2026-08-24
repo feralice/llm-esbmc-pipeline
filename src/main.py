@@ -170,6 +170,19 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Mostrar detalhes de cada arquivo durante avaliação.",
     )
+    parser.add_argument(
+        "--v2-manifest",
+        default=None,
+        metavar="CAMINHO",
+        help=(
+            "Somente no modo hybrid. Caminho do manifest_pilot.json do V2 "
+            "(dataset/v2_real_world/manifest_pilot.json). Quando informado, o "
+            "ESBMC verifica o harness oculto (bugs/<id>.py) referenciado no "
+            "manifesto para cada arquivo de --input que estiver em detection/, "
+            "em vez de rodar --function no mesmo arquivo que a LLM leu. Sem "
+            "essa flag, o hybrid se comporta como no V1 (arquivo único)."
+        ),
+    )
     return parser
 
 
@@ -203,6 +216,24 @@ def _infer_ground_truth_path(inputs: list[str]) -> Path | None:
             if candidate.exists():
                 return candidate
     return None
+
+
+def _load_v2_harness_map(manifest_path: str | None) -> dict[str, Path] | None:
+    """Build {detection_file: harness_file} from manifest_pilot.json, or None."""
+    if not manifest_path:
+        return None
+    manifest_file = Path(manifest_path)
+    if not manifest_file.exists():
+        print(f"--v2-manifest não encontrado: {manifest_file}", file=sys.stderr)
+        return None
+    data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    base_dir = manifest_file.parent
+    harness_map: dict[str, Path] = {}
+    for item in data.get("items", []):
+        detection_file = base_dir / item["detection_file"]
+        harness_file = base_dir / item["harness_file"]
+        harness_map[str(detection_file.resolve())] = harness_file.resolve()
+    return harness_map
 
 
 def _infer_backend(model: str | None) -> str:
@@ -395,6 +426,7 @@ def mode_hybrid(args: argparse.Namespace) -> int:
     model   = _resolve_model(args.model, backend)
     anthropic_key, openai_key, google_key = _resolve_keys(args)
     output_dir = args.output_dir or _default_output_dir("hybrid")
+    harness_for = _load_v2_harness_map(getattr(args, "v2_manifest", None))
 
     results = run_pipeline_multi(
         input_paths=input_paths,
@@ -410,6 +442,7 @@ def mode_hybrid(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
         prompt_mode=args.prompt_mode,
+        harness_for=harness_for,
     )
 
     report_path = Path(output_dir) / "report.json"

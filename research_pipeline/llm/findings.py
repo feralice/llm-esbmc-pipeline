@@ -3,8 +3,12 @@ from __future__ import annotations
 import ast
 import json
 
-from .categories import SUPPORTED_CATEGORIES, VERIFIABLE_OPERATION_KIND
-from ..ast_utils import expression_exists_in_executable_ast
+from .categories import (
+    SOURCE_GROUNDED_CATEGORIES,
+    SUPPORTED_CATEGORIES,
+    VERIFIABLE_OPERATION_KIND,
+)
+from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
 from ..models import CodeUnit, Finding
 
 """Utilities for turning raw LLM JSON into normalized Finding objects.
@@ -188,6 +192,7 @@ def _normalize_assertion_violation(unit: CodeUnit, metadata: dict[str, object]) 
     metadata["has_guard"] = "false"
     if _assertion_violation_matches_source(unit, str(metadata.get("expression", ""))):
         return "suspected_bug", True
+    _record_ast_rejection(unit, "assertion_violation", metadata)
     return "llm_false_positive", False
 
 
@@ -198,12 +203,15 @@ def _normalize_operation_finding(
 ) -> tuple[str, bool]:
     """Normalize verifiable operation-based bug claims.
 
-    This handles division_by_zero and out_of_bounds. The goal is structural
-    validation: does the LLM's expression correspond to executable code?
+    This handles operation-shaped V1 bugs and source-grounded V2 semantic bugs.
+    The goal is structural validation: does the LLM's expression correspond to
+    executable code? ESBMC, not this check, decides whether it is a real bug.
     """
     expected_operation_kind = VERIFIABLE_OPERATION_KIND.get(category)
     if expected_operation_kind is None:
-        return "smell_heuristic", False
+        if category in SOURCE_GROUNDED_CATEGORIES:
+            return _normalize_source_grounded_finding(unit, category, metadata)
+        return "llm_false_positive", False
 
     expression = str(metadata.get("expression", ""))
 
@@ -234,7 +242,40 @@ def _normalize_operation_finding(
 
     # Phase 3: the expression genuinely does not occur in executable code.
     metadata["has_guard"] = "false"
+    _record_ast_rejection(unit, category, metadata)
     return "llm_false_positive", False
+
+
+def _normalize_source_grounded_finding(
+    unit: CodeUnit,
+    category: str,
+    metadata: dict[str, object],
+) -> tuple[str, bool]:
+    """Ground a semantic V2 category in an exact executable AST fragment."""
+    expression = str(metadata.get("expression", "")).strip()
+    expected_relative_line = int(metadata.get("relative_line") or 0)
+    metadata["has_guard"] = "false"
+    if expression_exists_in_executable_ast(
+        expression, unit.source, category, expected_relative_line
+    ):
+        return "suspected_bug", True
+    _record_ast_rejection(unit, category, metadata)
+    return "llm_false_positive", False
+
+
+def _record_ast_rejection(
+    unit: CodeUnit, category: str, metadata: dict[str, object]
+) -> None:
+    audit = explain_ast_mismatch(
+        str(metadata.get("expression", "")),
+        unit.source,
+        category,
+        int(metadata.get("relative_line") or 0),
+    )
+    metadata["ast_rejection_reason"] = audit["code"]
+    metadata["ast_candidates"] = audit.get("candidates", [])
+    if "matching_lines" in audit:
+        metadata["ast_matching_lines"] = audit["matching_lines"]
 
 
 def _find_matching_operation(unit: CodeUnit, expected_kind: str, expression: str):

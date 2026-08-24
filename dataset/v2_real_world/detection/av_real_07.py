@@ -1,0 +1,2 @@
+def match(command, settings):
+    return 'ls' in command.script and not ('ls -' in command.script)

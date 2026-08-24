@@ -1,0 +1,2 @@
+def get_new_command(command, settings):
+    return 'open http://' + command.script[5:]

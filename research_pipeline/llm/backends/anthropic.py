@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from urllib import error, request
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
 
 from ..prompts import PromptMode, build_user_prompt, load_system_prompt
 from ...models import CodeUnit, Finding
+from ..telemetry import response_event
 
 
 class AnthropicAnalyzer:
@@ -31,6 +33,7 @@ class AnthropicAnalyzer:
             raise ValueError(
                 "ANTHROPIC_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
             )
+        self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         payload = {
@@ -42,7 +45,19 @@ class AnthropicAnalyzer:
             ],
         }
 
-        raw_response = self._post_json(payload)
+        started = time.monotonic()
+        try:
+            raw_response = self._post_json(payload)
+        except Exception as exc:
+            self.telemetry_events.append(response_event(
+                provider="anthropic", requested_model=self.model,
+                duration_seconds=time.monotonic() - started, error=exc,
+            ))
+            raise
+        self.telemetry_events.append(response_event(
+            provider="anthropic", requested_model=self.model,
+            duration_seconds=time.monotonic() - started, response=raw_response,
+        ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)

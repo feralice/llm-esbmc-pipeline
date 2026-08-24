@@ -736,7 +736,8 @@ def test_raw_prompt_contains_source_and_signature(tmp_path: Path) -> None:
 
     prompt = build_user_prompt(unit, prompt_mode="raw")
 
-    assert "compute_ratio" in prompt
+    assert "def target_function(total: int, count: int) -> int:" in prompt
+    assert "compute_ratio" not in prompt
     assert "total // count" in prompt
     assert "line_count" in prompt
     assert "parameter_count" in prompt
@@ -783,3 +784,40 @@ def test_raw_is_default_for_build_user_prompt(tmp_path: Path) -> None:
     prompt_raw     = build_user_prompt(unit, prompt_mode="raw")
 
     assert prompt_default == prompt_raw
+
+
+def test_prompt_sanitizes_label_leaks_without_changing_function_body(tmp_path: Path) -> None:
+    sample = tmp_path / "case.py"
+    sample.write_text(
+        "def calculate_buggy(value: int) -> int:\n"
+        "    \"\"\"Real bug before the fix.\"\"\"\n"
+        "    # This buggy implementation overflows.\n"
+        "    return value + 1\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    prompt = build_user_prompt(unit, prompt_mode="raw")
+
+    assert "def target_function(value: int) -> int:" in prompt
+    assert "return value + 1" in prompt
+    assert "calculate_buggy" not in prompt
+    assert "Real bug" not in prompt
+    assert "buggy implementation" not in prompt
+
+
+def test_prompt_renames_recursive_calls_with_the_function(tmp_path: Path) -> None:
+    sample = tmp_path / "recursive.py"
+    sample.write_text(
+        "def factorial_buggy(n: int) -> int:\n"
+        "    if n <= 1:\n"
+        "        return 1\n"
+        "    return n * factorial_buggy(n - 1)\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+
+    prompt = build_user_prompt(unit, prompt_mode="raw")
+
+    assert "return n * target_function(n - 1)" in prompt
+    assert "factorial_buggy" not in prompt

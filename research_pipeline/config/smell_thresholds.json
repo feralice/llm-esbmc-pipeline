@@ -1,0 +1,11 @@
+{
+  "long_method_min_executable_lines": 16,
+  "many_parameters_min": 5,
+  "complex_conditional_min_boolean_operators": 3,
+  "parameter_exclusions": ["self", "cls"],
+  "rationale": {
+    "long_method": "Minimum that matches all five manually reviewed V1 controls when counting distinct executable statement lines; this is an operational benchmark definition, not a universal Fowler threshold.",
+    "many_parameters": "Five or more parameters after excluding conventional receiver parameters.",
+    "complex_conditional": "Three or more boolean connectors (and/or) in one conditional expression."
+  }
+}

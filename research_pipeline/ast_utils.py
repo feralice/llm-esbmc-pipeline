@@ -26,6 +26,16 @@ _LINE_TOLERANCE = 2
 # evidence of an out-of-bounds-shaped operation.
 _OOB_METHOD_NAMES = frozenset({"pop", "insert"})
 
+_SOURCE_GROUNDED_CATEGORIES = frozenset(
+    {
+        "none_misuse",
+        "type_mismatch",
+        "invalid_precondition",
+        "variable_misuse",
+        "integer_overflow",
+    }
+)
+
 
 def _is_out_of_bounds_node(node: ast.AST) -> bool:
     if isinstance(node, ast.Subscript):
@@ -54,6 +64,8 @@ def expression_exists_in_executable_ast(
     - out_of_bounds: only Subscript nodes, or calls to `.pop`/`.insert`.
     - assertion_violation: only the `test` of a real `ast.Assert` counts
       (never the full assert statement).
+    - V2 semantic categories: exact expression or statement match in executable
+      source; this grounds the claim without pretending a node shape proves it.
     - any other category: never matches.
 
     When `expected_relative_line` is given (function-relative, 1-indexed,
@@ -67,11 +79,10 @@ def expression_exists_in_executable_ast(
     if not expression:
         return False
 
-    # Parse the LLM expression in eval mode so only expression syntax is valid.
-    try:
-        target = ast.unparse(ast.parse(expression, mode="eval").body)
-    except SyntaxError:
+    target_node = _parse_reported_node(expression)
+    if target_node is None:
         return False
+    target = ast.unparse(target_node)
 
     # Parse the full function source and walk its executable expression nodes.
     try:
@@ -79,17 +90,8 @@ def expression_exists_in_executable_ast(
     except SyntaxError:
         return False
 
-    if category == "division_by_zero":
-        candidates = (
-            node
-            for node in ast.walk(unit_tree)
-            if isinstance(node, ast.BinOp) and isinstance(node.op, _DIVISION_OPS)
-        )
-    elif category == "out_of_bounds":
-        candidates = (node for node in ast.walk(unit_tree) if _is_out_of_bounds_node(node))
-    elif category == "assertion_violation":
-        candidates = (node.test for node in ast.walk(unit_tree) if isinstance(node, ast.Assert))
-    else:
+    candidates = _candidate_nodes(unit_tree, category)
+    if candidates is None:
         return False
 
     for node in candidates:
@@ -103,3 +105,83 @@ def expression_exists_in_executable_ast(
             continue
         return True
     return False
+
+
+def explain_ast_mismatch(
+    expression: str,
+    unit_source: str,
+    category: str,
+    expected_relative_line: int = 0,
+) -> dict[str, object]:
+    """Explain why a reported expression did not pass structural grounding."""
+    if not expression.strip():
+        return {"code": "missing_expression", "candidates": []}
+    target_node = _parse_reported_node(expression)
+    if target_node is None:
+        return {"code": "invalid_expression_syntax", "candidates": []}
+    try:
+        tree = ast.parse(unit_source)
+    except SyntaxError:
+        return {"code": "invalid_unit_syntax", "candidates": []}
+    candidates = _candidate_nodes(tree, category)
+    if candidates is None:
+        return {"code": "unsupported_category", "candidates": []}
+
+    candidate_list = list(candidates)
+    candidate_text = sorted({ast.unparse(node) for node in candidate_list})
+    target = ast.unparse(target_node)
+    exact = [node for node in candidate_list if ast.unparse(node) == target]
+    if exact and expected_relative_line:
+        return {
+            "code": "line_mismatch",
+            "candidates": candidate_text,
+            "matching_lines": sorted({node.lineno for node in exact}),
+        }
+
+    all_executable = (
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.expr, ast.stmt))
+        and not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    )
+    if any(ast.unparse(node) == target for node in all_executable):
+        code = "wrong_node_shape_for_category"
+    else:
+        code = "expression_not_found"
+    return {"code": code, "candidates": candidate_text}
+
+
+def _candidate_nodes(tree: ast.AST, category: str):
+    if category == "division_by_zero":
+        return (
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.BinOp) and isinstance(node.op, _DIVISION_OPS)
+        )
+    if category == "out_of_bounds":
+        return (node for node in ast.walk(tree) if _is_out_of_bounds_node(node))
+    if category == "assertion_violation":
+        return (node.test for node in ast.walk(tree) if isinstance(node, ast.Assert))
+    if category in _SOURCE_GROUNDED_CATEGORIES:
+        return (
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, (ast.expr, ast.stmt))
+            and not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        )
+    return None
+
+
+def _parse_reported_node(expression: str) -> ast.AST | None:
+    """Parse one reported expression or simple executable statement."""
+    try:
+        return ast.parse(expression, mode="eval").body
+    except SyntaxError:
+        pass
+    try:
+        module = ast.parse(expression)
+    except SyntaxError:
+        return None
+    if len(module.body) != 1:
+        return None
+    return module.body[0]

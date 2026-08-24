@@ -1,0 +1,3 @@
+@for_app('php')
+def match(command):
+    return "php -s" in command.script
