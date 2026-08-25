@@ -33,6 +33,7 @@ from research_pipeline.pipeline import (
     run_pipeline_llm_only,
     run_pipeline_multi,
 )
+from research_pipeline.voting import aggregate_votes, write_vote_report
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy,
@@ -58,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=["esbmc-only", "llm-only", "hybrid", "benchmark"],
+        choices=["esbmc-only", "llm-only", "hybrid", "benchmark", "ensemble"],
         default="benchmark",
         help="Modo de execução. (padrão: benchmark)",
     )
@@ -69,7 +70,9 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="CAMINHO",
         help=(
             "Arquivo(s) Python ou diretório. Diretórios são lidos recursivamente. "
-            "No modo benchmark, passe o diretório raiz de ground truth (ex: dataset/labeled/ground_truths). Inclui bugs, clean e smells recursivamente."
+            "No modo benchmark, passe o diretório raiz de ground truth (ex: dataset/labeled/ground_truths). Inclui bugs, clean e smells recursivamente. "
+            "No modo ensemble, passe 2+ diretórios per_file de --report de modelos diferentes "
+            "(ex: reports/json/v1_benchmark/per_file/gpt-5_5 reports/json/v1_benchmark/per_file/claude-sonnet-4-6)."
         ),
     )
     parser.add_argument(
@@ -169,6 +172,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--verbose", "-v",
         action="store_true",
         help="Mostrar detalhes de cada arquivo durante avaliação.",
+    )
+    parser.add_argument(
+        "--min-votes",
+        type=int,
+        default=2,
+        metavar="N",
+        help=(
+            "Somente no modo ensemble. Número mínimo de modelos que precisam "
+            "concordar em (função, categoria) para o achado ser selecionado. "
+            "(padrão: 2)"
+        ),
     )
     parser.add_argument(
         "--v2-manifest",
@@ -633,6 +647,39 @@ def mode_benchmark(args: argparse.Namespace) -> int:
     return 0
 
 
+def mode_ensemble(args: argparse.Namespace) -> int:
+    if len(args.input) < 2:
+        print(
+            "Modo ensemble requer 2+ diretórios per_file (um por modelo) em --input.",
+            file=sys.stderr,
+        )
+        return 1
+
+    try:
+        report = aggregate_votes(args.input, min_votes=args.min_votes)
+    except (ValueError, FileNotFoundError) as exc:
+        print(f"Erro no ensemble: {exc}", file=sys.stderr)
+        return 1
+
+    print(f"\nEnsemble — {report['model_count']} modelo(s): {', '.join(report['models'])}")
+    print(f"  min_votes={report['min_votes']}")
+    print(f"  candidatos={report['candidate_count']}  selecionados={report['selected_count']}")
+    if args.verbose:
+        for candidate in report["candidates"]:
+            mark = "✓" if candidate["selected"] else " "
+            print(
+                f"  [{mark}] {candidate['votes']} voto(s)  "
+                f"{candidate['file']}::{candidate['function']}  {candidate['category']}  "
+                f"({', '.join(candidate['models'])})"
+            )
+
+    if args.report:
+        report_path = write_vote_report(report, args.report)
+        print(f"\nRelatório JSON: {report_path}")
+
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
@@ -646,6 +693,7 @@ def main() -> int:
         "llm-only":   mode_llm_only,
         "hybrid":     mode_hybrid,
         "benchmark":  mode_benchmark,
+        "ensemble":   mode_ensemble,
     }
     return dispatch[args.mode](args)
 
