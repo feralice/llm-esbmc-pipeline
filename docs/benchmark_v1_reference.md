@@ -1,7 +1,7 @@
 # Referência Técnica do Pipeline — llm-esbmc (V1)
 
 > Fonte de verdade para arquitetura, fluxos de execução, métricas e decisões metodológicas.
-> Atualizada em 2026-06-07 para refletir: `prompt_mode=raw` como padrão, remoção do path do prompt, bootstrap 95% CIs, correção de exemplos quasi-isomórficos no system prompt.
+> Atualizada para refletir: prompt único sem dicas AST, remoção do path do prompt, bootstrap 95% CIs e correção de exemplos quasi-isomórficos no system prompt.
 
 ---
 
@@ -76,8 +76,7 @@ arquivo.py
     │                          operations, guards, metrics)
     ▼
 [Passo 2] prompts.py ─────── Constrói user prompt
-    │                         raw mode: apenas source + metadados básicos
-    │                         ast_hints mode: + operações pré-extraídas (ablação)
+    │                         apenas source + metadados básicos
     ▼
 [Passo 3] LLM backend ────── Envia system_prompt + user_prompt
     │                         temperature=0, retry com backoff exponencial
@@ -161,12 +160,6 @@ METADADOS DA FUNÇÃO:
 ```
 
 **O campo `path` é excluído intencionalmente** — exporia a categoria via estrutura de diretórios (`bugs/division_by_zero/dz_01.py` vaza o rótulo).
-
-### Prompt mode: `ast_hints` (ablação apenas)
-
-Injeta operações pré-extraídas pelo AST (divisões, subscripts, guardas, métricas derivadas). **Não usar em avaliações principais.** Comparar `raw` vs `ast_hints` mede o quanto o pré-processamento AST inflava artificialmente as métricas.
-
----
 
 ## 6. Flags ESBMC por Categoria (Flow B)
 
@@ -437,7 +430,6 @@ def _find_match(generated, expected, already_matched):
 | `timeout` (ESBMC) | 30s | Evita travamentos em funções com análise cara |
 | `llm_timeout` | 300s | Suficiente para modelos locais lentos (DeepSeek) |
 | `temperature` | 0 | Reprodutibilidade máxima |
-| `prompt_mode` | `raw` | Sem leakage de operações pré-extraídas |
 | Bootstrap B | 2000 | Estabilidade do percentil com n=70 |
 | Bootstrap seed | 42 | Reprodutibilidade dos CIs |
 
@@ -449,7 +441,6 @@ def _find_match(generated, expected, already_matched):
 {
   "model": "openai/gpt-4o",
   "backend": "openai",
-  "prompt_mode": "raw",
   "ground_truth": "/path/to/ground_truths",
   "bound": 5,
   "timeout": 30,
@@ -565,8 +556,7 @@ sem reamostras nas quais a métrica seja definida.
 | **Flow A** | ESBMC puro sem LLM — baseline formal |
 | **Flow B** | LLM propõe, ESBMC confirma — pipeline híbrido |
 | **Flow C** | LLM puro sem ESBMC — baseline de IA |
-| **raw mode** | Prompt sem pré-extração de operações AST — padrão científico |
-| **ast_hints mode** | Prompt com operações pré-extraídas — apenas ablação |
+| **Prompt da LLM** | Código da função e metadados básicos, sem pré-extração de operações AST |
 | **FCR** | Formal Confirmation Rate — fração das hipóteses LLM confirmadas pelo ESBMC |
 | **NRR** | Noise Reduction Rate — redução de FPs do Flow C para Flow B |
 | **MCC** | Matthews Correlation Coefficient — métrica robusta para datasets desbalanceados |

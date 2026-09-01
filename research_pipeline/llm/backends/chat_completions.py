@@ -8,7 +8,7 @@ from urllib import error, request
 logger = logging.getLogger(__name__)
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
-from ..prompts import PromptMode, build_user_prompt, load_system_prompt
+from ..prompts import build_user_prompt, load_system_prompt
 from ...models import CodeUnit, Finding
 from ..telemetry import response_event
 
@@ -22,14 +22,12 @@ class ChatCompletionsAnalyzer:
         model: str = "deepseek-r1:7b",
         api_key: str = "ollama",
         timeout_seconds: int = 300,
-        prompt_mode: PromptMode = "raw",
         request_delay: float = 0.0,
     ) -> None:
         self.base_url = base_url.rstrip("/") + "/chat/completions"
         self.model = model
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
-        self.prompt_mode = prompt_mode
         self.request_delay = request_delay
         self.telemetry_events: list[dict] = []
 
@@ -40,7 +38,7 @@ class ChatCompletionsAnalyzer:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": load_system_prompt()},
-                {"role": "user", "content": build_user_prompt(unit, self.prompt_mode)},
+                {"role": "user", "content": build_user_prompt(unit)},
             ],
             "response_format": {"type": "json_object"},
             "temperature": 0,

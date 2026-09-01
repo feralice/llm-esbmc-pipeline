@@ -7,7 +7,7 @@ from urllib import error, request
 
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
 
-from ..prompts import PromptMode, build_user_prompt, load_system_prompt
+from ..prompts import build_user_prompt, load_system_prompt
 from ...models import CodeUnit, Finding
 from ..telemetry import response_event
 
@@ -23,12 +23,10 @@ class AnthropicAnalyzer:
         api_key: str | None = None,
         model: str = "claude-opus-4-8",
         timeout_seconds: int = 60,
-        prompt_mode: PromptMode = "raw",
     ) -> None:
         resolved_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         self.model = model
         self.timeout_seconds = timeout_seconds
-        self.prompt_mode = prompt_mode
         if not resolved_key:
             raise ValueError(
                 "ANTHROPIC_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -42,7 +40,7 @@ class AnthropicAnalyzer:
             "max_tokens": 4096,
             "system": load_system_prompt(),
             "messages": [
-                {"role": "user", "content": build_user_prompt(unit, self.prompt_mode)},
+                {"role": "user", "content": build_user_prompt(unit)},
             ],
         }
 

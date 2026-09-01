@@ -109,7 +109,6 @@ source .env
 python src/main.py --mode benchmark \
     --input dataset/labeled/ground_truths \
     --model gpt-4o \
-    --prompt-mode raw \
     --bound 5 --timeout 30 \
     --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 
@@ -117,12 +116,11 @@ python src/main.py --mode benchmark \
 python src/main.py --mode benchmark \
     --input dataset/labeled/ground_truths \
     --model deepseek-r1:7b \
-    --prompt-mode raw \
     --bound 5 --timeout 30 --llm-timeout 600 \
     --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
 ```
 
-> **`--prompt-mode raw` é obrigatório** em avaliações científicas. Sem ele, o prompt expõe operações pré-extraídas pelo AST que vazam o tipo de bug. Use `ast_hints` apenas para experimentos de ablação.
+O prompt enviado à LLM contém somente o código da função e metadados básicos; operações pré-extraídas pelo AST não são expostas.
 
 Se a execução for interrompida, repita o mesmo comando com `--resume`. O
 checkpoint só é aceito com a mesma configuração. Execuções parciais retornam

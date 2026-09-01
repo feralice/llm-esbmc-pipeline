@@ -26,7 +26,7 @@ from research_pipeline.report import consolidate_result
 from research_pipeline.pipeline import run_pipeline
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.llm.findings import finding_from_dict, normalize_findings
-from research_pipeline.llm.prompts import PromptMode, build_user_prompt
+from research_pipeline.llm.prompts import build_user_prompt
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.llm.backends import openai as openai_backend
 from research_pipeline.llm.backends.factory import build_analyzer
@@ -735,7 +735,7 @@ def test_esbmc_native_bug_is_zero_when_no_violation_found(tmp_path: Path) -> Non
 
 
 # ---------------------------------------------------------------------------
-# Prompt-mode tests
+# Prompt tests
 # ---------------------------------------------------------------------------
 
 def test_raw_prompt_excludes_ast_operation_hints(tmp_path: Path) -> None:
@@ -746,7 +746,7 @@ def test_raw_prompt_excludes_ast_operation_hints(tmp_path: Path) -> None:
     )
     unit = preprocess_file(sample)[0]
 
-    prompt = build_user_prompt(unit, prompt_mode="raw")
+    prompt = build_user_prompt(unit)
 
     assert "OPERAÇÕES DETECTADAS" not in prompt
     assert "Divisões/módulos" not in prompt
@@ -765,56 +765,13 @@ def test_raw_prompt_contains_source_and_signature(tmp_path: Path) -> None:
     )
     unit = preprocess_file(sample)[0]
 
-    prompt = build_user_prompt(unit, prompt_mode="raw")
+    prompt = build_user_prompt(unit)
 
     assert "def target_function(total: int, count: int) -> int:" in prompt
     assert "compute_ratio" not in prompt
     assert "total // count" in prompt
     assert "line_count" in prompt
     assert "parameter_count" in prompt
-
-
-def test_ast_hints_prompt_contains_pre_extracted_operations(tmp_path: Path) -> None:
-    sample = tmp_path / "dz.py"
-    sample.write_text(
-        "def compute_ratio(total: int, count: int) -> int:\n    return total // count\n",
-        encoding="utf-8",
-    )
-    unit = preprocess_file(sample)[0]
-
-    prompt = build_user_prompt(unit, prompt_mode="ast_hints")
-
-    assert "OPERAÇÕES DETECTADAS" in prompt
-    assert "Divisões/módulos" in prompt
-    assert "total // count" in prompt
-
-
-def test_build_analyzer_default_prompt_mode_is_raw() -> None:
-    analyzer = build_analyzer(
-        backend="anthropic",
-        anthropic_api_key="test-key",
-    )
-    assert analyzer.prompt_mode == "raw"
-
-
-def test_build_analyzer_ast_hints_mode_propagates() -> None:
-    analyzer = build_analyzer(
-        backend="anthropic",
-        anthropic_api_key="test-key",
-        prompt_mode="ast_hints",
-    )
-    assert analyzer.prompt_mode == "ast_hints"
-
-
-def test_raw_is_default_for_build_user_prompt(tmp_path: Path) -> None:
-    sample = tmp_path / "f.py"
-    sample.write_text("def add(a: int, b: int) -> int:\n    return a + b\n", encoding="utf-8")
-    unit = preprocess_file(sample)[0]
-
-    prompt_default = build_user_prompt(unit)
-    prompt_raw     = build_user_prompt(unit, prompt_mode="raw")
-
-    assert prompt_default == prompt_raw
 
 
 def test_prompt_sanitizes_label_leaks_without_changing_function_body(tmp_path: Path) -> None:
@@ -828,7 +785,7 @@ def test_prompt_sanitizes_label_leaks_without_changing_function_body(tmp_path: P
     )
     unit = preprocess_file(sample)[0]
 
-    prompt = build_user_prompt(unit, prompt_mode="raw")
+    prompt = build_user_prompt(unit)
 
     assert "def target_function(value: int) -> int:" in prompt
     assert "return value + 1" in prompt
@@ -848,7 +805,7 @@ def test_prompt_renames_recursive_calls_with_the_function(tmp_path: Path) -> Non
     )
     unit = preprocess_file(sample)[0]
 
-    prompt = build_user_prompt(unit, prompt_mode="raw")
+    prompt = build_user_prompt(unit)
 
     assert "return n * target_function(n - 1)" in prompt
     assert "factorial_buggy" not in prompt

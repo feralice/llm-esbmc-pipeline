@@ -36,14 +36,13 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 ```
 
 Saída no terminal mostra P/R/F1 para Flow C (LLM), Flow B (híbrido) e Flow A (ESBMC) separadamente.
 
-> **`--prompt-mode raw` é obrigatório** em avaliações científicas. Sem ele o prompt vaza operações pré-extraídas que dão dica do tipo de bug.
+O pipeline usa um único prompt, sem expor à LLM as operações pré-extraídas pelo AST.
 
 ---
 
@@ -57,7 +56,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 
@@ -66,7 +64,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model claude-sonnet-4-6 \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_claude-sonnet-4-6.json
 
@@ -75,7 +72,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model deepseek-r1:7b \
-  --prompt-mode raw \
   --bound 5 --timeout 30 --llm-timeout 600 \
   --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
 
@@ -84,7 +80,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model qwen2.5-coder:7b \
-  --prompt-mode raw \
   --bound 5 --timeout 30 --llm-timeout 600 \
   --report reports/json/v1_benchmark/benchmark_qwen2.5-coder-7b.json
 ```

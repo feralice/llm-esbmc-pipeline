@@ -15,7 +15,6 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from .llm.backends.factory import Backend, build_analyzer  # noqa: F401 - re-exported
-from .llm.prompts import PromptMode
 from .models import ESBMCDirectResult, ESBMCResult, FinalResult, Finding
 from .preprocess import preprocess_file
 from .report import consolidate_result, write_json_report
@@ -84,7 +83,6 @@ def run_pipeline(
     ollama_base_url: str | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
-    prompt_mode: PromptMode = "raw",
     harness_for: dict[str, Path] | None = None,
     resume: bool = False,
 ) -> list[FinalResult]:
@@ -105,7 +103,6 @@ def run_pipeline(
         ollama_base_url=ollama_base_url,
         bound=bound,
         timeout_seconds=timeout_seconds,
-        prompt_mode=prompt_mode,
         harness_for=harness_for,
         resume=resume,
     )
@@ -124,7 +121,6 @@ def run_pipeline_multi(
     bound: int = 5,
     timeout_seconds: int = 30,
     llm_timeout_seconds: int = 300,
-    prompt_mode: PromptMode = "raw",
     harness_for: dict[str, Path] | None = None,
     resume: bool = False,
 ) -> list[FinalResult]:
@@ -137,8 +133,8 @@ def run_pipeline_multi(
     4. report.consolidate_result() turns each finding into a FinalResult.
 
     The pipeline keeps file_path internally so ESBMC can run on the real file.
-    In prompt_mode="raw", the prompt builder intentionally omits the path from
-    the LLM prompt to avoid dataset-category leakage.
+    The prompt builder intentionally omits the path and pre-extracted operations
+    from the LLM prompt to avoid dataset-category leakage.
 
     harness_for: optional {input_file_path_str: harness_file_path} map. When an
     input file has an entry here (dataset/v2_real_world/manifest_pilot.json
@@ -160,12 +156,11 @@ def run_pipeline_multi(
         google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=llm_timeout_seconds,
-        prompt_mode=prompt_mode,
     )
     artifacts_dir = Path(output_dir)
     fingerprint = _run_fingerprint(
         mode="hybrid", backend=backend, model=getattr(analyzer, "model", llm_model),
-        prompt_mode=prompt_mode, bound=bound, timeout=timeout_seconds,
+        bound=bound, timeout=timeout_seconds,
         llm_timeout=llm_timeout_seconds, esbmc_command=esbmc_command,
         harness_for=harness_for,
     )
@@ -280,7 +275,6 @@ def run_pipeline_llm_only(
     google_api_key: str | None = None,
     ollama_base_url: str | None = None,
     timeout_seconds: int = 300,
-    prompt_mode: PromptMode = "raw",
     resume: bool = False,
 ) -> list[FinalResult]:
     """Flow C: run the LLM only, without ESBMC confirmation.
@@ -297,12 +291,11 @@ def run_pipeline_llm_only(
         google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=timeout_seconds,
-        prompt_mode=prompt_mode,
     )
     artifacts_dir = Path(output_dir)
     fingerprint = _run_fingerprint(
         mode="llm-only", backend=backend, model=getattr(analyzer, "model", llm_model),
-        prompt_mode=prompt_mode, bound=None, timeout=timeout_seconds,
+        bound=None, timeout=timeout_seconds,
     )
     results, completed_units = _initialize_run(artifacts_dir, fingerprint, resume)
     errors: list[dict] = []
@@ -370,7 +363,7 @@ def _unit_key(file_path: Path, qualname: str) -> str:
 
 
 def _run_fingerprint(
-    *, mode: str, backend: str, model: str | None, prompt_mode: str,
+    *, mode: str, backend: str, model: str | None,
     bound: int | None, timeout: int, llm_timeout: int | None = None,
     esbmc_command: list[str] | None = None,
     harness_for: dict[str, Path] | None = None,
@@ -379,7 +372,6 @@ def _run_fingerprint(
         "mode": mode,
         "backend": backend,
         "model": model,
-        "prompt_mode": prompt_mode,
         "bound": bound,
         "timeout": timeout,
         "llm_timeout": llm_timeout,

@@ -321,7 +321,7 @@ como direção de busca, não como leitura fechada.
   Preprint: <https://arxiv.org/abs/2005.14165>
 
 Fundamenta o conceito de few-shot in-context learning, mas é um paper geral, não específico de
-detecção de bug/código. O prompt atual (`_build_raw_prompt`) é zero-shot puro, sem nenhum exemplo.
+detecção de bug/código. O prompt atual (`build_user_prompt`) é zero-shot puro, sem nenhum exemplo.
 
 Busca pendente: paper que compare few-shot vs. zero-shot especificamente em detecção de
 bug/vulnerabilidade em código (não achado nem verificado nesta sessão).
@@ -351,7 +351,7 @@ fonte.
 `ast_utils.py` só extrai três tipos de operação (`division`, `subscript`, `call`), cobrindo bem
 apenas 2 das 8 categorias de bug formal (`division_by_zero`, `out_of_bounds`). As outras 6
 (`assertion_violation`, `none_misuse`, `type_mismatch`, `invalid_precondition`, `variable_misuse`,
-`integer_overflow`) não têm nenhum hint estrutural, nem no modo `ast_hints` de ablação.
+`integer_overflow`) não recebem hints estruturais no prompt.
 
 Busca pendente: como a literatura de detecção de bug guiada por LLM usa hints estruturais (AST,
 CFG, taint) por categoria de bug, não só para os casos "fáceis" de extrair (divisão, índice).

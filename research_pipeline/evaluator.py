@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Callable, cast
 
 from .llm.backends.factory import Backend, build_analyzer
-from .llm.prompts import PromptMode
 from .models import (
     ESBMCDirectResult,
     Finding,
@@ -666,7 +665,6 @@ def evaluate_model(
     llm_timeout_seconds: int = 300,
     verbose: bool = False,
     output_dir: str | Path | None = None,
-    prompt_mode: PromptMode = "raw",
     n_bootstrap: int = 2000,
     resume: bool = False,
 ) -> tuple[EvalCounts, dict[str, tuple[float, float] | None]]:
@@ -679,7 +677,6 @@ def evaluate_model(
         google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=llm_timeout_seconds,
-        prompt_mode=prompt_mode,
     )
 
 
@@ -688,7 +685,6 @@ def evaluate_model(
         "ground_truth": str(ground_truth_path.resolve()),
         "backend": backend,
         "model": getattr(analyzer, "model", model),
-        "prompt_mode": prompt_mode,
         "bound": bound,
         "timeout": timeout_seconds,
         "llm_timeout": llm_timeout_seconds,

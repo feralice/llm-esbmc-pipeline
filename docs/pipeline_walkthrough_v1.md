@@ -30,11 +30,11 @@ dz_01.py
 
 Quando você roda:
 ```bash
-python src/main.py --mode benchmark --model gpt-4o --prompt-mode raw ...
+python src/main.py --mode benchmark --model gpt-4o ...
 ```
 
 O `main.py`:
-1. Lê os argumentos (`--model`, `--bound`, `--prompt-mode`, `--report`, etc.)
+1. Lê os argumentos (`--model`, `--bound`, `--report`, etc.)
 2. Detecta o backend pelo nome do modelo:
    - nome com `claude` → Anthropic
    - nome com `gpt`, `o1`, `o3`, `o4` → OpenAI
@@ -67,9 +67,9 @@ O `main.py`:
 
 ## Passo 2 — `research_pipeline/llm/prompts.py`
 
-**O que faz:** `build_user_prompt(unit, prompt_mode)` monta o texto que vai para a LLM.
+**O que faz:** `build_user_prompt(unit)` monta o texto que vai para a LLM.
 
-### `raw` mode (padrão, obrigatório para avaliações)
+### Prompt enviado à LLM
 
 ```
 Analise a função 'compute_ratio' para o pipeline LLM + ESBMC.
@@ -91,12 +91,6 @@ METADADOS DA FUNÇÃO:
 ```
 
 **Por que o `path` foi removido:** o arquivo está em `dataset/labeled/ok/bugs/division_by_zero/dz_01.py`. Com o path no prompt, a LLM veria `division_by_zero` no diretório e "adivinharia" a categoria — isso mede leitura de label, não inteligência. O path foi removido em 2026-06-07.
-
-### `ast_hints` mode (só ablação)
-
-Inclui operações pré-extraídas pelo AST (divisões encontradas, subscripts, etc.). Não usar em avaliações principais — entrega o tipo de operação como dica, inflando artificialmente as métricas.
-
----
 
 ## Passo 2b — `research_pipeline/prompts/system_prompt.txt`
 
@@ -139,7 +133,7 @@ Formato OpenAI-compat. Usado para Ollama local: `deepseek-r1:7b`, `qwen2.5-coder
 ### `factory.py` — build_analyzer()
 
 ```python
-build_analyzer(backend="anthropic", llm_model="claude-sonnet-4-6", prompt_mode="raw")
+build_analyzer(backend="anthropic", llm_model="claude-sonnet-4-6")
 ```
 
 Detecta o backend automaticamente pelo nome do modelo e retorna o objeto correto.

@@ -173,17 +173,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--prompt-mode",
-        choices=["raw", "ast_hints"],
-        default="raw",
-        dest="prompt_mode",
-        help=(
-            "Modo do prompt LLM. "
-            "raw (padrão): LLM recebe apenas código da função, sem hints de AST. "
-            "ast_hints: injeção de operações pré-extraídas — usar apenas para ablação."
-        ),
-    )
-    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Mostrar detalhes de cada arquivo durante avaliação.",
@@ -510,7 +499,6 @@ def mode_llm_only(args: argparse.Namespace) -> int:
         google_api_key=google_key,
         ollama_base_url=args.ollama_base_url,
         timeout_seconds=args.llm_timeout,
-        prompt_mode=args.prompt_mode,
         resume=args.resume,
     )
 
@@ -550,7 +538,6 @@ def mode_hybrid(args: argparse.Namespace) -> int:
         bound=args.bound,
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
-        prompt_mode=args.prompt_mode,
         harness_for=harness_for,
         resume=args.resume,
     )
@@ -608,7 +595,6 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         llm_timeout_seconds=args.llm_timeout,
         verbose=args.verbose,
         output_dir=per_file_dir,
-        prompt_mode=args.prompt_mode,
         resume=args.resume,
     )
 
@@ -629,7 +615,6 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         report_data = {
             "model": label,
             "backend": backend,
-            "prompt_mode": args.prompt_mode,
             "ground_truth": str(gt_path.resolve()),
             "bound": args.bound,
             "timeout": args.timeout,
