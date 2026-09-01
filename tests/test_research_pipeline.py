@@ -426,6 +426,40 @@ def test_preprocess_invalid_python_returns_no_units(tmp_path: Path) -> None:
         assert preprocess_file(sample) == []
 
 
+def test_preprocess_string_percent_is_not_a_division(tmp_path: Path) -> None:
+    sample = tmp_path / "fmt.py"
+    sample.write_text(
+        'def label(name: str, count: int) -> str:\n'
+        '    tag = "item %s" % name\n'
+        '    return f"{tag}" % count\n',
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    assert [op.kind for op in unit.operations if op.kind == "division"] == []
+
+
+def test_preprocess_numeric_modulo_is_a_division(tmp_path: Path) -> None:
+    sample = tmp_path / "mod.py"
+    sample.write_text(
+        "def wrap(i: int, n: int) -> int:\n    return i % n\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    assert any(op.kind == "division" and op.expression == "i % n" for op in unit.operations)
+
+
+def test_preprocess_records_comprehensions_as_loops(tmp_path: Path) -> None:
+    sample = tmp_path / "comp.py"
+    sample.write_text(
+        "def scale(xs: list, n: int) -> list:\n"
+        "    return [x // n for x in xs]\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(sample)[0]
+    assert unit.loops
+    assert any(op.kind == "division" and op.expression == "x // n" for op in unit.operations)
+
+
 def test_ground_truth_loader_recurses_all_v1_subfolders() -> None:
     cases = load_ground_truth_cases(REPO_ROOT / "dataset" / "labeled" / "ground_truths")
 

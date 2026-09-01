@@ -24,6 +24,17 @@ def _all_arg_nodes(args: ast.arguments) -> list[ast.arg]:
     return nodes
 
 
+def _is_string_format_operand(node: ast.expr) -> bool:
+    """True when `node % x` is printf-style string formatting, not modulo.
+
+    `%` shares ast.Mod with the modulo operator; `"%s" % v` and `f"{a}" % v`
+    are not division-by-zero sites.
+    """
+    if isinstance(node, ast.JoinedStr):
+        return True
+    return isinstance(node, ast.Constant) and isinstance(node.value, (str, bytes))
+
+
 class _UnitCollector(ast.NodeVisitor):
     """Collect analyzable Python functions from a parsed source file.
 
@@ -163,6 +174,16 @@ class _StructureExtractor(ast.NodeVisitor):
         self.loops.append(ast.get_source_segment(self.source_text, node) or ast.unparse(node))
         self.generic_visit(node)
 
+    def _record_comprehension(self, node: ast.expr) -> None:
+        """A comprehension / generator iterates; record it as a loop."""
+        self.loops.append(ast.get_source_segment(self.source_text, node) or ast.unparse(node))
+        self.generic_visit(node)
+
+    visit_ListComp = _record_comprehension
+    visit_SetComp = _record_comprehension
+    visit_DictComp = _record_comprehension
+    visit_GeneratorExp = _record_comprehension
+
     def visit_If(self, node: ast.If) -> None:
         """Record if conditions as both branches and possible guards."""
         self.branch_count += 1
@@ -194,7 +215,11 @@ class _StructureExtractor(ast.NodeVisitor):
 
     def visit_BinOp(self, node: ast.BinOp) -> None:
         """Record division-like binary operations: /, // and %."""
-        if isinstance(node.op, (ast.Div, ast.FloorDiv, ast.Mod)):
+        is_div = isinstance(node.op, (ast.Div, ast.FloorDiv)) or (
+            isinstance(node.op, ast.Mod)
+            and not _is_string_format_operand(node.left)
+        )
+        if is_div:
             self.operations.append(
                 OperationRecord(
                     kind="division",
