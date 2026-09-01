@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import json
+import textwrap
 
 from .categories import (
     SOURCE_GROUNDED_CATEGORIES,
@@ -364,7 +365,7 @@ def _parse_assertion_expression(expression: str) -> ast.AST | None:
 def _assertion_tests(source: str) -> list[ast.AST]:
     """Extract assert test expressions from source."""
     try:
-        tree = ast.parse(source)
+        tree = ast.parse(textwrap.dedent(source))
     except SyntaxError:
         return []
     return [node.test for node in ast.walk(tree) if isinstance(node, ast.Assert)]

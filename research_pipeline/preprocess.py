@@ -1,10 +1,27 @@
 from __future__ import annotations
 
 import ast
+import textwrap
 import warnings
 from pathlib import Path
 
 from .models import CodeUnit, OperationRecord
+
+
+def _all_arg_nodes(args: ast.arguments) -> list[ast.arg]:
+    """Every parameter of a function, in source order, across all arg kinds.
+
+    ast.arguments splits parameters into posonlyargs / args / vararg /
+    kwonlyargs / kwarg. Reading only `.args` drops positional-only params,
+    keyword-only params, and *args / **kwargs, which real-world code uses.
+    """
+    nodes: list[ast.arg] = [*args.posonlyargs, *args.args]
+    if args.vararg is not None:
+        nodes.append(args.vararg)
+    nodes.extend(args.kwonlyargs)
+    if args.kwarg is not None:
+        nodes.append(args.kwarg)
+    return nodes
 
 
 class _UnitCollector(ast.NodeVisitor):
@@ -60,11 +77,16 @@ class _UnitCollector(ast.NodeVisitor):
         extractor.visit(node)
 
         qualname = ".".join([*self.scope, node.name]) if self.scope else node.name
-        source = "\n".join(self.source_lines[node.lineno - 1 : node.end_lineno])
-        params = [arg.arg for arg in node.args.args]
+        # dedent so a method's source parses on its own (ast.parse rejects the
+        # leading indentation); every downstream consumer re-parses unit.source.
+        source = textwrap.dedent(
+            "\n".join(self.source_lines[node.lineno - 1 : node.end_lineno])
+        )
+        arg_nodes = _all_arg_nodes(node.args)
+        params = [arg.arg for arg in arg_nodes]
 
         hints = {}
-        for arg in node.args.args:
+        for arg in arg_nodes:
             if arg.annotation is not None:
                 hints[arg.arg] = ast.unparse(arg.annotation)
         if node.returns is not None:
@@ -104,16 +126,27 @@ class _StructureExtractor(ast.NodeVisitor):
         self.guards: list[str] = []
         self.branch_count = 0
         self.source_text = "\n".join(source_lines)
+        self._entered = False
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """Visit only the body of this function, not the FunctionDef wrapper."""
+        """Visit this function's body once; a nested `def` is its own CodeUnit."""
+        if self._entered:
+            return
+        self._entered = True
         for stmt in node.body:
             self.visit(stmt)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
-        """Visit only the body of this async function."""
+        """Visit this async function's body once; a nested `def` is its own unit."""
+        if self._entered:
+            return
+        self._entered = True
         for stmt in node.body:
             self.visit(stmt)
+
+    def visit_Lambda(self, node: ast.Lambda) -> None:
+        """Do not descend into a lambda body; its operations are not this unit's."""
+        return
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
         """Visit annotated assignment values, ignoring the annotation itself."""

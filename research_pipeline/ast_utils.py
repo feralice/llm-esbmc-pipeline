@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import textwrap
 
 
 """Small AST helpers used after the LLM response.
@@ -85,8 +86,10 @@ def expression_exists_in_executable_ast(
     target = ast.unparse(target_node)
 
     # Parse the full function source and walk its executable expression nodes.
+    # dedent first: a method's source carries class indentation that ast.parse
+    # rejects (IndentationError, a SyntaxError subclass).
     try:
-        unit_tree = ast.parse(unit_source)
+        unit_tree = ast.parse(textwrap.dedent(unit_source))
     except SyntaxError:
         return False
 
@@ -120,7 +123,7 @@ def explain_ast_mismatch(
     if target_node is None:
         return {"code": "invalid_expression_syntax", "candidates": []}
     try:
-        tree = ast.parse(unit_source)
+        tree = ast.parse(textwrap.dedent(unit_source))
     except SyntaxError:
         return {"code": "invalid_unit_syntax", "candidates": []}
     candidates = _candidate_nodes(tree, category)
