@@ -11,10 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-_needs_openai = pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"),
-    reason="OPENAI_API_KEY não configurada — teste requer API real",
-)
+_needs_openai = pytest.mark.live_llm
 
 from research_pipeline.verification.esbmc_runner import (
     _FLOW_B_CATEGORY_FLAGS,

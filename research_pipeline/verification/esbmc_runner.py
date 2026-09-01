@@ -3,10 +3,25 @@
 import re
 import shutil
 import subprocess
+import tempfile
 import time
+from hashlib import sha256
 from pathlib import Path
 
 from ..models import ESBMCDirectResult, ESBMCResult
+
+
+def _bounded_incremental_flags(bound: int) -> list[str]:
+    """Return the ESBMC flags that make the configured incremental bound real."""
+    if isinstance(bound, bool) or bound < 1:
+        raise ValueError("bound deve ser um inteiro maior ou igual a 1")
+    return ["--incremental-bmc", "--max-k-step", str(bound)]
+
+
+def _artifact_stem(file_path: Path) -> str:
+    """Return a readable stem with a path hash to avoid cross-directory clashes."""
+    digest = sha256(str(file_path.resolve()).encode("utf-8")).hexdigest()[:10]
+    return f"{file_path.stem}_{digest}"
 
 
 def _esbmc_path(file_path: Path) -> Path:
@@ -37,7 +52,7 @@ def run_esbmc_direct(
     file_path = Path(file_path)
     base_command = list(esbmc_command or ["esbmc"])
 
-    command = [*base_command, "--incremental-bmc", str(file_path)]
+    command = [*base_command, *_bounded_incremental_flags(bound), str(file_path)]
 
     executable = shutil.which(command[0])
     if executable is None:
@@ -143,9 +158,9 @@ def _write_direct_log(file_path: Path, combined: str, output_dir: str | Path | N
         logs_dir = Path(output_dir) / "esbmc_outputs"
     else:
         # Resolve relative to project root, not CWD
-        logs_dir = Path(__file__).resolve().parents[1] / "artifacts" / "esbmc_outputs"
+        logs_dir = Path(tempfile.gettempdir()) / "llm-esbmc" / "esbmc_outputs"
     logs_dir.mkdir(parents=True, exist_ok=True)
-    target = logs_dir / f"{file_path.stem}_direct.log"
+    target = logs_dir / f"{_artifact_stem(file_path)}_direct.log"
     target.write_text(combined, encoding="utf-8")
     return target
 
@@ -187,7 +202,14 @@ def run_esbmc_on_function(
     flags = list(_FLOW_B_CATEGORY_FLAGS.get(category, []))
     if extra_flags:
         flags.extend(extra_flags)
-    command = [*base, "--function", function_name, "--incremental-bmc", *flags, str(file_path)]
+    command = [
+        *base,
+        "--function",
+        function_name,
+        *_bounded_incremental_flags(bound),
+        *flags,
+        str(file_path),
+    ]
 
     executable = shutil.which(command[0])
     if executable is None:
@@ -229,10 +251,15 @@ def run_esbmc_on_function(
         status = _classify_esbmc_result(combined, completed.returncode)
 
     details = _extract_esbmc_details(combined, file_path)
+    details["bound"] = bound
 
-    logs_dir = (Path(output_dir) if output_dir else Path(__file__).resolve().parents[1] / "artifacts" / "esbmc_function_logs")
+    logs_dir = (
+        Path(output_dir)
+        if output_dir
+        else Path(tempfile.gettempdir()) / "llm-esbmc" / "esbmc_function_logs"
+    )
     logs_dir.mkdir(parents=True, exist_ok=True)
-    raw_log_path = logs_dir / f"{file_path.stem}_{finding_id}.log"
+    raw_log_path = logs_dir / f"{_artifact_stem(file_path)}_{finding_id}.log"
     raw_log_path.write_text(combined, encoding="utf-8")
 
     return ESBMCResult(
@@ -264,7 +291,7 @@ def run_esbmc_function_baseline(
         *(esbmc_command or ["esbmc"]),
         "--function",
         "<each-function>",
-        "--incremental-bmc",
+        *_bounded_incremental_flags(bound),
         str(file_path),
     ]
 
@@ -491,8 +518,14 @@ def _prettify_output(
     property_kind = str(details.get("property_kind", "")).strip()
     property_text = str(details.get("property_text", "")).strip()
     location      = str(details.get("location", "")).strip()
-    warnings      = [str(item) for item in details.get("warnings", [])]
-    counterexample = [str(item) for item in details.get("counterexample", [])]
+    warnings_raw = details.get("warnings", [])
+    counterexample_raw = details.get("counterexample", [])
+    warnings = [str(item) for item in warnings_raw] if isinstance(warnings_raw, list) else []
+    counterexample = (
+        [str(item) for item in counterexample_raw]
+        if isinstance(counterexample_raw, list)
+        else []
+    )
 
     if status == "violation_found":
         lines.append("ESBMC confirmou violação.")

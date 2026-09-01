@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+
 import json
 import random
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, field
+from hashlib import sha256
 from pathlib import Path
-from typing import Callable
+from typing import Callable, cast
 
-from .llm.backends.factory import build_analyzer
+from .llm.backends.factory import Backend, build_analyzer
 from .llm.prompts import PromptMode
 from .models import (
     ESBMCDirectResult,
@@ -17,8 +19,16 @@ from .report import _category_from_esbmc_property, _esbmc_result_matches_categor
 from .verification.esbmc_runner import run_esbmc_function_baseline, run_esbmc_on_function
 
 
+
+
 @dataclass
 class EvalCounts:
+    # Benchmark coverage. Failed cases never disappear silently from the run.
+    cases_planned: int = 0
+    cases_evaluated: int = 0
+    cases_failed: int = 0
+    failed_cases: list[dict[str, str]] = field(default_factory=list)
+
     # LLM vs. ground truth — global
     bug_tp: int = 0
     bug_fp: int = 0
@@ -27,22 +37,27 @@ class EvalCounts:
     smell_fp: int = 0
     smell_fn: int = 0
 
+
     # LLM quality
     hallucination_count: int = 0   # findings where LLM claimed verifiable but AST rejected
     out_of_scope_count: int = 0    # findings whose category is outside the benchmark scope
+
 
     # Flow A (ESBMC-only --function) vs. ground truth
     esbmc_direct_tp: int = 0
     esbmc_direct_fp: int = 0
     esbmc_direct_fn: int = 0
 
+
     # Hybrid pipeline (LLM + ESBMC Flow B confirmed) vs. ground truth
     hybrid_bug_tp: int = 0
     hybrid_bug_fp: int = 0
     hybrid_bug_fn: int = 0
 
+
     # Ghost bugs (suspected_bug + verifiable=False) — excluded from hallucination_rate denominator.
     ghost_bug_count: int = 0
+
 
     # Function-level binary bug classification for MCC/accuracy.
     # Unit: one function = one vote. Only formal bug and clean cases participate;
@@ -60,6 +75,7 @@ class EvalCounts:
     esbmc_direct_func_fn: int = 0
     esbmc_direct_func_tn: int = 0
 
+
     # Combined pipeline outcomes (counts across all verifiable findings)
     llm_confirmed_by_esbmc: int = 0
     esbmc_native_bug: int = 0
@@ -68,35 +84,37 @@ class EvalCounts:
     esbmc_inconclusive: int = 0
     skipped_not_verifiable: int = 0
 
+
     # Per-category breakdown: {category: {"tp": int, "fp": int, "fn": int}}
     # per_category = LLM-only (Flow C) verdicts
     # per_category_hybrid = hybrid pipeline (Flow B) verdicts
-    per_category: dict = None
-    per_category_hybrid: dict = None
+    per_category: dict[str, dict[str, int]] = field(default_factory=dict)
+    per_category_hybrid: dict[str, dict[str, int]] = field(default_factory=dict)
 
-    def __post_init__(self):
-        if self.per_category is None:
-            self.per_category = {}
-        if self.per_category_hybrid is None:
-            self.per_category_hybrid = {}
 
     def add_category_tp(self, category: str) -> None:
         self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["tp"] += 1
 
+
     def add_category_fp(self, category: str) -> None:
         self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fp"] += 1
+
 
     def add_category_fn(self, category: str) -> None:
         self.per_category.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
 
+
     def add_hybrid_category_tp(self, category: str) -> None:
         self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["tp"] += 1
+
 
     def add_hybrid_category_fp(self, category: str) -> None:
         self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fp"] += 1
 
+
     def add_hybrid_category_fn(self, category: str) -> None:
         self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
+
 
     def merge_category(self, other: "EvalCounts") -> None:
         for cat, counts in other.per_category.items():
@@ -104,6 +122,7 @@ class EvalCounts:
             d["tp"] += counts["tp"]
             d["fp"] += counts["fp"]
             d["fn"] += counts["fn"]
+
 
     def merge_category_hybrid(self, other: "EvalCounts") -> None:
         for cat, counts in other.per_category_hybrid.items():
@@ -113,10 +132,13 @@ class EvalCounts:
             d["fn"] += counts["fn"]
 
 
+
+
 def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[dict]]]:
     """Load either the legacy ground_truth.json or the new per-category dataset JSONs."""
     if ground_truth_path.is_dir():
         return _load_cases_from_dir(ground_truth_path)
+
 
     payload = json.loads(ground_truth_path.read_text(encoding="utf-8"))
     if isinstance(payload, dict) and "items" in payload:
@@ -130,6 +152,7 @@ def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[di
             if isinstance(item, dict) and item.get("file")
         ]
 
+
     labeled_dir = ground_truth_path.parent
     return [
         (labeled_dir / filename, entry.get("expected_findings", []))
@@ -137,8 +160,11 @@ def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[di
     ]
 
 
+
+
 def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
     """Load dataset JSONs recursively from a ground_truths directory or category dir.
+
 
     Multiple ground-truth items for the same source file are grouped into a
     single case so the file is only sent to the LLM once.
@@ -158,6 +184,8 @@ def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
     return [(path, expected) for path, expected in grouped.items()]
 
 
+
+
 def _infer_source_root_for_ground_truth_dir(ground_truth_dir: Path) -> Path:
     # dataset/labeled/ground_truths/bugs -> dataset/labeled/ok/bugs
     if ground_truth_dir.parent.name == "ground_truths":
@@ -165,11 +193,15 @@ def _infer_source_root_for_ground_truth_dir(ground_truth_dir: Path) -> Path:
     return ground_truth_dir.parent / "ok" / ground_truth_dir.name
 
 
+
+
 def _source_path_for_item(source_root: Path, category: str, item: dict) -> Path:
     filename = str(item["file"])
     if category == "clean" or source_root.name == category:
         return source_root / filename
     return source_root / category / filename
+
+
 
 
 def _expected_from_dataset_item(item: dict) -> dict:
@@ -213,6 +245,8 @@ def _load_flat_multilabel_cases(payload: dict, source_root: Path) -> list[tuple[
     return sorted(grouped.items(), key=lambda case: str(case[0]))
 
 
+
+
 def _match(generated: list[Finding], expected: list[dict]) -> tuple[int, int, int]:
     matched: set[int] = set()
     tp = fp = fn = 0
@@ -225,6 +259,8 @@ def _match(generated: list[Finding], expected: list[dict]) -> tuple[int, int, in
             fn += 1
     fp = sum(1 for i in range(len(generated)) if i not in matched)
     return tp, fp, fn
+
+
 
 
 def _match_with_categories(
@@ -252,12 +288,15 @@ def _match_with_categories(
     return tp, fp, fn, verdicts
 
 
+
+
 def _find_match(
     generated: list[Finding],
     exp: dict,
     already_matched: set[int],
 ) -> int | None:
     """Return index of the match for exp in generated, or None.
+
 
     Fix 2: strict category + function match only. Both sides always carry
     function info, so category-only fallback would silently reward wrong-function
@@ -272,6 +311,8 @@ def _find_match(
         if g.category == cat and g_func == exp_func:
             return i
     return None
+
+
 
 
 def _count_llm_missed_flow_a_findings(flow_a_findings: list[Finding], llm_bugs: list[Finding]) -> int:
@@ -294,6 +335,8 @@ def _count_llm_missed_flow_a_findings(flow_a_findings: list[Finding], llm_bugs: 
     return missed
 
 
+
+
 def evaluate_file(
     file_path: Path,
     expected: list[dict],
@@ -306,6 +349,7 @@ def evaluate_file(
 ) -> EvalCounts:
     counts = EvalCounts()
 
+
     if not file_path.exists():
         counts.bug_fn   = sum(1 for e in expected if e.get("verifiable") is True)
         counts.smell_fn = sum(1 for e in expected if e.get("verifiable") is False and e.get("category") != "clean")
@@ -317,6 +361,7 @@ def evaluate_file(
             counts.esbmc_direct_func_fn = 1
         return counts
 
+
     # ---- LLM evaluation ----
     units = preprocess_file(file_path)
     unit_findings: list[tuple] = []
@@ -326,6 +371,7 @@ def evaluate_file(
             finding.metadata["function"] = unit.name
             unit_findings.append((unit, finding))
 
+
     bugs_with_units = [(u, f) for u, f in unit_findings if f.verifiable]
     bugs            = [f for _, f in bugs_with_units]
     smells          = [f for _, f in unit_findings if not f.verifiable and f.finding_type == "smell_heuristic"]
@@ -334,9 +380,11 @@ def evaluate_file(
     # Fix 5: suspected_bug + verifiable=False = ghost finding — treat as FP.
     ghost_bugs      = [f for _, f in unit_findings if f.finding_type == "suspected_bug" and not f.verifiable]
 
+
     exp_bugs   = [e for e in expected if e.get("verifiable") is True]
     is_clean_case = bool(expected) and all(e.get("category") == "clean" for e in expected)
     exp_smells = [e for e in expected if e.get("verifiable") is False and e.get("category") != "clean"]
+
 
     # Deduplicate bugs by (function, category): cap to max(expected_count, 1)
     # so multiple distinct bugs of the same type in the same function are kept
@@ -354,8 +402,10 @@ def evaluate_file(
             _seen_count[key] = _seen_count.get(key, 0) + 1
             bugs_deduped.append(f)
 
+
     bug_tp, bug_fp, bug_fn, bug_verdicts         = _match_with_categories(bugs_deduped, exp_bugs)
     smell_tp, smell_fp, smell_fn, smell_verdicts = _match_with_categories(smells, exp_smells)
+
 
     if is_clean_case:
         bug_tp = bug_fn = smell_tp = smell_fn = 0
@@ -366,6 +416,7 @@ def evaluate_file(
     else:
         bug_fp += len(hallucinations) + len(ghost_bugs)
         bug_verdicts.extend((f.category, "fp") for f in hallucinations + ghost_bugs)
+
 
     counts.bug_tp   = bug_tp
     counts.bug_fp   = bug_fp
@@ -388,6 +439,7 @@ def evaluate_file(
         else:
             counts.bug_func_tn = 1
 
+
     for cat, verdict in bug_verdicts + smell_verdicts:
         if verdict == "tp":
             counts.add_category_tp(cat)
@@ -396,10 +448,12 @@ def evaluate_file(
         elif verdict == "fn":
             counts.add_category_fn(cat)
 
+
     # ---- Flow B — ESBMC with --function (symbolic entry point) ----
     esbmc_confirmed_bugs: list[Finding] = []
     # Track all inconclusive findings for per-function FP accounting (Fix 8/9 unified).
     inconclusive_findings: list[Finding] = []
+
 
     num_hypotheses = len(bugs_with_units)
     for j, (unit, bug_finding) in enumerate(bugs_with_units, 1):
@@ -428,6 +482,7 @@ def evaluate_file(
             counts.esbmc_inconclusive += 1
             inconclusive_findings.append(bug_finding)
 
+
     # Use FULL exp_bugs — no dynamic exclusion.
     # Timeout on a real bug = FN (the pipeline failed to prove it). This is honest.
     hybrid_tp, hybrid_fp, hybrid_fn, hybrid_verdicts = _match_with_categories(
@@ -441,6 +496,7 @@ def evaluate_file(
         if sig not in exp_bug_signatures:
             hybrid_fp += 1
             counts.add_hybrid_category_fp(f.category)
+
 
     counts.hybrid_bug_tp = hybrid_tp
     counts.hybrid_bug_fp = hybrid_fp
@@ -456,6 +512,7 @@ def evaluate_file(
         else:
             counts.hybrid_bug_func_tn = 1
 
+
     # Fix 4: per_category_hybrid tracks hybrid (Flow B) verdicts, not LLM-only.
     for cat, verdict in hybrid_verdicts:
         if verdict == "tp":
@@ -464,6 +521,7 @@ def evaluate_file(
             counts.add_hybrid_category_fp(cat)
         elif verdict == "fn":
             counts.add_hybrid_category_fn(cat)
+
 
     # ---- Flow A: ESBMC-only function baseline ----
     print(f"    - Executando baseline ESBMC (Flow A)...")
@@ -497,12 +555,15 @@ def evaluate_file(
         else:
             counts.esbmc_direct_func_tn = 1
 
+
     if flow_a_findings:
         counts.esbmc_native_bug = len(flow_a_findings)
         counts.llm_missed_esbmc_bug = _count_llm_missed_flow_a_findings(flow_a_findings, bugs)
 
+
     if verbose:
         _print_detail(file_path.name, bugs, exp_bugs, smells, exp_smells, direct)
+
 
     if output_dir:
         _save_per_file_result(
@@ -517,7 +578,10 @@ def evaluate_file(
             rejected_findings=hallucinations,
         )
 
+
     return counts
+
+
 
 
 def _save_per_file_result(
@@ -586,6 +650,8 @@ def _save_per_file_result(
     out_path.write_text(_json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+
+
 def evaluate_model(
     ground_truth_path: Path,
     backend: str,
@@ -602,10 +668,11 @@ def evaluate_model(
     output_dir: str | Path | None = None,
     prompt_mode: PromptMode = "raw",
     n_bootstrap: int = 2000,
-) -> tuple[EvalCounts, dict[str, tuple[float, float]]]:
+    resume: bool = False,
+) -> tuple[EvalCounts, dict[str, tuple[float, float] | None]]:
     cases = load_ground_truth_cases(ground_truth_path)
     analyzer = build_analyzer(
-        backend=backend,
+        backend=cast(Backend, backend),
         llm_model=model,
         anthropic_api_key=anthropic_api_key,
         openai_api_key=openai_api_key,
@@ -615,11 +682,37 @@ def evaluate_model(
         prompt_mode=prompt_mode,
     )
 
-    total = EvalCounts()
+
+    checkpoint_path = Path(output_dir) / "benchmark_checkpoint.json" if output_dir else None
+    fingerprint = {
+        "ground_truth": str(ground_truth_path.resolve()),
+        "backend": backend,
+        "model": getattr(analyzer, "model", model),
+        "prompt_mode": prompt_mode,
+        "bound": bound,
+        "timeout": timeout_seconds,
+        "llm_timeout": llm_timeout_seconds,
+        "esbmc_command": esbmc_command or ["esbmc"],
+    }
+    completed: dict[str, dict] = {}
+    if resume and checkpoint_path and checkpoint_path.exists():
+        checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+        if checkpoint.get("fingerprint") != fingerprint:
+            raise ValueError(
+                "Não é seguro retomar o benchmark: a configuração difere do checkpoint."
+            )
+        completed = checkpoint.get("completed_cases", {})
+
+    failed_cases: list[dict[str, str]] = []
     case_list: list[EvalCounts] = []
     num_cases = len(cases)
     _MAX_RETRIES = 3
     for i, (file_path, expected) in enumerate(cases, 1):
+        case_key = _benchmark_case_key(file_path, expected)
+        if case_key in completed:
+            print(f"[{i}/{num_cases}] Retomada: {file_path.name} já concluído; pulando.")
+            case_list.append(EvalCounts(**completed[case_key]))
+            continue
         print(f"[{i}/{num_cases}] Processando {file_path.name}...")
         last_exc: Exception | None = None
         for attempt in range(1, _MAX_RETRIES + 1):
@@ -641,45 +734,25 @@ def evaluate_model(
                 print(f"  Tentativa {attempt}/{_MAX_RETRIES} falhou: {exc}", flush=True)
         if last_exc is not None:
             print(f"  WARN: {file_path.name} falhou após {_MAX_RETRIES} tentativas — pulando. Erro: {last_exc}", flush=True)
+            failed_cases.append({"file": str(file_path), "error": str(last_exc)})
             continue
         case_list.append(c)
-        total.bug_tp   += c.bug_tp
-        total.bug_fp   += c.bug_fp
-        total.bug_fn   += c.bug_fn
-        total.smell_tp += c.smell_tp
-        total.smell_fp += c.smell_fp
-        total.smell_fn += c.smell_fn
-        total.hallucination_count      += c.hallucination_count
-        total.out_of_scope_count       += c.out_of_scope_count
-        total.esbmc_direct_tp          += c.esbmc_direct_tp
-        total.esbmc_direct_fp          += c.esbmc_direct_fp
-        total.esbmc_direct_fn          += c.esbmc_direct_fn
-        total.esbmc_direct_func_tp     += c.esbmc_direct_func_tp
-        total.esbmc_direct_func_fp     += c.esbmc_direct_func_fp
-        total.esbmc_direct_func_fn     += c.esbmc_direct_func_fn
-        total.esbmc_direct_func_tn     += c.esbmc_direct_func_tn
-        total.hybrid_bug_tp            += c.hybrid_bug_tp
-        total.hybrid_bug_fp            += c.hybrid_bug_fp
-        total.hybrid_bug_fn            += c.hybrid_bug_fn
-        total.hybrid_bug_func_tp       += c.hybrid_bug_func_tp
-        total.hybrid_bug_func_fp       += c.hybrid_bug_func_fp
-        total.hybrid_bug_func_fn       += c.hybrid_bug_func_fn
-        total.hybrid_bug_func_tn       += c.hybrid_bug_func_tn
-        total.bug_func_tp              += c.bug_func_tp
-        total.bug_func_fp              += c.bug_func_fp
-        total.bug_func_fn              += c.bug_func_fn
-        total.bug_func_tn              += c.bug_func_tn
-        total.llm_confirmed_by_esbmc   += c.llm_confirmed_by_esbmc
-        total.esbmc_native_bug         += c.esbmc_native_bug
-        total.llm_missed_esbmc_bug     += c.llm_missed_esbmc_bug
-        total.not_confirmed_within_bound += c.not_confirmed_within_bound
-        total.esbmc_inconclusive       += c.esbmc_inconclusive
-        total.skipped_not_verifiable   += c.skipped_not_verifiable
-        total.ghost_bug_count          += c.ghost_bug_count
-        total.merge_category(c)
-        total.merge_category_hybrid(c)
+        completed[case_key] = asdict(c)
+        if checkpoint_path:
+            _write_benchmark_checkpoint(checkpoint_path, fingerprint, completed)
 
-    cis = compute_bootstrap_cis(case_list, n_bootstrap=n_bootstrap) if n_bootstrap > 0 else {}
+    total = _accumulate(case_list)
+    total.cases_planned = len(cases)
+    total.cases_evaluated = len(case_list)
+    total.cases_failed = len(failed_cases)
+    total.failed_cases = failed_cases
+
+
+    cis = (
+        compute_bootstrap_cis(case_list, n_bootstrap=n_bootstrap)
+        if n_bootstrap > 0 and case_list
+        else {}
+    )
     if output_dir and hasattr(analyzer, "telemetry_events"):
         from .llm.telemetry import write_telemetry
         write_telemetry(
@@ -689,11 +762,45 @@ def evaluate_model(
     return total, cis
 
 
+def _benchmark_case_key(file_path: Path, expected: list[dict]) -> str:
+    expected_json = json.dumps(expected, sort_keys=True, ensure_ascii=False)
+    digest = sha256(expected_json.encode("utf-8")).hexdigest()[:12]
+    return f"{file_path.resolve()}::{digest}"
+
+
+def _write_benchmark_checkpoint(
+    path: Path,
+    fingerprint: dict[str, object],
+    completed: dict[str, dict],
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"fingerprint": fingerprint, "completed_cases": completed}
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    temporary.replace(path)
+
+
+
+
 def prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
     p  = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     r  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0.0
     return p, r, f1
+
+
+def prf_defined(tp: int, fp: int, fn: int) -> dict[str, float | None]:
+    """Return P/R/F1 without converting undefined ratios into measured zeroes."""
+    precision = tp / (tp + fp) if (tp + fp) > 0 else None
+    recall = tp / (tp + fn) if (tp + fn) > 0 else None
+    f1 = None
+    if precision is not None and recall is not None and (precision + recall) > 0:
+        f1 = 2 * precision * recall / (precision + recall)
+    elif precision == 0.0 and recall == 0.0:
+        f1 = 0.0
+    return {"precision": precision, "recall": recall, "f1": f1}
+
+
 
 
 def mcc(tp: int, fp: int, fn: int, tn: int) -> float:
@@ -705,6 +812,17 @@ def mcc(tp: int, fp: int, fn: int, tn: int) -> float:
     return (tp * tn - fp * fn) / denom
 
 
+def mcc_defined(tp: int, fp: int, fn: int, tn: int) -> float | None:
+    """Return MCC, or None when its denominator is zero."""
+    import math
+    denom = math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+    if denom == 0:
+        return None
+    return (tp * tn - fp * fn) / denom
+
+
+
+
 def accuracy(tp: int, fp: int, fn: int, tn: int) -> float:
     total = tp + fp + fn + tn
     if total == 0:
@@ -712,11 +830,19 @@ def accuracy(tp: int, fp: int, fn: int, tn: int) -> float:
     return (tp + tn) / total
 
 
+def accuracy_defined(tp: int, fp: int, fn: int, tn: int) -> float | None:
+    total = tp + fp + fn + tn
+    return (tp + tn) / total if total else None
+
+
+
+
 def _expand_flow_a_findings(
     flow_a_findings: list[Finding],
     exp_bugs: list[dict],
 ) -> list[Finding]:
     """Expand Flow A findings to cover multi-instance ground truth entries.
+
 
     ESBMC stops at the first violation per function. When the ground truth has N
     instances for the same (function, category), one ESBMC confirmation counts as
@@ -735,12 +861,18 @@ def _expand_flow_a_findings(
     return expanded
 
 
+
+
 def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Finding]:
     if direct is None or direct.status != "violation_found":
         return []
 
+
     findings: list[Finding] = []
-    for item in direct.details.get("functions", []):
+    function_details = direct.details.get("functions", [])
+    if not isinstance(function_details, list):
+        return []
+    for item in function_details:
         if not isinstance(item, dict) or item.get("status") != "violation_found":
             continue
         property_text = " ".join(
@@ -765,6 +897,8 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
     return findings
 
 
+
+
 def hallucination_rate(counts: EvalCounts) -> float:
     # Denominator = LLM verifiable claims only (bugs + hallucinations).
     # Exclude ghost_bugs (suspected_bug + verifiable=False) — they inflate bug_fp
@@ -773,6 +907,17 @@ def hallucination_rate(counts: EvalCounts) -> float:
     if total_verifiable_claims == 0:
         return 0.0
     return counts.hallucination_count / total_verifiable_claims
+
+
+def hallucination_rate_defined(counts: EvalCounts) -> float | None:
+    total_verifiable_claims = counts.bug_tp + counts.bug_fp - counts.ghost_bug_count
+    return (
+        counts.hallucination_count / total_verifiable_claims
+        if total_verifiable_claims > 0
+        else None
+    )
+
+
 
 
 def formal_confirmation_rate(counts: EvalCounts) -> float:
@@ -787,8 +932,11 @@ def formal_confirmation_rate(counts: EvalCounts) -> float:
     return counts.llm_confirmed_by_esbmc / total_formal_attempts
 
 
+
+
 def noise_reduction_rate(counts: EvalCounts) -> float:
     """Reduction in bug false positives from Flow C to Flow B.
+
 
     If Flow C has no false positives, the mathematical ratio is undefined.
     Reports use 0.0 as an operational JSON convention for that case.
@@ -798,9 +946,25 @@ def noise_reduction_rate(counts: EvalCounts) -> float:
     return (counts.bug_fp - counts.hybrid_bug_fp) / counts.bug_fp
 
 
+def formal_confirmation_rate_defined(counts: EvalCounts) -> float | None:
+    attempts = (
+        counts.llm_confirmed_by_esbmc
+        + counts.not_confirmed_within_bound
+        + counts.esbmc_inconclusive
+    )
+    return counts.llm_confirmed_by_esbmc / attempts if attempts else None
+
+
+def noise_reduction_rate_defined(counts: EvalCounts) -> float | None:
+    return (counts.bug_fp - counts.hybrid_bug_fp) / counts.bug_fp if counts.bug_fp else None
+
+
+
+
 # ---------------------------------------------------------------------------
 # Bootstrap confidence intervals
 # ---------------------------------------------------------------------------
+
 
 def _accumulate(cases: list[EvalCounts]) -> EvalCounts:
     """Sum a list of per-case EvalCounts into one aggregate."""
@@ -844,44 +1008,55 @@ def _accumulate(cases: list[EvalCounts]) -> EvalCounts:
     return total
 
 
+
+
 def bootstrap_ci(
     case_counts: list[EvalCounts],
-    metric_fn: Callable[[EvalCounts], float],
+    metric_fn: Callable[[EvalCounts], float | None],
     n_bootstrap: int = 2000,
     confidence: float = 0.95,
     seed: int = 42,
-) -> tuple[float, float]:
+) -> tuple[float, float] | None:
     """Percentile bootstrap CI for a scalar metric computed on resampled case-level EvalCounts."""
     rng = random.Random(seed)
     n = len(case_counts)
     samples: list[float] = []
     for _ in range(n_bootstrap):
         resample = [rng.choice(case_counts) for _ in range(n)]
-        samples.append(metric_fn(_accumulate(resample)))
+        value = metric_fn(_accumulate(resample))
+        if value is not None:
+            samples.append(value)
+    if not samples:
+        return None
     samples.sort()
     alpha = (1.0 - confidence) / 2.0
-    lo = samples[int(alpha * n_bootstrap)]
-    hi = samples[min(int((1.0 - alpha) * n_bootstrap), n_bootstrap - 1)]
+    sample_count = len(samples)
+    lo = samples[int(alpha * sample_count)]
+    hi = samples[min(int((1.0 - alpha) * sample_count), sample_count - 1)]
     return lo, hi
 
 
-_BOOTSTRAP_METRICS: dict[str, Callable[[EvalCounts], float]] = {
-    "llm_bug_precision":    lambda c: prf(c.bug_tp, c.bug_fp, c.bug_fn)[0],
-    "llm_bug_recall":       lambda c: prf(c.bug_tp, c.bug_fp, c.bug_fn)[1],
-    "llm_bug_f1":           lambda c: prf(c.bug_tp, c.bug_fp, c.bug_fn)[2],
-    "llm_bug_mcc":          lambda c: mcc(c.bug_func_tp, c.bug_func_fp, c.bug_func_fn, c.bug_func_tn),
-    "hybrid_bug_precision": lambda c: prf(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)[0],
-    "hybrid_bug_recall":    lambda c: prf(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)[1],
-    "hybrid_bug_f1":        lambda c: prf(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)[2],
-    "hybrid_bug_mcc":       lambda c: mcc(c.hybrid_bug_func_tp, c.hybrid_bug_func_fp, c.hybrid_bug_func_fn, c.hybrid_bug_func_tn),
-    "esbmc_bug_precision":  lambda c: prf(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)[0],
-    "esbmc_bug_recall":     lambda c: prf(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)[1],
-    "esbmc_bug_f1":         lambda c: prf(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)[2],
-    "esbmc_bug_mcc":        lambda c: mcc(c.esbmc_direct_func_tp, c.esbmc_direct_func_fp, c.esbmc_direct_func_fn, c.esbmc_direct_func_tn),
-    "smell_precision":      lambda c: prf(c.smell_tp, c.smell_fp, c.smell_fn)[0],
-    "smell_recall":         lambda c: prf(c.smell_tp, c.smell_fp, c.smell_fn)[1],
-    "smell_f1":             lambda c: prf(c.smell_tp, c.smell_fp, c.smell_fn)[2],
+
+
+_BOOTSTRAP_METRICS: dict[str, Callable[[EvalCounts], float | None]] = {
+    "llm_bug_precision":    lambda c: prf_defined(c.bug_tp, c.bug_fp, c.bug_fn)["precision"],
+    "llm_bug_recall":       lambda c: prf_defined(c.bug_tp, c.bug_fp, c.bug_fn)["recall"],
+    "llm_bug_f1":           lambda c: prf_defined(c.bug_tp, c.bug_fp, c.bug_fn)["f1"],
+    "llm_bug_mcc":          lambda c: mcc_defined(c.bug_func_tp, c.bug_func_fp, c.bug_func_fn, c.bug_func_tn),
+    "hybrid_bug_precision": lambda c: prf_defined(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)["precision"],
+    "hybrid_bug_recall":    lambda c: prf_defined(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)["recall"],
+    "hybrid_bug_f1":        lambda c: prf_defined(c.hybrid_bug_tp, c.hybrid_bug_fp, c.hybrid_bug_fn)["f1"],
+    "hybrid_bug_mcc":       lambda c: mcc_defined(c.hybrid_bug_func_tp, c.hybrid_bug_func_fp, c.hybrid_bug_func_fn, c.hybrid_bug_func_tn),
+    "esbmc_bug_precision":  lambda c: prf_defined(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)["precision"],
+    "esbmc_bug_recall":     lambda c: prf_defined(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)["recall"],
+    "esbmc_bug_f1":         lambda c: prf_defined(c.esbmc_direct_tp, c.esbmc_direct_fp, c.esbmc_direct_fn)["f1"],
+    "esbmc_bug_mcc":        lambda c: mcc_defined(c.esbmc_direct_func_tp, c.esbmc_direct_func_fp, c.esbmc_direct_func_fn, c.esbmc_direct_func_tn),
+    "smell_precision":      lambda c: prf_defined(c.smell_tp, c.smell_fp, c.smell_fn)["precision"],
+    "smell_recall":         lambda c: prf_defined(c.smell_tp, c.smell_fp, c.smell_fn)["recall"],
+    "smell_f1":             lambda c: prf_defined(c.smell_tp, c.smell_fp, c.smell_fn)["f1"],
 }
+
+
 
 
 def compute_bootstrap_cis(
@@ -889,12 +1064,14 @@ def compute_bootstrap_cis(
     n_bootstrap: int = 2000,
     confidence: float = 0.95,
     seed: int = 42,
-) -> dict[str, tuple[float, float]]:
+) -> dict[str, tuple[float, float] | None]:
     """Compute percentile bootstrap CIs for all standard metrics. Returns {metric: (lo, hi)}."""
     return {
         name: bootstrap_ci(case_counts, fn, n_bootstrap=n_bootstrap, confidence=confidence, seed=seed)
         for name, fn in _BOOTSTRAP_METRICS.items()
     }
+
+
 
 
 def _print_detail(
@@ -910,6 +1087,8 @@ def _print_detail(
     _print_matches("smell", smells, exp_smells)
     if direct:
         print(f"  Flow A: {direct.status} — {direct.summary[:80]}")
+
+
 
 
 def _print_matches(label: str, generated: list[Finding], expected: list[dict]) -> None:

@@ -11,6 +11,9 @@ esbmc --version
 python -m pytest
 ```
 
+O pytest padrão não chama APIs reais. Para executar explicitamente essas
+integrações, use `python -m pytest -m live_llm`.
+
 ---
 
 ## Os três fluxos
@@ -87,6 +90,11 @@ python src/main.py \
 ```
 
 Gera `reports/json/v1_benchmark/benchmark_<modelo>.json` para cada modelo.
+
+Para retomar um benchmark interrompido, repita exatamente a mesma configuração
+e acrescente `--resume`. No modo benchmark, `--report` é obrigatório para
+localizar o checkpoint. Casos ausentes ficam em `coverage.failed_cases` e uma
+execução parcial retorna código de saída `2`.
 
 > **`--llm-timeout 600`** é necessário para modelos locais Ollama. Reasoning models como DeepSeek-R1 podem levar vários minutos por função — o padrão (300 s) costuma causar timeout em funções mais complexas.
 

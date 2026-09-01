@@ -232,7 +232,7 @@ def _normalize_operation_finding(
     # Phase 2: the expression exists in the AST, but preprocess.py did not
     # classify it as the expected operation kind. Keep it verifiable instead
     # of treating it as hallucination.
-    expected_relative_line = int(metadata.get("relative_line") or 0)
+    expected_relative_line = _metadata_int(metadata.get("relative_line"))
     if expression_exists_in_executable_ast(expression, unit.source, category, expected_relative_line):
         if _denominator_is_nonzero_constant(category, expression):
             metadata["has_guard"] = "false"
@@ -254,7 +254,7 @@ def _normalize_source_grounded_finding(
 ) -> tuple[str, bool]:
     """Ground a semantic V2 category in an exact executable AST fragment."""
     expression = str(metadata.get("expression", "")).strip()
-    expected_relative_line = int(metadata.get("relative_line") or 0)
+    expected_relative_line = _metadata_int(metadata.get("relative_line"))
     metadata["has_guard"] = "false"
     if expression_exists_in_executable_ast(
         expression, unit.source, category, expected_relative_line
@@ -271,7 +271,7 @@ def _record_ast_rejection(
         str(metadata.get("expression", "")),
         unit.source,
         category,
-        int(metadata.get("relative_line") or 0),
+        _metadata_int(metadata.get("relative_line")),
     )
     metadata["ast_rejection_reason"] = audit["code"]
     metadata["ast_candidates"] = audit.get("candidates", [])

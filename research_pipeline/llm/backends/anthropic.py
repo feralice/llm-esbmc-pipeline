@@ -25,14 +25,15 @@ class AnthropicAnalyzer:
         timeout_seconds: int = 60,
         prompt_mode: PromptMode = "raw",
     ) -> None:
-        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+        resolved_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.prompt_mode = prompt_mode
-        if not self.api_key:
+        if not resolved_key:
             raise ValueError(
                 "ANTHROPIC_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
             )
+        self.api_key: str = resolved_key
         self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:

@@ -96,7 +96,7 @@ arquivo.py
 [Passo 5] esbmc_runner.py ── Para cada finding verifiable=True:
     │                         run_esbmc_on_function(
     │                           --function <nome>, flags por categoria,
-    │                           --unwind <bound>, parâmetros simbólicos
+    │                           --max-k-step <bound>, parâmetros simbólicos
     │                         )
     │                         Flow A (baseline): roda em todas as funções sem LLM
     ▼
@@ -172,15 +172,16 @@ Injeta operações pré-extraídas pelo AST (divisões, subscripts, guardas, mé
 
 ```python
 _FLOW_B_CATEGORY_FLAGS = {
-    "division_by_zero":    ["--no-bounds-check"],
-    "out_of_bounds":       ["--no-div-by-zero-check", "--assign-param-nondet"],
-    "assertion_violation": [],
+    "division_by_zero":    ["--assign-param-nondet"],
+    "out_of_bounds":       ["--assign-param-nondet"],
+    "assertion_violation": ["--assign-param-nondet"],
 }
 ```
 
 - `--function <nome>`: ESBMC usa a função como ponto de entrada; todos os parâmetros tornam-se simbólicos (não-determinísticos), o que equivale a "testar todos os valores possíveis".
-- `--assign-param-nondet`: necessário para OOB — inicializa parâmetros de lista com valores simbólicos, permitindo que o ESBMC explore índices fora do bounds.
-- `--no-bounds-check` / `--no-div-by-zero-check`: desativa verificações de outras categorias para reduzir ruído nas propriedades reportadas.
+- `--assign-param-nondet`: inicializa parâmetros com valores simbólicos para os
+  três tipos de verificação formal.
+- `--max-k-step N`: aplica o bound informado pela CLI ao incremental BMC.
 
 **Por que `--function` é central:** Sem ele, o ESBMC analisa o módulo inteiro como main() e não consegue testar funções isoladas com parâmetros livres. Com `--function`, cada parâmetro recebe um valor simbólico ∈ domínio do tipo, e o BMC prova se existe algum valor que causa a violação.
 
@@ -432,7 +433,7 @@ def _find_match(generated, expected, already_matched):
 
 | Parâmetro | Valor | Justificativa |
 |---|---|---|
-| `bound` | 5 | Suficiente para funções de 2-5 LOC sem loops |
+| `bound` | 5 | Aplicado como `--max-k-step 5` no incremental BMC |
 | `timeout` (ESBMC) | 30s | Evita travamentos em funções com análise cara |
 | `llm_timeout` | 300s | Suficiente para modelos locais lentos (DeepSeek) |
 | `temperature` | 0 | Reprodutibilidade máxima |
@@ -452,6 +453,13 @@ def _find_match(generated, expected, already_matched):
   "ground_truth": "/path/to/ground_truths",
   "bound": 5,
   "timeout": 30,
+  "coverage": {
+    "status": "complete",
+    "planned": 70,
+    "evaluated": 70,
+    "failed": 0,
+    "failed_cases": []
+  },
   "metrics": {
     "bugs_llm_only": {
       "precision": 0.7895,
@@ -515,6 +523,10 @@ def _find_match(generated, expected, already_matched):
 }
 ```
 
+Métricas matematicamente indefinidas são serializadas como `null`, e não como
+`0.0`. Isso inclui razões sem denominador, MCC degenerado e intervalos bootstrap
+sem reamostras nas quais a métrica seja definida.
+
 ---
 
 ## 15. Limitações Metodológicas
@@ -535,7 +547,8 @@ def _find_match(generated, expected, already_matched):
 - Não suporta `len()` em nenhum contexto → dataset validado sem `len()`
 - Não suporta `list` como tipo nativo em alguns contextos → `--assign-param-nondet` compensa para OOB
 - Frontend Python é experimental — crashes ocasionais em sintaxe complexa
-- Loops sem bound fixo precisam de `--unwind` explícito
+- O limite incremental é controlado por `--max-k-step`; loops que exigem outra
+  política precisam de configuração explícita e registrada
 
 ---
 
