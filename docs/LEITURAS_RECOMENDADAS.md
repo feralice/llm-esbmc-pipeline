@@ -358,6 +358,10 @@ CFG, taint) por categoria de bug, não só para os casos "fáceis" de extrair (d
 Nenhuma leitura desta lista cobre isso ainda diretamente — candidatos a revisar: trabalhos de
 "structured prompting" ou "program-aware prompting" para detecção de vulnerabilidade.
 
+Estado 31/08/2026: a lacuna de cobertura de AST continua aberta. `research_pipeline/scan/prefilter.py`
+(V2) usa os mesmos três sinais mais alguns regex de fonte; nenhuma das seis categorias sem nó
+próprio ganhou hint. É item de trabalho, não só de leitura.
+
 ### 8.5 Significância estatística em avaliação com dataset pequeno
 
 - Dietterich, "Approximate Statistical Tests for Comparing Supervised Classification Learning
@@ -369,3 +373,160 @@ comparar dois classificadores no mesmo conjunto de teste, relevante porque `eval
 calcula apenas precision/recall/F1 por categoria (`result_tables.py`), sem nenhum teste de
 significância entre fluxos (llm-only vs. hybrid vs. esbmc-only) nem correção para dataset pequeno
 (~100 itens no V2).
+
+## 9. Leituras para o modo `scan` (síntese de harness sem ground truth, 31/08/2026)
+
+Este bloco cobre a direção que as seções 1 a 8 não alcançam: apontar o pipeline para um repositório
+selvagem, deixar a LLM sintetizar o harness e confirmar com ESBMC, **sem gabarito**. Motivado pela
+caça manual de 2026-08-27/28 (2 issues aceitas: gluonts#3343, statsforecast#1221) e pela
+implementação do `research_pipeline/scan/` iniciada em 28/08. Titulos e veiculos conferidos por
+busca nesta sessao; metadados finais (DOI verbatim, lista de autores) ainda a checar antes de
+citacao formal, mesmo padrao das secoes anteriores.
+
+### 9.1 Sintese de harness / driver por LLM
+
+#### OSS-Fuzz-Gen: geração de fuzz driver assistida por LLM (Google)
+
+- Documentação: <https://google.github.io/oss-fuzz/research/llms/target_generation/>
+- Repositório: <https://github.com/google/oss-fuzz-gen>
+- Estado: infraestrutura de produção, não paper revisado; há relatórios técnicos e posts dos autores.
+
+O sistema recebe uma lista de APIs, pede à LLM um harness de fuzzing, compila, e realimenta o erro
+de compilação até o harness rodar; a cada rodada mede cobertura e refina. Já integrou harnesses
+novos em projetos reais via OSS-Fuzz.
+
+Por que importa para o modo `scan`:
+
+- é o mesmo formato do passo 3 (LLM produz o artefato de teste, ferramenta decide);
+- a limitação que os próprios autores relatam é exatamente a sua: harness genérico gera **crash
+  falso-positivo por restrição de entrada errada**. É o `abstraction_gap` com outro nome, e valida
+  que `guards.py` e `ablation.py` atacam um problema conhecido;
+- o loop compila-erro-refina é o precedente para uma segunda chamada de reparo do harness.
+
+#### PromeFuzz: geração de harness de fuzzing guiada por conhecimento com LLMs
+
+- Evento: ACM CCS 2025.
+- DOI a confirmar: <https://doi.org/10.1145/3719027.3765222>
+
+Trabalho revisado por pares sobre a mesma tarefa de síntese de harness, com uma etapa de extração
+de "conhecimento" do projeto antes da geração. Serve como âncora acadêmica (não só engenharia) para
+posicionar o passo 3, e como comparação de desenho: quanto contexto do projeto a síntese precisa.
+
+### 9.2 LLM filtrando candidatos de análise estática em código real
+
+#### Enhancing Static Analysis for Practical Bug Detection: An LLM-Integrated Approach (LLift)
+
+- Autores: Haonan Li, Yu Hao, Yizhuo Zhai, Zhiyun Qian (a confirmar).
+- Veículo: Proceedings of the ACM on Programming Languages (OOPSLA 2024).
+- DOI a confirmar: <https://doi.org/10.1145/3649828>
+
+A análise estática gera candidatos, a LLM decide quais valem investigação, com o código relevante
+passado sob demanda. Encontrou quatro bugs de uso-antes-de-inicialização inéditos no kernel Linux,
+reconhecidos pela comunidade.
+
+Por que importa:
+
+- é o precedente mais próximo da caça selvagem: filtro barato acha muito, LLM tria, bug real sai;
+- o desenho "passa só o trecho relevante do warning para o modelo" é o que `prefilter.py` +
+  triagem já fazem, e o paper mede que isso melhora precisão e reduz risco;
+- dá base para a alegação de que o filtro formal (aqui, ESBMC no harness) é contribuição central,
+  não pós-processamento.
+
+#### A Contemporary Survey of Large Language Model Assisted Program Analysis
+
+- Estado: preprint arXiv, <https://arxiv.org/abs/2502.18474>.
+
+Survey recente que organiza o campo LLM + análise de programa. Uso: mapa de trabalho relacionado
+para a introdução, e fonte de tabelas de datasets de bug real (útil também para o §8.5 do sprint,
+metodologia de anotação).
+
+### 9.3 Solidez da abstração e prova espúria
+
+#### Counterexample-Guided Abstraction Refinement (CEGAR)
+
+- Autores: Edmund M. Clarke, Orna Grumberg, Somesh Jha, Yuan Lu, Helmut Veith.
+- Veículo: CAV 2000; versão estendida no Journal of the ACM, 2003. Prêmio CAV 2015.
+- DOI da versão JACM a confirmar.
+
+Clássico. Uma abstração grosseira demais produz **contraexemplo espúrio**; o laço detecta que ele
+não corresponde ao programa real e refina a abstração.
+
+Por que importa (e o paralelo não é literal):
+
+- a super-restrição do harness é o caso dual: uma pré-condição forte demais produz uma **prova
+  espúria** (`VERIFICATION SUCCESSFUL` que não vale para o código real);
+- `ablation.py` é um refinamento pobre: em vez de refinar a abstração, remove uma hipótese por vez
+  e observa se o veredito muda. Vocabulário para o texto: "prova espúria", "abstração forte demais",
+  "hipótese não sustentada pelo chamador";
+- justifica por que o passo 3 precisa de uma checagem de solidez, e não só do veredito do ESBMC.
+
+### 9.4 Inferência de pré-condição por LLM
+
+#### SpecGen: Automated Generation of Formal Program Specifications via Large Language Models
+
+- Estado: preprint arXiv, <https://arxiv.org/abs/2401.08807>.
+
+Gera especificação formal (pré, pós, invariante) por LLM, com etapa de mutação/seleção para
+descartar a que não passa no verificador.
+
+Por que importa:
+
+- `guards.py` hoje extrai pré-condição só por AST (o que a função valida). A rota alternativa é a
+  LLM propor a pré-condição e o ESBMC filtrar, como aqui;
+- complementa o §4.3 (Faria et al., Dafny): junto, sustentam "gerar anotação é uma etapa, validar
+  é outra";
+- cuidado: SpecGen mira anotação para verificação, não redução de abstração. O objetivo de
+  `guards.py` é o oposto (não deixar a pré-condição esconder o bug), então a técnica entra como
+  inspiração de arquitetura, não de meta.
+
+### 9.5 Como o modo `scan` muda a lacuna de pesquisa da seção 5
+
+A formulação do §5 assume oráculo oculto derivado de teste ou commit (estilo BugsInPy, dataset V2
+rotulado). O modo `scan` é uma segunda formulação, sem gabarito:
+
+```text
+repositório real, pouco auditado
+       ↓
+pré-filtro AST barato descarta a maioria das funções
+       ↓
+LLM localiza a expressão de risco e a categoria
+       ↓
+AST rejeita evidência inexistente
+       ↓
+LLM sintetiza harness escalar; AST restringe a pré-condição ao que a função valida
+       ↓
+ESBMC procura contraexemplo no harness
+       ↓
+ablação de hipótese detecta prova espúria (harness super-restrito)
+       ↓
+métrica sem ground truth: funil + taxa de abstraction_gap por auditoria de amostra
+```
+
+Alegação defensável com o levantamento atual:
+
+> Entre os trabalhos aqui analisados, a síntese de harness por LLM aparece para fuzzing (OSS-Fuzz-Gen,
+> PromeFuzz) e a triagem de candidatos por LLM aparece para análise estática (LLift), mas não foi
+> encontrada uma avaliação que combine localização de bug em Python por LLM, síntese de harness
+> compatível com um model checker (ESBMC-Python) e uma checagem de solidez da abstração do harness,
+> em código selvagem sem ground truth.
+
+### 9.6 Limitações do ESBMC-Python (não é leitura externa, é fonte primária)
+
+O repositório do ESBMC documenta as limitações do frontend Python, e isso deve alimentar direto o
+`synth_prompt.txt` (que construções o harness pode usar) e o texto da dissertação (o que o backend
+suporta):
+
+- `~/esbmc/website/content/docs/python/limitations.md` (numpy restrito, strings, dict, exceção,
+  concorrência, módulos)
+- `~/esbmc/website/content/docs/python/supported-features.md`
+- `~/esbmc/src/python-frontend/README.md`
+- `~/esbmc/docs/roadmap/python-issues-triage-report-2026-06-02.md`
+
+### 9.7 Ordem de leitura sugerida para esta direção
+
+1. **ESBMC-Python** (§1.2) e o `limitations.md` do repo: o que o backend aceita.
+2. **OSS-Fuzz-Gen**: a tarefa de síntese de harness e a falha de restrição de entrada, na prática.
+3. **LLift** (§9.2): triagem de candidato por LLM em código real, bug inédito confirmado.
+4. **CEGAR** (§9.3): vocabulário de prova espúria e abstração forte demais.
+5. **SpecGen** (§9.4) e **Faria et al.** (§4.3): gerar pré-condição vs. validar pré-condição.
+6. **PromeFuzz** e o **survey** (§9.1, §9.2): âncoras acadêmicas e mapa de trabalho relacionado.
