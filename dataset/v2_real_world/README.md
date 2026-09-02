@@ -332,19 +332,20 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
 
 ## Status
 
-105 items total, by primary category (recount taken directly from `ground_truths.json`, the sole
-authoritative source): 3 division_by_zero, 16 out_of_bounds, 19 assertion_violation, 23 none_misuse,
-10 type_mismatch, 34 invalid_precondition, 2 variable_misuse, 1 integer_overflow, 5 incorrect_result.
+106 items total, by primary category (recount taken directly from `ground_truths.json`, the sole
+authoritative source): 4 division_by_zero, 13 out_of_bounds, 19 assertion_violation, 23 none_misuse,
+10 type_mismatch, 31 invalid_precondition, 2 variable_misuse, 1 integer_overflow, 3 incorrect_result.
 Layout is flat (`bugs/*.py` + `detection/*.py` + one `ground_truths.json` with a `categories` list
 per item) rather than one folder/file per category.
 
 Went 105 → 100 in an earlier pass (5 pairs found to be the exact same real bug mined twice under
 different IDs, deduplicated), then 100 → 103 adding a new source (ESBMC's own history, see below),
-then 103 → 105 with a stricter issue-linked pass (see "Human-validated sources" below).
+then 103 → 105 with a stricter issue-linked pass, and 105 → 106 with `dz_real_04`
+(see "Human-validated sources" below).
 
 **Human-validated sources.** Fernanda asked for the provenance breakdown to be explicit: of the
-105 items, 76 come from BugsInPy (peer-reviewed academic curation — Widyasari et al., ESEC/FSE
-2020), 15 from fresh GitHub mining where the fix commit references a real issue number (someone
+106 items, 76 come from BugsInPy (peer-reviewed academic curation — Widyasari et al., ESEC/FSE
+2020), 16 from fresh GitHub mining where the fix commit references a real issue number (someone
 external reported the bug before the fix — `issue_ref` is set in `provenance` for these), 3 from
 ESBMC's own history (real commits, real regressions, but internal — no external reporter), and 11
 accepted on commit-message-and-diff reading alone (no independent human confirmation beyond the

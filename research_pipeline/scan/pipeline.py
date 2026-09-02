@@ -1,4 +1,4 @@
-"""Step 4 of the scan mode: the orchestrator.
+"""V2 steps 3--6: harness synthesis and verification orchestrator.
 
 Wires the scan pieces into one runnable flow, one candidate at a time:
 
@@ -21,6 +21,7 @@ import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 from ..models import Finding
 from ..preprocess import preprocess_file
@@ -42,6 +43,13 @@ ESBMC_INCONCLUSIVE = "esbmc_inconclusive"
 ESBMC_UNAVAILABLE = "esbmc_unavailable"
 CANDIDATE_NOT_FOUND = "candidate_not_found"
 SYNTH_FAILED = "synth_failed"
+
+# A conclusive verdict ends the retry loop; a recoverable one triggers another
+# synthesis attempt (the LLM output varies run to run).
+_CONCLUSIVE = frozenset({CONFIRMED_ON_ABSTRACTION, OVER_RESTRICTED, SAFE_ON_ABSTRACTION})
+_RECOVERABLE = frozenset(
+    {INVALID_HARNESS, UNSUPPORTED_HARNESS, NO_PROPERTY, ESBMC_INCONCLUSIVE, SYNTH_FAILED}
+)
 
 
 @dataclass
@@ -84,8 +92,35 @@ class ScanCaseResult:
     ablation_per_assumption: dict[str, str] = field(default_factory=dict)
     synth_model: str = ""
     synth_total_tokens: int | None = None
+    synth_seconds: float = 0.0
+    esbmc_seconds: float = 0.0
+    attempts: int = 1
+    attempt_history: list[dict] = field(default_factory=list)
     seconds: float = 0.0
     error: str = ""
+
+    @classmethod
+    def from_dict(cls, data: dict) -> ScanCaseResult:
+        return cls(
+            candidate=ScanCandidate.from_dict(data["candidate"]),
+            classification=str(data["classification"]),
+            harness=str(data.get("harness", "")),
+            harness_path=str(data.get("harness_path", "")),
+            compat_verdict=str(data.get("compat_verdict", "")),
+            compat_reasons=list(data.get("compat_reasons", [])),
+            esbmc_status=str(data.get("esbmc_status", "")),
+            esbmc_summary=str(data.get("esbmc_summary", "")),
+            masking_assumptions=list(data.get("masking_assumptions", [])),
+            ablation_per_assumption=dict(data.get("ablation_per_assumption", {})),
+            synth_model=str(data.get("synth_model", "")),
+            synth_total_tokens=data.get("synth_total_tokens"),
+            synth_seconds=float(data.get("synth_seconds", 0.0)),
+            esbmc_seconds=float(data.get("esbmc_seconds", 0.0)),
+            attempts=int(data.get("attempts", 1)),
+            attempt_history=list(data.get("attempt_history", [])),
+            seconds=float(data.get("seconds", 0.0)),
+            error=str(data.get("error", "")),
+        )
 
     def to_dict(self) -> dict:
         return {
@@ -107,6 +142,10 @@ class ScanCaseResult:
             "ablation_per_assumption": self.ablation_per_assumption,
             "synth_model": self.synth_model,
             "synth_total_tokens": self.synth_total_tokens,
+            "synth_seconds": round(self.synth_seconds, 3),
+            "esbmc_seconds": round(self.esbmc_seconds, 3),
+            "attempts": self.attempts,
+            "attempt_history": self.attempt_history,
             "seconds": round(self.seconds, 2),
             "error": self.error,
         }
@@ -141,19 +180,27 @@ def run_pipeline_scan(
     use_compat: bool = True,
     use_guards: bool = True,
     use_ablation: bool = True,
+    synth_retries: int = 1,
+    completed_results: dict[int, ScanCaseResult] | None = None,
+    on_result: Callable[[int, ScanCaseResult], None] | None = None,
 ) -> list[ScanCaseResult]:
     """Run the scan flow over every candidate and return one result each.
 
     The three layers are independently toggleable so the ablation study can run
-    synth-only, then +compat, +guards, +ablation and compare.
+    synth-only, then +compat, +guards, +ablation and compare. ``synth_retries``
+    is the number of extra synthesis attempts allowed when an attempt ends in a
+    recoverable failure (invalid harness, ESBMC error) rather than a verdict.
     """
     harness_dir = Path(output_dir) / "harnesses"
     harness_dir.mkdir(parents=True, exist_ok=True)
 
     results: list[ScanCaseResult] = []
     for index, candidate in enumerate(candidates):
-        results.append(
-            _run_one(
+        if completed_results and index in completed_results:
+            result = completed_results[index]
+            print(f"[{index + 1}/{len(candidates)}] Retomada: {candidate.function} já concluído; pulando.")
+        else:
+            result = _run_one(
                 candidate,
                 index=index,
                 synthesizer=synthesizer,
@@ -164,8 +211,11 @@ def run_pipeline_scan(
                 use_compat=use_compat,
                 use_guards=use_guards,
                 use_ablation=use_ablation,
+                synth_retries=synth_retries,
             )
-        )
+        results.append(result)
+        if on_result is not None:
+            on_result(index, result)
     return results
 
 
@@ -181,27 +231,19 @@ def _run_one(
     use_compat: bool = True,
     use_guards: bool = True,
     use_ablation: bool = True,
+    synth_retries: int = 1,
 ) -> ScanCaseResult:
     started = time.monotonic()
-    result = ScanCaseResult(
-        candidate=candidate,
-        classification=SYNTH_FAILED,
-        synth_model=synthesizer.model,
-    )
 
     source_path = Path(candidate.file)
     if not source_path.exists():
-        result.classification = CANDIDATE_NOT_FOUND
-        result.error = f"file not found: {candidate.file}"
-        result.seconds = time.monotonic() - started
-        return result
+        return _early(candidate, synthesizer.model, CANDIDATE_NOT_FOUND,
+                      f"file not found: {candidate.file}", started)
 
     unit = _find_unit(preprocess_file(source_path), candidate.function)
     if unit is None:
-        result.classification = CANDIDATE_NOT_FOUND
-        result.error = f"function {candidate.function!r} not found in {candidate.file}"
-        result.seconds = time.monotonic() - started
-        return result
+        return _early(candidate, synthesizer.model, CANDIDATE_NOT_FOUND,
+                      f"function {candidate.function!r} not found in {candidate.file}", started)
 
     finding = Finding(
         id=f"scan_{index:03d}",
@@ -216,8 +258,117 @@ def _run_one(
         metadata={"expression": candidate.expression},
     )
 
+    history: list[dict] = []
+    total_tokens = 0
+    total_synth_seconds = 0.0
+    total_esbmc_seconds = 0.0
+    repair_feedback = ""
+    previous_harness = ""
+    last: ScanCaseResult | None = None
+    for attempt in range(1 + max(0, synth_retries)):
+        result = _one_attempt(
+            candidate, unit, finding,
+            index=index, attempt=attempt,
+            synthesizer=synthesizer, esbmc_command=esbmc_command,
+            bound=bound, timeout_seconds=timeout_seconds, harness_dir=harness_dir,
+            use_compat=use_compat, use_guards=use_guards, use_ablation=use_ablation,
+            repair_feedback=repair_feedback,
+            previous_harness=previous_harness,
+        )
+        result.attempts = attempt + 1
+        result.seconds = time.monotonic() - started
+        total_tokens += result.synth_total_tokens or 0
+        total_synth_seconds += result.synth_seconds
+        total_esbmc_seconds += result.esbmc_seconds
+        history.append(
+            {
+                "attempt": attempt + 1,
+                "classification": result.classification,
+                "compat_reasons": result.compat_reasons,
+                "esbmc_status": result.esbmc_status,
+                "esbmc_summary": result.esbmc_summary,
+                "error": result.error,
+                "tokens": result.synth_total_tokens,
+                "synth_seconds": result.synth_seconds,
+                "esbmc_seconds": result.esbmc_seconds,
+                "repair_feedback": repair_feedback,
+            }
+        )
+        result.attempt_history = list(history)
+        result.synth_total_tokens = total_tokens or None
+        result.synth_seconds = total_synth_seconds
+        result.esbmc_seconds = total_esbmc_seconds
+        last = result
+        if result.classification in _CONCLUSIVE:
+            return result
+        if result.classification not in _RECOVERABLE:
+            return result
+        repair_feedback = _repair_feedback(result)
+        previous_harness = result.harness
+
+    assert last is not None
+    return last
+
+
+def _repair_feedback(result: ScanCaseResult) -> str:
+    """Turn deterministic validator output into the next synthesis instruction."""
+    if result.compat_reasons:
+        return "Compatibility validation failed:\n- " + "\n- ".join(result.compat_reasons)
+    if result.classification == NO_PROPERTY:
+        return (
+            "ESBMC generated no usable property. Add an explicit, reachable assert "
+            "for the suspected bug and keep a module-level symbolic driver."
+        )
+    if result.esbmc_summary:
+        return f"ESBMC could not verify the harness: {result.esbmc_summary}"
+    return result.error or f"Harness attempt ended as {result.classification}."
+
+
+def _early(
+    candidate: ScanCandidate, model: str, classification: str, error: str, started: float
+) -> ScanCaseResult:
+    return ScanCaseResult(
+        candidate=candidate,
+        classification=classification,
+        synth_model=model,
+        error=error,
+        seconds=time.monotonic() - started,
+    )
+
+
+def _one_attempt(
+    candidate: ScanCandidate,
+    unit,
+    finding: Finding,
+    *,
+    index: int,
+    attempt: int,
+    synthesizer: HarnessSynthesizer,
+    esbmc_command: list[str] | None,
+    bound: int,
+    timeout_seconds: int,
+    harness_dir: Path,
+    use_compat: bool,
+    use_guards: bool,
+    use_ablation: bool,
+    repair_feedback: str,
+    previous_harness: str,
+) -> ScanCaseResult:
+    started = time.monotonic()
+    result = ScanCaseResult(
+        candidate=candidate,
+        classification=SYNTH_FAILED,
+        synth_model=synthesizer.model,
+    )
+
     try:
-        synth_result = synthesizer.synthesize(unit, finding, use_guards=use_guards)
+        synth_result = synthesizer.synthesize(
+            unit,
+            finding,
+            use_guards=use_guards,
+            repair_feedback=repair_feedback,
+            previous_harness=previous_harness,
+        )
     except Exception as exc:  # noqa: BLE001 - network/API failure is reported, not raised
         result.classification = SYNTH_FAILED
         result.error = f"synthesis failed: {exc}"
@@ -226,6 +377,7 @@ def _run_one(
 
     result.harness = synth_result.harness
     result.synth_total_tokens = synth_result.telemetry.get("total_tokens")
+    result.synth_seconds = float(synth_result.telemetry.get("duration_seconds") or 0.0)
 
     if use_compat:
         compat = check_harness(synth_result.harness)
@@ -242,7 +394,8 @@ def _run_one(
     else:
         result.compat_verdict = "skipped"
 
-    harness_path = harness_dir / f"scan_{index:03d}_{unit.name}.py"
+    suffix = f"_try{attempt}" if attempt else ""
+    harness_path = harness_dir / f"scan_{index:03d}_{unit.name}{suffix}.py"
     harness_path.write_text(synth_result.harness, encoding="utf-8")
     result.harness_path = str(harness_path)
 
@@ -255,6 +408,7 @@ def _run_one(
     )
     result.esbmc_status = esbmc.status
     result.esbmc_summary = esbmc.summary
+    result.esbmc_seconds = esbmc.time_seconds
 
     result.classification = _classify_esbmc(esbmc.status)
     if use_ablation and result.classification == SAFE_ON_ABSTRACTION:

@@ -1,4 +1,4 @@
-"""Step 3 of the scan mode: LLM harness synthesis.
+"""V2 step 3: LLM harness synthesis.
 
 Given a real function (CodeUnit) and a bug hypothesis (Finding), ask the LLM to
 write a small self-contained ESBMC harness that models just the suspect
@@ -7,7 +7,7 @@ original file with --function; here the LLM produces the model that ESBMC runs.
 
 The prompt lives in research_pipeline/prompts/synth_prompt.txt.
 
-This module DOES call a paid LLM API. It is only reached from --mode scan.
+This module DOES call a paid LLM API. It is only reached from --mode v2.
 """
 
 from __future__ import annotations
@@ -49,13 +49,28 @@ _NO_GUARDS_BLOCK = (
 
 
 def build_synth_user_prompt(
-    unit: CodeUnit, finding: Finding, *, use_guards: bool = True
+    unit: CodeUnit,
+    finding: Finding,
+    *,
+    use_guards: bool = True,
+    repair_feedback: str = "",
+    previous_harness: str = "",
 ) -> str:
     expression = str(finding.metadata.get("expression", "")) or "(not given)"
     if use_guards:
         precondition = format_precondition_block(unit.source)
     else:
         precondition = _NO_GUARDS_BLOCK
+    repair_block = ""
+    if repair_feedback:
+        repair_block = (
+            "\n\nREPAIR REQUIRED\n"
+            "The previous harness was rejected by deterministic validation. "
+            "Correct only the reported problems; preserve the original suspect "
+            "expression's semantics and do not fabricate a fix.\n"
+            f"Validator feedback:\n{repair_feedback}\n"
+            f"Previous rejected harness:\n```python\n{previous_harness}\n```\n"
+        )
     return (
         f"Bug category: {finding.category}\n"
         f"Suspected unsafe expression: {expression}\n"
@@ -64,6 +79,7 @@ def build_synth_user_prompt(
         f"Type hints: {json.dumps(unit.type_hints)}\n\n"
         f"{precondition}\n\n"
         f"Real function source:\n```python\n{unit.source}\n```\n"
+        f"{repair_block}"
     )
 
 
@@ -93,43 +109,72 @@ class HarnessSynthesizer:
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 120,
     ) -> None:
-        if backend != "openai":
+        if backend not in {"openai", "ollama"}:
             raise ValueError(
-                f"synth backend {backend!r} not supported yet; only 'openai'."
+                f"synth backend {backend!r} not supported yet; use 'openai' or 'ollama'."
             )
         self.backend = backend
         self.model = model
-        self.base_url = base_url
+        self.base_url = (
+            base_url.rstrip("/") + "/chat/completions"
+            if backend == "ollama" and not base_url.rstrip("/").endswith("/chat/completions")
+            else base_url
+        )
         self.timeout_seconds = timeout_seconds
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
-        if not self.api_key:
+        if backend == "openai" and not self.api_key:
             raise ValueError("OPENAI_API_KEY não configurada para a síntese de harness.")
+        if backend == "ollama" and not self.api_key:
+            self.api_key = "ollama"
         self.telemetry_events: list[dict] = []
 
     def synthesize(
-        self, unit: CodeUnit, finding: Finding, *, use_guards: bool = True
+        self,
+        unit: CodeUnit,
+        finding: Finding,
+        *,
+        use_guards: bool = True,
+        repair_feedback: str = "",
+        previous_harness: str = "",
     ) -> SynthResult:
-        user_prompt = build_synth_user_prompt(unit, finding, use_guards=use_guards)
-        payload = {
-            "model": self.model,
-            "input": [
-                {"role": "system", "content": [{"type": "input_text", "text": load_synth_prompt()}]},
-                {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
-            ],
-        }
+        user_prompt = build_synth_user_prompt(
+            unit,
+            finding,
+            use_guards=use_guards,
+            repair_feedback=repair_feedback,
+            previous_harness=previous_harness,
+        )
+        if self.backend == "openai":
+            payload = {
+                "model": self.model,
+                "input": [
+                    {"role": "system", "content": [{"type": "input_text", "text": load_synth_prompt()}]},
+                    {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
+                ],
+            }
+        else:
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": load_synth_prompt()},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "temperature": 0,
+                "stream": False,
+            }
 
         started = time.monotonic()
         try:
             raw_response = self._post_json(payload)
         except Exception as exc:
             event = response_event(
-                provider="openai", requested_model=self.model,
+                provider=self.backend, requested_model=self.model,
                 duration_seconds=time.monotonic() - started, error=exc,
             )
             self.telemetry_events.append(event)
             raise
         event = response_event(
-            provider="openai", requested_model=self.model,
+            provider=self.backend, requested_model=self.model,
             duration_seconds=time.monotonic() - started, response=raw_response,
         )
         self.telemetry_events.append(event)
@@ -149,7 +194,7 @@ class HarnessSynthesizer:
                 self.base_url,
                 data=body,
                 headers={
-                    "Authorization": f"Bearer {self.api_key}",
+                    "Authorization": f"Bearer {self.api_key or 'ollama'}",
                     "Content-Type": "application/json",
                 },
                 method="POST",
@@ -179,6 +224,11 @@ class HarnessSynthesizer:
 def _extract_output_text(response_data: dict) -> str:
     if isinstance(response_data.get("output_text"), str):
         return response_data["output_text"]
+    choices = response_data.get("choices", [])
+    if choices:
+        content = choices[0].get("message", {}).get("content")
+        if isinstance(content, str) and content.strip():
+            return content
     parts: list[str] = []
     for item in response_data.get("output", []):
         for content in item.get("content", []):

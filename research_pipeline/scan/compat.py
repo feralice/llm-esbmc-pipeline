@@ -1,4 +1,4 @@
-"""Step 2 of the scan mode: harness compatibility check.
+"""V2 compatibility check for synthesized harnesses.
 
 The LLM (step 3) returns a synthesized harness as text. Before spending an
 ESBMC run on it, reject the harnesses ESBMC-Python cannot handle:
@@ -6,6 +6,7 @@ ESBMC run on it, reject the harnesses ESBMC-Python cannot handle:
 - does not parse                         -> invalid_harness
 - imports anything                       -> invalid_harness (not self-contained)
 - references numpy / pandas / torch / tf -> unsupported_harness
+- contains a for/while loop              -> invalid_harness
 - no module-level driver (a call or a
   `main()` invoked at module level)      -> invalid_harness
 
@@ -114,6 +115,13 @@ def check_harness(source: str) -> CompatResult:
         )
         reasons.append(f"imports {', '.join(n for n in names if n)}")
         return CompatResult(False, VERDICT_INVALID, reasons)
+
+    if any(isinstance(node, (ast.For, ast.AsyncFor, ast.While)) for node in ast.walk(tree)):
+        return CompatResult(
+            False,
+            VERDICT_INVALID,
+            ["contains a loop (scan harnesses must model only the scalar suspect expression)"],
+        )
 
     referenced = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
     referenced |= {

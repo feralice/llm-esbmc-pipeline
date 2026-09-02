@@ -87,7 +87,7 @@ def test_if_name_main_counts_as_driver():
     assert check_harness(src).ok
 
 
-def test_zip_is_unsupported():
+def test_loop_is_invalid_before_builtin_compatibility():
     src = (
         "def f(xs: list, ys: list) -> int:\n"
         "    for a, b in zip(xs, ys):\n"
@@ -97,11 +97,11 @@ def test_zip_is_unsupported():
     )
     r = check_harness(src)
     assert not r.ok
-    assert r.verdict == VERDICT_UNSUPPORTED
-    assert "zip" in r.reasons[0]
+    assert r.verdict == VERDICT_INVALID
+    assert "loop" in r.reasons[0]
 
 
-def test_enumerate_is_allowed():
+def test_enumerate_loop_is_invalid_for_scan_protocol():
     src = (
         "def f(xs: list) -> int:\n"
         "    for i, v in enumerate(xs):\n"
@@ -109,7 +109,22 @@ def test_enumerate_is_allowed():
         "    return 0\n"
         "f([1, 2])\n"
     )
-    assert check_harness(src).ok
+    r = check_harness(src)
+    assert not r.ok
+    assert r.verdict == VERDICT_INVALID
+    assert "loop" in r.reasons[0]
+
+
+def test_loop_free_unsupported_builtin_is_reported():
+    src = (
+        "def f(xs: list, ys: list) -> object:\n"
+        "    return zip(xs, ys)\n"
+        "f([1, 2], [3, 4])\n"
+    )
+    r = check_harness(src)
+    assert not r.ok
+    assert r.verdict == VERDICT_UNSUPPORTED
+    assert "zip" in r.reasons[0]
 
 
 def test_hallucinated_nondet_name_is_invalid():

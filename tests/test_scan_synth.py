@@ -68,15 +68,53 @@ def test_build_user_prompt_has_category_and_source(tmp_path: Path):
     assert "def g(a: int, b: int)" in prompt
 
 
+def test_repair_prompt_includes_validator_feedback_and_previous_harness(tmp_path: Path):
+    unit = _unit(tmp_path, "def g(a: int, b: int) -> float:\n    return a / b\n")
+    prompt = build_synth_user_prompt(
+        unit,
+        _finding("division_by_zero", "a / b"),
+        repair_feedback="references unsupported dependency: np",
+        previous_harness="value = np.array(data)",
+    )
+    assert "REPAIR REQUIRED" in prompt
+    assert "unsupported dependency: np" in prompt
+    assert "value = np.array(data)" in prompt
+
+
 def test_synthesizer_requires_openai_backend():
     with pytest.raises(ValueError):
-        HarnessSynthesizer(backend="ollama", api_key="x")
+        HarnessSynthesizer(backend="anthropic", api_key="x")
 
 
 def test_synthesizer_requires_key(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     with pytest.raises(ValueError):
         HarnessSynthesizer(api_key=None)
+
+
+def test_ollama_synthesis_uses_chat_completions_shape(tmp_path: Path, monkeypatch):
+    unit = _unit(tmp_path, "def g(a: int, b: int) -> int:\n    return a // b\n")
+    response = {
+        "model": "qwen2.5-coder:7b",
+        "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+        "choices": [{"message": {"content": "```python\ndef main():\n    assert False\nmain()\n```"}}],
+    }
+    synth = HarnessSynthesizer(
+        backend="ollama", model="qwen2.5-coder:7b",
+        base_url="http://localhost:11434/v1",
+    )
+    captured = {}
+
+    def fake_post(payload):
+        captured.update(payload)
+        return response
+
+    monkeypatch.setattr(synth, "_post_json", fake_post)
+    result = synth.synthesize(unit, _finding("division_by_zero", "a // b"))
+    assert captured["messages"][0]["role"] == "system"
+    assert "input" not in captured
+    assert "assert False" in result.harness
+    assert result.telemetry["total_tokens"] == 30
 
 
 def test_synthesize_with_mocked_api(tmp_path: Path, monkeypatch):

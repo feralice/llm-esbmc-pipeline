@@ -8,7 +8,7 @@ Modos de execução:
   hybrid      Flow B: LLM aponta bug → ESBMC confirma.
   benchmark   Roda os três fluxos (A+B+C) e calcula P/R/F1 vs ground truth.
   ensemble    Agrega votos de modelos já rodados (sem chamar LLM/ESBMC).
-  scan        V2: para cada candidato, a LLM sintetiza um harness → ESBMC → ablação.
+  v2          Evolução: LLM detecta hipótese → gera harness → ESBMC verifica.
 
 
 Exemplos:
@@ -16,7 +16,7 @@ Exemplos:
   python src/main.py --mode llm-only    --input dataset/labeled --model gpt-4o
   python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o --bound 5
   python src/main.py --mode benchmark   --input dataset/labeled/ground_truths --model gpt-4o
-  python src/main.py --mode scan        --input candidatos.json --model gpt-4o-mini
+  python src/main.py --mode v2 --input dataset/v2_real_world/detection --model gpt-4o-mini
 """
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import sys
+from hashlib import sha256
 from pathlib import Path
 
 
@@ -44,8 +45,11 @@ from research_pipeline.pipeline import (
     run_pipeline_multi,
 )
 from research_pipeline.voting import aggregate_votes, write_vote_report
-from research_pipeline.scan.pipeline import load_candidates, run_pipeline_scan
-from research_pipeline.scan.synth import HarnessSynthesizer
+from research_pipeline.scan.pipeline import ScanCandidate, ScanCaseResult, run_pipeline_scan
+from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
+from research_pipeline.llm.backends.factory import build_analyzer
+from research_pipeline.preprocess import preprocess_file
+from research_pipeline.v2_evaluator import evaluate_v2_results
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy_defined,
@@ -79,7 +83,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=["esbmc-only", "llm-only", "hybrid", "benchmark", "ensemble", "scan"],
+        choices=["esbmc-only", "llm-only", "hybrid", "benchmark", "ensemble", "v2"],
         default="benchmark",
         help="Modo de execução. (padrão: benchmark)",
     )
@@ -172,9 +176,10 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="CAMINHO",
         help=(
-            "Diretório de ground truth para comparação. "
+            "Ground truth para comparação. "
             "No modo benchmark, pode ser passado aqui em vez de --input. "
-            "Exemplo: dataset/labeled/ground_truths"
+            "No modo V2, informe dataset/v2_real_world/ground_truths.json; "
+            "ele é lido somente depois das chamadas às LLMs e ao ESBMC."
         ),
     )
     parser.add_argument(
@@ -204,29 +209,36 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--no-compat",
         action="store_true",
-        help="Modo scan: pula o compat.py (roda ESBMC no harness sem checar dependências).",
+        help="Modo V2: pula a checagem de compatibilidade do harness.",
     )
     parser.add_argument(
         "--no-guards",
         action="store_true",
-        help="Modo scan: não passa a allowlist de precondição (guards.py) para a síntese.",
+        help="Modo V2: não passa a allowlist de precondição para a síntese.",
     )
     parser.add_argument(
         "--no-ablation",
         action="store_true",
-        help="Modo scan: não roda ablação nos vereditos SUCCESSFUL.",
+        help="Modo V2: não roda ablação nos vereditos SUCCESSFUL.",
     )
     parser.add_argument(
-        "--v2-manifest",
-        default=None,
-        metavar="CAMINHO",
+        "--synth-retries",
+        type=int,
+        default=1,
+        metavar="N",
         help=(
-            "Somente no modo hybrid. Caminho do manifest_pilot.json do V2 "
-            "(dataset/v2_real_world/manifest_pilot.json). Quando informado, o "
-            "ESBMC verifica o harness oculto (bugs/<id>.py) referenciado no "
-            "manifesto para cada arquivo de --input que estiver em detection/, "
-            "em vez de rodar --function no mesmo arquivo que a LLM leu. Sem "
-            "essa flag, o hybrid se comporta como no V1 (arquivo único)."
+            "Modo V2: tentativas extras de síntese quando uma falha é "
+            "recuperável (harness inválido, erro do ESBMC). (padrão: 1)"
+        ),
+    )
+    parser.add_argument(
+        "--v2-stage",
+        choices=["end-to-end", "synthesis"],
+        default="end-to-end",
+        help=(
+            "Modo V2: 'end-to-end' detecta e sintetiza; 'synthesis' usa "
+            "hipóteses conhecidas somente para avaliar a geração de harness "
+            "isoladamente (requer --ground-truth)."
         ),
     )
     return parser
@@ -267,26 +279,6 @@ def _infer_ground_truth_path(inputs: list[str]) -> Path | None:
             if candidate.exists():
                 return candidate
     return None
-
-
-
-
-def _load_v2_harness_map(manifest_path: str | None) -> dict[str, Path] | None:
-    """Build {detection_file: harness_file} from manifest_pilot.json, or None."""
-    if not manifest_path:
-        return None
-    manifest_file = Path(manifest_path)
-    if not manifest_file.exists():
-        print(f"--v2-manifest não encontrado: {manifest_file}", file=sys.stderr)
-        return None
-    data = json.loads(manifest_file.read_text(encoding="utf-8"))
-    base_dir = manifest_file.parent
-    harness_map: dict[str, Path] = {}
-    for item in data.get("items", []):
-        detection_file = base_dir / item["detection_file"]
-        harness_file = base_dir / item["harness_file"]
-        harness_map[str(detection_file.resolve())] = harness_file.resolve()
-    return harness_map
 
 
 
@@ -349,6 +341,95 @@ def _write_json_atomic(path: Path, payload: object) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     temporary.replace(path)
+
+
+def _v2_candidate_dict(candidate: ScanCandidate) -> dict[str, str]:
+    return {
+        "file": candidate.file,
+        "function": candidate.function,
+        "category": candidate.category,
+        "expression": candidate.expression,
+        "note": candidate.note,
+    }
+
+
+def _load_v2_oracle_candidates(
+    ground_truth_path: str | Path, input_paths: list[Path]
+) -> list[ScanCandidate]:
+    """Load synthesis-only hypotheses without exposing human harness contents."""
+    gt_path = Path(ground_truth_path)
+    manifest_path = gt_path.parent / "manifest_pilot.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    allowed = {str(path.resolve()) for path in input_paths}
+    candidates: list[ScanCandidate] = []
+    for item in manifest.get("items", []):
+        detection = manifest_path.parent / item["detection_file"]
+        if str(detection.resolve()) not in allowed:
+            continue
+        declared_function = str(item["function"])
+        units = preprocess_file(detection)
+        selected_function = declared_function
+        if units:
+            alternatives = [part.strip() for part in declared_function.split("/")]
+            matched_unit = next(
+                (
+                    unit
+                    for unit in units
+                    if any(
+                        alt and (unit.qualname == alt or unit.name == alt.split(".")[-1])
+                        for alt in alternatives
+                    )
+                ),
+                None,
+            )
+            if matched_unit is None:
+                expression = str(item.get("expression", ""))
+                matched_unit = next(
+                    (unit for unit in units if expression and expression in unit.source),
+                    units[0],
+                )
+            selected_function = matched_unit.qualname
+        for category in item.get("categories", []):
+            candidates.append(
+                ScanCandidate(
+                    file=str(detection),
+                    function=selected_function,
+                    category=str(category),
+                    expression=str(item.get("expression", "")),
+                    note="Oracle-seeded hypothesis for synthesis-only evaluation.",
+                )
+            )
+    return candidates
+
+
+def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
+    return {
+        "config": config,
+        "sources": {
+            str(path.resolve()): sha256(path.read_bytes()).hexdigest()
+            for path in input_paths
+        },
+        "detector_prompt": sha256(
+            (REPO_ROOT / "research_pipeline/prompts/system_prompt.txt").read_bytes()
+        ).hexdigest(),
+        "synth_prompt": sha256(load_synth_prompt().encode("utf-8")).hexdigest(),
+    }
+
+
+def _summarize_v2_telemetry(events: list[dict]) -> dict:
+    by_stage: dict[str, dict[str, float | int]] = {}
+    for event in events:
+        stage = str(event["stage"])
+        totals = by_stage.setdefault(
+            stage, {"calls": 0, "failed_calls": 0, "tokens": 0, "seconds": 0.0}
+        )
+        totals["calls"] += 1
+        totals["failed_calls"] += int(event.get("status") != "success")
+        totals["tokens"] += int(event.get("total_tokens") or 0)
+        totals["seconds"] += float(event.get("duration_seconds") or 0.0)
+    for totals in by_stage.values():
+        totals["seconds"] = round(float(totals["seconds"]), 3)
+    return by_stage
 
 
 
@@ -542,7 +623,6 @@ def mode_hybrid(args: argparse.Namespace) -> int:
     model   = _resolve_model(args.model, backend)
     anthropic_key, openai_key, google_key = _resolve_keys(args)
     output_dir = args.output_dir or _default_output_dir("hybrid")
-    harness_for = _load_v2_harness_map(getattr(args, "v2_manifest", None))
 
 
     results = run_pipeline_multi(
@@ -558,7 +638,6 @@ def mode_hybrid(args: argparse.Namespace) -> int:
         bound=args.bound,
         timeout_seconds=args.timeout,
         llm_timeout_seconds=args.llm_timeout,
-        harness_for=harness_for,
         resume=args.resume,
     )
 
@@ -773,56 +852,222 @@ def mode_ensemble(args: argparse.Namespace) -> int:
     return 0
 
 
-def mode_scan(args: argparse.Namespace) -> int:
-    candidates_path = Path(args.input[0])
-    if not candidates_path.exists():
-        print(f"Candidatos não encontrados: {candidates_path}", file=sys.stderr)
+def mode_v2(args: argparse.Namespace) -> int:
+    input_paths = _resolve_input_paths(args.input)
+    if not input_paths:
+        print("Nenhum arquivo Python encontrado para a V2.", file=sys.stderr)
+        return 1
+    if args.v2_stage == "synthesis" and not args.ground_truth:
+        print("--v2-stage synthesis requer --ground-truth.", file=sys.stderr)
         return 1
 
     model = _resolve_model(args.model, "openai") or "gpt-4o-mini"
     backend: Backend = args.backend or _infer_backend(model)
-    if backend != "openai":
+    if backend not in {"openai", "ollama"}:
         print(
-            "O modo scan só sintetiza harness via OpenAI por enquanto "
-            "(--model gpt-4o-mini ou gpt-4o).",
+            "O modo V2 sintetiza harness via OpenAI ou Ollama por enquanto.",
             file=sys.stderr,
         )
         return 1
 
-    _, openai_key, _ = _resolve_keys(args)
+    anthropic_key, openai_key, google_key = _resolve_keys(args)
     try:
+        analyzer = build_analyzer(
+            backend=backend,
+            llm_model=model,
+            openai_api_key=openai_key,
+            anthropic_api_key=anthropic_key,
+            google_api_key=google_key,
+            ollama_base_url=args.ollama_base_url,
+            timeout_seconds=args.llm_timeout,
+        )
         synthesizer = HarnessSynthesizer(
-            model=model, api_key=openai_key, timeout_seconds=args.llm_timeout
+            backend=backend,
+            model=model,
+            api_key=openai_key if backend == "openai" else "ollama",
+            base_url=(args.ollama_base_url or "http://localhost:11434/v1")
+            if backend == "ollama"
+            else "https://api.openai.com/v1/responses",
+            timeout_seconds=args.llm_timeout,
         )
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
 
-    try:
-        candidates = load_candidates(candidates_path)
-    except (ValueError, json.JSONDecodeError) as exc:
-        print(f"Arquivo de candidatos inválido: {exc}", file=sys.stderr)
-        return 1
-    if not candidates:
-        print("Nenhum candidato no arquivo.", file=sys.stderr)
-        return 1
-
-    output_dir = args.output_dir or _default_output_dir("scan")
+    output_dir = args.output_dir or _default_output_dir("v2")
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
     config = {
         "model": model,
+        "backend": backend,
+        "v2_stage": args.v2_stage,
+        "input_files": [str(path.resolve()) for path in input_paths],
         "compat": not args.no_compat,
         "guards": not args.no_guards,
         "ablation": not args.no_ablation,
+        "synth_retries": args.synth_retries,
         "bound": args.bound,
         "timeout": args.timeout,
+        "llm_timeout": args.llm_timeout,
+        "esbmc_command": args.esbmc_command or ["esbmc"],
     }
+    fingerprint = _v2_fingerprint(config, input_paths)
+    checkpoint_path = output_path / "v2_checkpoint.json"
+    if args.resume:
+        if not checkpoint_path.exists():
+            print(f"Checkpoint V2 não encontrado: {checkpoint_path}", file=sys.stderr)
+            return 1
+        checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+        if checkpoint.get("fingerprint") != fingerprint:
+            print("Não é seguro retomar a V2: configuração, prompt ou fontes mudaram.", file=sys.stderr)
+            return 1
+    else:
+        checkpoint = {
+            "fingerprint": fingerprint,
+            "detection_units": {},
+            "synthesis_results": {},
+            "status": "running",
+            "telemetry_events": [],
+    }
+        _write_json_atomic(checkpoint_path, checkpoint)
+
+    analyzer_events_seen = 0
+    synthesizer_events_seen = 0
+
+    def capture_telemetry() -> None:
+        nonlocal analyzer_events_seen, synthesizer_events_seen
+        analyzer_events = getattr(analyzer, "telemetry_events", [])
+        synthesizer_events = getattr(synthesizer, "telemetry_events", [])
+        checkpoint.setdefault("telemetry_events", []).extend(
+            {**event, "stage": "detection"}
+            for event in analyzer_events[analyzer_events_seen:]
+        )
+        checkpoint["telemetry_events"].extend(
+            {**event, "stage": "synthesis"}
+            for event in synthesizer_events[synthesizer_events_seen:]
+        )
+        analyzer_events_seen = len(analyzer_events)
+        synthesizer_events_seen = len(synthesizer_events)
+
+    candidates: list[ScanCandidate] = (
+        _load_v2_oracle_candidates(args.ground_truth, input_paths)
+        if args.v2_stage == "synthesis"
+        else []
+    )
+    rejected_findings: list[dict[str, str]] = []
+    detection_errors: list[dict[str, str]] = []
+    analyzed_units = 0
+    detection_inputs = [] if args.v2_stage == "synthesis" else input_paths
+    if args.v2_stage == "synthesis":
+        print(f"\nModo V2 — síntese isolada: {len(candidates)} hipótese(s) conhecida(s)")
+    else:
+        print(f"\nModo V2 — etapa 1: detecção em {len(input_paths)} arquivo(s)")
+    for file_index, file_path in enumerate(detection_inputs, 1):
+        units = preprocess_file(file_path)
+        for unit in units:
+            analyzed_units += 1
+            unit_key = f"{file_path.resolve()}::{unit.qualname}"
+            saved_unit = checkpoint["detection_units"].get(unit_key)
+            if saved_unit is not None:
+                candidates.extend(ScanCandidate.from_dict(item) for item in saved_unit["candidates"])
+                rejected_findings.extend(saved_unit.get("rejected_findings", []))
+                print(f"  [{file_index}/{len(input_paths)}] Retomada: {file_path.name}::{unit.qualname}")
+                continue
+            print(f"  [{file_index}/{len(input_paths)}] Analisando {file_path.name}::{unit.qualname}...")
+            try:
+                findings = analyzer.analyze(unit)
+            except Exception as exc:  # one API failure must not discard other units
+                detection_errors.append(
+                    {"file": str(file_path), "function": unit.qualname, "error": str(exc)}
+                )
+                capture_telemetry()
+                _write_json_atomic(checkpoint_path, checkpoint)
+                continue
+            unit_candidates: list[ScanCandidate] = []
+            unit_rejections: list[dict[str, str]] = []
+            for finding in findings:
+                if not finding.verifiable or finding.finding_type != "suspected_bug":
+                    if finding.finding_type in {
+                        "llm_false_positive", "out_of_scope_finding", "suspected_bug"
+                    }:
+                        unit_rejections.append(
+                            {
+                                "file": str(file_path),
+                                "function": unit.qualname,
+                                "category": finding.category,
+                                "finding_type": finding.finding_type,
+                                "expression": str(finding.metadata.get("expression", "")),
+                                "reason": str(finding.metadata.get("ast_rejection_reason", "")),
+                            }
+                        )
+                    continue
+                unit_candidates.append(
+                    ScanCandidate(
+                        file=str(file_path),
+                        function=unit.qualname,
+                        category=finding.category,
+                        expression=str(finding.metadata.get("expression", "")),
+                        note=finding.explanation,
+                    )
+                )
+            candidates.extend(unit_candidates)
+            rejected_findings.extend(unit_rejections)
+            checkpoint["detection_units"][unit_key] = {
+                "candidates": [_v2_candidate_dict(candidate) for candidate in unit_candidates],
+                "rejected_findings": unit_rejections,
+            }
+            capture_telemetry()
+            _write_json_atomic(checkpoint_path, checkpoint)
+
+    if detection_errors:
+        checkpoint["status"] = "partial_detection"
+        checkpoint["detection_errors"] = detection_errors
+        _write_json_atomic(checkpoint_path, checkpoint)
+        report_path = Path(args.report) if args.report else output_path / "v2_report.json"
+        capture_telemetry()
+        telemetry_events = checkpoint["telemetry_events"]
+        telemetry_summary = _summarize_v2_telemetry(telemetry_events)
+        _write_json_atomic(output_path / "llm_telemetry.json", telemetry_events)
+        _write_json_atomic(
+            report_path,
+            {
+                "config": config,
+                "coverage": {"status": "partial", "stage": "detection"},
+                "detection": {
+                    "analyzed_units": analyzed_units,
+                    "hypotheses": len(candidates),
+                    "failed_units": len(detection_errors),
+                    "errors": detection_errors,
+                    "candidates": [_v2_candidate_dict(c) for c in candidates],
+                    "rejected_findings": rejected_findings,
+                },
+                "summary": _scan_summary([]),
+                "telemetry": telemetry_summary,
+                "results": [],
+            },
+        )
+        print("Execução V2 parcial na detecção; retome com --resume.", file=sys.stderr)
+        return 2
+
     layers = "".join(
         f" +{name}" for name in ("compat", "guards", "ablation") if config[name]
     ) or " synth-only"
+    candidate_origin = "conhecida(s)" if args.v2_stage == "synthesis" else "detectada(s)"
     print(
-        f"\nModo scan — {len(candidates)} candidato(s) → "
-        f"{len(candidates)} chamada(s) de síntese ao modelo {model} | camadas:{layers}"
+        f"\nModo V2 — etapa 2: {len(candidates)} hipótese(s) {candidate_origin} → "
+        f"síntese de harness com {model} | camadas:{layers}"
     )
+
+    completed_results = {
+        int(index): ScanCaseResult.from_dict(data)
+        for index, data in checkpoint.get("synthesis_results", {}).items()
+    }
+
+    def save_synthesis_result(index: int, result: ScanCaseResult) -> None:
+        checkpoint["synthesis_results"][str(index)] = result.to_dict()
+        checkpoint["status"] = "running"
+        capture_telemetry()
+        _write_json_atomic(checkpoint_path, checkpoint)
 
     results = run_pipeline_scan(
         candidates,
@@ -834,25 +1079,114 @@ def mode_scan(args: argparse.Namespace) -> int:
         use_compat=not args.no_compat,
         use_guards=not args.no_guards,
         use_ablation=not args.no_ablation,
+        synth_retries=args.synth_retries,
+        completed_results=completed_results,
+        on_result=save_synthesis_result,
     )
 
-    from collections import Counter
-
-    for r in results:
-        detail = r.error or r.esbmc_summary or ", ".join(r.compat_reasons)
-        print(f"  [{r.classification:24s}] {r.candidate.function:20s} {detail[:56]}")
-    tally = Counter(r.classification for r in results)
-    print("\n  " + "  ".join(f"{k}={v}" for k, v in sorted(tally.items())))
+    summary = _scan_summary(results)
+    if args.verbose:
+        for r in results:
+            detail = r.error or r.esbmc_summary or ", ".join(r.compat_reasons)
+            print(f"  [{r.classification:24s}] {r.candidate.function:20s} {detail[:56]}")
+    print("\n  por classificação:")
+    for k, v in sorted(summary["by_classification"].items()):
+        print(f"    {k:26s} {v}")
+    print("\n  por categoria (confirmado / total):")
+    for cat, d in sorted(summary["by_category"].items()):
+        print(f"    {cat:22s} {d['confirmed']}/{d['total']}")
 
     if args.report:
         report_path = Path(args.report)
     else:
-        report_path = Path(output_dir) / "scan_report.json"
+        report_path = output_path / "v2_report.json"
+    incomplete = {
+        "invalid_harness", "unsupported_harness", "no_property",
+        "esbmc_inconclusive", "esbmc_unavailable", "candidate_not_found",
+        "synth_failed",
+    }
+    partial = any(result.classification in incomplete for result in results)
+    capture_telemetry()
+    telemetry_events = checkpoint["telemetry_events"]
+    telemetry_summary = _summarize_v2_telemetry(telemetry_events)
+    _write_json_atomic(output_path / "llm_telemetry.json", telemetry_events)
     _write_json_atomic(
-        report_path, {"config": config, "results": [r.to_dict() for r in results]}
+        report_path,
+        {
+            "config": config,
+            "coverage": {
+                "status": "partial" if partial else "complete",
+                "stage": "synthesis" if partial else "complete",
+                "planned_hypotheses": len(candidates),
+                "evaluated_hypotheses": len(results),
+            },
+            "detection": {
+                "evaluated": args.v2_stage == "end-to-end",
+                "oracle_seeded": args.v2_stage == "synthesis",
+                "analyzed_units": analyzed_units,
+                "hypotheses": len(candidates),
+                "failed_units": len(detection_errors),
+                "errors": detection_errors,
+                "candidates": [
+                    {
+                        "file": c.file, "function": c.function,
+                        "category": c.category, "expression": c.expression,
+                    }
+                    for c in candidates
+                ],
+                "rejected_findings": rejected_findings,
+            },
+            "summary": summary,
+            "telemetry": telemetry_summary,
+            "evaluation": (
+                evaluate_v2_results(
+                    candidates=candidates,
+                    results=results,
+                    ground_truth_path=args.ground_truth,
+                    evaluated_sources=input_paths,
+                    rejected_findings=rejected_findings,
+                    evaluate_detection=args.v2_stage == "end-to-end",
+                )
+                if args.ground_truth
+                else None
+            ),
+            "results": [r.to_dict() for r in results],
+        },
     )
     print(f"\nRelatório JSON: {report_path}")
+    checkpoint["status"] = "partial_synthesis" if partial else "complete"
+    _write_json_atomic(checkpoint_path, checkpoint)
+    if partial:
+        print("Execução V2 parcial; consulte as classificações no relatório.", file=sys.stderr)
+        return 2
     return 0
+
+
+def _scan_summary(results) -> dict:
+    from collections import Counter
+
+    by_class = Counter(r.classification for r in results)
+    by_cat: dict = {}
+    for r in results:
+        cat = r.candidate.category
+        d = by_cat.setdefault(cat, {"total": 0, "confirmed": 0})
+        d["total"] += 1
+        if r.classification == "confirmed_on_abstraction":
+            d["confirmed"] += 1
+    total_tokens = sum(r.synth_total_tokens or 0 for r in results)
+    total_synth_seconds = sum(r.synth_seconds for r in results)
+    total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
+    return {
+        "n": len(results),
+        "by_classification": dict(by_class),
+        "by_category": by_cat,
+        "total_synth_tokens": total_tokens,
+        "total_synth_seconds": round(total_synth_seconds, 3),
+        "total_esbmc_seconds": round(total_esbmc_seconds, 3),
+        "mean_attempts": round(
+            sum(r.attempts for r in results) / max(1, len(results)), 2
+        ),
+    }
 
 
 
@@ -873,7 +1207,7 @@ def main() -> int:
         "hybrid":     mode_hybrid,
         "benchmark":  mode_benchmark,
         "ensemble":   mode_ensemble,
-        "scan":       mode_scan,
+        "v2":         mode_v2,
     }
     return dispatch[args.mode](args)
 

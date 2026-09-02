@@ -19,6 +19,7 @@ from research_pipeline.scan.pipeline import (
     OVER_RESTRICTED,
     SAFE_ON_ABSTRACTION,
     ScanCandidate,
+    ScanCaseResult,
     _classify_esbmc,
     _find_unit,
     load_candidates,
@@ -42,7 +43,7 @@ class _FakeSynthesizer:
         self._harness = harness
         self.model = model
 
-    def synthesize(self, unit, finding, *, use_guards: bool = True) -> SynthResult:
+    def synthesize(self, unit, finding, *, use_guards: bool = True, **kwargs) -> SynthResult:
         self.last_use_guards = use_guards
         return SynthResult(
             harness=self._harness,
@@ -72,12 +73,13 @@ def _candidate(tmp_path: Path, function: str = "target") -> ScanCandidate:
     return ScanCandidate(file=str(f), function=function, category="division_by_zero")
 
 
-def _run(tmp_path: Path, harness: str, candidate: ScanCandidate, **layers):
+def _run(tmp_path: Path, harness: str, candidate: ScanCandidate, **kw):
+    kw.setdefault("synth_retries", 0)
     return run_pipeline_scan(
         [candidate],
         synthesizer=_FakeSynthesizer(harness),
         output_dir=tmp_path / "out",
-        **layers,
+        **kw,
     )[0]
 
 
@@ -171,6 +173,52 @@ def test_no_compat_lets_junk_reach_esbmc(tmp_path, monkeypatch):
     assert result.compat_verdict == "skipped"
 
 
+class _RetrySynthesizer:
+    """Fails the first N attempts (bad harness), then returns a good one."""
+
+    def __init__(self, fail_times: int):
+        self._fail_times = fail_times
+        self._calls = 0
+        self.model = "retry-model"
+        self.feedback = []
+
+    def synthesize(self, unit, finding, *, use_guards: bool = True, **kwargs) -> SynthResult:
+        self._calls += 1
+        self.feedback.append(kwargs.get("repair_feedback", ""))
+        bad = "import os\ndef main():\n    pass\nmain()\n"
+        harness = bad if self._calls <= self._fail_times else _GOOD_HARNESS
+        return SynthResult(harness=harness, raw_response=harness, model=self.model, telemetry={})
+
+
+def test_retry_recovers_after_bad_harness(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    synthesizer = _RetrySynthesizer(fail_times=1)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)],
+        synthesizer=synthesizer,
+        output_dir=tmp_path / "out",
+        synth_retries=2,
+    )[0]
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert result.attempts == 2
+    assert synthesizer.feedback[0] == ""
+    assert "imports os" in synthesizer.feedback[1]
+    assert len(result.attempt_history) == 2
+
+
+def test_retry_exhausted_keeps_last_failure_and_full_history(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)],
+        synthesizer=_RetrySynthesizer(fail_times=99),
+        output_dir=tmp_path / "out",
+        synth_retries=2,
+    )[0]
+    assert result.classification == INVALID_HARNESS
+    assert result.attempts == 3
+    assert len(result.attempt_history) == 3
+
+
 def test_no_ablation_keeps_safe_verdict(tmp_path, monkeypatch):
     def flips_under_ablation(file_path, **kw):
         text = Path(file_path).read_text(encoding="utf-8")
@@ -180,3 +228,21 @@ def test_no_ablation_keeps_safe_verdict(tmp_path, monkeypatch):
     result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path), use_ablation=False)
     assert result.classification == SAFE_ON_ABSTRACTION
     assert result.masking_assumptions == []
+
+
+def test_completed_result_is_not_synthesized_again(tmp_path, monkeypatch):
+    candidate = _candidate(tmp_path)
+    completed = ScanCaseResult(
+        candidate=candidate,
+        classification=CONFIRMED_ON_ABSTRACTION,
+        synth_model="old-model",
+    )
+    synthesizer = _RetrySynthesizer(fail_times=0)
+    results = run_pipeline_scan(
+        [candidate],
+        synthesizer=synthesizer,
+        output_dir=tmp_path / "out",
+        completed_results={0: completed},
+    )
+    assert results == [completed]
+    assert synthesizer._calls == 0

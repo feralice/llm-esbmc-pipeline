@@ -19,7 +19,6 @@ from .models import ESBMCDirectResult, ESBMCResult, FinalResult, Finding
 from .preprocess import preprocess_file
 from .report import consolidate_result, write_json_report
 from .verification.esbmc_runner import (
-    run_esbmc_direct,
     run_esbmc_function_baseline,
     run_esbmc_on_function,
 )
@@ -83,7 +82,6 @@ def run_pipeline(
     ollama_base_url: str | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
-    harness_for: dict[str, Path] | None = None,
     resume: bool = False,
 ) -> list[FinalResult]:
     """Flow B: convenience wrapper for analyzing one file.
@@ -103,7 +101,6 @@ def run_pipeline(
         ollama_base_url=ollama_base_url,
         bound=bound,
         timeout_seconds=timeout_seconds,
-        harness_for=harness_for,
         resume=resume,
     )
 
@@ -121,7 +118,6 @@ def run_pipeline_multi(
     bound: int = 5,
     timeout_seconds: int = 30,
     llm_timeout_seconds: int = 300,
-    harness_for: dict[str, Path] | None = None,
     resume: bool = False,
 ) -> list[FinalResult]:
     """Flow B: LLM proposes findings; ESBMC checks verifiable bug findings.
@@ -136,17 +132,6 @@ def run_pipeline_multi(
     The prompt builder intentionally omits the path and pre-extracted operations
     from the LLM prompt to avoid dataset-category leakage.
 
-    harness_for: optional {input_file_path_str: harness_file_path} map. When an
-    input file has an entry here (dataset/v2_real_world/manifest_pilot.json
-    already provides this mapping — detection_file -> harness_file), ESBMC
-    verifies the mapped harness file directly (whole-file, no --function),
-    not the file the LLM read. This is what keeps the harness's own oracle
-    (nondet_*/asserts/precondition) hidden from the detection prompt while
-    still letting a verifiable finding be checked formally: the LLM never
-    sees the harness, and its file is unrelated in shape (often a different
-    function name or a buggy/fixed pair), so --function on it would not make
-    sense. Files with no entry keep the V1 behavior (run_esbmc_on_function on
-    the same file, via --function).
     """
     analyzer = build_analyzer(
         backend=backend,
@@ -162,7 +147,6 @@ def run_pipeline_multi(
         mode="hybrid", backend=backend, model=getattr(analyzer, "model", llm_model),
         bound=bound, timeout=timeout_seconds,
         llm_timeout=llm_timeout_seconds, esbmc_command=esbmc_command,
-        harness_for=harness_for,
     )
     results, completed_units = _initialize_run(artifacts_dir, fingerprint, resume)
     errors: list[dict] = []
@@ -173,8 +157,6 @@ def run_pipeline_multi(
     for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
         print(f"[{i}/{num_files}] Analisando {file_path.name} (hybrid)...")
-
-        harness_path = harness_for.get(str(file_path.resolve())) if harness_for else None
 
         # Preprocess converts each Python function into a CodeUnit.
         units = preprocess_file(file_path)
@@ -209,29 +191,16 @@ def run_pipeline_multi(
                         f"    - Validando hipotese {verified_count}/{num_verifiable}: "
                         f"{finding.category} em {unit.name}..."
                     )
-                    if harness_path is not None:
-                        # Verify the hidden harness, not the file the LLM saw.
-                        esbmc_direct_result = run_esbmc_direct(
-                            file_path=harness_path,
-                            esbmc_command=esbmc_command,
-                            bound=bound,
-                            timeout_seconds=timeout_seconds,
-                            output_dir=artifacts_dir,
-                        )
-                    else:
-                        # V1 behavior: ESBMC needs the real file path and
-                        # function name. This does not mean the LLM saw the
-                        # file path in raw mode.
-                        esbmc_result = run_esbmc_on_function(
-                            file_path=file_path,
-                            function_name=unit.name,
-                            finding_id=finding.id,
-                            category=finding.category,
-                            esbmc_command=esbmc_command,
-                            bound=bound,
-                            timeout_seconds=timeout_seconds,
-                            output_dir=artifacts_dir,
-                        )
+                    esbmc_result = run_esbmc_on_function(
+                        file_path=file_path,
+                        function_name=unit.name,
+                        finding_id=finding.id,
+                        category=finding.category,
+                        esbmc_command=esbmc_command,
+                        bound=bound,
+                        timeout_seconds=timeout_seconds,
+                        output_dir=artifacts_dir,
+                    )
 
                 result = consolidate_result(
                     unit_name=unit.qualname,
@@ -366,7 +335,6 @@ def _run_fingerprint(
     *, mode: str, backend: str, model: str | None,
     bound: int | None, timeout: int, llm_timeout: int | None = None,
     esbmc_command: list[str] | None = None,
-    harness_for: dict[str, Path] | None = None,
 ) -> dict[str, object]:
     return {
         "mode": mode,
@@ -376,9 +344,6 @@ def _run_fingerprint(
         "timeout": timeout,
         "llm_timeout": llm_timeout,
         "esbmc_command": esbmc_command or ["esbmc"],
-        "harness_for": {
-            key: str(value.resolve()) for key, value in sorted((harness_for or {}).items())
-        },
     }
 
 
