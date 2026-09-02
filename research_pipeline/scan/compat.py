@@ -23,17 +23,21 @@ import builtins
 import re
 from dataclasses import dataclass, field
 
-# Bare intrinsics a valid harness is expected to use without importing them.
+# Bare intrinsics a valid harness uses without importing them. Names taken from
+# src/python-frontend/models/esbmc.py and function_call/builder.h (the intrinsic
+# set the frontend actually registers).
 _ALLOWED_UNDEFINED = frozenset(
     {
         "nondet_int",
         "nondet_float",
         "nondet_bool",
         "nondet_str",
-        "nondet_uint",
+        "nondet_list",
+        "nondet_dict",
         "__ESBMC_assume",
         "__ESBMC_assert",
         "__ESBMC_cover",
+        "__ESBMC_unreachable",
         "__ESBMC_requires",
         "__ESBMC_ensures",
         "__ESBMC_assigns",
@@ -43,18 +47,21 @@ _ALLOWED_UNDEFINED = frozenset(
 # Names that mean the harness leaked a heavy dependency ESBMC-Python does not model.
 _UNSUPPORTED_NAMES = frozenset({"numpy", "np", "pandas", "pd", "torch", "tf", "tensorflow", "scipy"})
 
-# Builtins ESBMC-Python does not model; a harness using one gets sliced to
-# assert(false) or produces a spurious result. Scoped to the iteration/
-# aggregation helpers the synthesizer reaches for. `enumerate`, `any`, `range`,
-# `divmod`, `min`, `max` are modelled (src/python-frontend/README.md) and stay off.
-_UNSUPPORTED_BUILTINS = frozenset(
-    {"zip", "map", "filter", "sorted", "reversed", "all", "sum"}
-)
+# Builtins the frontend does not model at all (not merely restricted). `sorted`,
+# `sum`, `any`, `all`, `enumerate`, `min`, `max`, `divmod`, `range` ARE modelled
+# with documented restrictions (limitations.md, README.md line 263) and stay off
+# this list; the synth prompt still steers away from them, but a harness that
+# uses one is not rejected here.
+_UNSUPPORTED_BUILTINS = frozenset({"zip", "map", "filter", "reversed"})
 
-# The real intrinsic names. `__ESBMC_nondet_int` and friends are a common LLM
-# hallucination and are NOT valid.
-_VALID_NONDET = frozenset({"nondet_int", "nondet_float", "nondet_bool", "nondet_str", "nondet_uint"})
-_BAD_NONDET = re.compile(r"\b__ESBMC_nondet_\w+|\bnondet_(?!int\b|float\b|bool\b|str\b|uint\b)\w+")
+# The real nondet intrinsics (models/esbmc.py). `__ESBMC_nondet_*` and
+# `nondet_uint` are common LLM hallucinations and are NOT valid.
+_VALID_NONDET = frozenset(
+    {"nondet_int", "nondet_float", "nondet_bool", "nondet_str", "nondet_list", "nondet_dict"}
+)
+_BAD_NONDET = re.compile(
+    r"\b__ESBMC_nondet_\w+|\bnondet_(?!int\b|float\b|bool\b|str\b|list\b|dict\b)\w+"
+)
 
 VERDICT_OK = "ok"
 VERDICT_INVALID = "invalid_harness"
