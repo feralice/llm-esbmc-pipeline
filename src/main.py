@@ -202,6 +202,21 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--no-compat",
+        action="store_true",
+        help="Modo scan: pula o compat.py (roda ESBMC no harness sem checar dependências).",
+    )
+    parser.add_argument(
+        "--no-guards",
+        action="store_true",
+        help="Modo scan: não passa a allowlist de precondição (guards.py) para a síntese.",
+    )
+    parser.add_argument(
+        "--no-ablation",
+        action="store_true",
+        help="Modo scan: não roda ablação nos vereditos SUCCESSFUL.",
+    )
+    parser.add_argument(
         "--v2-manifest",
         default=None,
         metavar="CAMINHO",
@@ -793,9 +808,20 @@ def mode_scan(args: argparse.Namespace) -> int:
         return 1
 
     output_dir = args.output_dir or _default_output_dir("scan")
+    config = {
+        "model": model,
+        "compat": not args.no_compat,
+        "guards": not args.no_guards,
+        "ablation": not args.no_ablation,
+        "bound": args.bound,
+        "timeout": args.timeout,
+    }
+    layers = "".join(
+        f" +{name}" for name in ("compat", "guards", "ablation") if config[name]
+    ) or " synth-only"
     print(
         f"\nModo scan — {len(candidates)} candidato(s) → "
-        f"{len(candidates)} chamada(s) de síntese ao modelo {model}"
+        f"{len(candidates)} chamada(s) de síntese ao modelo {model} | camadas:{layers}"
     )
 
     results = run_pipeline_scan(
@@ -805,6 +831,9 @@ def mode_scan(args: argparse.Namespace) -> int:
         bound=args.bound,
         timeout_seconds=args.timeout,
         output_dir=output_dir,
+        use_compat=not args.no_compat,
+        use_guards=not args.no_guards,
+        use_ablation=not args.no_ablation,
     )
 
     from collections import Counter
@@ -819,7 +848,9 @@ def mode_scan(args: argparse.Namespace) -> int:
         report_path = Path(args.report)
     else:
         report_path = Path(output_dir) / "scan_report.json"
-    _write_json_atomic(report_path, [r.to_dict() for r in results])
+    _write_json_atomic(
+        report_path, {"config": config, "results": [r.to_dict() for r in results]}
+    )
     print(f"\nRelatório JSON: {report_path}")
     return 0
 

@@ -138,8 +138,15 @@ def run_pipeline_scan(
     bound: int = 5,
     timeout_seconds: int = 30,
     output_dir: str | Path,
+    use_compat: bool = True,
+    use_guards: bool = True,
+    use_ablation: bool = True,
 ) -> list[ScanCaseResult]:
-    """Run the scan flow over every candidate and return one result each."""
+    """Run the scan flow over every candidate and return one result each.
+
+    The three layers are independently toggleable so the ablation study can run
+    synth-only, then +compat, +guards, +ablation and compare.
+    """
     harness_dir = Path(output_dir) / "harnesses"
     harness_dir.mkdir(parents=True, exist_ok=True)
 
@@ -154,6 +161,9 @@ def run_pipeline_scan(
                 bound=bound,
                 timeout_seconds=timeout_seconds,
                 harness_dir=harness_dir,
+                use_compat=use_compat,
+                use_guards=use_guards,
+                use_ablation=use_ablation,
             )
         )
     return results
@@ -168,6 +178,9 @@ def _run_one(
     bound: int,
     timeout_seconds: int,
     harness_dir: Path,
+    use_compat: bool = True,
+    use_guards: bool = True,
+    use_ablation: bool = True,
 ) -> ScanCaseResult:
     started = time.monotonic()
     result = ScanCaseResult(
@@ -204,7 +217,7 @@ def _run_one(
     )
 
     try:
-        synth_result = synthesizer.synthesize(unit, finding)
+        synth_result = synthesizer.synthesize(unit, finding, use_guards=use_guards)
     except Exception as exc:  # noqa: BLE001 - network/API failure is reported, not raised
         result.classification = SYNTH_FAILED
         result.error = f"synthesis failed: {exc}"
@@ -214,17 +227,20 @@ def _run_one(
     result.harness = synth_result.harness
     result.synth_total_tokens = synth_result.telemetry.get("total_tokens")
 
-    compat = check_harness(synth_result.harness)
-    result.compat_verdict = compat.verdict
-    result.compat_reasons = list(compat.reasons)
-    if not compat.ok:
-        result.classification = (
-            UNSUPPORTED_HARNESS
-            if compat.verdict == VERDICT_UNSUPPORTED
-            else INVALID_HARNESS
-        )
-        result.seconds = time.monotonic() - started
-        return result
+    if use_compat:
+        compat = check_harness(synth_result.harness)
+        result.compat_verdict = compat.verdict
+        result.compat_reasons = list(compat.reasons)
+        if not compat.ok:
+            result.classification = (
+                UNSUPPORTED_HARNESS
+                if compat.verdict == VERDICT_UNSUPPORTED
+                else INVALID_HARNESS
+            )
+            result.seconds = time.monotonic() - started
+            return result
+    else:
+        result.compat_verdict = "skipped"
 
     harness_path = harness_dir / f"scan_{index:03d}_{unit.name}.py"
     harness_path.write_text(synth_result.harness, encoding="utf-8")
@@ -241,7 +257,7 @@ def _run_one(
     result.esbmc_summary = esbmc.summary
 
     result.classification = _classify_esbmc(esbmc.status)
-    if result.classification == SAFE_ON_ABSTRACTION:
+    if use_ablation and result.classification == SAFE_ON_ABSTRACTION:
         report = _ablate_harness(
             synth_result.harness,
             esbmc_command=esbmc_command,

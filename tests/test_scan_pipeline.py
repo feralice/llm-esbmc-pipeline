@@ -42,7 +42,8 @@ class _FakeSynthesizer:
         self._harness = harness
         self.model = model
 
-    def synthesize(self, unit, finding) -> SynthResult:
+    def synthesize(self, unit, finding, *, use_guards: bool = True) -> SynthResult:
+        self.last_use_guards = use_guards
         return SynthResult(
             harness=self._harness,
             raw_response=self._harness,
@@ -71,11 +72,12 @@ def _candidate(tmp_path: Path, function: str = "target") -> ScanCandidate:
     return ScanCandidate(file=str(f), function=function, category="division_by_zero")
 
 
-def _run(tmp_path: Path, harness: str, candidate: ScanCandidate):
+def _run(tmp_path: Path, harness: str, candidate: ScanCandidate, **layers):
     return run_pipeline_scan(
         [candidate],
         synthesizer=_FakeSynthesizer(harness),
         output_dir=tmp_path / "out",
+        **layers,
     )[0]
 
 
@@ -159,3 +161,22 @@ def test_candidate_function_not_found(tmp_path, monkeypatch):
     _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
     result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path, function="nonexistent"))
     assert result.classification == CANDIDATE_NOT_FOUND
+
+
+def test_no_compat_lets_junk_reach_esbmc(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("tool_error"))
+    junk = "import os\ndef main():\n    pass\nmain()\n"
+    result = _run(tmp_path, junk, _candidate(tmp_path), use_compat=False)
+    assert result.classification == "esbmc_inconclusive"
+    assert result.compat_verdict == "skipped"
+
+
+def test_no_ablation_keeps_safe_verdict(tmp_path, monkeypatch):
+    def flips_under_ablation(file_path, **kw):
+        text = Path(file_path).read_text(encoding="utf-8")
+        return _esbmc("violation_found" if "# [ablated] " in text else "no_violation_found")
+
+    _patch_esbmc(monkeypatch, flips_under_ablation)
+    result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path), use_ablation=False)
+    assert result.classification == SAFE_ON_ABSTRACTION
+    assert result.masking_assumptions == []

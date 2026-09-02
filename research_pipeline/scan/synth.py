@@ -41,15 +41,28 @@ def _strip_fence(text: str) -> str:
     return text.strip() + "\n"
 
 
-def build_synth_user_prompt(unit: CodeUnit, finding: Finding) -> str:
+_NO_GUARDS_BLOCK = (
+    "Preconditions the real function enforces: NOT PROVIDED for this run.\n"
+    "Add only one loose magnitude bound per variable so the search terminates "
+    "(e.g. __ESBMC_assume(abs(x) <= 1000)). Add NO other precondition."
+)
+
+
+def build_synth_user_prompt(
+    unit: CodeUnit, finding: Finding, *, use_guards: bool = True
+) -> str:
     expression = str(finding.metadata.get("expression", "")) or "(not given)"
+    if use_guards:
+        precondition = format_precondition_block(unit.source)
+    else:
+        precondition = _NO_GUARDS_BLOCK
     return (
         f"Bug category: {finding.category}\n"
         f"Suspected unsafe expression: {expression}\n"
         f"Function name: {unit.name}\n"
         f"Parameters: {', '.join(unit.parameters) or '(none)'}\n"
         f"Type hints: {json.dumps(unit.type_hints)}\n\n"
-        f"{format_precondition_block(unit.source)}\n\n"
+        f"{precondition}\n\n"
         f"Real function source:\n```python\n{unit.source}\n```\n"
     )
 
@@ -93,12 +106,15 @@ class HarnessSynthesizer:
             raise ValueError("OPENAI_API_KEY não configurada para a síntese de harness.")
         self.telemetry_events: list[dict] = []
 
-    def synthesize(self, unit: CodeUnit, finding: Finding) -> SynthResult:
+    def synthesize(
+        self, unit: CodeUnit, finding: Finding, *, use_guards: bool = True
+    ) -> SynthResult:
+        user_prompt = build_synth_user_prompt(unit, finding, use_guards=use_guards)
         payload = {
             "model": self.model,
             "input": [
                 {"role": "system", "content": [{"type": "input_text", "text": load_synth_prompt()}]},
-                {"role": "user", "content": [{"type": "input_text", "text": build_synth_user_prompt(unit, finding)}]},
+                {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
             ],
         }
 
