@@ -3,15 +3,11 @@
 Versão de trabalho, com caminhos de arquivo. Para orientador/banca, reescrever sem código.
 Estado em 31/08/2026: passos 1 a 3 implementados, sem entrypoint de CLI.
 
-O alvo é um repositório selvagem, sem gabarito. A LLM sintetiza o modelo reduzido
-que o ESBMC verifica (`research_pipeline/scan/synth.py`), em vez de o ESBMC rodar
-no código original. `guards.py` e `ablation.py` impedem que a LLM invente uma
+O alvo é um repositório selvagem, sem gabarito. Toda função extraída pelo
+`preprocess.py` vai para a triagem da LLM. A LLM sintetiza o modelo reduzido que o
+ESBMC verifica (`research_pipeline/scan/synth.py`), em vez de o ESBMC rodar no
+código original. `guards.py` e `ablation.py` impedem que a LLM invente uma
 precondição que faz o bug sumir.
-
-Sem pré-filtro sintático: toda função extraída pelo `preprocess.py` vai para a
-triagem da LLM. Um marcador de sintaxe (`/`, `[]`, `*`) não cobre categorias como
-`none_misuse` ou `variable_misuse`, e o bug costuma estar na falta de um check, não
-na presença de uma operação.
 
 ## Fluxo
 
@@ -57,6 +53,6 @@ Não vieram do ESBMC nem dos agentes ESBMC. Mistura:
 
 - `research_pipeline/scan/` é aditivo: nenhum fluxo V1 importa dele.
 - Sem entrypoint de CLI: não existe `--mode scan` ainda. Biblioteca + testes só.
-- `130 passed` na suíte.
+- `126 passed` na suíte.
 - Gap: `compat.py` não rejeita harness com `for`/`while`, mas `synth_prompt.txt` regra 2 proíbe loop. Inconsistência a fechar.
 - Commits na branch `feat/v2-scan-mode`: `6096357` (fix preprocess/ast_utils/findings), `99a6f07` (scan passos 1-3), `246371b` (docs LEITURAS §9).

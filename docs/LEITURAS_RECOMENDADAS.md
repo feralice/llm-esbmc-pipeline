@@ -263,10 +263,8 @@ CFG, taint) por categoria de bug, não só para os casos "fáceis" de extrair (d
 Nenhuma leitura desta lista cobre isso ainda diretamente — candidatos a revisar: trabalhos de
 "structured prompting" ou "program-aware prompting" para detecção de vulnerabilidade.
 
-Estado 01/09/2026: a lacuna de cobertura de AST continua aberta. O modo `scan` decidiu não usar
-pré-filtro sintático (toda função vai para a triagem da LLM), então o problema não é mais
-"o filtro cobre poucas categorias" e sim "a triagem não recebe hint estrutural para as 6
-categorias sem nó próprio". É item de trabalho, não só de leitura.
+Estado 01/09/2026: a triagem do modo `scan` roda sobre toda função e não recebe hint estrutural
+para as 6 categorias sem nó AST próprio. É item de trabalho, não só de leitura.
 
 ### 5.5 Significância estatística em avaliação com dataset pequeno
 
@@ -332,9 +330,9 @@ reconhecidos pela comunidade.
 
 Por que importa:
 
-- é o precedente mais próximo da caça selvagem: filtro barato acha muito, LLM tria, bug real sai;
-- a diferença de desenho vale registrar: LLift tem uma análise estática de verdade gerando os
-  candidatos, o modo `scan` decidiu não ter pré-filtro e manda toda função para a triagem;
+- é o precedente mais próximo da caça selvagem: uma análise estática gera os candidatos, a LLM
+  tria, o bug real sai;
+- no modo `scan` a triagem da LLM roda sobre todas as funções extraídas, sem um analisador prévio;
 - dá base para a alegação de que o filtro formal (aqui, ESBMC no harness) é contribuição central,
   não pós-processamento.
 
@@ -393,7 +391,7 @@ rotulado). O modo `scan` é uma segunda formulação, sem gabarito:
 ```text
 repositório real, pouco auditado
        ↓
-toda função extraída por AST vai para a triagem (sem pré-filtro)
+toda função extraída por AST vai para a triagem
        ↓
 LLM localiza a expressão de risco e a categoria
        ↓
