@@ -36,7 +36,6 @@ python scripts/run_esbmc_dataset.py
 python src/main.py --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 

@@ -1,10 +1,38 @@
 from __future__ import annotations
 
 import ast
+import textwrap
 import warnings
 from pathlib import Path
 
 from .models import CodeUnit, OperationRecord
+
+
+def _all_arg_nodes(args: ast.arguments) -> list[ast.arg]:
+    """Every parameter of a function, in source order, across all arg kinds.
+
+    ast.arguments splits parameters into posonlyargs / args / vararg /
+    kwonlyargs / kwarg. Reading only `.args` drops positional-only params,
+    keyword-only params, and *args / **kwargs, which real-world code uses.
+    """
+    nodes: list[ast.arg] = [*args.posonlyargs, *args.args]
+    if args.vararg is not None:
+        nodes.append(args.vararg)
+    nodes.extend(args.kwonlyargs)
+    if args.kwarg is not None:
+        nodes.append(args.kwarg)
+    return nodes
+
+
+def _is_string_format_operand(node: ast.expr) -> bool:
+    """True when `node % x` is printf-style string formatting, not modulo.
+
+    `%` shares ast.Mod with the modulo operator; `"%s" % v` and `f"{a}" % v`
+    are not division-by-zero sites.
+    """
+    if isinstance(node, ast.JoinedStr):
+        return True
+    return isinstance(node, ast.Constant) and isinstance(node.value, (str, bytes))
 
 
 class _UnitCollector(ast.NodeVisitor):
@@ -60,11 +88,16 @@ class _UnitCollector(ast.NodeVisitor):
         extractor.visit(node)
 
         qualname = ".".join([*self.scope, node.name]) if self.scope else node.name
-        source = "\n".join(self.source_lines[node.lineno - 1 : node.end_lineno])
-        params = [arg.arg for arg in node.args.args]
+        # dedent so a method's source parses on its own (ast.parse rejects the
+        # leading indentation); every downstream consumer re-parses unit.source.
+        source = textwrap.dedent(
+            "\n".join(self.source_lines[node.lineno - 1 : node.end_lineno])
+        )
+        arg_nodes = _all_arg_nodes(node.args)
+        params = [arg.arg for arg in arg_nodes]
 
         hints = {}
-        for arg in node.args.args:
+        for arg in arg_nodes:
             if arg.annotation is not None:
                 hints[arg.arg] = ast.unparse(arg.annotation)
         if node.returns is not None:
@@ -104,16 +137,27 @@ class _StructureExtractor(ast.NodeVisitor):
         self.guards: list[str] = []
         self.branch_count = 0
         self.source_text = "\n".join(source_lines)
+        self._entered = False
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """Visit only the body of this function, not the FunctionDef wrapper."""
+        """Visit this function's body once; a nested `def` is its own CodeUnit."""
+        if self._entered:
+            return
+        self._entered = True
         for stmt in node.body:
             self.visit(stmt)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
-        """Visit only the body of this async function."""
+        """Visit this async function's body once; a nested `def` is its own unit."""
+        if self._entered:
+            return
+        self._entered = True
         for stmt in node.body:
             self.visit(stmt)
+
+    def visit_Lambda(self, node: ast.Lambda) -> None:
+        """Do not descend into a lambda body; its operations are not this unit's."""
+        return
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
         """Visit annotated assignment values, ignoring the annotation itself."""
@@ -129,6 +173,16 @@ class _StructureExtractor(ast.NodeVisitor):
         """Record a while-loop and keep walking inside it."""
         self.loops.append(ast.get_source_segment(self.source_text, node) or ast.unparse(node))
         self.generic_visit(node)
+
+    def _record_comprehension(self, node: ast.expr) -> None:
+        """A comprehension / generator iterates; record it as a loop."""
+        self.loops.append(ast.get_source_segment(self.source_text, node) or ast.unparse(node))
+        self.generic_visit(node)
+
+    visit_ListComp = _record_comprehension
+    visit_SetComp = _record_comprehension
+    visit_DictComp = _record_comprehension
+    visit_GeneratorExp = _record_comprehension
 
     def visit_If(self, node: ast.If) -> None:
         """Record if conditions as both branches and possible guards."""
@@ -161,7 +215,11 @@ class _StructureExtractor(ast.NodeVisitor):
 
     def visit_BinOp(self, node: ast.BinOp) -> None:
         """Record division-like binary operations: /, // and %."""
-        if isinstance(node.op, (ast.Div, ast.FloorDiv, ast.Mod)):
+        is_div = isinstance(node.op, (ast.Div, ast.FloorDiv)) or (
+            isinstance(node.op, ast.Mod)
+            and not _is_string_format_operand(node.left)
+        )
+        if is_div:
             self.operations.append(
                 OperationRecord(
                     kind="division",

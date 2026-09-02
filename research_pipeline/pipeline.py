@@ -11,11 +11,11 @@ Flow C: LLM-only. The LLM findings are kept without formal confirmation.
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from pathlib import Path
 
 from .llm.backends.factory import Backend, build_analyzer  # noqa: F401 - re-exported
-from .llm.prompts import PromptMode
-from .models import ESBMCDirectResult, FinalResult
+from .models import ESBMCDirectResult, ESBMCResult, FinalResult, Finding
 from .preprocess import preprocess_file
 from .report import consolidate_result, write_json_report
 from .verification.esbmc_runner import (
@@ -30,7 +30,7 @@ from .verification.esbmc_runner import (
 # ---------------------------------------------------------------------------
 
 def run_pipeline_esbmc_direct(
-    input_paths: list[str | Path],
+    input_paths: Sequence[str | Path],
     output_dir: str | Path = "artifacts/esbmc-direct",
     esbmc_command: list[str] | None = None,
     bound: int = 5,
@@ -63,10 +63,7 @@ def run_pipeline_esbmc_direct(
         results.append(result)
 
     summary_path = Path(output_dir) / "esbmc_direct_results.json"
-    summary_path.write_text(
-        json.dumps([result.to_dict() for result in results], indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    _write_json_atomic(summary_path, [result.to_dict() for result in results])
     return results
 
 
@@ -86,8 +83,8 @@ def run_pipeline(
     ollama_base_url: str | None = None,
     bound: int = 5,
     timeout_seconds: int = 30,
-    prompt_mode: PromptMode = "raw",
     harness_for: dict[str, Path] | None = None,
+    resume: bool = False,
 ) -> list[FinalResult]:
     """Flow B: convenience wrapper for analyzing one file.
 
@@ -102,16 +99,17 @@ def run_pipeline(
         llm_model=llm_model,
         openai_api_key=openai_api_key,
         anthropic_api_key=anthropic_api_key,
+        google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         bound=bound,
         timeout_seconds=timeout_seconds,
-        prompt_mode=prompt_mode,
         harness_for=harness_for,
+        resume=resume,
     )
 
 
 def run_pipeline_multi(
-    input_paths: list[str | Path],
+    input_paths: Sequence[str | Path],
     output_dir: str | Path = "artifacts/research-pipeline",
     esbmc_command: list[str] | None = None,
     backend: Backend = "openai",
@@ -123,8 +121,8 @@ def run_pipeline_multi(
     bound: int = 5,
     timeout_seconds: int = 30,
     llm_timeout_seconds: int = 300,
-    prompt_mode: PromptMode = "raw",
     harness_for: dict[str, Path] | None = None,
+    resume: bool = False,
 ) -> list[FinalResult]:
     """Flow B: LLM proposes findings; ESBMC checks verifiable bug findings.
 
@@ -135,8 +133,8 @@ def run_pipeline_multi(
     4. report.consolidate_result() turns each finding into a FinalResult.
 
     The pipeline keeps file_path internally so ESBMC can run on the real file.
-    In prompt_mode="raw", the prompt builder intentionally omits the path from
-    the LLM prompt to avoid dataset-category leakage.
+    The prompt builder intentionally omits the path and pre-extracted operations
+    from the LLM prompt to avoid dataset-category leakage.
 
     harness_for: optional {input_file_path_str: harness_file_path} map. When an
     input file has an entry here (dataset/v2_real_world/manifest_pilot.json
@@ -158,13 +156,18 @@ def run_pipeline_multi(
         google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=llm_timeout_seconds,
-        prompt_mode=prompt_mode,
     )
     artifacts_dir = Path(output_dir)
-    _prepare_output_dir(artifacts_dir)
-
-    results: list[FinalResult] = []
+    fingerprint = _run_fingerprint(
+        mode="hybrid", backend=backend, model=getattr(analyzer, "model", llm_model),
+        bound=bound, timeout=timeout_seconds,
+        llm_timeout=llm_timeout_seconds, esbmc_command=esbmc_command,
+        harness_for=harness_for,
+    )
+    results, completed_units = _initialize_run(artifacts_dir, fingerprint, resume)
     errors: list[dict] = []
+    planned_units = 0
+    processed_units = len(completed_units)
 
     num_files = len(input_paths)
     for i, input_path in enumerate(input_paths, 1):
@@ -175,7 +178,12 @@ def run_pipeline_multi(
 
         # Preprocess converts each Python function into a CodeUnit.
         units = preprocess_file(file_path)
+        planned_units += len(units)
         for unit in units:
+            unit_key = _unit_key(file_path, unit.qualname)
+            if unit_key in completed_units:
+                print(f"    - Retomada: {unit.qualname} já concluída; pulando.")
+                continue
             # The LLM receives one function at a time and returns zero or more findings.
             try:
                 findings = analyzer.analyze(unit)
@@ -184,9 +192,7 @@ def run_pipeline_multi(
                 # must not discard every result already collected in this run.
                 print(f"    ERRO ao analisar {unit.qualname}: {exc}. Caso pulado, resultados anteriores preservados.")
                 errors.append({"unit": unit.qualname, "source_file": str(file_path), "error": str(exc)})
-                (artifacts_dir / "errors.json").write_text(
-                    json.dumps(errors, indent=2, ensure_ascii=False), encoding="utf-8"
-                )
+                _write_json_atomic(artifacts_dir / "errors.json", errors)
                 continue
 
             verifiable_findings = [finding for finding in findings if finding.verifiable]
@@ -240,6 +246,17 @@ def run_pipeline_multi(
             # run (network error, a case that exhausts every retry) must not cost
             # the results already collected for prior units.
             write_json_report(results, artifacts_dir / "report.json")
+            completed_units.add(unit_key)
+            processed_units += 1
+            _write_run_status(
+                artifacts_dir, fingerprint, planned_units, processed_units,
+                errors, completed_units,
+            )
+
+    _write_run_status(
+        artifacts_dir, fingerprint, planned_units, processed_units,
+        errors, completed_units,
+    )
 
     return results
 
@@ -249,7 +266,7 @@ def run_pipeline_multi(
 # ---------------------------------------------------------------------------
 
 def run_pipeline_llm_only(
-    input_paths: list[str | Path],
+    input_paths: Sequence[str | Path],
     output_dir: str | Path = "artifacts/llm-only",
     backend: Backend = "openai",
     llm_model: str | None = None,
@@ -258,7 +275,7 @@ def run_pipeline_llm_only(
     google_api_key: str | None = None,
     ollama_base_url: str | None = None,
     timeout_seconds: int = 300,
-    prompt_mode: PromptMode = "raw",
+    resume: bool = False,
 ) -> list[FinalResult]:
     """Flow C: run the LLM only, without ESBMC confirmation.
 
@@ -274,28 +291,35 @@ def run_pipeline_llm_only(
         google_api_key=google_api_key,
         ollama_base_url=ollama_base_url,
         timeout_seconds=timeout_seconds,
-        prompt_mode=prompt_mode,
     )
     artifacts_dir = Path(output_dir)
-    artifacts_dir.mkdir(parents=True, exist_ok=True)
-
-    results: list[FinalResult] = []
+    fingerprint = _run_fingerprint(
+        mode="llm-only", backend=backend, model=getattr(analyzer, "model", llm_model),
+        bound=None, timeout=timeout_seconds,
+    )
+    results, completed_units = _initialize_run(artifacts_dir, fingerprint, resume)
     errors: list[dict] = []
+    planned_units = 0
+    processed_units = len(completed_units)
     num_files = len(input_paths)
     for i, input_path in enumerate(input_paths, 1):
         file_path = Path(input_path)
         print(f"[{i}/{num_files}] Analisando {file_path.name} (LLM-only)...")
 
         # Flow C keeps the LLM findings as final suspected results.
-        for unit in preprocess_file(file_path):
+        units = preprocess_file(file_path)
+        planned_units += len(units)
+        for unit in units:
+            unit_key = _unit_key(file_path, unit.qualname)
+            if unit_key in completed_units:
+                print(f"    - Retomada: {unit.qualname} já concluída; pulando.")
+                continue
             try:
                 findings = analyzer.analyze(unit)
             except Exception as exc:
                 print(f"    ERRO ao analisar {unit.qualname}: {exc}. Caso pulado, resultados anteriores preservados.")
                 errors.append({"unit": unit.qualname, "source_file": str(file_path), "error": str(exc)})
-                (artifacts_dir / "errors.json").write_text(
-                    json.dumps(errors, indent=2, ensure_ascii=False), encoding="utf-8"
-                )
+                _write_json_atomic(artifacts_dir / "errors.json", errors)
                 continue
 
             for finding in findings:
@@ -310,13 +334,119 @@ def run_pipeline_llm_only(
 
             # Persist after every unit, not only at the end (see Flow B for why).
             write_json_report(results, artifacts_dir / "report.json")
+            completed_units.add(unit_key)
+            processed_units += 1
+            _write_run_status(
+                artifacts_dir, fingerprint, planned_units, processed_units,
+                errors, completed_units,
+            )
+
+    _write_run_status(
+        artifacts_dir, fingerprint, planned_units, processed_units,
+        errors, completed_units,
+    )
 
     return results
 
 
 def _prepare_output_dir(artifacts_dir: Path) -> None:
-    """Create the output directory and replace the old report.json if present."""
-    report_path = artifacts_dir / "report.json"
-    if report_path.exists():
-        report_path.unlink()
+    """Create the output directory and remove state owned by a previous run."""
     artifacts_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("report.json", "errors.json", "run_status.json"):
+        path = artifacts_dir / name
+        if path.exists():
+            path.unlink()
+
+
+def _unit_key(file_path: Path, qualname: str) -> str:
+    return f"{file_path.resolve()}::{qualname}"
+
+
+def _run_fingerprint(
+    *, mode: str, backend: str, model: str | None,
+    bound: int | None, timeout: int, llm_timeout: int | None = None,
+    esbmc_command: list[str] | None = None,
+    harness_for: dict[str, Path] | None = None,
+) -> dict[str, object]:
+    return {
+        "mode": mode,
+        "backend": backend,
+        "model": model,
+        "bound": bound,
+        "timeout": timeout,
+        "llm_timeout": llm_timeout,
+        "esbmc_command": esbmc_command or ["esbmc"],
+        "harness_for": {
+            key: str(value.resolve()) for key, value in sorted((harness_for or {}).items())
+        },
+    }
+
+
+def _initialize_run(
+    artifacts_dir: Path,
+    fingerprint: dict[str, object],
+    resume: bool,
+) -> tuple[list[FinalResult], set[str]]:
+    status_path = artifacts_dir / "run_status.json"
+    report_path = artifacts_dir / "report.json"
+    if not resume:
+        _prepare_output_dir(artifacts_dir)
+        return [], set()
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    if not status_path.exists():
+        return [], set()
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    if status.get("fingerprint") != fingerprint:
+        raise ValueError(
+            "Não é seguro retomar: a configuração atual difere de run_status.json. "
+            "Use outro --output-dir ou execute sem --resume."
+        )
+    results = _load_json_report(report_path) if report_path.exists() else []
+    return results, set(status.get("completed_units", []))
+
+
+def _load_json_report(path: Path) -> list[FinalResult]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    results: list[FinalResult] = []
+    for item in payload:
+        finding = Finding(**item["finding"])
+        esbmc = ESBMCResult(**item["esbmc_result"]) if item.get("esbmc_result") else None
+        direct = (
+            ESBMCDirectResult(**item["esbmc_direct_result"])
+            if item.get("esbmc_direct_result") else None
+        )
+        results.append(FinalResult(
+            unit_name=item["unit_name"], source_file=item["source_file"],
+            finding=finding, esbmc_result=esbmc, esbmc_direct_result=direct,
+            final_classification=item["final_classification"],
+            interpretation=item["interpretation"],
+        ))
+    return results
+
+
+def _write_run_status(
+    artifacts_dir: Path,
+    fingerprint: dict[str, object],
+    planned: int,
+    processed: int,
+    errors: list[dict],
+    completed_units: set[str],
+) -> None:
+    status = "complete" if not errors and processed == planned else "partial"
+    payload = {
+        "status": status,
+        "fingerprint": fingerprint,
+        "planned_units": planned,
+        "processed_units": processed,
+        "failed_units": len(errors),
+        "errors": errors,
+        "completed_units": sorted(completed_units),
+    }
+    _write_json_atomic(artifacts_dir / "run_status.json", payload)
+
+
+def _write_json_atomic(target: Path, payload: object) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    temporary.replace(target)

@@ -50,8 +50,8 @@ def build_dataset_statistics(ground_truth_path: str | Path) -> dict:
 
     metrics = ("physical_lines", "executable_lines", "parameters", "cyclomatic_complexity")
     per_category: dict[str, dict] = {}
-    categories = sorted({category for row in function_rows for category in row["categories"]})
-    for category in categories:
+    category_names = sorted({category for row in function_rows for category in row["categories"]})
+    for category in category_names:
         rows = [row for row in function_rows if category in row["categories"]]
         per_category[category] = {
             "functions": len(rows),

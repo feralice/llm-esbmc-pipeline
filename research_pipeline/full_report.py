@@ -363,8 +363,14 @@ def _esbmc_function_dict(esbmc: ESBMCResult | None) -> dict | None:
 # Utility
 # ---------------------------------------------------------------------------
 
-def _safe_int(value: str | None) -> int:
+def _safe_int(value: object) -> int:
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, int):
+        return value
+    if not isinstance(value, str):
+        return 0
     try:
         return int(value or 0)
-    except (ValueError, TypeError):
+    except ValueError:
         return 0

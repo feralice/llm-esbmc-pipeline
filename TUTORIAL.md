@@ -11,6 +11,9 @@ esbmc --version
 python -m pytest
 ```
 
+O pytest padrão não chama APIs reais. Para executar explicitamente essas
+integrações, use `python -m pytest -m live_llm`.
+
 ---
 
 ## Os três fluxos
@@ -33,14 +36,13 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 ```
 
 Saída no terminal mostra P/R/F1 para Flow C (LLM), Flow B (híbrido) e Flow A (ESBMC) separadamente.
 
-> **`--prompt-mode raw` é obrigatório** em avaliações científicas. Sem ele o prompt vaza operações pré-extraídas que dão dica do tipo de bug.
+O pipeline usa um único prompt, sem expor à LLM as operações pré-extraídas pelo AST.
 
 ---
 
@@ -54,7 +56,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model gpt-4o \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 
@@ -63,7 +64,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model claude-sonnet-4-6 \
-  --prompt-mode raw \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_claude-sonnet-4-6.json
 
@@ -72,7 +72,6 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model deepseek-r1:7b \
-  --prompt-mode raw \
   --bound 5 --timeout 30 --llm-timeout 600 \
   --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
 
@@ -81,12 +80,16 @@ python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
   --model qwen2.5-coder:7b \
-  --prompt-mode raw \
   --bound 5 --timeout 30 --llm-timeout 600 \
   --report reports/json/v1_benchmark/benchmark_qwen2.5-coder-7b.json
 ```
 
 Gera `reports/json/v1_benchmark/benchmark_<modelo>.json` para cada modelo.
+
+Para retomar um benchmark interrompido, repita exatamente a mesma configuração
+e acrescente `--resume`. No modo benchmark, `--report` é obrigatório para
+localizar o checkpoint. Casos ausentes ficam em `coverage.failed_cases` e uma
+execução parcial retorna código de saída `2`.
 
 > **`--llm-timeout 600`** é necessário para modelos locais Ollama. Reasoning models como DeepSeek-R1 podem levar vários minutos por função — o padrão (300 s) costuma causar timeout em funções mais complexas.
 

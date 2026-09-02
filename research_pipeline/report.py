@@ -283,8 +283,10 @@ def make_direct_observation_result(
 def write_json_report(results: list[FinalResult], output_path: str | Path) -> Path:
     target = Path(output_path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    temporary.write_text(
         json.dumps([r.to_dict() for r in results], indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+    temporary.replace(target)
     return target
