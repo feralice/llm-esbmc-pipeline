@@ -1,30 +1,23 @@
 [
   {
     "file": "dataset/v2_real_world/detection/dz_real_01.py",
-    "function": "color_interp_distance",
+    "function": "makeMappingArray",
     "category": "division_by_zero",
-    "expression": "(xind_i - x_ind_prev) / (x_ind - x_ind_prev)",
-    "note": "denominador não é validado contra zero"
+    "expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+    "note": "x[ind] - x[ind - 1] pode ser 0 se dois pontos de mapeamento coincidem"
   },
   {
     "file": "dataset/v2_real_world/detection/dz_real_02.py",
-    "function": "rating_ratio",
+    "function": "choose_best_split",
     "category": "division_by_zero",
     "expression": "float(not_parsed) / float(num_substrings)",
-    "note": "num_substrings pode ser 0"
+    "note": "num_substrings = len(possible_substrings_splits[i]) pode ser 0"
   },
   {
     "file": "dataset/v2_real_world/detection/dz_real_03.py",
-    "function": "hash_expand_range",
+    "function": "do",
     "category": "division_by_zero",
-    "expression": "(crc >> idx) % rng",
-    "note": "rng pode ser 0"
-  },
-  {
-    "file": "dataset/v2_real_world/detection/ip_real_01.py",
-    "function": "buggy_should_raise",
-    "category": "invalid_precondition",
-    "expression": "b == c",
-    "note": "pré-condição não checada no início da função"
+    "expression": "(crc >> idx) % (range_end - range_begin + 1)",
+    "note": "range_end - range_begin + 1 pode ser 0 se range_begin = range_end + 1"
   }
 ]
