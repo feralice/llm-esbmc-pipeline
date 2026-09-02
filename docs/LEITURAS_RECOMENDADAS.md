@@ -589,3 +589,139 @@ O que é específico desta pesquisa, à luz da revisão:
   ver se entram no trabalho relacionado;
 - a seção 6 fala em "issues" para a caça manual; o estado em 1 de setembro é as duas issues
   abertas com PRs da comunidade sem review de mantenedor, ajustar quando houver desfecho.
+
+## 8. Trabalhos agênticos de nível de repositório (levantamento via base ASE, 1 de setembro de 2026)
+
+Fonte: `PurCL/ASE`, base curada de 1.666 artigos sobre engenharia de software com agentes
+(ICSE, FSE, ASE, ISSTA, PLDI, OOPSLA, S&P, CCS, NDSS, ACL, ICML, 2023 a 2026), com taxonomia
+de tema. Site: <https://chengpeng-wang.github.io/Survey/ase.html>. Arquivo local com abstract
+e DOI de cada paper: `data/labeldata/labeldata.json`. Serve para varrer o trabalho relacionado
+por rótulo (Bug Detection 249, Program Verification 44, Data-flow Analysis 23, Symbolic
+Execution 7, Test Case Generation 118, Program Repair 223). Metadados abaixo saíram dessa base
+nesta data; verificar no `citation-verifier` antes de citar.
+
+### 8.1 RepoAudit: agente LLM para auditoria de nível de repositório
+
+- Autores: Jinyao Guo, Chengpeng Wang, Xiangzhe Xu, Zian Su, Xiangyu Zhang (Purdue).
+- Veículo encontrado: ICML 2025 (PMLR v267). Repositório: <https://github.com/PurCL/RepoAudit>.
+- Rótulos ASE: Static Analysis, Bug Detection, Data-flow Analysis, Agent Design, Memory Management.
+
+Arquitetura, lida direto do código:
+
+- **MetaScan** (sem LLM, tree-sitter): varre o repo (`os.walk`, pula `build`/`venv`/`.git`/...),
+  extrai toda função e o call graph nos dois sentidos.
+- **DFBScan** (o agente, 30 workers em paralelo): um *initiator* por tipo de bug acha os pontos
+  de partida por casamento de nó (NPD em Python: todo literal `None` é `source`, todo `x.y` e
+  `x[i]` é `sink`). Um *worklist* processa cada `source`: manda **uma função por vez** para o LLM
+  (`IntraDataFlowAnalyzer`), lê para onde o valor propaga (ARG / PARA / RET / SINK), segue o call
+  graph só nessa direção, com corte de profundidade 3 a 4 e cache de pares `(valor, contexto)`.
+  Quando um caminho chega a um `sink`, uma 2ª chamada de LLM (`PathValidator`) decide se o caminho
+  inter-procedural é viável; só então escreve o `BugReport`.
+- **Chamada de modelo** (`llmtool/LLM_utils.py`): roteamento por substring do nome do modelo
+  (`gemini`/`gpt`/`o3-mini`/`claude`/`deepseek`), chave do ambiente, retry `tryCnt < 5`,
+  `tiktoken` para custo, temperature 0.0. O modelo nunca executa nada; "simula linha por linha".
+
+Custo relatado: ~100 prompts e US$ 0,57 a 2,54 por projeto de ~250 mil linhas.
+
+Como se relaciona com esta pesquisa:
+
+- é o precedente mais completo da direção "descoberta agêntica no repo": o *initiator* barato
+  não decide bug, só ancora a busca; o LLM navega sob demanda; um validador fecha;
+- a diferença que sustenta a contribuição: o validador do RepoAudit é **palpite de LLM sobre
+  viabilidade**. Aqui o validador seria o **ESBMC-Python sobre um harness escalar sintetizado**,
+  que dá contraexemplo formal ou prova limitada, mais a checagem de ablação da abstração;
+- RepoAudit mira a tríade de ponteiro (NPD, MLK, UAF), que é forma de C; as 8 categorias formais
+  desta pesquisa (divisão por zero, índice, pré-condição, overflow, uso de None, ...) precisam de
+  outra definição de `source`/`sink`, ainda não feita na literatura;
+- o desenho de par `(initiator, worklist, validador)` e as flags (temperature 0.0, workers
+  paralelos, retry no parse) são reaproveitáveis diretamente.
+
+### 8.2 Revelio: detecção agêntica de memory safety em escala de repositório, com custo baixo
+
+- Estado encontrado: preprint arXiv 2606.22263, 2026. DOI: <https://doi.org/10.48550/arXiv.2606.22263>.
+- Rótulos ASE: Static Analysis, Bug Detection, Fuzzing, Test Case Generation, Agent Design.
+
+Framework end-to-end para descoberta de vulnerabilidade de memória em repos grandes. Ataca a
+alucinação **gerando um artefato executável** (PoC) para confirmar o achado, em vez de confiar no
+texto do modelo. É o vizinho mais próximo do argumento "gere algo verificável, não aceite o
+texto": Revelio usa PoC dinâmico; esta pesquisa usaria harness mais model checking. A distinção
+a registrar: PoC exige compilar e rodar o projeto real; o harness escalar não, e o ESBMC dá
+garantia limitada (bounded), não só "rodou e quebrou".
+
+### 8.3 IRIS: análise estática assistida por LLM, repositório inteiro
+
+- Estado encontrado: ICLR 2025. Título de arquivo: "LLM-Assisted Static Analysis for Detecting
+  Security Vulnerabilities".
+- Rótulos ASE: Static Analysis, Bug Detection, Taint Analysis, Benchmark.
+
+Abordagem neuro-simbólica que combina LLM com análise estática para raciocínio no repositório
+inteiro. O ponto que os autores levantam e que vale citar: a ferramenta de análise depende de
+especificação rotulada por humano, e o LLM sozinho não faz o raciocínio de caminho; a combinação
+é que funciona. Sustenta a tese de que o passo formal (aqui, ESBMC) é a contribuição, não um
+enfeite.
+
+### 8.4 Sanitizing LLMs in Bug Detection with Data-Flow
+
+- Estado encontrado: EMNLP Findings 2024.
+- Rótulos ASE: Static Analysis, Bug Detection, Data-flow Analysis, Taint Analysis.
+
+Força o LLM a **emitir o caminho de fluxo de dados** em chain-of-thought few-shot e valida esse
+caminho contra o programa, para detectar e descartar falso positivo por alucinação. É o mesmo
+princípio do `ablation.py` num registro diferente: lá valida-se o caminho que o LLM afirmou; aqui
+remove-se cada hipótese do harness e observa-se o veredito. Citar como precedente da ideia
+"a saída do LLM tem de ser checada contra o programa, não aceita como verdade".
+
+### 8.5 Hitchhiker's Guide to Program Analysis, Part II (e Part III no §7.4)
+
+- Estado encontrado: preprint arXiv 2025 (Part II); Part III é o 2606.15122 já citado no §7.4.
+- Rótulos ASE: Static Analysis, Bug Detection, Empirical Study.
+
+Série que estuda o trade-off precisão/escalabilidade da análise estática e por que a aplicação
+ingênua de LLM a análise de programa dá resultado não confiável (modelagem simplificada,
+sobre-aproximação de caminho e de restrição de dados). Referência para a seção de motivação:
+por que "LLM lê o código e diz se tem bug" não basta.
+
+### 8.6 Estudos e benchmarks úteis para a avaliação
+
+- **Benchmarking LLMs and LLM-based Agents in Practical Vulnerability Detection for Code
+  Repositories** (ACL 2025): mostra que detecção real exige análise inter-procedural (bug nasce
+  em multi-hop, não em função isolada) e que benchmarks de repositório (ReposVul, VulEval) são
+  caros. Base para justificar por que a fonte de candidato fica fora do método medido.
+- **How Effective Are They? Exploring LLM Based Fuzz Driver Generation** (ISSTA 2024, DOI
+  10.1145/3650212.3680355): estudo empírico da síntese de fuzz driver por LLM. Linha de base de
+  comparação para o passo 3.
+- **Automatically Inspecting Thousands of Static Bug Warnings with LLM: How Far Are We?**
+  (TKDD 2024): triagem de aviso de análise estática por LLM, com número de precisão. Vizinho do
+  LLift e da onda do §7.4.
+- **CyberGym** (arXiv 2025): 1.507 vulnerabilidades reais com patch, para avaliação de agente em
+  escala. Fonte possível de dataset externo.
+- **Boosting Static Resource Leak Detection via LLM-based Resource-Oriented Intention Inference**
+  (ICSE 2025, DOI 10.1109/ICSE55347.2025.00131): LLM inferindo intenção de recurso para reduzir
+  falso negativo e falso positivo de detecção estática. Padrão "LLM completa a especificação que a
+  ferramenta não tem".
+
+### 8.7 Onde esta pesquisa fica diferente de todos esses (rascunho de contribuição)
+
+Com o levantamento das seções 6, 7 e 8, a formulação defensável do que é próprio:
+
+> Os validadores de achado nesses trabalhos são: palpite de LLM sobre viabilidade (RepoAudit),
+> PoC dinâmico que exige compilar o projeto (Revelio), ou um verificador leve de fluxo de dados
+> (Sanitizing, IRIS). Nenhum usa um model checker limitado sobre um harness escalar sintetizado
+> para Python, e nenhum faz uma checagem mecânica de que a abstração do harness não esconde o bug
+> (ablação de hipótese). As categorias-alvo da literatura de nível de repositório são de memory
+> safety (NPD, MLK, UAF); as oito classes de erro de runtime de Python (divisão por zero, índice,
+> pré-condição não checada, overflow, uso de None, ...) não têm uma definição de source/sink
+> publicada. A avaliação sem gabarito (funil mais auditoria de amostra) é pouco usada: a maioria
+> mede contra benchmark de CVE.
+
+Quatro peças candidatas a contribuição, da mais sólida para a mais arriscada:
+
+1. **Validação formal do achado por ESBMC-Python sobre harness sintetizado**, no lugar de palpite
+   de LLM ou PoC dinâmico. Dá contraexemplo ou prova limitada.
+2. **Checagem de solidez da abstração por ablação de hipótese** (`ablation.py`): prova mecânica de
+   que nenhuma `__ESBMC_assume` do harness está mascarando o bug. É o dual do FalseCrashReducer e
+   não aparece nos trabalhos de nível de repositório.
+3. **Definição de source/sink para as oito classes de erro de runtime de Python**, análoga ao
+   extractor de 41 linhas do RepoAudit, mas para aritmética e pré-condição, não ponteiro.
+4. **Protocolo de avaliação sem gabarito**: funil (candidatos, harness válidos, confirmados,
+   `abstraction_gap`) mais auditoria manual de amostra, com o V1 rotulado como calibração.
