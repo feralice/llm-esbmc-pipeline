@@ -69,6 +69,43 @@ def test_offset_index_is_risky(tmp_path: Path):
     assert assess_unit(unit).is_risky
 
 
+def test_multiplication_is_risky_for_overflow(tmp_path: Path):
+    unit = _unit(tmp_path, "def area(w: int, h: int) -> int:\n    return w * h\n")
+    risk = assess_unit(unit)
+    assert risk.is_risky
+    assert "arithmetic_growth" in risk.signals
+
+
+def test_power_is_risky_for_overflow(tmp_path: Path):
+    unit = _unit(tmp_path, "def sq(n: int) -> int:\n    return n ** 2\n")
+    assert "arithmetic_growth" in assess_unit(unit).signals
+
+
+def test_assert_is_risky(tmp_path: Path):
+    unit = _unit(tmp_path, "def f(n: int) -> int:\n    assert n >= 0\n    return n\n")
+    risk = assess_unit(unit)
+    assert risk.is_risky
+    assert "assert_property" in risk.signals
+
+
+def test_if_raise_guard_is_risky(tmp_path: Path):
+    unit = _unit(
+        tmp_path,
+        "def f(n: int) -> str:\n"
+        "    if n < 0:\n"
+        "        raise ValueError('n must be non-negative')\n"
+        "    return str(n)\n",
+    )
+    risk = assess_unit(unit)
+    assert risk.is_risky
+    assert "precondition_guard" in risk.signals
+
+
+def test_plain_addition_is_not_growth(tmp_path: Path):
+    unit = _unit(tmp_path, "def f(a: int, b: int) -> int:\n    return a + b - 1\n")
+    assert not assess_unit(unit).is_risky
+
+
 def test_plain_function_is_not_risky(tmp_path: Path):
     unit = _unit(tmp_path, "def greet(name: str) -> str:\n    msg = 'hi ' + name\n    return msg.upper()\n")
     risk = assess_unit(unit)
