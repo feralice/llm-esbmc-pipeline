@@ -7,6 +7,8 @@ Modos de execução:
   llm-only    Flow C: LLM puro, sem ESBMC.
   hybrid      Flow B: LLM aponta bug → ESBMC confirma.
   benchmark   Roda os três fluxos (A+B+C) e calcula P/R/F1 vs ground truth.
+  ensemble    Agrega votos de modelos já rodados (sem chamar LLM/ESBMC).
+  scan        V2: para cada candidato, a LLM sintetiza um harness → ESBMC → ablação.
 
 
 Exemplos:
@@ -14,6 +16,7 @@ Exemplos:
   python src/main.py --mode llm-only    --input dataset/labeled --model gpt-4o
   python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o --bound 5
   python src/main.py --mode benchmark   --input dataset/labeled/ground_truths --model gpt-4o
+  python src/main.py --mode scan        --input candidatos.json --model gpt-4o-mini
 """
 from __future__ import annotations
 
@@ -41,6 +44,8 @@ from research_pipeline.pipeline import (
     run_pipeline_multi,
 )
 from research_pipeline.voting import aggregate_votes, write_vote_report
+from research_pipeline.scan.pipeline import load_candidates, run_pipeline_scan
+from research_pipeline.scan.synth import HarnessSynthesizer
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy_defined,
@@ -74,7 +79,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=["esbmc-only", "llm-only", "hybrid", "benchmark", "ensemble"],
+        choices=["esbmc-only", "llm-only", "hybrid", "benchmark", "ensemble", "scan"],
         default="benchmark",
         help="Modo de execução. (padrão: benchmark)",
     )
@@ -753,6 +758,72 @@ def mode_ensemble(args: argparse.Namespace) -> int:
     return 0
 
 
+def mode_scan(args: argparse.Namespace) -> int:
+    candidates_path = Path(args.input[0])
+    if not candidates_path.exists():
+        print(f"Candidatos não encontrados: {candidates_path}", file=sys.stderr)
+        return 1
+
+    model = _resolve_model(args.model, "openai") or "gpt-4o-mini"
+    backend: Backend = args.backend or _infer_backend(model)
+    if backend != "openai":
+        print(
+            "O modo scan só sintetiza harness via OpenAI por enquanto "
+            "(--model gpt-4o-mini ou gpt-4o).",
+            file=sys.stderr,
+        )
+        return 1
+
+    _, openai_key, _ = _resolve_keys(args)
+    try:
+        synthesizer = HarnessSynthesizer(
+            model=model, api_key=openai_key, timeout_seconds=args.llm_timeout
+        )
+    except ValueError as exc:
+        print(f"Erro: {exc}", file=sys.stderr)
+        return 1
+
+    try:
+        candidates = load_candidates(candidates_path)
+    except (ValueError, json.JSONDecodeError) as exc:
+        print(f"Arquivo de candidatos inválido: {exc}", file=sys.stderr)
+        return 1
+    if not candidates:
+        print("Nenhum candidato no arquivo.", file=sys.stderr)
+        return 1
+
+    output_dir = args.output_dir or _default_output_dir("scan")
+    print(
+        f"\nModo scan — {len(candidates)} candidato(s) → "
+        f"{len(candidates)} chamada(s) de síntese ao modelo {model}"
+    )
+
+    results = run_pipeline_scan(
+        candidates,
+        synthesizer=synthesizer,
+        esbmc_command=args.esbmc_command,
+        bound=args.bound,
+        timeout_seconds=args.timeout,
+        output_dir=output_dir,
+    )
+
+    from collections import Counter
+
+    for r in results:
+        detail = r.error or r.esbmc_summary or ", ".join(r.compat_reasons)
+        print(f"  [{r.classification:24s}] {r.candidate.function:20s} {detail[:56]}")
+    tally = Counter(r.classification for r in results)
+    print("\n  " + "  ".join(f"{k}={v}" for k, v in sorted(tally.items())))
+
+    if args.report:
+        report_path = Path(args.report)
+    else:
+        report_path = Path(output_dir) / "scan_report.json"
+    _write_json_atomic(report_path, [r.to_dict() for r in results])
+    print(f"\nRelatório JSON: {report_path}")
+    return 0
+
+
 
 
 # ---------------------------------------------------------------------------
@@ -771,6 +842,7 @@ def main() -> int:
         "hybrid":     mode_hybrid,
         "benchmark":  mode_benchmark,
         "ensemble":   mode_ensemble,
+        "scan":       mode_scan,
     }
     return dispatch[args.mode](args)
 

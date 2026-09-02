@@ -25,8 +25,9 @@ flowchart LR
 | **Flow A** | `--mode esbmc-only` | ESBMC puro — baseline formal sem LLM |
 | **Flow B** | `--mode hybrid` | LLM indica categoria → ESBMC confirma no código original |
 | **Flow C** | `--mode llm-only` | LLM puro — baseline de qualidade da IA sem verificação formal |
+| **V2 (experimental)** | `--mode scan` | Para cada candidato, a LLM sintetiza um harness escalar → ESBMC verifica o harness → ablação checa super-restrição. Ver `docs/v2_scan_mode_fluxo.md` |
 
-**Princípio central:** A LLM faz triagem de categoria; o ESBMC decide com semântica formal própria. Nenhum código LLM-gerado entra no loop de verificação.
+**Princípio central (Flows A/B/C):** A LLM faz triagem de categoria; o ESBMC decide com semântica formal própria. Nenhum código LLM-gerado entra no loop de verificação. O modo `scan` (V2) troca esse princípio de propósito: a LLM escreve o harness que o ESBMC verifica, e `guards.py`/`ablation.py` controlam a solidez da abstração.
 
 ---
 
@@ -220,7 +221,7 @@ Ver [`docs/benchmark_v1_reference.md`](docs/benchmark_v1_reference.md) para a es
 ```
 llm-esbmc-pipeline/
 ├── src/
-│   └── main.py                     # CLI — --mode benchmark|hybrid|esbmc-only|llm-only
+│   └── main.py                     # CLI — --mode benchmark|hybrid|esbmc-only|llm-only|ensemble|scan
 ├── research_pipeline/
 │   ├── preprocess.py               # Extrai CodeUnit por função via AST
 │   ├── pipeline.py                 # Orquestra flows A/B/C
