@@ -8,14 +8,17 @@ que o ESBMC verifica (`research_pipeline/scan/synth.py`), em vez de o ESBMC roda
 no código original. `guards.py` e `ablation.py` impedem que a LLM invente uma
 precondição que faz o bug sumir.
 
+Sem pré-filtro sintático: toda função extraída pelo `preprocess.py` vai para a
+triagem da LLM. Um marcador de sintaxe (`/`, `[]`, `*`) não cobre categorias como
+`none_misuse` ou `variable_misuse`, e o bug costuma estar na falta de um check, não
+na presença de uma operação.
+
 ## Fluxo
 
 ```mermaid
 flowchart TD
   A[repo Python selvagem] --> B["preprocess.py: extrai CodeUnit por funcao"]
-  B --> C{"prefilter.py: operacao valor-dependente?"}
-  C -->|nao| X["descarta (custo zero)"]
-  C -->|sim| D["LLM triagem: Finding (categoria + expressao suspeita)"]
+  B --> D["LLM triagem: Finding (categoria + expressao suspeita), toda funcao"]
   D --> E["guards.py: allowlist de precondicao (so if...raise e assert do topo)"]
   E --> F["synth.py + synth_prompt.txt: LLM escreve o harness ESBMC-Python"]
   F --> G{"compat.py: harness roda no ESBMC-Python?"}
@@ -31,8 +34,7 @@ flowchart TD
 
 | arquivo | passo | função |
 |---|---|---|
-| `scan/prefilter.py` | 1 | filtro AST barato: mantém só função com operação cuja segurança depende de valor não checado (`/`, `//`, `%`, subscript, `divmod`/`pop`/`insert`, `range` sobre não-literal). Sem LLM, sem ESBMC. Permissivo: falso-manter custa 1 chamada de LLM, falso-descartar perde o candidato em silêncio |
-| `scan/compat.py` | 2 | rejeita harness que o ESBMC-Python não roda: não parseia / tem `import` / vaza numpy-pandas-torch / usa builtin não modelado (`zip`,`sum`,`sorted`...) / nome nondet inválido (`__ESBMC_nondet_int`) / sem driver a nível de módulo |
+| `scan/compat.py` | 3 helper | rejeita harness que o ESBMC-Python não roda: não parseia / tem `import` / vaza numpy-pandas-torch / usa builtin não modelado (`zip`,`sum`,`sorted`...) / nome nondet inválido (`__ESBMC_nondet_int`) / sem driver a nível de módulo |
 | `scan/guards.py` | 3 helper | extrai a allowlist de precondição: só os `if cond: raise` e `assert cond` no topo do corpo viram `__ESBMC_assume` permitidos. Qualquer outro bound é super-restrição |
 | `scan/synth.py` | 3 | `HarnessSynthesizer`: chama a OpenAI Responses API, monta o prompt (source + hipótese + bloco de precondição), extrai o harness do fence ```python. Chama API paga, só via modo scan |
 | `scan/ablation.py` | 3 backstop | harness deu SUCCESSFUL? Remove um `__ESBMC_assume` por vez, re-roda o ESBMC. Se o verdict vira FAILED, aquele assume mascarava o bug. Recebe um callable `run`, não roda ESBMC direto |

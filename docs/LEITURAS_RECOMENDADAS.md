@@ -263,9 +263,10 @@ CFG, taint) por categoria de bug, não só para os casos "fáceis" de extrair (d
 Nenhuma leitura desta lista cobre isso ainda diretamente — candidatos a revisar: trabalhos de
 "structured prompting" ou "program-aware prompting" para detecção de vulnerabilidade.
 
-Estado 31/08/2026: a lacuna de cobertura de AST continua aberta. `research_pipeline/scan/prefilter.py`
-(V2) usa os mesmos três sinais mais alguns regex de fonte; nenhuma das seis categorias sem nó
-próprio ganhou hint. É item de trabalho, não só de leitura.
+Estado 01/09/2026: a lacuna de cobertura de AST continua aberta. O modo `scan` decidiu não usar
+pré-filtro sintático (toda função vai para a triagem da LLM), então o problema não é mais
+"o filtro cobre poucas categorias" e sim "a triagem não recebe hint estrutural para as 6
+categorias sem nó próprio". É item de trabalho, não só de leitura.
 
 ### 5.5 Significância estatística em avaliação com dataset pequeno
 
@@ -332,8 +333,8 @@ reconhecidos pela comunidade.
 Por que importa:
 
 - é o precedente mais próximo da caça selvagem: filtro barato acha muito, LLM tria, bug real sai;
-- o desenho "passa só o trecho relevante do warning para o modelo" é o que `prefilter.py` +
-  triagem já fazem, e o paper mede que isso melhora precisão e reduz risco;
+- a diferença de desenho vale registrar: LLift tem uma análise estática de verdade gerando os
+  candidatos, o modo `scan` decidiu não ter pré-filtro e manda toda função para a triagem;
 - dá base para a alegação de que o filtro formal (aqui, ESBMC no harness) é contribuição central,
   não pós-processamento.
 
@@ -392,7 +393,7 @@ rotulado). O modo `scan` é uma segunda formulação, sem gabarito:
 ```text
 repositório real, pouco auditado
        ↓
-pré-filtro AST barato descarta a maioria das funções
+toda função extraída por AST vai para a triagem (sem pré-filtro)
        ↓
 LLM localiza a expressão de risco e a categoria
        ↓
