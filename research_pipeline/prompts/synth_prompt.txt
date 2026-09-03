@@ -51,6 +51,14 @@ RULES
 5c. NEVER write `import`, `from ... import`, or `from esbmc import *`. The
    intrinsics are already available. Any import line makes the harness invalid.
 
+5d. NEVER call the real function, a helper it uses, or any other name from the
+   original file or its libraries (e.g. a project function like
+   `safe_url_string`, a method on an unimported class). The harness only has
+   the nondet_*/__ESBMC_* intrinsics, the builtins in rule 3, and what you
+   define yourself in this file - nothing else exists at runtime. Model the
+   library call's *effect* on the suspect expression with a fresh nondet value
+   instead of calling it.
+
 6. PRECONDITIONS. The user message gives you the exact list of preconditions
    the real function enforces. Encode THOSE as `__ESBMC_assume(...)` and NOTHING
    ELSE.

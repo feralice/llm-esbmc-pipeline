@@ -151,3 +151,25 @@ def test_undefined_names_ignores_intrinsics_and_builtins():
 def test_undefined_names_flags_unknown_symbol():
     src = "def f(x: int) -> int:\n    return x + MYSTERY_CONST\nf(nondet_int())\n"
     assert "MYSTERY_CONST" in undefined_names(src)
+
+
+def test_undefined_helper_call_is_invalid():
+    """Regression: gpt-4o-mini synth run (2026-09-02) called an unimported project
+    helper (safe_url_string) instead of reconstructing the expression with nondet
+    scalars; ESBMC then errored internally (tool_error) instead of a clean verdict.
+    check_harness() must reject this before it reaches ESBMC.
+    """
+    src = (
+        "def model():\n"
+        "    url: str = nondet_str()\n"
+        "    encoding: str = nondet_str()\n"
+        "    s = safe_url_string(url, encoding)\n"
+        "    assert isinstance(s, str)\n"
+        "def main():\n"
+        "    model()\n"
+        "main()\n"
+    )
+    r = check_harness(src)
+    assert not r.ok
+    assert r.verdict == VERDICT_INVALID
+    assert "safe_url_string" in r.reasons[0]

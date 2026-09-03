@@ -7,6 +7,9 @@ ESBMC run on it, reject the harnesses ESBMC-Python cannot handle:
 - imports anything                       -> invalid_harness (not self-contained)
 - references numpy / pandas / torch / tf -> unsupported_harness
 - contains a for/while loop              -> invalid_harness
+- references a name never bound in the
+  harness (external helper, unimported
+  type, project class)                   -> invalid_harness
 - no module-level driver (a call or a
   `main()` invoked at module level)      -> invalid_harness
 
@@ -161,20 +164,23 @@ def check_harness(source: str) -> CompatResult:
             ["no module-level driver (harness must call the function at module level)"],
         )
 
+    undefined = sorted(_undefined_names(tree))
+    if undefined:
+        return CompatResult(
+            False,
+            VERDICT_INVALID,
+            [
+                "references undefined name(s): " + ", ".join(undefined)
+                + " (harness cannot import; every name must be a bound local, an"
+                " ESBMC intrinsic, or a builtin)"
+            ],
+        )
+
     return CompatResult(True, VERDICT_OK, [])
 
 
-def undefined_names(source: str) -> set[str]:
-    """Names used but never bound in the harness, minus the allowed intrinsics.
-
-    A non-empty result is a soft warning (the harness may still verify), not a
-    hard reject; check_harness() does not use it. Exposed for the scan report.
-    """
-    try:
-        tree = ast.parse(source)
-    except SyntaxError:
-        return set()
-
+def _undefined_names(tree: ast.Module) -> set[str]:
+    """Names used but never bound in the harness, minus the allowed intrinsics."""
     bound: set[str] = set()
     used: set[str] = set()
     for node in ast.walk(tree):
@@ -189,3 +195,15 @@ def undefined_names(source: str) -> set[str]:
                 used.add(node.id)
 
     return used - bound - _ALLOWED_UNDEFINED - set(dir(builtins))
+
+
+def undefined_names(source: str) -> set[str]:
+    """Names used but never bound in the harness, minus the allowed intrinsics.
+
+    Exposed for the scan report; check_harness() rejects on this internally.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return set()
+    return _undefined_names(tree)

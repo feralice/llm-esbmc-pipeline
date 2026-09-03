@@ -18,6 +18,7 @@ import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 from urllib import error, request
 
 from ..llm.telemetry import response_event
@@ -144,6 +145,7 @@ class HarnessSynthesizer:
             repair_feedback=repair_feedback,
             previous_harness=previous_harness,
         )
+        payload: dict[str, Any]
         if self.backend == "openai":
             payload = {
                 "model": self.model,

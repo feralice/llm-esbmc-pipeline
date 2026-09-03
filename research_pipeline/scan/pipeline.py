@@ -19,9 +19,9 @@ from __future__ import annotations
 import json
 import tempfile
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 from ..models import Finding
 from ..preprocess import preprocess_file
@@ -156,7 +156,7 @@ def load_candidates(path: str | Path) -> list[ScanCandidate]:
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
     items = raw.get("candidates", raw) if isinstance(raw, dict) else raw
     if not isinstance(items, list):
-        raise ValueError("candidate file must be a JSON list or {'candidates': [...]}")
+        raise TypeError("candidate file must be a JSON list or {'candidates': [...]}")
     return [ScanCandidate.from_dict(item) for item in items]
 
 
