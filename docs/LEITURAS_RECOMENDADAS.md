@@ -79,6 +79,71 @@ Como ajuda esta pesquisa:
 - ajuda a delimitar a originalidade: esta pesquisa trabalha com localização de bugs Python,
   casamento AST e síntese de harness, não somente invariantes de laço.
 
+### 1.4b A Survey of Machine Learning for Big Code and Naturalness
+
+- Autores: Miltiadis Allamanis, Earl T. Barr, Premkumar T. Devanbu, Charles Sutton.
+- Veículo: ACM Computing Surveys, vol. 51, n. 4, artigo 81, 2018.
+- DOI: <https://doi.org/10.1145/3212695>
+- Preprint aberto: <https://arxiv.org/abs/1709.06182>
+
+Survey de referência sobre representação de código pra aprendizado de máquina e análise de
+programa. A seção 4.1.1 ("Syntactic Models") trata especificamente de modelos baseados em AST,
+contrastando com representação por token e por grafo; a seção 3 discute por que a AST de uma
+função é estruturalmente mais funda e repetitiva que a árvore sintática de um texto em linguagem
+natural, o que justifica tratá-la como objeto próprio, não como um "token stream com parênteses".
+
+Como ajuda esta pesquisa:
+
+- fundamenta a escolha de AST (em vez de token ou string) como estrutura de checagem antes de
+  aceitar uma alegação da LLM, tanto no grounding do V1 (`ast_utils.py`) quanto na validação de
+  harness do V2 (`compat.py`);
+- dá vocabulário de literatura pra descrever o que já é intuição de projeto: casar o formato do
+  nó (`BinOp`+`Div`, `Subscript`) ou o estado de ligação de um nome (`Store` vs `Load`) contra a
+  árvore real, em vez de aceitar o texto reportado pela LLM;
+- é leitura de revisão, não de sistema; não resolve a lacuna do §5.4 (cobertura de AST por
+  categoria de bug), mas dá a base pra argumentar por que AST é a representação certa antes de
+  discutir a cobertura.
+
+### 1.4c Detecting and Correcting Hallucinations in LLM-Generated Code via Deterministic AST Analysis
+
+- Autores: Dipin Khati, Daniel Rodriguez-Cardenas, Paul Pantzer e Denys Poshyvanyk.
+- Estado: preprint arXiv 2601.19106, janeiro de 2026.
+
+Precedente quase direto de `compat.py`. O sistema faz o mesmo movimento: parseia o código gerado
+pela LLM em AST, valida contra uma base de conhecimento determinística (nomes e parâmetros que
+existem de fato) e rejeita ou corrige o que não bate, em vez de aceitar o texto do modelo como
+verdade. Em 200 trechos Python: 100% de precisão, 87,6% de recall, 77% dos casos corrigidos
+automaticamente sem nova chamada ao modelo.
+
+Como ajuda esta pesquisa:
+
+- é a leitura mais próxima do que `compat.py` faz hoje: distinguir nome ligado (`Store`) de nome
+  só usado (`Load`) pra pegar chamada a função nunca definida no harness (achado do smoke test de
+  2/09/2026, corrigido no mesmo dia);
+- a métrica deles (precisão/recall da detecção de alucinação, taxa de correção automática) é
+  modelo direto pra reportar o ganho da checagem de nome indefinido nesta pesquisa;
+- diferença a registrar: eles corrigem a alucinação e seguem usando o código; aqui a alucinação
+  vira motivo de nova tentativa de síntese (retry com `repair_feedback`), não correção cirúrgica
+  do harness.
+
+### 1.4d Evaluating the Effectiveness of Small Language Models in Detecting Refactoring Bugs
+
+- Autores: Rohit Gheyi, Márcio Ribeiro e Jonhnanthan Oliveira.
+- Estado: preprint arXiv 2502.18454, fevereiro de 2025.
+
+Compara modelos pequenos (Llama 3.2 3B, Mistral 7B, Gemma, Phi-4 14B) contra modelos proprietários
+(o1-mini, o3-mini-high) detectando bug de refatoração em Java e Python. O modelo aberto Phi-4 14B
+chega perto do melhor proprietário.
+
+Como ajuda esta pesquisa:
+
+- referência empírica direta pro eixo SLM-local vs LLM-pago que já aparece nos achados do modo
+  `scan` (capacidade do modelo importa na qualidade da síntese, ver `makeMappingArray` com
+  gpt-4o-mini vs gpt-4o em 01/09/2026);
+- dá um segundo dado, fora do próprio pipeline, de que modelo pequeno local pode chegar perto de
+  modelo pago em tarefa de detecção de bug bem delimitada, o que sustenta rodar a ablação de custo
+  com um modelo local em vez de assumir que só LLM grande serve.
+
 ### 1.4 BugsInPy: A Database of Existing Bugs in Python Programs
 
 - Autores: Ratnadira Widyasari et al.
