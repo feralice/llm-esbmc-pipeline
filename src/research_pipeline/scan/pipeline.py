@@ -412,16 +412,28 @@ def _one_attempt(
 
     result.classification = _classify_esbmc(esbmc.status)
     if result.classification == CONFIRMED_ON_ABSTRACTION:
-        violated_property = str(esbmc.details.get("property_kind", "")).strip()
-        if violated_property != EXPECTED_PROPERTY_MARKER:
-            result.classification = INVALID_HARNESS
-            result.compat_verdict = "invalid_harness"
-            result.compat_reasons = [
-                (
-                    "ESBMC failed a different property "
-                    f"({violated_property or 'unknown'}), not the marked expected assertion"
-                )
-            ]
+        raw_violated = esbmc.details.get("violated_properties")
+        violated = [str(v).strip() for v in raw_violated] if isinstance(raw_violated, list) else []
+        if not violated:
+            fallback = str(esbmc.details.get("property_kind", "")).strip()
+            violated = [fallback] if fallback else []
+        if EXPECTED_PROPERTY_MARKER not in violated:
+            if violated and all(_looks_like_cover_negation(v) for v in violated):
+                # --multi-property showed only __ESBMC_cover's own inverted-assert
+                # failing (proving the bug input is reachable, as intended); the
+                # marked assert itself was never violated, so this run is safe on
+                # this abstraction, not an invalid harness.
+                result.classification = SAFE_ON_ABSTRACTION
+                result.esbmc_status = "no_violation_found"
+            else:
+                result.classification = INVALID_HARNESS
+                result.compat_verdict = "invalid_harness"
+                result.compat_reasons = [
+                    (
+                        "ESBMC failed a different property "
+                        f"({violated[0] if violated else 'unknown'}), not the marked expected assertion"
+                    )
+                ]
     if use_ablation and result.classification == SAFE_ON_ABSTRACTION:
         report = _ablate_harness(
             synth_result.harness,
@@ -436,6 +448,19 @@ def _one_attempt(
 
     result.seconds = time.monotonic() - started
     return result
+
+
+def _looks_like_cover_negation(property_kind: str) -> bool:
+    """True when a violated property's text is ESBMC's own inverted-assert form
+    for __ESBMC_cover(cond) (compiled internally as assert(!cond)), not a real
+    exception or the harness's own marked assert.
+
+    Confirmed empirically (2026-09-04, real ESBMC 8.4.0, --multi-property): a
+    tripped __ESBMC_cover always reports as "assertion !(<condition>)"; genuine
+    exceptions (invalid int() conversion, uncaught exception on a missing dict
+    key) never take this shape. See docs/experiment_log.md EXP-01.
+    """
+    return property_kind.startswith("assertion !(")
 
 
 def _classify_esbmc(status: str) -> str:

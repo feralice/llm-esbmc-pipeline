@@ -52,7 +52,12 @@ def run_esbmc_direct(
     file_path = Path(file_path)
     base_command = list(esbmc_command or ["esbmc"])
 
-    command = [*base_command, *_bounded_incremental_flags(bound), str(file_path)]
+    # --multi-property: without it, ESBMC's __ESBMC_cover (implemented internally
+    # as an inverted assert) can shadow the harness's own marked assert when both
+    # trip on the same input, so "Violated property" reports the cover's own text
+    # instead of the marker. With it, both are reported separately (verified
+    # empirically 2026-09-04; see docs/experiment_log.md EXP-01).
+    command = [*base_command, *_bounded_incremental_flags(bound), "--multi-property", str(file_path)]
 
     executable = shutil.which(command[0])
     if executable is None:
@@ -479,38 +484,48 @@ def _extract_esbmc_details(
                 if rendered not in counterexample:
                     counterexample.append(rendered)
 
-    property_block_match = re.search(
-        r"Violated property:\s*\n(?P<body>.*?)(?:\n\s*\nVERIFICATION FAILED|\Z)",
-        output,
-        re.DOTALL,
-    )
-    if property_block_match:
-        property_lines = [
-            ln.strip()
-            for ln in property_block_match.group("body").splitlines()
-            if ln.strip()
-        ]
-        for ln in property_lines:
+    # --multi-property makes ESBMC print one "Violated property:" block per
+    # failed property (e.g. one for a __ESBMC_cover reachability goal, another
+    # for the harness's own marked assert) instead of stopping at the first.
+    # Each block is "Violated property:\n" followed by consecutive indented
+    # lines, ending at the next blank line.
+    violated_properties: list[dict[str, str]] = []
+    for block_match in re.finditer(r"Violated property:\n((?:[ \t]+.*\n)+)", output):
+        block_lines = [ln.strip() for ln in block_match.group(1).splitlines() if ln.strip()]
+        block_kind = ""
+        block_text = ""
+        block_location = ""
+        block_function = ""
+        for ln in block_lines:
             if " function " in ln and " line " in ln:
                 fm = re.search(r"function ([^ ]+)", ln)
                 lm = re.search(r" line (\d+)", ln)
                 if fm:
-                    function_name = fm.group(1)
+                    block_function = fm.group(1)
                 if lm:
-                    location = f"linha {lm.group(1)}"
-                    if function_name:
-                        location = f"{function_name}, {location}"
+                    block_location = f"linha {lm.group(1)}"
+                    if block_function:
+                        block_location = f"{block_function}, {block_location}"
                 continue
-            if not property_kind:
-                property_kind = ln
+            if not block_kind:
+                block_kind = ln
                 continue
-            if not property_text:
-                property_text = ln
+            if not block_text:
+                block_text = ln
                 break
+        if block_kind and block_kind not in {v["kind"] for v in violated_properties}:
+            violated_properties.append({"kind": block_kind, "text": block_text, "location": block_location})
+
+    if violated_properties:
+        property_kind = violated_properties[0]["kind"]
+        property_text = violated_properties[0]["text"]
+        location = violated_properties[0]["location"] or location
+        function_name = function_name or (location.split(",")[0] if location else "")
 
     return {
         "warnings": warnings,
         "counterexample": counterexample[:6],
+        "violated_properties": [v["kind"] for v in violated_properties],
         "property_kind": property_kind,
         "property_text": property_text,
         "location": location,

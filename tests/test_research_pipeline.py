@@ -25,9 +25,42 @@ from research_pipeline.verification.esbmc_runner import (
     _FLOW_B_CATEGORY_FLAGS,
     _classify_esbmc_direct_result,
     _classify_esbmc_result,
+    _extract_esbmc_details,
     _extract_generated_vcc_count,
     _summarize_direct,
 )
+
+# Real --multi-property output (ESBMC 8.4.0), captured 2026-09-04 from a harness
+# with __ESBMC_cover(x == 5) immediately before assert x != 5, MARKER — EXP-01,
+# docs/experiment_log.md. Two properties fail: the cover's own inverted-assert
+# (no custom message) and the harness's marked assert (its literal message).
+_MULTI_PROPERTY_OUTPUT = """\
+State 3 file probe.py line 4 column 4 function model thread 0
+----------------------------------------------------
+Violated property:
+  file probe.py line 4 column 4 function model
+  LLM_ESBMC_EXPECTED_PROPERTY
+  x != 5
+
+Slicing time: 0.000s (removed 0 assignments)
+No solver specified; defaulting to z3
+
+State 3 file probe.py line 3 column 4 function model thread 0
+----------------------------------------------------
+Violated property:
+  file probe.py line 3 column 4 function model
+  assertion !(x == 5)
+  !(x == 5)
+
+Properties: 2 verified, 2 failed
+VERIFICATION FAILED
+"""
+
+
+def test_extract_esbmc_details_collects_every_multi_property_violation():
+    details = _extract_esbmc_details(_MULTI_PROPERTY_OUTPUT)
+    assert details["violated_properties"] == ["LLM_ESBMC_EXPECTED_PROPERTY", "assertion !(x == 5)"]
+    assert details["property_kind"] == "LLM_ESBMC_EXPECTED_PROPERTY"
 
 
 def test_summarize_direct_warns_on_zero_vcc_success():

@@ -137,6 +137,44 @@ def test_different_violated_property_is_not_confirmation(tmp_path, monkeypatch):
     assert "different property" in result.compat_reasons[0]
 
 
+def test_marker_among_multiple_violated_properties_still_confirms(tmp_path, monkeypatch):
+    """Regression: --multi-property (added 2026-09-04, EXP-01) can report BOTH
+    an __ESBMC_cover reachability goal and the harness's own marked assert as
+    separately violated. The marker just needs to be ONE of them.
+    """
+    def multi_violation(*args, **kwargs):
+        result = _esbmc("violation_found")
+        result.details["violated_properties"] = [
+            "LLM_ESBMC_EXPECTED_PROPERTY", "assertion !(x == 5)",
+        ]
+        return result
+
+    _patch_esbmc(monkeypatch, multi_violation)
+    result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+
+
+def test_only_cover_negation_violated_is_safe_not_invalid(tmp_path, monkeypatch):
+    """Regression: before --multi-property, ESBMC could report only the
+    __ESBMC_cover's own inverted-assert (proving reachability, as intended)
+    while the harness's marked assert genuinely held. That used to be
+    misclassified as invalid_harness; it is a real safe result.
+    """
+    def only_cover(*args, **kwargs):
+        result = _esbmc("violation_found")
+        result.details["violated_properties"] = ["assertion !(x == 5)"]
+        return result
+
+    _patch_esbmc(monkeypatch, only_cover)
+    # use_ablation=False: isolate the classification fix from ablation's own
+    # (correct) behavior — the mock returns the same fake verdict for every
+    # ablated variant too, which ablation would otherwise read as every
+    # assumption masking the bug.
+    result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path), use_ablation=False)
+    assert result.classification == SAFE_ON_ABSTRACTION
+    assert result.compat_reasons == []
+
+
 def test_safe_on_abstraction(tmp_path, monkeypatch):
     _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("no_violation_found"))
     result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
