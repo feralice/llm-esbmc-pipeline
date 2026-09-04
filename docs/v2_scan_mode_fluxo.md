@@ -41,7 +41,7 @@ flowchart TD
 |---|---|---|
 | `src/main.py::mode_v2` | 1–2 | extrai funções e reutiliza o analisador da V1; somente findings verificáveis seguem para síntese |
 | `scan/pipeline.py` | 3–6 | encadeia synth → compat → `run_esbmc_direct` → ablação. Classifica: `confirmed_on_abstraction` / `over_restricted` / `safe_on_abstraction` / `invalid_harness` / `unsupported_harness` / `no_property` / `esbmc_inconclusive` / `candidate_not_found` / `synth_failed` |
-| `scan/compat.py` | 3 helper | rejeita harness que o ESBMC-Python não roda: não parseia / tem `import` / vaza numpy-pandas-torch / usa builtin não modelado (`zip`,`sum`,`sorted`...) / nome nondet inválido (`__ESBMC_nondet_int`) / sem driver a nível de módulo |
+| `scan/compat.py` | 3 helper | rejeita harness que o ESBMC-Python não roda: não parseia / tem `import` / vaza numpy-pandas-torch / usa builtin não modelado (`zip`,`sum`,`sorted`...) / nome nondet inválido (`__ESBMC_nondet_int`) / **referencia nome nunca ligado no harness** (função externa não definida, ex. `safe_url_string`) / sem driver a nível de módulo |
 | `scan/guards.py` | 3 helper | extrai a allowlist de precondição: só os `if cond: raise` e `assert cond` no topo do corpo viram `__ESBMC_assume` permitidos. Qualquer outro bound é super-restrição |
 | `scan/synth.py` | 3 | `HarnessSynthesizer`: chama OpenAI Responses ou a API compatível do Ollama, monta o prompt (source + hipótese + bloco de precondição) e extrai o harness do fence ```python. Só é usado pelo modo V2 |
 | `scan/ablation.py` | 3 backstop | harness deu SUCCESSFUL? Remove um `__ESBMC_assume` por vez, re-roda o ESBMC. Se o verdict vira FAILED, aquele assume mascarava o bug. Recebe um callable `run`, não roda ESBMC direto |
@@ -59,6 +59,7 @@ Não vieram do ESBMC nem dos agentes ESBMC. Mistura:
 | builtin não modelado | lista à mão; `enumerate`/`any` removidos após checar `src/python-frontend/README.md` do master | resto (`zip`,`map`,`filter`,`sorted`,`reversed`,`all`,`sum`) a confirmar |
 | nome nondet errado | skill `esbmc-python-guide` + `models/nondet.py` | sólida |
 | sem driver a nível de módulo | gotcha descoberto à mão, está no `CLAUDE.md` e na memória | sólida, testada |
+| nome nunca ligado no harness (`Store` vs `Load`) | achado na validação end-to-end de 02/09 (8/26 harnesses chamavam função externa não definida, ex. `safe_url_string`, e travavam o ESBMC em erro interno); antes só `undefined_names()` avisava, agora `check_harness()` rejeita | sólida, com regressão em `tests/test_scan_compat.py::test_undefined_helper_call_is_invalid` |
 
 ## Uso
 
@@ -102,6 +103,39 @@ Nesse estágio, as hipóteses vêm do manifesto de avaliação. Por isso, o rela
 marca detecção e ponta a ponta como não avaliadas e calcula somente as métricas
 de síntese condicionadas a uma hipótese correta.
 
+## Proveniência e confirmação do gabarito (dataset/v2_real_world/)
+
+Duas camadas, já fechadas, antes de qualquer harness sintetizado por LLM entrar em cena:
+
+1. **Bug real.** Os 106 itens de `ground_truths.json` têm bloco `provenance` rastreando pra um
+   commit de verdade: 76/106 via `bugsinpy_id` (base pública, revisada pela comunidade), os outros
+   30 via `repo_url` + `commit_hash` direto do GitHub (a maioria com par `buggy_commit`/
+   `fixed_commit`). Nenhum item é hipótese sem fonte.
+2. **Harness feito à mão, confirmado pelo ESBMC.** `dataset/v2_real_world/README.md`, passo 6 do
+   método: todos os 106 harnesses de `bugs/*.py` foram rodados com
+   `esbmc file.py --z3 --unwind 6 --timeout 20s` e deram `VERIFICATION FAILED` com
+   `Generated N VCC(s)`, `N > 0`, nunca prova vazia (0 VCC). É o gabarito, já confirmado, contra o
+   qual o harness sintetizado por LLM é comparado.
+
+O que ainda não estava medido até 02-03/09/2026: se o harness que a LLM sintetiza (V2, `scan/`)
+chega no mesmo veredito desse gabarito já confirmado. É a run completa nos 106 candidatos.
+
+## Como validar pela pasta de harnesses
+
+Cada tentativa de síntese grava o arquivo em
+`<output-dir>/harnesses/scan_<index>_<função>[_try<N>].py` (o `_tryN` só aparece a partir da 2ª
+tentativa). Pra auditar um caso à mão:
+
+1. Acha o índice/candidato no `v2_checkpoint.json` (`synthesis_results`) ou no `v2_report.json`
+   final; cada entrada tem `classification`, `esbmc_status`, `compat_reasons`, `harness_path`.
+2. Abre o `.py` naquele caminho e compara com o gabarito correspondente em
+   `dataset/v2_real_world/bugs/<id>.py`: o harness da LLM reduziu a mesma expressão suspeita, com
+   `nondet_*` no lugar certo, ou concretizou/mudou o que importa?
+3. Pra `over_restricted`, `ablation_per_assumption` no mesmo registro nomeia qual `__ESBMC_assume`
+   mascarava o bug (achado quando removê-la muda o veredito pra FAILED).
+4. Pra `esbmc_inconclusive` com `esbmc_status: tool_error`, era o padrão do achado de 02/09
+   (chamada a nome indefinido); agora `compat.py` barra isso antes de gastar um run de ESBMC.
+
 ## Estado
 
 - `research_pipeline/scan/` é o nome interno legado dos componentes de síntese;
@@ -117,3 +151,27 @@ de síntese condicionadas a uma hipótese correta.
   `qwen2.5-coder:7b` mantiveram NumPy; `compat.py` bloqueou corretamente o
   harness como `unsupported_harness` antes do ESBMC. Isso valida o caminho de
   feedback e evidencia que a taxa de síntese deve ser medida por modelo.
+- **02/09/2026, validação end-to-end real contra os 106 candidatos.** Três falhas achadas e
+  corrigidas nesta janela, cada uma só apareceu rodando contra código real, nenhuma em teste
+  isolado:
+  1. Super-restrição (28/08): LLM inventa bound que a função real não garante, prova vira vazia.
+     Corrigido com `guards.py` (allowlist de precondição por AST) + `ablation.py` (remove uma
+     `__ESBMC_assume` por vez, re-roda).
+  2. Concretização (01/09): LLM fixa um valor constante em vez de manter símbolo (`x = [0.0, 0.2,
+     0.8, 1.0]` fixo em `makeMappingArray`), divisor deixa de poder ser zero, bug some da prova.
+     Corrigido reescrevendo `synth_prompt.txt` ancorado em `limitations.md`/`supported-features.md`/
+     `models/esbmc.py` do ESBMC (commit `cbc6311`).
+  3. Chamada externa não definida (02/09): harness chama função do projeto original (ex.
+     `safe_url_string`) em vez de reconstruir com nondet; ESBMC trava em erro interno
+     (`tool_error`). Em amostra de 26 candidatos reais, 8 terminaram assim. Corrigido tornando
+     `undefined_names()` critério de rejeição em `check_harness()`, não só aviso; regra 5d nova no
+     `synth_prompt.txt` (commit `278df52`, teste de regressão
+     `test_scan_compat.py::test_undefined_helper_call_is_invalid`).
+- **Gotcha de `--resume` confirmado ao vivo (02/09):** o fingerprint do checkpoint inclui prompt e
+  fontes; ao mudar `synth_prompt.txt`/`compat.py` no meio de uma rodada, `--resume` recusa com
+  "Não é seguro retomar" em vez de misturar resultado de prompt antigo com novo. Comportamento
+  correto, mas exige rodar do zero (novo `--output-dir`) sempre que prompt ou `compat.py` mudam
+  entre duas rodadas que serão comparadas.
+- **Pendente no fechamento desta janela:** rodada completa dos 106 candidatos com o `compat.py`
+  corrigido, consistente do início ao fim (a rodada anterior misturava pré-fix/pós-fix e foi
+  descartada pelo próprio `--resume`). Resultado final ainda não fechado nesta versão do doc.
