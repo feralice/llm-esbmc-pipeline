@@ -1,13 +1,7 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 from research_pipeline.scan.compat import (
+    EXPECTED_PROPERTY_MARKER,
     VERDICT_INVALID,
     VERDICT_OK,
     VERDICT_UNSUPPORTED,
@@ -19,7 +13,7 @@ _GOOD = """\
 def div_core(a: int, b: int) -> int:
     __ESBMC_assume(b >= 0)
     __ESBMC_assume(b <= 100)
-    assert b != 0
+    assert b != 0, "LLM_ESBMC_EXPECTED_PROPERTY"
     return a // b
 
 
@@ -81,7 +75,9 @@ def test_missing_module_level_driver_is_invalid():
 
 def test_if_name_main_counts_as_driver():
     src = (
-        "def f(a: int, b: int) -> int:\n    return a // b\n\n"
+        "def f(a: int, b: int) -> int:\n"
+        "    assert b != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    return a // b\n\n"
         "if __name__ == '__main__':\n    f(nondet_int(), nondet_int())\n"
     )
     assert check_harness(src).ok
@@ -164,7 +160,7 @@ def test_undefined_helper_call_is_invalid():
         "    url: str = nondet_str()\n"
         "    encoding: str = nondet_str()\n"
         "    s = safe_url_string(url, encoding)\n"
-        "    assert isinstance(s, str)\n"
+        "    assert isinstance(s, str), 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
         "def main():\n"
         "    model()\n"
         "main()\n"
@@ -173,3 +169,54 @@ def test_undefined_helper_call_is_invalid():
     assert not r.ok
     assert r.verdict == VERDICT_INVALID
     assert "safe_url_string" in r.reasons[0]
+
+
+def test_abs_of_symbolic_string_is_invalid():
+    src = (
+        "def f(x: str) -> int:\n"
+        "    y: int = abs(x)\n"
+        f"    assert y >= 0, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return y\n"
+        "f(nondet_str())\n"
+    )
+    r = check_harness(src)
+    assert not r.ok
+    assert "abs() receives str" in r.reasons[0]
+
+
+def test_symbolic_integer_subscript_is_invalid():
+    src = (
+        "def f(x: int) -> int:\n"
+        "    y: int = x[0]\n"
+        f"    assert y == y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return y\n"
+        "f(nondet_int())\n"
+    )
+    r = check_harness(src)
+    assert not r.ok
+    assert "subscript non-container" in r.reasons[0]
+
+
+def test_scalar_attribute_method_is_allowed():
+    """Regression: 106-candidate run on 2026-09-03 showed a blanket ban on any
+    .method() call rejected cheap, well-modeled string/dict methods (.isdigit,
+    .startswith, .get, .join...), not just expensive ones (.split, .replace,
+    .partition - documented as costly in dataset/v2_real_world/README.md).
+    check_harness() no longer rejects on attribute calls alone; a genuinely
+    unsupported method still fails at the ESBMC stage, not here.
+    """
+    src = (
+        "def f(x: str) -> bool:\n"
+        "    y: bool = x.isdigit()\n"
+        f"    assert y == y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return y\n"
+        "f(nondet_str())\n"
+    )
+    assert check_harness(src).ok
+
+
+def test_expected_assertion_marker_is_required():
+    src = "def f(x: int) -> None:\n    assert x != 0\nf(nondet_int())\n"
+    r = check_harness(src)
+    assert not r.ok
+    assert "exactly one expected assertion" in r.reasons[0]

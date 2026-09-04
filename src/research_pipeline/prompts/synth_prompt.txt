@@ -97,6 +97,26 @@ RULES
    - none_misuse / type_mismatch / invalid_precondition / variable_misuse:
      model the offending value the buggy way and assert the postcondition the
      real code assumes.
+   - The harness must contain exactly ONE Python assert. Give it the literal
+     message `"LLM_ESBMC_EXPECTED_PROPERTY"`, for example:
+     `assert divisor != 0, "LLM_ESBMC_EXPECTED_PROPERTY"`. This marker lets the
+     pipeline distinguish the intended property from an internal ESBMC failure.
+   - If the condition has more than one comparison (e.g. `0 <= idx < 1000`) or
+     more than one boolean term (`and`/`or`), bind it to a named bool first,
+     then assert the name: `ok: bool = 0 <= idx < 1000` then
+     `assert ok, "LLM_ESBMC_EXPECTED_PROPERTY"`. ESBMC-Python checks a chained
+     comparison as separate internal steps and only one of them carries the
+     marker back, which can make a correct harness look unconfirmed.
+   - If the suspect expression is itself a call that can raise on bad input
+     (`int(...)` on a non-numeric string, a dict/list lookup by a key or index
+     that may be absent), place the assert BEFORE that call, checking the
+     precondition the real code failed to enforce - not a check on the risky
+     call's result. `int()`/dict-key access raise their own ESBMC-internal
+     violation on bad input (esbmc-python-guide skill, gotcha 9); if your
+     marked assert sits after the risky call, execution never reaches it on
+     the buggy input and ESBMC reports its own message instead of yours.
+     Right: `looks_like_int = len(s) > 0 and s.lstrip('-').isdigit()`,
+     `assert looks_like_int, "LLM_ESBMC_EXPECTED_PROPERTY"`, THEN `x = int(s)`.
 
 10. Keep it short. One model function, one main(), one call. No comments needed
     beyond a one-line reference to the real function.

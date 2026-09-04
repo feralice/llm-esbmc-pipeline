@@ -70,6 +70,7 @@ _BAD_NONDET = re.compile(
 VERDICT_OK = "ok"
 VERDICT_INVALID = "invalid_harness"
 VERDICT_UNSUPPORTED = "unsupported_harness"
+EXPECTED_PROPERTY_MARKER = "LLM_ESBMC_EXPECTED_PROPERTY"
 
 
 @dataclass
@@ -164,6 +165,14 @@ def check_harness(source: str) -> CompatResult:
             ["no module-level driver (harness must call the function at module level)"],
         )
 
+    assertion_reasons = _check_expected_assertion(tree)
+    if assertion_reasons:
+        return CompatResult(False, VERDICT_INVALID, assertion_reasons)
+
+    type_reasons = _check_scalar_types(tree)
+    if type_reasons:
+        return CompatResult(False, VERDICT_INVALID, type_reasons)
+
     undefined = sorted(_undefined_names(tree))
     if undefined:
         return CompatResult(
@@ -177,6 +186,86 @@ def check_harness(source: str) -> CompatResult:
         )
 
     return CompatResult(True, VERDICT_OK, [])
+
+
+def _check_expected_assertion(tree: ast.Module) -> list[str]:
+    """Require one unmistakable user property and no unmarked assertions."""
+    assertions = [node for node in ast.walk(tree) if isinstance(node, ast.Assert)]
+    marked = [
+        node
+        for node in assertions
+        if isinstance(node.msg, ast.Constant)
+        and node.msg.value == EXPECTED_PROPERTY_MARKER
+    ]
+    if len(marked) != 1:
+        return [
+            (
+                "harness must contain exactly one expected assertion written as "
+                f'assert <condition>, "{EXPECTED_PROPERTY_MARKER}"'
+            )
+        ]
+    if len(assertions) != 1:
+        return ["harness contains additional unmarked assertions"]
+    return []
+
+
+def _annotation_name(annotation: ast.expr | None) -> str | None:
+    if isinstance(annotation, ast.Name):
+        return annotation.id
+    return None
+
+
+def _infer_expr_type(node: ast.expr, known: dict[str, str]) -> str | None:
+    if isinstance(node, ast.Name):
+        return known.get(node.id)
+    if isinstance(node, ast.Constant):
+        return type(node.value).__name__
+    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+        return {
+            "nondet_int": "int", "nondet_float": "float",
+            "nondet_bool": "bool", "nondet_str": "str",
+            "int": "int", "float": "float", "bool": "bool", "str": "str",
+            "abs": _infer_expr_type(node.args[0], known) if node.args else None,
+        }.get(node.func.id)
+    if isinstance(node, ast.List):
+        return "list"
+    if isinstance(node, ast.Dict):
+        return "dict"
+    if isinstance(node, ast.Tuple):
+        return "tuple"
+    return None
+
+
+def _check_scalar_types(tree: ast.Module) -> list[str]:
+    """Catch deterministic type errors that ESBMC may turn into false failures."""
+    known: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.arg):
+            annotated = _annotation_name(node.annotation)
+            if annotated:
+                known[node.arg] = annotated
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            annotated = _annotation_name(node.annotation)
+            inferred = _infer_expr_type(node.value, known) if node.value else None
+            known[node.target.id] = annotated or inferred or known.get(node.target.id, "")
+        elif isinstance(node, ast.Assign):
+            inferred = _infer_expr_type(node.value, known)
+            if inferred:
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        known[target.id] = inferred
+
+    reasons: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "abs":
+            operand_type = _infer_expr_type(node.args[0], known) if node.args else None
+            if operand_type not in {None, "int", "float", "bool"}:
+                reasons.append(f"abs() receives {operand_type}, expected a numeric value")
+        elif isinstance(node, ast.Subscript):
+            value_type = _infer_expr_type(node.value, known)
+            if value_type in {"int", "float", "bool"}:
+                reasons.append(f"attempts to subscript non-container value of type {value_type}")
+    return list(dict.fromkeys(reasons))
 
 
 def _undefined_names(tree: ast.Module) -> set[str]:

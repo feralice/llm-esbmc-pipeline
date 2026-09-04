@@ -27,7 +27,7 @@ from ..models import Finding
 from ..preprocess import preprocess_file
 from ..verification.esbmc_runner import run_esbmc_direct
 from .ablation import FAILED, AblationReport, ablate
-from .compat import VERDICT_UNSUPPORTED, check_harness
+from .compat import EXPECTED_PROPERTY_MARKER, VERDICT_UNSUPPORTED, check_harness
 from .synth import HarnessSynthesizer
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
@@ -411,6 +411,17 @@ def _one_attempt(
     result.esbmc_seconds = esbmc.time_seconds
 
     result.classification = _classify_esbmc(esbmc.status)
+    if result.classification == CONFIRMED_ON_ABSTRACTION:
+        violated_property = str(esbmc.details.get("property_kind", "")).strip()
+        if violated_property != EXPECTED_PROPERTY_MARKER:
+            result.classification = INVALID_HARNESS
+            result.compat_verdict = "invalid_harness"
+            result.compat_reasons = [
+                (
+                    "ESBMC failed a different property "
+                    f"({violated_property or 'unknown'}), not the marked expected assertion"
+                )
+            ]
     if use_ablation and result.classification == SAFE_ON_ABSTRACTION:
         report = _ablate_harness(
             synth_result.harness,
