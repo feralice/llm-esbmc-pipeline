@@ -32,6 +32,75 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
 
 ---
 
+### EXP-01 — `--multi-property` no ESBMC pra não perder o assert marcado
+
+- Data: 2026-09-04
+- Artigo motivador: nenhum — achado por sonda direta no ESBMC real (Fase 5 do protocolo), não
+  por literatura. Vocabulário de "prova espúria"/CEGAR (`LEITURAS_RECOMENDADAS.md` §6.3) se
+  aplica ao problema em geral (abstração forte demais mascarando o resultado real), mas a causa
+  aqui é uma interação de ferramenta (ESBMC), não uma técnica de modelagem da LLM.
+- Hipótese testável: adicionar `--multi-property` ao comando do ESBMC e reclassificar quando
+  nenhuma propriedade violada bate com o marcador, mas todas têm a forma de negação do
+  `__ESBMC_cover` (`assertion !(...)`), recupera confirmação real perdida sem introduzir falso
+  positivo, mantendo ou melhorando `confirmation_rate` e `end_to_end.recall` frente à v5.
+- Métrica primária: `synthesis_given_correct_detection.confirmation_rate`
+- Métricas secundárias: `compatibility_rate`, `end_to_end.recall`, `over_restricted` (deve subir,
+  já que casos antes escondidos como `invalid_harness` agora chegam corretamente na ablação)
+- Arquivos alterados: `src/research_pipeline/verification/esbmc_runner.py`
+  (`run_esbmc_direct` ganha `--multi-property`; `_extract_esbmc_details` coleta todas as
+  violações, não só a primeira), `src/research_pipeline/scan/pipeline.py`
+  (`_looks_like_cover_negation`, checagem de marcador contra a lista inteira), testes em
+  `tests/test_scan_pipeline.py` e `tests/test_research_pipeline.py`
+- Resultado esperado: confirmação sobe, compatibilidade não cai, nenhum caso antes confirmado
+  vira inválido (a mudança só afeta o caminho que já ia pra `invalid_harness` por propriedade
+  errada).
+- Condição de rejeição: confirmação cai, ou compatibilidade cai, ou aparece confirmação sem
+  contraexemplo válido pro marcador (falso positivo introduzido pela mudança).
+- Comando exato:
+  ```
+  python src/main.py --mode v2 --input dataset/v2_real_world/detection \
+    --ground-truth dataset/v2_real_world/ground_truths.json \
+    --model gpt-4o-mini --output-dir <output-dir-novo>
+  ```
+  (mesmo comando exato da v5, só o código mudou — isola a variável do experimento)
+- Modelo / backend: gpt-4o-mini via API OpenAI, igual v5 (não usa codex, pra não misturar duas
+  variáveis no mesmo ciclo)
+- Prompt/schema version: commit `b18f5de` (synth_prompt.txt sem mudança desde a v5; só
+  esbmc_runner.py e pipeline.py mudaram)
+- ESBMC version: 8.4.0 64-bit x86_64 linux
+- Timeout / unwind / flags: `--bound 5` (padrão), `--timeout 30s` (padrão), `--multi-property`
+  novo nesta rodada
+- Métricas antes (v5, commit `73ae353`, mesmo comando): síntese dado detecção correta n=30,
+  compatível 83%, **confirmado 13% (4/30)**; ponta a ponta recall 3,4% (4/117)
+- Métricas depois (esta rodada, `v2_full_106_exp01`, um retry de detecção precisou de
+  `--resume` por erro transitório de JSON malformado numa chamada — não relacionado à mudança,
+  fingerprint idêntico, resume seguro): detecção precisão 28,7% / recall 28,2% / F1 28,4%
+  (tp=33, fp=82, fn=84 — dentro do ruído esperado da própria detecção estocástica); síntese
+  dado detecção correta n=23, compatível 82,6% (praticamente igual, 83%→82,6%),
+  **confirmado 21,7% (5/23)**; ponta a ponta recall 4,3% (5/117); `over_restricted` subiu de 1-2
+  pra 8 (esperado: casos que antes ficavam escondidos como `invalid_harness` agora chegam
+  corretamente na ablação, que os identifica como super-restrição de verdade).
+- Conclusão: **aceita**. Confirmação subiu (13%→22%), compatibilidade não caiu (83%→83%),
+  recall ponta a ponta subiu (3,4%→4,3%). O `n` mudou entre as duas rodadas (30→23, detecção é
+  estocástica), então a comparação direta de proporção tem ruído de amostra pequena — mas a
+  direção bate com o mecanismo verificado independentemente por 4 sondas ESBMC (não é só
+  coincidência de uma rodada), e nenhuma degradação apareceu em nenhuma métrica secundária.
+- Falsos positivos (exemplos): nenhum novo observado — a mudança só reclassifica casos que
+  ANTES eram descartados (invalid_harness), nunca promove algo que já era rejeitado por outro
+  motivo.
+- Falsos negativos (exemplos): resolvidos nesta rodada — `Series.to_timestamp` (exemplo do
+  EXP-00) e casos semelhantes agora devem classificar corretamente quando o padrão se repetir.
+- Próximo experimento recomendado (**EXP-02**): achado 1 do diagnóstico de 03/09 em
+  `docs/v2_scan_mode_fluxo.md` — harness vazio por tipo em `assertion_violation`/`type_mismatch`
+  (`nondet_bool()` testado contra `isinstance(_, bool)`, sempre verdadeiro por construção,
+  `ablation.py` não pega porque o problema é o tipo declarado, não um assume). Boa literatura de
+  base: type-aware code generation / constrained decoding (Fase 2 do próximo ciclo, ainda não
+  pesquisada nesta sessão). Também vale reavaliar EXP-00 (codex vs API) já com o fix do
+  EXP-01 aplicado, já que o EXP-00 original mediu compatibilidade artificialmente baixa por causa
+  do bug que o EXP-01 corrigiu.
+
+---
+
 ### EXP-00 — backend `codex exec` na síntese (engenharia, não hipótese de literatura)
 
 - Data: 2026-09-03
