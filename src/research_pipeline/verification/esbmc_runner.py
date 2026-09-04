@@ -117,6 +117,12 @@ def run_esbmc_direct(
 
 def _classify_esbmc_direct_result(output: str, returncode: int | None) -> str:
     """Classify ESBMC output into one of the five canonical statuses for Flow A."""
+    if re.search(
+        r"Undefined function .*replacing with assert\(false\)", output, re.IGNORECASE
+    ):
+        return "unsupported_case"
+    if re.search(r"(?:ERROR:\s*)?TypeError:", output):
+        return "tool_error"
     if "ERROR:" in output and "VERIFICATION" not in output:
         # Distinguish "unsupported" (missing module/feature) from generic crash
         if "Cannot open file" in output or "not supported" in output.lower():
@@ -141,6 +147,11 @@ def _summarize_direct(status: str, details: dict, timeout_seconds: int = 30) -> 
         base = f"ESBMC direto encontrou violação: {prop_kind}." if prop_kind else "ESBMC direto encontrou violação."
         return f"{base} Local: {location}." if location else base
     if status == "no_violation_found":
+        if zero_vccs:
+            return (
+                "ESBMC direto: sem violação, mas 0 VCCs geradas — prova pode ser vazia "
+                "(nenhuma computação relevante sobreviveu ao slicer)."
+            )
         return "ESBMC direto: sem violação no bound analisado."
     if status == "no_vcc_generated":
         return "ESBMC direto: 0 VCCs geradas — arquivo sem chamadas verificáveis no nível de módulo."
@@ -444,8 +455,6 @@ def _extract_esbmc_details(
     path_text = str(source_path).replace("\\", "/") if source_path else ""
 
     for raw_line in normalized_lines:
-        line = raw_line.strip()
-
         if "SyntaxWarning:" in raw_line:
             warning_text = raw_line.split("SyntaxWarning:", 1)[1].strip()
             if warning_text and warning_text not in warnings:

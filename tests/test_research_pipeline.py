@@ -1,37 +1,48 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
-import sys
 from types import SimpleNamespace
 
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 _needs_openai = pytest.mark.live_llm
 
-from research_pipeline.verification.esbmc_runner import (
-    _FLOW_B_CATEGORY_FLAGS,
-    _classify_esbmc_result,
-    _classify_esbmc_direct_result,
-    _extract_generated_vcc_count,
-)
 from research_pipeline import evaluator
 from research_pipeline.ast_utils import expression_exists_in_executable_ast
 from research_pipeline.evaluator import evaluate_file, load_ground_truth_cases
-from research_pipeline.report import consolidate_result
-from research_pipeline.pipeline import run_pipeline
-from research_pipeline.preprocess import preprocess_file
-from research_pipeline.llm.findings import finding_from_dict, normalize_findings
-from research_pipeline.llm.prompts import build_user_prompt
-from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.llm.backends import openai as openai_backend
 from research_pipeline.llm.backends.factory import build_analyzer
 from research_pipeline.llm.backends.openai import OpenAIResponsesAnalyzer
+from research_pipeline.llm.findings import finding_from_dict, normalize_findings
+from research_pipeline.llm.prompts import build_user_prompt
+from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.models import ESBMCDirectResult, Finding
+from research_pipeline.pipeline import run_pipeline
+from research_pipeline.preprocess import preprocess_file
+from research_pipeline.report import consolidate_result
+from research_pipeline.verification.esbmc_runner import (
+    _FLOW_B_CATEGORY_FLAGS,
+    _classify_esbmc_direct_result,
+    _classify_esbmc_result,
+    _extract_generated_vcc_count,
+    _summarize_direct,
+)
+
+
+def test_summarize_direct_warns_on_zero_vcc_success():
+    """Regression: zero_vccs was computed but silently dropped from the summary
+    text (found via ruff F841, 2026-09-03) -- exactly the vacuous-proof gotcha
+    (esbmc-python-guide skill, gotcha 4) the summary should surface, not hide.
+    """
+    summary = _summarize_direct("no_violation_found", {"zero_vccs": True})
+    assert "0 VCCs" in summary
+    assert "vazia" in summary
+
+
+def test_summarize_direct_no_warning_when_vccs_generated():
+    summary = _summarize_direct("no_violation_found", {"zero_vccs": False})
+    assert "0 VCCs" not in summary
 
 
 @_needs_openai
@@ -209,6 +220,19 @@ def test_classify_unsupported_case() -> None:
     """Cannot open file → unsupported_case."""
     output = "Parsing /tmp/test.py\nERROR: Cannot open file 'numpy'\n"
     assert _classify_esbmc_direct_result(output, 1) == "unsupported_case"
+
+
+def test_undefined_function_injected_assert_is_not_a_bug_confirmation() -> None:
+    output = (
+        "WARNING: Undefined function 'to_timestamp' - replacing with assert(false)\n"
+        "Generated 1 VCC(s)\nVERIFICATION FAILED\n"
+    )
+    assert _classify_esbmc_direct_result(output, 1) == "unsupported_case"
+
+
+def test_python_type_error_is_tool_error() -> None:
+    output = "Converting\nERROR: TypeError: 'int' object is not subscriptable\n"
+    assert _classify_esbmc_direct_result(output, 254) == "tool_error"
 
 
 def test_pop_without_esbmc_result_is_skipped_not_confirmed() -> None:
