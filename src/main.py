@@ -20,7 +20,6 @@ Exemplos:
 """
 from __future__ import annotations
 
-
 import argparse
 import json
 import os
@@ -28,32 +27,19 @@ import sys
 from hashlib import sha256
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
 from dotenv import load_dotenv
+
 load_dotenv(REPO_ROOT / ".env")
 
 
-from research_pipeline.pipeline import (
-    Backend,
-    run_pipeline_esbmc_direct,
-    run_pipeline_llm_only,
-    run_pipeline_multi,
-)
-from research_pipeline.voting import aggregate_votes, write_vote_report
-from research_pipeline.scan.pipeline import ScanCandidate, ScanCaseResult, run_pipeline_scan
-from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
-from research_pipeline.llm.backends.factory import build_analyzer
-from research_pipeline.preprocess import preprocess_file
-from research_pipeline.v2_evaluator import evaluate_v2_results
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy_defined,
-    compute_bootstrap_cis,
     evaluate_model,
     formal_confirmation_rate_defined,
     hallucination_rate_defined,
@@ -61,9 +47,22 @@ from research_pipeline.evaluator import (
     noise_reduction_rate_defined,
     prf_defined,
 )
-
-
-
+from research_pipeline.llm.backends.factory import build_analyzer
+from research_pipeline.pipeline import (
+    Backend,
+    run_pipeline_esbmc_direct,
+    run_pipeline_llm_only,
+    run_pipeline_multi,
+)
+from research_pipeline.preprocess import preprocess_file
+from research_pipeline.scan.pipeline import (
+    ScanCandidate,
+    ScanCaseResult,
+    run_pipeline_scan,
+)
+from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
+from research_pipeline.v2_evaluator import evaluate_v2_results
+from research_pipeline.voting import aggregate_votes, write_vote_report
 
 # ---------------------------------------------------------------------------
 # CLI
@@ -410,7 +409,7 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
             for path in input_paths
         },
         "detector_prompt": sha256(
-            (REPO_ROOT / "research_pipeline/prompts/system_prompt.txt").read_bytes()
+            (REPO_ROOT / "src/research_pipeline/prompts/system_prompt.txt").read_bytes()
         ).hexdigest(),
         "synth_prompt": sha256(load_synth_prompt().encode("utf-8")).hexdigest(),
     }
@@ -525,12 +524,12 @@ def _print_benchmark_table(label: str, counts: EvalCounts, cis: dict | None = No
 
 
     if counts.per_category_hybrid:
-        print(f"\n  Por categoria (Flow B — híbrido):")
+        print("\n  Por categoria (Flow B — híbrido):")
         for cat, c in sorted(counts.per_category_hybrid.items()):
             metrics = prf_defined(c["tp"], c["fp"], c["fn"])
             print(f"    {cat:<30} P={_fmt_optional(metrics['precision'])} R={_fmt_optional(metrics['recall'])} F1={_fmt_optional(metrics['f1'])}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")
     if counts.per_category:
-        print(f"\n  Por categoria (Flow C — LLM only):")
+        print("\n  Por categoria (Flow C — LLM only):")
         for cat, c in sorted(counts.per_category.items()):
             metrics = prf_defined(c["tp"], c["fp"], c["fn"])
             print(f"    {cat:<30} P={_fmt_optional(metrics['precision'])} R={_fmt_optional(metrics['recall'])} F1={_fmt_optional(metrics['f1'])}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")

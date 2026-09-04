@@ -11,7 +11,6 @@ from .llm.findings import normalize_findings
 from .models import Finding
 from .preprocess import preprocess_file
 
-
 _LEAKY_NAME = re.compile(r"(^|_)(buggy|correct|fixed|broken|unsafe)($|_)", re.IGNORECASE)
 _LEAKY_COMMENT = re.compile(
     r"\b(real bug|before the fix|pre-fix|buggy|the fix|correct behavior|crash trigger)\b",
@@ -106,7 +105,10 @@ def _has_hidden_oracle(source: str) -> bool:
     except SyntaxError:
         return False
     for node in tree.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "main":
-            if any(isinstance(child, ast.Assert) for child in ast.walk(node)):
-                return True
+        if (
+            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == "main"
+            and any(isinstance(child, ast.Assert) for child in ast.walk(node))
+        ):
+            return True
     return False

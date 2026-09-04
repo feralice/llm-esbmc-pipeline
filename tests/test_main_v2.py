@@ -1,15 +1,9 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-for path in (REPO_ROOT, REPO_ROOT / "src"):
-    if str(path) not in sys.path:
-        sys.path.insert(0, str(path))
-
-import main  # noqa: E402
-from research_pipeline.models import Finding  # noqa: E402
+import main
+from research_pipeline.models import Finding
 
 
 class _Analyzer:

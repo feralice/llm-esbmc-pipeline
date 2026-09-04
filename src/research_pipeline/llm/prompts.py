@@ -7,7 +7,9 @@ from pathlib import Path
 
 from ..models import CodeUnit
 from ..smell_policy import load_smell_thresholds
-from .schema import FINDINGS_JSON_SCHEMA  # noqa: F401 - re-exported for backward compatibility
+from .schema import (
+    FINDINGS_JSON_SCHEMA,  # noqa: F401 - re-exported for backward compatibility
+)
 
 """Prompt builders for the LLM analysis step.
 
@@ -24,7 +26,9 @@ PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
 def _reasoning_steps() -> str:
     policy = load_smell_thresholds()
     return (
-        "Aplique o raciocínio do system prompt (itens 1-5) para cada operação perigosa encontrada.\n"
+        "Faça uma passagem completa e aplique o raciocínio do system prompt (itens 1-5) "
+        "a cada operação perigosa encontrada. Retorne todas as causas raiz independentes "
+        "com evidência concreta, sem quantidade fixa e sem duplicatas.\n"
         "Independentemente de haver bugs, aplique os limiares operacionais: "
         f"long_method (>={policy['long_method_min_executable_lines']} linhas executáveis), "
         f"many_parameters (>={policy['many_parameters_min']} parâmetros, excluindo self/cls), "

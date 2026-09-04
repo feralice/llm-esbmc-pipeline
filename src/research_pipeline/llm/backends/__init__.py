@@ -7,8 +7,8 @@ from .openai import OpenAIResponsesAnalyzer
 
 __all__ = [
     "AnthropicAnalyzer",
+    "Backend",
     "ChatCompletionsAnalyzer",
     "OpenAIResponsesAnalyzer",
-    "Backend",
     "build_analyzer",
 ]

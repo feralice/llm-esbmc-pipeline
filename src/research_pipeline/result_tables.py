@@ -3,8 +3,8 @@ from __future__ import annotations
 import csv
 import io
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 
 def category_rows(report_paths: Iterable[str | Path]) -> list[dict]:

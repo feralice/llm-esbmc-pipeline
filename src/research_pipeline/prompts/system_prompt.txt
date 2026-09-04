@@ -2,6 +2,11 @@ Você é um especialista em segurança de código Python em um pipeline de pesqu
 
 Sua tarefa: analisar a função fornecida e identificar dois tipos de problemas.
 
+Faça uma busca completa pela função. A saída pode conter zero, uma ou várias
+hipóteses: não existe quantidade mínima nem máxima fixa. Reporte separadamente
+cada causa raiz independente sustentada por uma expressão concreta; não duplique
+a mesma causa raiz em formulações diferentes e não complete uma cota com palpites.
+
 ## BUGS FORMAIS (verifiable=true)
 
 Reporte apenas quando parâmetro livre (sem restrição de constante) pode causar a falha:

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-
 import json
 import random
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from hashlib import sha256
 from pathlib import Path
-from typing import Callable, cast
+from typing import cast
 
 from .llm.backends.factory import Backend, build_analyzer
 from .models import (
@@ -15,9 +15,10 @@ from .models import (
 )
 from .preprocess import preprocess_file
 from .report import _category_from_esbmc_property, _esbmc_result_matches_category
-from .verification.esbmc_runner import run_esbmc_function_baseline, run_esbmc_on_function
-
-
+from .verification.esbmc_runner import (
+    run_esbmc_function_baseline,
+    run_esbmc_on_function,
+)
 
 
 @dataclass
@@ -115,7 +116,7 @@ class EvalCounts:
         self.per_category_hybrid.setdefault(category, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
 
 
-    def merge_category(self, other: "EvalCounts") -> None:
+    def merge_category(self, other: EvalCounts) -> None:
         for cat, counts in other.per_category.items():
             d = self.per_category.setdefault(cat, {"tp": 0, "fp": 0, "fn": 0})
             d["tp"] += counts["tp"]
@@ -123,7 +124,7 @@ class EvalCounts:
             d["fn"] += counts["fn"]
 
 
-    def merge_category_hybrid(self, other: "EvalCounts") -> None:
+    def merge_category_hybrid(self, other: EvalCounts) -> None:
         for cat, counts in other.per_category_hybrid.items():
             d = self.per_category_hybrid.setdefault(cat, {"tp": 0, "fp": 0, "fn": 0})
             d["tp"] += counts["tp"]
@@ -523,7 +524,7 @@ def evaluate_file(
 
 
     # ---- Flow A: ESBMC-only function baseline ----
-    print(f"    - Executando baseline ESBMC (Flow A)...")
+    print("    - Executando baseline ESBMC (Flow A)...")
     direct = run_esbmc_function_baseline(
         file_path=file_path,
         function_names=[unit.name for unit in units],

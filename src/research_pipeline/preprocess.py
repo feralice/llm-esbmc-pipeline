@@ -78,9 +78,7 @@ class _UnitCollector(ast.NodeVisitor):
         if name.startswith("test_"):
             return True
         # Module-level main() is orchestration, not a useful formal target.
-        if name == "main" and not self.scope:
-            return True
-        return False
+        return name == "main" and not self.scope
 
     def _build_unit(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> CodeUnit:
         """Convert one AST function node into the pipeline's CodeUnit format."""

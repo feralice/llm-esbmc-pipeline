@@ -4,13 +4,13 @@ import ast
 import json
 import textwrap
 
+from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
+from ..models import CodeUnit, Finding
 from .categories import (
     SOURCE_GROUNDED_CATEGORIES,
     SUPPORTED_CATEGORIES,
     VERIFIABLE_OPERATION_KIND,
 )
-from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
-from ..models import CodeUnit, Finding
 
 """Utilities for turning raw LLM JSON into normalized Finding objects.
 

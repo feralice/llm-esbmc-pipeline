@@ -1,12 +1,7 @@
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
 
 import pytest
 
@@ -31,6 +26,7 @@ _GOOD_HARNESS = (
     "def core(n: int) -> int:\n"
     "    __ESBMC_assume(n >= 1)\n"
     "    __ESBMC_assume(n <= 100)\n"
+    "    assert n != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
     "    return 10 // n\n"
     "def main() -> None:\n"
     "    core(nondet_int())\n"
@@ -60,6 +56,7 @@ def _esbmc(status: str) -> ESBMCDirectResult:
         command=["esbmc"],
         returncode=0,
         summary=status,
+        details={"property_kind": "LLM_ESBMC_EXPECTED_PROPERTY"},
     )
 
 
@@ -126,6 +123,18 @@ def test_confirmed_on_abstraction(tmp_path, monkeypatch):
     result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
     assert result.classification == CONFIRMED_ON_ABSTRACTION
     assert result.synth_total_tokens == 123
+
+
+def test_different_violated_property_is_not_confirmation(tmp_path, monkeypatch):
+    def wrong_property(*args, **kwargs):
+        result = _esbmc("violation_found")
+        result.details["property_kind"] = "Unsupported function 'to_timestamp' is reached"
+        return result
+
+    _patch_esbmc(monkeypatch, wrong_property)
+    result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
+    assert result.classification == INVALID_HARNESS
+    assert "different property" in result.compat_reasons[0]
 
 
 def test_safe_on_abstraction(tmp_path, monkeypatch):

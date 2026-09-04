@@ -4,7 +4,7 @@ with gpt-4o-mini, compat-check, run ESBMC, compare verdict to the hand-made bugs
 import json, subprocess, sys, tempfile, os
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc")
+sys.path.insert(0, "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src")
 os.chdir("/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc")
 from dotenv import load_dotenv
 load_dotenv(".env")

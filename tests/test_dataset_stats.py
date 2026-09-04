@@ -1,6 +1,9 @@
 import json
 
-from research_pipeline.dataset_stats import build_dataset_statistics, write_dataset_statistics
+from research_pipeline.dataset_stats import (
+    build_dataset_statistics,
+    write_dataset_statistics,
+)
 
 
 def test_dataset_statistics_support_multilabel_and_annotations(tmp_path) -> None:

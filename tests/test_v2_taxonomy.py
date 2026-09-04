@@ -13,7 +13,6 @@ from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.models import Finding
 from research_pipeline.preprocess import preprocess_file
 
-
 V2_CATEGORIES = {
     "assertion_violation",
     "division_by_zero",

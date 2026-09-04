@@ -14,7 +14,7 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
-from .llm.backends.factory import Backend, build_analyzer  # noqa: F401 - re-exported
+from .llm.backends.factory import Backend, build_analyzer
 from .models import ESBMCDirectResult, ESBMCResult, FinalResult, Finding
 from .preprocess import preprocess_file
 from .report import consolidate_result, write_json_report
@@ -22,7 +22,6 @@ from .verification.esbmc_runner import (
     run_esbmc_function_baseline,
     run_esbmc_on_function,
 )
-
 
 # ---------------------------------------------------------------------------
 # Flow A: ESBMC-only

@@ -5,11 +5,11 @@ import os
 import time
 from urllib import error, request
 
+from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
 from ..schema import FINDINGS_JSON_SCHEMA
 from ..telemetry import response_event
-from ...models import CodeUnit, Finding
 
 
 class OpenAIResponsesAnalyzer:

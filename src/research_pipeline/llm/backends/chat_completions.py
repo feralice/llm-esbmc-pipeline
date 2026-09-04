@@ -7,9 +7,14 @@ from urllib import error, request
 
 logger = logging.getLogger(__name__)
 
-from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings, strip_markdown_json
-from ..prompts import build_user_prompt, load_system_prompt
 from ...models import CodeUnit, Finding
+from ..findings import (
+    coerce_findings_payload,
+    finding_from_dict,
+    normalize_findings,
+    strip_markdown_json,
+)
+from ..prompts import build_user_prompt, load_system_prompt
 from ..telemetry import response_event
 
 

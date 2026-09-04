@@ -3,7 +3,6 @@ from __future__ import annotations
 import ast
 import textwrap
 
-
 """Small AST helpers used after the LLM response.
 
 This module does not detect bugs by itself. It only checks whether an

@@ -7,7 +7,6 @@ from pathlib import Path
 
 from .models import CodeUnit
 
-
 THRESHOLDS_PATH = Path(__file__).resolve().parent / "config" / "smell_thresholds.json"
 
 
