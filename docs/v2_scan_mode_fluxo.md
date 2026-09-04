@@ -172,6 +172,66 @@ tentativa). Pra auditar um caso à mão:
   "Não é seguro retomar" em vez de misturar resultado de prompt antigo com novo. Comportamento
   correto, mas exige rodar do zero (novo `--output-dir`) sempre que prompt ou `compat.py` mudam
   entre duas rodadas que serão comparadas.
-- **Pendente no fechamento desta janela:** rodada completa dos 106 candidatos com o `compat.py`
-  corrigido, consistente do início ao fim (a rodada anterior misturava pré-fix/pós-fix e foi
-  descartada pelo próprio `--resume`). Resultado final ainda não fechado nesta versão do doc.
+- **03/09/2026, mais duas correções e a rodada completa fechada.** Depois do achado de 02/09, a
+  validação end-to-end revelou mais duas falhas antes de fechar o número:
+  4. Condição composta perde o marcador: `assert 0 <= idx < 1000, MARCADOR` é verificado pelo
+     ESBMC-Python em passos internos separados, e só um carrega o marcador de volta ao pipeline.
+     Corrigido no `synth_prompt.txt`: condição composta vira variável nomeada antes do assert
+     (`ok: bool = 0 <= idx < 1000`).
+  5. Assert depois de chamada que pode lançar sozinha: `int(nondet_str())` e acesso a dict/lista
+     por chave/índice ausente disparam a própria checagem interna do ESBMC-Python antes do assert
+     marcado ser alcançado no caso com bug. Confirmado com ESBMC real (`int()` inválido:
+     `invalid literal for int() - digit out of range for base`, fonte
+     `c2goto/library/python/string.c:1231`; dict: `uncaught exception`). Documentado como gotcha 9
+     na skill `esbmc-python-guide`. Corrigido no prompt: assert tem que vir **antes** da chamada
+     arriscada, checando a pré-condição que faltou, não a consequência.
+  Nessa janela também apareceu uma regressão própria: bloquear todo `.método()` (tentativa de
+  reforçar rule 5b) rejeitava operação barata e normal (`.isdigit`, `.get`, `.startswith`), caiu a
+  taxa de confirmação de 57% pra 8%. Revertido; ficou só a checagem de tipo escalar (`abs()` em
+  string, subscript em int/float/bool) e o marcador único por assert.
+  Commits: `e2e4cbe` (marcador + tipo escalar), `4ba9edd` (fix não relacionado do resumo do ESBMC
+  direto escondendo prova vazia), `73ae353` (layout `src/`).
+
+## Diagnóstico da rodada completa (03/09/2026, ver commits acima)
+
+Primeira medição de ponta a ponta nos 106 candidatos reais, todas as correções acima aplicadas.
+Comando: `--mode v2 --input dataset/v2_real_world/detection --ground-truth
+dataset/v2_real_world/ground_truths.json --model gpt-4o-mini`.
+
+| etapa | número | leitura |
+|---|---|---|
+| detecção (cega) | precisão 34%, recall 36%, F1 35% | detector V1 sem alteração hoje; acha 42/117 rótulos |
+| síntese, dado detecção correta | 83% compatível, **13% confirmado** (4/30) | camada mexida hoje |
+| ponta a ponta | precisão 33%, **recall 3,4%** (4/117) | ≈ recall detecção × confirmação da síntese |
+
+O recall final é baixo porque as duas etapas multiplicam: 0,36 × 0,13 ≈ 0,047, perto do 0,034
+observado. Duas alavancas independentes, não uma.
+
+### Causas concretas do 87% que não confirma (dado detecção correta)
+
+Contagem sobre os 26 casos que não confirmaram: 9 `tool_error`, 19 `inconclusive` sem timeout
+(3-8s de execução), 12 `invalid_harness` (rejeição do `compat.py` funcionando como desenhado), 12
+`safe_on_abstraction`, 2 `over_restricted` (ablação pegando super-restrição, funcionando).
+
+1. **Harness vazio por tipo, achado mais importante desta rodada.** Em `assertion_violation`/
+   `type_mismatch`, a LLM modela `param: bool = nondet_bool()` e testa
+   `assert isinstance(param, bool)`. `nondet_bool()` só produz `bool` por construção: o assert
+   nunca pode falhar, a prova é vazia por tipo, não por `__ESBMC_assume`. `ablation.py` não pega
+   isso porque não tem assume nenhum mascarando, o problema é o tipo declarado do parâmetro. 6 dos
+   12 `safe_on_abstraction` têm essa forma. Ainda não corrigido: precisa de regra nova no prompt
+   pra essas categorias usarem um tipo mais largo (`nondet_str()` representando "valor de origem
+   não confiável") em vez do mesmo tipo que está sendo testado.
+2. **Anotação de tipo fora do suportado.** Achado real: `data: object` e
+   `isinstance(x, (list, tuple))` (forma de tupla) aparecem nos harnesses que travam em
+   `tool_error`/`inconclusive`. `compat.py` hoje não valida que a anotação é uma das quatro
+   suportadas (`int`/`float`/`bool`/`str`). Ainda não corrigido.
+3. **19 casos inconclusivos sem timeout**, causa exata não investigada; precisa ler log bruto
+   caso a caso antes de virar hipótese de correção.
+
+### Ordem sugerida pra próxima sessão
+
+1. Detecção (maior alavanca matemática: dobrar o recall da detecção quase dobra o número final,
+   sem tocar em síntese; gap já mapeado em `docs/LEITURAS_RECOMENDADAS.md` §5.4).
+2. Harness vazio por tipo (achado 1 acima).
+3. Anotação de tipo não suportada (achado 2 acima).
+4. Investigar os 19 casos inconclusivos (achado 3 acima).
