@@ -265,7 +265,47 @@ def _check_scalar_types(tree: ast.Module) -> list[str]:
             value_type = _infer_expr_type(node.value, known)
             if value_type in {"int", "float", "bool"}:
                 reasons.append(f"attempts to subscript non-container value of type {value_type}")
+        elif (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "isinstance"
+            and len(node.args) == 2
+        ):
+            reasons.extend(_tautological_isinstance_reasons(node, known))
     return list(dict.fromkeys(reasons))
+
+
+def _tautological_isinstance_reasons(call: ast.Call, known: dict[str, str]) -> list[str]:
+    """isinstance(x, T) is always True in a scan harness whenever x's own
+    declared/inferred type already IS T -- ESBMC-Python gives every variable a
+    fixed static type (no real dynamic typing), so this never tests anything.
+    Confirmed empirically 2026-09-04 (EXP-02, docs/experiment_log.md): a
+    parameter typed `bool` and checked with `isinstance(param, bool)` always
+    verifies SUCCESSFUL, hiding the type_mismatch/assertion_violation bug the
+    harness meant to model.
+    """
+    target = call.args[0]
+    if not isinstance(target, ast.Name):
+        return []
+    target_type = known.get(target.id)
+    if not target_type:
+        return []
+    type_arg = call.args[1]
+    checked_types: list[str] = []
+    if isinstance(type_arg, ast.Name):
+        checked_types = [type_arg.id]
+    elif isinstance(type_arg, ast.Tuple):
+        checked_types = [elt.id for elt in type_arg.elts if isinstance(elt, ast.Name)]
+    if target_type in checked_types:
+        return [
+            (
+                f"isinstance({target.id}, {target_type}) is always True here - "
+                f"{target.id} is already declared/inferred as {target_type}, ESBMC-Python "
+                "gives it no other possible type; model the wrong-type case with a "
+                "differently-typed nondet_*() value instead"
+            )
+        ]
+    return []
 
 
 def _undefined_names(tree: ast.Module) -> set[str]:

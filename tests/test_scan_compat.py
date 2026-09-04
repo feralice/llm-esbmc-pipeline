@@ -215,6 +215,40 @@ def test_scalar_attribute_method_is_allowed():
     assert check_harness(src).ok
 
 
+def test_tautological_isinstance_against_own_nondet_type_is_invalid():
+    """Regression (EXP-02, docs/experiment_log.md, 2026-09-04): a parameter
+    declared `bool` and fed nondet_bool() can only ever hold True/False in
+    ESBMC-Python's static type model, so `isinstance(param, bool)` is always
+    True by construction. 6 of 12 safe_on_abstraction results in the
+    2026-09-03 diagnosis had this exact shape - a vacuous proof, not a real
+    safety result.
+    """
+    src = (
+        "def f() -> None:\n"
+        "    param: bool = nondet_bool()\n"
+        f"    assert isinstance(param, bool), {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    r = check_harness(src)
+    assert not r.ok
+    assert "always True" in r.reasons[0]
+
+
+def test_isinstance_against_a_different_type_is_not_flagged():
+    """isinstance checking a type OTHER than the target's own declared type is
+    a real (if maybe always-false) check, not the always-True tautology this
+    rule targets - do not over-reject.
+    """
+    src = (
+        "def f() -> None:\n"
+        "    x: int = nondet_int()\n"
+        "    y: bool = isinstance(x, str)\n"
+        f"    assert y == y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    assert check_harness(src).ok
+
+
 def test_expected_assertion_marker_is_required():
     src = "def f(x: int) -> None:\n    assert x != 0\nf(nondet_int())\n"
     r = check_harness(src)

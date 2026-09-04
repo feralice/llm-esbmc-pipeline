@@ -96,7 +96,13 @@ RULES
    - integer_overflow: compute the value and assert it stays in range.
    - none_misuse / type_mismatch / invalid_precondition / variable_misuse:
      model the offending value the buggy way and assert the postcondition the
-     real code assumes.
+     real code assumes. NEVER type-hint a parameter as T and fed it
+     `nondet_T()` and then `assert isinstance(name, T)` (or `assume`/`cover`
+     the same check) - in ESBMC-Python a value declared type T can never be
+     anything else, so that check is always True and proves nothing. To model
+     "the wrong type reaches here", use a DIFFERENT nondet type as the stand-in
+     (e.g. `nondet_str()` for a value the real code treats as untyped/external)
+     and check its shape instead of its Python type.
    - The harness must contain exactly ONE Python assert. Give it the literal
      message `"LLM_ESBMC_EXPECTED_PROPERTY"`, for example:
      `assert divisor != 0, "LLM_ESBMC_EXPECTED_PROPERTY"`. This marker lets the
