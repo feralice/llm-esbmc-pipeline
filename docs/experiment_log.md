@@ -32,6 +32,67 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
 
 ---
 
+### EXP-02 — rejeitar `isinstance()` tautológico contra o próprio tipo nondet
+
+- Data: 2026-09-04
+- Artigo motivador: Type-Constrained Code Generation with Language Models (Mündler et al.,
+  PACMPL/PLDI 2025, DOI 10.1145/3729274) — parente conceitual (ver `docs/literature_log.md`),
+  não fonte direta da técnica.
+- Hipótese testável: rejeitar `isinstance(nome, T)` quando `nome` já é conhecido/declarado como
+  `T` (sempre verdadeiro em ESBMC-Python, que dá tipo estático fixo a toda variável) recupera
+  confirmação real que hoje vira `safe_on_abstraction` vazio, sem introduzir falso positivo.
+- Métrica primária: `synthesis_given_correct_detection.confirmation_rate`
+- Métricas secundárias: `compatibility_rate`, `end_to_end.recall`
+- Arquivos alterados: `src/research_pipeline/scan/compat.py` (`_tautological_isinstance_reasons`),
+  `src/research_pipeline/prompts/synth_prompt.txt` (regra nova), testes em
+  `tests/test_scan_compat.py`
+- Resultado esperado: confirmação sobe (mesmo raciocínio do EXP-01: parar de contar prova vazia
+  como se fosse resultado real).
+- Condição de rejeição: confirmação cai, ou o check rejeita harness que não é de fato
+  tautológico (falso positivo).
+- Comando exato: igual EXP-01 (`--model gpt-4o-mini`, mesmo dataset, output-dir novo)
+- Modelo / backend: gpt-4o-mini via API OpenAI
+- Prompt/schema version: commit `11f4001`
+- ESBMC version: 8.4.0 64-bit x86_64 linux
+- Timeout / unwind / flags: iguais ao EXP-01 (`--bound 5`, `--multi-property` já presente)
+- Métricas antes (EXP-01, `v2_full_106_exp01`): n=23, compatível 83%, **confirmado 22% (5/23)**,
+  recall ponta a ponta 4,3% (5/117)
+- Métricas depois (`v2_full_106_exp02`): detecção precisão 26,1% / recall 25,6% (tp=30, fp=85,
+  fn=87 — outra amostra de candidatos, detecção é estocástica); síntese dado detecção correta
+  n=21, compatível **71,4%** (caiu de 83%), confirmado **9,5% (2/21)** (caiu de 22%); ponta a
+  ponta recall 1,7% (2/117, caiu de 4,3%).
+- **Investigação da queda (obrigatória antes de aceitar/rejeitar, Fase 12):** inspecionei os 4
+  harnesses rejeitados pela regra nova (7 dos 16 `invalid_harness` totais desta rodada) um por
+  um. **Todos os 4 são tautologia real** (`isinstance(content_length, int)` depois de
+  `content_length: int = int(...)`, `isinstance(result, str)` depois de `result: str = ...`,
+  etc.) — a regra não teve nenhum falso positivo, confirmado por leitura manual, não só pelo
+  teste automatizado negativo. O `attempt_history` de `get_new_command` mostra que a 1ª tentativa
+  falhou por outro motivo (`esbmc_inconclusive`) e a tautologia só apareceu na 2ª e última
+  tentativa (`synth_retries=1`, sem orçamento pra mais uma correção) — não é o check bloqueando
+  um caso que antes passava, é a LLM cometendo esse erro específico numa tentativa diferente a
+  cada rodada (estocástico) e o orçamento de retry curto demais pra sempre corrigir a tempo.
+- Conclusão: **inconclusiva, mudança mantida (não revertida)**. A métrica primária caiu nesta
+  rodada, o que pela regra estrita da Fase 12 não é "evidência clara de melhoria" — não declaro
+  isso como aceito. Mas também não reverto: reverter reintroduziria um problema já verificado
+  (prova vazia contada como segurança real), e a queda de métrica tem causa identificada e
+  independente da correção em si (amostra de candidatos diferente entre rodadas — detecção
+  estocástica, n=23 vs n=21 — combinada com orçamento de retry apertado). Decisão: manter o
+  código (correto por inspeção manual), tratar o número desta rodada como não conclusivo até uma
+  medição maior, e atacar a causa provável separadamente.
+- Falsos positivos (exemplos): nenhum encontrado nesta rodada (os 4 inspecionados são tautologia
+  real).
+- Falsos negativos (exemplos): não aplicável a este experimento especificamente.
+- Próximo experimento recomendado (**EXP-03**): duas direções, decidir com base em qual é mais
+  barata de medir primeiro:
+  (a) aumentar `synth_retries` (hoje 1) pra dar mais chance de a LLM corrigir depois do feedback
+  determinístico do `compat.py`, e medir se isso recupera confirmação sem estourar custo/tempo;
+  (b) rodar o EXP-02 de novo com uma semente/candidatos fixos (não redetectar do zero) pra isolar
+  a variável de detecção estocástica da variável de síntese, permitindo comparação mais limpa
+  entre rodadas futuras — problema metodológico que afeta TODOS os experimentos anteriores
+  também, vale registrar como limitação transversal do protocolo atual de medição.
+
+---
+
 ### EXP-01 — `--multi-property` no ESBMC pra não perder o assert marcado
 
 - Data: 2026-09-04
