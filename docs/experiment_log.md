@@ -91,6 +91,24 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   entre rodadas futuras — problema metodológico que afeta TODOS os experimentos anteriores
   também, vale registrar como limitação transversal do protocolo atual de medição.
 
+**Atualização da mesma sessão, medição limpa com `--v2-stage synthesis` (candidatos fixos do
+manifesto, sem redetecção estocástica):** rodada `v2_synth_fixed_exp02`, mesmo código
+(commit `11f4001`), mesmo comando exceto `--v2-stage synthesis` no lugar da detecção cega —
+n=**117** (todos os candidatos do manifesto, não só os ~20-30 que a detecção blindada acertava
+por rodada), compatível **82,9%**, **confirmado 31,6% (37/117)**, `over_restricted` 7. É a maior
+e mais estável amostra medida até agora nesta sessão (5-6x maior que qualquer rodada anterior).
+Dos 19 `invalid_harness` desta rodada, 11 (58%) são a checagem de `isinstance` tautológico —
+confirma que é erro comum da LLM, não coincidência de uma rodada pequena, e mesmo assim a
+compatibilidade geral fica em 83%, saudável. **Isso resolve a inconclusão acima**: numa amostra
+grande o bastante pra não depender de qual candidato a detecção blindada achou por acaso, o
+código do EXP-01+EXP-02 juntos entrega o melhor número de confirmação já visto nesta sessão
+(31,6%, contra os 13-22% de amostras de 20-30 casos). Conclusão revisada: **EXP-02 aceito**,
+a leitura "inconclusiva" anterior era artefato de amostra pequena, não sinal real.
+**Recomendação metodológica permanente:** usar `--v2-stage synthesis` (candidatos fixos) como
+modo padrão de comparação entre experimentos daqui pra frente, não `--mode v2` sem
+`--v2-stage` (que redetecta do zero e muda o `n` a cada rodada). Reavaliar EXP-00 e EXP-01 nesse
+modo fica como trabalho futuro se a comparação exata entre eles for necessária pra dissertação.
+
 ---
 
 ### EXP-01 — `--multi-property` no ESBMC pra não perder o assert marcado
