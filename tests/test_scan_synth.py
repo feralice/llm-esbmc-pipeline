@@ -112,6 +112,61 @@ def test_ollama_synthesis_uses_chat_completions_shape(tmp_path: Path, monkeypatc
     assert result.telemetry["total_tokens"] == 30
 
 
+def test_codex_backend_parses_json_events_and_output_file(tmp_path: Path, monkeypatch):
+    """codex exec writes the harness to -o <file> and reports usage as a
+    turn.completed JSONL event on stdout, not an HTTP response body - the
+    parsing has to happen in _run_codex(), not _post_json().
+    """
+    unit = _unit(tmp_path, "def g(a: int, b: int) -> float:\n    return a / b\n")
+    fake_harness = "def main() -> None:\n    assert False, 'x'\nmain()\n"
+
+    import subprocess as subprocess_module
+
+    from research_pipeline.scan import synth as synth_module
+
+    captured_command: list[str] = []
+
+    def fake_run(command, **kwargs):
+        captured_command[:] = command
+        out_index = command.index("-o") + 1
+        Path(command[out_index]).write_text(f"```python\n{fake_harness}```", encoding="utf-8")
+        stdout = "\n".join(
+            [
+                '{"type": "thread.started", "thread_id": "abc"}',
+                '{"type": "item.completed", "item": {"type": "agent_message"}}',
+                '{"type": "turn.completed", "usage": {"input_tokens": 17000, "output_tokens": 120}}',
+            ]
+        )
+        return subprocess_module.CompletedProcess(command, returncode=0, stdout=stdout, stderr="")
+
+    monkeypatch.setattr(synth_module.subprocess, "run", fake_run)
+
+    synth = HarnessSynthesizer(backend="codex", model="gpt-5.1-codex")
+    result = synth.synthesize(unit, _finding("division_by_zero", "a / b"))
+
+    assert "--sandbox" in captured_command and "read-only" in captured_command
+    assert "-m" in captured_command and "gpt-5.1-codex" in captured_command
+    assert "assert False" in result.harness
+    assert result.telemetry["prompt_tokens"] == 17000
+    assert result.telemetry["completion_tokens"] == 120
+    assert result.telemetry["status"] == "success"
+
+
+def test_codex_backend_reports_missing_binary(tmp_path: Path, monkeypatch):
+    unit = _unit(tmp_path, "def g(a: int, b: int) -> float:\n    return a / b\n")
+
+    from research_pipeline.scan import synth as synth_module
+
+    def fake_run(command, **kwargs):
+        raise FileNotFoundError("codex")
+
+    monkeypatch.setattr(synth_module.subprocess, "run", fake_run)
+
+    synth = HarnessSynthesizer(backend="codex", model="")
+    with pytest.raises(RuntimeError, match="não encontrado no PATH"):
+        synth.synthesize(unit, _finding("division_by_zero", "a / b"))
+
+
 def test_synthesize_with_mocked_api(tmp_path: Path, monkeypatch):
     unit = _unit(tmp_path, "def g(a: int, b: int) -> float:\n    return a / b\n")
     fake_harness = (

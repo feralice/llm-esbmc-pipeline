@@ -122,6 +122,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
     )
     parser.add_argument(
+        "--synth-backend",
+        choices=["openai", "ollama", "codex"],
+        default=None,
+        help=(
+            "Backend só para a síntese de harness no modo V2 (padrão: mesmo de --backend). "
+            "'codex' chama o `codex exec` local via assinatura já paga, em vez da API "
+            "OpenAI cobrada por token."
+        ),
+    )
+    parser.add_argument(
+        "--synth-model",
+        default=None,
+        metavar="MODELO",
+        help="Modelo só para a síntese de harness no modo V2 (padrão: mesmo de --model).",
+    )
+    parser.add_argument(
         "--bound",
         type=_positive_int,
         default=5,
@@ -864,10 +880,15 @@ def mode_v2(args: argparse.Namespace) -> int:
     backend: Backend = args.backend or _infer_backend(model)
     if backend not in {"openai", "ollama"}:
         print(
-            "O modo V2 sintetiza harness via OpenAI ou Ollama por enquanto.",
+            "O modo V2 detecta via OpenAI ou Ollama por enquanto.",
             file=sys.stderr,
         )
         return 1
+
+    synth_backend = args.synth_backend or backend
+    # 'model' is resolved against OpenAI/Ollama naming; codex has its own model
+    # namespace, so only fall back to it when synth_backend wasn't overridden.
+    synth_model = args.synth_model or ("" if args.synth_backend == "codex" else model)
 
     anthropic_key, openai_key, google_key = _resolve_keys(args)
     try:
@@ -881,11 +902,11 @@ def mode_v2(args: argparse.Namespace) -> int:
             timeout_seconds=args.llm_timeout,
         )
         synthesizer = HarnessSynthesizer(
-            backend=backend,
-            model=model,
-            api_key=openai_key if backend == "openai" else "ollama",
+            backend=synth_backend,
+            model=synth_model,
+            api_key=openai_key if synth_backend == "openai" else "ollama",
             base_url=(args.ollama_base_url or "http://localhost:11434/v1")
-            if backend == "ollama"
+            if synth_backend == "ollama"
             else "https://api.openai.com/v1/responses",
             timeout_seconds=args.llm_timeout,
         )
@@ -899,6 +920,8 @@ def mode_v2(args: argparse.Namespace) -> int:
     config = {
         "model": model,
         "backend": backend,
+        "synth_backend": synth_backend,
+        "synth_model": synth_model,
         "v2_stage": args.v2_stage,
         "input_files": [str(path.resolve()) for path in input_paths],
         "compat": not args.no_compat,
@@ -1054,7 +1077,7 @@ def mode_v2(args: argparse.Namespace) -> int:
     candidate_origin = "conhecida(s)" if args.v2_stage == "synthesis" else "detectada(s)"
     print(
         f"\nModo V2 — etapa 2: {len(candidates)} hipótese(s) {candidate_origin} → "
-        f"síntese de harness com {model} | camadas:{layers}"
+        f"síntese de harness com {synth_backend}:{synth_model or '(padrão da conta)'} | camadas:{layers}"
     )
 
     completed_results = {
