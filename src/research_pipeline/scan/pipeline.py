@@ -27,13 +27,29 @@ from ..models import Finding
 from ..preprocess import preprocess_file
 from ..verification.esbmc_runner import run_esbmc_direct
 from .ablation import FAILED, AblationReport, ablate
-from .compat import EXPECTED_PROPERTY_MARKER, VERDICT_UNSUPPORTED, check_harness
+from .compat import (
+    EXPECTED_PROPERTY_MARKER,
+    OUTCOME_CATEGORIES,
+    VERDICT_UNSUPPORTED,
+    check_harness,
+)
 from .synth import HarnessSynthesizer
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
 # because "confirmed" here means "on the synthesized abstraction", not "on the
 # original file".
 CONFIRMED_ON_ABSTRACTION = "confirmed_on_abstraction"
+# ESBMC found a violation in an OUTCOME_CATEGORIES candidate (incorrect_result,
+# assertion_violation). check_harness() already rejects the bare-boolean shape
+# (compat.py's _unconstrained_outcome_reasons), but that check only catches the
+# harness's SYNTAX, not whether the grounding is real -- an LLM can satisfy it
+# with e.g. `assert x == True` and stay just as disconnected from the real bug
+# (EXP-03, docs/experiment_log.md, 2026-09-04). Every confirmation in these two
+# categories is demoted here rather than trusted automatically. This is a
+# report label, not a workflow step: the pipeline still runs end to end with
+# no human input, it just declines to count these as a strong automatic claim
+# (the "reject option" pattern from selective-prediction literature).
+CONFIRMED_UNVERIFIED = "confirmed_unverified"
 OVER_RESTRICTED = "over_restricted"
 SAFE_ON_ABSTRACTION = "safe_on_abstraction"
 INVALID_HARNESS = "invalid_harness"
@@ -46,7 +62,9 @@ SYNTH_FAILED = "synth_failed"
 
 # A conclusive verdict ends the retry loop; a recoverable one triggers another
 # synthesis attempt (the LLM output varies run to run).
-_CONCLUSIVE = frozenset({CONFIRMED_ON_ABSTRACTION, OVER_RESTRICTED, SAFE_ON_ABSTRACTION})
+_CONCLUSIVE = frozenset(
+    {CONFIRMED_ON_ABSTRACTION, CONFIRMED_UNVERIFIED, OVER_RESTRICTED, SAFE_ON_ABSTRACTION}
+)
 _RECOVERABLE = frozenset(
     {INVALID_HARNESS, UNSUPPORTED_HARNESS, NO_PROPERTY, ESBMC_INCONCLUSIVE, SYNTH_FAILED}
 )
@@ -380,7 +398,7 @@ def _one_attempt(
     result.synth_seconds = float(synth_result.telemetry.get("duration_seconds") or 0.0)
 
     if use_compat:
-        compat = check_harness(synth_result.harness)
+        compat = check_harness(synth_result.harness, category=candidate.category)
         result.compat_verdict = compat.verdict
         result.compat_reasons = list(compat.reasons)
         if not compat.ok:
@@ -434,6 +452,12 @@ def _one_attempt(
                         f"({violated[0] if violated else 'unknown'}), not the marked expected assertion"
                     )
                 ]
+    if (
+        result.classification == CONFIRMED_ON_ABSTRACTION
+        and candidate.category in OUTCOME_CATEGORIES
+    ):
+        result.classification = CONFIRMED_UNVERIFIED
+
     if use_ablation and result.classification == SAFE_ON_ABSTRACTION:
         report = _ablate_harness(
             synth_result.harness,

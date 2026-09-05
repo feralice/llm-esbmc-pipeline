@@ -12,6 +12,9 @@ ESBMC run on it, reject the harnesses ESBMC-Python cannot handle:
   type, project class)                   -> invalid_harness
 - no module-level driver (a call or a
   `main()` invoked at module level)      -> invalid_harness
+- `incorrect_result`/`assertion_violation` category, bare boolean assert over
+  a fully unconstrained input, no domain assume, no buggy-vs-expected
+  comparison                             -> invalid_harness
 
 The last rule encodes a gotcha found while building harnesses by hand this
 project: ESBMC-Python only registers the `nondet_*` / `__ESBMC_assume`
@@ -67,6 +70,21 @@ _BAD_NONDET = re.compile(
     r"\b__ESBMC_nondet_\w+|\bnondet_(?!int\b|float\b|bool\b|str\b|list\b|dict\b)\w+"
 )
 
+# Categories where the bug is "wrong output for a valid input", not "missing
+# precondition check". These require either a domain assume or a buggy-vs-
+# expected comparison (see _unconstrained_outcome_reasons); the other
+# categories (invalid_precondition, none_misuse, variable_misuse, type_mismatch)
+# correctly assert a bare boolean over unconstrained input by design -- that IS
+# the bug (an unchecked precondition lets a bad value through).
+#
+# Public: the scan pipeline also uses this set to flag a CONFIRMED verdict in
+# these categories as needing manual review, since an LLM can satisfy this
+# module's structural check (any assume, any comparison) without the harness
+# being semantically grounded (EXP-03, docs/experiment_log.md, 2026-09-04:
+# `assert matched == expected` with `expected: bool = True` passes the
+# structural check but is exactly as vacuous as the bare assert it replaced).
+OUTCOME_CATEGORIES = frozenset({"incorrect_result", "assertion_violation"})
+
 VERDICT_OK = "ok"
 VERDICT_INVALID = "invalid_harness"
 VERDICT_UNSUPPORTED = "unsupported_harness"
@@ -95,8 +113,13 @@ def _has_module_level_driver(tree: ast.Module) -> bool:
     return False
 
 
-def check_harness(source: str) -> CompatResult:
-    """Return a CompatResult for a synthesized harness given as text."""
+def check_harness(source: str, *, category: str | None = None) -> CompatResult:
+    """Return a CompatResult for a synthesized harness given as text.
+
+    ``category`` is the candidate's hypothesis category (e.g. "incorrect_result").
+    When given, it gates the outcome-comparison check (see
+    ``_unconstrained_outcome_reasons``).
+    """
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
@@ -168,6 +191,10 @@ def check_harness(source: str) -> CompatResult:
     assertion_reasons = _check_expected_assertion(tree)
     if assertion_reasons:
         return CompatResult(False, VERDICT_INVALID, assertion_reasons)
+
+    outcome_reasons = _unconstrained_outcome_reasons(tree, category)
+    if outcome_reasons:
+        return CompatResult(False, VERDICT_INVALID, outcome_reasons)
 
     type_reasons = _check_scalar_types(tree)
     if type_reasons:
@@ -306,6 +333,96 @@ def _tautological_isinstance_reasons(call: ast.Call, known: dict[str, str]) -> l
             )
         ]
     return []
+
+
+def _has_assume_call(tree: ast.Module) -> bool:
+    return any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "__ESBMC_assume"
+        for node in ast.walk(tree)
+    )
+
+
+def _direct_constant_names(tree: ast.Module) -> set[str]:
+    """Names bound to a bare literal (`expected: bool = True`), never derived
+    from a nondet_*() or computed -- lets _unconstrained_outcome_reasons catch
+    `assert buggy == expected` where `expected` is a hardcoded constant wearing
+    an oracle's clothes, not a real correct-value computation. Confirmed
+    empirically 2026-09-04 (EXP-03, docs/experiment_log.md): re-running the
+    pipeline after this module first required "a comparison" produced exactly
+    this shape (`expected: bool = True; assert matched == expected`) -- as
+    vacuous as the bare assert it replaced, but now passing an Eq comparison.
+    """
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Assign, ast.AnnAssign)) and isinstance(node.value, ast.Constant):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            for target in targets:
+                if isinstance(target, ast.Name):
+                    names.add(target.id)
+    return names
+
+
+def _is_hardcoded_side(expr: ast.expr, constant_names: set[str]) -> bool:
+    return isinstance(expr, ast.Constant) or (
+        isinstance(expr, ast.Name) and expr.id in constant_names
+    )
+
+
+def _unconstrained_outcome_reasons(tree: ast.Module, category: str | None) -> list[str]:
+    """`incorrect_result`/`assertion_violation` harnesses claim the real function
+    returns the wrong value for some input the real caller can actually produce.
+    Proving that requires either restricting the input domain to what the real
+    caller guarantees (`__ESBMC_assume`), or comparing the buggy expression
+    against an explicit expected value/oracle -- the pattern used in the
+    hand-made reference harnesses (`dataset/v2_real_world/bugs/*.py`):
+    `assert buggy_result == correct_result`.
+
+    Without either, the marked assert claims a bare boolean/negation holds for
+    every value a fully free `nondet_*()` can take -- falsifiable by a
+    fabricated input unrelated to the real bug. Confirmed empirically
+    2026-09-04 (EXP-03, docs/experiment_log.md): `assert "php -s" in script`
+    over an unconstrained `nondet_str()` "confirms" on the empty string, which
+    has nothing to do with the real bug (BugsInPy thefuck #7, about flags
+    separated by other arguments).
+    """
+    if category not in OUTCOME_CATEGORIES:
+        return []
+    if _has_assume_call(tree):
+        return []
+    marked = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assert)
+        and isinstance(node.msg, ast.Constant)
+        and node.msg.value == EXPECTED_PROPERTY_MARKER
+    ]
+    if len(marked) != 1:
+        return []
+    test = marked[0].test
+    if isinstance(test, ast.Compare):
+        if not any(isinstance(op, (ast.Eq, ast.NotEq)) for op in test.ops):
+            return []
+        constant_names = _direct_constant_names(tree)
+        sides = [test.left, *test.comparators]
+        if not any(_is_hardcoded_side(side, constant_names) for side in sides):
+            return []
+        return [
+            (
+                f"category '{category}' compares the buggy expression against a "
+                "hardcoded constant, not a computed expected value -- that is the "
+                "same unconstrained-input problem wearing a comparison's clothes; "
+                "compute the expected/correct value from the input instead"
+            )
+        ]
+    return [
+        (
+            f"category '{category}' asserts a bare boolean over a fully unconstrained "
+            "input with no __ESBMC_assume and no buggy-vs-expected comparison -- add "
+            "a domain assume or compare against an explicit expected value/oracle"
+        )
+    ]
 
 
 def _undefined_names(tree: ast.Module) -> set[str]:

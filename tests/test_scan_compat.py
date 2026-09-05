@@ -249,6 +249,93 @@ def test_isinstance_against_a_different_type_is_not_flagged():
     assert check_harness(src).ok
 
 
+def test_unconstrained_outcome_assertion_is_invalid():
+    """Regression (EXP-03, docs/experiment_log.md, 2026-09-04): a bare boolean
+    asserted over a fully unconstrained nondet_str() "confirms" on a fabricated
+    input unrelated to the real bug (av_real_12/thefuck#7: `assert "php -s" in
+    script` fails on the empty string, which has nothing to do with the actual
+    bug about flags separated by other arguments).
+    """
+    src = (
+        "def f() -> bool:\n"
+        "    script: str = nondet_str()\n"
+        "    matches: bool = \"php -s\" in script\n"
+        f"    assert matches, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return matches\n"
+        "f()\n"
+    )
+    r = check_harness(src, category="assertion_violation")
+    assert not r.ok
+    assert "unconstrained" in r.reasons[0]
+
+
+def test_unconstrained_outcome_assertion_passes_with_assume():
+    """An __ESBMC_assume restricting the domain to what the real caller
+    guarantees makes the same shape of assertion meaningful again."""
+    src = (
+        "def f() -> bool:\n"
+        "    script: str = nondet_str()\n"
+        "    __ESBMC_assume(len(script) > 0)\n"
+        "    matches: bool = \"php -s\" in script\n"
+        f"    assert matches, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return matches\n"
+        "f()\n"
+    )
+    assert check_harness(src, category="assertion_violation").ok
+
+
+def test_unconstrained_outcome_assertion_passes_with_oracle_comparison():
+    """Comparing the buggy expression against an explicit expected value (the
+    pattern used in dataset/v2_real_world/bugs/*.py) is the other accepted way
+    to ground the assertion, with no assume required."""
+    src = (
+        "def f() -> None:\n"
+        "    script: str = nondet_str()\n"
+        "    buggy: bool = \"php -s\" in script\n"
+        "    correct: bool = \" -s \" in script\n"
+        f"    assert buggy == correct, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    assert check_harness(src, category="assertion_violation").ok
+
+
+def test_unconstrained_outcome_assertion_rejects_hardcoded_comparison():
+    """Regression (EXP-03 re-run, docs/experiment_log.md, 2026-09-04): codex's
+    retry after the first version of this rule wrapped the same vacuous
+    assertion in `expected: bool = True; assert matched == expected` - passes
+    a naive "is it a Compare" check but is exactly as vacuous as the bare
+    assert it replaced, since `expected` is a hardcoded constant, not a real
+    correct-value computation.
+    """
+    src = (
+        "def f() -> bool:\n"
+        "    script: str = nondet_str()\n"
+        "    expected: bool = True\n"
+        "    matched: bool = \"php -s\" in script\n"
+        f"    assert matched == expected, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return matched\n"
+        "f()\n"
+    )
+    r = check_harness(src, category="assertion_violation")
+    assert not r.ok
+    assert "hardcoded constant" in r.reasons[0]
+
+
+def test_unconstrained_outcome_check_does_not_apply_to_precondition_categories():
+    """invalid_precondition (and none_misuse/variable_misuse/type_mismatch) bugs
+    are, by design, "an unchecked precondition lets a bad value through" - a
+    bare boolean over unconstrained input IS the correct shape there, not the
+    defect this rule targets."""
+    src = (
+        "def f() -> None:\n"
+        "    current_is_none: bool = nondet_bool()\n"
+        f"    assert not current_is_none, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    assert check_harness(src, category="invalid_precondition").ok
+    assert check_harness(src, category=None).ok
+
+
 def test_expected_assertion_marker_is_required():
     src = "def f(x: int) -> None:\n    assert x != 0\nf(nondet_int())\n"
     r = check_harness(src)

@@ -86,6 +86,7 @@ def evaluate_v2_results(
 
     compatible = sum(r.compat_verdict in {"ok", "skipped"} for r in true_positive_results)
     confirmed = sum(r.classification == "confirmed_on_abstraction" for r in true_positive_results)
+    unverified = sum(r.classification == "confirmed_unverified" for r in true_positive_results)
     over_restricted = sum(r.classification == "over_restricted" for r in true_positive_results)
     repaired = sum(
         r.classification == "confirmed_on_abstraction" and r.attempts > 1
@@ -117,6 +118,7 @@ def evaluate_v2_results(
             "confirmation_rate": confirmed / len(true_positive_results) if true_positive_results else None,
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,
+            "unverified": unverified,
         },
         "end_to_end": end_to_end_metrics,
     }

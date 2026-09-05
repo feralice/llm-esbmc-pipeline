@@ -92,7 +92,23 @@ RULES
      (`//` and `%` on ints it does); the explicit assert makes every case
      checkable (esbmc-python-guide gotcha 3).
    - out_of_bounds: assert 0 <= <index> < <length> before the access.
-   - assertion_violation: keep the real assert.
+   - assertion_violation / incorrect_result: these two categories mean "the
+     function computes the WRONG VALUE for a valid input", not "an unchecked
+     precondition lets a bad value through" - a bare assert on an unconstrained
+     nondet_*() proves nothing here (it is falsifiable by any arbitrary input,
+     unrelated to the real bug: confirmed empirically 2026-09-04, EXP-03,
+     docs/experiment_log.md - `assert "php -s" in script` for a free
+     nondet_str() "fails" on the empty string, which has nothing to do with the
+     real bug). Model BOTH the buggy expression and the correct expression (you
+     are given the fix, or can derive the intended behavior from the function's
+     docstring/contract), on the SAME nondet input, and assert they agree:
+     `buggy: T = <suspect expression>`, `correct: T = <intended expression>`,
+     `assert buggy == correct, "LLM_ESBMC_EXPECTED_PROPERTY"`. If the input
+     domain genuinely has no restriction, that is fine and expected - the
+     agreement is what grounds the check, not a restricted domain. Wrapping
+     the same bare boolean in an `== True`/`== expected_literal` comparison
+     against a HARDCODED constant does not satisfy this rule; `correct` must be
+     an actual computed expression, not a literal.
    - integer_overflow: compute the value and assert it stays in range.
    - none_misuse / type_mismatch / invalid_precondition / variable_misuse:
      model the offending value the buggy way and assert the postcondition the

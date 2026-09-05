@@ -1114,9 +1114,10 @@ def mode_v2(args: argparse.Namespace) -> int:
     print("\n  por classificação:")
     for k, v in sorted(summary["by_classification"].items()):
         print(f"    {k:26s} {v}")
-    print("\n  por categoria (confirmado / total):")
+    print("\n  por categoria (confirmado / total, não-verificado entre parênteses):")
     for cat, d in sorted(summary["by_category"].items()):
-        print(f"    {cat:22s} {d['confirmed']}/{d['total']}")
+        unverified = f" ({d['unverified']} não-verificado)" if d["unverified"] else ""
+        print(f"    {cat:22s} {d['confirmed']}/{d['total']}{unverified}")
 
     if args.report:
         report_path = Path(args.report)
@@ -1191,10 +1192,12 @@ def _scan_summary(results) -> dict:
     by_cat: dict = {}
     for r in results:
         cat = r.candidate.category
-        d = by_cat.setdefault(cat, {"total": 0, "confirmed": 0})
+        d = by_cat.setdefault(cat, {"total": 0, "confirmed": 0, "unverified": 0})
         d["total"] += 1
         if r.classification == "confirmed_on_abstraction":
             d["confirmed"] += 1
+        elif r.classification == "confirmed_unverified":
+            d["unverified"] += 1
     total_tokens = sum(r.synth_total_tokens or 0 for r in results)
     total_synth_seconds = sum(r.synth_seconds for r in results)
     total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
