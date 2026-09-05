@@ -299,7 +299,44 @@ def _check_scalar_types(tree: ast.Module) -> list[str]:
             and len(node.args) == 2
         ):
             reasons.extend(_tautological_isinstance_reasons(node, known))
+        elif isinstance(node, ast.Compare):
+            reasons.extend(_tautological_str_coercion_reasons(node, known))
     return list(dict.fromkeys(reasons))
+
+
+def _tautological_str_coercion_reasons(compare: ast.Compare, known: dict[str, str]) -> list[str]:
+    """`str(x) == x` (or `!=`) is always False in real Python whenever `x` is
+    int/float/bool -- a string is never equal to a number, independent of
+    value, so the comparison carries zero information about the hypothesized
+    bug. Confirmed on real code 2026-09-05: a synthesized harness for tqdm's
+    `_is_utf` modeled `encoding_is_text: bool = str(encoding) == encoding`
+    (encoding: int) and asserted it -- always-False by construction, same
+    vacuous-comparison failure EXP-03 found in assertion_violation/
+    incorrect_result (docs/experiment_log.md), but here in type_mismatch,
+    proving the pattern is not scoped to those two categories.
+    """
+    if len(compare.ops) != 1 or not isinstance(compare.ops[0], (ast.Eq, ast.NotEq)):
+        return []
+    sides = [compare.left, compare.comparators[0]]
+    for coerced, other in (sides, sides[::-1]):
+        if (
+            isinstance(coerced, ast.Call)
+            and isinstance(coerced.func, ast.Name)
+            and coerced.func.id == "str"
+            and len(coerced.args) == 1
+            and isinstance(coerced.args[0], ast.Name)
+            and isinstance(other, ast.Name)
+            and coerced.args[0].id == other.id
+            and known.get(other.id) in {"int", "float", "bool"}
+        ):
+            return [
+                (
+                    f"str({other.id}) == {other.id} is always False -- a string is never "
+                    f"equal to a value of type {known[other.id]}, independent of the value; "
+                    "this comparison carries no information about the hypothesized bug"
+                )
+            ]
+    return []
 
 
 def _tautological_isinstance_reasons(call: ast.Call, known: dict[str, str]) -> list[str]:

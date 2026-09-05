@@ -336,6 +336,41 @@ def test_unconstrained_outcome_check_does_not_apply_to_precondition_categories()
     assert check_harness(src, category=None).ok
 
 
+def test_str_coercion_tautology_is_invalid():
+    """Regression (real external code, 2026-09-05): synthesized harness for
+    tqdm's `_is_utf` (category type_mismatch, not one of the two outcome
+    categories) modeled `encoding_is_text: bool = str(encoding) == encoding`
+    for `encoding: int` -- always False in real Python regardless of value,
+    proving nothing about the hypothesized bug. Not scoped to assertion_
+    violation/incorrect_result: this is a general AST-shape defect.
+    """
+    src = (
+        "def f() -> bool:\n"
+        "    encoding: int = nondet_int()\n"
+        "    encoding_is_text: bool = str(encoding) == encoding\n"
+        f"    assert encoding_is_text, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return encoding_is_text\n"
+        "f()\n"
+    )
+    r = check_harness(src, category="type_mismatch")
+    assert not r.ok
+    assert "always False" in r.reasons[0]
+
+
+def test_str_coercion_of_str_typed_value_is_not_flagged():
+    """`str(x) == x` is a legitimate (if odd) check when x is already a str --
+    only cross-type str-vs-number coercion is the always-False tautology."""
+    src = (
+        "def f() -> bool:\n"
+        "    name: str = nondet_str()\n"
+        "    y: bool = str(name) == name\n"
+        f"    assert y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "    return y\n"
+        "f()\n"
+    )
+    assert check_harness(src, category="type_mismatch").ok
+
+
 def test_expected_assertion_marker_is_required():
     src = "def f(x: int) -> None:\n    assert x != 0\nf(nondet_int())\n"
     r = check_harness(src)
