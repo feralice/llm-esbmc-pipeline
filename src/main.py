@@ -1114,10 +1114,15 @@ def mode_v2(args: argparse.Namespace) -> int:
     print("\n  por classificação:")
     for k, v in sorted(summary["by_classification"].items()):
         print(f"    {k:26s} {v}")
-    print("\n  por categoria (confirmado / total, não-verificado entre parênteses):")
+    print("\n  por categoria (confirmado / total, nativo e não-verificado entre parênteses):")
     for cat, d in sorted(summary["by_category"].items()):
-        unverified = f" ({d['unverified']} não-verificado)" if d["unverified"] else ""
-        print(f"    {cat:22s} {d['confirmed']}/{d['total']}{unverified}")
+        extra = []
+        if d["native"]:
+            extra.append(f"{d['native']} via --function nativo")
+        if d["unverified"]:
+            extra.append(f"{d['unverified']} não-verificado")
+        suffix = f" ({', '.join(extra)})" if extra else ""
+        print(f"    {cat:22s} {d['confirmed']}/{d['total']}{suffix}")
 
     if args.report:
         report_path = Path(args.report)
@@ -1192,9 +1197,12 @@ def _scan_summary(results) -> dict:
     by_cat: dict = {}
     for r in results:
         cat = r.candidate.category
-        d = by_cat.setdefault(cat, {"total": 0, "confirmed": 0, "unverified": 0})
+        d = by_cat.setdefault(cat, {"total": 0, "confirmed": 0, "native": 0, "unverified": 0})
         d["total"] += 1
-        if r.classification == "confirmed_on_abstraction":
+        if r.classification == "confirmed_native":
+            d["confirmed"] += 1
+            d["native"] += 1
+        elif r.classification == "confirmed_on_abstraction":
             d["confirmed"] += 1
         elif r.classification == "confirmed_unverified":
             d["unverified"] += 1

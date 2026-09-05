@@ -5,13 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from research_pipeline.models import ESBMCDirectResult
+from research_pipeline.models import ESBMCDirectResult, ESBMCResult
 from research_pipeline.scan import pipeline as scan_pipeline
 from research_pipeline.scan.pipeline import (
     CANDIDATE_NOT_FOUND,
+    CONFIRMED_NATIVE,
     CONFIRMED_ON_ABSTRACTION,
     INVALID_HARNESS,
     OVER_RESTRICTED,
+    SAFE_NATIVE,
     SAFE_ON_ABSTRACTION,
     ScanCandidate,
     ScanCaseResult,
@@ -62,6 +64,29 @@ def _esbmc(status: str) -> ESBMCDirectResult:
 
 def _patch_esbmc(monkeypatch, fn) -> None:
     monkeypatch.setattr(scan_pipeline, "run_esbmc_direct", fn)
+
+
+def _native_result(status: str) -> ESBMCResult:
+    return ESBMCResult(
+        finding_id="native",
+        status=status,
+        command=["esbmc", "--function"],
+        returncode=0,
+        summary=status,
+    )
+
+
+def _patch_native(monkeypatch, fn) -> None:
+    monkeypatch.setattr(scan_pipeline, "run_esbmc_on_function", fn)
+
+
+@pytest.fixture(autouse=True)
+def _native_skipped_by_default(monkeypatch):
+    """Every test in this file exercises the harness-synthesis path unless it
+    explicitly opts into a native result via _patch_native -- without this,
+    _run_one's native-first check (_try_native) would shell out to a real
+    `esbmc` subprocess on every test's throwaway candidate file."""
+    _patch_native(monkeypatch, lambda *a, **k: _native_result("skipped"))
 
 
 def _candidate(tmp_path: Path, function: str = "target") -> ScanCandidate:
@@ -293,3 +318,61 @@ def test_completed_result_is_not_synthesized_again(tmp_path, monkeypatch):
     )
     assert results == [completed]
     assert synthesizer._calls == 0
+
+
+def test_native_violation_confirms_without_calling_synthesizer(tmp_path, monkeypatch):
+    """ESBMC's own --function/--assign-param-nondet (Flow B) checks the REAL
+    source directly -- when it finds a violation, there's no need to spend an
+    LLM call synthesizing a harness at all."""
+    _patch_native(monkeypatch, lambda *a, **k: _native_result("violation_found"))
+    synthesizer = _RetrySynthesizer(fail_times=0)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)],
+        synthesizer=synthesizer,
+        output_dir=tmp_path / "out",
+    )[0]
+    assert result.classification == CONFIRMED_NATIVE
+    assert synthesizer._calls == 0
+
+
+def test_native_no_violation_is_safe_for_precondition_category(tmp_path, monkeypatch):
+    """division_by_zero (and the other 6 precondition-style categories) map
+    to one of ESBMC's own automatic checks, so a real no_violation_found
+    verdict here is meaningful evidence, not vacuous."""
+    _patch_native(monkeypatch, lambda *a, **k: _native_result("no_violation_found"))
+    synthesizer = _RetrySynthesizer(fail_times=0)
+    candidate = _candidate(tmp_path)
+    assert candidate.category == "division_by_zero"
+    result = run_pipeline_scan(
+        [candidate], synthesizer=synthesizer, output_dir=tmp_path / "out"
+    )[0]
+    assert result.classification == SAFE_NATIVE
+    assert synthesizer._calls == 0
+
+
+def test_native_no_violation_falls_through_for_outcome_category(tmp_path, monkeypatch):
+    """assertion_violation/incorrect_result have no built-in ESBMC property
+    encoding the hypothesized "correct" behaviour (no assert exists on the
+    real source) -- a no_violation_found verdict here proves nothing (EXP-03,
+    docs/experiment_log.md), so the pipeline must fall through to harness
+    synthesis instead of trusting it as SAFE_NATIVE."""
+    _patch_native(monkeypatch, lambda *a, **k: _native_result("no_violation_found"))
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    candidate = _candidate(tmp_path)
+    candidate.category = "assertion_violation"
+    result = _run(tmp_path, _GOOD_HARNESS, candidate)
+    # Fell through to harness synthesis (not SAFE_NATIVE) and got confirmed
+    # there -- then demoted to confirmed_unverified, same policy as any other
+    # assertion_violation confirmation (EXP-03), proving native's
+    # no_violation_found was correctly NOT trusted as a safe verdict.
+    assert result.classification == "confirmed_unverified"
+
+
+def test_native_tool_error_falls_through_to_synthesis(tmp_path, monkeypatch):
+    """A real function without full type-hint coverage (the common case for
+    unannotated production code) fails Flow B's conversion -- fall through to
+    the LLM harness rather than treating that as any kind of verdict."""
+    _patch_native(monkeypatch, lambda *a, **k: _native_result("tool_error"))
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
+    assert result.classification == CONFIRMED_ON_ABSTRACTION

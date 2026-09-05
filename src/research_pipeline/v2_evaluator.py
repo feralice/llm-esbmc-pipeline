@@ -84,8 +84,13 @@ def evaluate_v2_results(
         false_hypothesis_results.extend(grouped[allowed:])
         remaining[sig] = max(0, allowed - len(grouped))
 
-    compatible = sum(r.compat_verdict in {"ok", "skipped"} for r in true_positive_results)
-    confirmed = sum(r.classification == "confirmed_on_abstraction" for r in true_positive_results)
+    compatible = sum(
+        r.compat_verdict in {"ok", "skipped", "native_function"} for r in true_positive_results
+    )
+    confirmed_native = sum(r.classification == "confirmed_native" for r in true_positive_results)
+    confirmed = confirmed_native + sum(
+        r.classification == "confirmed_on_abstraction" for r in true_positive_results
+    )
     unverified = sum(r.classification == "confirmed_unverified" for r in true_positive_results)
     over_restricted = sum(r.classification == "over_restricted" for r in true_positive_results)
     repaired = sum(
@@ -95,7 +100,8 @@ def evaluate_v2_results(
 
     end_to_end_tp = confirmed
     end_to_end_fp = sum(
-        r.classification == "confirmed_on_abstraction" for r in false_hypothesis_results
+        r.classification in {"confirmed_on_abstraction", "confirmed_native"}
+        for r in false_hypothesis_results
     )
     end_to_end_fn = sum(expected.values()) - end_to_end_tp
     detection_metrics = {
@@ -116,6 +122,7 @@ def evaluate_v2_results(
             "compatibility_rate": compatible / len(true_positive_results) if true_positive_results else None,
             "confirmed_on_abstraction": confirmed,
             "confirmation_rate": confirmed / len(true_positive_results) if true_positive_results else None,
+            "confirmed_native": confirmed_native,
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,
             "unverified": unverified,

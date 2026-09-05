@@ -211,6 +211,7 @@ def run_esbmc_on_function(
     bound: int = 5,
     timeout_seconds: int = 30,
     output_dir: str | Path | None = None,
+    class_name: str | None = None,
 ) -> ESBMCResult:
     """Flow B: run ESBMC with --function so parameters become symbolic automatically."""
     file_path = Path(file_path)
@@ -222,6 +223,7 @@ def run_esbmc_on_function(
         *base,
         "--function",
         function_name,
+        *(["--class", class_name] if class_name else []),
         *_bounded_incremental_flags(bound),
         *flags,
         str(file_path),
