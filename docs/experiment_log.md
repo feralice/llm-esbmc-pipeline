@@ -32,6 +32,96 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
 
 ---
 
+### EXP-03 — grounding obrigatório em `assertion_violation`/`incorrect_result` (bare assert sobre input livre é falso positivo)
+
+- Data: 2026-09-04
+- Artigo motivador: engenharia, não literatura (achado por auditoria manual de harness confirmado, não por hipótese de paper).
+- Hipótese testável: harnesses de `incorrect_result`/`assertion_violation` sem `__ESBMC_assume` real e sem comparação buggy-vs-correto afirmam uma propriedade universal sobre input totalmente livre, falsificável por qualquer input arbitrário sem relação com o bug real — logo, confirmação nessas condições é falso positivo estrutural, não achado real.
+- Métrica primária: falso positivo estimado por auditoria manual (não taxa de confirmação — essa métrica cai por design nesta mudança, não é o alvo).
+- Métricas secundárias: `confirmation_rate` das outras 7 categorias (não deve mudar).
+- Arquivos alterados: `src/research_pipeline/scan/compat.py` (`_unconstrained_outcome_reasons`,
+  `_direct_constant_names`, `OUTCOME_CATEGORIES` exportado), `src/research_pipeline/scan/pipeline.py`
+  (nova classificação `confirmed_unverified`, demoção incondicional pra `incorrect_result`/
+  `assertion_violation`), `src/research_pipeline/prompts/synth_prompt.txt` (regra 9: instrução
+  nova pra `incorrect_result`, que não tinha nenhuma; `assertion_violation` reforçada a exigir
+  comparação buggy-vs-correto computado, não constante), `src/research_pipeline/v2_evaluator.py`
+  (`unverified` no relatório), `src/main.py` (contagem por categoria mostra não-verificado
+  separada), testes em `tests/test_scan_compat.py`.
+- Resultado esperado: confirmação automática cai nas 2 categorias de risco; harnesses gerados
+  ficam com forma buggy-vs-correto genuína (não vazia); nenhuma perda nas outras 7 categorias.
+- Condição de rejeição: guarda estática bloqueia harness genuinamente válido nas 2 categorias
+  (falso positivo do próprio guard), ou alguma das outras 7 categorias muda de comportamento.
+- Comando exato: `--v2-stage synthesis`, amostra fixa de 12 arquivos (13 hipóteses),
+  `--synth-backend codex`, mesmo dataset/ground-truth do EXP-02.
+- Modelo / backend: codex exec (padrão da conta), detecção não roda (oracle-seeded).
+- Prompt/schema version: commit em progresso nesta sessão (base `1b30466`).
+- ESBMC version: 8.4.0 64-bit x86_64 linux.
+- Timeout / unwind / flags: `--incremental-bmc --max-k-step 5 --multi-property` (via `run_esbmc_direct`, sem mudança).
+- **Iteração 1 (antes de qualquer mudança), amostra n=13**: `assertion_violation` 3/3 confirmado.
+  Auditoria manual de 4 harnesses (`Settings.update`, `match`, `__init__`, `initialize`): as 2
+  `assertion_violation` (`update`, `match`) eram bare assert sobre `nondet_int`/`nondet_str` livre,
+  zero `__ESBMC_assume`, zero comparação — falso positivo confirmado por comparação com o harness
+  de referência feito à mão (`dataset/v2_real_world/bugs/av_real_12.py`, que usa comparação
+  diferencial buggy-vs-fixed num witness concreto, não asserção universal).
+- **Iteração 2 (guard v1: exige assume OU `ast.Compare`), mesma amostra**: `assertion_violation`
+  caiu pra 2/3 confirmado (1/3 `invalid_harness`, `unified_strdate`, corretamente barrado — comparava
+  duas strings nondet independentes). Mas os 2 que continuaram confirmados burlaram a guarda sem
+  ficar genuínos: `Settings.update` virou `__ESBMC_assume(abs(x) <= 1000)` (bound de busca, não
+  precondição real — a regra 9 do prompt já chama isso de "search bound, not a precondition") com
+  assert continuando trivialmente falso pra dois nondet_int livres; `match` virou
+  `expected: bool = True; assert matched == expected` — tecnicamente uma `ast.Compare`, mas
+  `expected` é constante chumbada, semanticamente idêntico ao bare assert anterior.
+- **Iteração 3 (guard v2: rejeita comparação contra nome ligado a constante direta, + prompt
+  reforçado com instrução explícita de `buggy`/`correct` computados)**: mesma amostra, `codex` numa
+  3ª chamada — os 3 candidatos das 2 categorias de risco (`Settings.update`, `unified_strdate`,
+  `gamma`) agora geram harness com comparação `buggy`/`correct` genuinamente computada (ex:
+  `gamma`: `2.0*3.14153` vs `2.0*3.141592653589793`, uma aproximação de pi genuína). Isso é uma
+  forma muito melhor que as iterações anteriores. Mesmo assim, **classificados como
+  `confirmed_unverified`, não `confirmed_on_abstraction`, por decisão de política**: não existe
+  checagem automática capaz de confirmar que o `correct` que a LLM inventou é de fato o
+  comportamento correto documentado da função real (ela pode ter acertado por sorte, ou inventado
+  um "correto" tão arbitrário quanto o buggy). A guarda estática reduz a incidência da forma vazia
+  mas não fecha essa lacuna semântica — por isso a demoção incondicional continua ativa para as 2
+  categorias, independente do que a guarda aceitar.
+- Conclusão: **aceita, com escopo reduzido do que a hipótese original pedia**. Não foi possível
+  atingir "confirmação automática segura nas 2 categorias" só com checagem estática de AST — jogo de
+  gato-e-rato com a variação estocástica da LLM (confirmado em 2 iterações consecutivas, cada uma
+  fechando a brecha da anterior e abrindo espaço pra próxima). A mudança que FICA e resolve o
+  objetivo real (zero falso positivo relatado como confirmado): (1) prompt melhor reduz a taxa de
+  harness vazio nas 2 categorias (efeito observado, não medido em amostra grande); (2) toda
+  confirmação nessas 2 categorias vira `confirmed_unverified`, nunca conta como confirmação
+  automática nas métricas (`v2_evaluator.py`) nem no `confirmation_rate` reportado — sem
+  bloquear a rodada nem exigir intervenção humana pra o pipeline terminar (é rótulo de relatório,
+  não etapa de fluxo; é o padrão "reject option" da literatura de seleção/abstenção). As outras 7 categorias continuam automáticas, sem
+  mudança de comportamento (confirmado: 6+1+1+1 = 9 confirmados nas 4 categorias de precondição +
+  `none_misuse`/`type_mismatch`/`variable_misuse`, idêntico ao padrão histórico).
+- Falsos positivos (exemplos): os 2 documentados na iteração 1 (`Settings.update`, `match`), e os 2
+  disfarces documentados na iteração 2 (mesmos 2, formas diferentes) — 4 evidências concretas do
+  mesmo mecanismo, não uma amostra única.
+- Falsos negativos (exemplos): nenhum novo introduzido — `unified_strdate` (iteração 2, `invalid_harness`)
+  tinha harness genuinamente vazio (duas strings nondet independentes comparadas), barrado
+  corretamente, não é perda de recall real.
+**Atualização da mesma sessão, medição completa nos 117 candidatos fixos (`--v2-stage synthesis`,
+mesmo comando do EXP-02, commit em progresso desta sessão)**: compatibilidade **99,1%** (116/117,
+subiu de 82,9%), confirmação **76,1%** (89/117, subiu de 31,6% do EXP-02) — mais que dobrou.
+Das 22 candidatas nas 2 categorias de risco (`assertion_violation` 19 + `incorrect_result` 3),
+**zero** contam como `confirmed_on_abstraction` (0/19 e 0/3): 12 viraram `confirmed_unverified`
+(rótulo automático, sem bloquear a rodada), o resto virou `over_restricted`/`safe_on_abstraction`
+genuíno, não confirmação vazia contada por engano. As outras 7 categorias continuam automáticas e
+sem regressão: `division_by_zero` 4/4, `out_of_bounds` 13/13, `none_misuse` 27/27,
+`variable_misuse` 3/3, `type_mismatch` 9/10, `invalid_precondition` 33/37. Zero `invalid_harness`/
+`unsupported_harness` por limitação de cobertura em toda a amostra (2 casos fora da curva: 1
+`esbmc_inconclusive` por tipo não suportado, 1 `candidate_not_found` por rótulo de dataset
+"module-level constants" que não é função, nenhum dos dois é regressão desta mudança).
+Isso resolve o próximo experimento originalmente proposto abaixo (EXP-04 rodada grande) na mesma
+sessão. Próximo trabalho real, se quiser perseguir: o backstop mais forte discutido nesta sessão (replay do
+  contra-exemplo do ESBMC contra a função real sob CPython, usando `esbmc.details["counterexample"]`
+  já extraído em `verification/esbmc_runner.py:454`) como forma de eventualmente promover
+  `confirmed_unverified` pra `confirmed_on_abstraction` automaticamente quando o replay confirma
+  — mas isso é trabalho maior, não decidido ainda.
+
+---
+
 ### EXP-02 — rejeitar `isinstance()` tautológico contra o próprio tipo nondet
 
 - Data: 2026-09-04
