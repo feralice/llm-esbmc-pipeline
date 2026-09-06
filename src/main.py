@@ -382,7 +382,7 @@ def _load_v2_oracle_candidates(
 ) -> list[ScanCandidate]:
     """Load synthesis-only hypotheses without exposing human harness contents."""
     gt_path = Path(ground_truth_path)
-    manifest_path = gt_path.parent / "manifest_pilot.json"
+    manifest_path = gt_path.parent / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     allowed = {str(path.resolve()) for path in input_paths}
     candidates: list[ScanCandidate] = []

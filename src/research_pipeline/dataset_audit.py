@@ -6,10 +6,12 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from .ast_utils import expression_exists_as_statement
 from .evaluator import load_ground_truth_cases
 from .llm.findings import normalize_findings
 from .models import Finding
 from .preprocess import preprocess_file
+from .scan.compat import OUTCOME_CATEGORIES
 
 _LEAKY_NAME = re.compile(r"(^|_)(buggy|correct|fixed|broken|unsafe)($|_)", re.IGNORECASE)
 _LEAKY_COMMENT = re.compile(
@@ -44,7 +46,7 @@ def _match_unit(units, declared_function: str, expression: str):
 
 
 def _load_v2_manifest_cases(ground_truth_path: Path):
-    """Audit the v2 flat-multilabel dataset against manifest_pilot.json,
+    """Audit the v2 flat-multilabel dataset against manifest.json,
     not ground_truths.json.
 
     main.py:_load_v2_oracle_candidates builds real candidates from the
@@ -56,7 +58,7 @@ def _load_v2_manifest_cases(ground_truth_path: Path):
     such case as unlabeled/ungrounded. Returns None when there's no sibling
     manifest (legacy/test datasets keep using load_ground_truth_cases).
     """
-    manifest_path = ground_truth_path.parent / "manifest_pilot.json"
+    manifest_path = ground_truth_path.parent / "manifest.json"
     if not manifest_path.is_file():
         return None
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -130,6 +132,25 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
                 issues.append({**prefix, "code": "label_leak_in_function_name"})
             if _has_leaky_comment(unit.source):
                 issues.append({**prefix, "code": "label_leak_in_comments"})
+
+            if category in OUTCOME_CATEGORIES:
+                # assertion_violation/incorrect_result manifest entries record the
+                # buggy statement itself, not an assert -- the assert is added
+                # later by the synthesized driver harness, never present in the
+                # target function. normalize_findings' assertion_violation branch
+                # only matches ast.Assert.test nodes (correct for a real LLM-
+                # reported assert in scan mode) and false-flags every such label
+                # here as ungrounded (docs/experiment_log.md, 2026-09-05).
+                if expression_exists_as_statement(expression, unit.source):
+                    accepted_labels += 1
+                else:
+                    issues.append({
+                        **prefix,
+                        "code": "ground_truth_not_grounded_in_target",
+                        "expression": expression,
+                        "reason": "expression_not_found",
+                    })
+                continue
 
             finding = Finding(
                 id="dataset-audit", stage="audit", finding_type="suspected_bug",

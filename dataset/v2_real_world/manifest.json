@@ -1,5 +1,5 @@
 {
-  "description": "Pilot dataset (§24.3 of GUIA_DATASET.md): 15 cases across division_by_zero, out_of_bounds and assertion_violation, split into a neutral detection/ input (for LLM/SLM detection, no oracle leakage) and a reference to the existing harnesses/ file (ESBMC oracle, hidden from the detection model).",
+  "description": "V2 real-world dataset (§24.3 of GUIA_DATASET.md): 106 cases mined from BugsInPy-tracked projects, across division_by_zero, out_of_bounds, assertion_violation, none_misuse, type_mismatch, invalid_precondition, variable_misuse, integer_overflow and incorrect_result, split into a neutral detection/ input (for LLM/SLM detection, no oracle leakage) and a reference to the existing bugs/ file (ESBMC oracle, hidden from the detection model).",
   "items": [
     {
       "id": "dz_real_01",
@@ -1614,7 +1614,8 @@
         "assertion_violation",
         "none_misuse"
       ],
-      "expression": "def unified_strdate",
+      "expression": "return compat_str(upload_date)",
+      "line": 63,
       "provenance": {
         "project": "youtube-dl",
         "bugsinpy_id": 29,

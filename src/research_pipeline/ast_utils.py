@@ -140,17 +140,57 @@ def explain_ast_mismatch(
             "matching_lines": sorted({node.lineno for node in exact}),
         }
 
-    all_executable = (
+    if any(ast.unparse(node) == target for node in _executable_nodes(tree)):
+        code = "wrong_node_shape_for_category"
+    else:
+        code = "expression_not_found"
+    return {"code": code, "candidates": candidate_text}
+
+
+def expression_exists_as_statement(
+    expression: str, unit_source: str, expected_relative_line: int = 0
+) -> bool:
+    """Category-agnostic grounding: does `expression` occur as an executable
+    expr/stmt node in `unit_source`, at all (line tolerance still applies)?
+
+    For the V2 manifest's outcome categories (assertion_violation,
+    incorrect_result) the recorded expression is the buggy statement itself,
+    not an assert -- the assert is added later by the synthesized harness, not
+    present in the target function. `expression_exists_in_executable_ast`'s
+    assertion_violation branch only matches `ast.Assert.test` nodes, which is
+    correct for a real LLM-reported assert in scan mode but wrongly flags
+    every such manifest label as ungrounded. Use this instead when auditing
+    that dataset shape.
+    """
+    if not expression:
+        return False
+    target_node = _parse_reported_node(expression)
+    if target_node is None:
+        return False
+    target = ast.unparse(target_node)
+    try:
+        unit_tree = ast.parse(textwrap.dedent(unit_source))
+    except SyntaxError:
+        return False
+    for node in _executable_nodes(unit_tree):
+        try:
+            if ast.unparse(node) != target:
+                continue
+        except Exception:
+            continue
+        if expected_relative_line and abs(node.lineno - expected_relative_line) > _LINE_TOLERANCE:
+            continue
+        return True
+    return False
+
+
+def _executable_nodes(tree: ast.AST):
+    return (
         node
         for node in ast.walk(tree)
         if isinstance(node, (ast.expr, ast.stmt))
         and not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
     )
-    if any(ast.unparse(node) == target for node in all_executable):
-        code = "wrong_node_shape_for_category"
-    else:
-        code = "expression_not_found"
-    return {"code": code, "candidates": candidate_text}
 
 
 def _candidate_nodes(tree: ast.AST, category: str):
@@ -165,12 +205,7 @@ def _candidate_nodes(tree: ast.AST, category: str):
     if category == "assertion_violation":
         return (node.test for node in ast.walk(tree) if isinstance(node, ast.Assert))
     if category in _SOURCE_GROUNDED_CATEGORIES:
-        return (
-            node
-            for node in ast.walk(tree)
-            if isinstance(node, (ast.expr, ast.stmt))
-            and not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-        )
+        return _executable_nodes(tree)
     return None
 
 

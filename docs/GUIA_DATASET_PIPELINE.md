@@ -1490,7 +1490,7 @@ dataset/v2_real_world/
 ├── detection/           # 100 arquivos, código real intocado (nome/comentário/classe do commit original)
 ├── bugs/                # 100 harnesses, já existiam, intocados
 ├── ground_truths.json   # metadados + categoria(s) + expressão, um arquivo só (não mais por categoria)
-├── manifest_pilot.json  # liga detection_file ↔ harness_file ↔ provenance ↔ oracle ↔ abstraction
+├── manifest.json  # liga detection_file ↔ harness_file ↔ provenance ↔ oracle ↔ abstraction
 └── candidates_phase1.json  # histórico de mineração/triagem, não é dataset final
 ```
 
@@ -1559,7 +1559,7 @@ de colocar um script"). A lógica foi incorporada direto no `hybrid` (Flow B) ex
 harness oculto (`run_esbmc_direct`, arquivo inteiro, sem `--function`) em vez de rodar `--function`
 no mesmo arquivo que a LLM leu — preserva a separação detecção/oráculo sem duplicar máquina de
 avaliação nova. Uso: `python src/main.py --mode hybrid --input dataset/v2_real_world/detection
---v2-manifest dataset/v2_real_world/manifest_pilot.json --model <modelo>`. Sem a flag, `hybrid` se
+--v2-manifest dataset/v2_real_world/manifest.json --model <modelo>`. Sem a flag, `hybrid` se
 comporta exatamente como antes (V1, arquivo único) — mudança aditiva, não quebra nada existente.
 
 Auditoria de 105 itens confirmou 102 genuinamente corretos (violação bate com a categoria

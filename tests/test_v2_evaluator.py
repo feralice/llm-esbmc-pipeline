@@ -17,7 +17,7 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
         json.dumps({"items": [{"id": "b1", "categories": ["division_by_zero"]}]}),
         encoding="utf-8",
     )
-    (tmp_path / "manifest_pilot.json").write_text(
+    (tmp_path / "manifest.json").write_text(
         json.dumps({"items": [{
             "id": "b1", "detection_file": "detection/bug.py",
             "harness_file": "bugs/bug.py", "categories": ["division_by_zero"],
@@ -56,7 +56,7 @@ def test_over_restricted_is_not_counted_as_confirmation(tmp_path) -> None:
         json.dumps({"items": [{"id": "b1", "categories": ["invalid_precondition"]}]}),
         encoding="utf-8",
     )
-    (tmp_path / "manifest_pilot.json").write_text(
+    (tmp_path / "manifest.json").write_text(
         json.dumps({"items": [{
             "id": "b1", "detection_file": "detection/bug.py",
             "harness_file": "bugs/bug.py", "categories": ["invalid_precondition"],
@@ -83,7 +83,7 @@ def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
     (tmp_path / "ground_truths.json").write_text(
         json.dumps({"items": [{"id": "c1", "categories": []}]}), encoding="utf-8"
     )
-    (tmp_path / "manifest_pilot.json").write_text(
+    (tmp_path / "manifest.json").write_text(
         json.dumps({"items": [{
             "id": "c1", "detection_file": "detection/clean.py",
             "harness_file": "bugs/clean.py", "categories": [],

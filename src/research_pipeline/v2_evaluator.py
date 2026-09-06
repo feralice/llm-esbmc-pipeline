@@ -39,7 +39,7 @@ def evaluate_v2_results(
 ) -> dict:
     """Return detection, synthesis-conditional and end-to-end V2 metrics."""
     gt_path = Path(ground_truth_path)
-    manifest_file = Path(manifest_path) if manifest_path else gt_path.parent / "manifest_pilot.json"
+    manifest_file = Path(manifest_path) if manifest_path else gt_path.parent / "manifest.json"
     gt_items = json.loads(gt_path.read_text(encoding="utf-8")).get("items", [])
     manifest_items = json.loads(manifest_file.read_text(encoding="utf-8")).get("items", [])
     gt_ids = {str(item.get("id")) for item in gt_items}
