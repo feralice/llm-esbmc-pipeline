@@ -217,6 +217,8 @@ def load_candidates(path: str | Path) -> list[ScanCandidate]:
 
 def _find_unit(units: list, function_name: str):
     """Match by simple name, tolerating a dotted qualname like 'Class.method'."""
+    if function_name.strip().lower().startswith("module-level"):
+        return next((unit for unit in units if getattr(unit, "kind", "function") == "module"), None)
     want = function_name.split(".")[-1]
     for unit in units:
         if unit.name == want or unit.qualname == function_name:
@@ -303,7 +305,7 @@ def _run_one(
         return _early(candidate, synthesizer.model, CANDIDATE_NOT_FOUND,
                       f"function {candidate.function!r} not found in {candidate.file}", started)
 
-    native = _try_native(
+    native = None if getattr(unit, "kind", "function") == "module" else _try_native(
         candidate,
         finding_id=f"scan_{index:03d}_native",
         esbmc_command=esbmc_command,
@@ -330,7 +332,9 @@ def _run_one(
     )
 
     driver_note = ""
-    if use_driver:
+    if use_driver and getattr(unit, "kind", "function") == "module":
+        driver_note = "unsupported: module-level unit has no callable function for verbatim driver"
+    elif use_driver:
         driver, driver_note = _try_driver(
             candidate, unit, finding,
             index=index, synthesizer=synthesizer, esbmc_command=esbmc_command,

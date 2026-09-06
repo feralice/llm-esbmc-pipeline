@@ -412,7 +412,10 @@ def _load_v2_oracle_candidates(
                     (unit for unit in units if expression and expression in unit.source),
                     units[0],
                 )
-            selected_function = matched_unit.qualname
+            # Keep the manifest label for module-level cases; it may describe
+            # a group of constants rather than a Python function name.
+            if matched_unit.kind != "module":
+                selected_function = matched_unit.qualname
         for category in item.get("categories", []):
             candidates.append(
                 ScanCandidate(

@@ -47,11 +47,12 @@ def load_system_prompt() -> str:
 
 def build_user_prompt(unit: CodeUnit) -> str:
     """Build the leakage-resistant user prompt for one CodeUnit."""
+    subject = "unidade de módulo" if unit.kind == "module" else "função"
     return (
-        "Analise a função 'target_function' para o pipeline LLM + ESBMC.\n\n"
-        "CÓDIGO DA FUNÇÃO:\n"
+        f"Analise a {subject} para o pipeline LLM + ESBMC.\n\n"
+        f"CÓDIGO DA {subject.upper()}:\n"
         f"```python\n{_source_for_llm(unit)}\n```\n\n"
-        "METADADOS DA FUNÇÃO:\n"
+        f"METADADOS DA {subject.upper()}:\n"
         f"{json.dumps(_function_metadata_raw(unit), ensure_ascii=False, indent=2)}\n\n"
         + _reasoning_steps()
     )

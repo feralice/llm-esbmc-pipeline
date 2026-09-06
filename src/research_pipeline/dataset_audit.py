@@ -18,6 +18,11 @@ _LEAKY_COMMENT = re.compile(
 )
 
 
+def _is_module_level_label(function: str) -> bool:
+    """Return whether a dataset label intentionally targets module code."""
+    return function.strip().lower().startswith("module-level")
+
+
 def _match_unit(units, declared_function: str, expression: str):
     """Resolve a ground-truth function label to the real unit in the source.
 
@@ -109,6 +114,7 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
 
     checked_labels = 0
     accepted_labels = 0
+    module_level_labels = 0
     cases = _load_v2_manifest_cases(path) or load_ground_truth_cases(path)
     for raw_source_path, expected in cases:
         source_path = _prefer_detection_source(raw_source_path)
@@ -123,6 +129,18 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
             expression = str(entry.get("expression", ""))
             unit = _match_unit(units, function, expression)
             prefix = {"file": source_path.name, "function": function, "category": category}
+            if _is_module_level_label(function):
+                module_level_labels += 1
+                if expression_exists_as_statement(expression, source):
+                    accepted_labels += 1
+                else:
+                    issues.append({
+                        **prefix,
+                        "code": "ground_truth_not_grounded_in_module",
+                        "expression": expression,
+                        "reason": "expression_not_found",
+                    })
+                continue
             if unit is None:
                 issues.append({**prefix, "code": "missing_target_function"})
                 continue
@@ -150,6 +168,7 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
         "labels_checked": checked_labels,
         "labels_grounded_in_target": accepted_labels,
         "labels_not_grounded_in_target": checked_labels - accepted_labels,
+        "module_level_labels": module_level_labels,
         "issue_counts": dict(sorted(counts.items())),
         "issues": issues,
     }

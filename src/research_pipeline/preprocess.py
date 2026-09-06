@@ -242,7 +242,12 @@ class _StructureExtractor(ast.NodeVisitor):
 
 
 def preprocess_file(path: str | Path) -> list[CodeUnit]:
-    """Read a Python file and return one CodeUnit for each analyzable function."""
+    """Read a Python file and return analyzable function/module units.
+
+    A file with no analyzable functions is represented by one ``module`` unit.
+    This keeps module-level constants visible to V2 while leaving ordinary
+    function files unchanged.
+    """
     file_path = Path(path)
     source = file_path.read_text(encoding="utf-8")
     source_lines = source.splitlines()
@@ -257,6 +262,41 @@ def preprocess_file(path: str | Path) -> list[CodeUnit]:
 
     collector = _UnitCollector(source_lines, file_path)
     collector.visit(tree)
+
+    if not collector.units and source.strip():
+        extractor = _StructureExtractor(source_lines)
+        extractor.visit(tree)
+        hints = {
+            node.target.id: ast.unparse(node.annotation)
+            for node in tree.body
+            if isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.annotation is not None
+        }
+        collector.units.append(
+            CodeUnit(
+                path=file_path,
+                name="module-level",
+                qualname="module-level",
+                source=source,
+                start_line=1,
+                end_line=max(1, len(source_lines)),
+                parameters=[],
+                type_hints=hints,
+                operations=extractor.operations,
+                loops=extractor.loops,
+                conditionals=extractor.conditionals,
+                guards=extractor.guards,
+                metrics={
+                    "line_count": max(1, len(source_lines)),
+                    "parameter_count": 0,
+                    "branch_count": extractor.branch_count,
+                    "loop_count": len(extractor.loops),
+                    "operation_count": len(extractor.operations),
+                },
+                kind="module",
+            )
+        )
 
     # Convert absolute operation lines into function-relative line numbers.
     for unit in collector.units:

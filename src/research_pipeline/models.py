@@ -19,7 +19,7 @@ class OperationRecord:
 
 @dataclass
 class CodeUnit:
-    """One analyzable Python function extracted from a source file."""
+    """One analyzable function or module-level source unit."""
 
     path: Path                         # File that contains the function.
     name: str                          # Simple function name, e.g. "divide".
@@ -34,6 +34,7 @@ class CodeUnit:
     conditionals: list[str]            # If-condition expressions.
     guards: list[str]                  # Conditions/assertions that may guard unsafe operations.
     metrics: dict[str, int]            # Simple metrics such as line and parameter count.
+    kind: str = "function"             # ``function`` or ``module``.
 
 
 # ---------------------------------------------------------------------------

@@ -376,6 +376,8 @@ def evaluate_file(
     units = preprocess_file(file_path)
     unit_findings: list[tuple] = []
     for unit in units:
+        if unit.kind != "function":
+            continue
         for finding in analyzer.analyze(unit):
             # Annotate function name for improved matching (MÉDIO 1)
             finding.metadata["function"] = unit.name

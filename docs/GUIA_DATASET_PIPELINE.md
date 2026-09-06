@@ -320,16 +320,10 @@ o rótulo está mal alinhado com a entrada de detecção.
 
 ## 8. Como interpretar o estado atual do V2
 
-A auditoria atual encontrou 116 rótulos verificáveis:
-
-- 52 estão ligados a uma expressão encontrada na função-alvo;
-- 64 não estão ligados corretamente à AST da função-alvo;
-- muitos harnesses possuem nomes, comentários ou oráculos que não devem ser mostrados diretamente
-  à LLM.
-
-Isso não significa que os 64 bugs sejam falsos. Significa que o arquivo atual prova uma propriedade
-para o ESBMC, mas o ground truth de detecção ainda não está alinhado com o código apresentado à
-LLM.
+A auditoria atual encontrou 117 rótulos verificáveis, todos ancorados no código apresentado à LLM.
+São 116 unidades de função e um caso de constantes no nível do módulo. Esse caso é representado
+como uma unidade `module` para a detecção e segue pela síntese escalar; os caminhos nativo e
+verbatim-driver continuam reservados a funções chamáveis por `--function`.
 
 O pipeline já sanitiza a cópia enviada ao modelo, removendo comentários, docstrings e nomes como
 `buggy`. Essa proteção reduz vazamentos, mas não substitui a correção do dataset: cada expressão

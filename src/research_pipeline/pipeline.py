@@ -52,7 +52,7 @@ def run_pipeline_esbmc_direct(
         units = preprocess_file(file_path)
         result = run_esbmc_function_baseline(
             file_path=file_path,
-            function_names=[unit.name for unit in units],
+            function_names=[unit.name for unit in units if unit.kind == "function"],
             esbmc_command=esbmc_command,
             bound=bound,
             timeout_seconds=timeout_seconds,
@@ -159,6 +159,7 @@ def run_pipeline_multi(
 
         # Preprocess converts each Python function into a CodeUnit.
         units = preprocess_file(file_path)
+        units = [unit for unit in units if unit.kind == "function"]
         planned_units += len(units)
         for unit in units:
             unit_key = _unit_key(file_path, unit.qualname)

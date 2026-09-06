@@ -52,3 +52,24 @@ def test_dataset_audit_clean_target_is_grounded(tmp_path) -> None:
 def test_write_dataset_audit_round_trips(tmp_path) -> None:
     output = write_dataset_audit({"labels_checked": 0}, tmp_path / "audit.json")
     assert json.loads(output.read_text(encoding="utf-8"))["labels_checked"] == 0
+
+
+def test_dataset_audit_accepts_module_level_grounding(tmp_path) -> None:
+    detection = tmp_path / "detection"
+    bugs = tmp_path / "bugs"
+    detection.mkdir()
+    bugs.mkdir()
+    (detection / "constants.py").write_text("pi: float = 3.14\n", encoding="utf-8")
+    (bugs / "constants.py").write_text("pi: float = 3.14\n", encoding="utf-8")
+    gt = tmp_path / "ground_truths.json"
+    gt.write_text(json.dumps({"items": [{
+        "id": "module-1", "file": "constants.py",
+        "function": "module-level constants", "categories": ["incorrect_result"],
+        "expression": "pi: float = 3.14", "verifiable": True
+    }]}), encoding="utf-8")
+
+    report = audit_dataset(gt)
+
+    assert report["module_level_labels"] == 1
+    assert report["labels_grounded_in_target"] == 1
+    assert report["issues"] == []

@@ -22,7 +22,11 @@ def build_dataset_statistics(ground_truth_path: str | Path) -> dict:
     missing_functions: list[dict] = []
 
     for source_path, expected in cases:
-        units = {unit.name: unit for unit in preprocess_file(source_path)}
+        units = {
+            unit.name: unit
+            for unit in preprocess_file(source_path)
+            if unit.kind == "function"
+        }
         expected_by_function: dict[str, set[str]] = defaultdict(set)
         for entry in expected:
             expected_by_function[str(entry.get("function", ""))].add(str(entry["category"]))
