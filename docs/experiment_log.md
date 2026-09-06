@@ -87,6 +87,45 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   equivalente a um assert real do domínio. Pendência: rerodar os 15 bloqueados
   por quota depois do reset, sem precisar reprocessar os outros 102.
 
+#### Atualização — retomada pós-quota (2026-09-05, 117/117 completo)
+
+- `--resume` tinha um bug: tratava `synth_failed` como resultado definitivo e
+  nunca tentava de novo os 15 bloqueados por quota (`completed_results` em
+  `run_pipeline_scan` reusava qualquer entrada do checkpoint, inclusive
+  falhas). Corrigido em `src/main.py` — `completed_results` agora exclui
+  entradas com `classification == SYNTH_FAILED` antes de passar pro pipeline,
+  então `--resume` as retenta em vez de repetir a falha antiga.
+- Rodada `--resume` após o reset de quota (20:47, ~35min após o reset
+  estimado de 20:12) processou os 15 pendentes de verdade. Resultado final,
+  117/117 sem nenhum bloqueio externo: confirmação **69,2%** (81/117: 66
+  `confirmed_driver` + 15 `confirmed_on_abstraction`); somando os 7
+  `confirmed_unverified` (bug real achado, rebaixado por categoria por
+  design) chega a **75,2%** (88/117). Tier driver conclusivo em 95/117.
+  Distribuição completa: `confirmed_driver` 66, `confirmed_on_abstraction`
+  15, `confirmed_unverified` 7, `safe_driver` 18, `over_restricted` 4,
+  `safe_on_abstraction` 2, `esbmc_inconclusive` 2, `invalid_harness` 2,
+  `candidate_not_found` 1.
+- Verificação manual dos 20 casos `safe_driver`/`safe_on_abstraction`:
+  rerodados localmente com `--max-k-step 10` (o dobro do bound 5 da rodada).
+  9 confirmam seguro genuinamente (nenhuma violação até k=10), 9 ficam
+  inconclusivos (ESBMC desiste, limite de busca), **0 viram bug achado**.
+  Não há evidência de harness mascarando bug real nesses casos — o gap
+  residual é limite de bound do BMC, não erro de síntese.
+- Nota de escopo importante: essa rodada inteira usa `--v2-stage synthesis`,
+  ou seja, a hipótese de bug vem plantada do `ground_truths.json` (candidato
+  tem `"note": "Oracle-seeded hypothesis for synthesis-only evaluation"`),
+  não da LLM. Mede só harness+ESBMC, não mede a LLM detectando bug sozinha —
+  essa é outra pergunta, respondida pelo EXP-02 (detecção do zero, ~26%
+  precisão/recall). Testar o fluxo completo (LLM decide a hipótese) requer
+  `--v2-stage end-to-end` (padrão do modo, sem seed), ainda não rodado hoje.
+- Próximo ajuste identificado, não implementado: validador diferencial pras
+  categorias `assertion_violation`/`incorrect_result` em `driver_check.py` —
+  hoje o rebaixamento pra `confirmed_unverified` é cego por categoria; a
+  distinção real (comparado a mão: `to_timestamp` vácuo vs. `match`
+  fundamentado num cálculo de referência independente) é sintaticamente
+  detectável (assert que só reafirma o nondet cru vs. assert que compara
+  `result` contra uma segunda expressão derivada separadamente).
+
 #### Histórico — versão anterior de função inteira
 
 - Data: 2026-09-05

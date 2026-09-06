@@ -56,6 +56,7 @@ from research_pipeline.pipeline import (
 )
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.pipeline import (
+    SYNTH_FAILED,
     ScanCandidate,
     ScanCaseResult,
     run_pipeline_scan,
@@ -1092,6 +1093,7 @@ def mode_v2(args: argparse.Namespace) -> int:
     completed_results = {
         int(index): ScanCaseResult.from_dict(data)
         for index, data in checkpoint.get("synthesis_results", {}).items()
+        if data.get("classification") != SYNTH_FAILED
     }
 
     def save_synthesis_result(index: int, result: ScanCaseResult) -> None:
