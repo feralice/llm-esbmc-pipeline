@@ -33,7 +33,9 @@ from .compat import (
     VERDICT_UNSUPPORTED,
     check_harness,
 )
-from .synth import HarnessSynthesizer
+from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
+from .driver_check import check_driver_harness
+from .synth import STYLE_DRIVER, HarnessSynthesizer
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
 # because "confirmed" here means "on the synthesized abstraction", not "on the
@@ -58,6 +60,17 @@ CONFIRMED_UNVERIFIED = "confirmed_unverified"
 # 2026-09-05: ~16% of dataset/v2_real_world/detection functions qualify).
 CONFIRMED_NATIVE = "confirmed_native"
 SAFE_NATIVE = "safe_native"
+# Verbatim-driver method (_try_driver): the LLM keeps the real function body
+# untouched and writes only the symbolic driver -- nondet inputs, __ESBMC_assume
+# preconditions, a plain-assert postcondition, main() called at module level.
+# ESBMC then executes the real arithmetic/control flow. This is the reference
+# PoC pattern (github.com/lucasccordeiro/vllm, harness/); it removes the
+# expression-reconstruction abstraction gap the scalar synth carries and does
+# not use __ESBMC_cover, so the marker/cover interaction (EXP-01) does not
+# arise. Tried after _try_native, before the scalar synth fallback. Needs the
+# real function to convert under ESBMC-Python (same gate as _try_native).
+CONFIRMED_DRIVER = "confirmed_driver"
+SAFE_DRIVER = "safe_driver"
 OVER_RESTRICTED = "over_restricted"
 SAFE_ON_ABSTRACTION = "safe_on_abstraction"
 INVALID_HARNESS = "invalid_harness"
@@ -71,7 +84,14 @@ SYNTH_FAILED = "synth_failed"
 # A conclusive verdict ends the retry loop; a recoverable one triggers another
 # synthesis attempt (the LLM output varies run to run).
 _CONCLUSIVE = frozenset(
-    {CONFIRMED_ON_ABSTRACTION, CONFIRMED_UNVERIFIED, OVER_RESTRICTED, SAFE_ON_ABSTRACTION}
+    {
+        CONFIRMED_ON_ABSTRACTION,
+        CONFIRMED_UNVERIFIED,
+        CONFIRMED_DRIVER,
+        SAFE_DRIVER,
+        OVER_RESTRICTED,
+        SAFE_ON_ABSTRACTION,
+    }
 )
 _RECOVERABLE = frozenset(
     {INVALID_HARNESS, UNSUPPORTED_HARNESS, NO_PROPERTY, ESBMC_INCONCLUSIVE, SYNTH_FAILED}
@@ -124,6 +144,12 @@ class ScanCaseResult:
     attempt_history: list[dict] = field(default_factory=list)
     seconds: float = 0.0
     error: str = ""
+    # Why the verbatim-driver tier did or did not produce this result. One of:
+    # "" (driver disabled), "conclusive", "unsupported: <reason>",
+    # "invalid xN: <reason>", "inconclusive: <esbmc summary>", "vacuous: 0 VCCs",
+    # "synth-failed: <exc>". Set even when the tier fell through to scalar synth,
+    # so a run can be sliced by driver applicability without re-instrumenting.
+    driver_note: str = ""
 
     @classmethod
     def from_dict(cls, data: dict) -> ScanCaseResult:
@@ -146,6 +172,7 @@ class ScanCaseResult:
             attempt_history=list(data.get("attempt_history", [])),
             seconds=float(data.get("seconds", 0.0)),
             error=str(data.get("error", "")),
+            driver_note=str(data.get("driver_note", "")),
         )
 
     def to_dict(self) -> dict:
@@ -174,6 +201,7 @@ class ScanCaseResult:
             "attempt_history": self.attempt_history,
             "seconds": round(self.seconds, 2),
             "error": self.error,
+            "driver_note": self.driver_note,
         }
 
 
@@ -206,6 +234,7 @@ def run_pipeline_scan(
     use_compat: bool = True,
     use_guards: bool = True,
     use_ablation: bool = True,
+    use_driver: bool = True,
     synth_retries: int = 1,
     completed_results: dict[int, ScanCaseResult] | None = None,
     on_result: Callable[[int, ScanCaseResult], None] | None = None,
@@ -237,6 +266,7 @@ def run_pipeline_scan(
                 use_compat=use_compat,
                 use_guards=use_guards,
                 use_ablation=use_ablation,
+                use_driver=use_driver,
                 synth_retries=synth_retries,
             )
         results.append(result)
@@ -257,6 +287,7 @@ def _run_one(
     use_compat: bool = True,
     use_guards: bool = True,
     use_ablation: bool = True,
+    use_driver: bool = True,
     synth_retries: int = 1,
 ) -> ScanCaseResult:
     started = time.monotonic()
@@ -296,6 +327,19 @@ def _run_one(
         confidence="medium",
         metadata={"expression": candidate.expression},
     )
+
+    driver_note = ""
+    if use_driver:
+        driver, driver_note = _try_driver(
+            candidate, unit, finding,
+            index=index, synthesizer=synthesizer, esbmc_command=esbmc_command,
+            bound=bound, timeout_seconds=timeout_seconds, harness_dir=harness_dir,
+            use_guards=use_guards, use_ablation=use_ablation, retries=synth_retries,
+        )
+        if driver is not None:
+            driver.driver_note = driver_note
+            driver.seconds = time.monotonic() - started
+            return driver
 
     history: list[dict] = []
     total_tokens = 0
@@ -337,6 +381,7 @@ def _run_one(
         result.synth_total_tokens = total_tokens or None
         result.synth_seconds = total_synth_seconds
         result.esbmc_seconds = total_esbmc_seconds
+        result.driver_note = driver_note
         last = result
         if result.classification in _CONCLUSIVE:
             return result
@@ -428,6 +473,131 @@ def _try_native(
         esbmc_seconds=result.time_seconds,
         attempts=0,
     )
+
+
+def _try_driver(
+    candidate: ScanCandidate,
+    unit,
+    finding: Finding,
+    *,
+    index: int,
+    synthesizer: HarnessSynthesizer,
+    esbmc_command: list[str] | None,
+    bound: int,
+    timeout_seconds: int,
+    harness_dir: Path,
+    use_guards: bool,
+    use_ablation: bool,
+    retries: int,
+) -> tuple[ScanCaseResult | None, str]:
+    """Verbatim-driver method: LLM keeps the real function body and writes only
+    the symbolic driver.
+
+    Returns ``(result, note)``. ``result`` is a conclusive ScanCaseResult, or
+    None to fall through to the scalar-synth fallback (function does not fit the
+    method, the harness stayed invalid across retries, ESBMC was inconclusive).
+    ``note`` records why in either case, so a run can be sliced by driver
+    applicability without a second instrumented pass.
+    """
+    repair_feedback = ""
+    previous_harness = ""
+    tokens = 0
+    synth_seconds = 0.0
+    esbmc_seconds = 0.0
+    invalid_reasons = ""
+    invalid_count = 0
+
+    for attempt in range(1 + max(0, retries)):
+        try:
+            synth = synthesizer.synthesize(
+                unit, finding,
+                use_guards=use_guards, style=STYLE_DRIVER,
+                repair_feedback=repair_feedback, previous_harness=previous_harness,
+            )
+        except Exception as exc:  # noqa: BLE001 - network/API failure is reported, not raised
+            print(f"  driver: synthesis failed ({exc}); falling back to scalar synth")
+            return None, f"synth-failed: {exc}"
+
+        tokens += synth.telemetry.get("total_tokens") or 0
+        synth_seconds += float(synth.telemetry.get("duration_seconds") or 0.0)
+
+        check = check_driver_harness(
+            synth.harness, real_source=unit.source, function_name=unit.name,
+            expression=candidate.expression,
+        )
+        if not check.ok:
+            reason = "; ".join(check.reasons)
+            if check.verdict == DRIVER_VERDICT_UNSUPPORTED:
+                return None, f"unsupported: {reason}"
+            invalid_count += 1
+            invalid_reasons = reason
+            repair_feedback = "Driver harness rejected:\n- " + "\n- ".join(check.reasons)
+            previous_harness = synth.harness
+            continue
+
+        harness_path = harness_dir / f"scan_{index:03d}_{unit.name}_driver.py"
+        harness_path.write_text(synth.harness, encoding="utf-8")
+
+        esbmc = run_esbmc_direct(
+            harness_path,
+            esbmc_command=esbmc_command,
+            bound=bound,
+            timeout_seconds=timeout_seconds,
+            output_dir=str(harness_dir),
+        )
+        esbmc_seconds += esbmc.time_seconds
+
+        base = ScanCaseResult(
+            candidate=candidate,
+            classification=CONFIRMED_DRIVER,
+            harness=synth.harness,
+            harness_path=str(harness_path),
+            compat_verdict="driver",
+            esbmc_status=esbmc.status,
+            esbmc_summary=esbmc.summary,
+            synth_model=synthesizer.model,
+            synth_total_tokens=tokens or None,
+            synth_seconds=synth_seconds,
+            esbmc_seconds=esbmc_seconds,
+            attempts=attempt + 1,
+        )
+
+        if esbmc.status == "violation_found":
+            base.classification = (
+                CONFIRMED_UNVERIFIED
+                if candidate.category in OUTCOME_CATEGORIES
+                else CONFIRMED_DRIVER
+            )
+            return base, "conclusive"
+
+        if esbmc.status == "no_violation_found":
+            base.classification = SAFE_DRIVER
+            if use_ablation:
+                report = _ablate_harness(
+                    synth.harness, esbmc_command=esbmc_command,
+                    bound=bound, timeout_seconds=timeout_seconds,
+                )
+                base.ablation_per_assumption = dict(report.per_assumption)
+                if report.over_restricted:
+                    base.classification = OVER_RESTRICTED
+                    base.masking_assumptions = list(report.masking_assumptions)
+            return base, "conclusive"
+
+        # no_vcc_generated -> vacuous (Finding 1 shape); anything else ->
+        # inconclusive. Both recoverable: retry, else fall through to scalar.
+        if esbmc.status == "no_vcc_generated":
+            repair_feedback = (
+                "ESBMC generated 0 VCCs -- the harness verified vacuously. Make the "
+                "asserted property depend on the call result and keep every "
+                "precondition an __ESBMC_assume."
+            )
+        else:
+            repair_feedback = f"ESBMC was inconclusive ({esbmc.summary})."
+        previous_harness = synth.harness
+
+    if invalid_count:
+        return None, f"invalid x{invalid_count}: {invalid_reasons}"
+    return None, f"inconclusive: {esbmc.summary}"
 
 
 def _one_attempt(

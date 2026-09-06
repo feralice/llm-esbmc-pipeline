@@ -85,10 +85,12 @@ def evaluate_v2_results(
         remaining[sig] = max(0, allowed - len(grouped))
 
     compatible = sum(
-        r.compat_verdict in {"ok", "skipped", "native_function"} for r in true_positive_results
+        r.compat_verdict in {"ok", "skipped", "native_function", "driver"}
+        for r in true_positive_results
     )
     confirmed_native = sum(r.classification == "confirmed_native" for r in true_positive_results)
-    confirmed = confirmed_native + sum(
+    confirmed_driver = sum(r.classification == "confirmed_driver" for r in true_positive_results)
+    confirmed = confirmed_native + confirmed_driver + sum(
         r.classification == "confirmed_on_abstraction" for r in true_positive_results
     )
     unverified = sum(r.classification == "confirmed_unverified" for r in true_positive_results)
@@ -100,7 +102,7 @@ def evaluate_v2_results(
 
     end_to_end_tp = confirmed
     end_to_end_fp = sum(
-        r.classification in {"confirmed_on_abstraction", "confirmed_native"}
+        r.classification in {"confirmed_on_abstraction", "confirmed_native", "confirmed_driver"}
         for r in false_hypothesis_results
     )
     end_to_end_fn = sum(expected.values()) - end_to_end_tp
@@ -123,6 +125,7 @@ def evaluate_v2_results(
             "confirmed_on_abstraction": confirmed,
             "confirmation_rate": confirmed / len(true_positive_results) if true_positive_results else None,
             "confirmed_native": confirmed_native,
+            "confirmed_driver": confirmed_driver,
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,
             "unverified": unverified,

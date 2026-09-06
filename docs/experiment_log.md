@@ -32,6 +32,169 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
 
 ---
 
+### EXP-04 — tier "verbatim-slice": preservar a expressão suspeita no harness
+
+#### Rodada slice — 2026-09-05 (em execução)
+
+- Revisão da hipótese antes da rodada: preservar o menor slice rodável da expressão
+  suspeita, substituindo operandos de objeto/container/call externa por `nondet_*()`,
+  permite que o tier driver confirme casos de forma atribuível. Isso não demonstra,
+  sozinho, equivalência semântica com a função real nem precisão da detecção.
+- Validador atual: preservação do esqueleto de operadores, resultado vivo inclusive
+  com atribuição anotada, `main()` no módulo, sem imports/intrínsecos sombreados e
+  rejeição de `isinstance` tautológico. A descrição abaixo registra a versão anterior
+  de função inteira e seus resultados; não descreve o validador atual.
+- Resultado esperado: `confirmed_driver > 0`, com evidência nos harnesses e logs;
+  registrar compatibilidade, confirmação e distribuição de `driver_notes` do relatório.
+- Comando da rodada:
+  ```bash
+  PYTHONPATH=src .venv/bin/python src/main.py --mode v2 --v2-stage synthesis \
+    --input dataset/v2_real_world/detection \
+    --ground-truth dataset/v2_real_world/ground_truths.json \
+    --synth-backend codex --output-dir artifacts/v2/driver-slice-117-rerun
+  ```
+- Primeira tentativa (`artifacts/v2/driver-slice-117`): interrompida porque o sandbox
+  impediu a inicialização do `codex exec` (`Read-only file system`). Não é medição
+  do método. A rodada `-rerun` foi iniciada fora do sandbox, sem reutilizar esse checkpoint.
+- Métricas depois (`driver-slice-117-rerun`, 117 candidatos fixos): confirmação
+  **60,68%** (71/117: 59 `confirmed_driver` + 12 `confirmed_on_abstraction` via
+  fallback escalar); tier driver chegou a veredito conclusivo em **85/117** casos
+  (59 `confirmed_driver` + 17 `safe_driver` + 4 `over_restricted` + 5
+  `confirmed_unverified`), 6 `inconclusive` e 10 `invalid` (caem no fallback
+  escalar). 15/117 (`SortedDict.__eq__`, `match`, `Task.to_str_params`,
+  `SimpleTaskState.get_necessary_tasks`, `Scheduler.add_task`,
+  `IOLoop.initialize`, `_make_getset_interval`, `date_convert`, `send2trash`,
+  `gamma`, `try_match_char_class_range`, `string_to_int`,
+  `Markdown._html_class_str_from_tag`, `interpolate_bilinear_2x_fwd` x2)
+  não chegaram a rodar: `codex exec` bateu no limite de uso da conta
+  compartilhada durante a síntese, antes de qualquer tentativa de harness.
+  Excluindo esses 15 (não é falha do método, é quota externa esgotada),
+  confirmação sobe pra **69,6%** (71/102). 1 candidato (`ir_real_02`,
+  "module-level constants") não é função de verdade — `candidate_not_found`
+  correto, entrada de dataset não elegível pro lookup por função.
+- Verificação manual pós-rodada (2026-09-05): reexecutado `esbmc` local sobre
+  `scan_003_do_driver.py` (`HashExpander.do`, `dz_real_03.py`, divisão por
+  zero) — contraexemplo concreto (`range_end=-536870913`,
+  `range_begin=-536870912` → divisor 0), `VERIFICATION FAILED` reproduzido,
+  confirma que o tier driver liga código real ao ESBMC de fato, não só no
+  relatório agregado.
+- Conclusão da rodada slice: hipótese aceita. Tier driver é o principal
+  produtor de confirmação grounded (85/117 vereditos conclusivos, contra 0/117
+  do tier nativo nesse dataset — ver EXP anterior sobre `--function`). Os 5
+  `confirmed_unverified` dentro do driver não são falha do harness: são
+  `assertion_violation`/`incorrect_result`, categoria que o validador de
+  grounding (EXP-03) rebaixa de propósito por não ter checagem automática
+  equivalente a um assert real do domínio. Pendência: rerodar os 15 bloqueados
+  por quota depois do reset, sem precisar reprocessar os outros 102.
+
+#### Histórico — versão anterior de função inteira
+
+- Data: 2026-09-05
+- Artigo motivador: engenharia, não literatura. Padrão de harness do PoC ESBMC-Python do
+  orientador (`github.com/lucasccordeiro/vllm`, diretório `harness/` + `RETROSPECTIVE.md`):
+  função copiada verbatim da fonte upstream, `main()` no nível de módulo com `nondet_*`,
+  precondição = `__ESBMC_assume`, propriedade = `assert` liso, par buggy/não-buggy, gate de
+  contagem de VCC (`Generated 0 VCC(s)` + SUCCESSFUL = vácuo; a Finding 1 do PoC é um `def
+  nondet_int(): return 0` num stub sombreando o intrínseco).
+- Hipótese testável: um tier que mantém o corpo da função real sem tocar e pede à LLM só o
+  driver simbólico (assume/assert, sem `__ESBMC_cover`, sem string marcador) fecha o
+  abstraction gap do método escalar (que reconstrói a expressão e pode "consertar" o bug sem
+  querer) e não sofre da interação cover/marcador do EXP-01 — logo sobe a confirmação
+  *grounded* (ancorada no bug real, não numa propriedade que a LLM inventou).
+- Métrica primária: taxa de confirmação nos 117 candidatos fixos. Ressalva: o alvo real é
+  confirmação *grounded* auditada, não a taxa bruta.
+- Métricas secundárias: compatibilidade; nº de casos em que o tier driver de fato produziu o
+  veredito (vs. caiu no fallback escalar); distribuição do motivo de fallthrough (`driver_note`).
+- Arquivos alterados: `src/research_pipeline/prompts/driver_prompt.txt` (novo — regras do
+  método verbatim-driver), `src/research_pipeline/scan/driver_check.py` (novo — validador AST:
+  função presente e verbatim vs. fonte real, driver no módulo, resultado vivo, sem import, sem
+  `__ESBMC_cover`, sem `def` sombreando intrínseco, numpy/pandas → `unsupported`),
+  `src/research_pipeline/scan/pipeline.py` (`_try_driver` entre `_try_native` e a síntese
+  escalar; classificações `confirmed_driver`/`safe_driver`; campo `driver_note` gravado mesmo
+  no fallthrough; `_try_driver` retorna `(result, note)`; toggle `use_driver`),
+  `src/research_pipeline/scan/synth.py` (`synthesize(style="driver"|"scalar")`,
+  `load_synth_prompt(style)`, passa `fixed_behaviour` de `finding.metadata`),
+  `src/research_pipeline/v2_evaluator.py` (métricas contam `confirmed_driver`), `src/main.py`
+  (flag `--no-driver`, bloco "tier driver" no resumo, `driver_notes` no `_scan_summary`),
+  `tests/test_scan_driver.py` (novo — 15 testes), `tests/test_scan_pipeline.py` (testes de
+  fluxo escalar passam `use_driver=False`; o tier tem testes próprios).
+- Bug real achado e corrigido no ciclo (não reverte, fica): `driver_check.py`
+  `_strip_for_compare` construía nós `ast.Assign` sem localização no `visit_AnnAssign` do
+  `NodeTransformer`; `ast.unparse` quebrava ao normalizar uma função real com variável local
+  anotada (os testes iniciais só cobriam corpos sem `AnnAssign`). Corrigido com
+  `ast.fix_missing_locations(cloned)` antes do `unparse` (linha 94). Achado por outra sessão
+  da mesma rodada, em código real do dataset.
+- Resultado esperado: o tier driver dispara numa fração relevante dos 117 e gera harness com o
+  corpo real intacto; confirmação sobe de forma atribuível ao tier (casos que só o driver
+  pega); nenhuma regressão nas categorias que já funcionavam.
+- Condição de rejeição: o tier quase não dispara (função real quase nunca copiável verbatim), ou
+  o validador rejeita cópias boas, ou a confirmação não sobe além do ruído de síntese estocástica.
+- Comando exato (subconjunto desta sessão): 6 candidatos reais de `dataset/v2_real_world/detection/`
+  (`av_real_01` `cli_bool_option`, `av_real_03` `to_timestamp`, `dz_real_01` `makeMappingArray`,
+  `dz_real_02` `choose_best_split`, `ip_real_04` `_read_body`, `nm_real_01` `update_headers`),
+  `HarnessSynthesizer(backend="codex")`, `run_pipeline_scan(bound=3, use_ablation=False,
+  use_driver=True, synth_retries=1)`, `run_esbmc_direct` com `--incremental-bmc --max-k-step 3
+  --multi-property`. Rodada completa dos 117: feita pela Fernanda, mesmo comando do EXP-03.
+- Modelo / backend: `codex exec` (padrão da conta); detecção não roda (oracle-seeded).
+- Prompt/schema version: base `0a3a2dc`, mudança em progresso nesta sessão (não commitada).
+- ESBMC version: 8.4.0 64-bit x86_64 linux.
+- Timeout / unwind / flags: `--incremental-bmc --max-k-step {3,5} --multi-property`, sem mudança
+  em `run_esbmc_direct`.
+- Métricas antes (EXP-03, rodada completa 117): confirmação **76,1%** (89/117), compatibilidade
+  **99,1%** (116/117).
+- Métricas depois (rodada completa 117, com o tier driver ligado): confirmação **77,8%** (91/117),
+  compatibilidade **98,3%** (115/117). Ambos os deltas dentro do ruído normal da síntese
+  estocástica (2-3 pp entre rodadas com a mesma config, observado a noite toda no EXP-03).
+  **O tier driver disparou 1 vez em 117** — a melhora de 1,7 pp não é atribuível a ele.
+- Subconjunto de 6 (codex, esta sessão): **6/6 o driver devolveu bloco `python` vazio** e caiu
+  no fallback escalar (`driver_note: unsupported: empty harness`). Confirmado na mão para
+  `cli_bool_option` (função de 6 linhas, sem numpy): o codex respondeu literalmente
+  `` ```python\n``` ``. Causa: a regra 1 do `driver_prompt.txt` tem uma saída fácil ("se o corpo
+  não puder ser mantido verbatim, retorne bloco vazio") e o modelo a aciona no primeiro `self.`,
+  `params.get()` ou `import` que vê, mesmo com o prompt permitindo stub de call externa.
+- Análise estática das 104 funções de `dataset/v2_real_world/detection/`: ~50% método de classe
+  com acesso a `self.x.y`, ~10% com `import` de lib do projeto, ~8% com `with`/`try` (I/O),
+  **~37% aritmética/lógica pura — a única fração copiável verbatim como está**. numpy/pandas/torch
+  explícito: só 4%. O gargalo do método "copia função inteira" não é numpy, é método de classe.
+- Sanidade end-to-end do mecanismo (ESBMC real, harness driver feito à mão): `cdiv` com
+  precondição `1 <= b` → `VERIFICATION SUCCESSFUL` (3 VCC); `cdiv` sem essa precondição →
+  `VERIFICATION FAILED`, `division by zero at ... function cdiv` (na função real, 3 VCC). O tier
+  funciona; o problema é a LLM não produzir o harness.
+- Conclusão: **inconclusiva — método imaturo.** O tier está mecanicamente correto e não sofre do
+  EXP-01, mas o enquadramento "copie a função inteira verbatim" faz a LLM desistir em
+  praticamente todo caso de código real. Nenhum ganho atribuível. Não é motivo pra descartar: o
+  mecanismo funciona e um bug real foi achado e fechado no `driver_check.py`.
+- Falsos positivos (exemplos): nenhum novo do tier driver (ele não confirmou nada em nenhuma
+  rodada). Auditoria dos fallbacks escalares do subconjunto expôs FP **pré-existentes** do
+  escalar: `to_timestamp` "confirmou" `len(index) > 0` — propriedade fabricada, zero relação com
+  o bug real (`assert isinstance(self.index, PeriodIndex)`); `_read_body` inventou os dois lados
+  da comparação buggy/correct. Parte dos 76% do EXP-03 é confirmação não-grounded.
+- Falsos negativos (exemplos): `av_real_01` `cli_bool_option` — fallback escalar tipou
+  `param: bool`, `isinstance(param, bool)` vira sempre-verdadeiro, `safe_on_abstraction`; o bug
+  real (`params.get()` retorna não-bool) some. O tier driver pegaria se não tivesse desistido.
+- Próximo experimento recomendado (EXP-05):
+  1. **Instrumentação `driver_note` já feita nesta sessão** — rodar o V2 completo 1x para a
+     distribuição real do motivo de fallthrough nos 117 (`unsupported` vs `invalid` vs
+     `inconclusive`) antes do redesenho.
+  2. **Redesenhar para verbatim-slice**: (a) remover a saída de bloco vazio da regra 1;
+     (b) reformular para "copie o menor slice rodável em volta da expressão do bug — a linha do
+     bug mais as que alimentam seus operandos, verbatim; troque cada operando vindo de objeto /
+     container / call externa por um `nondet_*()` do tipo plausível; descarte o resto";
+     (c) `driver_check` compara só a linha do bug e as linhas que alimentam operandos contra a
+     fonte real, não o corpo inteiro.
+  3. Demoção de `assertion_violation`/`incorrect_result` no caminho driver: **manter por
+     enquanto**; só tirar depois de auditoria manual confirmando que o slice é mais grounded que
+     o escalar (mesma lógica de política do EXP-03 — não existe checagem automática que garanta
+     que o `correct` inventado pela LLM é o comportamento documentado).
+  4. Pular ablação de `__ESBMC_assume` que vem do guard allowlist (bug observado no smoke:
+     harness correto com precondição legítima do caller virou `over_restricted` falso porque a
+     ablação removeu a precondição).
+  5. **Medição da detecção** (LLM aponta função + categoria do bug sozinha vs. gabarito): é o
+     núcleo do experimento, não trabalho opcional. Pendente só de decidir *quando* rodar (custa
+     mais — escaneia toda função de todo arquivo, não só a hipótese pré-dada).
+
+---
+
 ### EXP-03 — grounding obrigatório em `assertion_violation`/`incorrect_result` (bare assert sobre input livre é falso positivo)
 
 - Data: 2026-09-04

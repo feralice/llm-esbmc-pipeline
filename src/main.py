@@ -237,6 +237,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Modo V2: não roda ablação nos vereditos SUCCESSFUL.",
     )
     parser.add_argument(
+        "--no-driver",
+        action="store_true",
+        help=(
+            "Modo V2: pula o método verbatim-driver (função real intacta + driver "
+            "sintetizado) e vai direto para a síntese escalar."
+        ),
+    )
+    parser.add_argument(
         "--synth-retries",
         type=int,
         default=1,
@@ -927,6 +935,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "compat": not args.no_compat,
         "guards": not args.no_guards,
         "ablation": not args.no_ablation,
+        "driver": not args.no_driver,
         "synth_retries": args.synth_retries,
         "bound": args.bound,
         "timeout": args.timeout,
@@ -1072,7 +1081,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         return 2
 
     layers = "".join(
-        f" +{name}" for name in ("compat", "guards", "ablation") if config[name]
+        f" +{name}" for name in ("driver", "compat", "guards", "ablation") if config[name]
     ) or " synth-only"
     candidate_origin = "conhecida(s)" if args.v2_stage == "synthesis" else "detectada(s)"
     print(
@@ -1101,6 +1110,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         use_compat=not args.no_compat,
         use_guards=not args.no_guards,
         use_ablation=not args.no_ablation,
+        use_driver=not args.no_driver,
         synth_retries=args.synth_retries,
         completed_results=completed_results,
         on_result=save_synthesis_result,
@@ -1110,10 +1120,15 @@ def mode_v2(args: argparse.Namespace) -> int:
     if args.verbose:
         for r in results:
             detail = r.error or r.esbmc_summary or ", ".join(r.compat_reasons)
-            print(f"  [{r.classification:24s}] {r.candidate.function:20s} {detail[:56]}")
+            drv = f"  [driver: {r.driver_note}]" if r.driver_note else ""
+            print(f"  [{r.classification:24s}] {r.candidate.function:20s} {detail[:56]}{drv}")
     print("\n  por classificação:")
     for k, v in sorted(summary["by_classification"].items()):
         print(f"    {k:26s} {v}")
+    if summary.get("driver_notes"):
+        print("\n  tier driver (por que aplicou ou não):")
+        for k, v in sorted(summary["driver_notes"].items()):
+            print(f"    {k:26s} {v}")
     print("\n  por categoria (confirmado / total, nativo e não-verificado entre parênteses):")
     for cat, d in sorted(summary["by_category"].items()):
         extra = []
@@ -1197,15 +1212,23 @@ def _scan_summary(results) -> dict:
     by_cat: dict = {}
     for r in results:
         cat = r.candidate.category
-        d = by_cat.setdefault(cat, {"total": 0, "confirmed": 0, "native": 0, "unverified": 0})
+        d = by_cat.setdefault(
+            cat, {"total": 0, "confirmed": 0, "native": 0, "driver": 0, "unverified": 0}
+        )
         d["total"] += 1
         if r.classification == "confirmed_native":
             d["confirmed"] += 1
             d["native"] += 1
+        elif r.classification == "confirmed_driver":
+            d["confirmed"] += 1
+            d["driver"] += 1
         elif r.classification == "confirmed_on_abstraction":
             d["confirmed"] += 1
         elif r.classification == "confirmed_unverified":
             d["unverified"] += 1
+    driver_notes = Counter(
+        (r.driver_note.split(":", 1)[0] or "n/a") for r in results if r.driver_note
+    )
     total_tokens = sum(r.synth_total_tokens or 0 for r in results)
     total_synth_seconds = sum(r.synth_seconds for r in results)
     total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
@@ -1213,6 +1236,7 @@ def _scan_summary(results) -> dict:
         "n": len(results),
         "by_classification": dict(by_class),
         "by_category": by_cat,
+        "driver_notes": dict(driver_notes),
         "total_synth_tokens": total_tokens,
         "total_synth_seconds": round(total_synth_seconds, 3),
         "total_esbmc_seconds": round(total_esbmc_seconds, 3),

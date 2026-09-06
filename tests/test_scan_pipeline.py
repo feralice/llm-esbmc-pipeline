@@ -97,6 +97,9 @@ def _candidate(tmp_path: Path, function: str = "target") -> ScanCandidate:
 
 def _run(tmp_path: Path, harness: str, candidate: ScanCandidate, **kw):
     kw.setdefault("synth_retries", 0)
+    # These exercise the scalar-synth / native / ablation / retry logic; the
+    # verbatim-driver tier has its own tests (test_scan_driver.py).
+    kw.setdefault("use_driver", False)
     return run_pipeline_scan(
         [candidate],
         synthesizer=_FakeSynthesizer(harness),
@@ -270,6 +273,7 @@ def test_retry_recovers_after_bad_harness(tmp_path, monkeypatch):
         synthesizer=synthesizer,
         output_dir=tmp_path / "out",
         synth_retries=2,
+        use_driver=False,
     )[0]
     assert result.classification == CONFIRMED_ON_ABSTRACTION
     assert result.attempts == 2
@@ -285,6 +289,7 @@ def test_retry_exhausted_keeps_last_failure_and_full_history(tmp_path, monkeypat
         synthesizer=_RetrySynthesizer(fail_times=99),
         output_dir=tmp_path / "out",
         synth_retries=2,
+        use_driver=False,
     )[0]
     assert result.classification == INVALID_HARNESS
     assert result.attempts == 3

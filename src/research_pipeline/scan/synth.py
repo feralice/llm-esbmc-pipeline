@@ -27,13 +27,19 @@ from ..llm.telemetry import response_event
 from ..models import CodeUnit, Finding
 from .guards import format_precondition_block
 
-_SYNTH_PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "synth_prompt.txt"
+_PROMPT_DIR = Path(__file__).resolve().parent.parent / "prompts"
+_SYNTH_PROMPT_PATH = _PROMPT_DIR / "synth_prompt.txt"
+_DRIVER_PROMPT_PATH = _PROMPT_DIR / "driver_prompt.txt"
 
 _FENCE = re.compile(r"```(?:python)?\s*\n(.*?)```", re.DOTALL)
 
+STYLE_SCALAR = "scalar"
+STYLE_DRIVER = "driver"
 
-def load_synth_prompt() -> str:
-    return _SYNTH_PROMPT_PATH.read_text(encoding="utf-8").strip()
+
+def load_synth_prompt(style: str = STYLE_SCALAR) -> str:
+    path = _DRIVER_PROMPT_PATH if style == STYLE_DRIVER else _SYNTH_PROMPT_PATH
+    return path.read_text(encoding="utf-8").strip()
 
 
 def _strip_fence(text: str) -> str:
@@ -58,12 +64,19 @@ def build_synth_user_prompt(
     use_guards: bool = True,
     repair_feedback: str = "",
     previous_harness: str = "",
+    style: str = STYLE_SCALAR,
 ) -> str:
     expression = str(finding.metadata.get("expression", "")) or "(not given)"
     if use_guards:
         precondition = format_precondition_block(unit.source)
     else:
         precondition = _NO_GUARDS_BLOCK
+    fixed_behaviour = str(finding.metadata.get("fixed_behaviour", "")).strip()
+    fixed_block = (
+        f"\nIntended (fixed) behaviour:\n{fixed_behaviour}\n"
+        if style == STYLE_DRIVER and fixed_behaviour
+        else ""
+    )
     repair_block = ""
     if repair_feedback:
         repair_block = (
@@ -80,7 +93,8 @@ def build_synth_user_prompt(
         f"Function name: {unit.name}\n"
         f"Parameters: {', '.join(unit.parameters) or '(none)'}\n"
         f"Type hints: {json.dumps(unit.type_hints)}\n\n"
-        f"{precondition}\n\n"
+        f"{precondition}\n"
+        f"{fixed_block}\n"
         f"Real function source:\n```python\n{unit.source}\n```\n"
         f"{repair_block}"
     )
@@ -141,20 +155,23 @@ class HarnessSynthesizer:
         use_guards: bool = True,
         repair_feedback: str = "",
         previous_harness: str = "",
+        style: str = STYLE_SCALAR,
     ) -> SynthResult:
+        system_prompt = load_synth_prompt(style)
         user_prompt = build_synth_user_prompt(
             unit,
             finding,
             use_guards=use_guards,
             repair_feedback=repair_feedback,
             previous_harness=previous_harness,
+            style=style,
         )
         payload: dict[str, Any] = {}
         if self.backend == "openai":
             payload = {
                 "model": self.model,
                 "input": [
-                    {"role": "system", "content": [{"type": "input_text", "text": load_synth_prompt()}]},
+                    {"role": "system", "content": [{"type": "input_text", "text": system_prompt}]},
                     {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
                 ],
             }
@@ -162,7 +179,7 @@ class HarnessSynthesizer:
             payload = {
                 "model": self.model,
                 "messages": [
-                    {"role": "system", "content": load_synth_prompt()},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
                 "temperature": 0,
@@ -172,7 +189,7 @@ class HarnessSynthesizer:
         started = time.monotonic()
         try:
             raw_response = (
-                self._run_codex(load_synth_prompt(), user_prompt)
+                self._run_codex(system_prompt, user_prompt)
                 if self.backend == "codex"
                 else self._post_json(payload)
             )
