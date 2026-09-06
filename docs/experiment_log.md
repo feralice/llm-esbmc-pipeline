@@ -126,6 +126,38 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   detectável (assert que só reafirma o nondet cru vs. assert que compara
   `result` contra uma segunda expressão derivada separadamente).
 
+#### Ajustes de ferramenta (2026-09-05, mesma noite)
+
+- `--bound` default subiu de 5 para 20, `--timeout` de 30s para 60s
+  (`src/main.py`). `--incremental-bmc` já cresce k sozinho (1,2,3...); o
+  teto é que estava artificialmente baixo comparado ao default do próprio
+  ESBMC (`--max-k-step`, default 50). Não muda nada do que já foi medido
+  hoje (bound 5), só afeta rodadas futuras.
+- `dataset_audit.py` corrigido: auditava `ground_truths.json` diretamente,
+  cujo campo `function`/`expression` descreve o arquivo `bugs/` (oráculo
+  interno, ex. `buggy_match`) para os casos "buggy vs correct", não o
+  arquivo `detection/` que a LLM de detecção realmente lê (`match`). Agora
+  lê `manifest_pilot.json` (mesma fonte que `main.py:_load_v2_oracle_candidates`
+  usa pra montar candidato de verdade) quando existe. Resultado:
+  `missing_target_function` caiu de 107/117 para 1/117 (falso alarme
+  resolvido — o dataset em si sempre esteve correto, só o script de
+  auditoria apontava pro arquivo errado).
+- **Pendente, não bloqueia nada**:
+  1. 47/117 (todas `assertion_violation`) ainda batem
+     `ground_truth_not_grounded_in_target` / `wrong_node_shape_for_category`.
+     Causa: `normalize_findings` (o validador de forma AST) espera um nó
+     tipo `assert`; o manifesto grava a **expressão suspeita** (ex.
+     `current_column += 1`), não um assert literal — é o mesmo motivo pelo
+     qual `assertion_violation`/`incorrect_result` já são tratadas à parte
+     em todo o resto da pipeline (sem checagem nativa, rebaixadas em
+     `confirmed_unverified`). O validador não é a ferramenta certa pra essa
+     categoria nesse contexto; não é erro no dataset.
+  2. `av_real_17` (`manifest_pilot.json`) tem `"expression": "def
+     unified_strdate"` — só o cabeçalho da função, não uma expressão
+     checável. `ground_truths.json` do mesmo id tem a expressão real
+     (`"return compat_str(upload_date)"`); falta copiar pro manifest.
+     1 item, baixa prioridade.
+
 #### Histórico — versão anterior de função inteira
 
 - Data: 2026-09-05

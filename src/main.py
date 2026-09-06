@@ -141,13 +141,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--bound",
         type=_positive_int,
-        default=5,
-        help="Bound de unwinding para o ESBMC. (padrão: 5)",
+        default=20,
+        help="Bound de unwinding para o ESBMC (teto do --max-k-step incremental). (padrão: 20)",
     )
     parser.add_argument(
         "--timeout",
         type=_positive_int,
-        default=30,
+        default=60,
         help="Timeout em segundos para cada chamada ao ESBMC. (padrão: 30)",
     )
     parser.add_argument(
