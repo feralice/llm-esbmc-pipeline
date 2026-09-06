@@ -98,13 +98,13 @@ def test_v2_semantic_category_rejects_expression_not_in_source(tmp_path: Path) -
     assert normalized.verifiable is False
 
 
-def test_v1_category_shape_restriction_remains_strict() -> None:
+def test_ast_grounding_does_not_classify_bug_category() -> None:
     source = "def sample(items: list[int], i: int) -> int:\n    return items[i]\n"
 
     assert expression_exists_in_executable_ast(
         "items[i]", source, "out_of_bounds"
     )
-    assert not expression_exists_in_executable_ast(
+    assert expression_exists_in_executable_ast(
         "items[i]", source, "division_by_zero"
     )
 
@@ -139,3 +139,38 @@ def test_v2_ground_truth_loader_supports_flat_multilabel_layout(tmp_path: Path) 
         "none_misuse",
         "invalid_precondition",
     }
+
+
+def test_v2_ground_truth_loader_prefers_harness_aliases(tmp_path: Path) -> None:
+    bugs = tmp_path / "bugs"
+    bugs.mkdir()
+    (bugs / "sample.py").write_text(
+        "def oracle_sample(value: str) -> int:\n    return len(value)\n", encoding="utf-8"
+    )
+    ground_truth = tmp_path / "ground_truths.json"
+    ground_truth.write_text(
+        """{
+  "items": [{
+    "id": "sample",
+    "file": "sample.py",
+    "function": "real_sample",
+    "expression": "value.strip()",
+    "harness_file": "sample.py",
+    "harness_function": "oracle_sample",
+    "harness_expression": "len(value)",
+    "harness_line": 2,
+    "categories": ["none_misuse"],
+    "verifiable": true,
+    "should_go_to_esbmc": true
+  }]
+}
+""",
+        encoding="utf-8",
+    )
+
+    cases = load_ground_truth_cases(ground_truth)
+
+    assert cases[0][0] == bugs / "sample.py"
+    assert cases[0][1][0]["function"] == "oracle_sample"
+    assert cases[0][1][0]["expression"] == "len(value)"
+    assert cases[0][1][0]["line"] == 2

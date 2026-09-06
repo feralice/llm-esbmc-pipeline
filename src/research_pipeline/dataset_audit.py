@@ -3,15 +3,13 @@ from __future__ import annotations
 import ast
 import json
 import re
+import warnings
 from collections import Counter
 from pathlib import Path
 
 from .ast_utils import expression_exists_as_statement
 from .evaluator import load_ground_truth_cases
-from .llm.findings import normalize_findings
-from .models import Finding
 from .preprocess import preprocess_file
-from .scan.compat import OUTCOME_CATEGORIES
 
 _LEAKY_NAME = re.compile(r"(^|_)(buggy|correct|fixed|broken|unsafe)($|_)", re.IGNORECASE)
 _LEAKY_COMMENT = re.compile(
@@ -99,7 +97,7 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
     raw = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
     raw_items = raw.get("items", []) if isinstance(raw, dict) else []
     ids = [str(item.get("id", "")) for item in raw_items]
-    files = [str(item.get("file", "")) for item in raw_items]
+    files = [str(item.get("harness_file", item.get("file", ""))) for item in raw_items]
 
     issues: list[dict] = []
     for value, count in Counter(ids).items():
@@ -133,40 +131,14 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
             if _has_leaky_comment(unit.source):
                 issues.append({**prefix, "code": "label_leak_in_comments"})
 
-            if category in OUTCOME_CATEGORIES:
-                # assertion_violation/incorrect_result manifest entries record the
-                # buggy statement itself, not an assert -- the assert is added
-                # later by the synthesized driver harness, never present in the
-                # target function. normalize_findings' assertion_violation branch
-                # only matches ast.Assert.test nodes (correct for a real LLM-
-                # reported assert in scan mode) and false-flags every such label
-                # here as ungrounded (docs/experiment_log.md, 2026-09-05).
-                if expression_exists_as_statement(expression, unit.source):
-                    accepted_labels += 1
-                else:
-                    issues.append({
-                        **prefix,
-                        "code": "ground_truth_not_grounded_in_target",
-                        "expression": expression,
-                        "reason": "expression_not_found",
-                    })
-                continue
-
-            finding = Finding(
-                id="dataset-audit", stage="audit", finding_type="suspected_bug",
-                category=category, title="", explanation="", evidence=[],
-                verifiable=True, confidence="high",
-                metadata={"expression": expression, "line": entry.get("line", 0)},
-            )
-            normalized = normalize_findings(unit, [finding])[0]
-            if normalized.verifiable:
+            if expression_exists_as_statement(expression, unit.source):
                 accepted_labels += 1
             else:
                 issues.append({
                     **prefix,
                     "code": "ground_truth_not_grounded_in_target",
                     "expression": expression,
-                    "reason": normalized.metadata.get("ast_rejection_reason", "unknown"),
+                    "reason": "expression_not_found",
                 })
 
         if _has_hidden_oracle(source):
@@ -197,7 +169,9 @@ def _has_leaky_comment(source: str) -> bool:
 
 def _has_hidden_oracle(source: str) -> bool:
     try:
-        tree = ast.parse(source)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", SyntaxWarning)
+            tree = ast.parse(source)
     except SyntaxError:
         return False
     for node in tree.body:

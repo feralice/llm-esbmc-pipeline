@@ -82,10 +82,10 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   produtor de confirmação grounded (85/117 vereditos conclusivos, contra 0/117
   do tier nativo nesse dataset — ver EXP anterior sobre `--function`). Os 5
   `confirmed_unverified` dentro do driver não são falha do harness: são
-  `assertion_violation`/`incorrect_result`, categoria que o validador de
-  grounding (EXP-03) rebaixa de propósito por não ter checagem automática
-  equivalente a um assert real do domínio. Pendência: rerodar os 15 bloqueados
-  por quota depois do reset, sem precisar reprocessar os outros 102.
+  `assertion_violation`/`incorrect_result` sem evidência diferencial
+  suficiente para tratar a propriedade violada como comportamento correto
+  independente. Pendência: rerodar os 15 bloqueados por quota depois do reset,
+  sem precisar reprocessar os outros 102.
 
 #### Atualização — retomada pós-quota (2026-09-05, 117/117 completo)
 
@@ -99,8 +99,8 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   estimado de 20:12) processou os 15 pendentes de verdade. Resultado final,
   117/117 sem nenhum bloqueio externo: confirmação **69,2%** (81/117: 66
   `confirmed_driver` + 15 `confirmed_on_abstraction`); somando os 7
-  `confirmed_unverified` (bug real achado, rebaixado por categoria por
-  design) chega a **75,2%** (88/117). Tier driver conclusivo em 95/117.
+  `confirmed_unverified` (violação achada, mas sem grounding diferencial
+  suficiente) chega a **75,2%** (88/117). Tier driver conclusivo em 95/117.
   Distribuição completa: `confirmed_driver` 66, `confirmed_on_abstraction`
   15, `confirmed_unverified` 7, `safe_driver` 18, `over_restricted` 4,
   `safe_on_abstraction` 2, `esbmc_inconclusive` 2, `invalid_harness` 2,
@@ -118,13 +118,17 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   essa é outra pergunta, respondida pelo EXP-02 (detecção do zero, ~26%
   precisão/recall). Testar o fluxo completo (LLM decide a hipótese) requer
   `--v2-stage end-to-end` (padrão do modo, sem seed), ainda não rodado hoje.
-- Próximo ajuste identificado, não implementado: validador diferencial pras
-  categorias `assertion_violation`/`incorrect_result` em `driver_check.py` —
-  hoje o rebaixamento pra `confirmed_unverified` é cego por categoria; a
-  distinção real (comparado a mão: `to_timestamp` vácuo vs. `match`
-  fundamentado num cálculo de referência independente) é sintaticamente
-  detectável (assert que só reafirma o nondet cru vs. assert que compara
-  `result` contra uma segunda expressão derivada separadamente).
+- Ajuste posterior implementado: validador diferencial pras categorias
+  `assertion_violation`/`incorrect_result`. O rebaixamento pra
+  `confirmed_unverified` deixou de ser cego por categoria: uma confirmação só
+  conta como forte quando o assert compara o resultado buggy contra uma segunda
+  expressão calculada separadamente; asserts sobre nondet cru ou constantes
+  continuam não-verificados.
+- Ajuste metodológico posterior: AST deixou de ser tratada como classificador
+  de categoria. O papel atual da AST é grounding: verificar que a expressão
+  retornada pela LLM/dataset existe como sintaxe executável no código alvo. A
+  hipótese semântica continua vindo da LLM/dataset e a confirmação continua
+  vindo do ESBMC.
 
 #### Ajustes de ferramenta (2026-09-05, mesma noite)
 
@@ -134,29 +138,22 @@ documentação ao rejeitar uma hipótese, só a mudança experimental do ciclo.
   ESBMC (`--max-k-step`, default 50). Não muda nada do que já foi medido
   hoje (bound 5), só afeta rodadas futuras.
 - `dataset_audit.py` corrigido: auditava `ground_truths.json` diretamente,
-  cujo campo `function`/`expression` descreve o arquivo `bugs/` (oráculo
+  cujo campo `function`/`expression` descrevia o arquivo `bugs/` (oráculo
   interno, ex. `buggy_match`) para os casos "buggy vs correct", não o
   arquivo `detection/` que a LLM de detecção realmente lê (`match`). Agora
-  lê `manifest_pilot.json` (mesma fonte que `main.py:_load_v2_oracle_candidates`
+  lê `manifest.json` (mesma fonte que `main.py:_load_v2_oracle_candidates`
   usa pra montar candidato de verdade) quando existe. Resultado:
   `missing_target_function` caiu de 107/117 para 1/117 (falso alarme
   resolvido — o dataset em si sempre esteve correto, só o script de
   auditoria apontava pro arquivo errado).
-- **Pendente, não bloqueia nada**:
-  1. 47/117 (todas `assertion_violation`) ainda batem
-     `ground_truth_not_grounded_in_target` / `wrong_node_shape_for_category`.
-     Causa: `normalize_findings` (o validador de forma AST) espera um nó
-     tipo `assert`; o manifesto grava a **expressão suspeita** (ex.
-     `current_column += 1`), não um assert literal — é o mesmo motivo pelo
-     qual `assertion_violation`/`incorrect_result` já são tratadas à parte
-     em todo o resto da pipeline (sem checagem nativa, rebaixadas em
-     `confirmed_unverified`). O validador não é a ferramenta certa pra essa
-     categoria nesse contexto; não é erro no dataset.
-  2. `av_real_17` (`manifest_pilot.json`) tem `"expression": "def
-     unified_strdate"` — só o cabeçalho da função, não uma expressão
-     checável. `ground_truths.json` do mesmo id tem a expressão real
-     (`"return compat_str(upload_date)"`); falta copiar pro manifest.
-     1 item, baixa prioridade.
+- Ajuste posterior: `av_real_05`, `av_real_08` e `av_real_21` tiveram
+  expressões do `manifest.json` corrigidas para statements reais do arquivo
+  `detection/`. Em seguida, os demais avisos do auditor foram revisados e as
+  expressões incompletas/parciais do dataset foram normalizadas para nós AST
+  reais; o audit caiu para **116/117 grounded**, sobrando só `ir_real_02`
+  (`module-level constants`), que não é função. O helper de AST também passou
+  a dedentar métodos pelo indent da primeira linha de código, necessário para
+  `tqdm.__init__` com docstring longa.
 
 #### Histórico — versão anterior de função inteira
 

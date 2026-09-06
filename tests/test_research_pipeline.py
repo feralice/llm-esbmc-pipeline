@@ -82,27 +82,23 @@ def test_summarize_direct_no_warning_when_vccs_generated():
 def test_pipeline_generates_mixed_results(tmp_path: Path) -> None:
     sample = tmp_path / "sample.py"
     sample.write_text(
-        "\n".join(
-            [
-                "def avg(values, n):",
-                "    total = 0",
-                "    for i in range(n):",
-                "        total += values[i]",
-                "    return total / n",
-                "",
-                "def long_method(a, b, c, d, e, f):",
-                "    x = a + b",
-                "    if x > 0:",
-                "        x += c",
-                "    if x > 1:",
-                "        x += d",
-                "    if x > 2:",
-                "        x += e",
-                "    if x > 3:",
-                "        x += f",
-                "    return x",
-            ]
-        ),
+        """def avg(values, n):
+    total = 0
+    for i in range(n):
+        total += values[i]
+    return total / n
+
+def long_method(a, b, c, d, e, f):
+    x = a + b
+    if x > 0:
+        x += c
+    if x > 1:
+        x += d
+    if x > 2:
+        x += e
+    if x > 3:
+        x += f
+    return x""",
         encoding="utf-8",
     )
 
@@ -126,18 +122,14 @@ def test_pipeline_generates_mixed_results(tmp_path: Path) -> None:
 def test_preprocess_ignores_test_functions_and_annotations(tmp_path: Path) -> None:
     sample = tmp_path / "sample_annotations.py"
     sample.write_text(
-        "\n".join(
-            [
-                "from typing import List",
-                "",
-                "def target(xs: List[int], i: int):",
-                "    return xs[i]",
-                "",
-                "def test_target():",
-                "    data: List[int] = [1, 2, 3]",
-                "    return data[0]",
-            ]
-        ),
+        """from typing import List
+
+def target(xs: List[int], i: int):
+    return xs[i]
+
+def test_target():
+    data: List[int] = [1, 2, 3]
+    return data[0]""",
         encoding="utf-8",
     )
 
@@ -574,10 +566,10 @@ def test_expression_not_in_string_literal(tmp_path: Path) -> None:
     assert expression_exists_in_executable_ast("lst[i]", source, "out_of_bounds") is False
 
 
-def test_expression_exists_in_executable_ast_wrong_category(tmp_path: Path) -> None:
-    """A Subscript match must not count for division_by_zero (item #26: no generic node match)."""
+def test_expression_exists_in_executable_ast_ignores_category(tmp_path: Path) -> None:
+    """AST grounding only checks that the LLM expression exists in source."""
     source = "def f(lst, i):\n    return lst[i]\n"
-    assert expression_exists_in_executable_ast("lst[i]", source, "division_by_zero") is False
+    assert expression_exists_in_executable_ast("lst[i]", source, "division_by_zero") is True
 
 
 def test_expression_exists_in_executable_ast_assertion(tmp_path: Path) -> None:
@@ -585,10 +577,10 @@ def test_expression_exists_in_executable_ast_assertion(tmp_path: Path) -> None:
     assert expression_exists_in_executable_ast("x > 0", source, "assertion_violation") is True
 
 
-def test_expression_exists_in_executable_ast_assertion_not_whole_statement(tmp_path: Path) -> None:
-    """Matching must compare node.test, not the full `assert ...` statement text."""
+def test_expression_exists_in_executable_ast_assertion_whole_statement(tmp_path: Path) -> None:
+    """Assertion grounding accepts either the asserted condition or statement."""
     source = "def f(x):\n    assert x > 0\n"
-    assert expression_exists_in_executable_ast("assert x > 0", source, "assertion_violation") is False
+    assert expression_exists_in_executable_ast("assert x > 0", source, "assertion_violation") is True
 
 
 def test_expression_exists_in_executable_ast_line_grounding(tmp_path: Path) -> None:
@@ -669,8 +661,8 @@ def test_assertion_violation_wrong_expression_is_false_positive(tmp_path: Path) 
     assert normalized[0].verifiable is False
 
 
-def test_assertion_violation_no_real_assert_is_false_positive(tmp_path: Path) -> None:
-    """The expression text matches a comment/if, but no real assert exists (item #26)."""
+def test_assertion_violation_expression_in_if_is_source_grounded(tmp_path: Path) -> None:
+    """AST grounding requires executable evidence, not an `assert` node."""
     sample = tmp_path / "assertion.py"
     sample.write_text(
         "def f(x: int) -> bool:\n"
@@ -685,9 +677,8 @@ def test_assertion_violation_no_real_assert_is_false_positive(tmp_path: Path) ->
     finding = _make_finding("assertion_violation", "x > 0")
     normalized = normalize_findings(unit, [finding])
 
-    assert normalized[0].finding_type == "llm_false_positive", (
-        "nao ha assert de verdade no arquivo, so texto parecido em comentario/if"
-    )
+    assert normalized[0].finding_type == "suspected_bug"
+    assert normalized[0].verifiable is True
 
 
 def test_finding_from_dict_preserves_line_metadata_as_int() -> None:

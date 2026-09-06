@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import ast
 import json
-import textwrap
 
 from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
 from ..models import CodeUnit, Finding
@@ -31,7 +30,7 @@ def coerce_findings_payload(payload: dict) -> list[dict]:
     """Return payload["findings"] or fail if the LLM used the wrong shape."""
     findings = payload.get("findings")
     if not isinstance(findings, list):
-        raise RuntimeError("JSON da LLM nao contem a chave 'findings' no formato esperado.")
+        raise TypeError("JSON da LLM nao contem a chave 'findings' no formato esperado.")
     return findings
 
 
@@ -143,7 +142,7 @@ def _unique_finding_id(preferred_id: str, fallback_id: str, used_ids: set[str]) 
 
 
 def _out_of_scope_finding(finding: Finding, finding_id: str) -> Finding:
-    """Mark a supported-shape finding whose category is outside benchmark scope."""
+    """Mark a finding whose category is outside benchmark scope."""
     metadata = dict(finding.metadata)
     metadata["original_category"] = finding.category
     metadata["has_guard"] = "false"
@@ -167,11 +166,7 @@ def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: s
     finding_type = finding.finding_type
     verifiable = finding.verifiable
 
-    # assertion_violation is checked by matching assert-like source syntax.
-    if verifiable and finding.category == "assertion_violation":
-        finding_type, verifiable = _normalize_assertion_violation(unit, metadata)
-    # division_by_zero and out_of_bounds are checked against operations from preprocessing.
-    elif verifiable:
+    if verifiable:
         finding_type, verifiable = _normalize_operation_finding(unit, finding.category, metadata)
 
     return Finding(
@@ -188,25 +183,18 @@ def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: s
     )
 
 
-def _normalize_assertion_violation(unit: CodeUnit, metadata: dict[str, object]) -> tuple[str, bool]:
-    """Accept assertion_violation only when the reported assert exists in source."""
-    metadata["has_guard"] = "false"
-    if _assertion_violation_matches_source(unit, str(metadata.get("expression", ""))):
-        return "suspected_bug", True
-    _record_ast_rejection(unit, "assertion_violation", metadata)
-    return "llm_false_positive", False
-
-
 def _normalize_operation_finding(
     unit: CodeUnit,
     category: str,
     metadata: dict[str, object],
 ) -> tuple[str, bool]:
-    """Normalize verifiable operation-based bug claims.
+    """Normalize verifiable bug claims.
 
-    This handles operation-shaped V1 bugs and source-grounded V2 semantic bugs.
-    The goal is structural validation: does the LLM's expression correspond to
-    executable code? ESBMC, not this check, decides whether it is a real bug.
+    Division and subscript categories first try the preprocessed operation
+    index to recover line/guard metadata. If that fast path misses, all
+    categories use the same source-AST grounding rule: the LLM's expression
+    must occur as executable code. ESBMC, not this check, decides whether it is
+    a real bug.
     """
     expected_operation_kind = VERIFIABLE_OPERATION_KIND.get(category)
     if expected_operation_kind is None:
@@ -252,7 +240,7 @@ def _normalize_source_grounded_finding(
     category: str,
     metadata: dict[str, object],
 ) -> tuple[str, bool]:
-    """Ground a semantic V2 category in an exact executable AST fragment."""
+    """Ground an LLM category in an exact executable AST fragment."""
     expression = str(metadata.get("expression", "")).strip()
     expected_relative_line = _metadata_int(metadata.get("relative_line"))
     metadata["has_guard"] = "false"
@@ -323,52 +311,6 @@ def _bounds_guard_covers_expression(unit: CodeUnit, expression: str) -> bool:
         return False
     index = expression[start + 1 : end].strip()
     return bool(index and any(index in guard for guard in unit.guards))
-
-
-def _assertion_violation_matches_source(unit: CodeUnit, expression: str) -> bool:
-    """Return True when an assertion expression is present in the function."""
-    expression = expression.strip()
-    if not expression:
-        # Model identified the category but didn't provide the expression.
-        # Accept if the function contains any assert at all.
-        return bool(_assertion_tests(unit.source))
-
-    expected = _parse_assertion_expression(expression)
-    if expected is None:
-        return False
-
-    expected_dump = ast.dump(expected)
-    return any(ast.dump(actual) == expected_dump for actual in _assertion_tests(unit.source))
-
-
-def _parse_assertion_expression(expression: str) -> ast.AST | None:
-    """Parse either `assert condition` or bare `condition` into an AST node."""
-    try:
-        module = ast.parse(expression)
-    except SyntaxError:
-        try:
-            return ast.parse(expression, mode="eval").body
-        except SyntaxError:
-            return None
-
-    if len(module.body) != 1:
-        return None
-
-    statement = module.body[0]
-    if isinstance(statement, ast.Assert):
-        return statement.test
-    if isinstance(statement, ast.Expr):
-        return statement.value
-    return None
-
-
-def _assertion_tests(source: str) -> list[ast.AST]:
-    """Extract assert test expressions from source."""
-    try:
-        tree = ast.parse(textwrap.dedent(source))
-    except SyntaxError:
-        return []
-    return [node.test for node in ast.walk(tree) if isinstance(node, ast.Assert)]
 
 
 def _denominator_is_nonzero_constant(category: str, expression: str) -> bool:

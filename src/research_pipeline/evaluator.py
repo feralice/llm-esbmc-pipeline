@@ -204,13 +204,20 @@ def _source_path_for_item(source_root: Path, category: str, item: dict) -> Path:
 
 
 
-def _expected_from_dataset_item(item: dict) -> dict:
+def _expected_from_dataset_item(item: dict, *, use_harness_aliases: bool = False) -> dict:
+    function = item.get("function", "")
+    expression = item.get("expression", "")
+    line = item.get("line")
+    if use_harness_aliases:
+        function = item.get("harness_function", function)
+        expression = item.get("harness_expression", expression)
+        line = item.get("harness_line", line)
     return {
-        "function": item.get("function", ""),
+        "function": function,
         "category": item.get("expected_category", item.get("category", "")),
         "verifiable": bool(item.get("verifiable", False)),
-        "expression": item.get("expression", ""),
-        "line": item.get("line"),
+        "expression": expression,
+        "line": line,
         "id": item.get("id", ""),
         "expected_type": item.get("expected_type", ""),
         "should_go_to_esbmc": bool(item.get("should_go_to_esbmc", False)),
@@ -231,15 +238,18 @@ def _load_flat_multilabel_cases(payload: dict, source_root: Path) -> list[tuple[
     """Load V2 items, expanding each category tag into one expected finding."""
     grouped: dict[Path, list[dict]] = {}
     for item in payload.get("items", []):
-        if not isinstance(item, dict) or not item.get("file"):
+        if not isinstance(item, dict):
+            continue
+        filename = item.get("harness_file", item.get("file"))
+        if not filename:
             continue
         categories = item.get("categories", [])
         if not isinstance(categories, list) or not categories:
             continue
-        source = source_root / str(item["file"])
+        source = source_root / str(filename)
         expected = grouped.setdefault(source, [])
         for category in categories:
-            entry = _expected_from_dataset_item(item)
+            entry = _expected_from_dataset_item(item, use_harness_aliases=True)
             entry["category"] = str(category)
             expected.append(entry)
     return sorted(grouped.items(), key=lambda case: str(case[0]))

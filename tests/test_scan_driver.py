@@ -7,7 +7,6 @@ import pytest
 from research_pipeline.scan import pipeline as scan_pipeline
 from research_pipeline.scan.driver_check import (
     VERDICT_INVALID,
-    VERDICT_OK,
     VERDICT_UNSUPPORTED,
     check_driver_harness,
 )
@@ -36,6 +35,24 @@ _SLICE_HARNESS = (
     "    __ESBMC_assume(b <= 1024)\n"
     "    result = slice_model(a, b)\n"
     "    assert result * b >= a\n"
+    "main()\n"
+)
+
+_DIFFERENTIAL_SLICE_HARNESS = (
+    "def slice_model(a: int, b: int) -> int:\n"
+    "    return -(a // -b)\n"
+    "def expected_model(a: int, b: int) -> int:\n"
+    "    return (a + b - 1) // b\n"
+    "def main() -> None:\n"
+    "    a = nondet_int()\n"
+    "    b = nondet_int()\n"
+    "    __ESBMC_assume(0 <= a)\n"
+    "    __ESBMC_assume(a <= 1024)\n"
+    "    __ESBMC_assume(1 <= b)\n"
+    "    __ESBMC_assume(b <= 1024)\n"
+    "    result = slice_model(a, b)\n"
+    "    expected = expected_model(a, b)\n"
+    "    assert result == expected\n"
     "main()\n"
 )
 
@@ -232,6 +249,17 @@ def test_driver_violation_confirms(tmp_path, monkeypatch):
 def test_driver_violation_in_outcome_category_is_demoted(tmp_path, monkeypatch):
     result, _ = _run(tmp_path, monkeypatch, lambda *a, **k: _esbmc("violation_found"))
     assert result.classification == CONFIRMED_UNVERIFIED
+
+
+def test_differential_driver_violation_in_outcome_category_confirms(tmp_path, monkeypatch):
+    result, _ = _run(
+        tmp_path,
+        monkeypatch,
+        lambda *a, **k: _esbmc("violation_found"),
+        harness=_DIFFERENTIAL_SLICE_HARNESS,
+    )
+    assert result.classification == CONFIRMED_DRIVER
+    assert result.compat_reasons == []
 
 
 def test_driver_no_violation_is_safe(tmp_path, monkeypatch):

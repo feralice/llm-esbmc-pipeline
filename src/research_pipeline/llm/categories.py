@@ -22,10 +22,12 @@ VERIFIABLE_OPERATION_KIND: dict[str, str] = {
     "out_of_bounds": "subscript",
 }
 
-# These V2 categories describe semantic misuse rather than one unique AST node
-# shape. They still require an exact source-AST match before reaching ESBMC.
+# These V2 categories are grounded by exact source-AST evidence before reaching
+# ESBMC. The AST check does not classify the bug; it only verifies that the
+# LLM-reported expression exists in executable source.
 SOURCE_GROUNDED_CATEGORIES: frozenset[str] = frozenset(
     {
+        "assertion_violation",
         "none_misuse",
         "type_mismatch",
         "invalid_precondition",

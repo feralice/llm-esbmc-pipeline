@@ -9,7 +9,7 @@
       "categories": [
         "division_by_zero"
       ],
-      "expression": "distance = (xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+      "expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
       "provenance": {
         "project": "matplotlib",
         "bugsinpy_id": 30,
@@ -120,7 +120,7 @@
       "categories": [
         "out_of_bounds"
       ],
-      "expression": "command.script.split()[1] == 'stash'",
+      "expression": "command.script.split()[1]",
       "provenance": {
         "project": "thefuck",
         "bugsinpy_id": 21,
@@ -364,7 +364,7 @@
       "categories": [
         "assertion_violation"
       ],
-      "expression": "conf = dict(self)\n        conf.update(kwargs)",
+      "expression": "conf.update(kwargs)",
       "provenance": {
         "project": "thefuck",
         "bugsinpy_id": 29,
@@ -476,7 +476,7 @@
       "categories": [
         "type_mismatch"
       ],
-      "expression": "'': lambda v: v is not None,",
+      "expression": "UNARY_OPERATORS = {'': lambda v: v is not None, '!': lambda v: v is None}",
       "provenance": {
         "project": "youtube-dl",
         "bugsinpy_id": 1,
@@ -617,7 +617,7 @@
         "type_mismatch",
         "none_misuse"
       ],
-      "expression": "headerrow=None, datarow=DataRow('', separator, '')",
+      "expression": "TableFormat(None, None, None, None, headerrow=None, datarow=DataRow('', separator, ''), padding=0, with_header_hide=None)",
       "provenance": {
         "project": "python-tabulate",
         "commit_hash": "41a6db29b666f0c0eedec40efb5bc3af4f411a56",
@@ -698,7 +698,7 @@
       "categories": [
         "variable_misuse"
       ],
-      "expression": "l_bar = (prefix if prefix else '') + \\",
+      "expression": "l_bar = (prefix if prefix else '') + '{0:3.0f}%|'.format(percentage)",
       "provenance": {
         "project": "tqdm",
         "bugsinpy_id": 8,
@@ -727,7 +727,7 @@
       "categories": [
         "variable_misuse"
       ],
-      "expression": "elif type(skey) is not Optional:",
+      "expression": "type(skey) is not Optional",
       "provenance": {
         "project": "schema",
         "repo_url": "https://github.com/keleshev/schema",
@@ -836,7 +836,7 @@
       "categories": [
         "none_misuse"
       ],
-      "expression": "if len(video_title) > 80 + 3:",
+      "expression": "len(video_title) > 80 + 3",
       "provenance": {
         "project": "youtube-dl",
         "bugsinpy_id": 39,
@@ -944,7 +944,7 @@
       "categories": [
         "none_misuse"
       ],
-      "expression": "if isinstance(args, dict):",
+      "expression": "isinstance(args, dict)",
       "provenance": {
         "project": "tornado",
         "bugsinpy_id": 9,
@@ -971,7 +971,7 @@
       "categories": [
         "none_misuse"
       ],
-      "expression": "if \"//\" in self.app.config.SERVER_NAME:",
+      "expression": "\"//\" in self.app.config.SERVER_NAME",
       "provenance": {
         "project": "sanic",
         "bugsinpy_id": 4,
@@ -998,7 +998,7 @@
       "categories": [
         "none_misuse"
       ],
-      "expression": "return self.total if self.iterable is None else",
+      "expression": "self.total if self.iterable is None else self.iterable.shape[0] if hasattr(self.iterable, \"shape\") else len(self.iterable) if hasattr(self.iterable, \"__len__\") else self.total",
       "provenance": {
         "project": "tqdm",
         "bugsinpy_id": 6,
@@ -1053,7 +1053,7 @@
       "categories": [
         "none_misuse"
       ],
-      "expression": "while len(self) >= self.limit:",
+      "expression": "len(self) >= self.limit",
       "provenance": {
         "project": "scrapy",
         "bugsinpy_id": 2,
@@ -1393,7 +1393,7 @@
       "categories": [
         "assertion_violation"
       ],
-      "expression": "if disable:\n            self.iterable = iterable",
+      "expression": "self.iterable = iterable",
       "provenance": {
         "project": "tqdm",
         "bugsinpy_id": 5,
@@ -1641,7 +1641,7 @@
       "categories": [
         "assertion_violation"
       ],
-      "expression": "for f in ('_type', 'url', 'ie_key')",
+      "expression": "del force_properties[f]",
       "provenance": {
         "project": "youtube-dl",
         "bugsinpy_id": "18",
@@ -1845,12 +1845,12 @@
       "id": "oob_real_16",
       "detection_file": "detection/oob_real_16.py",
       "harness_file": "bugs/oob_real_16.py",
-      "function": "IndexedSet._get_real_index / __getitem__",
+      "function": "IndexedSet.__getitem__",
       "categories": [
         "out_of_bounds",
         "invalid_precondition"
       ],
-      "expression": "if index < 0:\n            index += len(self)",
+      "expression": "self.item_list[real_index]",
       "provenance": {
         "project": "boltons",
         "repo_url": "https://github.com/mahmoud/boltons",
@@ -2039,7 +2039,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "if text is not None",
+      "expression": "text is not None",
       "provenance": {
         "project": "scrapy",
         "bugsinpy_id": 12,
@@ -2179,7 +2179,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "find_route_by_view_name",
+      "expression": "self.router.find_route_by_view_name(view_name, **kw)",
       "provenance": {
         "project": "sanic",
         "bugsinpy_id": 3,
@@ -2235,7 +2235,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "SPIDER_MANAGER_CLASS",
+      "expression": "settings.get('SPIDER_MANAGER_CLASS')",
       "provenance": {
         "project": "scrapy",
         "bugsinpy_id": 35,
@@ -2319,7 +2319,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "start >= size) or end == 0",
+      "expression": "(start is not None and start >= size) or end == 0",
       "provenance": {
         "project": "tornado",
         "bugsinpy_id": 4,
@@ -2429,7 +2429,7 @@
         "invalid_precondition",
         "none_misuse"
       ],
-      "expression": "RESPONSES.get",
+      "expression": "http.RESPONSES.get(int(status))",
       "provenance": {
         "project": "scrapy",
         "bugsinpy_id": "17",
@@ -2455,7 +2455,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "__getitem__",
+      "expression": "self.to_tuple()[index]",
       "provenance": {
         "project": "python-semver",
         "repo_url": "https://github.com/python-semver/python-semver",
@@ -2482,7 +2482,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "sub_moved_events",
+      "expression": "src_dir_path + full_path[len(dest_dir_path):] if src_dir_path else \"\"",
       "provenance": {
         "project": "watchdog",
         "repo_url": "https://github.com/gorakhargosh/watchdog",
@@ -2505,11 +2505,11 @@
       "id": "ip_real_21",
       "detection_file": "detection/ip_real_21.py",
       "harness_file": "bugs/ip_real_21.py",
-      "function": "SortedDict.__eq__ / __ne__",
+      "function": "SortedDict.__eq__",
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "__eq__",
+      "expression": "len(self._dict) == len(that) and all((key in that and self[key] == that[key] for key in self))",
       "provenance": {
         "project": "sortedcontainers",
         "repo_url": "https://github.com/grantjenks/python-sortedcontainers",
@@ -2563,7 +2563,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "to_str_params",
+      "expression": "params[param_name].significant",
       "provenance": {
         "project": "luigi",
         "bugsinpy_id": 20,
@@ -2615,7 +2615,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "add_task",
+      "expression": "worker is not None",
       "provenance": {
         "project": "luigi",
         "bugsinpy_id": 7,
@@ -2721,7 +2721,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "SHFileOperation",
+      "expression": "SHFileOperationW(byref(fileop))",
       "provenance": {
         "project": "send2trash",
         "repo_url": "https://github.com/arsenetar/send2trash",
@@ -2801,7 +2801,7 @@
       "categories": [
         "incorrect_result"
       ],
-      "expression": "if pattern_len != 7:",
+      "expression": "pattern_len != 7",
       "provenance": {
         "project": "esbmc",
         "repo_url": "https://github.com/esbmc/esbmc",
@@ -2855,7 +2855,7 @@
       "categories": [
         "none_misuse"
       ],
-      "expression": "if tag in html_classes_from_tag:",
+      "expression": "tag in html_classes_from_tag",
       "provenance": {
         "project": "python-markdown2",
         "repo_url": "https://github.com/trentm/python-markdown2",

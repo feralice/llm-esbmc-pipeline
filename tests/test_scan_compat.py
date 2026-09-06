@@ -6,6 +6,7 @@ from research_pipeline.scan.compat import (
     VERDICT_OK,
     VERDICT_UNSUPPORTED,
     check_harness,
+    check_outcome_grounding,
     undefined_names,
 )
 
@@ -319,6 +320,43 @@ def test_unconstrained_outcome_assertion_rejects_hardcoded_comparison():
     r = check_harness(src, category="assertion_violation")
     assert not r.ok
     assert "hardcoded constant" in r.reasons[0]
+
+
+def test_outcome_grounding_accepts_separately_computed_expected_value():
+    src = (
+        "def f() -> None:\n"
+        "    value: int = nondet_int()\n"
+        "    result: int = value + 1\n"
+        "    expected: int = value - 1\n"
+        f"    assert result == expected, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    assert check_outcome_grounding(src).ok
+
+
+def test_outcome_grounding_rejects_raw_nondet_expected_value():
+    src = (
+        "def f() -> None:\n"
+        "    result: bool = nondet_bool()\n"
+        "    expected: bool = nondet_bool()\n"
+        f"    assert result == expected, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    r = check_outcome_grounding(src)
+    assert not r.ok
+    assert "differential assertion" in r.reasons[0]
+
+
+def test_outcome_grounding_rejects_expected_value_derived_from_result():
+    src = (
+        "def f() -> None:\n"
+        "    value: int = nondet_int()\n"
+        "    result: int = value + 1\n"
+        "    expected: int = result + 1\n"
+        f"    assert result == expected, {EXPECTED_PROPERTY_MARKER!r}\n"
+        "f()\n"
+    )
+    assert not check_outcome_grounding(src).ok
 
 
 def test_unconstrained_outcome_check_does_not_apply_to_precondition_categories():

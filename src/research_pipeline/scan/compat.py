@@ -29,6 +29,7 @@ import ast
 import builtins
 import re
 from dataclasses import dataclass, field
+from itertools import pairwise
 
 # Bare intrinsics a valid harness uses without importing them. Names taken from
 # src/python-frontend/models/esbmc.py and function_call/builder.h (the intrinsic
@@ -77,12 +78,12 @@ _BAD_NONDET = re.compile(
 # correctly assert a bare boolean over unconstrained input by design -- that IS
 # the bug (an unchecked precondition lets a bad value through).
 #
-# Public: the scan pipeline also uses this set to flag a CONFIRMED verdict in
-# these categories as needing manual review, since an LLM can satisfy this
-# module's structural check (any assume, any comparison) without the harness
-# being semantically grounded (EXP-03, docs/experiment_log.md, 2026-09-04:
-# `assert matched == expected` with `expected: bool = True` passes the
-# structural check but is exactly as vacuous as the bare assert it replaced).
+# Public: the scan pipeline also uses this set to require differential grounding
+# before counting a solver failure as a strong confirmation. An LLM can satisfy
+# this module's basic structural check (any assume, any comparison) without the
+# harness being semantically grounded (EXP-03, docs/experiment_log.md,
+# 2026-09-04: `assert matched == expected` with `expected: bool = True` passes a
+# naive comparison check but is exactly as vacuous as the bare assert it replaced).
 OUTCOME_CATEGORIES = frozenset({"incorrect_result", "assertion_violation"})
 
 VERDICT_OK = "ok"
@@ -97,6 +98,14 @@ class CompatResult:
 
     ok: bool
     verdict: str            # VERDICT_OK | VERDICT_INVALID | VERDICT_UNSUPPORTED
+    reasons: list[str] = field(default_factory=list)
+
+
+@dataclass
+class OutcomeGroundingResult:
+    """Whether an outcome-category assertion has an independent oracle side."""
+
+    ok: bool
     reasons: list[str] = field(default_factory=list)
 
 
@@ -404,6 +413,123 @@ def _direct_constant_names(tree: ast.Module) -> set[str]:
 def _is_hardcoded_side(expr: ast.expr, constant_names: set[str]) -> bool:
     return isinstance(expr, ast.Constant) or (
         isinstance(expr, ast.Name) and expr.id in constant_names
+    )
+
+
+def _is_nondet_call(expr: ast.expr) -> bool:
+    return isinstance(expr, ast.Call) and isinstance(expr.func, ast.Name) and expr.func.id in _VALID_NONDET
+
+
+def _expr_type(expr: ast.expr, origins: dict[str, str]) -> str:
+    if isinstance(expr, ast.Constant):
+        return "constant"
+    if isinstance(expr, ast.Name):
+        return origins.get(expr.id, "raw")
+    if _is_nondet_call(expr):
+        return "nondet"
+    if isinstance(expr, ast.Call):
+        return "call"
+    if isinstance(expr, ast.Compare):
+        return "computed"
+    if isinstance(expr, (ast.BinOp, ast.BoolOp, ast.UnaryOp, ast.IfExp, ast.Subscript, ast.Attribute)):
+        return "computed"
+    names = [n.id for n in ast.walk(expr) if isinstance(n, ast.Name)]
+    if any(origins.get(name) in {"computed", "call"} for name in names):
+        return "computed"
+    if any(origins.get(name) == "nondet" for name in names):
+        return "raw"
+    return "computed"
+
+
+def _expr_names(expr: ast.expr) -> set[str]:
+    return {node.id for node in ast.walk(expr) if isinstance(node, ast.Name)}
+
+
+def _assigned_origins(tree: ast.Module) -> tuple[dict[str, str], dict[str, set[str]]]:
+    """Best-effort name origin for grounding outcome assertions."""
+    origins: dict[str, str] = {}
+    deps: dict[str, set[str]] = {}
+    for _ in range(2):
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                targets, value = node.targets, node.value
+            elif isinstance(node, ast.AnnAssign) and node.value is not None:
+                targets, value = [node.target], node.value
+            else:
+                continue
+            origin = _expr_type(value, origins)
+            value_deps = set(_expr_names(value))
+            for name in list(value_deps):
+                value_deps.update(deps.get(name, set()))
+            for target in targets:
+                if isinstance(target, ast.Name):
+                    origins[target.id] = origin
+                    deps[target.id] = value_deps - {target.id}
+    return origins, deps
+
+
+def _comparison_pairs(compare: ast.Compare) -> list[tuple[ast.expr, ast.expr]]:
+    sides = [compare.left, *compare.comparators]
+    return list(pairwise(sides))
+
+
+def _expr_deps(expr: ast.expr, deps: dict[str, set[str]]) -> set[str]:
+    names = _expr_names(expr)
+    out = set(names)
+    for name in names:
+        out.update(deps.get(name, set()))
+    return out
+
+
+def _has_differential_comparison(
+    assertion: ast.Assert, origins: dict[str, str], deps: dict[str, set[str]]
+) -> bool:
+    for compare in [n for n in ast.walk(assertion.test) if isinstance(n, ast.Compare)]:
+        if not any(isinstance(op, (ast.Eq, ast.NotEq)) for op in compare.ops):
+            continue
+        for left, right in _comparison_pairs(compare):
+            left_type = _expr_type(left, origins)
+            right_type = _expr_type(right, origins)
+            if {left_type, right_type} <= {"constant", "nondet", "raw"}:
+                continue
+            if left_type in {"constant", "nondet"} or right_type in {"constant", "nondet"}:
+                continue
+            if ast.dump(left) == ast.dump(right):
+                continue
+            left_names = _expr_names(left)
+            right_names = _expr_names(right)
+            if left_names & _expr_deps(right, deps) or right_names & _expr_deps(left, deps):
+                continue
+            if "call" in {left_type, right_type} or "computed" in {left_type, right_type}:
+                return True
+    return False
+
+
+def check_outcome_grounding(source: str) -> OutcomeGroundingResult:
+    """Accept only outcome assertions with a separately computed comparison.
+
+    `assertion_violation` and `incorrect_result` are about wrong behavior for a
+    valid input. A solver failure is strong evidence only when the harness
+    compares the buggy result with a second computation, such as a fixed/oracle
+    expression. Bare booleans, constants and raw nondet values are kept as
+    `confirmed_unverified`.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        return OutcomeGroundingResult(False, [f"does not parse: {exc.msg}"])
+    origins, deps = _assigned_origins(tree)
+    assertions = [node for node in ast.walk(tree) if isinstance(node, ast.Assert)]
+    if any(_has_differential_comparison(assertion, origins, deps) for assertion in assertions):
+        return OutcomeGroundingResult(True, [])
+    return OutcomeGroundingResult(
+        False,
+        [
+            (
+                "outcome-category confirmation has no differential assertion "
+                "(compare the buggy result with a separately computed expected value)"
+            )
+        ],
     )
 
 

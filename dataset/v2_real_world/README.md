@@ -15,7 +15,10 @@ category layout forces a single primary label per file:
 - `bugs/` — every confirmed item's `.py` harness in one flat folder (106 files, no subfolders)
 - `ground_truths.json` — one file for all items, with a `provenance` block per item linking back to
   the real project/commit, `abstraction_notes`, and a `categories` field (a **list**, not a single
-  string) — most items have one category, a small number genuinely have two (see Method below)
+  string) — most items have one category, a small number genuinely have two (see Method below).
+  The primary `function`/`expression` fields describe the neutral `detection/` source. The
+  ESBMC-oracle harness target is stored separately as `harness_file`, `harness_function`,
+  `harness_expression`, and `harness_line`.
 
 The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; anything that read
 `expected_category` as a single string should read `categories[0]` for the primary label or check

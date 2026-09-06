@@ -57,7 +57,7 @@ registrar o motivo ajuda a justificar o recorte metodológico posteriormente.
 
 | Data | Item/pergunta | Decisão | Motivo | Ação | Prazo |
 |---|---|---|---|---|---|
-| 2026-08-23 | Objetivo do V2 | Medir detecção e confirmação formal de forma encadeada | O modelo de linguagem propõe o candidato; AST e ESBMC o confirmam, rejeitam ou classificam como inconclusivo | Separar métricas por etapa e também avaliar o resultado fim a fim | A definir |
+| 2026-08-23 | Objetivo do V2 | Medir detecção e confirmação formal de forma encadeada | O modelo de linguagem propõe o candidato; AST ancora a evidência no código; ESBMC confirma, rejeita ou deixa inconclusivo | Separar métricas por etapa e também avaliar o resultado fim a fim | A definir |
 | 2026-08-23 | Relação entre V1 e V2 | Ainda não decidida | O V1 é o benchmark controlado do artigo já concluído; o V2 é uma evolução em construção e ainda não foi definido formalmente como estudo de transferência | Discutir protocolo e alegações do V2 com o orientador | Próxima orientação |
 
 ### Resultado esperado da próxima reunião
@@ -262,13 +262,21 @@ a pesquisa.
 ## 6. O que o AST deve validar
 
 O AST não prova que existe um bug. Ele apenas verifica se a LLM apontou algo que realmente aparece
-no código analisado e que possui a forma correta para a categoria.
+no código analisado como sintaxe executável. A categoria é uma hipótese semântica da LLM/dataset;
+ela não deve ser decidida pelo AST.
 
-- `division_by_zero`: deve apontar uma operação `/`, `//` ou `%`;
-- `out_of_bounds`: deve apontar um acesso indexado, `pop` ou `insert`;
-- `assertion_violation`: deve apontar a condição de um `assert` real;
-- categorias sem um tipo de nó exclusivo, como `invalid_precondition` e `variable_misuse`: a
-  expressão deve existir no código, mas a confirmação depende da propriedade executada pelo ESBMC.
+O uso correto aqui é grounding:
+
+- a função/método alvo precisa existir;
+- a expressão indicada precisa existir dentro da função/método analisado;
+- a expressão precisa estar em código executável, não apenas comentário, docstring ou string literal;
+- quando a LLM fornecer linha, o match deve ficar perto dessa linha;
+- se a expressão existir mas a categoria parecer estranha, isso é erro de hipótese da LLM, não
+  rejeição AST.
+
+Para categorias com forma sintática óbvia (`division_by_zero`, `out_of_bounds`,
+`assertion_violation`), o AST pode ser usado como diagnóstico auxiliar, mas não como fonte de
+verdade da categoria. A confirmação depende da propriedade executada pelo ESBMC.
 
 Se o JSON aponta para uma expressão que existe somente em `main()` e a LLM analisou outra função,
 o rótulo está mal alinhado com a entrada de detecção.
@@ -289,7 +297,8 @@ o rótulo está mal alinhado com a entrada de detecção.
 - [ ] A implementação corrigida não é mostrada à LLM.
 - [ ] O oráculo criado para o ESBMC não é mostrado como parte do defeito original.
 - [ ] A expressão do ground truth aparece na função analisada.
-- [ ] A linha e a categoria correspondem à AST dessa função.
+- [ ] A linha informada corresponde ao trecho real da AST dessa função.
+- [ ] A categoria foi revisada como hipótese semântica, separada do grounding por AST.
 
 ### Harness do ESBMC
 
@@ -391,8 +400,8 @@ defendidas.
    separado para o ESBMC?
 6. Se o `assert` estiver apenas no harness, qual expressão deve constar no ground truth da etapa de
    detecção: a operação suspeita da função, a precondição ausente ou a propriedade do harness?
-7. Para categorias sem um nó AST característico, basta exigir que a expressão apontada exista na
-   função, ou precisamos de uma regra estrutural mais forte?
+7. Devemos manter o AST estritamente como grounding de expressão, mesmo quando a categoria tem uma
+   forma sintática óbvia?
 8. O ESBMC deve verificar a função isolada com `--function` ou o harness completo por meio de
    `main()`? Como documentar as categorias em que uma dessas formas não funciona?
 
@@ -1326,7 +1335,7 @@ código sem gabarito
         ↓
 LLM ou SLM propõe função, categoria e expressão suspeita
         ↓
-AST verifica se a evidência existe e é compatível com a categoria
+AST verifica se a evidência existe no código executável
         ↓
 ESBMC tenta demonstrar a violação de uma propriedade correspondente
         ↓
@@ -1380,7 +1389,7 @@ Proposta de estados distintos:
 
 - **confirmado:** o ESBMC encontrou um contraexemplo para a propriedade correta e correspondente ao
   candidato;
-- **rejeitado pelo AST:** a expressão não existe ou possui forma incompatível com a categoria;
+- **rejeitado pelo AST:** a expressão não existe como código executável na função/método alvo;
 - **não confirmado dentro do limite:** o ESBMC executou, mas não encontrou a violação nas condições
   configuradas;
 - **inconclusivo:** timeout, erro da ferramenta, zero VCC ou recurso não suportado;
@@ -1392,8 +1401,8 @@ candidato é falso.
 
 #### Decisão 4 — categorias da primeira evolução
 
-Recomendação: começar com categorias que possuem relação mais direta com a AST e com propriedades
-formais:
+Recomendação: começar com categorias que possuem evidência local simples e propriedades formais
+mais diretas:
 
 1. `division_by_zero`;
 2. `out_of_bounds`;

@@ -11,6 +11,7 @@ from research_pipeline.scan.pipeline import (
     CANDIDATE_NOT_FOUND,
     CONFIRMED_NATIVE,
     CONFIRMED_ON_ABSTRACTION,
+    CONFIRMED_UNVERIFIED,
     INVALID_HARNESS,
     OVER_RESTRICTED,
     SAFE_NATIVE,
@@ -30,6 +31,17 @@ _GOOD_HARNESS = (
     "    __ESBMC_assume(n <= 100)\n"
     "    assert n != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
     "    return 10 // n\n"
+    "def main() -> None:\n"
+    "    core(nondet_int())\n"
+    "main()\n"
+)
+
+_DIFFERENTIAL_OUTCOME_HARNESS = (
+    "def core(n: int) -> int:\n"
+    "    result: int = 10 // n\n"
+    "    expected: int = n - 1\n"
+    "    assert result == expected, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+    "    return result\n"
     "def main() -> None:\n"
     "    core(nondet_int())\n"
     "main()\n"
@@ -370,7 +382,18 @@ def test_native_no_violation_falls_through_for_outcome_category(tmp_path, monkey
     # there -- then demoted to confirmed_unverified, same policy as any other
     # assertion_violation confirmation (EXP-03), proving native's
     # no_violation_found was correctly NOT trusted as a safe verdict.
-    assert result.classification == "confirmed_unverified"
+    assert result.classification == CONFIRMED_UNVERIFIED
+
+
+def test_outcome_category_with_differential_assertion_confirms_strongly(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    candidate = _candidate(tmp_path)
+    candidate.category = "assertion_violation"
+
+    result = _run(tmp_path, _DIFFERENTIAL_OUTCOME_HARNESS, candidate)
+
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert result.compat_reasons == []
 
 
 def test_native_tool_error_falls_through_to_synthesis(tmp_path, monkeypatch):

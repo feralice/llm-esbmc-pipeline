@@ -248,7 +248,9 @@ def preprocess_file(path: str | Path) -> list[CodeUnit]:
     source_lines = source.splitlines()
 
     try:
-        tree = ast.parse(source)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", SyntaxWarning)
+            tree = ast.parse(source)
     except SyntaxError as exc:
         warnings.warn(f"Skipping invalid Python file {file_path}: {exc}", RuntimeWarning)
         return []
