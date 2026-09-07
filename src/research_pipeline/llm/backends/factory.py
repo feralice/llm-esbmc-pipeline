@@ -5,15 +5,17 @@ from typing import Literal
 from ...llm.protocols import LLMAnalyzer
 from .anthropic import AnthropicAnalyzer
 from .chat_completions import ChatCompletionsAnalyzer
+from .codex import CodexAnalyzer
 from .openai import OpenAIResponsesAnalyzer
 
-Backend = Literal["openai", "anthropic", "ollama", "google"]
+Backend = Literal["openai", "anthropic", "ollama", "google", "codex"]
 
 _DEFAULT_MODEL: dict[str, str] = {
     "openai":    "gpt-5.5",
     "anthropic": "claude-opus-4-8",
     "ollama":    "deepseek-r1:7b",
     "google":    "gemini-2.5-flash",
+    "codex":     "",
 }
 
 _DEFAULT_OLLAMA_URL = "http://localhost:11434/v1"
@@ -56,4 +58,6 @@ def build_analyzer(
             timeout_seconds=timeout_seconds,
             request_delay=4.0,
         )
-    raise ValueError(f"Backend desconhecido: {backend!r}. Use 'openai', 'anthropic', 'ollama' ou 'google'.")
+    if backend == "codex":
+        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds)
+    raise ValueError(f"Backend desconhecido: {backend!r}. Use 'openai', 'anthropic', 'ollama', 'google' ou 'codex'.")

@@ -118,7 +118,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--backend",
-        choices=["openai", "anthropic", "ollama", "google"],
+        choices=["openai", "anthropic", "ollama", "google", "codex"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
     )
@@ -890,9 +890,11 @@ def mode_v2(args: argparse.Namespace) -> int:
 
     model = _resolve_model(args.model, "openai") or "gpt-4o-mini"
     backend: Backend = args.backend or _infer_backend(model)
-    if backend not in {"openai", "ollama"}:
+    if backend == "codex" and not args.model:
+        model = ""
+    if backend not in {"openai", "ollama", "codex"}:
         print(
-            "O modo V2 detecta via OpenAI ou Ollama por enquanto.",
+            "O modo V2 detecta via OpenAI, Ollama ou Codex CLI por enquanto.",
             file=sys.stderr,
         )
         return 1
@@ -1011,7 +1013,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             print(f"  [{file_index}/{len(input_paths)}] Analisando {file_path.name}::{unit.qualname}...")
             try:
                 findings = analyzer.analyze(unit)
-            except Exception as exc:  # one API failure must not discard other units
+            except Exception as exc:  # noqa: BLE001 - one API failure must not discard other units
                 detection_errors.append(
                     {"file": str(file_path), "function": unit.qualname, "error": str(exc)}
                 )
