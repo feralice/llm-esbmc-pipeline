@@ -438,18 +438,8 @@ class _StyleSynthesizer:
         return SynthResult(harness=harness, raw_response=harness, model=self.model, telemetry={})
 
 
-def test_loop_fallback_off_by_default(tmp_path, monkeypatch):
-    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("no_violation_found"))
-    synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
-    result = run_pipeline_scan(
-        [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
-        synth_retries=0, use_driver=False,
-    )[0]
-    assert STYLE_LOOP not in synth.seen_styles
-    assert result.classification == SAFE_ON_ABSTRACTION
-
-
-def test_loop_fallback_runs_when_scalar_not_confirmed(tmp_path, monkeypatch):
+def test_loop_fallback_runs_by_default_when_scalar_not_confirmed(tmp_path, monkeypatch):
+    """The loop style is part of --mode v2 unconditionally: no flag gates it."""
     def esbmc(file_path, **kw):
         text = Path(file_path).read_text(encoding="utf-8")
         return _esbmc("violation_found" if "for i in range" in text else "no_violation_found")
@@ -458,7 +448,7 @@ def test_loop_fallback_runs_when_scalar_not_confirmed(tmp_path, monkeypatch):
     synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
     result = run_pipeline_scan(
         [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
-        synth_retries=0, use_driver=False, loop_fallback=True,
+        synth_retries=0, use_driver=False,
     )[0]
     assert synth.seen_styles[-1] == STYLE_LOOP
     assert result.classification == CONFIRMED_ON_ABSTRACTION
@@ -470,7 +460,21 @@ def test_loop_fallback_skipped_when_scalar_already_confirmed(tmp_path, monkeypat
     synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
     result = run_pipeline_scan(
         [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
-        synth_retries=0, use_driver=False, loop_fallback=True,
+        synth_retries=0, use_driver=False,
     )[0]
     assert result.classification == CONFIRMED_ON_ABSTRACTION
     assert STYLE_LOOP not in synth.seen_styles
+
+
+def test_loop_fallback_can_be_disabled_for_ablation(tmp_path, monkeypatch):
+    """loop_fallback stays a parameter (not a CLI flag) so an ablation study can
+    still isolate the loop tier's contribution, the same way use_driver/use_ablation
+    already do."""
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("no_violation_found"))
+    synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
+        synth_retries=0, use_driver=False, loop_fallback=False,
+    )[0]
+    assert STYLE_LOOP not in synth.seen_styles
+    assert result.classification == SAFE_ON_ABSTRACTION

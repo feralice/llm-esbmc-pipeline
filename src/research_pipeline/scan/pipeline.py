@@ -288,7 +288,7 @@ def run_pipeline_scan(
     use_ablation: bool = True,
     use_driver: bool = True,
     synth_retries: int = 1,
-    loop_fallback: bool = False,
+    loop_fallback: bool = True,
     completed_results: dict[int, ScanCaseResult] | None = None,
     on_result: Callable[[int, ScanCaseResult], None] | None = None,
 ) -> list[ScanCaseResult]:
@@ -343,7 +343,7 @@ def _run_one(
     use_ablation: bool = True,
     use_driver: bool = True,
     synth_retries: int = 1,
-    loop_fallback: bool = False,
+    loop_fallback: bool = True,
 ) -> ScanCaseResult:
     started = time.monotonic()
 
