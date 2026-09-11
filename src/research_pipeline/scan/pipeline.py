@@ -47,7 +47,7 @@ CONFIRMED_ON_ABSTRACTION = "confirmed_on_abstraction"
 # (compat.py's _unconstrained_outcome_reasons), but that check only catches the
 # harness's SYNTAX, not whether the grounding is real -- an LLM can satisfy it
 # with e.g. `assert x == True` and stay just as disconnected from the real bug
-# (EXP-03, docs/experiment_log.md, 2026-09-04). A confirmation in these two
+# (EXP-03, docs/v2/experiment_log.md, 2026-09-04). A confirmation in these two
 # categories is trusted only when check_outcome_grounding() finds a
 # buggy-vs-expected comparison; otherwise it is demoted to this report label.
 # The pipeline still runs end to end with no human input, it just declines to
@@ -81,6 +81,15 @@ ESBMC_INCONCLUSIVE = "esbmc_inconclusive"
 ESBMC_UNAVAILABLE = "esbmc_unavailable"
 CANDIDATE_NOT_FOUND = "candidate_not_found"
 SYNTH_FAILED = "synth_failed"
+
+# Stage labels used to explain why a correctly detected label did not become an
+# end-to-end confirmation.  Keep these independent from ``classification``:
+# the latter describes the final verdict, while this field describes where the
+# pipeline stopped trusting the hypothesis.
+FAILURE_GROUNDING = "grounding"
+FAILURE_SYNTHESIS = "synthesis"
+FAILURE_VERIFICATION = "verification"
+FAILURE_UNATTRIBUTED = "unattributed"
 
 # A conclusive verdict ends the retry loop; a recoverable one triggers another
 # synthesis attempt (the LLM output varies run to run).
@@ -129,6 +138,7 @@ class ScanCaseResult:
 
     candidate: ScanCandidate
     classification: str
+    failure_stage: str = ""
     harness: str = ""
     harness_path: str = ""
     compat_verdict: str = ""
@@ -152,11 +162,16 @@ class ScanCaseResult:
     # so a run can be sliced by driver applicability without re-instrumenting.
     driver_note: str = ""
 
+    def __post_init__(self) -> None:
+        if not self.failure_stage:
+            self.failure_stage = _failure_stage_for_classification(self.classification)
+
     @classmethod
     def from_dict(cls, data: dict) -> ScanCaseResult:
         return cls(
             candidate=ScanCandidate.from_dict(data["candidate"]),
             classification=str(data["classification"]),
+            failure_stage=str(data.get("failure_stage", "")),
             harness=str(data.get("harness", "")),
             harness_path=str(data.get("harness_path", "")),
             compat_verdict=str(data.get("compat_verdict", "")),
@@ -186,6 +201,7 @@ class ScanCaseResult:
                 "note": self.candidate.note,
             },
             "classification": self.classification,
+            "failure_stage": self.failure_stage,
             "harness": self.harness,
             "harness_path": self.harness_path,
             "compat_verdict": self.compat_verdict,
@@ -213,6 +229,36 @@ def load_candidates(path: str | Path) -> list[ScanCandidate]:
     if not isinstance(items, list):
         raise TypeError("candidate file must be a JSON list or {'candidates': [...]}")
     return [ScanCandidate.from_dict(item) for item in items]
+
+
+def _failure_stage_for_classification(classification: str) -> str:
+    """Map a final verdict to the pipeline stage that prevented confirmation.
+
+    ``confirmed_unverified`` is a grounding failure: ESBMC found a violation,
+    but the outcome assertion did not have an independently grounded oracle.
+    Harness validation and missing properties are synthesis failures.  A safe,
+    inconclusive, unavailable, or over-restricted result is a verification
+    outcome, even when the root cause may be an overly restrictive harness.
+    """
+    if classification in {CONFIRMED_UNVERIFIED, CANDIDATE_NOT_FOUND}:
+        return FAILURE_GROUNDING
+    if classification in {
+        INVALID_HARNESS,
+        UNSUPPORTED_HARNESS,
+        NO_PROPERTY,
+        SYNTH_FAILED,
+    }:
+        return FAILURE_SYNTHESIS
+    if classification in {
+        SAFE_NATIVE,
+        SAFE_DRIVER,
+        SAFE_ON_ABSTRACTION,
+        OVER_RESTRICTED,
+        ESBMC_INCONCLUSIVE,
+        ESBMC_UNAVAILABLE,
+    }:
+        return FAILURE_VERIFICATION
+    return ""
 
 
 def _find_unit(units: list, function_name: str):
@@ -447,7 +493,7 @@ def _try_native(
       there is no built-in property encoding the hypothesized "correct"
       behaviour (no assert exists on the real source), so an absence of
       violation here proves nothing -- same vacuous-claim risk EXP-03 found
-      for a bare assert on unconstrained input (docs/experiment_log.md).
+      for a bare assert on unconstrained input (docs/v2/experiment_log.md).
     """
     parts = candidate.function.split(".")
     function_name = parts[-1]
@@ -737,7 +783,7 @@ def _looks_like_cover_negation(property_kind: str) -> bool:
     Confirmed empirically (2026-09-04, real ESBMC 8.4.0, --multi-property): a
     tripped __ESBMC_cover always reports as "assertion !(<condition>)"; genuine
     exceptions (invalid int() conversion, uncaught exception on a missing dict
-    key) never take this shape. See docs/experiment_log.md EXP-01.
+    key) never take this shape. See docs/v2/experiment_log.md EXP-01.
     """
     return property_kind.startswith("assertion !(")
 

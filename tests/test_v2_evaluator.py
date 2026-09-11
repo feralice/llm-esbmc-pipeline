@@ -98,3 +98,45 @@ def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
         }],
     )
     assert metrics["detection"]["fp"] == 1
+
+
+def test_stage_losses_account_for_correct_detection_labels(tmp_path) -> None:
+    detection = tmp_path / "detection"
+    detection.mkdir()
+    first = detection / "first.py"
+    second = detection / "second.py"
+    source = "def f(x: int) -> int:\n    return 1 // x\n"
+    first.write_text(source, encoding="utf-8")
+    second.write_text(source, encoding="utf-8")
+    (tmp_path / "ground_truths.json").write_text(
+        json.dumps({"items": [{"id": "b1", "categories": ["division_by_zero"]},
+                               {"id": "b2", "categories": ["division_by_zero"]}]}),
+        encoding="utf-8",
+    )
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"items": [
+            {"id": "b1", "detection_file": "detection/first.py", "categories": ["division_by_zero"]},
+            {"id": "b2", "detection_file": "detection/second.py", "categories": ["division_by_zero"]},
+        ]}),
+        encoding="utf-8",
+    )
+    correct_but_safe = ScanCandidate(str(first), "f", "division_by_zero")
+    rejected_correct = {
+        "file": str(second),
+        "category": "division_by_zero",
+        "finding_type": "llm_false_positive",
+        "reason": "invalid_expression_syntax",
+    }
+
+    metrics = evaluate_v2_results(
+        candidates=[correct_but_safe],
+        results=[ScanCaseResult(correct_but_safe, "safe_driver")],
+        ground_truth_path=tmp_path / "ground_truths.json",
+        rejected_findings=[rejected_correct],
+    )
+
+    losses = metrics["pipeline_stage_losses"]
+    assert losses["correct_detection_labels"] == 2
+    assert losses["confirmed_end_to_end"] == 0
+    assert losses["total_losses"] == 2
+    assert losses["by_stage"] == {"grounding": 1, "verification": 1}

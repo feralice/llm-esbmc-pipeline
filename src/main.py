@@ -223,6 +223,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--vote-kind",
+        choices=["bugs", "smells"],
+        default="bugs",
+        help=(
+            "Somente no modo ensemble. Vota em achados formais (generated_bugs) "
+            "ou em code smells heurísticos (generated_smells). (padrão: bugs)"
+        ),
+    )
+    parser.add_argument(
         "--no-compat",
         action="store_true",
         help="Modo V2: pula a checagem de compatibilidade do harness.",
@@ -852,13 +861,13 @@ def mode_ensemble(args: argparse.Namespace) -> int:
 
 
     try:
-        report = aggregate_votes(args.input, min_votes=args.min_votes)
+        report = aggregate_votes(args.input, min_votes=args.min_votes, kind=args.vote_kind)
     except (ValueError, FileNotFoundError) as exc:
         print(f"Erro no ensemble: {exc}", file=sys.stderr)
         return 1
 
 
-    print(f"\nEnsemble — {report['model_count']} modelo(s): {', '.join(report['models'])}")
+    print(f"\nEnsemble ({args.vote_kind}) — {report['model_count']} modelo(s): {', '.join(report['models'])}")
     print(f"  min_votes={report['min_votes']}")
     print(f"  candidatos={report['candidate_count']}  selecionados={report['selected_count']}")
     if args.verbose:

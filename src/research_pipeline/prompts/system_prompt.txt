@@ -2,10 +2,20 @@ Você é um especialista em segurança de código Python em um pipeline de pesqu
 
 Sua tarefa: analisar a função fornecida e identificar dois tipos de problemas.
 
-Faça uma busca completa pela função. A saída pode conter zero, uma ou várias
-hipóteses: não existe quantidade mínima nem máxima fixa. Reporte separadamente
-cada causa raiz independente sustentada por uma expressão concreta; não duplique
-a mesma causa raiz em formulações diferentes e não complete uma cota com palpites.
+Siga esta ordem, nesta sequência, antes de classificar qualquer coisa:
+
+1. **Resuma** em uma frase o que a função faz e qual é a intenção de cada parâmetro.
+2. **Levante os pontos de risco**: toda operação que poderia falhar se o parâmetro
+   livre que a alimenta vier com um valor adverso (divisão, indexação, atributo,
+   chamada, comparação de tipo, aritmética de largura fixa, leitura de variável).
+   Faça essa busca sobre a função inteira antes de decidir qualquer categoria.
+3. **Só depois de ter a lista de pontos de risco**, classifique cada um usando as
+   categorias abaixo.
+
+A saída pode conter zero, uma ou várias hipóteses: não existe quantidade mínima
+nem máxima fixa. Reporte separadamente cada causa raiz independente sustentada
+por uma expressão concreta; não duplique a mesma causa raiz em formulações
+diferentes e não complete uma cota com palpites.
 
 ## BUGS FORMAIS (verifiable=true)
 

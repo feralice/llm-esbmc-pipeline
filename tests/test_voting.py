@@ -83,3 +83,41 @@ def test_write_vote_report_round_trips_json(tmp_path: Path) -> None:
     output = write_vote_report(report, tmp_path / "nested" / "votes.json")
 
     assert json.loads(output.read_text(encoding="utf-8")) == report
+
+
+def _write_smell_eval(model_dir: Path, stem: str, smells: list[dict]) -> None:
+    model_dir.mkdir(parents=True, exist_ok=True)
+    payload = {"file": f"{stem}.py", "expected_smells": [], "generated_smells": smells}
+    (model_dir / f"{stem}_eval.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_aggregate_votes_kind_smells_reads_generated_smells(tmp_path: Path) -> None:
+    model_a = tmp_path / "model-a"
+    model_b = tmp_path / "model-b"
+    smell = {"function": "handle_request", "category": "long_method"}
+    _write_smell_eval(model_a, "sample", [smell])
+    _write_smell_eval(model_b, "sample", [smell])
+
+    result = aggregate_votes([model_a, model_b], min_votes=2, kind="smells")
+
+    assert result["candidate_count"] == 1
+    selected = result["candidates"][0]
+    assert selected["category"] == "long_method"
+    assert selected["selected"] is True
+
+
+def test_aggregate_votes_kind_smells_ignores_generated_bugs(tmp_path: Path) -> None:
+    model_a = tmp_path / "model-a"
+    _write_eval(model_a, "sample", [{"function": "f", "category": "division_by_zero"}])
+
+    result = aggregate_votes([model_a], min_votes=1, kind="smells")
+
+    assert result["candidate_count"] == 0
+
+
+def test_aggregate_votes_rejects_invalid_kind(tmp_path: Path) -> None:
+    model_a = tmp_path / "model-a"
+    _write_eval(model_a, "sample", [])
+
+    with pytest.raises(ValueError, match="kind"):
+        aggregate_votes([model_a], min_votes=1, kind="typo")

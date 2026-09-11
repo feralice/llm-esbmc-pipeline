@@ -11,6 +11,13 @@ import json
 from collections import Counter
 from pathlib import Path
 
+from .scan.pipeline import (
+    FAILURE_GROUNDING,
+    FAILURE_SYNTHESIS,
+    FAILURE_UNATTRIBUTED,
+    FAILURE_VERIFICATION,
+)
+
 
 def _prf(tp: int, fp: int, fn: int) -> dict[str, float | None]:
     precision = tp / (tp + fp) if tp + fp else None
@@ -25,6 +32,24 @@ def _prf(tp: int, fp: int, fn: int) -> dict[str, float | None]:
 
 def _signature(file: str, category: str) -> tuple[str, str]:
     return str(Path(file).resolve()), category
+
+
+def _failure_stage(result) -> str:
+    """Read the explicit stage, with a compatibility fallback for old reports."""
+    stage = str(getattr(result, "failure_stage", "") or "")
+    if stage:
+        return stage
+    classification = str(getattr(result, "classification", ""))
+    if classification == "confirmed_unverified":
+        return FAILURE_GROUNDING
+    if classification in {"invalid_harness", "unsupported_harness", "no_property", "synth_failed"}:
+        return FAILURE_SYNTHESIS
+    if classification in {
+        "safe_native", "safe_driver", "safe_on_abstraction", "over_restricted",
+        "esbmc_inconclusive", "esbmc_unavailable",
+    }:
+        return FAILURE_VERIFICATION
+    return FAILURE_UNATTRIBUTED
 
 
 def evaluate_v2_results(
@@ -84,6 +109,20 @@ def evaluate_v2_results(
         false_hypothesis_results.extend(grouped[allowed:])
         remaining[sig] = max(0, allowed - len(grouped))
 
+    # A detection true positive can be present only in rejected_findings when
+    # the AST/expression grounding filter discarded it before synthesis. Match
+    # those occurrences against the still-unprocessed true positives so the
+    # stage accounting is disjoint and sums to detection_tp - end_to_end_tp.
+    rejected_signatures = Counter(
+        _signature(str(item["file"]), str(item["category"]))
+        for item in (rejected_findings or [])
+    )
+    grounding_unprocessed = sum(
+        min(count, rejected_signatures.get(sig, 0))
+        for sig, count in remaining.items()
+    )
+    other_unprocessed = sum(remaining.values()) - grounding_unprocessed
+
     compatible = sum(
         r.compat_verdict in {"ok", "skipped", "native_function", "driver"}
         for r in true_positive_results
@@ -106,6 +145,17 @@ def evaluate_v2_results(
         for r in false_hypothesis_results
     )
     end_to_end_fn = sum(expected.values()) - end_to_end_tp
+    stage_losses = Counter()
+    for result in true_positive_results:
+        if result.classification not in {
+            "confirmed_native", "confirmed_driver", "confirmed_on_abstraction"
+        }:
+            stage_losses[_failure_stage(result)] += 1
+    if grounding_unprocessed:
+        stage_losses[FAILURE_GROUNDING] += grounding_unprocessed
+    if other_unprocessed:
+        stage_losses[FAILURE_UNATTRIBUTED] += other_unprocessed
+    stage_loss_total = sum(stage_losses.values())
     detection_metrics = {
         "tp": detection_tp, "fp": detection_fp, "fn": detection_fn,
         **_prf(detection_tp, detection_fp, detection_fn),
@@ -129,6 +179,12 @@ def evaluate_v2_results(
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,
             "unverified": unverified,
+        },
+        "pipeline_stage_losses": {
+            "correct_detection_labels": detection_tp,
+            "confirmed_end_to_end": end_to_end_tp,
+            "total_losses": stage_loss_total,
+            "by_stage": dict(sorted(stage_losses.items())),
         },
         "end_to_end": end_to_end_metrics,
     }

@@ -11,15 +11,26 @@ VoteKey = tuple[str, str, str]
 def aggregate_votes(
     model_report_dirs: Iterable[str | Path],
     min_votes: int = 2,
+    kind: str = "bugs",
 ) -> dict:
     """Aggregate model findings by ``(file, function, category)``.
 
     Each input directory represents one model and must contain the ``*_eval.json``
     files produced by the benchmark's ``per_file`` reporting. Repeated findings
     from the same model count as one vote, so verbosity cannot inflate consensus.
-    Ground-truth verdicts are intentionally ignored: voting uses only
-    ``generated_bugs`` and is therefore safe to run before evaluation.
+    Ground-truth verdicts are intentionally ignored: voting reads only the
+    generated findings (``generated_bugs`` or ``generated_smells``, per ``kind``)
+    and is therefore safe to run before evaluation.
+
+    ``kind`` selects which findings to vote on: ``"bugs"`` (default, formal
+    ``verifiable=true`` findings) or ``"smells"`` (heuristic ``smell_heuristic``
+    findings, which never reach ESBMC). Smell findings carry no expression/line/
+    confidence, so their evidence entries are empty.
     """
+    if kind not in ("bugs", "smells"):
+        raise ValueError('kind must be "bugs" or "smells"')
+    findings_field = "generated_bugs" if kind == "bugs" else "generated_smells"
+
     report_dirs = [Path(path) for path in model_report_dirs]
     if not report_dirs:
         raise ValueError("at least one model report directory is required")
@@ -50,18 +61,18 @@ def aggregate_votes(
                 raise ValueError(f"missing file field in {report_file}")
 
             findings_by_key: dict[VoteKey, list[dict]] = defaultdict(list)
-            generated = payload.get("generated_bugs", [])
+            generated = payload.get(findings_field, [])
             if not isinstance(generated, list):
-                raise ValueError(f"generated_bugs must be a list in {report_file}")
+                raise ValueError(f"{findings_field} must be a list in {report_file}")
 
             for finding in generated:
                 if not isinstance(finding, dict):
-                    raise ValueError(f"generated_bugs entries must be objects in {report_file}")
+                    raise ValueError(f"{findings_field} entries must be objects in {report_file}")
                 function = str(finding.get("function") or "").strip()
                 category = str(finding.get("category") or "").strip()
                 if not function or not category:
                     raise ValueError(
-                        f"generated bug missing function/category in {report_file}"
+                        f"generated finding missing function/category in {report_file}"
                     )
                 key = (source_file, function, category)
                 findings_by_key[key].append(_finding_evidence(finding))
