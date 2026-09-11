@@ -36,7 +36,7 @@ from .compat import (
 )
 from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
 from .driver_check import check_driver_harness
-from .synth import STYLE_DRIVER, HarnessSynthesizer
+from .synth import STYLE_DRIVER, STYLE_LOOP, STYLE_SCALAR, HarnessSynthesizer
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
 # because "confirmed" here means "on the synthesized abstraction", not "on the
@@ -105,6 +105,9 @@ _CONCLUSIVE = frozenset(
 )
 _RECOVERABLE = frozenset(
     {INVALID_HARNESS, UNSUPPORTED_HARNESS, NO_PROPERTY, ESBMC_INCONCLUSIVE, SYNTH_FAILED}
+)
+_CONFIRMATIONS = frozenset(
+    {CONFIRMED_ON_ABSTRACTION, CONFIRMED_UNVERIFIED, CONFIRMED_DRIVER, CONFIRMED_NATIVE}
 )
 
 
@@ -285,6 +288,7 @@ def run_pipeline_scan(
     use_ablation: bool = True,
     use_driver: bool = True,
     synth_retries: int = 1,
+    loop_fallback: bool = False,
     completed_results: dict[int, ScanCaseResult] | None = None,
     on_result: Callable[[int, ScanCaseResult], None] | None = None,
 ) -> list[ScanCaseResult]:
@@ -317,6 +321,7 @@ def run_pipeline_scan(
                 use_ablation=use_ablation,
                 use_driver=use_driver,
                 synth_retries=synth_retries,
+                loop_fallback=loop_fallback,
             )
         results.append(result)
         if on_result is not None:
@@ -338,6 +343,7 @@ def _run_one(
     use_ablation: bool = True,
     use_driver: bool = True,
     synth_retries: int = 1,
+    loop_fallback: bool = False,
 ) -> ScanCaseResult:
     started = time.monotonic()
 
@@ -434,14 +440,36 @@ def _run_one(
         result.esbmc_seconds = total_esbmc_seconds
         result.driver_note = driver_note
         last = result
-        if result.classification in _CONCLUSIVE:
-            return result
-        if result.classification not in _RECOVERABLE:
-            return result
+        if result.classification in _CONCLUSIVE or result.classification not in _RECOVERABLE:
+            break
         repair_feedback = _repair_feedback(result)
         previous_harness = result.harness
 
     assert last is not None
+    if loop_fallback and last.classification not in _CONFIRMATIONS:
+        loop_result = _one_attempt(
+            candidate, unit, finding,
+            index=index, attempt=0,
+            synthesizer=synthesizer, esbmc_command=esbmc_command,
+            bound=bound, timeout_seconds=timeout_seconds, harness_dir=harness_dir,
+            use_compat=use_compat, use_guards=use_guards, use_ablation=use_ablation,
+            repair_feedback="", previous_harness="",
+            style=STYLE_LOOP,
+        )
+        loop_result.attempts = (last.attempts or 1) + 1
+        loop_result.attempt_history = [*history, {
+            "attempt": loop_result.attempts, "style": STYLE_LOOP,
+            "classification": loop_result.classification,
+            "esbmc_status": loop_result.esbmc_status,
+            "esbmc_summary": loop_result.esbmc_summary, "error": loop_result.error,
+        }]
+        loop_result.synth_total_tokens = (total_tokens + (loop_result.synth_total_tokens or 0)) or None
+        loop_result.synth_seconds += total_synth_seconds
+        loop_result.esbmc_seconds += total_esbmc_seconds
+        loop_result.driver_note = driver_note
+        loop_result.seconds = time.monotonic() - started
+        if loop_result.classification in _CONFIRMATIONS:
+            return loop_result
     return last
 
 
@@ -672,6 +700,7 @@ def _one_attempt(
     use_ablation: bool,
     repair_feedback: str,
     previous_harness: str,
+    style: str = STYLE_SCALAR,
 ) -> ScanCaseResult:
     started = time.monotonic()
     result = ScanCaseResult(
@@ -687,6 +716,7 @@ def _one_attempt(
             use_guards=use_guards,
             repair_feedback=repair_feedback,
             previous_harness=previous_harness,
+            style=style,
         )
     except Exception as exc:  # noqa: BLE001 - network/API failure is reported, not raised
         result.classification = SYNTH_FAILED
@@ -699,7 +729,11 @@ def _one_attempt(
     result.synth_seconds = float(synth_result.telemetry.get("duration_seconds") or 0.0)
 
     if use_compat:
-        compat = check_harness(synth_result.harness, category=candidate.category)
+        compat = check_harness(
+            synth_result.harness,
+            category=candidate.category,
+            allow_bounded_loop=style == STYLE_LOOP,
+        )
         result.compat_verdict = compat.verdict
         result.compat_reasons = list(compat.reasons)
         if not compat.ok:
@@ -714,6 +748,8 @@ def _one_attempt(
         result.compat_verdict = "skipped"
 
     suffix = f"_try{attempt}" if attempt else ""
+    if style == STYLE_LOOP:
+        suffix += "_loop"
     harness_path = harness_dir / f"scan_{index:03d}_{unit.name}{suffix}.py"
     harness_path.write_text(synth_result.harness, encoding="utf-8")
     result.harness_path = str(harness_path)

@@ -122,12 +122,44 @@ def _has_module_level_driver(tree: ast.Module) -> bool:
     return False
 
 
-def check_harness(source: str, *, category: str | None = None) -> CompatResult:
+def _bounded_loop_reasons(tree: ast.Module) -> list[str]:
+    """Allow exactly one non-nested ``for`` over a constant ``range()``; reject the rest.
+
+    The loop harness style keeps one real loop so a bug between adjacent
+    container elements or across iterations stays expressible. The bound must be
+    a literal so ESBMC's incremental unwinding actually terminates.
+    """
+    loops = [n for n in ast.walk(tree) if isinstance(n, (ast.For, ast.AsyncFor, ast.While))]
+    if not loops:
+        return []
+    if len(loops) > 1:
+        return ["contains more than one loop (loop harness allows exactly one)"]
+    loop = loops[0]
+    if not isinstance(loop, ast.For):
+        return ["loop harness allows only a `for` loop, not `while`/`async for`"]
+    it = loop.iter
+    if not (
+        isinstance(it, ast.Call)
+        and isinstance(it.func, ast.Name)
+        and it.func.id == "range"
+        and it.args
+        and all(isinstance(a, ast.Constant) and isinstance(a.value, int) for a in it.args)
+    ):
+        return ["loop harness `for` must iterate `range(<int literal>...)`"]
+    return []
+
+
+def check_harness(
+    source: str, *, category: str | None = None, allow_bounded_loop: bool = False
+) -> CompatResult:
     """Return a CompatResult for a synthesized harness given as text.
 
     ``category`` is the candidate's hypothesis category (e.g. "incorrect_result").
     When given, it gates the outcome-comparison check (see
     ``_unconstrained_outcome_reasons``).
+
+    ``allow_bounded_loop`` relaxes the no-loop rule for the loop harness style:
+    one non-nested ``for`` over a constant ``range()`` is permitted.
     """
     try:
         tree = ast.parse(source)
@@ -152,7 +184,11 @@ def check_harness(source: str, *, category: str | None = None) -> CompatResult:
         reasons.append(f"imports {', '.join(n for n in names if n)}")
         return CompatResult(False, VERDICT_INVALID, reasons)
 
-    if any(isinstance(node, (ast.For, ast.AsyncFor, ast.While)) for node in ast.walk(tree)):
+    if allow_bounded_loop:
+        loop_reasons = _bounded_loop_reasons(tree)
+        if loop_reasons:
+            return CompatResult(False, VERDICT_INVALID, loop_reasons)
+    elif any(isinstance(node, (ast.For, ast.AsyncFor, ast.While)) for node in ast.walk(tree)):
         return CompatResult(
             False,
             VERDICT_INVALID,

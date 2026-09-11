@@ -28,17 +28,22 @@ from ..models import CodeUnit, Finding
 from .guards import format_precondition_block
 
 _PROMPT_DIR = Path(__file__).resolve().parent.parent / "prompts"
-_SYNTH_PROMPT_PATH = _PROMPT_DIR / "synth_prompt.txt"
-_DRIVER_PROMPT_PATH = _PROMPT_DIR / "driver_prompt.txt"
 
 _FENCE = re.compile(r"```(?:python)?\s*\n(.*?)```", re.DOTALL)
 
 STYLE_SCALAR = "scalar"
 STYLE_DRIVER = "driver"
+STYLE_LOOP = "loop"
+
+_PROMPT_FILES = {
+    STYLE_SCALAR: "synth_prompt.txt",
+    STYLE_DRIVER: "driver_prompt.txt",
+    STYLE_LOOP: "synth_prompt_loop.txt",
+}
 
 
 def load_synth_prompt(style: str = STYLE_SCALAR) -> str:
-    path = _DRIVER_PROMPT_PATH if style == STYLE_DRIVER else _SYNTH_PROMPT_PATH
+    path = _PROMPT_DIR / _PROMPT_FILES.get(style, _PROMPT_FILES[STYLE_SCALAR])
     return path.read_text(encoding="utf-8").strip()
 
 
@@ -74,7 +79,7 @@ def build_synth_user_prompt(
     fixed_behaviour = str(finding.metadata.get("fixed_behaviour", "")).strip()
     fixed_block = (
         f"\nIntended (fixed) behaviour:\n{fixed_behaviour}\n"
-        if style == STYLE_DRIVER and fixed_behaviour
+        if style in {STYLE_DRIVER, STYLE_LOOP} and fixed_behaviour
         else ""
     )
     repair_block = ""

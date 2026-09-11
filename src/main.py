@@ -265,6 +265,16 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--v2-loop-harness",
+        action="store_true",
+        help=(
+            "Modo V2: quando driver e síntese escalar não confirmam, tenta um "
+            "harness de loop limitado (lista pequena de nondets + índice real) "
+            "para bugs entre elementos adjacentes ou entre iterações. Uma chamada "
+            "de LLM extra por caso não confirmado; desligado por padrão."
+        ),
+    )
+    parser.add_argument(
         "--v2-stage",
         choices=["end-to-end", "synthesis"],
         default="end-to-end",
@@ -952,6 +962,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "ablation": not args.no_ablation,
         "driver": not args.no_driver,
         "synth_retries": args.synth_retries,
+        "loop_harness": args.v2_loop_harness,
         "bound": args.bound,
         "timeout": args.timeout,
         "llm_timeout": args.llm_timeout,
@@ -1128,6 +1139,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         use_ablation=not args.no_ablation,
         use_driver=not args.no_driver,
         synth_retries=args.synth_retries,
+        loop_fallback=args.v2_loop_harness,
         completed_results=completed_results,
         on_result=save_synthesis_result,
     )

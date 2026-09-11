@@ -414,3 +414,57 @@ def test_expected_assertion_marker_is_required():
     r = check_harness(src)
     assert not r.ok
     assert "exactly one expected assertion" in r.reasons[0]
+
+
+_LOOP_HARNESS = """\
+def model() -> None:
+    a: int = nondet_int()
+    b: int = nondet_int()
+    c: int = nondet_int()
+    __ESBMC_assume(-1000 <= a and a <= 1000)
+    __ESBMC_assume(-1000 <= b and b <= 1000)
+    __ESBMC_assume(-1000 <= c and c <= 1000)
+    __ESBMC_assume(a <= b and b <= c)
+    xs: list[int] = [a, b, c]
+    for i in range(1, 3):
+        gap: int = xs[i] - xs[i - 1]
+        assert gap >= 0, "LLM_ESBMC_EXPECTED_PROPERTY"
+
+model()
+"""
+
+
+def test_loop_harness_rejected_without_opt_in():
+    r = check_harness(_LOOP_HARNESS, category="incorrect_result")
+    assert not r.ok
+    assert "loop" in r.reasons[0]
+
+
+def test_loop_harness_accepted_with_opt_in():
+    assert check_harness(
+        _LOOP_HARNESS, category="incorrect_result", allow_bounded_loop=True
+    ).ok
+
+
+def test_loop_harness_rejects_while():
+    src = _LOOP_HARNESS.replace("for i in range(1, 3):", "while a < b:")
+    r = check_harness(src, allow_bounded_loop=True)
+    assert not r.ok
+    assert "while" in r.reasons[0]
+
+
+def test_loop_harness_rejects_symbolic_range_bound():
+    src = _LOOP_HARNESS.replace("range(1, 3)", "range(1, len(xs))")
+    r = check_harness(src, allow_bounded_loop=True)
+    assert not r.ok
+    assert "int literal" in r.reasons[0]
+
+
+def test_loop_harness_rejects_second_loop():
+    src = _LOOP_HARNESS.replace(
+        "model()\n",
+        "def other() -> None:\n    for j in range(2):\n        pass\n\nother()\nmodel()\n",
+    )
+    r = check_harness(src, allow_bounded_loop=True)
+    assert not r.ok
+    assert "more than one loop" in r.reasons[0]

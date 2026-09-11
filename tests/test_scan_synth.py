@@ -7,6 +7,9 @@ import pytest
 from research_pipeline.models import Finding
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.synth import (
+    STYLE_DRIVER,
+    STYLE_LOOP,
+    STYLE_SCALAR,
     HarnessSynthesizer,
     _strip_fence,
     build_synth_user_prompt,
@@ -40,6 +43,15 @@ def test_synth_prompt_file_loads():
     assert "nondet_int()" in text
     assert "__ESBMC_assume" in text
     assert "module level" in text
+
+
+def test_prompt_style_selects_distinct_files():
+    scalar = load_synth_prompt(STYLE_SCALAR)
+    driver = load_synth_prompt(STYLE_DRIVER)
+    loop = load_synth_prompt(STYLE_LOOP)
+    assert scalar != driver != loop != scalar
+    assert "bounded loop" in loop
+    assert "range(3)" in loop
 
 
 def test_strip_fence_extracts_python_block():

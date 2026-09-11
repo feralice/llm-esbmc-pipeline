@@ -23,7 +23,7 @@ from research_pipeline.scan.pipeline import (
     load_candidates,
     run_pipeline_scan,
 )
-from research_pipeline.scan.synth import SynthResult
+from research_pipeline.scan.synth import STYLE_LOOP, SynthResult
 
 _GOOD_HARNESS = (
     "def core(n: int) -> int:\n"
@@ -404,3 +404,73 @@ def test_native_tool_error_falls_through_to_synthesis(tmp_path, monkeypatch):
     _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
     result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
     assert result.classification == CONFIRMED_ON_ABSTRACTION
+
+
+_LOOP_HARNESS = (
+    "def model() -> None:\n"
+    "    a: int = nondet_int()\n"
+    "    b: int = nondet_int()\n"
+    "    c: int = nondet_int()\n"
+    "    __ESBMC_assume(-1000 <= a and a <= 1000)\n"
+    "    __ESBMC_assume(-1000 <= b and b <= 1000)\n"
+    "    __ESBMC_assume(-1000 <= c and c <= 1000)\n"
+    "    __ESBMC_assume(a <= b and b <= c)\n"
+    "    xs: list[int] = [a, b, c]\n"
+    "    for i in range(1, 3):\n"
+    "        gap: int = xs[i] - xs[i - 1]\n"
+    "        assert gap >= 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+    "model()\n"
+)
+
+
+class _StyleSynthesizer:
+    """Returns a scalar harness by default, a loop harness for style='loop'."""
+
+    def __init__(self, scalar: str, loop: str):
+        self._scalar = scalar
+        self._loop = loop
+        self.model = "style-model"
+        self.seen_styles: list[str] = []
+
+    def synthesize(self, unit, finding, *, use_guards: bool = True, style: str = "scalar", **kw) -> SynthResult:
+        self.seen_styles.append(style)
+        harness = self._loop if style == STYLE_LOOP else self._scalar
+        return SynthResult(harness=harness, raw_response=harness, model=self.model, telemetry={})
+
+
+def test_loop_fallback_off_by_default(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("no_violation_found"))
+    synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
+        synth_retries=0, use_driver=False,
+    )[0]
+    assert STYLE_LOOP not in synth.seen_styles
+    assert result.classification == SAFE_ON_ABSTRACTION
+
+
+def test_loop_fallback_runs_when_scalar_not_confirmed(tmp_path, monkeypatch):
+    def esbmc(file_path, **kw):
+        text = Path(file_path).read_text(encoding="utf-8")
+        return _esbmc("violation_found" if "for i in range" in text else "no_violation_found")
+
+    _patch_esbmc(monkeypatch, esbmc)
+    synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
+        synth_retries=0, use_driver=False, loop_fallback=True,
+    )[0]
+    assert synth.seen_styles[-1] == STYLE_LOOP
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert result.harness_path.endswith("_loop.py")
+
+
+def test_loop_fallback_skipped_when_scalar_already_confirmed(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    synth = _StyleSynthesizer(_GOOD_HARNESS, _LOOP_HARNESS)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)], synthesizer=synth, output_dir=tmp_path / "out",
+        synth_retries=0, use_driver=False, loop_fallback=True,
+    )[0]
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert STYLE_LOOP not in synth.seen_styles
