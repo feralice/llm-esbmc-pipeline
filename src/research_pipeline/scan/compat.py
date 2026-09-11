@@ -42,13 +42,13 @@ _ALLOWED_UNDEFINED = frozenset(
         "nondet_str",
         "nondet_list",
         "nondet_dict",
+        "assume",
         "__ESBMC_assume",
         "__ESBMC_assert",
         "__ESBMC_cover",
         "__ESBMC_unreachable",
         "__ESBMC_requires",
         "__ESBMC_ensures",
-        "__ESBMC_assigns",
     }
 )
 
@@ -61,6 +61,13 @@ _UNSUPPORTED_NAMES = frozenset({"numpy", "np", "pandas", "pd", "torch", "tf", "t
 # this list; the synth prompt still steers away from them, but a harness that
 # uses one is not rejected here.
 _UNSUPPORTED_BUILTINS = frozenset({"zip", "map", "filter", "reversed"})
+
+_UNSUPPORTED_METHODS = frozenset(
+    {
+        "add", "remove", "discard", "isdisjoint",
+        "most_common", "extend", "rotate",
+    }
+)
 
 # The real nondet intrinsics (models/esbmc.py). `__ESBMC_nondet_*` and
 # `nondet_uint` are common LLM hallucinations and are NOT valid.
@@ -219,6 +226,14 @@ def check_harness(
             [f"uses builtin ESBMC-Python does not model: {', '.join(bad_builtins)}"],
         )
 
+    auxiliary_reasons = _auxiliary_property_reasons(tree)
+    if auxiliary_reasons:
+        return CompatResult(False, VERDICT_INVALID, auxiliary_reasons)
+
+    construct_reasons = _unsupported_construct_reasons(tree)
+    if construct_reasons:
+        return CompatResult(False, VERDICT_UNSUPPORTED, construct_reasons)
+
     bad_nondet = sorted(set(_BAD_NONDET.findall(source)))
     if bad_nondet:
         return CompatResult(
@@ -278,6 +293,68 @@ def _check_expected_assertion(tree: ast.Module) -> list[str]:
         ]
     if len(assertions) != 1:
         return ["harness contains additional unmarked assertions"]
+    return []
+
+
+def _unsupported_construct_reasons(tree: ast.Module) -> list[str]:
+    """Reject syntax/models that are known to be unreliable for scan harnesses."""
+    reasons: list[str] = []
+    if any(isinstance(node, ast.Lambda) for node in ast.walk(tree)):
+        reasons.append("uses lambda (ESBMC-Python infers lambda returns unreliably)")
+    if any(isinstance(node, ast.NamedExpr) for node in ast.walk(tree)):
+        reasons.append("uses walrus operator (unsupported in ESBMC-Python harness expressions)")
+    if any(
+        isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.Await, ast.Yield, ast.YieldFrom))
+        for node in ast.walk(tree)
+    ):
+        reasons.append("uses async/generator syntax (not supported by this harness profile)")
+    if any(isinstance(node, (ast.With, ast.AsyncWith)) for node in ast.walk(tree)):
+        reasons.append("uses with-statement syntax (not supported by this harness profile)")
+
+    methods = sorted(
+        {
+            node.func.attr
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr in _UNSUPPORTED_METHODS
+        }
+    )
+    if methods:
+        reasons.append("uses unsupported ESBMC-Python method(s): " + ", ".join(methods))
+
+    if any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "__ESBMC_assigns"
+        for node in ast.walk(tree)
+    ):
+        reasons.append(
+            "uses ESBMC intrinsic(s) rejected by the Python frontend: __ESBMC_assigns"
+        )
+
+    return reasons
+
+
+def _auxiliary_property_reasons(tree: ast.Module) -> list[str]:
+    """Reject extra ESBMC properties under this pipeline's one-assert profile."""
+    auxiliary_properties = sorted(
+        {
+            node.func.id
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in {
+                "__ESBMC_assert", "__ESBMC_cover", "__ESBMC_unreachable",
+            }
+        }
+    )
+    if auxiliary_properties:
+        return [
+            "uses ESBMC intrinsic(s) outside the scalar harness property profile: "
+            + ", ".join(auxiliary_properties)
+            + "; use exactly one marked Python assert"
+        ]
     return []
 
 

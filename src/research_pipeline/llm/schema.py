@@ -42,6 +42,17 @@ FINDINGS_JSON_SCHEMA: dict = {
                             "additionalProperties": False,
                             "properties": {
                                 "expression": {"type": "string"},
+                                "line": {"type": "integer"},
+                                "operands": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
+                                "guard_evidence": {"type": "string"},
+                                "missing_guard": {"type": "string"},
+                                "context_needed": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
                             },
                             "required": ["expression"],
                         },

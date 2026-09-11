@@ -16,6 +16,8 @@ outside the measured method, the same way BugsInPy supplies the cases in V1.
 
 from __future__ import annotations
 
+import ast
+import builtins
 import json
 import tempfile
 import time
@@ -164,6 +166,11 @@ class ScanCaseResult:
     # "synth-failed: <exc>". Set even when the tier fell through to scalar synth,
     # so a run can be sliced by driver applicability without re-instrumenting.
     driver_note: str = ""
+    # What ESBMC actually verified.  Keep this separate from classification:
+    # a confirmed result on a scalar abstraction is not equivalent to a result
+    # obtained from the original function body.
+    verification_target: str = ""
+    abstraction_level: str = ""
 
     def __post_init__(self) -> None:
         if not self.failure_stage:
@@ -192,6 +199,8 @@ class ScanCaseResult:
             seconds=float(data.get("seconds", 0.0)),
             error=str(data.get("error", "")),
             driver_note=str(data.get("driver_note", "")),
+            verification_target=str(data.get("verification_target", "")),
+            abstraction_level=str(data.get("abstraction_level", "")),
         )
 
     def to_dict(self) -> dict:
@@ -222,6 +231,8 @@ class ScanCaseResult:
             "seconds": round(self.seconds, 2),
             "error": self.error,
             "driver_note": self.driver_note,
+            "verification_target": self.verification_target,
+            "abstraction_level": self.abstraction_level,
         }
 
 
@@ -287,6 +298,7 @@ def run_pipeline_scan(
     use_guards: bool = True,
     use_ablation: bool = True,
     use_driver: bool = True,
+    use_real_driver: bool = True,
     synth_retries: int = 1,
     loop_fallback: bool = True,
     completed_results: dict[int, ScanCaseResult] | None = None,
@@ -320,6 +332,7 @@ def run_pipeline_scan(
                 use_guards=use_guards,
                 use_ablation=use_ablation,
                 use_driver=use_driver,
+                use_real_driver=use_real_driver,
                 synth_retries=synth_retries,
                 loop_fallback=loop_fallback,
             )
@@ -342,6 +355,7 @@ def _run_one(
     use_guards: bool = True,
     use_ablation: bool = True,
     use_driver: bool = True,
+    use_real_driver: bool = True,
     synth_retries: int = 1,
     loop_fallback: bool = True,
 ) -> ScanCaseResult:
@@ -384,6 +398,21 @@ def _run_one(
     )
 
     driver_note = ""
+    if use_real_driver:
+        real_driver = _try_real_body_driver(
+            candidate,
+            unit,
+            finding_id=f"scan_{index:03d}_real",
+            esbmc_command=esbmc_command,
+            bound=bound,
+            timeout_seconds=timeout_seconds,
+            harness_dir=harness_dir,
+            use_ablation=use_ablation,
+        )
+        if real_driver is not None:
+            real_driver.seconds = time.monotonic() - started
+            return real_driver
+
     if use_driver and getattr(unit, "kind", "function") == "module":
         driver_note = "unsupported: module-level unit has no callable function for verbatim driver"
     elif use_driver:
@@ -551,6 +580,132 @@ def _try_native(
         esbmc_summary=result.summary,
         esbmc_seconds=result.time_seconds,
         attempts=0,
+        verification_target="original_function",
+        abstraction_level="none",
+    )
+
+
+_REAL_BODY_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds"})
+_REAL_BODY_TYPES = frozenset({"int", "float", "bool", "str"})
+
+
+def _real_body_parameters(unit) -> list[tuple[str, str]] | None:
+    """Return simple typed parameters suitable for a deterministic driver.
+
+    This deliberately accepts only free functions with scalar annotations. A
+    conservative refusal is important here: silently omitting a global,
+    object, or collection dependency would turn the "real body" tier into a
+    scalar abstraction while reporting it as intact.
+    """
+    try:
+        tree = ast.parse(unit.source)
+    except SyntaxError:
+        return None
+    fn = next((n for n in tree.body if isinstance(n, ast.FunctionDef)), None)
+    if fn is None or any(arg.arg in {"self", "cls"} for arg in fn.args.args):
+        return None
+
+    params: list[tuple[str, str]] = []
+    for arg in [*fn.args.posonlyargs, *fn.args.args, *fn.args.kwonlyargs]:
+        if not isinstance(arg.annotation, ast.Name) or arg.annotation.id not in _REAL_BODY_TYPES:
+            return None
+        params.append((arg.arg, arg.annotation.id))
+    if fn.args.vararg or fn.args.kwarg:
+        return None
+
+    # Reject free names other than the function itself and Python builtins.
+    # Imported modules and module globals cannot be reconstructed safely from a
+    # CodeUnit containing only the function body.
+    bound = {name for name, _ in params} | {fn.name}
+    used = {
+        node.id
+        for node in ast.walk(fn)
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)
+    }
+    if used - bound - set(dir(builtins)):
+        return None
+    return params
+
+
+def _nondet_for_type(type_name: str) -> str:
+    return {
+        "int": "nondet_int()",
+        "float": "nondet_float()",
+        "bool": "nondet_bool()",
+        "str": "nondet_str()",
+    }[type_name]
+
+
+def _try_real_body_driver(
+    candidate: ScanCandidate,
+    unit,
+    *,
+    finding_id: str,
+    esbmc_command: list[str] | None,
+    bound: int,
+    timeout_seconds: int,
+    harness_dir: Path,
+    use_ablation: bool,
+) -> ScanCaseResult | None:
+    """Verify the original CodeUnit body with a generated module-level driver.
+
+    This is intentionally deterministic and is restricted to automatic ESBMC
+    properties. Wrong-result properties need an independent oracle, which
+    cannot be invented safely from a candidate alone and therefore remain on
+    the LLM driver/slice path.
+    """
+    if candidate.category not in _REAL_BODY_CATEGORIES:
+        return None
+    params = _real_body_parameters(unit)
+    if params is None:
+        return None
+
+    lines = [unit.source.rstrip(), "", "def main() -> None:"]
+    for name, type_name in params:
+        lines.append(f"    {name}: {type_name} = {_nondet_for_type(type_name)}")
+        if type_name == "float":
+            lines.append(f"    __ESBMC_assume({name} == {name})")
+    call = ", ".join(name for name, _ in params)
+    lines.extend([f"    {unit.name}({call})", "", "main()", ""])
+    harness = "\n".join(lines)
+
+    harness_path = harness_dir / f"{finding_id}.py"
+    harness_path.write_text(harness, encoding="utf-8")
+    esbmc = run_esbmc_direct(
+        harness_path,
+        esbmc_command=esbmc_command,
+        bound=bound,
+        timeout_seconds=timeout_seconds,
+        output_dir=str(harness_dir),
+    )
+    if esbmc.status not in {"violation_found", "no_violation_found"}:
+        return None
+    classification = CONFIRMED_DRIVER if esbmc.status == "violation_found" else SAFE_DRIVER
+    ablation_report = AblationReport(over_restricted=False)
+    if classification == SAFE_DRIVER and use_ablation:
+        ablation_report = _ablate_harness(
+            harness,
+            esbmc_command=esbmc_command,
+            bound=bound,
+            timeout_seconds=timeout_seconds,
+        )
+        if ablation_report.over_restricted:
+            classification = OVER_RESTRICTED
+    return ScanCaseResult(
+        candidate=candidate,
+        classification=classification,
+        harness=harness,
+        harness_path=str(harness_path),
+        compat_verdict="real_body_driver",
+        esbmc_status=esbmc.status,
+        esbmc_summary=esbmc.summary,
+        esbmc_seconds=esbmc.time_seconds,
+        attempts=0,
+        verification_target="original_function_body",
+        abstraction_level="none",
+        driver_note="real-body-conclusive",
+        masking_assumptions=list(ablation_report.masking_assumptions),
+        ablation_per_assumption=dict(ablation_report.per_assumption),
     )
 
 
@@ -639,6 +794,8 @@ def _try_driver(
             synth_seconds=synth_seconds,
             esbmc_seconds=esbmc_seconds,
             attempts=attempt + 1,
+            verification_target="verbatim_slice",
+            abstraction_level="slice",
         )
 
         if esbmc.status == "violation_found":
@@ -707,6 +864,8 @@ def _one_attempt(
         candidate=candidate,
         classification=SYNTH_FAILED,
         synth_model=synthesizer.model,
+        verification_target="scalar_harness",
+        abstraction_level="scalar",
     )
 
     try:

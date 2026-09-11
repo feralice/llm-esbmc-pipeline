@@ -47,6 +47,7 @@ _INTRINSIC_NAMES = frozenset(
         "nondet_str",
         "nondet_list",
         "nondet_dict",
+        "assume",
         "__ESBMC_assume",
         "__ESBMC_assert",
         "__ESBMC_cover",

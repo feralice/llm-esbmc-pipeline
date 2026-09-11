@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from research_pipeline.scan.compat import (
     EXPECTED_PROPERTY_MARKER,
     VERDICT_INVALID,
@@ -139,6 +141,48 @@ def test_hallucinated_nondet_name_is_invalid():
 
 def test_real_intrinsic_names_pass():
     assert check_harness(_GOOD).ok
+
+
+def test_assume_alias_is_allowed():
+    src = _GOOD.replace("__ESBMC_assume", "assume")
+    assert check_harness(src).ok
+
+
+@pytest.mark.parametrize(
+    "snippet, expected",
+    [
+        ("x = lambda y: y\n", "lambda"),
+        ("x = (y := 1)\n", "walrus"),
+        ("__ESBMC_cover(True)\n", "outside the scalar harness property profile"),
+        ("__ESBMC_assert(True, 'x')\n", "outside the scalar harness property profile"),
+        ("values.add(1)\n", "unsupported ESBMC-Python method"),
+    ],
+)
+def test_known_esbmc_incompatibilities_are_rejected(snippet: str, expected: str):
+    src = (
+        "def f(x: int) -> int:\n"
+        f"    {snippet}"
+        "    assert x == x, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    return x\n"
+        "f(nondet_int())\n"
+    )
+    result = check_harness(src)
+    assert not result.ok
+    assert expected in " ".join(result.reasons)
+
+
+def test_unsupported_esbmc_assigns_is_not_whitelisted():
+    src = (
+        "def f(x: int) -> int:\n"
+        "    __ESBMC_assigns(x)\n"
+        "    assert x == x, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    return x\n"
+        "f(nondet_int())\n"
+    )
+    result = check_harness(src)
+    assert not result.ok
+    assert result.verdict == VERDICT_UNSUPPORTED
+    assert "__ESBMC_assigns" in " ".join(result.reasons)
 
 
 def test_undefined_names_ignores_intrinsics_and_builtins():

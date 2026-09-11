@@ -54,6 +54,10 @@ def finding_from_dict(data: dict) -> Finding:
             "expression": str(metadata_raw.get("expression", "")),
             "line": _metadata_int(metadata_raw.get("line")),
             "relative_line": _metadata_int(metadata_raw.get("relative_line")),
+            "operands": _metadata_strings(metadata_raw.get("operands", [])),
+            "guard_evidence": str(metadata_raw.get("guard_evidence", "")),
+            "missing_guard": str(metadata_raw.get("missing_guard", "")),
+            "context_needed": _metadata_strings(metadata_raw.get("context_needed", [])),
             "expected_exception": str(data.get("expected_exception", "")),
         },
     )
@@ -130,6 +134,15 @@ def _metadata_int(value) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _metadata_strings(value) -> list[str]:
+    """Normalize optional structured evidence fields without trusting types."""
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return []
 
 
 def _unique_finding_id(preferred_id: str, fallback_id: str, used_ids: set[str]) -> str:

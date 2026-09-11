@@ -36,7 +36,14 @@ __ESBMC_assume(cond)     assume(cond)              # mesmo efeito
 __ESBMC_assert(cond, msg)
 __ESBMC_cover(cond)                                # builder.cpp, não está no models/esbmc.py
 __ESBMC_unreachable()                              # falha se alcançado
+__ESBMC_requires(cond)  __ESBMC_ensures(cond)      # contratos de função
 ```
+
+`__ESBMC_assigns` é reconhecido pelo parser, mas o frontend Python o rejeita
+explicitamente como ainda não suportado. `__ESBMC_old`,
+`__ESBMC_return_value`, `__ESBMC_is_fresh`, `__ESBMC_forall` e
+`__ESBMC_exists` pertencem ao suporte de contratos e não devem ser usados no
+perfil simples de síntese de harness sem uma regra específica.
 
 `__VERIFIER_nondet_int()` e `__VERIFIER_assume()` também são reconhecidos
 (`builder.h:24`), mas são o dialeto do caminho pytest-testgen / SV-COMP. Para

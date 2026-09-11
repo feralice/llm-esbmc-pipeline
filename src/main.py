@@ -250,8 +250,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-driver",
         action="store_true",
         help=(
-            "Modo V2: pula o método verbatim-driver (função real intacta + driver "
-            "sintetizado) e vai direto para a síntese escalar."
+            "Modo V2: pula o driver gerado pela LLM (verbatim-slice) e vai direto "
+            "para a síntese escalar."
+        ),
+    )
+    parser.add_argument(
+        "--no-real-driver",
+        action="store_true",
+        help=(
+            "Modo V2: não tenta anexar um driver determinístico ao corpo original; "
+            "use apenas o driver/slice gerado pela LLM."
         ),
     )
     parser.add_argument(
@@ -967,6 +975,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "guards": not args.no_guards,
         "ablation": not args.no_ablation,
         "driver": not args.no_driver,
+        "real_driver": not args.no_real_driver,
         "synth_retries": args.synth_retries,
         "bound": args.bound,
         "timeout": args.timeout,
@@ -1112,7 +1121,8 @@ def mode_v2(args: argparse.Namespace) -> int:
         return 2
 
     layers = "".join(
-        f" +{name}" for name in ("driver", "compat", "guards", "ablation") if config[name]
+        f" +{name}" for name in ("real-driver", "driver", "compat", "guards", "ablation")
+        if config.get(name.replace("-", "_"), config.get(name, False))
     ) or " synth-only"
     candidate_origin = "conhecida(s)" if args.v2_stage == "synthesis" else "detectada(s)"
     print(
@@ -1143,6 +1153,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         use_guards=not args.no_guards,
         use_ablation=not args.no_ablation,
         use_driver=not args.no_driver,
+        use_real_driver=not args.no_real_driver,
         synth_retries=args.synth_retries,
         completed_results=completed_results,
         on_result=save_synthesis_result,
@@ -1284,6 +1295,12 @@ def _scan_summary(results) -> dict:
     driver_notes = Counter(
         (r.driver_note.split(":", 1)[0] or "n/a") for r in results if r.driver_note
     )
+    verification_targets = Counter(
+        r.verification_target or "unknown" for r in results
+    )
+    abstraction_levels = Counter(
+        r.abstraction_level or "unknown" for r in results
+    )
     total_tokens = sum(r.synth_total_tokens or 0 for r in results)
     total_synth_seconds = sum(r.synth_seconds for r in results)
     total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
@@ -1292,6 +1309,8 @@ def _scan_summary(results) -> dict:
         "by_classification": dict(by_class),
         "by_category": by_cat,
         "driver_notes": dict(driver_notes),
+        "verification_targets": dict(verification_targets),
+        "abstraction_levels": dict(abstraction_levels),
         "total_synth_tokens": total_tokens,
         "total_synth_seconds": round(total_synth_seconds, 3),
         "total_esbmc_seconds": round(total_esbmc_seconds, 3),
