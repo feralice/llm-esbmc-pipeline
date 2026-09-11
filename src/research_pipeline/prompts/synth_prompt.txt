@@ -97,7 +97,7 @@ RULES
      precondition lets a bad value through" - a bare assert on an unconstrained
      nondet_*() proves nothing here (it is falsifiable by any arbitrary input,
      unrelated to the real bug: confirmed empirically 2026-09-04, EXP-03,
-     docs/experiment_log.md - `assert "php -s" in script` for a free
+     docs/v2/experiment_log.md - `assert "php -s" in script` for a free
      nondet_str() "fails" on the empty string, which has nothing to do with the
      real bug). Model BOTH the buggy expression and the correct expression (you
      are given the fix, or can derive the intended behavior from the function's

@@ -371,7 +371,7 @@ def test_native_no_violation_falls_through_for_outcome_category(tmp_path, monkey
     """assertion_violation/incorrect_result have no built-in ESBMC property
     encoding the hypothesized "correct" behaviour (no assert exists on the
     real source) -- a no_violation_found verdict here proves nothing (EXP-03,
-    docs/experiment_log.md), so the pipeline must fall through to harness
+    docs/v2/experiment_log.md), so the pipeline must fall through to harness
     synthesis instead of trusting it as SAFE_NATIVE."""
     _patch_native(monkeypatch, lambda *a, **k: _native_result("no_violation_found"))
     _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))

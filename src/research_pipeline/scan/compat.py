@@ -81,7 +81,7 @@ _BAD_NONDET = re.compile(
 # Public: the scan pipeline also uses this set to require differential grounding
 # before counting a solver failure as a strong confirmation. An LLM can satisfy
 # this module's basic structural check (any assume, any comparison) without the
-# harness being semantically grounded (EXP-03, docs/experiment_log.md,
+# harness being semantically grounded (EXP-03, docs/v2/experiment_log.md,
 # 2026-09-04: `assert matched == expected` with `expected: bool = True` passes a
 # naive comparison check but is exactly as vacuous as the bare assert it replaced).
 OUTCOME_CATEGORIES = frozenset({"incorrect_result", "assertion_violation"})
@@ -321,7 +321,7 @@ def _tautological_str_coercion_reasons(compare: ast.Compare, known: dict[str, st
     `_is_utf` modeled `encoding_is_text: bool = str(encoding) == encoding`
     (encoding: int) and asserted it -- always-False by construction, same
     vacuous-comparison failure EXP-03 found in assertion_violation/
-    incorrect_result (docs/experiment_log.md), but here in type_mismatch,
+    incorrect_result (docs/v2/experiment_log.md), but here in type_mismatch,
     proving the pattern is not scoped to those two categories.
     """
     if len(compare.ops) != 1 or not isinstance(compare.ops[0], (ast.Eq, ast.NotEq)):
@@ -352,7 +352,7 @@ def _tautological_isinstance_reasons(call: ast.Call, known: dict[str, str]) -> l
     """isinstance(x, T) is always True in a scan harness whenever x's own
     declared/inferred type already IS T -- ESBMC-Python gives every variable a
     fixed static type (no real dynamic typing), so this never tests anything.
-    Confirmed empirically 2026-09-04 (EXP-02, docs/experiment_log.md): a
+    Confirmed empirically 2026-09-04 (EXP-02, docs/v2/experiment_log.md): a
     parameter typed `bool` and checked with `isinstance(param, bool)` always
     verifies SUCCESSFUL, hiding the type_mismatch/assertion_violation bug the
     harness meant to model.
@@ -395,7 +395,7 @@ def _direct_constant_names(tree: ast.Module) -> set[str]:
     from a nondet_*() or computed -- lets _unconstrained_outcome_reasons catch
     `assert buggy == expected` where `expected` is a hardcoded constant wearing
     an oracle's clothes, not a real correct-value computation. Confirmed
-    empirically 2026-09-04 (EXP-03, docs/experiment_log.md): re-running the
+    empirically 2026-09-04 (EXP-03, docs/v2/experiment_log.md): re-running the
     pipeline after this module first required "a comparison" produced exactly
     this shape (`expected: bool = True; assert matched == expected`) -- as
     vacuous as the bare assert it replaced, but now passing an Eq comparison.
@@ -545,7 +545,7 @@ def _unconstrained_outcome_reasons(tree: ast.Module, category: str | None) -> li
     Without either, the marked assert claims a bare boolean/negation holds for
     every value a fully free `nondet_*()` can take -- falsifiable by a
     fabricated input unrelated to the real bug. Confirmed empirically
-    2026-09-04 (EXP-03, docs/experiment_log.md): `assert "php -s" in script`
+    2026-09-04 (EXP-03, docs/v2/experiment_log.md): `assert "php -s" in script`
     over an unconstrained `nondet_str()` "confirms" on the empty string, which
     has nothing to do with the real bug (BugsInPy thefuck #7, about flags
     separated by other arguments).

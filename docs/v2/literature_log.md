@@ -3,7 +3,7 @@
 Um item por artigo lido em função de um ciclo do loop `/loop 1h`. Formato fixo por item,
 preenchido só depois de conferir a fonte primária (nunca por resumo de terceiros). Metadados
 formais (DOI, autor verbatim) ainda precisam passar pelo mesmo processo de verificação usado no
-`docs/LEITURAS_RECOMENDADAS.md` antes de qualquer citação fora deste log.
+`docs/projeto/leituras_recomendadas.md` antes de qualquer citação fora deste log.
 
 ## Modelo de entrada
 
@@ -39,7 +39,7 @@ formais (DOI, autor verbatim) ainda precisam passar pelo mesmo processo de verif
 - Métricas: taxa de erro de compilação, correção funcional.
 - Resultado principal: reduz erro de compilação em mais da metade, aumenta correção funcional.
 - Hipótese aplicável aqui: **inversa, não direta**. O problema deles é código mal tipado; o
-  problema achado no EXP-02 (`docs/experiment_log.md`) é código **bem** tipado que ainda assim
+  problema achado no EXP-02 (`docs/v2/experiment_log.md`) é código **bem** tipado que ainda assim
   não prova nada, porque o tipo declarado do parâmetro (`nondet_bool()`) já elimina por
   construção a condição que o assert testa (`isinstance(param, bool)` é sempre verdade se `param`
   só pode ser `bool`). O paralelo que vale: os dois mostram que o sistema de tipos da linguagem

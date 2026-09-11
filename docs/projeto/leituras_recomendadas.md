@@ -11,7 +11,59 @@ autores. Preprints são identificados para não serem apresentados como publica�
 sem confirmação. Antes de qualquer citação formal, o `citation-verifier` confere título verbatim,
 lista de autores, veículo e DOI.
 
+## Sumário de hierarquia (leitura ativa vs. histórico)
+
+Tabela adicionada na revisão de 08/09/2026, só para dar hierarquia; nenhum conteúdo abaixo foi
+reescrito ou removido por causa dela. `[NÚCLEO]` é leitura que fundamenta o método atual e fica
+prioritária pra reler; `[APOIO]` é contexto útil, leitura secundária; `[HISTÓRICO]` registra decisão
+já tomada ou direção já resolvida, não é leitura ativa mas continua documentado. A mesma tag
+aparece de novo no início da seção ou subseção correspondente no corpo do texto.
+
+| Seção | Tema | Status |
+|---|---|---|
+| Convenção terminológica | LLM vs. SLM | [APOIO] |
+| 1. Leituras prioritárias | cabeçalho, ver subseções | misto |
+| 1.1 | ESBMC-Python (ISSTA 2024) | [NÚCLEO] |
+| 1.2 | LLM Meets BMC, invariante neuro-simbólico (ASE 2024) | [NÚCLEO] |
+| 1.3 | LLM-Generated Invariants sem loop unrolling (ASE 2024) | [NÚCLEO] |
+| 1.4b | Survey of ML for Big Code and Naturalness | [APOIO] |
+| 1.4c | Alucinação corrigida por análise de AST determinística | [NÚCLEO] |
+| 1.4d | SLMs detectando bug de refatoração | [APOIO] |
+| 1.4 | BugsInPy | [NÚCLEO] |
+| 2. Repetição, votação e crítica | cabeçalho, mecanismo já implementado na V1 | [HISTÓRICO] |
+| 2.1 | Self-Consistency (ICLR 2023) | [HISTÓRICO] |
+| 2.2 | Universal Self-Consistency | [HISTÓRICO] |
+| 3. Geração de propriedades e harnesses | cabeçalho, ver subseções | misto |
+| 3.1 | Inductive Loop Invariants via LLM | [APOIO] |
+| 3.2 | Verificação automatizada de programas C sintetizados por LLM | [APOIO] |
+| 3.3 | Faria et al., anotação formal validada por oráculo de teste | [NÚCLEO] |
+| 4. Como as fontes formam a lacuna (formulação V1) | superada/estendida por 6.5 e 7.6 | [HISTÓRICO] |
+| 5. Lacunas de prompt, hints e métricas | cabeçalho, ver subseções | misto |
+| 5.1 | Few-shot vs. zero-shot | [APOIO] |
+| 5.2 | Lost in the Middle (tamanho de prompt) | [APOIO] |
+| 5.3 | Chain-of-thought | [HISTÓRICO] |
+| 5.4 | Cobertura de AST por categoria de bug | [APOIO] |
+| 5.5 | Significância estatística com dataset pequeno | [APOIO] |
+| 6. Leituras para o modo `scan` | direção ativa do V2 | [NÚCLEO] |
+| 6.1 a 6.7 | síntese de harness, triagem LLM, CEGAR, SpecGen, limitações ESBMC, ordem de leitura | [NÚCLEO] |
+| 7. Estado da literatura para o V2 | revisão mais recente, sustenta a lacuna atual | [NÚCLEO] |
+| 7.1 a 7.9 | EVA, FalseCrashReducer, onda 2025, avaliação sem gabarito, mapa e pendências | [NÚCLEO] |
+| 8. Trabalhos agênticos de nível de repositório | trabalho relacionado mais recente | [NÚCLEO] |
+| 8.1 | RepoAudit | [NÚCLEO] |
+| 8.2 | Revelio | [NÚCLEO] |
+| 8.3 | IRIS | [NÚCLEO] |
+| 8.4 | Sanitizing LLMs in Bug Detection with Data-Flow | [NÚCLEO] |
+| 8.5 | Hitchhiker's Guide to Program Analysis, Part II | [APOIO] |
+| 8.6 | Estudos e benchmarks úteis para avaliação | [APOIO] |
+| 8.7 | Rascunho de contribuição própria | [NÚCLEO] |
+
+Leitura das seções 1 e 2: são as mais antigas do documento. A maior parte da seção 1 continua
+núcleo porque fundamenta o backend formal e a procedência do dataset; a seção 2 virou histórico
+porque o mecanismo de votação já está implementado na V1, não é mais decisão em aberto.
+
 ## Convenção terminológica
+
+**[APOIO]**
 
 A pesquisa avalia tanto **LLMs** quanto **SLMs**. O documento usa "modelos de linguagem" como termo
 geral. A sigla LLM é preservada nos títulos dos artigos e quando a fonte estudou especificamente
@@ -21,7 +73,11 @@ forma de acesso: local/pago e SLM/LLM são dimensões diferentes.
 
 ## 1. Leituras prioritárias
 
+**[NÚCLEO/APOIO, misto] Núcleo: 1.1, 1.2, 1.3, 1.4c, 1.4 (BugsInPy). Apoio: 1.4b, 1.4d. Ver sumário de hierarquia no topo do arquivo.**
+
 ### 1.1 ESBMC-Python: A Bounded Model Checker for Python Programs
+
+**[NÚCLEO]**
 
 - Autores: Bruno Farias, Rafael Menezes, Eddie B. de Lima Filho, Youcheng Sun e Lucas C. Cordeiro.
 - Evento: ISSTA 2024.
@@ -42,6 +98,8 @@ Como ajuda esta pesquisa:
 
 ### 1.2 LLM Meets Bounded Model Checking: Neuro-symbolic Loop Invariant Inference
 
+**[NÚCLEO]**
+
 - Autores: Guangyuan Wu, Weining Cao, Yuan Yao, Hengfeng Wei, Taolue Chen e Xiaoxing Ma.
 - Evento: ASE 2024.
 - DOI: <https://doi.org/10.1145/3691620.3695014>
@@ -59,6 +117,8 @@ Como ajuda esta pesquisa:
 - ajuda a defender que o filtro formal é contribuição central, não apenas pós-processamento.
 
 ### 1.3 LLM-Generated Invariants for Bounded Model Checking Without Loop Unrolling
+
+**[NÚCLEO]**
 
 - Autores: Muhammad A. A. Pirzada, Giles Reger, Ahmed Bhayat e Lucas C. Cordeiro.
 - Evento: ASE 2024; Distinguished Paper Award.
@@ -80,6 +140,8 @@ Como ajuda esta pesquisa:
   casamento AST e síntese de harness, não somente invariantes de laço.
 
 ### 1.4b A Survey of Machine Learning for Big Code and Naturalness
+
+**[APOIO]**
 
 - Autores: Miltiadis Allamanis, Earl T. Barr, Premkumar T. Devanbu, Charles Sutton.
 - Veículo: ACM Computing Surveys, vol. 51, n. 4, artigo 81, 2018.
@@ -106,6 +168,8 @@ Como ajuda esta pesquisa:
 
 ### 1.4c Detecting and Correcting Hallucinations in LLM-Generated Code via Deterministic AST Analysis
 
+**[NÚCLEO]**
+
 - Autores: Dipin Khati, Daniel Rodriguez-Cardenas, Paul Pantzer e Denys Poshyvanyk.
 - Estado: preprint arXiv 2601.19106, janeiro de 2026.
 
@@ -128,6 +192,8 @@ Como ajuda esta pesquisa:
 
 ### 1.4d Evaluating the Effectiveness of Small Language Models in Detecting Refactoring Bugs
 
+**[APOIO]**
+
 - Autores: Rohit Gheyi, Márcio Ribeiro e Jonhnanthan Oliveira.
 - Estado: preprint arXiv 2502.18454, fevereiro de 2025.
 
@@ -145,6 +211,8 @@ Como ajuda esta pesquisa:
   com um modelo local em vez de assumir que só LLM grande serve.
 
 ### 1.4 BugsInPy: A Database of Existing Bugs in Python Programs
+
+**[NÚCLEO]**
 
 - Autores: Ratnadira Widyasari et al.
 - Evento: ESEC/FSE 2020.
@@ -165,7 +233,11 @@ Como ajuda esta pesquisa:
 
 ## 2. Leituras para repetição, votação e crítica
 
+**[HISTÓRICO] Mecanismo de votação já implementado na V1; a leitura documenta a decisão tomada, não é mais busca em aberto.**
+
 ### 2.1 Self-Consistency Improves Chain of Thought Reasoning in Language Models
+
+**[HISTÓRICO]**
 
 - Autores: Xuezhi Wang et al.
 - Evento: ICLR 2023.
@@ -185,6 +257,8 @@ Como adaptar:
 
 ### 2.2 Universal Self-Consistency for Large Language Model Generation
 
+**[HISTÓRICO]**
+
 - Autores: Xinyun Chen et al.
 - Ano: 2023, preprint.
 - Publicação dos autores: <https://deepmind.google/research/publications/50879/>
@@ -199,7 +273,11 @@ mais auditável; um árbitro LLM pode ficar como ablação.
 
 ## 3. Leituras para geração de propriedades e harnesses
 
+**[APOIO, com exceção] Apoio: 3.1 e 3.2. Núcleo: 3.3, citada no mapa da seção 7.7.**
+
 ### 3.1 Finding Inductive Loop Invariants using Large Language Models
+
+**[APOIO]**
 
 - Autores: Adharsh Kamath et al.
 - Preprint: <https://arxiv.org/abs/2311.07948>
@@ -209,6 +287,8 @@ ideia de que plausibilidade textual não basta: o artefato gerado precisa passar
 formal independente.
 
 ### 3.2 Towards Automated Verification of LLM-Synthesized C Programs
+
+**[APOIO]**
 
 - Autores: Prasita Mukherjee e Benjamin Delaware.
 - Preprint: <https://arxiv.org/abs/2410.14835>
@@ -225,6 +305,8 @@ Aplicação possível:
 - usar feedback formal para nova tentativa.
 
 ### 3.3 Automatic Generation of Formal Specification and Verification Annotations Using LLMs and Test Oracles
+
+**[NÚCLEO]**
 
 - Autores: João Pascoal Faria, Emanuel Trigo, Vinicius Honorato e Rui Abreu.
 - Ano: 2026.
@@ -246,6 +328,8 @@ Cuidados: Dafny é uma linguagem orientada à verificação e fornece especifica
 existem em um arquivo Python comum. Os resultados não podem ser transferidos diretamente.
 
 ## 4. Como essas fontes formam uma lacuna de pesquisa
+
+**[HISTÓRICO] Formulação original da lacuna para o V1 (oráculo derivado de BugsInPy); continua registrada, mas foi estendida pela segunda formulação da seção 6.5 e revisada na 7.6.**
 
 Os trabalhos encontrados cobrem partes da proposta:
 
@@ -281,11 +365,15 @@ A seção 6 desdobra uma segunda formulação, sem gabarito, para o modo `scan`.
 
 ## 5. Lacunas de prompt, hints estruturais e métricas (achado da revisão do pipeline, 24/08/2026)
 
+**[APOIO] Lacunas de prompt e métrica ainda em aberto, exceto 5.3 (chain-of-thought), que já é histórico porque a técnica já está implementada no system prompt.**
+
 Revisão do código (`research_pipeline/llm/prompts.py`, `ast_utils.py`, `evaluator.py`) encontrou
 três lacunas concretas que ainda precisam de leitura antes de virar decisão de projeto. Ficam aqui
 como direção de busca, não como leitura fechada.
 
 ### 5.1 Few-shot vs. zero-shot prompting
+
+**[APOIO]**
 
 - Brown et al., "Language Models are Few-Shot Learners", NeurIPS 2020.
   Preprint: <https://arxiv.org/abs/2005.14165>
@@ -298,8 +386,10 @@ bug/vulnerabilidade em código (não achado nem verificado nesta sessão).
 
 ### 5.2 Tamanho de prompt e degradação de contexto
 
+**[APOIO]**
+
 - Liu et al., "Lost in the Middle: How Language Models Use Long Contexts", TACL 2023.
-  Preprint: <https://arxiv.org/abs/2307.03172> — aceito em periódico revisado por pares (confirmado
+  Preprint: <https://arxiv.org/abs/2307.03172>: aceito em periódico revisado por pares (confirmado
   nesta sessão).
 
 Mostra que modelos usam pior informação no meio de um prompt longo. Prompt atual do pipeline é
@@ -308,15 +398,19 @@ referência obrigatória se a dissertação discutir por que o prompt foi mantid
 
 ### 5.3 Chain-of-thought (relacionado ao bloco de raciocínio do system prompt)
 
+**[HISTÓRICO]**
+
 - Wei et al., "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models", 2022.
   Preprint: <https://arxiv.org/abs/2201.11903>
 
 Estado encontrado nesta sessão: preprint arXiv. Não confirmado se a versão final foi aceita em
-NeurIPS 2022 — conferir antes de citar como revisado por pares. O bloco "RACIOCÍNIO — pense passo a
+NeurIPS 2022, conferir antes de citar como revisado por pares. O bloco "RACIOCÍNIO, pense passo a
 passo" do `system_prompt.txt` já implementa essa técnica; falta o texto da dissertação citar a
 fonte.
 
 ### 5.4 Cobertura de AST por categoria de bug
+
+**[APOIO]**
 
 `ast_utils.py` só extrai três tipos de operação (`division`, `subscript`, `call`), cobrindo bem
 apenas 2 das 8 categorias de bug formal (`division_by_zero`, `out_of_bounds`). As outras 6
@@ -325,13 +419,15 @@ apenas 2 das 8 categorias de bug formal (`division_by_zero`, `out_of_bounds`). A
 
 Busca pendente: como a literatura de detecção de bug guiada por LLM usa hints estruturais (AST,
 CFG, taint) por categoria de bug, não só para os casos "fáceis" de extrair (divisão, índice).
-Nenhuma leitura desta lista cobre isso ainda diretamente — candidatos a revisar: trabalhos de
+Nenhuma leitura desta lista cobre isso ainda diretamente. Candidatos a revisar: trabalhos de
 "structured prompting" ou "program-aware prompting" para detecção de vulnerabilidade.
 
 Estado 01/09/2026: a triagem do modo `scan` roda sobre toda função e não recebe hint estrutural
 para as 6 categorias sem nó AST próprio. É item de trabalho, não só de leitura.
 
 ### 5.5 Significância estatística em avaliação com dataset pequeno
+
+**[APOIO]**
 
 - Dietterich, "Approximate Statistical Tests for Comparing Supervised Classification Learning
   Algorithms", Neural Computation, 1998.
@@ -345,6 +441,8 @@ significância entre fluxos (llm-only vs. hybrid vs. esbmc-only) nem correção 
 
 ## 6. Leituras para o modo `scan` (síntese de harness sem ground truth, 31/08/2026)
 
+**[NÚCLEO]**
+
 Este bloco cobre a direção que as seções 1 a 5 não alcançam: apontar o pipeline para um repositório
 selvagem, deixar a LLM sintetizar o harness e confirmar com ESBMC, **sem gabarito**. Motivado pela
 caça manual de 2026-08-27/28 (issues gluonts#3343 e statsforecast#1221) e pela implementação do
@@ -353,6 +451,8 @@ finais (DOI verbatim, lista de autores) ainda a checar antes de citação formal
 seções anteriores.
 
 ### 6.1 Síntese de harness / driver por LLM
+
+**[NÚCLEO]**
 
 #### OSS-Fuzz-Gen: geração de fuzz driver assistida por LLM (Google)
 
@@ -383,6 +483,8 @@ posicionar o passo 3, e como comparação de desenho: quanto contexto do projeto
 
 ### 6.2 LLM filtrando candidatos de análise estática em código real
 
+**[NÚCLEO]**
+
 #### Enhancing Static Analysis for Practical Bug Detection: An LLM-Integrated Approach (LLift)
 
 - Autores: Haonan Li, Yu Hao, Yizhuo Zhai, Zhiyun Qian (a confirmar).
@@ -411,6 +513,8 @@ de anotação).
 
 ### 6.3 Solidez da abstração e prova espúria
 
+**[NÚCLEO]**
+
 #### Counterexample-Guided Abstraction Refinement (CEGAR)
 
 - Autores: Edmund M. Clarke, Orna Grumberg, Somesh Jha, Yuan Lu, Helmut Veith.
@@ -431,6 +535,8 @@ Por que importa (e o paralelo não é literal):
 
 ### 6.4 Inferência de pré-condição por LLM
 
+**[NÚCLEO]**
+
 #### SpecGen: Automated Generation of Formal Program Specifications via Large Language Models
 
 - Estado: preprint arXiv, <https://arxiv.org/abs/2401.08807>.
@@ -449,6 +555,8 @@ Por que importa:
   inspiração de arquitetura, não de meta.
 
 ### 6.5 Como o modo `scan` muda a lacuna de pesquisa da seção 4
+
+**[NÚCLEO]**
 
 A formulação do §4 assume oráculo oculto derivado de teste ou commit (estilo BugsInPy, dataset V2
 rotulado). O modo `scan` é uma segunda formulação, sem gabarito:
@@ -481,6 +589,8 @@ Alegação defensável com o levantamento atual:
 
 ### 6.6 Limitações do ESBMC-Python (não é leitura externa, é fonte primária)
 
+**[NÚCLEO]**
+
 O repositório do ESBMC documenta as limitações do frontend Python, e isso deve alimentar direto o
 `synth_prompt.txt` (que construções o harness pode usar) e o texto da dissertação (o que o backend
 suporta):
@@ -493,6 +603,8 @@ suporta):
 
 ### 6.7 Ordem de leitura sugerida para esta direção
 
+**[NÚCLEO]**
+
 1. **ESBMC-Python** (§1.1) e o `limitations.md` do repo: o que o backend aceita.
 2. **OSS-Fuzz-Gen**: a tarefa de síntese de harness e a falha de restrição de entrada, na prática.
 3. **LLift** (§6.2): triagem de candidato por LLM em código real, bug inédito confirmado.
@@ -502,12 +614,16 @@ suporta):
 
 ## 7. Estado da literatura para o V2 (revisão de 1 de setembro de 2026)
 
+**[NÚCLEO]**
+
 Busca dirigida à direção do modo `scan` (código selvagem, síntese de harness por LLM, confirmação
 por ESBMC-Python, sem gabarito). Os itens abaixo saíram de busca por palavra-chave nesta data.
 Metadados finais (título verbatim, lista de autores, DOI, veículo) precisam passar pelo
 `citation-verifier` antes de qualquer citação formal, mesmo padrão das seções 1 a 6.
 
 ### 7.1 Três blocos onde a proposta se encaixa
+
+**[NÚCLEO]**
 
 O modo `scan` fica no cruzamento de três linhas que a literatura trata separadas:
 
@@ -521,6 +637,8 @@ A combinação dos três, em Python verificado direto e com checagem de solidez 
 contribuição pode estar.
 
 ### 7.2 EVA: tradução assistida por modelo de linguagem e BMC de código Python
+
+**[NÚCLEO]**
 
 - Autores prováveis: S. Shivaji, N. Lobakhina, K. Havelund, A. Pinto e L. Cordeiro.
 - Veículo encontrado: 3rd AI ISoLA, 2026.
@@ -543,6 +661,8 @@ Como se relaciona com esta pesquisa:
   frontend nativo é preferível.
 
 ### 7.3 FalseCrashReducer: reduzir crash falso positivo em geração de fuzz driver
+
+**[NÚCLEO]**
 
 - Autores prováveis: P. C. Amusuo, D. Liu, R. A. Calvo Mendez, J. Metzman, O. Chang e J. C. Davis.
 - Estado encontrado: preprint arXiv 2510.02185, outubro de 2025.
@@ -569,6 +689,8 @@ Como se relaciona com esta pesquisa:
 
 ### 7.4 Onda de 2025 sobre filtragem de falso positivo por modelo de linguagem
 
+**[NÚCLEO]**
+
 Trabalhos recentes sobre o sub-problema de decidir se um alerta de análise estática é real:
 
 - "Minimizing False Positives in Static Bug Detection via LLM-Enhanced Path Feasibility Analysis",
@@ -590,6 +712,8 @@ O que essa onda diz para a pesquisa:
 
 ### 7.5 Descoberta de bug em escala e avaliação sem gabarito
 
+**[NÚCLEO]**
+
 - "One Bug, Hundreds Behind: LLMs for Large-Scale Bug Discovery", preprint arXiv 2510.14036.
   Conferir se há confirmação formal ou só triagem; se for só triagem, entra como contraste.
 - "BugScope: Learn to Detect Bugs Like Human", preprint arXiv 2507.15671. Provável detecção pura,
@@ -600,6 +724,8 @@ O que essa onda diz para a pesquisa:
   protocolo com revisor humano. É a base metodológica que falta para a métrica-manchete do `scan`.
 
 ### 7.6 Lacuna de pesquisa revisada
+
+**[NÚCLEO]**
 
 A formulação do §6.5 continua válida, mas precisa ficar mais precisa depois desta busca:
 
@@ -622,6 +748,8 @@ O que é específico desta pesquisa, à luz da revisão:
 
 ### 7.7 Mapa leitura para decisão de projeto do V2
 
+**[NÚCLEO]**
+
 | Decisão no modo `scan` | Pergunta de banca | Leitura que responde |
 |---|---|---|
 | Modelo de linguagem sintetiza o harness (passo 3) | já foi feito, por que é difícil | OSS-Fuzz-Gen (§6.1), FalseCrashReducer (§7.3), LLM-Generated Invariants (§1.3) |
@@ -633,6 +761,8 @@ O que é específico desta pesquisa, à luz da revisão:
 | Verificar Python direto, sem transpilar | por que não fazer como o EVA | EVA (§7.2), ESBMC-Python (§1.1) |
 
 ### 7.8 Ordem de leitura para fechar a revisão desta direção
+
+**[NÚCLEO]**
 
 1. **EVA** (§7.2): vizinho do grupo, define a diferença de arquitetura.
 2. **FalseCrashReducer** (§7.3): estado da arte do `abstraction_gap`.
@@ -646,6 +776,8 @@ O que é específico desta pesquisa, à luz da revisão:
 
 ### 7.9 Pendências desta revisão
 
+**[NÚCLEO]**
+
 - passar `citation-verifier` em EVA, FalseCrashReducer e nos quatro preprints de 2025 e 2026
   antes de citar;
 - ler "One Bug, Hundreds Behind" e decidir se ameaça a lacuna ou entra como contraste;
@@ -657,6 +789,8 @@ O que é específico desta pesquisa, à luz da revisão:
 
 ## 8. Trabalhos agênticos de nível de repositório (levantamento via base ASE, 1 de setembro de 2026)
 
+**[NÚCLEO]**
+
 Fonte: `PurCL/ASE`, base curada de 1.666 artigos sobre engenharia de software com agentes
 (ICSE, FSE, ASE, ISSTA, PLDI, OOPSLA, S&P, CCS, NDSS, ACL, ICML, 2023 a 2026), com taxonomia
 de tema. Site: <https://chengpeng-wang.github.io/Survey/ase.html>. Arquivo local com abstract
@@ -667,8 +801,12 @@ nesta data; verificar no `citation-verifier` antes de citar.
 
 ### 8.1 RepoAudit: agente LLM para auditoria de nível de repositório
 
+**[NÚCLEO]**
+
 - Autores: Jinyao Guo, Chengpeng Wang, Xiangzhe Xu, Zian Su, Xiangyu Zhang (Purdue).
 - Veículo encontrado: ICML 2025 (PMLR v267). Repositório: <https://github.com/PurCL/RepoAudit>.
+  `[VERIFICAR CITAÇÃO]` veículo sem hedge de "a confirmar" ao contrário do resto da seção 8; checar
+  no `citation-verifier` antes de citar formalmente.
 - Rótulos ASE: Static Analysis, Bug Detection, Data-flow Analysis, Agent Design, Memory Management.
 
 Arquitetura, lida direto do código:
@@ -703,6 +841,8 @@ Como se relaciona com esta pesquisa:
 
 ### 8.2 Revelio: detecção agêntica de memory safety em escala de repositório, com custo baixo
 
+**[NÚCLEO]**
+
 - Estado encontrado: preprint arXiv 2606.22263, 2026. DOI: <https://doi.org/10.48550/arXiv.2606.22263>.
 - Rótulos ASE: Static Analysis, Bug Detection, Fuzzing, Test Case Generation, Agent Design.
 
@@ -714,6 +854,8 @@ a registrar: PoC exige compilar e rodar o projeto real; o harness escalar não, 
 garantia limitada (bounded), não só "rodou e quebrou".
 
 ### 8.3 IRIS: análise estática assistida por LLM, repositório inteiro
+
+**[NÚCLEO]**
 
 - Estado encontrado: ICLR 2025. Título de arquivo: "LLM-Assisted Static Analysis for Detecting
   Security Vulnerabilities".
@@ -727,7 +869,11 @@ enfeite.
 
 ### 8.4 Sanitizing LLMs in Bug Detection with Data-Flow
 
-- Estado encontrado: EMNLP Findings 2024.
+**[NÚCLEO]**
+
+- Estado encontrado: EMNLP Findings 2024. `[VERIFICAR CITAÇÃO]` título e par venue/ano com
+  confiança moderada nesta revisão; não achado hedge equivalente ao de outros itens da seção 8,
+  conferir verbatim no `citation-verifier` antes de citar.
 - Rótulos ASE: Static Analysis, Bug Detection, Data-flow Analysis, Taint Analysis.
 
 Força o LLM a **emitir o caminho de fluxo de dados** em chain-of-thought few-shot e valida esse
@@ -738,6 +884,8 @@ remove-se cada hipótese do harness e observa-se o veredito. Citar como preceden
 
 ### 8.5 Hitchhiker's Guide to Program Analysis, Part II (e Part III no §7.4)
 
+**[APOIO]**
+
 - Estado encontrado: preprint arXiv 2025 (Part II); Part III é o 2606.15122 já citado no §7.4.
 - Rótulos ASE: Static Analysis, Bug Detection, Empirical Study.
 
@@ -747,6 +895,8 @@ sobre-aproximação de caminho e de restrição de dados). Referência para a se
 por que "LLM lê o código e diz se tem bug" não basta.
 
 ### 8.6 Estudos e benchmarks úteis para a avaliação
+
+**[APOIO]**
 
 - **Benchmarking LLMs and LLM-based Agents in Practical Vulnerability Detection for Code
   Repositories** (ACL 2025): mostra que detecção real exige análise inter-procedural (bug nasce
@@ -766,6 +916,8 @@ por que "LLM lê o código e diz se tem bug" não basta.
   ferramenta não tem".
 
 ### 8.7 Onde esta pesquisa fica diferente de todos esses (rascunho de contribuição)
+
+**[NÚCLEO]**
 
 Com o levantamento das seções 6, 7 e 8, a formulação defensável do que é próprio:
 

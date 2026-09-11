@@ -1,6 +1,6 @@
 # V2 Real-World Dataset
 
-Implements the direction proposed in [`docs/v2_harness_synthesis.md`](../../docs/v2_harness_synthesis.md):
+Implements the direction proposed in [`docs/v2/harness_synthesis.md`](../../docs/v2/harness_synthesis.md):
 real bugs from [BugsInPy](https://github.com/soarsmu/BugsInPy), abstracted by hand into
 self-contained, ESBMC-verifiable harnesses. Complements the synthetic, controlled V1 dataset at
 `dataset/labeled/` — V1 answers "can the pipeline confirm a known bug shape", V2 answers "does that
@@ -32,7 +32,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
 2. Isolate the scalar/logic core that carries the bug — no numpy/pandas/external imports.
 3. Where the real code needs an external object (a pandas index type, a dict lookup, an
    attribute's liveness), stub the *minimum* needed shape (an int tag, a bool flag) rather than
-   importing the real dependency — per the stub-shadowing approach `docs/v2_harness_synthesis.md`
+   importing the real dependency, per the stub-shadowing approach `docs/v2/harness_synthesis.md`
    §5.2 and §6 call for.
 4. Preserve the real caller's actual precondition (what the original code already guarantees)
    instead of inventing a stricter one — this is what makes the counterexample mean something.

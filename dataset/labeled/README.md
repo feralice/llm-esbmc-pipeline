@@ -43,4 +43,4 @@ python src/main.py --mode benchmark \
 python scripts/compare_benchmarks.py --dir reports/json/v1_benchmark
 ```
 
-See [`TUTORIAL.md`](../../TUTORIAL.md) for all V1 model commands and [`docs/benchmark_v1_reference.md`](../../docs/benchmark_v1_reference.md) for the full methodology.
+See [`TUTORIAL.md`](../../TUTORIAL.md) for all V1 model commands and [`docs/v1/benchmark_reference.md`](../../docs/v1/benchmark_reference.md) for the full methodology.

@@ -1,0 +1,20 @@
+Atividade,Bloco do cronograma,Prazo alvo (calendario),Status,Onde evoluir / proximo passo
+Casamento de expressao AST por categoria de bug,Semanas 1-2,Concluido (ago/2026),Feito,Cobre 8 categorias formais; sem pendencia conhecida
+Ampliar dataset com casos reais (ESBMC + BugsInPy),Semanas 1-2,Concluido (ago/2026),Feito,117 casos auditados; 0 warnings de grounding
+Votacao entre modelos para melhorar o recall,Semanas 1-2,Concluido (ago/2026),Feito,Estendido em 08/09 pra tambem votar em code smell (--vote-kind smells); sem custo de API
+Rodada end-to-end sem seed do gabarito,Mes 1,Set/2026 (rodando agora),Em andamento,Deteccao dos 104 arquivos ja fechou (100 hipoteses); sintese de harness por hipotese em andamento
+Auditoria manual dos resultados da rodada end-to-end,Mes 1,Set/2026,Nao feito,Depende do relatorio da rodada end-to-end fechar
+Validacao semantica do harness sintetizado,Mes 1,Set/2026,Em andamento,Sai do mesmo relatorio da rodada end-to-end
+Checagem de concretizacao de operandos simbolicos,Mes 1,Set/2026,Nao feito,Falha B conhecida do scan mode; hoje so existe como instrucao de prompt, falta virar checagem automatica
+Testar parametros alternativos de verificacao no ESBMC,Mes 1,Set/2026,Em andamento,Piloto no dataset V1 (48 casos, --no-slice/--ir) deu 0 divergencia; V1 so cobre 3 das 8 categorias. Piloto novo rodando nos harnesses reais da V2, testando --strict-types (type_mismatch) e --unsigned-overflow-check (integer_overflow)
+Comparar pipeline baseline vs. pipeline evoluido,Mes 1,Set/2026,Parcial,Numeros soltos existem (sintese 69-75%; deteccao pura ~26%); falta consolidar como comparacao formal por categoria
+Ajustar o prompt com exemplos reais (few-shot),Mes 1,Set/2026,Nao feito,Sem trabalho iniciado
+Avaliar bugs em projetos reais (validacao externa),Mes 1-2,Set-Out/2026,Em andamento continuo,5 achados confirmados, 2 issues reais abertas (gluonts#3343, statsforecast#1221); item novo aws-neuron ainda por fazer
+Revisao bibliografica (fundamentos LLM/SLM + trabalhos correlatos e datasets),Semanas 1-2 / Mes 1-2,Ago-Out/2026,Em andamento,21 artigos de artigos_estudo reorganizados por prioridade (nucleo/apoio/candidato a arquivar) e consolidados num arquivo so em 08/09
+Construir o modulo de sintese de harness (V2),Mes 1-2,Set-Out/2026,Feito (adiantado),Tres camadas (nativo, driver verbatim, escalar) implementadas e testadas, adiantado vs previsto
+Fundamentacao em logica de Hoare para o harness,Mes 2,Out/2026,Nao iniciado,So leitura e redacao metodologica
+Medir custo computacional (tempo tokens e API),Mes 2,Out/2026,Parcial,Telemetria automatica ja existe; falta so converter tokens em R$/US$
+Comparacao e consolidacao final (EVA/PyVeritas datasets V1xV2xacademicos validacao externa),Mes 2-3,Out-Nov/2026,Nao iniciado,Depende de ler EVA e PyVeritas por completo primeiro
+Publicar artefatos (Zenodo/DOI),Mes 3,Nov/2026,Nao iniciado,Sem trabalho iniciado
+Consolidar e analisar os resultados,Mes 4,Dez/2026,Nao iniciado,Depende do end-to-end fechado e da comparacao final
+Escrever os resultados da dissertacao,Mes 4,Dez/2026,Nao iniciado,Meta: deixar folga real antes do prazo maximo (06/04/2027)

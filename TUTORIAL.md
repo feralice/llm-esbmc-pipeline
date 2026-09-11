@@ -1,6 +1,6 @@
-# Tutorial — Benchmark V1
+# Tutorial: Execução do Pipeline
 
-> **Nota:** Para a especificação completa da metodologia, métricas e categorias, consulte a [**Referência Oficial do Benchmark V1**](docs/benchmark_v1_reference.md).
+> **Nota:** A V2 é o fluxo principal atual. A V1 permanece como baseline reproduzível para comparação.
 
 ## Pré-requisitos
 
@@ -13,6 +13,46 @@ python -m pytest
 
 O pytest padrão não chama APIs reais. Para executar explicitamente essas
 integrações, use `python -m pytest -m live_llm`.
+
+---
+
+## 1. V2 end-to-end
+
+Esta execução mede o método completo. A LLM recebe os arquivos de detecção e
+precisa encontrar a unidade, a categoria e a expressão por conta própria.
+
+```bash
+PYTHONPATH=src .venv/bin/python src/main.py \
+  --mode v2 --v2-stage end-to-end \
+  --input dataset/v2_real_world/detection \
+  --ground-truth dataset/v2_real_world/ground_truths.json \
+  --synth-backend codex \
+  --output-dir artifacts/v2/end-to-end-117
+```
+
+O pipeline executa: preprocessamento AST, detecção LLM, grounding da expressão,
+`verbatim-driver`, síntese escalar quando necessário, validação do harness,
+ESBMC, grounding diferencial e ablação de `__ESBMC_assume`.
+
+Saídas principais: `v2_report.json`, `v2_checkpoint.json`, `harnesses/` e
+`llm_telemetry.json`. Para retomar uma execução interrompida, repita o comando
+com `--resume`; a configuração, as fontes e os prompts precisam ser os mesmos.
+
+### Síntese isolada
+
+Para avaliar apenas a geração e a verificação dos harnesses, usando hipóteses
+conhecidas no gabarito:
+
+```bash
+PYTHONPATH=src .venv/bin/python src/main.py \
+  --mode v2 --v2-stage synthesis \
+  --input dataset/v2_real_world/detection \
+  --ground-truth dataset/v2_real_world/ground_truths.json \
+  --synth-backend codex \
+  --output-dir artifacts/v2/synthesis
+```
+
+Esse modo não mede a detecção autônoma da LLM.
 
 ---
 
@@ -29,7 +69,7 @@ integrações, use `python -m pytest -m live_llm`.
 
 ---
 
-## 1. Benchmark completo (Flow A + B + C em um comando)
+## 2. Benchmark V1 completo (Flow A + B + C em um comando)
 
 ```bash
 python src/main.py \
@@ -46,7 +86,7 @@ O pipeline usa um único prompt, sem expor à LLM as operações pré-extraídas
 
 ---
 
-## 2. Comparar vários LLMs
+## 3. Comparar vários LLMs na V1
 
 ### Modelos V1 (um por vez)
 
@@ -67,7 +107,7 @@ python src/main.py \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_claude-sonnet-4-6.json
 
-# DeepSeek-R1 7b (Ollama local — llm-timeout maior)
+# DeepSeek-R1 7b (Ollama local: llm-timeout maior)
 python src/main.py \
   --mode benchmark \
   --input dataset/labeled/ground_truths \
@@ -91,7 +131,7 @@ e acrescente `--resume`. No modo benchmark, `--report` é obrigatório para
 localizar o checkpoint. Casos ausentes ficam em `coverage.failed_cases` e uma
 execução parcial retorna código de saída `2`.
 
-> **`--llm-timeout 600`** é necessário para modelos locais Ollama. Reasoning models como DeepSeek-R1 podem levar vários minutos por função — o padrão (300 s) costuma causar timeout em funções mais complexas.
+> **`--llm-timeout 600`** é necessário para modelos locais Ollama. Reasoning models como DeepSeek-R1 podem levar vários minutos por função: o padrão (300 s) costuma causar timeout em funções mais complexas.
 
 ### Atalho: todos de uma vez
 
@@ -106,7 +146,7 @@ DeepSeek sequenciais via Ollama, já que dividem a mesma GPU). Logs individuais 
 
 ---
 
-## 3. Comparar resultados
+## 4. Comparar resultados
 
 ```bash
 python scripts/compare_benchmarks.py --dir reports/json/v1_benchmark
@@ -114,7 +154,7 @@ python scripts/compare_benchmarks.py --dir reports/json/v1_benchmark
 
 ---
 
-## 4. Visualizar no frontend
+## 5. Visualizar no frontend
 
 ```bash
 explorer.exe frontend/index.html
@@ -124,9 +164,9 @@ Arrastar todos os arquivos `reports/json/v1_benchmark/benchmark_*.json` → aba 
 
 ---
 
-## Modos individuais (exploração, não benchmark)
+## 6. Modos individuais (exploração, não benchmark)
 
-### Flow A — só ESBMC (sem LLM, sem métricas de ground truth)
+### Flow A: só ESBMC (sem LLM, sem métricas de ground truth)
 
 ```bash
 python src/main.py \
@@ -136,7 +176,7 @@ python src/main.py \
   --bound 5 --timeout 30
 ```
 
-### Flow B — LLM + ESBMC em arquivo(s) individual(is)
+### Flow B: LLM + ESBMC em arquivo(s) individual(is)
 
 ```bash
 python src/main.py \
@@ -146,7 +186,7 @@ python src/main.py \
   --bound 5 --timeout 30
 ```
 
-### Flow C — só LLM (sem ESBMC)
+### Flow C: só LLM (sem ESBMC)
 
 ```bash
 python src/main.py \
@@ -157,7 +197,7 @@ python src/main.py \
 
 ---
 
-## Validar dataset sem LLM
+## 7. Validar dataset sem LLM
 
 ```bash
 python scripts/verify_dataset.py
@@ -166,7 +206,7 @@ python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 
 ---
 
-## Testes
+## 8. Testes
 
 ```bash
 python -m pytest

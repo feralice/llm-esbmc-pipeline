@@ -1,6 +1,6 @@
 # Leituras de code smells (arquivado em 1 de setembro de 2026)
 
-Movido de `docs/LEITURAS_RECOMENDADAS.md` quando aquele documento foi podado para focar em
+Movido de `docs/projeto/leituras_recomendadas.md` quando aquele documento foi podado para focar em
 ajuste do pipeline (localização de bug, síntese de harness, verificação formal, prompt,
 avaliação). O material aqui continua válido para a parte de code smells da pesquisa, só saiu
 da lista principal. As perguntas para o orientador e a ordem de leitura antiga também ficaram

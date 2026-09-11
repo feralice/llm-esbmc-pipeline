@@ -10,4 +10,4 @@ Esta pasta contém os relatórios gerados pelo pipeline em formato JSON.
 
 ## Formato dos Dados
 
-Consulte a [**Referência Oficial do Benchmark V1**](../../docs/benchmark_v1_reference.md) para entender como interpretar os campos `metrics`, `hallucinations` e as classificações finais dos achados.
+Consulte a [**Referência Oficial do Benchmark V1**](../../docs/v1/benchmark_reference.md) para entender como interpretar os campos `metrics`, `hallucinations` e as classificações finais dos achados.

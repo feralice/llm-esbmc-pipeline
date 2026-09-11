@@ -1,0 +1,29 @@
+Tema,Descricao,Materiais possiveis,Origem
+Fundamentos de Bounded Model Checking,Verificacao com um limite de passos definido,Slides,Original
+Instalacao e primeiro uso do ESBMC-Python,Como instalar e rodar a primeira verificacao MacOS WSL Windows etc,Roteiro de instalacao em PDF,Original
+Anotacao de tipo obrigatoria e valores simbolicos (nondet),Anotacao de tipo e valor simbolico obrigatorios,Lista de exercicios,Original
+Peculiaridades do frontend Python (divisao real e inteira slicing excecoes),Limitacoes do Python no ESBMC e como contornar,Roteiro pratico,Original
+Modelos operacionais da biblioteca padrao (math random heapq),Como o ESBMC-Python modela as bibliotecas padrao por baixo dos panos,Codigo comentado e PDF explicando o fluxo,Original
+Divisao por zero e bugs aritmeticos,Como o ESBMC identifica bug de divisao por zero,Lista de exercicios,Original
+Estouro de limites em listas e strings,Como o ESBMC identifica acesso fora do limite,Lista de exercicios,Original
+Contratos de funcao (requires ensures assigns),O que a funcao promete antes e depois de rodar,Slides,Original
+Leitura e interpretacao de contraexemplos,Como ler o relatorio de erro do ESBMC,PDF,Original
+Padroes de classificacao de vulnerabilidade (CWE e OWASP),Nomenclatura padrao para tipos de bug explicar saida do esbmc,Slides,Original
+Estudo de caso com bug real do proprio ESBMC,Bug real documentado no proprio ESBMC,Estudo de caso,Original
+Limites do que a verificacao limitada consegue provar,Ate onde a prova do ESBMC garante,Slides,Original
+Fundamentos de arquitetura de LLM (Transformer e atencao),Como o modelo le o texto,Slides,Original
+Tokenizacao e representacao de texto,Como o texto e convertido em numeros,Exercicio pratico,Original
+Pre-treinamento e ajuste fino,Diferenca entre modelo generico e especializado,Slides comparativos,Original
+Modelos pequenos (SLM) e execucao local delas,Modelo pequeno executado localmente,PDF,Original
+Engenharia de prompt: few-shot Chain-of-Thought e outros,Como formular o pedido pra LLM,Lista de exercicios,Original
+Alucinacao em modelos de linguagem,Quando o modelo gera informacao falsa,Exemplos reais,Original
+Avaliacao de LLM: metricas e vieses de benchmark,Como medir a qualidade de um modelo,Lista de exercicios,Original
+Verificacao assistida por modelos de linguagem,LLM sugere ESBMC confirma,Slides,Original
+Como usar LLM com o ESBMC,Utilizacao de skills extensao do proprio ESBMC,PDF com escopo e limitacoes,Original
+Fundamentos de SAT/SMT (Z3 Bitwuzla),O que o ESBMC pergunta pro solver depois de montar o problema,Slides com exemplo de formula pequena,Sugestao
+Pipeline interno do ESBMC: parsing para GOTO para execucao simbolica para SMT,O caminho entre o codigo fonte e o contraexemplo que aparece na tela,Diagrama comentado,Sugestao
+BMC por unwinding vs k-induction,Diferenca entre incompletude do BMC e prova por inducao em profundidade arbitraria,Slides,Sugestao
+As quatro propriedades verificadas pelo ESBMC-Python e o que fica fora,Divisao por zero indice overflow e assert; nao e prova de corretude funcional completa,Slides,Sugestao
+Verificacao formal vs teste e fuzzing,Por que rodar ESBMC alem de pytest ja cobrir os casos que alguem pensou em escrever,Slides com exemplo comparativo,Sugestao
+Custo de usar LLM em escala: tokens latencia SLM local vs API paga,Quando compensa rodar modelo pequeno local em vez de API cara,Exercicio de estimativa de custo,Sugestao
+Como contribuir com o ESBMC open source (regression test coverage PR),Passo a passo pra abrir uma contribuicao real no projeto,Roteiro pratico opcional/avancado,Sugestao

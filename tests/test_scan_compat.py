@@ -217,7 +217,7 @@ def test_scalar_attribute_method_is_allowed():
 
 
 def test_tautological_isinstance_against_own_nondet_type_is_invalid():
-    """Regression (EXP-02, docs/experiment_log.md, 2026-09-04): a parameter
+    """Regression (EXP-02, docs/v2/experiment_log.md, 2026-09-04): a parameter
     declared `bool` and fed nondet_bool() can only ever hold True/False in
     ESBMC-Python's static type model, so `isinstance(param, bool)` is always
     True by construction. 6 of 12 safe_on_abstraction results in the
@@ -251,7 +251,7 @@ def test_isinstance_against_a_different_type_is_not_flagged():
 
 
 def test_unconstrained_outcome_assertion_is_invalid():
-    """Regression (EXP-03, docs/experiment_log.md, 2026-09-04): a bare boolean
+    """Regression (EXP-03, docs/v2/experiment_log.md, 2026-09-04): a bare boolean
     asserted over a fully unconstrained nondet_str() "confirms" on a fabricated
     input unrelated to the real bug (av_real_12/thefuck#7: `assert "php -s" in
     script` fails on the empty string, which has nothing to do with the actual
@@ -301,7 +301,7 @@ def test_unconstrained_outcome_assertion_passes_with_oracle_comparison():
 
 
 def test_unconstrained_outcome_assertion_rejects_hardcoded_comparison():
-    """Regression (EXP-03 re-run, docs/experiment_log.md, 2026-09-04): codex's
+    """Regression (EXP-03 re-run, docs/v2/experiment_log.md, 2026-09-04): codex's
     retry after the first version of this rule wrapped the same vacuous
     assertion in `expected: bool = True; assert matched == expected` - passes
     a naive "is it a Compare" check but is exactly as vacuous as the bare

@@ -32,7 +32,7 @@ from research_pipeline.verification.esbmc_runner import (
 
 # Real --multi-property output (ESBMC 8.4.0), captured 2026-09-04 from a harness
 # with __ESBMC_cover(x == 5) immediately before assert x != 5, MARKER — EXP-01,
-# docs/experiment_log.md. Two properties fail: the cover's own inverted-assert
+# docs/v2/experiment_log.md. Two properties fail: the cover's own inverted-assert
 # (no custom message) and the harness's marked assert (its literal message).
 _MULTI_PROPERTY_OUTPUT = """\
 State 3 file probe.py line 4 column 4 function model thread 0

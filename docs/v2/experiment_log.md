@@ -357,7 +357,7 @@ sessão. Próximo trabalho real, se quiser perseguir: o backstop mais forte disc
 
 - Data: 2026-09-04
 - Artigo motivador: Type-Constrained Code Generation with Language Models (Mündler et al.,
-  PACMPL/PLDI 2025, DOI 10.1145/3729274) — parente conceitual (ver `docs/literature_log.md`),
+  PACMPL/PLDI 2025, DOI 10.1145/3729274) — parente conceitual (ver `docs/v2/literature_log.md`),
   não fonte direta da técnica.
 - Hipótese testável: rejeitar `isinstance(nome, T)` quando `nome` já é conhecido/declarado como
   `T` (sempre verdadeiro em ESBMC-Python, que dá tipo estático fixo a toda variável) recupera

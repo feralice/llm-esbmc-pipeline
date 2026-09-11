@@ -1,7 +1,7 @@
 # Pipeline Walkthrough — Cada Arquivo, Cada Passo
 
 > Guia de leitura para quem quer entender o pipeline de dentro para fora.
-> Para referência de métricas e fórmulas, veja [`benchmark_v1_reference.md`](benchmark_v1_reference.md).
+> Para referência de métricas e fórmulas, veja [`benchmark_reference.md`](benchmark_reference.md).
 
 ---
 

@@ -1,0 +1,20 @@
+Atividade,Semanas 1-2,Mes 1,Mes 2,Mes 3,Mes 4
+Casamento de expressao AST por categoria de bug,X,,,,
+Ampliar dataset com casos reais (ESBMC + BugsInPy),X,,,,
+Votacao entre modelos para melhorar o recall,X,,,,
+Rodada end-to-end sem seed do gabarito,,X,,,
+Auditoria manual dos resultados da rodada end-to-end,,X,,,
+Validacao semantica do harness sintetizado,,X,,,
+Checagem de concretizacao de operandos simbolicos,,X,,,
+Testar parametros alternativos de verificacao no ESBMC,,X,,,
+Comparar pipeline baseline vs. pipeline evoluido,,X,,,
+Ajustar o prompt com exemplos reais (few-shot),,X,,,
+Avaliar bugs em projetos reais (validacao externa),,X,X,,
+Revisao bibliografica (fundamentos LLM/SLM + trabalhos correlatos e datasets),X,X,X,,
+Construir o modulo de sintese de harness (V2),,X,X,,
+Fundamentacao em logica de Hoare para o harness,,,X,,
+Medir custo computacional (tempo tokens e API),,,X,,
+Comparacao e consolidacao final (EVA/PyVeritas datasets V1xV2xacademicos validacao externa),,,X,X,
+Publicar artefatos (Zenodo/DOI),,,,X,
+Consolidar e analisar os resultados,,,,,X
+Escrever os resultados da dissertacao,,,,,X
