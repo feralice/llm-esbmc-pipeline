@@ -20,6 +20,7 @@ def response_event(
     total = _first_int(usage, "total_tokens")
     if total is None and prompt is not None and completion is not None:
         total = prompt + completion
+    cached = _cached_tokens(usage)
     message = str(error) if error else ""
     return {
         "provider": provider,
@@ -30,14 +31,35 @@ def response_event(
         "prompt_tokens": prompt,
         "completion_tokens": completion,
         "total_tokens": total,
+        "cached_tokens": cached,
         "error": message or None,
     }
+
+
+def _cached_tokens(usage: dict) -> int | None:
+    """Read the provider's automatic prompt-cache hit count, when reported.
+
+    OpenAI's Responses API nests it under ``input_tokens_details.cached_tokens``;
+    the Chat Completions API (used for the Ollama-compatible backend) nests it
+    under ``prompt_tokens_details.cached_tokens``. Ollama itself never sets it —
+    there is no server-side cache to report, so the field stays None, distinct
+    from a real zero-hit call.
+    """
+    for details_key in ("input_tokens_details", "prompt_tokens_details"):
+        details = usage.get(details_key)
+        if isinstance(details, dict):
+            value = details.get("cached_tokens")
+            if isinstance(value, int):
+                return value
+    return None
 
 
 def summarize_events(events: list[dict]) -> dict:
     """Summarize calls while keeping missing provider data visibly missing."""
     durations = [float(event["duration_seconds"]) for event in events if event.get("duration_seconds") is not None]
     token_values = [int(event["total_tokens"]) for event in events if event.get("total_tokens") is not None]
+    prompt_values = [int(event["prompt_tokens"]) for event in events if event.get("prompt_tokens") is not None]
+    cached_values = [int(event["cached_tokens"]) for event in events if event.get("cached_tokens") is not None]
     return {
         "calls": len(events),
         "successful": sum(event.get("status") == "success" for event in events),
@@ -45,6 +67,17 @@ def summarize_events(events: list[dict]) -> dict:
         "errors": sum(event.get("status") == "error" for event in events),
         "calls_with_token_usage": len(token_values),
         "total_tokens": sum(token_values) if token_values else None,
+        # None (not 0) when no event reported a cache field at all -- e.g. every
+        # call went through Ollama, which never sets it. A real 0 means the
+        # provider reported the field and it was a cache miss every time.
+        "calls_with_cache_data": len(cached_values),
+        "cached_tokens": sum(cached_values) if cached_values else None,
+        "prompt_tokens": sum(prompt_values) if prompt_values else None,
+        "cache_hit_rate": (
+            round(sum(cached_values) / sum(prompt_values), 4)
+            if cached_values and prompt_values and sum(prompt_values) > 0
+            else None
+        ),
         "latency_seconds": _duration_summary(durations),
     }
 

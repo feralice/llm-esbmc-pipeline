@@ -83,3 +83,31 @@ def test_v2_resume_does_not_repeat_completed_detection(tmp_path: Path, monkeypat
     assert _Analyzer.calls == 1
     assert main.mode_v2(parser.parse_args([*base, "--resume"])) == 0
     assert _Analyzer.calls == 1
+
+
+def test_summarize_v2_telemetry_reports_cache_hit_rate_per_stage():
+    events = [
+        {"stage": "detection", "status": "success", "duration_seconds": 1.0,
+         "total_tokens": 100, "prompt_tokens": 80, "cached_tokens": 64},
+        {"stage": "detection", "status": "success", "duration_seconds": 1.0,
+         "total_tokens": 100, "prompt_tokens": 80, "cached_tokens": 0},
+        {"stage": "synthesis", "status": "success", "duration_seconds": 1.0,
+         "total_tokens": 100, "prompt_tokens": 80},  # e.g. codex backend: no cache field
+    ]
+    summary = main._summarize_v2_telemetry(events)
+    assert summary["detection"]["calls_with_cache_data"] == 2
+    assert summary["detection"]["cached_tokens"] == 64
+    assert summary["detection"]["cache_hit_rate"] == 0.4
+    assert summary["synthesis"]["calls_with_cache_data"] == 0
+    assert summary["synthesis"]["cache_hit_rate"] is None
+
+
+def test_print_cache_summary_shows_rate_and_missing_data(capsys):
+    main._print_cache_summary({
+        "detection": {"cache_hit_rate": 0.4, "cached_tokens": 64, "prompt_tokens": 160},
+        "synthesis": {"cache_hit_rate": None, "cached_tokens": 0, "prompt_tokens": 0},
+    })
+    out = capsys.readouterr().out
+    assert "detection: 40%" in out
+    assert "64/160 tokens" in out
+    assert "synthesis: sem dado de cache" in out

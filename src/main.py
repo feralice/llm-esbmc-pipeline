@@ -457,14 +457,30 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
     for event in events:
         stage = str(event["stage"])
         totals = by_stage.setdefault(
-            stage, {"calls": 0, "failed_calls": 0, "tokens": 0, "seconds": 0.0}
+            stage,
+            {
+                "calls": 0, "failed_calls": 0, "tokens": 0, "prompt_tokens": 0,
+                "cached_tokens": 0, "calls_with_cache_data": 0, "seconds": 0.0,
+            },
         )
         totals["calls"] += 1
         totals["failed_calls"] += int(event.get("status") != "success")
         totals["tokens"] += int(event.get("total_tokens") or 0)
+        totals["prompt_tokens"] += int(event.get("prompt_tokens") or 0)
         totals["seconds"] += float(event.get("duration_seconds") or 0.0)
+        cached = event.get("cached_tokens")
+        if isinstance(cached, int):
+            totals["calls_with_cache_data"] += 1
+            totals["cached_tokens"] += cached
     for totals in by_stage.values():
         totals["seconds"] = round(float(totals["seconds"]), 3)
+        # 0 calls_with_cache_data means no event in this stage reported the
+        # field (e.g. Ollama backend) -- report the rate as unknown, not 0%.
+        totals["cache_hit_rate"] = (
+            round(totals["cached_tokens"] / totals["prompt_tokens"], 4)
+            if totals["calls_with_cache_data"] and totals["prompt_tokens"] > 0
+            else None
+        )
     return by_stage
 
 
@@ -1213,12 +1229,35 @@ def mode_v2(args: argparse.Namespace) -> int:
         },
     )
     print(f"\nRelatório JSON: {report_path}")
+    _print_cache_summary(telemetry_summary)
     checkpoint["status"] = "partial_synthesis" if partial else "complete"
     _write_json_atomic(checkpoint_path, checkpoint)
     if partial:
         print("Execução V2 parcial; consulte as classificações no relatório.", file=sys.stderr)
         return 2
     return 0
+
+
+def _print_cache_summary(telemetry_summary: dict) -> None:
+    """One line per stage on whether the provider's automatic prompt cache hit.
+
+    None (not 0%) means no event in that stage reported the field at all --
+    e.g. the whole stage ran through Ollama or codex exec, which never report
+    it. Say so plainly rather than implying a measured 0% cache rate.
+    """
+    lines = []
+    for stage, totals in sorted(telemetry_summary.items()):
+        rate = totals.get("cache_hit_rate")
+        if rate is None:
+            lines.append(f"  {stage}: sem dado de cache do provedor")
+        else:
+            lines.append(
+                f"  {stage}: {rate:.0%} dos tokens de prompt vieram do cache "
+                f"({totals['cached_tokens']}/{totals['prompt_tokens']} tokens)"
+            )
+    if lines:
+        print("Cache de prompt (automático do provedor):")
+        print("\n".join(lines))
 
 
 def _scan_summary(results) -> dict:

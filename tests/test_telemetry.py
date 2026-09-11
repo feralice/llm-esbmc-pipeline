@@ -20,6 +20,71 @@ def test_response_event_normalizes_provider_usage() -> None:
     assert event["status"] == "success"
 
 
+def test_response_event_reads_openai_responses_cache_field() -> None:
+    event = response_event(
+        provider="openai",
+        requested_model="gpt-4o-mini",
+        duration_seconds=1.0,
+        response={
+            "model": "gpt-4o-mini-2024-07-18",
+            "usage": {
+                "input_tokens": 2000,
+                "input_tokens_details": {"cached_tokens": 1536},
+                "output_tokens": 100,
+                "total_tokens": 2100,
+            },
+        },
+    )
+    assert event["cached_tokens"] == 1536
+
+
+def test_response_event_reads_chat_completions_cache_field() -> None:
+    event = response_event(
+        provider="ollama",
+        requested_model="qwen2.5-coder",
+        duration_seconds=1.0,
+        response={
+            "usage": {
+                "prompt_tokens": 2000,
+                "prompt_tokens_details": {"cached_tokens": 0},
+                "completion_tokens": 100,
+            },
+        },
+    )
+    assert event["cached_tokens"] == 0
+
+
+def test_response_event_cached_tokens_absent_when_provider_omits_it() -> None:
+    event = response_event(
+        provider="codex",
+        requested_model="",
+        duration_seconds=1.0,
+        response={"usage": {"input_tokens": 2000, "output_tokens": 100}},
+    )
+    assert event["cached_tokens"] is None
+
+
+def test_summary_reports_cache_hit_rate() -> None:
+    events = [
+        {"status": "success", "duration_seconds": 1.0, "total_tokens": 12,
+         "prompt_tokens": 10, "cached_tokens": 8},
+        {"status": "success", "duration_seconds": 1.0, "total_tokens": 12,
+         "prompt_tokens": 10, "cached_tokens": 0},
+    ]
+    summary = summarize_events(events)
+    assert summary["calls_with_cache_data"] == 2
+    assert summary["cached_tokens"] == 8
+    assert summary["cache_hit_rate"] == 0.4
+
+
+def test_summary_cache_hit_rate_is_none_when_no_provider_reports_it() -> None:
+    events = [{"status": "success", "duration_seconds": 1.0, "total_tokens": 12}]
+    summary = summarize_events(events)
+    assert summary["calls_with_cache_data"] == 0
+    assert summary["cached_tokens"] is None
+    assert summary["cache_hit_rate"] is None
+
+
 def test_summary_distinguishes_missing_usage_and_timeouts() -> None:
     events = [
         {"status": "success", "duration_seconds": 1.0, "total_tokens": 12},
