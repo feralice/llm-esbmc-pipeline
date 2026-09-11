@@ -3,8 +3,9 @@ harness that the ESBMC-Python model checker can verify.
 
 Rules grounded in the ESBMC repository docs
 (website/content/docs/python/{limitations,supported-features}.md,
-src/python-frontend/README.md, src/python-frontend/models/esbmc.py) and the
-esbmc-python-guide reference. ESBMC-Python verifies exactly four property classes:
+src/python-frontend/README.md, src/python-frontend/models/esbmc.py), the
+esbmc-python-guide reference, and docs/esbmc/python_frontend_reference.md.
+ESBMC-Python verifies exactly four property classes:
 division by zero, indexing errors, arithmetic overflow, and user assertions
 (README line 278).
 
@@ -142,6 +143,25 @@ RULES
 
 10. Keep it short. One model function, one main(), one call. No comments needed
     beyond a one-line reference to the real function.
+
+11. KNOWN SPURIOUS PATTERNS. Each of these makes ESBMC report a verdict that has
+    nothing to do with the real bug. Never write one.
+    - `re.match(...)` / `re.search(...)` / `re.fullmatch(...)` return a bool in
+      ESBMC-Python, not `Optional[Match]`. `if m is None:` is always false and
+      `m.group(...)` does not exist. If the real bug is a regex-result misuse,
+      model the match outcome as a fresh `nondet_bool()` instead.
+    - String methods on a SYMBOLIC receiver degrade to a nondet over-
+      approximation: `nondet_str().removeprefix(p)`, `.center(n)`, `.format(...)`,
+      `.partition(x)` (becomes `("","","")`), `.splitlines()` (becomes `[]`),
+      `.casefold()`, `.zfill(n)`. An assert on the result of one of these is
+      vacuous. Rebuild the property from the scalar operands, not from a string
+      transform.
+    - `isinstance(x, UserClass)` and `isinstance(x, (list|dict|set|tuple))`
+      always return False; a tagged dynamic value only holds bool/int/float/str.
+      Do not check membership of an aggregate type.
+    - `min([])` / `max([])` raise `IndexError`, not `ValueError`.
+    - Any harness whose single assert compares a value against a HARDCODED
+      literal (rule 9) rather than a computed expression.
 
 OUTPUT
 

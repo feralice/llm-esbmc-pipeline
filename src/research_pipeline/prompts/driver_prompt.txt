@@ -93,6 +93,14 @@ RULES
    category, and one line each: what every `__ESBMC_assume` encodes, what the
    assert checks, and which operands were turned into nondet.
 
+8. SPURIOUS PATTERNS to avoid (docs/esbmc/python_frontend_reference.md sec 6):
+   `re.match`/`search` return bool not Optional[Match], so `if m is None:` is
+   dead; a string method on a symbolic receiver (`.removeprefix`, `.center`,
+   `.format`, `.partition`, `.splitlines`) degrades to nondet, so an assert on
+   its result proves nothing; `isinstance(x, T)` on a stand-in typed T is always
+   true. Keep the real operators; turn the untrusted operand into a nondet of a
+   DIFFERENT shape and check that.
+
 OUTPUT
 
 Return only the harness, inside a single ```python fenced block. Nothing else.
