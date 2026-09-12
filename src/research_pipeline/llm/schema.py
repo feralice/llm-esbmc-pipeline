@@ -54,7 +54,15 @@ FINDINGS_JSON_SCHEMA: dict = {
                                     "items": {"type": "string"},
                                 },
                             },
-                            "required": ["expression"],
+                            # OpenAI Structured Outputs strict mode requires
+                            # every declared property to be required. Fields
+                            # that are semantically optional must be emitted
+                            # with an empty/default value instead of omitted.
+                            "required": [
+                                "expression", "line", "operands",
+                                "guard_evidence", "missing_guard",
+                                "context_needed",
+                            ],
                         },
                     },
                     "required": [
