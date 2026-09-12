@@ -1,4 +1,36 @@
 {
+  "evaluation_policy": {
+    "detection_scope": "only items not requiring patch context",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "patch_context_items": [
+      "nm_real_15",
+      "nm_real_16",
+      "av_real_04",
+      "av_real_09",
+      "av_real_10",
+      "av_real_19",
+      "av_real_20",
+      "ip_real_08",
+      "ip_real_09",
+      "ip_real_12",
+      "ip_real_20",
+      "ip_real_31",
+      "ir_real_01",
+      "ir_real_02",
+      "ir_real_03",
+      "ir_real_05",
+      "av_real_06",
+      "av_real_07",
+      "av_real_08",
+      "av_real_11",
+      "av_real_12",
+      "av_real_13",
+      "av_real_14",
+      "av_real_15",
+      "av_real_17",
+      "av_real_21"
+    ]
+  },
   "description": "V2 dataset: real bugs extracted from BugsInPy and fresh GitHub projects, abstracted to self-contained ESBMC-verifiable models. Each item lists all categories that genuinely apply (see docs/v2_harness_synthesis.md).",
   "items": [
     {
@@ -14,7 +46,9 @@
         "bugsinpy_id": 17,
         "source_file": "youtube_dl/utils.py",
         "source_function": "cli_bool_option",
-        "repo_url": "https://github.com/ytdl-org/youtube-dl"
+        "repo_url": "https://github.com/ytdl-org/youtube-dl",
+        "buggy_commit": "4bf22f7a1014c55e3358b5a419945071b152eafc",
+        "fixed_commit": "5b232f46dcbdc805507c02edd4fd598f31d544d5"
       },
       "abstraction_notes": "Zero external dependencies -- dict.get()'s None-on-missing-key behavior modeled directly with a nondet bool + nondet value, no stubbing needed.",
       "categories": [
@@ -43,7 +77,9 @@
         "bugsinpy_id": 1,
         "source_file": "tornado/websocket.py",
         "source_function": "WebSocketHandler.set_nodelay",
-        "repo_url": "https://github.com/tornadoweb/tornado"
+        "repo_url": "https://github.com/tornadoweb/tornado",
+        "buggy_commit": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+        "fixed_commit": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63"
       },
       "abstraction_notes": "Object-attribute liveness stubbed as two independent nondet bools (ws_connection_not_none, stream_not_none); real precondition (ws_connection guaranteed live post-handshake) applied via __ESBMC_assume, isolating that the assert checks the wrong attribute.",
       "categories": [
@@ -72,7 +108,9 @@
         "bugsinpy_id": 3,
         "source_file": "pandas/core/series.py",
         "source_function": "Series.to_timestamp",
-        "repo_url": "https://github.com/pandas-dev/pandas"
+        "repo_url": "https://github.com/pandas-dev/pandas",
+        "buggy_commit": "45fee32",
+        "fixed_commit": "d3a6a3a58e1a6eb68b8b8399ff252b8f4501950e"
       },
       "abstraction_notes": "pandas index type stubbed as an int tag (no pandas import) -- PeriodIndex vs. 'anything else' is the only distinction the real assert makes.",
       "categories": [
@@ -101,11 +139,13 @@
         "bugsinpy_id": 9,
         "source_file": "luigi/execution_summary.py",
         "source_function": "_partition_tasks / _summary_format",
-        "repo_url": "https://github.com/spotify/luigi"
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "f7e0b7710fd8b12f27625b1efb62a8fde6e206c4",
+        "fixed_commit": "b7115974c3deadf77113686248b39567cb67e38f"
       },
       "abstraction_notes": "Near-zero stubbing: the buggy line (`failed = ever_failed`, real fix is `ever_failed and not completed`) is pure bool/str logic entirely within ESBMC-Python's supported surface (booleans, string equality, if/return), so the harness reproduces the real function's control flow near-verbatim instead of standing in for an unsupported operation. Real caller precondition modeled directly: a task that failed at least once and was later completed (succeeded on retry) should report the ':)' smiley, not ':('.",
       "categories": [
-        "assertion_violation"
+        "incorrect_result"
       ],
       "harness_file": "av_real_04.py",
       "harness_function": "summary_smiley",
@@ -130,11 +170,13 @@
         "bugsinpy_id": 5,
         "source_file": "tqdm/_tqdm.py",
         "source_function": "tqdm.__init__",
-        "repo_url": "https://github.com/tqdm/tqdm"
+        "repo_url": "https://github.com/tqdm/tqdm",
+        "buggy_commit": "19b08ab34fdbfa0275bc5cb2430436c724c7e759",
+        "fixed_commit": "4f340697af69b71850aad496387c9c5aa1904136"
       },
       "abstraction_notes": "Near-zero stubbing: real bug is pure control-flow ordering (the `total = len(iterable)` computation sits below the `if disable: return` early-return branch in the real __init__), reproduced verbatim as an int/bool early-return structure -- `total_is_none`/`iterable_is_none` stand in for the real None-vs-set attribute state (ESBMC-Python has no None-typed int), `disable` and `iterable_len` are the real parameters unchanged. Real caller precondition: an iterable was passed and no explicit total was given; len() does not depend on `disable`, so the correct total should always resolve to the iterable's length regardless of the disable branch.",
       "categories": [
-        "assertion_violation"
+        "none_misuse"
       ],
       "harness_file": "av_real_05.py",
       "harness_function": "total_after_init",
@@ -267,7 +309,7 @@
       },
       "abstraction_notes": "Near-verbatim: real bug swaps which extra bound feeds max() vs min() in the else-branch (oldmax should pair with min(), oldmin with max()). ESBMC-Python's max()/min() are 2-argument only (no 3-arg or iterable form), so the real 3-arg max(vmin, vmax, oldmax) is expressed as nested max(max(vmin, vmax), oldmax), semantically identical.",
       "categories": [
-        "assertion_violation"
+        "incorrect_result"
       ],
       "harness_file": "av_real_09.py",
       "harness_function": "buggy_bounds",
@@ -300,7 +342,7 @@
       },
       "abstraction_notes": "Near-verbatim: real bug is a tokenizer column counter that treats a tab the same width class as a space class boundary but advances by 4 instead of the unified 1 the fix uses. `is_tab` stands in for the real `char in ' \\t'` character-class check. Corrected 08/09/2026: buggy_column/correct_column bodies were swapped relative to the real commit; buggy_column now reproduces the pre-fix differentiated (+4 for tab) behavior, correct_column the unified fix.",
       "categories": [
-        "assertion_violation"
+        "incorrect_result"
       ],
       "harness_file": "av_real_10.py",
       "harness_function": "buggy_column",
@@ -315,7 +357,7 @@
     {
       "id": "av_real_11",
       "file": "av_real_11.py",
-      "function": "HTTP1Connection._read_body",
+      "function": "HTTP1Connection.write_headers",
       "verifiable": true,
       "expression": "headers.get(\"Transfer-Encoding\") == \"chunked\"",
       "expected_type": "AssertionError",
@@ -358,7 +400,9 @@
         "bugsinpy_id": 7,
         "source_file": "thefuck/rules/php_s.py",
         "source_function": "match",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "64d6835e15a22cf8803d398cbb593f748c550e8a",
+        "fixed_commit": "75d2c43997ca703150cbdb4c46ed7b2e2e71fd11"
       },
       "abstraction_notes": "Verbatim string logic, no stubbing: buggy version only matches the literal substring 'php -s', missing commands where other flags separate 'php' from '-s' (e.g. 'php -d foo -s bar'); fixed version checks for the bare ' -s ' flag token anywhere. Concrete literal script demonstrates the divergence. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 40. Usar esse valor ao reproduzir.]",
       "categories": [
@@ -387,7 +431,9 @@
         "bugsinpy_id": 5,
         "source_file": "thefuck/rules/git_push.py",
         "source_function": "match",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "7c858fadb3458be829d3d43666ccb46c3ed5b8a0",
+        "fixed_commit": "c205683a8df8a57e2db1e9816a5a7ce3255b08fc"
       },
       "abstraction_notes": "Verbatim string logic, no stubbing: buggy check fires on any occurrence of the bare substring 'set-upstream' in git's stderr, even in an unrelated message; fixed version requires the full 'git push --set-upstream' phrase that git actually prints. Concrete literal output demonstrates the divergence. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 60. Usar esse valor ao reproduzir.]",
       "categories": [
@@ -416,7 +462,9 @@
         "bugsinpy_id": 27,
         "source_file": "thefuck/rules/open.py",
         "source_function": "get_new_command",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "bc6b107066d3f1e60b4cfcaa8cf6399e98cf1b1c",
+        "fixed_commit": "1becd92b126a368d6e7d93aa8eea209414ce4aa2"
       },
       "abstraction_notes": "Old code sliced off a fixed 5 chars ('open '); new code does script.replace('open ', 'open http://') which replaces every occurrence, not just the prefix. Modeled as buggy/correct string-function pair; deterministic literal 'open open google.com' makes the two diverge (slice only handles the first occurrence, replace rewrites both). [AUDITADO 2026-08-23] BROKEN at default settings: default --unwind 6/--timeout 20s hits ESBMC's own string-model unwinding assertion (__python_strnlen_bounded/strncmp internals), not the real assert -- a false VERIFICATION FAILED that does NOT demonstrate the claimed bug. Retested up to --unwind 40 --timeout 60s: still times out before reaching the real assert. Needs a much longer timeout or a lighter string-comparison harness; do not cite this item's ESBMC result as confirmed until re-verified. [FIXED 2026-08-24: --incremental-bmc confirms the real property, no longer a false confirmation.]",
       "categories": [
@@ -446,7 +494,9 @@
         "bugsinpy_id": 11,
         "source_file": "scrapy/utils/gz.py",
         "source_function": "gunzip",
-        "repo_url": "https://github.com/scrapy/scrapy"
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "241bd00e76df142a24699819f8496bdec8f5c83a",
+        "fixed_commit": "9de6f1ca757b7f200d15e94840c9d431cf202276"
       },
       "abstraction_notes": "Old code appended the whole extrabuf; fix slices to only the trailing extrasize bytes (extrabuf[-extrasize:]), since extrabuf can contain stale bytes beyond the real chunk boundary. Modeled as buggy/correct string-slice pair with literal inputs. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 40. Usar esse valor ao reproduzir.]",
       "categories": [
@@ -475,7 +525,9 @@
         "bugsinpy_id": 29,
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_strdate",
-        "repo_url": "https://github.com/ytdl-org/youtube-dl"
+        "repo_url": "https://github.com/ytdl-org/youtube-dl",
+        "buggy_commit": "c514b0ec655b23e7804eb18df04daa863d973f32",
+        "fixed_commit": "6a750402787dfc1f39a9ad347f2d78ae1c94c52c"
       },
       "abstraction_notes": "Old code called compat_str(upload_date) unconditionally, turning a real 'no date found' None into the nonsense string 'None'; fix only returns a string when upload_date was actually found. Modeled with a bool flag standing in for 'value found vs None', per the project's existing None-return-shape convention (no real Optional[str] typing needed for the property being checked).",
       "categories": [
@@ -505,11 +557,13 @@
         "bugsinpy_id": 24,
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "_make_getset_interval",
-        "repo_url": "https://github.com/matplotlib/matplotlib"
+        "repo_url": "https://github.com/matplotlib/matplotlib",
+        "buggy_commit": "9a5473dbac05f3d6773b42c8e16d58a7dc3159b8",
+        "fixed_commit": "407a9fe71a4c0a8ba4914b8f54f21d32d6dd2d74"
       },
       "abstraction_notes": "Swapped which extra bound feeds max() vs min(): buggy code paired oldmax with max() and oldmin with min(); fix pairs oldmin with max() and oldmax with min(). Modeled as buggy/correct scalar function pair with literal float inputs.",
       "categories": [
-        "assertion_violation"
+        "incorrect_result"
       ],
       "harness_file": "av_real_19.py",
       "harness_function": "make_interval_buggy",
@@ -526,7 +580,7 @@
       "file": "av_real_10.py",
       "function": "(duplicate real bug, see twin)",
       "verifiable": true,
-      "expression": "current_column += 1",
+      "expression": "current_column += 4",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -534,19 +588,21 @@
         "bugsinpy_id": 10,
         "source_file": "blib2to3/pgen2/driver.py",
         "source_function": "Driver.parse_tokens (column tracking)",
-        "repo_url": "https://github.com/psf/black"
+        "repo_url": "https://github.com/psf/black",
+        "buggy_commit": "f6643c4f0cfbae1f2493fdfce46cfbae3d26f46b",
+        "fixed_commit": "66aa676278948368dff251dffd58c850cb8b889e"
       },
       "abstraction_notes": "Old code merged the space and tab cases into 'elif char in \\' \\t\\': current_column += 1', losing the tab-specific +4 that real terminals/editors use for column counting; fix keeps space and tab as separate cases. Modeled as buggy/correct scalar function pair with a literal tab character input.",
       "categories": [
-        "assertion_violation"
+        "incorrect_result"
       ],
       "harness_file": "av_real_20.py",
       "harness_function": "advance_column_buggy",
-      "harness_expression": "current_column += 1",
-      "harness_line": 2,
+      "harness_expression": "return current_column + 4",
+      "harness_line": 5,
       "audit": {
-        "source_expression": "current_column += 1",
-        "harness_property": "current_column += 1",
+        "source_expression": "current_column += 4",
+        "harness_property": "return current_column + 4",
         "provenance_complete": false
       }
     },
@@ -563,7 +619,9 @@
         "bugsinpy_id": "18",
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.process_ie_result",
-        "repo_url": "https://github.com/ytdl-org/youtube-dl"
+        "repo_url": "https://github.com/ytdl-org/youtube-dl",
+        "buggy_commit": "dc6520aa3d1fe7afc52613e392f15dde90af4844",
+        "fixed_commit": "0396806f671e5828c2abdeb8048acf8b654507b6"
       },
       "abstraction_notes": "Real code filtered only ('_type', 'url', 'ie_key') from force_properties before merging into new_result; fix extends the filter tuple to also drop ('id', 'extractor', 'extractor_key'), which previously leaked through. Modeled as a buggy/correct boolean pair over a single representative 'is this one of the newly-added keys' flag.",
       "categories": [
@@ -745,9 +803,9 @@
     {
       "id": "ip_real_04",
       "file": "ip_real_04.py",
-      "function": "HTTP1Connection._read_body",
+      "function": "HTTP1Connection.write_headers",
       "verifiable": true,
-      "expression": "content_length",
+      "expression": "\"Transfer-Encoding\" not in headers",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -756,7 +814,7 @@
         "buggy_commit": "2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
         "fixed_commit": "4f486a4aec746e9d66441600ee3b0743228b061c",
         "source_file": "tornado/http1connection.py",
-        "source_function": "HTTP1Connection._read_body",
+        "source_function": "HTTP1Connection.write_headers",
         "repo_url": "https://github.com/tornadoweb/tornado",
         "buggy_commit_url": "https://github.com/tornadoweb/tornado/commit/2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
         "fixed_commit_url": "https://github.com/tornadoweb/tornado/commit/4f486a4aec746e9d66441600ee3b0743228b061c"
@@ -895,7 +953,7 @@
       },
       "abstraction_notes": "uri.find('/')-based host/path splitting reduced to a bool (has_host) plus a held-constant string for the extracted host, since the bug is about whether the extracted host is ever consulted, not the string-splitting mechanics themselves.",
       "categories": [
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "harness_file": "ip_real_08.py",
       "harness_function": "buggy_netloc",
@@ -928,7 +986,7 @@
       },
       "abstraction_notes": "to_remove/to_set dicts reduced to two bools for a single representative key (key_in_to_remove, key_in_to_set); the real function's string formatting (\"no {0}\".format(key)) and the unrelated vlan_id/None-value skip logic are omitted since the bug is purely about the missing to_set membership check.",
       "categories": [
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "harness_file": "ip_real_09.py",
       "harness_function": "buggy_emits_removal",
@@ -1027,7 +1085,7 @@
       },
       "abstraction_notes": "Pure bool-logic bug, isolable verbatim: the buggy guard skipped a state update whenever vrf also needed updating (`state_needs_update and not vrf_needs_update` instead of just `state_needs_update`). Modeled as buggy/correct function pair, no stubbing needed.",
       "categories": [
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "harness_file": "ip_real_12.py",
       "harness_function": "buggy_should_update_state",
@@ -1118,7 +1176,9 @@
         "bugsinpy_id": "4",
         "source_file": "black.py",
         "source_function": "EmptyLineTracker._maybe_empty_lines",
-        "repo_url": "https://github.com/psf/black"
+        "repo_url": "https://github.com/psf/black",
+        "buggy_commit": "65ea568e3301951f26e0e3b98f6d5dc80132e917",
+        "fixed_commit": "c7495b9aa098ef7a358fc74556359d21c6a4ba11"
       },
       "abstraction_notes": "Real code subtracted previous_after from before unconditionally, including on the first line where previous_line is None; fix forces 0 in that case. Modeled as pure int arithmetic, no black-internal types needed.",
       "categories": [
@@ -1147,7 +1207,9 @@
         "bugsinpy_id": "86",
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "pivot",
-        "repo_url": "https://github.com/pandas-dev/pandas"
+        "repo_url": "https://github.com/pandas-dev/pandas",
+        "buggy_commit": "55cfabb",
+        "fixed_commit": "f792d8c50ee456aa8aa2ae406d8e6b8843f45614"
       },
       "abstraction_notes": "Real pivot() silently accepted columns=None and fell into groupby logic assuming a real key; fix raises TypeError immediately. Modeled as a buggy/correct boolean pair, no DataFrame/pandas-internal types needed.",
       "categories": [
@@ -1177,7 +1239,9 @@
         "bugsinpy_id": "17",
         "source_file": "scrapy/utils/response.py",
         "source_function": "response_status_message",
-        "repo_url": "https://github.com/scrapy/scrapy"
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "ebef6d7c6dd8922210db8a4a44f48fe27ee0cd16",
+        "fixed_commit": "65c7c05060fd2d1fc161d4904243d5e0b31e202b"
       },
       "abstraction_notes": "dict.get() with no default returned None for status codes outside the known table, crashing downstream string formatting; fix adds an 'Unknown Status' default. Modeled as a bool precondition (was the status in the table), no scrapy-internal types needed.",
       "categories": [
@@ -1270,13 +1334,13 @@
         "project": "watchdog",
         "repo_url": "https://github.com/gorakhargosh/watchdog",
         "commit_hash": "dc345245a3c82afc4a0cdd197068fb5a32545033",
-        "parent_commit": "HEAD~1",
+        "parent_commit": "3f8a12f9cf6d9f8091e05b61952409ed9623257d",
         "source_file": "src/watchdog/events.py",
         "source_function": "generate_sub_moved_events"
       },
       "abstraction_notes": "Real code used `full_path.replace(dest_dir_path, src_dir_path)`, replacing ALL occurrences of dest_dir_path in the string instead of only the leading prefix; correct behaviour is prefix-slicing. Reproduced with concrete literal strings where dest_dir_path recurs deeper in the path (\"a/a/a/a\" with dest=\"a/a\"), matching real issue #1158's corrupting example: buggy=\"b/b\", correct=\"b/a/a\".",
       "categories": [
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "harness_file": "ip_real_20.py",
       "harness_function": "buggy_replace",
@@ -1332,7 +1396,9 @@
         "bugsinpy_id": "18",
         "source_file": "thefuck/rules/sudo.py",
         "source_function": "match",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "b65a9a0a4fd9bef394b45a1d367d29aa1e1c403e",
+        "fixed_commit": "c3b1ba763708b8faaaf55717c436c4cd4c57a7ea"
       },
       "abstraction_notes": "Real match() had no guard excluding commands already starting with 'sudo', so a failing 'sudo ...' command whose stderr happened to contain a matched pattern (e.g. \"permission denied\") would be re-suggested with sudo prepended again. Modeled as a bool (starts_with_sudo) + fixed matching stderr string; needs --unwind 30 (not the dataset's usual 6) because the counterexample search passes through ESBMC-Python's str.lower() operational model, which has its own internal unwind-bound loop over the string's characters.",
       "categories": [
@@ -1361,7 +1427,9 @@
         "bugsinpy_id": 20,
         "source_file": "luigi/task.py",
         "source_function": "Task.to_str_params",
-        "repo_url": "https://github.com/spotify/luigi"
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "b958140c2ec838e590a5be02dbac7414d5d0bf17",
+        "fixed_commit": "c3d685e2b03369aab6f4d86ed1c95169c1c2c217"
       },
       "abstraction_notes": "Old code dropped the 'significant' guard, silently including insignificant params (used e.g. for retries/scheduling metadata) in the serialized/hashed param string. Modeled as a bool-guarded dict-build pair.",
       "categories": [
@@ -1392,7 +1460,8 @@
         "source_function": "CentralPlannerScheduler.get_work",
         "repo_url": "https://github.com/spotify/luigi",
         "buggy_commit": "554850f32784537796383db5ee188d0455863ca9",
-        "buggy_commit_url": "https://github.com/spotify/luigi/commit/554850f32784537796383db5ee188d0455863ca9"
+        "buggy_commit_url": "https://github.com/spotify/luigi/commit/554850f32784537796383db5ee188d0455863ca9",
+        "fixed_commit": "c0857e9e06012b696017e0a353ae74f4f621d066"
       },
       "abstraction_notes": "Old code short-circuited truthily for any assistant regardless of whether it actually had workers assigned to the task; fix requires assistant AND a non-empty task.workers set. Modeled as a pure bool-logic pair.",
       "categories": [
@@ -1421,7 +1490,9 @@
         "bugsinpy_id": 15,
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.get_necessary_tasks",
-        "repo_url": "https://github.com/spotify/luigi"
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "a822f55d4d7c5adf5b9e3b64f23189d8305e9bf9",
+        "fixed_commit": "736c0f1352463c20ece84f2f651bcd37fd2b88ae"
       },
       "abstraction_notes": "Old tuple membership check omitted UNKNOWN status, treating unknown-status tasks as always necessary; fix adds UNKNOWN to the exclusion tuple. Modeled status membership as bool flags.",
       "categories": [
@@ -1450,7 +1521,9 @@
         "bugsinpy_id": 7,
         "source_file": "luigi/scheduler.py",
         "source_function": "Scheduler.add_task",
-        "repo_url": "https://github.com/spotify/luigi"
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "dd1f2ce0061e7787166522a3c75339ba4755dd2c",
+        "fixed_commit": "daf9ce99a3a7ed4227d1564570c5fce8848357e5"
       },
       "abstraction_notes": "Old guard blocked re-scheduling any RUNNING/BATCH_RUNNING task regardless of which worker was actually running it; fix allows reschedule when a different worker now claims it (worker_running != worker_id). Modeled as a bool-logic pair over the status/worker predicates.",
       "categories": [
@@ -1481,7 +1554,8 @@
         "source_function": "HTTP1Connection.write_headers",
         "repo_url": "https://github.com/tornadoweb/tornado",
         "buggy_commit": "2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
-        "buggy_commit_url": "https://github.com/tornadoweb/tornado/commit/2ca8821d006f6693f920a4b183a3a7c985a5c8ad"
+        "buggy_commit_url": "https://github.com/tornadoweb/tornado/commit/2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
+        "fixed_commit": "4f486a4aec746e9d66441600ee3b0743228b061c"
       },
       "abstraction_notes": "Old code disabled chunked-transfer whenever ANY Transfer-Encoding header was present; fix allows it through when the header's value is specifically 'chunked'. Modeled as a bool-predicate pair.",
       "categories": [
@@ -1510,7 +1584,9 @@
         "bugsinpy_id": 14,
         "source_file": "tornado/ioloop.py",
         "source_function": "IOLoop.initialize",
-        "repo_url": "https://github.com/tornadoweb/tornado"
+        "repo_url": "https://github.com/tornadoweb/tornado",
+        "buggy_commit": "81ee310adcd905fbdf7c98d9fb6ef0c5a46026c2",
+        "fixed_commit": "1d02ed606f1c52636462633d009bdcbaac644331"
       },
       "abstraction_notes": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair.",
       "categories": [
@@ -1531,7 +1607,7 @@
       "file": "ip_real_31.py",
       "function": "_make_getset_interval",
       "verifiable": true,
-      "expression": "getter",
+      "expression": "max(vmin, vmax, oldmax)",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -1539,11 +1615,13 @@
         "bugsinpy_id": "26",
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "_make_getset_interval",
-        "repo_url": "https://github.com/matplotlib/matplotlib"
+        "repo_url": "https://github.com/matplotlib/matplotlib",
+        "buggy_commit": "04d9d28b820af0b4df230a3c67314ed5b0af8fdd",
+        "fixed_commit": "557375ff91f64c1b827f6014da2d369513a69316"
       },
       "abstraction_notes": "Real code swapped oldmin/oldmax in the max()/min() call when computing the new axis interval bound (used max(vmin, vmax, oldmax) and min(vmin, vmax, oldmin) instead of the other way round). Modeled as pure float arithmetic, buggy vs. correct argument order.",
       "categories": [
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "harness_file": "ip_real_31.py",
       "harness_function": "compute_limit_high_buggy",
@@ -1633,7 +1711,8 @@
         "_correction_note": "source_function was recorded as remove_cookies, which does not exist in the file at the buggy commit; corrected to update_headers (verified against the real fix diff).",
         "repo_url": "https://github.com/httpie/httpie",
         "buggy_commit": "8c33e5e3d31d3cd6476c4d9bc963a4c529f883d2",
-        "buggy_commit_url": "https://github.com/httpie/httpie/commit/8c33e5e3d31d3cd6476c4d9bc963a4c529f883d2"
+        "buggy_commit_url": "https://github.com/httpie/httpie/commit/8c33e5e3d31d3cd6476c4d9bc963a4c529f883d2",
+        "fixed_commit": "589887939507ff26d36ec74bd2c045819cfa3d56"
       },
       "abstraction_notes": "ESBMC-Python does not model bytes/str .decode(), so the None-attribute-access crash is made explicit via assert on the precondition it actually depends on (value is not None) rather than by calling .decode() directly. The real loop calls value.decode('utf8') unconditionally on every stored header value; httpie represents an explicitly-unset header as value=None.",
       "categories": [
@@ -1664,7 +1743,8 @@
         "source_function": "tqdm.format_meter",
         "repo_url": "https://github.com/tqdm/tqdm",
         "buggy_commit": "03b347646492131d889871939b40457d29147216",
-        "buggy_commit_url": "https://github.com/tqdm/tqdm/commit/03b347646492131d889871939b40457d29147216"
+        "buggy_commit_url": "https://github.com/tqdm/tqdm/commit/03b347646492131d889871939b40457d29147216",
+        "fixed_commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08"
       },
       "abstraction_notes": "Reduced tqdm's `total *= unit_scale` to its scalar core. `total` defaults to None when the wrapped iterable has no __len__; the real code only guards `unit_scale not in (True, 1)` before scaling, not total's nullness. Real caller precondition (unit_scale already filtered to exclude True/1) preserved via __ESBMC_assume.",
       "categories": [
@@ -1695,7 +1775,8 @@
         "source_function": "FacebookIE._real_extract",
         "repo_url": "https://github.com/ytdl-org/youtube-dl",
         "buggy_commit": "b04c8f735805ea2671429ac8d683c2887a6b4db8",
-        "buggy_commit_url": "https://github.com/ytdl-org/youtube-dl/commit/b04c8f735805ea2671429ac8d683c2887a6b4db8"
+        "buggy_commit_url": "https://github.com/ytdl-org/youtube-dl/commit/b04c8f735805ea2671429ac8d683c2887a6b4db8",
+        "fixed_commit": "a020a0dc20ced6468ec46214c394f6f360735b1d"
       },
       "abstraction_notes": "Near-verbatim: the pre-fix inline truncation logic (`if len(video_title) > 80 + 3: ...`) has no None guard. video_title comes from `_html_search_regex(..., default=None)`, so it's genuinely None on a legitimate code path. This is the one item in the dataset that reproduces the real crash by calling the real operation (len() on NULL) rather than asserting the precondition directly -- confirmed VERIFICATION FAILED with a NULL pointer dereference (CWE-476) in ESBMC's strlen. Note: an `x if cond else None` ternary assignment to a str-annotated variable did NOT preserve NULL semantics in testing (silently VERIFICATION SUCCESSFUL) -- an if/else assignment does; the harness uses if/else for this reason.",
       "categories": [
@@ -1726,7 +1807,8 @@
         "source_function": "OffsiteMiddleware.get_host_regex",
         "repo_url": "https://github.com/scrapy/scrapy",
         "buggy_commit": "c57512fa669e6f6b1b766a7639206a380f0d10ce",
-        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/c57512fa669e6f6b1b766a7639206a380f0d10ce"
+        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/c57512fa669e6f6b1b766a7639206a380f0d10ce",
+        "fixed_commit": "9d9dea0d69709ef0f7aef67ddba1bd7bda25d273"
       },
       "abstraction_notes": "Pre-fix, `url_pattern.match(domain)` runs on every entry of allowed_domains before the None-filter (which only applies in a later, separate list comprehension). A None entry reaches `.match()` unguarded. Tried modeling with the real re.match() call directly first; ESBMC-Python's re model type-validates and can raise TypeError for a None argument in isolation, but that didn't reliably trigger once domain passed through a function-parameter boundary in this shape during testing, so the crash is made explicit via assert on the real precondition instead (same pattern as nm_real_01/02).",
       "categories": [
@@ -1757,7 +1839,8 @@
         "source_function": "Response.follow",
         "repo_url": "https://github.com/scrapy/scrapy",
         "buggy_commit": "426da0ed07637e7efbcfb0fe49546e187d5d7f67",
-        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/426da0ed07637e7efbcfb0fe49546e187d5d7f67"
+        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/426da0ed07637e7efbcfb0fe49546e187d5d7f67",
+        "fixed_commit": "acd2b8d43b5ebec7ffd364b6f335427041a0b98d"
       },
       "abstraction_notes": "Pre-fix, follow() only special-cases a Link instance before calling self.urljoin(url) unconditionally; urljoin (urllib.parse.urljoin) requires a string and raises TypeError on None. ESBMC-Python does not model urllib.parse, so the crash is made explicit via assert on the precondition it depends on.",
       "categories": [
@@ -1788,7 +1871,8 @@
         "source_function": "create_instance",
         "repo_url": "https://github.com/scrapy/scrapy",
         "buggy_commit": "cb8140a42a27ede87b0880372024f2f1804618b8",
-        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/cb8140a42a27ede87b0880372024f2f1804618b8"
+        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/cb8140a42a27ede87b0880372024f2f1804618b8",
+        "fixed_commit": "cf9be5344a89dd8e14f8241ec69de9c984ec1e05"
       },
       "abstraction_notes": "Pre-fix, create_instance() returns whatever from_crawler()/from_settings()/objcls() produced with no check that the result isn't None -- a misbehaving extension can legitimately return None and the caller receives it silently. The fix raises TypeError on a None result; modeled as an assert on that postcondition.",
       "categories": [
@@ -1819,7 +1903,8 @@
         "source_function": "url_concat",
         "repo_url": "https://github.com/tornadoweb/tornado",
         "buggy_commit": "c9d2a3fa573987629ad576e991c2f3b65f4daab4",
-        "buggy_commit_url": "https://github.com/tornadoweb/tornado/commit/c9d2a3fa573987629ad576e991c2f3b65f4daab4"
+        "buggy_commit_url": "https://github.com/tornadoweb/tornado/commit/c9d2a3fa573987629ad576e991c2f3b65f4daab4",
+        "fixed_commit": "86cc31f52992fb9d11f92de6fd5496842fea2265"
       },
       "abstraction_notes": "Pre-fix, url_concat has no `if args is None: return url` guard; None falls through the isinstance(args, dict) check into an else branch that assumes an iterable of pairs, raising TypeError on iteration. The fix's entire diff is that one guard line, so the real precondition is asserted directly rather than reproducing urlparse/query-string internals ESBMC-Python does not model.",
       "categories": [
@@ -1850,7 +1935,8 @@
         "source_function": "Request.url_for",
         "repo_url": "https://github.com/sanic-org/sanic",
         "buggy_commit": "e506c89304948bba593e8603ecace1c495b06fd5",
-        "buggy_commit_url": "https://github.com/sanic-org/sanic/commit/e506c89304948bba593e8603ecace1c495b06fd5"
+        "buggy_commit_url": "https://github.com/sanic-org/sanic/commit/e506c89304948bba593e8603ecace1c495b06fd5",
+        "fixed_commit": "e81a8ce07329e95d3d0899b1d774f21759c28e0e"
       },
       "abstraction_notes": "Pre-fix, `if \"//\" in self.app.config.SERVER_NAME:` accesses SERVER_NAME unguarded; SERVER_NAME may not be set on the app's dynamic config object at all (AttributeError, not a None value). ESBMC-Python doesn't model dynamic per-instance attribute existence for a config object shaped this way, so the crash is made explicit via assert on the real precondition.",
       "categories": [
@@ -1881,7 +1967,8 @@
         "source_function": "tqdm.__len__",
         "repo_url": "https://github.com/tqdm/tqdm",
         "buggy_commit": "a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
-        "buggy_commit_url": "https://github.com/tqdm/tqdm/commit/a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec"
+        "buggy_commit_url": "https://github.com/tqdm/tqdm/commit/a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
+        "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9"
       },
       "abstraction_notes": "Pre-fix, the __len__ fallback reads self.total directly; if __len__ is invoked before __init__ has assigned self.total at all (not merely set to None), that's an AttributeError, distinct from nm_real_02's None-value bug in the same project/file. The fix uses getattr(self, \"total\", None). ESBMC-Python's class model requires declared instance attributes, so it doesn't naturally represent 'attribute not yet assigned' -- modeled via assert on the real precondition.",
       "categories": [
@@ -2045,7 +2132,8 @@
         "source_function": "request_httprepr",
         "repo_url": "https://github.com/scrapy/scrapy",
         "buggy_commit": "5c4666a3d489bd3efa2e188de58721a125a5bfad",
-        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/5c4666a3d489bd3efa2e188de58721a125a5bfad"
+        "buggy_commit_url": "https://github.com/scrapy/scrapy/commit/5c4666a3d489bd3efa2e188de58721a125a5bfad",
+        "fixed_commit": "8d45b3c4810cb5304ba1193b45697a0df1157326"
       },
       "abstraction_notes": "urlparse(...).hostname is None for a URL with no netloc; to_bytes(None) crashes. ESBMC-Python does not model to_bytes() internals, so the crash is made explicit via the real precondition it depended on, same pattern as nm_real_01.",
       "categories": [
@@ -2076,12 +2164,12 @@
         "source_function": "APIRouter.include_router",
         "repo_url": "https://github.com/tiangolo/fastapi",
         "buggy_commit": "6f7f9268f6b03f42831dcfeaa5c15ba9813333ec",
-        "buggy_commit_url": "https://github.com/tiangolo/fastapi/commit/6f7f9268f6b03f42831dcfeaa5c15ba9813333ec"
+        "buggy_commit_url": "https://github.com/tiangolo/fastapi/commit/6f7f9268f6b03f42831dcfeaa5c15ba9813333ec",
+        "fixed_commit": "c8df3ae57c57e119d115dd3c1f44efa78de1022a"
       },
       "abstraction_notes": "Real code reassigns the router-level `responses` dict inside the route loop instead of combining locally, so route2's combined_responses leaks route1's response codes. Modeled as bool 'has_key' presence across two routes.",
       "categories": [
-        "none_misuse",
-        "variable_misuse"
+        "incorrect_result"
       ],
       "harness_file": "nm_real_15.py",
       "harness_function": "two_routes_buggy",
@@ -2108,12 +2196,12 @@
         "source_function": "Axes.scatter",
         "repo_url": "https://github.com/matplotlib/matplotlib",
         "buggy_commit": "49593b73854e10ace8f3c05343220328def6a328",
-        "buggy_commit_url": "https://github.com/matplotlib/matplotlib/commit/49593b73854e10ace8f3c05343220328def6a328"
+        "buggy_commit_url": "https://github.com/matplotlib/matplotlib/commit/49593b73854e10ace8f3c05343220328def6a328",
+        "fixed_commit": "66289c4f1895b8c65ca92a03d92f6b1cfa552267"
       },
       "abstraction_notes": "Real code overwrote any user-supplied linewidths unconditionally with the rcParam default when marker not filled, instead of only substituting for None entries. Modeled as int precondition pair.",
       "categories": [
-        "none_misuse",
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "harness_file": "nm_real_16.py",
       "harness_function": "get_linewidth_buggy",
@@ -2337,7 +2425,9 @@
         "bugsinpy_id": 1,
         "source_file": "thefuck/rules/pip_unknown_command.py",
         "source_function": "get_new_command",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "2ced7a7f33ae0bec3ffc7a43ce95330bdf6cfcb9",
+        "fixed_commit": "444908ce1c17767ef4aaf9e0b4950497914f7f63"
       },
       "abstraction_notes": "re.findall() is not modeled by ESBMC-Python's re module (only match/search/fullmatch are), so its list-length effect is stubbed with a nondet bool standing in for 'did the narrow [a-z]+ pattern match real pip output'.",
       "categories": [
@@ -2366,7 +2456,9 @@
         "bugsinpy_id": 21,
         "source_file": "thefuck/rules/git_fix_stash.py",
         "source_function": "match",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "71dc2666ccf62e653291d9a7a08e2c6c3320425b",
+        "fixed_commit": "213791d3c2af379ffa37a140735998736b41912e"
       },
       "abstraction_notes": "Faithful to the real code -- str.split() is natively modeled by ESBMC-Python, no stubbing needed.",
       "categories": [
@@ -2376,6 +2468,7 @@
       "harness_function": "is_stash_command",
       "harness_expression": "tokens[1]",
       "harness_line": 7,
+      "recommended_flags": "--incremental-bmc (2026-09-11 audit: at any --unwind N tried, incl. with __ESBMC_assume(len(script) <= 10) added to main(), the split()/strcmp internals still fully unwind and time out before the real property is checked; --incremental-bmc confirms VERIFICATION FAILED at k=1 on the real IndexError)",
       "audit": {
         "source_expression": "command.script.split()[1]",
         "harness_property": "tokens[1]",
@@ -2395,7 +2488,9 @@
         "bugsinpy_id": 9,
         "source_file": "thefuck/rules/git_push.py",
         "source_function": "get_new_command",
-        "repo_url": "https://github.com/nvbn/thefuck"
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit": "ce6b82c92d78ae283cb3db001766b76f6647bc47",
+        "fixed_commit": "feb36ede5c518fdc3b6eddf945b2d8b1e2294d15"
       },
       "abstraction_notes": "script_parts list rebuilt via range()+append() with a nondet, bounded length (idx guaranteed valid before the first pop, matching the real precondition that idx was found by searching the original list).",
       "categories": [
@@ -2547,7 +2642,7 @@
         "project": "wcwidth",
         "repo_url": "https://github.com/jquast/wcwidth",
         "commit_hash": "4c914039ba6c70ea2508420b591e3319683d5185",
-        "source_file": "wcwidth/wcwidth.py",
+        "source_file": "wcwidth/_wcswidth.py",
         "source_function": "wcswidth / wcstwidth"
       },
       "abstraction_notes": "end was set directly to the caller-supplied n without clamping to len(pwcs); when n exceeds the string length the loop indexes past the end. Fixes real issue #228, has an upstream regression test.",
@@ -2664,7 +2759,9 @@
         "bugsinpy_id": "6",
         "source_file": "youtube_dl/utils.py",
         "source_function": "dfxp2srt",
-        "repo_url": "https://github.com/ytdl-org/youtube-dl"
+        "repo_url": "https://github.com/ytdl-org/youtube-dl",
+        "buggy_commit": "4f29fa99069760dc47ef9ca5dbf607a567d2982f",
+        "fixed_commit": "d631d5f9f27f93767226192e4288990413fa9dbd"
       },
       "abstraction_notes": "Real code used para.attrib['begin'] (dict subscript, KeyError if missing) before the fix switched to .get('begin'); modeled as a plain dict with a bool flag for whether the key is present, near-verbatim reproduction of the real dict-access bug.",
       "categories": [
@@ -2788,7 +2885,7 @@
         "project": "youtube-dl",
         "bugsinpy_id": 1,
         "buggy_commit": "99036a1298089068dcf80c0985bfcc3f8c24f281",
-        "fixed_commit": null,
+        "fixed_commit": "1cc47c667419e0eadc0a6989256ab7b276852adf",
         "source_file": "youtube_dl/utils.py",
         "source_function": "_match_one",
         "repo_url": "https://github.com/ytdl-org/youtube-dl",
@@ -3018,11 +3115,12 @@
         "source_function": "MetricsHandler.get",
         "repo_url": "https://github.com/spotify/luigi",
         "buggy_commit": "1164eb6b85b8a70f596dbb99452bec513e72c12e",
-        "buggy_commit_url": "https://github.com/spotify/luigi/commit/1164eb6b85b8a70f596dbb99452bec513e72c12e"
+        "buggy_commit_url": "https://github.com/spotify/luigi/commit/1164eb6b85b8a70f596dbb99452bec513e72c12e",
+        "fixed_commit": "aec5dc2ed8db53fc282a0bd24aabe59031b6d1ba"
       },
       "abstraction_notes": "Real code called configure_http_handler() on the metrics VALUE returned by generate_latest() instead of on the metrics_collector object that actually defines that method. Modeled with two minimal classes (Metrics with no such method, MetricsCollector with it) -- ESBMC-Python's class model raises AttributeError on the wrong-object call, near-verbatim reproduction.",
       "categories": [
-        "type_mismatch"
+        "variable_misuse"
       ],
       "harness_file": "tm_real_10.py",
       "harness_function": "get_handler_buggy",
@@ -3039,7 +3137,7 @@
       "file": "vm_real_01.py",
       "function": "tqdm.format_meter",
       "verifiable": true,
-      "expression": "l_bar = (prefix if prefix else '') + '{0:3.0f}%|'.format(percentage)",
+      "expression": "return l_bar + r_bar",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -3230,7 +3328,7 @@
       "file": "ir_real_05.py",
       "function": "string_to_int",
       "categories": [
-        "invalid_precondition"
+        "incorrect_result"
       ],
       "verifiable": true,
       "expression": "alpha_len = len(alphabet)",
@@ -3317,6 +3415,526 @@
       "audit": {
         "source_expression": "(h_src - wdw_size) / step_size",
         "harness_property": "(h_src - wdw_size) / step_size",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "nm_real_24",
+      "file": "nm_real_24.py",
+      "function": "reformat_many",
+      "verifiable": true,
+      "expression": "executor.shutdown()",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "black",
+        "bugsinpy_id": 1,
+        "source_file": "black.py",
+        "source_function": "reformat_many",
+        "repo_url": "https://github.com/psf/black",
+        "buggy_commit": "26c9465a22c732ab1e17b0dec578fa3432e9b558",
+        "fixed_commit": "c0a7582e3d4cc8bec3b7f5a6c52b36880dcb57d7"
+      },
+      "abstraction_notes": "ProcessPoolExecutor(...) can raise OSError on platforms without multiprocessing (e.g. AWS Lambda); the fix catches that and falls back to executor=None, but the pre-fix finally block called executor.shutdown() unconditionally, crashing on the very platform the fallback was meant to support. Harness abstracts the None-carrying value as a bool flag + nondet, same pattern as nm_real_01/02.",
+      "categories": [
+        "none_misuse"
+      ],
+      "harness_file": "nm_real_24.py",
+      "harness_function": "reformat_many_finally",
+      "harness_expression": "assert not executor_is_none",
+      "harness_line": 7,
+      "audit": {
+        "source_expression": "executor.shutdown()",
+        "harness_property": "assert not executor_is_none",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_03",
+      "file": "vm_real_03.py",
+      "function": "Language.pipe",
+      "verifiable": true,
+      "expression": "docs = _pipe(pipe, docs, kwargs)",
+      "expected_type": "TypeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "spacy",
+        "bugsinpy_id": 5,
+        "source_file": "spacy/language.py",
+        "source_function": "Language.pipe",
+        "repo_url": "https://github.com/explosion/spaCy",
+        "buggy_commit": "bdfb696677a7591ced018e7597c00929e97c6837",
+        "fixed_commit": "3bd15055ce74b04dcaf3b9abe2adeb01fb595776"
+      },
+      "abstraction_notes": "_pipe(docs, proc, kwargs) does `for doc in docs: proc(doc, **kwargs)`; the buggy call site passes _pipe(pipe, docs, kwargs), swapping the non-iterable pipe component into the docs position (TypeError either way this is unwound). ESBMC-Python's frontend needs static type consistency across the call site, so the real precondition (correct argument order) is asserted directly, same pattern as the nm_real_* None-flag harnesses.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "vm_real_03.py",
+      "harness_function": "pipe_call_order_ok",
+      "harness_expression": "assert not args_swapped",
+      "harness_line": 11,
+      "audit": {
+        "source_expression": "docs = _pipe(pipe, docs, kwargs)",
+        "harness_property": "assert not args_swapped",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "nm_real_25",
+      "file": "nm_real_25.py",
+      "function": "HTTP1Connection._can_keep_alive",
+      "verifiable": true,
+      "expression": "start_line.method in (\"HEAD\", \"GET\")",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "tornado",
+        "bugsinpy_id": 13,
+        "source_file": "tornado/http1connection.py",
+        "source_function": "HTTP1Connection._can_keep_alive",
+        "repo_url": "https://github.com/tornadoweb/tornado",
+        "buggy_commit": "d7d9c467cda38f4c9352172ba7411edc29a85196",
+        "fixed_commit": "34903f9e1a99441b2729bbe6f1d65d46cf352ea7"
+      },
+      "abstraction_notes": "start_line can be a request start line (has .method) or a response start line (no .method attribute at all); the buggy elif branch accesses .method unconditionally, raising AttributeError on a response. Fix uses getattr(start_line, 'method', None). Modeled with a bool flag standing in for 'start_line is a request line', same pattern as nm_real_08/nm_real_14.",
+      "categories": [
+        "none_misuse"
+      ],
+      "harness_file": "nm_real_25.py",
+      "harness_function": "check_keep_alive",
+      "harness_expression": "assert is_request_line",
+      "harness_line": 8,
+      "audit": {
+        "source_expression": "start_line.method in (\"HEAD\", \"GET\")",
+        "harness_property": "assert is_request_line",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "tm_real_11",
+      "file": "tm_real_11.py",
+      "function": "sitemap_urls_from_robots",
+      "verifiable": true,
+      "expression": "line.lstrip().startswith('Sitemap:')",
+      "expected_type": "TypeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": 20,
+        "source_file": "scrapy/utils/sitemap.py",
+        "source_function": "sitemap_urls_from_robots",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
+        "fixed_commit": "25c56159b86288311630cc0cf6db9d755aeeff1e"
+      },
+      "abstraction_notes": "SitemapSpider._parse_sitemap calls sitemap_urls_from_robots(response.body) (bytes); inside, line.lstrip().startswith('Sitemap:') compares bytes against a str literal, raising TypeError. Fix passes response.text (str) instead. Modeled with a bool flag standing in for 'the caller passed str, not bytes'.",
+      "categories": [
+        "type_mismatch"
+      ],
+      "harness_file": "tm_real_11.py",
+      "harness_function": "sitemap_urls_from_robots_ok",
+      "harness_expression": "assert passed_text",
+      "harness_line": 8,
+      "audit": {
+        "source_expression": "line.lstrip().startswith('Sitemap:')",
+        "harness_property": "assert passed_text",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_04",
+      "file": "vm_real_04.py",
+      "function": "YoutubeDL._build_format_filter",
+      "verifiable": true,
+      "expression": "op = lambda attr, value: not str_op",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "youtube-dl",
+        "bugsinpy_id": 12,
+        "source_file": "youtube_dl/YoutubeDL.py",
+        "source_function": "YoutubeDL._build_format_filter",
+        "repo_url": "https://github.com/ytdl-org/youtube-dl",
+        "buggy_commit": "435e382423f860aca82a58d7c3db58cbfa242b40",
+        "fixed_commit": "e118a8794ffe5a3a414afd489726f34d753b0b23"
+      },
+      "abstraction_notes": "`lambda attr, value: not str_op` negates the str_op function object itself (always truthy, attr/value unused) instead of calling str_op(attr, value) and negating the result -- a negated string filter (e.g. \"ext!=mp4\") always evaluates to False. Visible from the real code alone: the lambda's own parameters are unused and str_op is referenced without being called. Modeled as buggy (constant False) vs correct (not attr_matches).",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "vm_real_04.py",
+      "harness_function": "negated_filter_buggy",
+      "harness_expression": "assert buggy == correct",
+      "harness_line": 19,
+      "audit": {
+        "source_expression": "op = lambda attr, value: not str_op",
+        "harness_property": "assert buggy == correct",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_05",
+      "file": "vm_real_05.py",
+      "function": "LocalFileSystem.move",
+      "verifiable": true,
+      "expression": "self.fs.mkdir(d)",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "luigi",
+        "bugsinpy_id": 13,
+        "source_file": "luigi/file.py",
+        "source_function": "LocalFileSystem.move",
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "3c90bcdac63d978dbdaeae408420e22b963c9863",
+        "fixed_commit": "a8e64fe7f83d69702166a44c7e8cb9470ff31040"
+      },
+      "abstraction_notes": "LocalFileSystem has no `fs` attribute at all; `mkdir` is defined directly on `self`. Visible from the real code alone: the class body shows `def mkdir(self, ...)` right next to the erroneous `self.fs.mkdir(d)` call, same pattern as tm_real_10's wrong-object dispatch.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "vm_real_05.py",
+      "harness_function": "move_creates_dir",
+      "harness_expression": "assert not uses_self_fs",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "self.fs.mkdir(d)",
+        "harness_property": "assert not uses_self_fs",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_06",
+      "file": "vm_real_06.py",
+      "function": "CrawlerProcess.__init__",
+      "verifiable": true,
+      "expression": "configure_logging(settings)",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": 32,
+        "source_file": "scrapy/crawler.py",
+        "source_function": "CrawlerProcess.__init__",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "342cb622f1ea93268477da557099010bbd72529a",
+        "fixed_commit": "aa6a72707daabfb6217f52e4774f2ff038f83dcc"
+      },
+      "abstraction_notes": "super().__init__(settings) normalizes a plain dict into a Settings object stored as self.settings; the buggy code calls configure_logging(settings)/log_scrapy_info(settings) with the original local parameter instead of self.settings. Visible from the real code alone: CrawlerRunner.__init__ right above shows the dict-to-Settings normalization that CrawlerProcess.__init__ then ignores. Modeled with a bool flag standing in for 'settings is still a plain dict at the call site'.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "vm_real_06.py",
+      "harness_function": "crawler_process_init",
+      "harness_expression": "assert not settings_is_dict",
+      "harness_line": 9,
+      "audit": {
+        "source_expression": "configure_logging(settings)",
+        "harness_property": "assert not settings_is_dict",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "tm_real_12",
+      "file": "tm_real_12.py",
+      "function": "S3CopyToTable.run",
+      "verifiable": true,
+      "expression": "path = self.s3_load_path()",
+      "expected_type": "TypeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "luigi",
+        "bugsinpy_id": 25,
+        "source_file": "luigi/contrib/redshift.py",
+        "source_function": "S3CopyToTable.run",
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "d7ec31609c88503391d12d65b6037f397feff816",
+        "fixed_commit": "040bbc9ef8d1703b64d13c60f271fded63e13601"
+      },
+      "abstraction_notes": "s3_load_path is declared as a property (abc.abstractproperty in the real code); self.s3_load_path already returns the load-path string, so calling self.s3_load_path() tries to call that string. Visible from the real code alone: the property decorator sits right above the erroneous call site in the same class. Modeled with a bool flag standing in for 'the property was called instead of accessed'.",
+      "categories": [
+        "type_mismatch"
+      ],
+      "harness_file": "tm_real_12.py",
+      "harness_function": "read_s3_load_path",
+      "harness_expression": "assert not called_as_function",
+      "harness_line": 7,
+      "audit": {
+        "source_expression": "path = self.s3_load_path()",
+        "harness_property": "assert not called_as_function",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "io_real_02",
+      "file": "io_real_02.py",
+      "function": "integer_squareroot",
+      "verifiable": true,
+      "expression": "y = (x + 1) // 2",
+      "expected_type": "ValueError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "consensus-specs",
+        "source_file": "specs/phase0/beacon-chain.md",
+        "source_function": "integer_squareroot",
+        "repo_url": "https://github.com/ethereum/consensus-specs",
+        "buggy_commit": "2faa44b6b68997beb6a64654be2b345a4bb7b8a8",
+        "fixed_commit": "f82a3af97852867e8922b57ccc6815f9659c209a",
+        "pr_url": "https://github.com/ethereum/consensus-specs/pull/3600",
+        "note": "Not a BugsInPy case. Reported as found by ESBMC-Python against Ethereum's executable consensus specification. Verified against the actual PR #3600 diff and the remerkleable uint64 source (protolambda/remerkleable v0.1.27) on 2026-09-11: remerkleable's uint64 bounds-checks every arithmetic result and raises ValueError on overflow rather than silently wrapping to 0, so the real crash on n == 2**64-1 is an unhandled ValueError from `x + 1`, not a silent wraparound followed by a division by zero."
+      },
+      "abstraction_notes": "The literal UINT64_MAX = 2**64-1 itself overflows ESBMC-Python's fixed-width int representation, so the bound is modeled at a smaller scale (TYPE_MAX = 255) preserving the same mechanism: x == TYPE_MAX makes x + 1 exceed the type's bound. Same technique io_real_01 uses for numpy int8.",
+      "categories": [
+        "integer_overflow"
+      ],
+      "harness_file": "io_real_02.py",
+      "harness_function": "integer_squareroot_first_step",
+      "harness_expression": "assert x != TYPE_MAX",
+      "harness_line": 16,
+      "audit": {
+        "source_expression": "y = (x + 1) // 2",
+        "harness_property": "assert x != TYPE_MAX",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_07",
+      "file": "vm_real_07.py",
+      "function": "fit_generator",
+      "verifiable": true,
+      "expression": "val_enqueuer_gen = iter_sequence_infinite(generator)",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "keras",
+        "bugsinpy_id": 13,
+        "source_file": "keras/engine/training_generator.py",
+        "source_function": "fit_generator",
+        "repo_url": "https://github.com/keras-team/keras",
+        "buggy_commit": "2bfd1f2c950df5fc3f40b903c1966f1b0a48bee4",
+        "fixed_commit": "a07253d8269e1b750f0a64767cc9a07da8a3b7ea"
+      },
+      "abstraction_notes": "Inside the branch that builds the VALIDATION data enqueuer, `iter_sequence_infinite(generator)` reuses the TRAINING generator variable instead of `val_data`, so validation silently iterates over training data. Visible from the real code alone: `val_data = validation_data` is assigned on the line right above, unused. Modeled with a bool flag standing in for 'the wrong (training) generator variable was used'.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "vm_real_07.py",
+      "harness_function": "pick_validation_enqueuer",
+      "harness_expression": "assert not uses_train_generator",
+      "harness_line": 7,
+      "audit": {
+        "source_expression": "val_enqueuer_gen = iter_sequence_infinite(generator)",
+        "harness_property": "assert not uses_train_generator",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "tm_real_13",
+      "file": "tm_real_13.py",
+      "function": "XmlItemExporter._export_xml_field",
+      "verifiable": true,
+      "expression": "self._xg_characters(serialized_value)",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": 22,
+        "source_file": "scrapy/exporters.py",
+        "source_function": "XmlItemExporter._export_xml_field",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "a35aec71e96b0c0288c370afa425e8e700dca8b3",
+        "fixed_commit": "bb2cf7c0d7199fffe0aa100e5c8a51c6b4b82fc2"
+      },
+      "abstraction_notes": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'.",
+      "categories": [
+        "type_mismatch"
+      ],
+      "harness_file": "tm_real_13.py",
+      "harness_function": "export_xml_field_value",
+      "harness_expression": "assert is_text",
+      "harness_line": 9,
+      "audit": {
+        "source_expression": "self._xg_characters(serialized_value)",
+        "harness_property": "assert is_text",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_08",
+      "file": "vm_real_08.py",
+      "function": "get_write_function",
+      "verifiable": true,
+      "expression": "with open(output_path, 'a') as output_file:",
+      "expected_type": "NameError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "PySnooper",
+        "bugsinpy_id": 3,
+        "source_file": "pysnooper/pysnooper.py",
+        "source_function": "get_write_function",
+        "repo_url": "https://github.com/cool-RR/PySnooper",
+        "buggy_commit": "6e3d797be3fa0a746fb5b1b7c7fea78eb926c208",
+        "fixed_commit": "15555ed760000b049aff8fecc79d29339c1224c3"
+      },
+      "abstraction_notes": "The enclosing function's parameter is `output`, not `output_path`; `output_path` is never assigned anywhere in the file, so every call to the returned write() function raises NameError. Visible from the real code alone: `output_path` never appears as a parameter or assignment target in the shown function. Modeled with a bool flag standing in for 'the undefined name was referenced'.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "vm_real_08.py",
+      "harness_function": "open_output_file",
+      "harness_expression": "assert not uses_undefined_name",
+      "harness_line": 7,
+      "audit": {
+        "source_expression": "with open(output_path, 'a') as output_file:",
+        "harness_property": "assert not uses_undefined_name",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "ip_real_34",
+      "file": "ip_real_34.py",
+      "function": "find_hook",
+      "verifiable": true,
+      "expression": "return os.path.abspath(os.path.join(hooks_dir, hook_file))",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "cookiecutter",
+        "bugsinpy_id": 2,
+        "source_file": "cookiecutter/hooks.py",
+        "source_function": "find_hook",
+        "repo_url": "https://github.com/cookiecutter/cookiecutter",
+        "buggy_commit": "d7e7b28811e474e14d1bed747115e47dcdd15ba3",
+        "fixed_commit": "90434ff4ea4477941444f1e83313beb414838535"
+      },
+      "abstraction_notes": "find_hook returns on the FIRST matching hook file found inside the os.listdir loop, so run_hook only ever executes one script even when multiple hook files match the same hook name (e.g. both pre_gen_project.py and pre_gen_project.sh present); the rest are silently skipped. Visible from the real code alone: an early `return` sits inside a `for` loop that could otherwise match more than once. Modeled as a scalar count of hooks actually run (buggy: always 1 when any match; correct: the real match count).",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "harness_file": "ip_real_34.py",
+      "harness_function": "hooks_run_buggy",
+      "harness_expression": "assert buggy == correct",
+      "harness_line": 21,
+      "audit": {
+        "source_expression": "return os.path.abspath(os.path.join(hooks_dir, hook_file))",
+        "harness_property": "assert buggy == correct",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "oob_real_06",
+      "file": "oob_real_06.py",
+      "function": "merge_configs",
+      "verifiable": true,
+      "expression": "default[k]",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "cookiecutter",
+        "bugsinpy_id": 1513,
+        "source_file": "cookiecutter/config.py",
+        "source_function": "merge_configs",
+        "repo_url": "https://github.com/cookiecutter/cookiecutter",
+        "buggy_commit": "2fd137f2c2d508cd0d194301101da7e85df6994e",
+        "fixed_commit": "cc92e3cc00a3d2acd1ef6d38cf5731478dade3cb"
+      },
+      "abstraction_notes": "PyBugHive issue #1513: merge_configs used default[k] for a nested override key that may not exist in default, producing KeyError. The ESBMC harness models the relevant dictionary-key existence condition as default_has_key and asserts it, avoiding the large recursive dict model.",
+      "categories": ["out_of_bounds"],
+      "harness_file": "oob_real_06.py",
+      "harness_function": "merge_nested_config",
+      "harness_expression": "assert default_has_key",
+      "harness_line": 4,
+      "audit": {
+        "source_expression": "default[k]",
+        "harness_property": "assert default_has_key",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "nm_real_26",
+      "file": "nm_real_26.py",
+      "function": "request_httprepr",
+      "verifiable": true,
+      "expression": "to_bytes(parsed.hostname)",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": 29,
+        "source_file": "scrapy/utils/request.py",
+        "source_function": "request_httprepr",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "5c4666a3d489bd3efa2e188de58721a125a5bfad",
+        "fixed_commit": "8d45b3c4810cb5304ba1193b45697a0df1157326"
+      },
+      "abstraction_notes": "The pre-fix code passes parsed.hostname directly to to_bytes even when the parsed URL has no hostname; the fix uses parsed.hostname or b''. The harness models the optional None host with hostname_is_none.",
+      "categories": ["none_misuse"],
+      "harness_file": "nm_real_26.py",
+      "harness_function": "format_host_header",
+      "harness_expression": "assert not hostname_is_none",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "to_bytes(parsed.hostname)",
+        "harness_property": "assert not hostname_is_none",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "tm_real_14",
+      "file": "tm_real_14.py",
+      "function": "read_conllx",
+      "verifiable": true,
+      "expression": "int(head)",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "spacy",
+        "bugsinpy_id": 4,
+        "source_file": "spacy/cli/converters/conllu2json.py",
+        "source_function": "read_conllx",
+        "repo_url": "https://github.com/explosion/spaCy",
+        "buggy_commit": "abd5c06374eab5db0cf897b73543b1f3eb007e12",
+        "fixed_commit": "9fa9d7f2cb52ce6a70c264d4e57c7f190d7686bf"
+      },
+      "abstraction_notes": "The pre-fix branch converts head with int(head) whenever head != '0', although CONLL-U uses '_' as a valid missing-head placeholder. The harness models that input shape with head_is_underscore.",
+      "categories": ["type_mismatch"],
+      "harness_file": "tm_real_14.py",
+      "harness_function": "convert_head_is_safe",
+      "harness_expression": "assert not head_is_underscore",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "int(head)",
+        "harness_property": "assert not head_is_underscore",
+        "provenance_complete": true
+      }
+    },
+    {
+      "id": "vm_real_09",
+      "file": "vm_real_09.py",
+      "function": "__len__",
+      "verifiable": true,
+      "expression": "self.total",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "tqdm",
+        "pybughive_issue": 539,
+        "source_file": "tqdm/_tqdm.py",
+        "source_function": "__len__",
+        "repo_url": "https://github.com/tqdm/tqdm",
+        "buggy_commit": "a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
+        "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9"
+      },
+      "abstraction_notes": "The pre-fix final branch reads self.total when iterable has no __len__ and no explicit total exists, causing AttributeError. The harness models that optional attribute state with total_is_defined.",
+      "categories": ["variable_misuse"],
+      "harness_file": "vm_real_09.py",
+      "harness_function": "length_without_total",
+      "harness_expression": "assert total_is_defined",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "self.total",
+        "harness_property": "assert total_is_defined",
         "provenance_complete": true
       }
     }

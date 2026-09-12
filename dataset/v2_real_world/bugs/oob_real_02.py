@@ -10,6 +10,11 @@ def is_stash_command(script: str) -> bool:
 
 def main() -> None:
     script: str = nondet_str()
+    # Bounded so ESBMC-Python's split()/strcmp internals can be fully
+    # unwound at --unwind 6; unbounded nondet_str() otherwise hits the
+    # string-library's own unwinding-assertion limit before reaching the
+    # real is_stash_command property (see audit finding, 2026-09-11).
+    __ESBMC_assume(len(script) <= 10)
     is_stash_command(script)
 
 

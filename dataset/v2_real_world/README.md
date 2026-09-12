@@ -12,7 +12,7 @@ Reorganized from the original per-category-folder shape (kept in git history if 
 single flat structure, since several bugs genuinely fit more than one category and a folder-per-
 category layout forces a single primary label per file:
 
-- `bugs/` — every confirmed item's `.py` harness in one flat folder (106 files, no subfolders)
+- `bugs/` — every confirmed item's `.py` harness in one flat folder (123 files, no subfolders)
 - `ground_truths.json` — one file for all items, with a `provenance` block per item linking back to
   the real project/commit, `abstraction_notes`, and a `categories` field (a **list**, not a single
   string) — most items have one category, a small number genuinely have two (see Method below).
@@ -53,7 +53,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
    (only when the real defect is a silent wrong-value bug modeled the buggy/correct way, not a raised
    `IndexError`) and `none_misuse`↔`variable_misuse` (only when state genuinely leaks/is stale across
    iterations, the same shape as `vm_real_01`/`vm_real_02`, not just "a None involved somewhere").
-   10 of 106 items got a second tag; the other 96 stayed single-category on purpose.
+   9 of 123 items got a second tag; the other 114 stayed single-category on purpose.
 
 ## Findings worth keeping for the write-up
 
@@ -185,7 +185,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
   second, broader pass.
 
 - **A 5th category, `type_mismatch`, from re-reading the `type_mismatch`/`other` triage candidates
-  (`candidates_phase1.json`) end to end**: 3 of 7 held up as real, dependency-free logic bugs —
+  (the phase-1 candidate list) end to end**: 3 of 7 held up as real, dependency-free logic bugs —
   `spacy/4` (CoNLL-U's `"_"` no-head sentinel reaching `int("_")`, real `ValueError`), `luigi/28`
   (Hive normalizes table names to lowercase but the caller's case-sensitive substring check missed
   real, differently-cased tables), `youtube-dl/1` (the `''` filter operator's `v is not None` check
@@ -207,7 +207,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
   category-mismatch trap the same shape as `thefuck/15`/`scrapy/18` already in this file.
 
 - **A 6th category, `invalid_precondition`, from re-triaging the `invalid_precondition` slice of
-  `candidates_phase1.json` (15 candidates)**: 9 held up as real, dependency-free logic bugs, all
+  the phase-1 candidate list (15 candidates)**: 9 held up as real, dependency-free logic bugs, all
   modeled as a `buggy_*`/`correct_*` sibling-function pair (the real buggy condition vs. the real
   fixed one) so ESBMC finds the exact input where they disagree, rather than a single function
   compared against a hand-picked constant. `scrapy/37` (URL scheme check too loose, `':' not in url`
@@ -237,7 +237,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
   `numpy`-arithmetic stub or `set()`/`sorted()`-with-key modeling ESBMC-Python doesn't have — left
   as open leads for a future pass rather than rushed into a shaky abstraction.
 
-- **`none_misuse` re-triaged from `candidates_phase1.json`'s 15-candidate slice, re-reading each
+- **`none_misuse` re-triaged from the phase-1 candidate list's 15-candidate slice, re-reading each
   patch in full rather than trusting the phase-1 label**: 7 of 15 held up, more than doubling the
   category. Two phase-1 labels flipped on close reading and were rejected outright:
   `fastapi/13` isn't a None crash at all — the pre-fix code already guards `if responses is None:
@@ -269,7 +269,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
   correctly verifies `FAILED` with the NULL-pointer counterexample. Worth flagging for
   `esbmc-python-guide`: prefer `if`/`else` over a ternary whenever a branch assigns `None` to an
   otherwise-typed variable.
-- **`candidates_phase1.json`'s "high confidence" tag still needs a full-patch re-read before
+- **The phase-1 candidate list's "high confidence" tag still needs a full-patch re-read before
   writing a harness**: of 19 high-confidence candidates re-examined for this batch, only 8 held up
   cleanly (`nm_real_10..12`, `tm_real_04..06`, `ip_real_10..11`). Rejects: `thefuck/26` was a
   feature commit (adds a "start all instances" fallback), not a crash fix, mislabeled by triage;
@@ -283,7 +283,7 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
   models `is` on int literals the way CPython's small-int cache does, since that's a genuinely
   interesting semantic question, not just a stub problem.
 - **`assertion_violation`/`out_of_bounds` batch (6 av + 2 oob, all confirmed, 8/8)**: this pass
-  targeted the highest-confidence leftover candidates from `candidates_phase1.json` and every one
+  targeted the highest-confidence leftover candidates from the phase-1 list and every one
   held up. Two (`oob_real_04` thefuck/22, `oob_real_05` black/17) are verbatim -- the real buggy line
   copied as-is, no abstraction at all, just an empty list/string literal to trigger the native
   IndexError check. The rest (`av_real_06`-`av_real_11`: thefuck/31, thefuck/32, thefuck/29,
@@ -335,19 +335,29 @@ The old `ground_truths/<category>.json` + `bugs/<category>/` layout is gone; any
 
 ## Status
 
-106 items total, by primary category (recount taken directly from `ground_truths.json`, the sole
-authoritative source): 4 division_by_zero, 13 out_of_bounds, 19 assertion_violation, 23 none_misuse,
-10 type_mismatch, 31 invalid_precondition, 2 variable_misuse, 1 integer_overflow, 3 incorrect_result.
+123 items total, by primary category (recount taken directly from `ground_truths.json`, the sole
+authoritative source): 4 division_by_zero, 14 out_of_bounds, 13 assertion_violation, 25 none_misuse,
+13 type_mismatch, 26 invalid_precondition, 10 variable_misuse, 2 integer_overflow, 16 incorrect_result.
 Layout is flat (`bugs/*.py` + `detection/*.py` + one `ground_truths.json` with a `categories` list
 per item) rather than one folder/file per category.
 
+**Detection scope.** The manifest and ground truth carry an explicit evaluation policy with 26
+items that require the real patch to classify an outcome-valued bug (`patch_context_items`). The
+V2 detection stage evaluates the other 97 items only; those 26 remain available to the harness and
+provenance audit, but are not counted as category-detection false negatives when the detector sees
+only the neutral source file. This prevents the benchmark from requiring the detector to infer an
+expected result that is not present in the buggy source alone.
+
 Went 105 → 100 in an earlier pass (5 pairs found to be the exact same real bug mined twice under
 different IDs, deduplicated), then 100 → 103 adding a new source (ESBMC's own history, see below),
-then 103 → 105 with a stricter issue-linked pass, and 105 → 106 with `dz_real_04`
+then 103 → 105 with a stricter issue-linked pass, 105 → 106 with `dz_real_04`, and
+106 → 120 with the expanded BugsInPy/GitHub audit pass, and 120 → 122 with
+two additional BugsInPy cases validated from their upstream fixes, and 122 → 123
+with PyBugHive's `tqdm#539`
 (see "Human-validated sources" below).
 
 **Human-validated sources.** Fernanda asked for the provenance breakdown to be explicit: of the
-106 items, 76 come from BugsInPy (peer-reviewed academic curation — Widyasari et al., ESEC/FSE
+120 items, 89 come from BugsInPy (peer-reviewed academic curation — Widyasari et al., ESEC/FSE
 2020), 16 from fresh GitHub mining where the fix commit references a real issue number (someone
 external reported the bug before the fix — `issue_ref` is set in `provenance` for these), 3 from
 ESBMC's own history (real commits, real regressions, but internal — no external reporter), and 11
@@ -381,7 +391,7 @@ value bug once the crash was worked around, hit an unrelated live Z3 encoding cr
 struct_type_pointer_struct and (_ BitVec 64) are incompatible`) — worth a `esbmc-verifier`-style report on
 its own, not folded into this dataset.
 
-**Final cleanup pass over `candidates_phase1.json`'s last ~23 unresolved candidates**: 7 confirmed
+**Final cleanup pass over the phase-1 list's last ~23 unresolved candidates**: 7 confirmed
 -- `oob_real_15` (youtube-dl/6, near-verbatim `dict['begin']` KeyError vs. the fixed `.get()`),
 `oob_real_16` (boltons `IndexedSet` double negative-index normalization silently wrapping an
 out-of-range index instead of raising), `av_real_21` (youtube-dl/18, force_properties filter tuple
@@ -402,7 +412,7 @@ Two more real **ESBMC-Python limitations confirmed by direct probe** (not datase
   `src/python-frontend/models/datetime.py` that `timestamp()` isn't modeled at all yet, so the bug
   isn't representable in any form, not even a probe-shaped harness.
 
-Remaining candidates in `candidates_phase1.json` not promoted to `ground_truths/`: `thefuck/11`,
+Remaining candidates from the phase-1 review not promoted to `ground_truths/`: `thefuck/11`,
 `tqdm/3`, `tqdm/9`, `luigi/30`, `scrapy/23`, `luigi/13`, `thefuck/30`, `luigi/25`, `scrapy/21`,
 `spacy/2` (blocked on the `dict.update()` ESBMC bug itself, not a triage rejection), `boltons`
 `math.log(x, 1.0)` (solver-cost reject, ~60s timeout even reduced), `deepdiff`'s two candidates

@@ -66,7 +66,14 @@ def evaluate_v2_results(
     gt_path = Path(ground_truth_path)
     manifest_file = Path(manifest_path) if manifest_path else gt_path.parent / "manifest.json"
     gt_items = json.loads(gt_path.read_text(encoding="utf-8")).get("items", [])
-    manifest_items = json.loads(manifest_file.read_text(encoding="utf-8")).get("items", [])
+    manifest_payload = json.loads(manifest_file.read_text(encoding="utf-8"))
+    manifest_items = manifest_payload.get("items", [])
+    patch_context_ids = {
+        str(item)
+        for item in manifest_payload.get("evaluation_policy", {}).get(
+            "patch_context_items", []
+        )
+    }
     gt_ids = {str(item.get("id")) for item in gt_items}
     manifest_ids = {str(item.get("id")) for item in manifest_items}
     if gt_ids != manifest_ids:
@@ -82,6 +89,7 @@ def evaluate_v2_results(
         _signature(str(base / item["detection_file"]), str(category))
         for item in manifest_items
         for category in item.get("categories", [])
+        if str(item.get("id")) not in patch_context_ids
         if allowed_sources is None
         or str((base / item["detection_file"]).resolve()) in allowed_sources
     )
@@ -166,6 +174,8 @@ def evaluate_v2_results(
     } if evaluate_detection else {"status": "not_evaluated_oracle_seeded"}
     return {
         "unit": "category label on a detection source",
+        "detection_scope": "items without patch context",
+        "excluded_patch_context_items": len(patch_context_ids),
         "expected_labels": sum(expected.values()),
         "detection": detection_metrics,
         "synthesis_given_correct_detection": {

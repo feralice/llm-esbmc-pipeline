@@ -1,7 +1,5 @@
 def send2trash(paths):
     paths = preprocess_paths(paths)
-    if not paths:
-        return
     # convert data type
     paths = [text_type(path, "mbcs") if not isinstance(path, text_type) else path for path in paths]
     # convert to full paths

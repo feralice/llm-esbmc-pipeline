@@ -12,12 +12,20 @@ def summary_smiley(ever_failed: bool, completed: bool) -> str:
     return ":)"
 
 
+def correct_summary_smiley(ever_failed: bool, completed: bool) -> str:
+    failed: bool = ever_failed and (not completed)
+    if failed:
+        return ":("
+    return ":)"
+
+
 def main() -> None:
     ever_failed: bool = nondet_bool()
     completed: bool = nondet_bool()
     __ESBMC_assume(ever_failed and completed)
-    smiley: str = summary_smiley(ever_failed, completed)
-    assert smiley == ":)"
+    buggy: str = summary_smiley(ever_failed, completed)
+    correct: str = correct_summary_smiley(ever_failed, completed)
+    assert buggy == correct
 
 
 main()

@@ -99,7 +99,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Requisito externo:** ESBMC 8.0+ no PATH.
+`requirements.txt` só traz `python-dotenv` e `pytest`: o resto do pipeline usa
+biblioteca padrão do Python (nenhum SDK de LLM é dependência, as chamadas vão
+por `urllib` puro).
+
+**Requisito externo:** ESBMC 8.0+ no PATH (validado contra 8.4.0).
 
 ```bash
 esbmc --version   # verificar instalação
@@ -111,6 +115,18 @@ Para modelos locais, instale o [Ollama](https://ollama.ai) e baixe os modelos:
 ollama pull deepseek-r1:7b
 ollama pull qwen2.5-coder:7b
 ```
+
+Para a síntese de harness no modo V2 sem cobrança por token, instale o
+[Codex CLI](https://github.com/openai/codex) e autentique com a assinatura
+ChatGPT/Codex já paga (em vez da API OpenAI, cobrada por token):
+
+```bash
+npm install -g @openai/codex
+codex login
+```
+
+Use `--synth-backend codex` (ou `--backend codex` também na detecção, pra não
+depender de `OPENAI_API_KEY` em nenhuma etapa) pra rodar por aí.
 
 ---
 
@@ -125,6 +141,13 @@ OPENAI_API_KEY=       # para gpt-*
 ANTHROPIC_API_KEY=    # para claude-*
 # OLLAMA_BASE_URL=    # opcional, padrão: http://localhost:11434
 ```
+
+No modo `v2`, a detecção usa `gpt-4o-mini` via OpenAI por padrão mesmo quando
+`--synth-backend codex` só troca a síntese do harness: `OPENAI_API_KEY`
+continua exigida a menos que `--backend` (detecção) também seja `ollama` ou
+`codex`. Nenhuma chave é necessária pra rodar o V2 inteiro com
+`--backend codex --synth-backend codex`, ou com `--backend ollama` pra modelo
+local em ambas as etapas.
 
 ---
 

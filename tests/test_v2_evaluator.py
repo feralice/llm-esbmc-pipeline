@@ -47,6 +47,41 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
     }
 
 
+def test_v2_excludes_patch_context_items_from_detection_metrics(tmp_path) -> None:
+    detection = tmp_path / "detection"
+    detection.mkdir()
+    first = detection / "first.py"
+    second = detection / "second.py"
+    source = "def f(x: int) -> int:\n    return 1 // x\n"
+    first.write_text(source, encoding="utf-8")
+    second.write_text(source, encoding="utf-8")
+    (tmp_path / "ground_truths.json").write_text(
+        json.dumps({"items": [
+            {"id": "b1", "categories": ["division_by_zero"]},
+            {"id": "b2", "categories": ["assertion_violation"]},
+        ]}),
+        encoding="utf-8",
+    )
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({
+            "evaluation_policy": {"patch_context_items": ["b2"]},
+            "items": [
+                {"id": "b1", "detection_file": "detection/first.py", "categories": ["division_by_zero"]},
+                {"id": "b2", "detection_file": "detection/second.py", "categories": ["assertion_violation"]},
+            ],
+        }),
+        encoding="utf-8",
+    )
+    candidate = ScanCandidate(str(first), "f", "division_by_zero")
+    metrics = evaluate_v2_results(
+        candidates=[candidate], results=[],
+        ground_truth_path=tmp_path / "ground_truths.json",
+    )
+    assert metrics["excluded_patch_context_items"] == 1
+    assert metrics["detection"]["tp"] == 1
+    assert metrics["detection"]["fn"] == 0
+
+
 def test_over_restricted_is_not_counted_as_confirmation(tmp_path) -> None:
     detection = tmp_path / "detection"
     detection.mkdir()

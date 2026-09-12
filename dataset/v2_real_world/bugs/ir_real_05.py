@@ -29,8 +29,9 @@ def main() -> None:
     __ESBMC_assume(alphabet_len != alphabet_index_len)
     __ESBMC_assume(d0 >= 0 and d0 < alphabet_index_len)
     __ESBMC_assume(d1 >= 0 and d1 < alphabet_index_len)
-    assert string_to_int_buggy(alphabet_len, alphabet_index_len, d0, d1) == \
-        string_to_int_fixed(alphabet_len, alphabet_index_len, d0, d1)
+    buggy: int = string_to_int_buggy(alphabet_len, alphabet_index_len, d0, d1)
+    correct: int = string_to_int_fixed(alphabet_len, alphabet_index_len, d0, d1)
+    assert buggy == correct
 
 
 main()

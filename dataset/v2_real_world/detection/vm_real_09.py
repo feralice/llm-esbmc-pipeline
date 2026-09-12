@@ -1,0 +1,6 @@
+class Progress:
+    def __len__(self):
+        return self.total if self.iterable is None else (
+            len(self.iterable) if hasattr(self.iterable, "__len__")
+            else self.total
+        )

@@ -394,6 +394,27 @@ def _v2_candidate_dict(candidate: ScanCandidate) -> dict[str, str]:
     }
 
 
+def _v2_detection_input_paths(
+    ground_truth_path: str | Path, input_paths: list[Path]
+) -> list[Path]:
+    """Return only V2 sources whose category is inferable without the patch."""
+    gt_path = Path(ground_truth_path)
+    manifest_path = gt_path.parent / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    excluded = set(
+        str(item)
+        for item in manifest.get("evaluation_policy", {}).get(
+            "patch_context_items", []
+        )
+    )
+    excluded_paths = {
+        str((manifest_path.parent / item["detection_file"]).resolve())
+        for item in manifest.get("items", [])
+        if str(item.get("id")) in excluded
+    }
+    return [path for path in input_paths if str(path.resolve()) not in excluded_paths]
+
+
 def _load_v2_oracle_candidates(
     ground_truth_path: str | Path, input_paths: list[Path]
 ) -> list[ScanCandidate]:
@@ -920,6 +941,12 @@ def mode_v2(args: argparse.Namespace) -> int:
     if args.v2_stage == "synthesis" and not args.ground_truth:
         print("--v2-stage synthesis requer --ground-truth.", file=sys.stderr)
         return 1
+    all_input_paths = input_paths
+    if args.v2_stage == "detection" and args.ground_truth:
+        input_paths = _v2_detection_input_paths(args.ground_truth, input_paths)
+        if not input_paths:
+            print("Nenhum arquivo V2 elegível sem contexto do patch.", file=sys.stderr)
+            return 1
 
     model = _resolve_model(args.model, "openai") or "gpt-4o-mini"
     backend: Backend = args.backend or _infer_backend(model)
@@ -971,6 +998,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "synth_model": synth_model,
         "v2_stage": args.v2_stage,
         "input_files": [str(path.resolve()) for path in input_paths],
+        "excluded_patch_context_files": len(all_input_paths) - len(input_paths),
         "compat": not args.no_compat,
         "guards": not args.no_guards,
         "ablation": not args.no_ablation,

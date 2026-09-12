@@ -1,0 +1,17 @@
+class XmlItemExporter:
+    def _export_xml_field(self, name, serialized_value):
+        self.xg.startElement(name, {})
+        if hasattr(serialized_value, 'items'):
+            for subname, value in serialized_value.items():
+                self._export_xml_field(subname, value)
+        elif is_listlike(serialized_value):
+            for value in serialized_value:
+                self._export_xml_field('value', value)
+        else:
+            self._xg_characters(serialized_value)
+        self.xg.endElement(name)
+
+    def _xg_characters(self, serialized_value):
+        if not isinstance(serialized_value, six.text_type):
+            serialized_value = serialized_value.decode(self.encoding)
+        return self.xg.characters(serialized_value)
