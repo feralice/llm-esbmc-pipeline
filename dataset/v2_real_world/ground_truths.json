@@ -2461,6 +2461,7 @@
         "fixed_commit": "213791d3c2af379ffa37a140735998736b41912e"
       },
       "abstraction_notes": "Faithful to the real code -- str.split() is natively modeled by ESBMC-Python, no stubbing needed.",
+      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N times out in split()/strcmp internals; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError)",
       "categories": [
         "out_of_bounds"
       ],

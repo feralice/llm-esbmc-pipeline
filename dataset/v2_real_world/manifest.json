@@ -173,7 +173,7 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc (plain --unwind N, even with a bounded len(script), still fully unwinds split()/strcmp internals and times out before reaching the real property; --incremental-bmc confirms VERIFICATION FAILED at k=1 on the real IndexError, 2026-09-11 audit)"
+      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N, even with a bounded len(script), still fully unwinds split()/strcmp internals and times out before reaching the real property; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError, 2026-09-11 audit)"
     },
     {
       "id": "oob_real_03",
