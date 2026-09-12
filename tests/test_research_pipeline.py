@@ -15,7 +15,7 @@ from research_pipeline.llm.backends import openai as openai_backend
 from research_pipeline.llm.backends.factory import build_analyzer
 from research_pipeline.llm.backends.openai import OpenAIResponsesAnalyzer
 from research_pipeline.llm.findings import finding_from_dict, normalize_findings
-from research_pipeline.llm.prompts import build_user_prompt
+from research_pipeline.llm.prompts import build_user_prompt, load_system_prompt
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
 from research_pipeline.models import ESBMCDirectResult, Finding
 from research_pipeline.pipeline import run_pipeline
@@ -803,6 +803,22 @@ def test_raw_prompt_excludes_ast_operation_hints(tmp_path: Path) -> None:
     assert "operation_count" not in prompt
     assert "branch_count" not in prompt
     assert "loop_count" not in prompt
+
+
+def test_v2_bug_only_prompt_excludes_smell_instructions(tmp_path: Path) -> None:
+    sample = tmp_path / "sample.py"
+    sample.write_text("def f(value: int) -> int:\n    return value\n", encoding="utf-8")
+    unit = preprocess_file(sample)[0]
+
+    system = load_system_prompt(include_smells=False)
+    user = build_user_prompt(unit, include_smells=False)
+
+    for text in (system, user):
+        assert "long_method" not in text
+        assert "many_parameters" not in text
+        assert "complex_conditional" not in text
+        assert "smell_heuristic" not in text
+    assert '"suspected_bug"' in system
 
 
 def test_raw_prompt_contains_source_and_signature(tmp_path: Path) -> None:

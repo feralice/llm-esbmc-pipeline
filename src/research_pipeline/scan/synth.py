@@ -159,22 +159,26 @@ class HarnessSynthesizer:
         timeout_seconds: int = 120,
         codex_command: str = "codex",
     ) -> None:
-        if backend not in {"openai", "ollama", "codex"}:
+        if backend not in {"openai", "ollama", "google", "codex"}:
             raise ValueError(
-                f"synth backend {backend!r} not supported yet; use 'openai', 'ollama' or 'codex'."
+                f"synth backend {backend!r} not supported yet; use 'openai', 'google', 'ollama' or 'codex'."
             )
         self.backend = backend
         self.model = model
         self.base_url = (
             base_url.rstrip("/") + "/chat/completions"
-            if backend == "ollama" and not base_url.rstrip("/").endswith("/chat/completions")
+            if backend in {"ollama", "google"} and not base_url.rstrip("/").endswith("/chat/completions")
             else base_url
         )
         self.timeout_seconds = timeout_seconds
         self.codex_command = codex_command
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        self.api_key = api_key or os.environ.get(
+            "GEMINI_API_KEY" if backend == "google" else "OPENAI_API_KEY"
+        )
         if backend == "openai" and not self.api_key:
             raise ValueError("OPENAI_API_KEY não configurada para a síntese de harness.")
+        if backend == "google" and not self.api_key:
+            raise ValueError("GEMINI_API_KEY não configurada para a síntese de harness.")
         if backend == "ollama" and not self.api_key:
             self.api_key = "ollama"
         self.telemetry_events: list[dict] = []
@@ -207,7 +211,7 @@ class HarnessSynthesizer:
                     {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
                 ],
             }
-        elif self.backend == "ollama":
+        elif self.backend in {"ollama", "google"}:
             payload = {
                 "model": self.model,
                 "messages": [

@@ -32,6 +32,51 @@ class _Synthesizer:
         self.model = kwargs["model"]
 
 
+class _AnalyzerWithSmell:
+    def analyze(self, unit):
+        return [
+            Finding(
+                id="smell",
+                stage="llm_analysis",
+                finding_type="smell_heuristic",
+                category="long_method",
+                title="",
+                explanation="too long",
+                evidence=[],
+                verifiable=False,
+                confidence="high",
+                metadata={},
+            ),
+            Finding(
+                id="fake-smell-bug",
+                stage="llm_analysis",
+                finding_type="suspected_bug",
+                category="many_parameters",
+                title="",
+                explanation="not a formal bug",
+                evidence=[],
+                verifiable=True,
+                confidence="high",
+                metadata={"expression": "f(...)"},
+            ),
+        ]
+
+
+def test_v2_does_not_forward_smells_to_synthesis(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def f(value: int) -> int:\n    return value\n", encoding="utf-8")
+    captured = {}
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _AnalyzerWithSmell())
+    monkeypatch.setattr(main, "HarnessSynthesizer", _Synthesizer)
+    monkeypatch.setattr(main, "run_pipeline_scan", lambda candidates, **kwargs: captured.setdefault("candidates", candidates) or [])
+
+    args = main.build_parser().parse_args(["--mode", "hybrid", "--input", str(source), "--output-dir", str(tmp_path / "out")])
+
+    assert main.mode_v2(args) == 0
+    assert captured["candidates"] == []
+
+
 def test_v2_detects_before_synthesizing(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "sample.py"
     source.write_text(

@@ -84,7 +84,10 @@ RULES
    division_by_zero, `__ESBMC_cover(<divisor> == 0)`; for out_of_bounds,
    `__ESBMC_cover(<index> < 0)` or `__ESBMC_cover(<index> >= <length>)`. This
    makes ESBMC prove the bug input is still reachable under your assumes; if it
-   is not, the harness is over-constrained.
+   is not, the harness is over-constrained. The pipeline runs ESBMC with
+   `--multi-property`, which reports the cover's own reachability check
+   separately from your marked assert - it will never shadow or replace
+   rule 9's marked assert.
 
 8. Drive execution from module level: define the model function, then a
    main() that calls it with the nondet values, then call main().

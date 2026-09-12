@@ -21,11 +21,13 @@ class OpenAIResponsesAnalyzer:
         model: str = "gpt-5.5",
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
+        include_smells: bool = True,
     ) -> None:
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self.model = model
         self.base_url = base_url
         self.timeout_seconds = timeout_seconds
+        self.include_smells = include_smells
         if not self.api_key:
             raise ValueError(
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -38,11 +40,11 @@ class OpenAIResponsesAnalyzer:
             "input": [
                 {
                     "role": "system",
-                    "content": [{"type": "input_text", "text": load_system_prompt()}],
+                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells)}],
                 },
                 {
                     "role": "user",
-                    "content": [{"type": "input_text", "text": build_user_prompt(unit)}],
+                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells)}],
                 },
             ],
             "text": {"format": {"type": "json_schema", **FINDINGS_JSON_SCHEMA}},

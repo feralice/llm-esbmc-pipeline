@@ -3,6 +3,8 @@
 > Material de apoio pro estágio em docência. Roteiro testado para WSL2 com Ubuntu;
 > notas ao final cobrem Linux nativo e macOS. Fonte oficial: `~/esbmc/website/content/docs/development/building.md`
 > e `~/esbmc/website/content/docs/python/usage.md`, conferir se o repositório mudou antes de reusar em aula.
+> Última verificação: 2026-09-12, ESBMC 8.5.0. O output exato do ESBMC muda
+> entre versões (seção 5 tem um exemplo); revalidar antes de cada turma.
 
 ## 1. Por que WSL
 
@@ -81,20 +83,33 @@ Roda sem erro no interpretador Python normal. Rodando com ESBMC:
 esbmc docs/exemplos_esbmc/01_divisao_por_zero.py
 ```
 
-Saída real (ESBMC 8.4.0, testada nesta máquina):
+Saída real (ESBMC 8.5.0, testada nesta máquina):
 
 ```
+[Counterexample]
+
+State 4  thread 0
+----------------------------------------------------
 Violated property:
-  file 01_divisao_por_zero.py line 19 column 8 function div1
-  division by zero
-  CWE: CWE-369
-  x != 0
+  uncaught exception: ZeroDivisionError
+  !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 16)
+
+** Results:
+  FAILED       [global.assertion.4]  line 0  uncaught exception: ZeroDivisionError
+  NOT CHECKED  [div1.division-by-zero.1]  line 20  division by zero
 
 VERIFICATION FAILED
 ```
 
 O ESBMC prova que existe um caminho (`cond` e `x` viram 0 depois do cast)
-onde `42 // x` quebra, e devolve a restrição concreta (`x != 0`) que falha.
+onde `42 // x` quebra. Nesta versão, o modo padrão para na primeira
+violação encontrada, que é a checagem global de exceção não capturada
+(`ZeroDivisionError`), não a propriedade nomeada `division by zero` da
+linha 20 (essa fica `NOT CHECKED`). Versões anteriores (8.4.0) reportavam
+a propriedade `division by zero` com `CWE: CWE-369` e a restrição
+concreta (`x != 0`) direto nesse primeiro bloco; o comportamento mudou
+entre versões, então rodar `--multi-property` (seção 6) é o jeito
+confiável de ver as duas checagens separadas, independente da versão.
 Esse contraexemplo é o ponto de partida do tópico "Leitura e interpretação
 de contraexemplos" do roteiro.
 
@@ -115,10 +130,14 @@ Harness na mão (entrada simbólica em vez de `random`):
 def divide(a: int, b: int) -> int:
     return a // b
 
-b: int = __VERIFIER_nondet_int()
+b: int = nondet_int()
 __ESBMC_assume(b > 0)          # restringe o dominio: so valores positivos
 assert divide(10, b) >= 0
 ```
+
+`nondet_int()` é o nome certo no frontend Python (`__VERIFIER_nondet_int`
+é da entrada C/C++, não existe aqui). Testado: com `b > 0`, `VERIFICATION
+SUCCESSFUL`.
 
 Cuidado didático: `b != 0` sozinho não bastaria aqui, porque `10 // b` com
 `b` negativo dá resultado negativo em Python (divisão inteira arredonda pra

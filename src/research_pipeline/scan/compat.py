@@ -166,7 +166,16 @@ def check_harness(
     ``_unconstrained_outcome_reasons``).
 
     ``allow_bounded_loop`` relaxes the no-loop rule for the loop harness style:
-    one non-nested ``for`` over a constant ``range()`` is permitted.
+    one non-nested ``for`` over a constant ``range()`` is permitted. It also
+    re-forbids ``__ESBMC_cover``: confirmed safe there too with real ESBMC
+    (2026-09-12, cover inside a bounded for-loop body still gets its own
+    single check.assertion.N per source line, not one per iteration, and
+    --multi-property separates it from the marked assert exactly like the
+    scalar case), but synth_prompt_loop.txt rule 9 still tells the LLM not to
+    use it there: the full unwind of a bounded loop already forces every
+    iteration to be explored, so a cover goal adds no reachability guarantee
+    the loop style doesn't already have. Kept banned for that reason, not
+    for safety.
     """
     try:
         tree = ast.parse(source)
@@ -226,7 +235,7 @@ def check_harness(
             [f"uses builtin ESBMC-Python does not model: {', '.join(bad_builtins)}"],
         )
 
-    auxiliary_reasons = _auxiliary_property_reasons(tree)
+    auxiliary_reasons = _auxiliary_property_reasons(tree, allow_cover=not allow_bounded_loop)
     if auxiliary_reasons:
         return CompatResult(False, VERDICT_INVALID, auxiliary_reasons)
 
@@ -336,17 +345,35 @@ def _unsupported_construct_reasons(tree: ast.Module) -> list[str]:
     return reasons
 
 
-def _auxiliary_property_reasons(tree: ast.Module) -> list[str]:
-    """Reject extra ESBMC properties under this pipeline's one-assert profile."""
+def _auxiliary_property_reasons(tree: ast.Module, *, allow_cover: bool = True) -> list[str]:
+    """Reject extra ESBMC properties under this pipeline's one-assert profile.
+
+    __ESBMC_cover is allowed only when ``allow_cover`` is true (scalar style):
+    it compiles to assert(!cond), a distinct AST Call node, not ast.Assert, so
+    it never trips _check_expected_assertion's "exactly one assert" gate.
+    --multi-property (esbmc_runner.py) plus _looks_like_cover_negation
+    (pipeline.py) already separate a cover-reachability failure from the
+    marked assert's own violation; confirmed empirically with real ESBMC
+    8.5.0 on 2026-09-12 (assert-only, assert+cover, cover-only, each with and
+    without --multi-property; see commit b18f5de for the --multi-property
+    wiring itself). Loop style (``allow_cover=False``) confirmed the same
+    separation holds inside a bounded for-loop body too (2026-09-12: cover
+    gets one check.assertion.N per source line regardless of iteration count,
+    no explosion, no masking of a later-iteration assert violation at the
+    correct --unwind bound) - it stays rejected there anyway because
+    synth_prompt_loop.txt rule 9 says a cover goal is redundant when the loop
+    is already fully unwound, not because it is unsafe.
+    """
+    forbidden = {"__ESBMC_assert", "__ESBMC_unreachable"}
+    if not allow_cover:
+        forbidden.add("__ESBMC_cover")
     auxiliary_properties = sorted(
         {
             node.func.id
             for node in ast.walk(tree)
             if isinstance(node, ast.Call)
             and isinstance(node.func, ast.Name)
-            and node.func.id in {
-                "__ESBMC_assert", "__ESBMC_cover", "__ESBMC_unreachable",
-            }
+            and node.func.id in forbidden
         }
     )
     if auxiliary_properties:

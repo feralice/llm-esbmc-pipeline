@@ -153,7 +153,6 @@ def test_assume_alias_is_allowed():
     [
         ("x = lambda y: y\n", "lambda"),
         ("x = (y := 1)\n", "walrus"),
-        ("__ESBMC_cover(True)\n", "outside the scalar harness property profile"),
         ("__ESBMC_assert(True, 'x')\n", "outside the scalar harness property profile"),
         ("values.add(1)\n", "unsupported ESBMC-Python method"),
     ],
@@ -169,6 +168,44 @@ def test_known_esbmc_incompatibilities_are_rejected(snippet: str, expected: str)
     result = check_harness(src)
     assert not result.ok
     assert expected in " ".join(result.reasons)
+
+
+def test_esbmc_cover_is_allowed_alongside_marked_assert():
+    """__ESBMC_cover compiles to assert(!cond), a Call node distinct from the
+    ast.Assert the marker check counts, and --multi-property (esbmc_runner.py)
+    reports it as a separate property from the marked assert - confirmed with
+    real ESBMC 8.5.0, 2026-09-12. See docs EXP-01 (commit b18f5de) for the
+    --multi-property side of this guarantee."""
+    src = (
+        "def f(x: int) -> int:\n"
+        "    __ESBMC_cover(x == 0)\n"
+        "    assert x == x, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    return x\n"
+        "f(nondet_int())\n"
+    )
+    result = check_harness(src)
+    assert result.ok, result.reasons
+
+
+def test_esbmc_cover_is_still_rejected_for_loop_style():
+    """allow_bounded_loop=True is the loop harness style. synth_prompt_loop.txt
+    rule 9 forbids __ESBMC_cover there (the bounded loop already forces every
+    iteration), and unlike the scalar style, cover-in-a-loop was never proven
+    safe against --multi-property's cover/marker separation - only the scalar
+    case was (see test_esbmc_cover_is_allowed_alongside_marked_assert)."""
+    src = (
+        "def f(xs: list) -> int:\n"
+        "    total: int = 0\n"
+        "    for i in range(3):\n"
+        "        __ESBMC_cover(total == 0)\n"
+        "        total = total + xs[i]\n"
+        "    assert total == total, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    return total\n"
+        "f([nondet_int(), nondet_int(), nondet_int()])\n"
+    )
+    result = check_harness(src, allow_bounded_loop=True)
+    assert not result.ok
+    assert "outside the scalar harness property profile" in " ".join(result.reasons)
 
 
 def test_unsupported_esbmc_assigns_is_not_whitelisted():
@@ -512,3 +549,19 @@ def test_loop_harness_rejects_second_loop():
     r = check_harness(src, allow_bounded_loop=True)
     assert not r.ok
     assert "more than one loop" in r.reasons[0]
+
+
+def test_loop_harness_still_rejects_esbmc_cover():
+    """__ESBMC_cover is allowed for scalar style (see
+    test_esbmc_cover_is_allowed_alongside_marked_assert). Confirmed with real
+    ESBMC 8.5.0 (2026-09-12) that the same cover/marked-assert separation
+    also holds inside a bounded for-loop body -- the validator still rejects
+    it there because synth_prompt_loop.txt rule 9 calls it redundant once the
+    loop is fully unwound, not because it is unsafe."""
+    src = _LOOP_HARNESS.replace(
+        "gap: int = xs[i] - xs[i - 1]\n",
+        "gap: int = xs[i] - xs[i - 1]\n        __ESBMC_cover(gap == 0)\n",
+    )
+    r = check_harness(src, allow_bounded_loop=True)
+    assert not r.ok
+    assert "outside the scalar harness property profile" in r.reasons[0]

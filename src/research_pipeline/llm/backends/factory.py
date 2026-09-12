@@ -30,6 +30,7 @@ def build_analyzer(
     ollama_base_url: str | None = None,
     google_api_key: str | None = None,
     timeout_seconds: int = 300,
+    include_smells: bool = True,
 ) -> LLMAnalyzer:
     model = llm_model or _DEFAULT_MODEL[backend]
     if backend == "openai":
@@ -37,18 +38,21 @@ def build_analyzer(
             api_key=openai_api_key,
             model=model,
             timeout_seconds=timeout_seconds,
+            include_smells=include_smells,
         )
     if backend == "anthropic":
         return AnthropicAnalyzer(
             api_key=anthropic_api_key,
             model=model,
             timeout_seconds=timeout_seconds,
+            include_smells=include_smells,
         )
     if backend == "ollama":
         return ChatCompletionsAnalyzer(
             base_url=ollama_base_url or _DEFAULT_OLLAMA_URL,
             model=model,
             timeout_seconds=timeout_seconds,
+            include_smells=include_smells,
         )
     if backend == "google":
         return ChatCompletionsAnalyzer(
@@ -57,7 +61,8 @@ def build_analyzer(
             api_key=google_api_key or "",
             timeout_seconds=timeout_seconds,
             request_delay=4.0,
+            include_smells=include_smells,
         )
     if backend == "codex":
-        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds)
+        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells)
     raise ValueError(f"Backend desconhecido: {backend!r}. Use 'openai', 'anthropic', 'ollama', 'google' ou 'codex'.")

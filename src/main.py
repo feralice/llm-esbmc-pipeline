@@ -129,11 +129,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--synth-backend",
-        choices=["openai", "ollama", "codex"],
+        choices=["openai", "ollama", "google", "codex"],
         default=None,
         help=(
             "Backend só para a síntese de harness no modo V2 (padrão: mesmo de --backend). "
-            "'codex' chama o `codex exec` local via assinatura já paga, em vez da API "
+            "'google' usa a API compatível do Gemini; 'codex' chama o `codex exec` local via assinatura já paga, em vez da API "
             "OpenAI cobrada por token."
         ),
     )
@@ -969,9 +969,9 @@ def mode_v2(args: argparse.Namespace) -> int:
     backend: Backend = args.backend or _infer_backend(model)
     if backend == "codex" and not args.model:
         model = ""
-    if backend not in {"openai", "ollama", "codex"}:
+    if backend not in {"openai", "ollama", "google", "codex"}:
         print(
-            "O modo V2 detecta via OpenAI, Ollama ou Codex CLI por enquanto.",
+            "O modo V2 detecta via OpenAI, Gemini, Ollama ou Codex CLI.",
             file=sys.stderr,
         )
         return 1
@@ -991,13 +991,18 @@ def mode_v2(args: argparse.Namespace) -> int:
             google_api_key=google_key,
             ollama_base_url=args.ollama_base_url,
             timeout_seconds=args.llm_timeout,
+            include_smells=False,
         )
         synthesizer = HarnessSynthesizer(
             backend=synth_backend,
             model=synth_model,
-            api_key=openai_key if synth_backend == "openai" else "ollama",
+            api_key=(openai_key if synth_backend == "openai" else google_key)
+            if synth_backend in {"openai", "google"}
+            else "ollama",
             base_url=(args.ollama_base_url or "http://localhost:11434/v1")
             if synth_backend == "ollama"
+            else "https://generativelanguage.googleapis.com/v1beta/openai/"
+            if synth_backend == "google"
             else "https://api.openai.com/v1/responses",
             timeout_seconds=args.llm_timeout,
         )
@@ -1025,6 +1030,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "bound": args.bound,
         "timeout": args.timeout,
         "llm_timeout": args.llm_timeout,
+        "include_smells": False,
         "esbmc_command": args.esbmc_command or ["esbmc"],
     }
     fingerprint = _v2_fingerprint(config, input_paths)
@@ -1071,6 +1077,11 @@ def mode_v2(args: argparse.Namespace) -> int:
         else []
     )
     rejected_findings: list[dict[str, str]] = []
+    formal_bug_categories = {
+        "assertion_violation", "division_by_zero", "out_of_bounds",
+        "none_misuse", "type_mismatch", "invalid_precondition",
+        "variable_misuse", "integer_overflow",
+    }
     detection_errors: list[dict[str, str]] = []
     analyzed_units = 0
     detection_inputs = [] if args.v2_stage == "synthesis" else input_paths
@@ -1102,7 +1113,11 @@ def mode_v2(args: argparse.Namespace) -> int:
             unit_candidates: list[ScanCandidate] = []
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:
-                if not finding.verifiable or finding.finding_type != "suspected_bug":
+                if (
+                    not finding.verifiable
+                    or finding.finding_type != "suspected_bug"
+                    or finding.category not in formal_bug_categories
+                ):
                     if finding.finding_type in {
                         "llm_false_positive", "out_of_scope_finding", "suspected_bug"
                     }:
