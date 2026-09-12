@@ -51,7 +51,7 @@ def test_v2_detects_before_synthesizing(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(main, "run_pipeline_scan", fake_pipeline)
     args = main.build_parser().parse_args(
         [
-            "--mode", "v2", "--input", str(source),
+            "--mode", "hybrid", "--input", str(source),
             "--output-dir", str(tmp_path / "out"),
         ]
     )
@@ -77,7 +77,7 @@ def test_v2_resume_does_not_repeat_completed_detection(tmp_path: Path, monkeypat
     monkeypatch.setattr(main, "HarnessSynthesizer", _Synthesizer)
     monkeypatch.setattr(main, "run_pipeline_scan", lambda candidates, **kwargs: [])
     parser = main.build_parser()
-    base = ["--mode", "v2", "--input", str(source), "--output-dir", str(output)]
+    base = ["--mode", "hybrid", "--input", str(source), "--output-dir", str(output)]
 
     assert main.mode_v2(parser.parse_args(base)) == 0
     assert _Analyzer.calls == 1

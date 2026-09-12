@@ -7,7 +7,8 @@ Modos de execução:
   llm-only    Flow C: LLM puro, sem ESBMC.
   hybrid      Fluxo principal: LLM detecta → gera harness → ESBMC confirma.
   hybrid-direct Flow B legado: LLM aponta bug → ESBMC confirma no código original.
-  benchmark   Roda os três fluxos (A+B+C) e calcula P/R/F1 vs ground truth.
+  benchmark   Benchmark V2 end-to-end com métricas vs ground truth.
+  benchmark-v1 Benchmark legado dos fluxos A+B+C.
   ensemble    Agrega votos de modelos já rodados (sem chamar LLM/ESBMC).
   v2          Alias compatível de hybrid.
 
@@ -16,8 +17,8 @@ Exemplos:
   python src/main.py --mode esbmc-only  --input dataset/labeled --bound 5
   python src/main.py --mode llm-only    --input dataset/labeled --model gpt-4o
   python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o --bound 5
-  python src/main.py --mode benchmark   --input dataset/labeled/ground_truths --model gpt-4o
-  python src/main.py --mode v2 --input dataset/v2_real_world/detection --model gpt-4o-mini
+  python src/main.py --mode benchmark   --input dataset/v2_real_world/detection --ground-truth dataset/v2_real_world/ground_truths.json --backend codex --synth-backend codex
+  python src/main.py --mode benchmark-v1 --input dataset/labeled/ground_truths --model gpt-4o
 """
 from __future__ import annotations
 
@@ -86,10 +87,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--mode",
         choices=[
             "esbmc-only", "llm-only", "hybrid", "hybrid-direct",
-            "benchmark", "ensemble", "v2",
+            "benchmark", "benchmark-v1", "ensemble",
         ],
         default="benchmark",
-        help="Modo de execução. hybrid é o fluxo V2 principal. (padrão: benchmark)",
+        help="Modo de execução. hybrid e benchmark usam a V2; benchmark-v1 é o legado. (padrão: benchmark)",
     )
     parser.add_argument(
         "--input", "-i",
@@ -735,7 +736,7 @@ def mode_hybrid(args: argparse.Namespace) -> int:
 
 
 
-def mode_benchmark(args: argparse.Namespace) -> int:
+def mode_benchmark_v1(args: argparse.Namespace) -> int:
     if args.resume and not args.report:
         print("--resume no modo benchmark requer --report para localizar o checkpoint.", file=sys.stderr)
         return 1
@@ -898,6 +899,18 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         )
         return 2
     return 0
+
+
+def mode_benchmark(args: argparse.Namespace) -> int:
+    """Run the V2 end-to-end benchmark under the stable benchmark name."""
+    if not args.ground_truth:
+        print(
+            "O benchmark V2 requer --ground-truth com o manifesto V2.",
+            file=sys.stderr,
+        )
+        return 1
+    args.v2_stage = "end-to-end"
+    return mode_v2(args)
 
 
 def mode_ensemble(args: argparse.Namespace) -> int:
@@ -1370,8 +1383,8 @@ def main() -> int:
         "hybrid":     mode_v2,
         "hybrid-direct": mode_hybrid,
         "benchmark":  mode_benchmark,
+        "benchmark-v1": mode_benchmark_v1,
         "ensemble":   mode_ensemble,
-        "v2":         mode_v2,
     }
     return dispatch[args.mode](args)
 

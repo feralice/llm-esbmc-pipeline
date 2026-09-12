@@ -439,7 +439,7 @@ class _StyleSynthesizer:
 
 
 def test_loop_fallback_runs_by_default_when_scalar_not_confirmed(tmp_path, monkeypatch):
-    """The loop style is part of --mode v2 unconditionally: no flag gates it."""
+    """The loop style is part of the hybrid V2 flow unconditionally: no flag gates it."""
     def esbmc(file_path, **kw):
         text = Path(file_path).read_text(encoding="utf-8")
         return _esbmc("violation_found" if "for i in range" in text else "no_violation_found")

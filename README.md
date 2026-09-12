@@ -54,7 +54,8 @@ classificação da categoria pela LLM, não a execução do harness.
 | **Flow A** | `--mode esbmc-only` | ESBMC puro: baseline formal sem LLM |
 | **Flow B legado** | `--mode hybrid-direct` | LLM indica categoria → ESBMC confirma no código original |
 | **Flow C** | `--mode llm-only` | LLM puro: baseline de qualidade da IA sem verificação formal |
-| **Híbrido principal (V2)** | `--mode hybrid` ou `--mode v2` | LLM detecta → driver/síntese gera harness → validadores → ESBMC verifica → grounding e ablação classificam. |
+| **Híbrido principal (V2)** | `--mode hybrid` | LLM detecta → driver/síntese gera harness → validadores → ESBMC verifica → grounding e ablação classificam. |
+| **Benchmark legado V1** | `--mode benchmark-v1` | Avalia os fluxos antigos A+B+C com as métricas V1. |
 
 **Princípio central (Flows A/B/C):** A LLM faz triagem de categoria; o ESBMC decide com semântica formal própria. Na V2, a detecção permanece igual, mas uma segunda chamada à LLM transforma cada hipótese em um harness verificável; `compat.py`, `guards.py` e `ablation.py` controlam a abstração.
 
@@ -153,11 +154,11 @@ local em ambas as etapas.
 
 ## Como rodar
 
-### V2 end-to-end (fluxo principal)
+### Híbrido V2 end-to-end (fluxo principal)
 
 ```bash
 PYTHONPATH=src .venv/bin/python src/main.py \
-    --mode v2 \
+    --mode hybrid \
     --v2-stage end-to-end \
     --input dataset/v2_real_world/detection \
     --ground-truth dataset/v2_real_world/ground_truths.json \
@@ -169,7 +170,7 @@ O relatório é escrito em `artifacts/v2/end-to-end-117/v2_report.json` e o
 checkpoint em `v2_checkpoint.json`. Para retomar uma execução interrompida,
 acrescente `--resume` com a mesma configuração.
 
-Use `--v2-stage synthesis` para medir somente a geração e a verificação dos
+Use `--v2-stage synthesis` com `--mode hybrid` para medir somente a geração e a verificação dos
 harnesses a partir de hipóteses conhecidas do gabarito. Essa variante não mede
 a capacidade de detecção da LLM.
 
@@ -204,7 +205,7 @@ Ver todos os comandos em [`TUTORIAL.md`](TUTORIAL.md).
 ### Modos auxiliares
 
 ```bash
-# Flow B manual (exploração/debug)
+# Fluxo híbrido legado (exploração/debug)
 python src/main.py --mode hybrid-direct \
     --input dataset/labeled/ok/bugs \
     --model gpt-4o --bound 5 --timeout 30
@@ -293,7 +294,7 @@ Ver [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) para a es
 ```
 llm-esbmc-pipeline/
 ├── src/
-│   └── main.py                     # CLI: --mode benchmark|hybrid|esbmc-only|llm-only|ensemble|v2
+│   └── main.py                     # CLI: --mode benchmark|benchmark-v1|hybrid|hybrid-direct|esbmc-only|llm-only|ensemble
 ├── research_pipeline/
 │   ├── preprocess.py               # Extrai CodeUnit por função via AST
 │   ├── pipeline.py                 # Orquestra flows A/B/C

@@ -7,7 +7,7 @@ original file with --function; here the LLM produces the model that ESBMC runs.
 
 The prompt lives in research_pipeline/prompts/synth_prompt.txt.
 
-This module DOES call a paid LLM API. It is only reached from --mode v2.
+This module DOES call a paid LLM API. It is reached by the hybrid V2 flow.
 """
 
 from __future__ import annotations
