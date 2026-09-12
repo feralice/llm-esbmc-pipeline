@@ -5,10 +5,11 @@ main.py — Pipeline LLM + AST + ESBMC para verificação de bugs em Python.
 Modos de execução:
   esbmc-only  Flow A: ESBMC puro com --function, sem LLM.
   llm-only    Flow C: LLM puro, sem ESBMC.
-  hybrid      Flow B: LLM aponta bug → ESBMC confirma.
+  hybrid      Fluxo principal: LLM detecta → gera harness → ESBMC confirma.
+  hybrid-direct Flow B legado: LLM aponta bug → ESBMC confirma no código original.
   benchmark   Roda os três fluxos (A+B+C) e calcula P/R/F1 vs ground truth.
   ensemble    Agrega votos de modelos já rodados (sem chamar LLM/ESBMC).
-  v2          Evolução: LLM detecta hipótese → gera harness → ESBMC verifica.
+  v2          Alias compatível de hybrid.
 
 
 Exemplos:
@@ -83,9 +84,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=["esbmc-only", "llm-only", "hybrid", "benchmark", "ensemble", "v2"],
+        choices=[
+            "esbmc-only", "llm-only", "hybrid", "hybrid-direct",
+            "benchmark", "ensemble", "v2",
+        ],
         default="benchmark",
-        help="Modo de execução. (padrão: benchmark)",
+        help="Modo de execução. hybrid é o fluxo V2 principal. (padrão: benchmark)",
     )
     parser.add_argument(
         "--input", "-i",
@@ -1363,7 +1367,8 @@ def main() -> int:
     dispatch = {
         "esbmc-only": mode_esbmc_only,
         "llm-only":   mode_llm_only,
-        "hybrid":     mode_hybrid,
+        "hybrid":     mode_v2,
+        "hybrid-direct": mode_hybrid,
         "benchmark":  mode_benchmark,
         "ensemble":   mode_ensemble,
         "v2":         mode_v2,

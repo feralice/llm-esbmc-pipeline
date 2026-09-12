@@ -52,9 +52,9 @@ classificação da categoria pela LLM, não a execução do harness.
 | Fluxo | Modo | Descrição |
 |---|---|---|
 | **Flow A** | `--mode esbmc-only` | ESBMC puro: baseline formal sem LLM |
-| **Flow B** | `--mode hybrid` | LLM indica categoria → ESBMC confirma no código original |
+| **Flow B legado** | `--mode hybrid-direct` | LLM indica categoria → ESBMC confirma no código original |
 | **Flow C** | `--mode llm-only` | LLM puro: baseline de qualidade da IA sem verificação formal |
-| **V2** | `--mode v2` | Fluxo principal: LLM detecta → driver/síntese gera harness → validadores → ESBMC verifica → grounding e ablação classificam. |
+| **Híbrido principal (V2)** | `--mode hybrid` ou `--mode v2` | LLM detecta → driver/síntese gera harness → validadores → ESBMC verifica → grounding e ablação classificam. |
 
 **Princípio central (Flows A/B/C):** A LLM faz triagem de categoria; o ESBMC decide com semântica formal própria. Na V2, a detecção permanece igual, mas uma segunda chamada à LLM transforma cada hipótese em um harness verificável; `compat.py`, `guards.py` e `ablation.py` controlam a abstração.
 
@@ -205,7 +205,7 @@ Ver todos os comandos em [`TUTORIAL.md`](TUTORIAL.md).
 
 ```bash
 # Flow B manual (exploração/debug)
-python src/main.py --mode hybrid \
+python src/main.py --mode hybrid-direct \
     --input dataset/labeled/ok/bugs \
     --model gpt-4o --bound 5 --timeout 30
 
