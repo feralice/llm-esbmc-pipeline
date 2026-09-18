@@ -44,13 +44,24 @@ cmake -GNinja -Bbuild -DDOWNLOAD_DEPENDENCIES=1 -DENABLE_Z3=1 -DENABLE_PYTHON_FR
 ninja -C build
 ```
 
-O binário fica em `build/src/esbmc/esbmc`. `ast2json` já vem embutido no
-código-fonte, não precisa de `pip install` separado. Adicionar ao PATH
-(ajustar `~/.bashrc`):
+O binário fica em `build/src/esbmc/esbmc`. Para instalá-lo no prefixo padrão
+do CMake (`/usr/local`) e disponibilizá-lo como `esbmc` no PATH do Ubuntu/WSL,
+execute:
+
+```bash
+sudo cmake --install build
+```
+
+Isso instala o executável em `/usr/local/bin/esbmc`; não é necessário fazer um
+`export PATH` manual. Se preferir não instalar no sistema, é possível executar
+diretamente `build/src/esbmc/esbmc` ou manter o `build/src/esbmc` no PATH:
 
 ```bash
 export PATH="$HOME/esbmc/build/src/esbmc:$PATH"
 ```
+
+`ast2json` já vem embutido no código-fonte, não precisa de `pip install`
+separado.
 
 Verificar:
 

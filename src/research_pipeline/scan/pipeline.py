@@ -25,7 +25,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..models import Finding
+from ..models import CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER, Finding
 from ..preprocess import preprocess_file
 from ..verification.esbmc_runner import run_esbmc_direct, run_esbmc_on_function
 from .ablation import FAILED, AblationReport, ablate
@@ -394,6 +394,7 @@ def _run_one(
         evidence=[],
         verifiable=True,
         confidence="medium",
+        confidence_source=CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER,
         metadata={"expression": candidate.expression},
     )
 
@@ -586,16 +587,62 @@ def _try_native(
 
 
 _REAL_BODY_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds"})
-_REAL_BODY_TYPES = frozenset({"int", "float", "bool", "str"})
+_REAL_BODY_SCALAR_TYPES = frozenset({"int", "float", "bool", "str"})
+# nondet_list (esbmc/src/python-frontend/models/nondet.py) builds monomorphic
+# int/bool/str elements soundly by calling the matching nondet_* once per
+# element. A float element could be NaN, and there is no way to
+# __ESBMC_assume it away per-element from outside the builder's own loop the
+# way the scalar-float case does below -- so float lists are refused rather
+# than modelled unsoundly.
+#
+# dict[K, V] is deliberately NOT supported yet: nondet_dict's key-population
+# loop timed out at 60s on both an int-keyed and a str-keyed dict of size 3
+# in manual testing against real ESBMC 8.5.0 (2026-09-12), even before the
+# lookup itself is checked. Accepting the shape here would silently burn the
+# whole timeout budget on every dict-typed candidate before falling through
+# to the LLM tier -- worse than refusing outright. Revisit if a cheaper
+# encoding for dict access lands upstream.
+_REAL_BODY_CONTAINER_ELEM_TYPES = frozenset({"int", "bool", "str"})
+# Small on purpose, same reasoning as veripp's DEFAULT_MAX_ARRAY_LEN: BMC cost
+# grows with unwind depth, and an out-of-bounds access shows up at any length,
+# including 0 -- confirmed empirically against real ESBMC 8.5.0 on
+# `values: list[int]; return values[index]` at this size, within the
+# pipeline's default --max-k-step bound.
+_MAX_REAL_BODY_CONTAINER_SIZE = 3
+
+# A shape is ("int",) for a bare scalar or ("list", "int") for `list[int]`.
+_Shape = tuple[str, ...]
 
 
-def _real_body_parameters(unit) -> list[tuple[str, str]] | None:
+def _annotation_shape(annotation: ast.expr) -> _Shape | None:
+    """Map one parameter annotation to a nondet-construction recipe, or None
+    when the shape is not one this driver knows how to construct -- the
+    caller refuses the whole function rather than guess."""
+    if isinstance(annotation, ast.Name):
+        return (annotation.id,) if annotation.id in _REAL_BODY_SCALAR_TYPES else None
+    if not isinstance(annotation, ast.Subscript) or not isinstance(annotation.value, ast.Name):
+        return None
+    if annotation.value.id != "list":
+        return None
+    elem = annotation.slice
+    if isinstance(elem, ast.Name) and elem.id in _REAL_BODY_CONTAINER_ELEM_TYPES:
+        return ("list", elem.id)
+    return None
+
+
+def _annotation_source(shape: _Shape) -> str:
+    """Render a shape back to the type annotation text for the driver line."""
+    return shape[0] if len(shape) == 1 else f"list[{shape[1]}]"
+
+
+def _real_body_parameters(unit) -> list[tuple[str, _Shape]] | None:
     """Return simple typed parameters suitable for a deterministic driver.
 
-    This deliberately accepts only free functions with scalar annotations. A
-    conservative refusal is important here: silently omitting a global,
-    object, or collection dependency would turn the "real body" tier into a
-    scalar abstraction while reporting it as intact.
+    This deliberately accepts only free functions with scalar or bounded
+    list[T] annotations. A conservative refusal is important here: silently
+    omitting a global, object, or unsupported collection dependency would
+    turn the "real body" tier into a scalar abstraction while reporting it
+    as intact.
     """
     try:
         tree = ast.parse(unit.source)
@@ -605,18 +652,31 @@ def _real_body_parameters(unit) -> list[tuple[str, str]] | None:
     if fn is None or any(arg.arg in {"self", "cls"} for arg in fn.args.args):
         return None
 
-    params: list[tuple[str, str]] = []
+    params: list[tuple[str, _Shape]] = []
     for arg in [*fn.args.posonlyargs, *fn.args.args, *fn.args.kwonlyargs]:
-        if not isinstance(arg.annotation, ast.Name) or arg.annotation.id not in _REAL_BODY_TYPES:
+        shape = _annotation_shape(arg.annotation) if arg.annotation is not None else None
+        if shape is None:
             return None
-        params.append((arg.arg, arg.annotation.id))
+        params.append((arg.arg, shape))
     if fn.args.vararg or fn.args.kwarg:
         return None
 
-    # Reject free names other than the function itself and Python builtins.
-    # Imported modules and module globals cannot be reconstructed safely from a
-    # CodeUnit containing only the function body.
-    bound = {name for name, _ in params} | {fn.name}
+    # Reject free names other than the function itself, its own locals, and
+    # Python builtins. Imported modules and module globals cannot be
+    # reconstructed safely from a CodeUnit containing only the function body.
+    # Local assignment targets (a `for` variable, an intermediate result) are
+    # bound by the function itself, not free -- excluding them here used to
+    # refuse every function with more than a bare `return expr` body,
+    # scalar or container alike.
+    bound = (
+        {name for name, _ in params}
+        | {fn.name}
+        | {
+            node.id
+            for node in ast.walk(fn)
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+        }
+    )
     used = {
         node.id
         for node in ast.walk(fn)
@@ -634,6 +694,15 @@ def _nondet_for_type(type_name: str) -> str:
         "bool": "nondet_bool()",
         "str": "nondet_str()",
     }[type_name]
+
+
+def _nondet_for_shape(shape: _Shape) -> str:
+    if len(shape) == 1:
+        return _nondet_for_type(shape[0])
+    return (
+        f"nondet_list({_MAX_REAL_BODY_CONTAINER_SIZE}, "
+        f"elem_type={_nondet_for_type(shape[1])})"
+    )
 
 
 def _try_real_body_driver(
@@ -661,9 +730,9 @@ def _try_real_body_driver(
         return None
 
     lines = [unit.source.rstrip(), "", "def main() -> None:"]
-    for name, type_name in params:
-        lines.append(f"    {name}: {type_name} = {_nondet_for_type(type_name)}")
-        if type_name == "float":
+    for name, shape in params:
+        lines.append(f"    {name}: {_annotation_source(shape)} = {_nondet_for_shape(shape)}")
+        if shape == ("float",):
             lines.append(f"    __ESBMC_assume({name} == {name})")
     call = ", ".join(name for name, _ in params)
     lines.extend([f"    {unit.name}({call})", "", "main()", ""])

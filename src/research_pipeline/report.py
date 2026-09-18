@@ -14,6 +14,7 @@ from .models import (
     CLASSIFICATION_NOT_CONFIRMED,
     CLASSIFICATION_OUT_OF_SCOPE,
     CLASSIFICATION_SKIPPED,
+    CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
     ESBMCDirectResult,
     ESBMCResult,
     FinalResult,
@@ -194,6 +195,7 @@ def make_missed_bug_result(
         evidence=[esbmc_direct_result.summary],
         verifiable=True,
         confidence="high",
+        confidence_source=CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
         metadata={
             "function": fn_name,
             "expression": prop_kind,
@@ -262,6 +264,7 @@ def make_direct_observation_result(
         evidence=[esbmc_direct_result.summary],
         verifiable=False,
         confidence="high",
+        confidence_source=CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
         metadata={
             "expression": str(esbmc_direct_result.details.get("property_kind", "")),
             "line": str(esbmc_direct_result.details.get("location", "")),

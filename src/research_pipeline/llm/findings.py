@@ -4,7 +4,7 @@ import ast
 import json
 
 from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
-from ..models import CodeUnit, Finding
+from ..models import CONFIDENCE_SOURCE_LLM_SELF_REPORT, CodeUnit, Finding
 from .categories import (
     SOURCE_GROUNDED_CATEGORIES,
     SUPPORTED_CATEGORIES,
@@ -35,13 +35,30 @@ def coerce_findings_payload(payload: dict) -> list[dict]:
 
 
 def finding_from_dict(data: dict) -> Finding:
-    """Convert one raw finding dictionary from the LLM into a Finding object."""
+    """Convert one raw finding dictionary from the LLM into a Finding object.
+
+    system_prompt.txt's JSON contract (shared by every backend) never asks the
+    model for id/title/confidence/evidence -- FINDINGS_JSON_SCHEMA's strict
+    mode does not even declare them as properties. The `.get(...) or default`
+    fallbacks below are therefore not a rare edge case: for every real LLM
+    finding today, title=="", evidence==[], and confidence=="low" always,
+    none of it a genuine per-finding signal. Treat `confidence` as
+    informative only once the prompt is changed to ask for it.
+
+    `id` defaults to "" rather than a literal placeholder: `normalize_findings`
+    -> `_unique_finding_id` treats a blank id as "not supplied" and replaces
+    it with a qualname-scoped fallback. A non-blank placeholder like "unknown"
+    would instead be accepted as a real id, so every function's first bug
+    finding would collide on the same id -- and that id is used verbatim in
+    the ESBMC log file name (`esbmc_runner._artifact_stem`), so the second
+    function's verification log would silently overwrite the first's.
+    """
     metadata_raw = data.get("metadata", {})
     if not isinstance(metadata_raw, dict):
         metadata_raw = {}
 
     return Finding(
-        id=str(data.get("id") or "unknown"),
+        id=str(data.get("id") or ""),
         stage=str(data.get("stage") or "llm_analysis"),
         finding_type=str(data.get("finding_type") or "smell_heuristic"),
         category=str(data.get("category") or "unknown"),
@@ -50,6 +67,7 @@ def finding_from_dict(data: dict) -> Finding:
         evidence=_normalize_evidence(data.get("evidence", [])),
         verifiable=bool(data.get("verifiable", False)),
         confidence=str(data.get("confidence") or "low"),
+        confidence_source=CONFIDENCE_SOURCE_LLM_SELF_REPORT,
         metadata={
             "expression": str(metadata_raw.get("expression", "")),
             "line": _metadata_int(metadata_raw.get("line")),
@@ -169,6 +187,7 @@ def _out_of_scope_finding(finding: Finding, finding_id: str) -> Finding:
         evidence=finding.evidence,
         verifiable=False,
         confidence=finding.confidence,
+        confidence_source=finding.confidence_source,
         metadata=metadata,
     )
 
@@ -192,6 +211,7 @@ def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: s
         evidence=finding.evidence,
         verifiable=verifiable,
         confidence=finding.confidence,
+        confidence_source=finding.confidence_source,
         metadata=metadata,
     )
 

@@ -10,6 +10,7 @@ from typing import cast
 
 from .llm.backends.factory import Backend, build_analyzer
 from .models import (
+    CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
     ESBMCDirectResult,
     Finding,
 )
@@ -900,6 +901,7 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
                 evidence=[str(item.get("property_kind", ""))],
                 verifiable=True,
                 confidence="high",
+                confidence_source=CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
                 metadata={"function": str(item.get("name", ""))},
             )
         )
@@ -968,6 +970,66 @@ def noise_reduction_rate_defined(counts: EvalCounts) -> float | None:
     return (counts.bug_fp - counts.hybrid_bug_fp) / counts.bug_fp if counts.bug_fp else None
 
 
+# ---------------------------------------------------------------------------
+# Repeated runs — the LLM is stochastic, one run measures nothing about
+# variance. See docs/... (llm-features skill): several runs per case, raw
+# per-run outcomes persisted alongside the aggregate, never estimated.
+# ---------------------------------------------------------------------------
+
+
+def run_repeated(run_once: Callable[[], EvalCounts], n_runs: int) -> list[EvalCounts]:
+    """Call `run_once` `n_runs` times and return each run's raw EvalCounts.
+
+    Each call re-runs the full LLM analysis, so this multiplies API cost by
+    `n_runs`. Callers with `n_runs <= 1` should skip this and keep the
+    existing single-run path unchanged.
+    """
+    if n_runs < 1:
+        raise ValueError(f"n_runs must be >= 1, got {n_runs}")
+    return [run_once() for _ in range(n_runs)]
+
+
+def _headline_metrics(counts: EvalCounts) -> dict[str, float | None]:
+    bug = prf_defined(counts.bug_tp, counts.bug_fp, counts.bug_fn)
+    smell = prf_defined(counts.smell_tp, counts.smell_fp, counts.smell_fn)
+    return {
+        "bug_precision": bug["precision"],
+        "bug_recall": bug["recall"],
+        "bug_f1": bug["f1"],
+        "smell_precision": smell["precision"],
+        "smell_recall": smell["recall"],
+        "smell_f1": smell["f1"],
+        "formal_confirmation_rate": formal_confirmation_rate_defined(counts),
+        "noise_reduction_rate": noise_reduction_rate_defined(counts),
+    }
+
+
+def summarize_repeated_runs(counts_list: list[EvalCounts]) -> dict:
+    """Aggregate headline metrics across repeated runs without discarding the raw values.
+
+    A mean that moves between two sessions is undiagnosable without the
+    per-run history, so `raw_runs` ships alongside `aggregate` rather than
+    replacing it. A metric undefined in every run (e.g. no bugs in the
+    ground truth) aggregates to `None`, not to a silent zero.
+    """
+    import statistics
+
+    if not counts_list:
+        raise ValueError("counts_list must contain at least one run")
+
+    raw_runs = [_headline_metrics(counts) for counts in counts_list]
+    aggregate: dict[str, dict[str, float | None | int]] = {}
+    for metric_name in raw_runs[0]:
+        defined_values = [run[metric_name] for run in raw_runs if run[metric_name] is not None]
+        aggregate[metric_name] = {
+            "mean": statistics.fmean(defined_values) if defined_values else None,
+            "stdev": statistics.stdev(defined_values) if len(defined_values) > 1 else (
+                0.0 if defined_values else None
+            ),
+            "n_defined": len(defined_values),
+            "n_runs": len(raw_runs),
+        }
+    return {"raw_runs": raw_runs, "aggregate": aggregate}
 
 
 # ---------------------------------------------------------------------------

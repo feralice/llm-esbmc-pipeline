@@ -99,9 +99,13 @@ class ChatCompletionsAnalyzer:
                     "Aumente --llm-timeout ou verifique se Ollama está respondendo."
                 ) from exc
             except error.URLError as exc:
+                hint = (
+                    "\nVerifique se o Ollama está rodando com: ollama serve"
+                    if "localhost" in self.base_url or "127.0.0.1" in self.base_url
+                    else ""
+                )
                 raise RuntimeError(
-                    f"Falha de rede ao chamar {self.base_url}: {exc.reason}\n"
-                    "Verifique se o Ollama está rodando com: ollama serve"
+                    f"Falha de rede ao chamar {self.base_url}: {exc.reason}{hint}"
                 ) from exc
         raise RuntimeError("API Chat Completions falhou após todas as tentativas.")
 

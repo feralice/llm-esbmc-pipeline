@@ -48,6 +48,8 @@ from research_pipeline.evaluator import (
     mcc_defined,
     noise_reduction_rate_defined,
     prf_defined,
+    run_repeated,
+    summarize_repeated_runs,
 )
 from research_pipeline.llm.backends.factory import build_analyzer
 from research_pipeline.pipeline import (
@@ -123,18 +125,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--backend",
-        choices=["openai", "anthropic", "ollama", "google", "codex"],
+        choices=["openai", "anthropic", "ollama", "google", "codex", "claude_cli"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
     )
     parser.add_argument(
         "--synth-backend",
-        choices=["openai", "ollama", "google", "codex"],
+        choices=["openai", "ollama", "google", "codex", "claude_cli"],
         default=None,
         help=(
             "Backend só para a síntese de harness no modo V2 (padrão: mesmo de --backend). "
             "'google' usa a API compatível do Gemini; 'codex' chama o `codex exec` local via assinatura já paga, em vez da API "
-            "OpenAI cobrada por token."
+            "OpenAI cobrada por token; 'claude_cli' chama `claude -p` local via assinatura Claude já paga, sem precisar de "
+            "OPENAI_API_KEY/GEMINI_API_KEY."
         ),
     )
     parser.add_argument(
@@ -214,6 +217,18 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Retomar unidades concluídas no --output-dir; exige a mesma "
             "configuração de modelo, prompt, bound e timeout."
+        ),
+    )
+    parser.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        metavar="N",
+        help=(
+            "Somente no modo benchmark-v1. Repete a avaliação completa N vezes "
+            "(a LLM é estocástica) e persiste cada outcome bruto em "
+            "raw_runs_<label>.json ao lado de --report, além de média/desvio-padrão "
+            "das métricas de headline. (padrão: 1, sem custo extra de API)"
         ),
     )
     parser.add_argument(
@@ -623,6 +638,20 @@ def _print_benchmark_table(label: str, counts: EvalCounts, cis: dict | None = No
     print(f"{'─' * 60}")
 
 
+def _print_repeated_summary(label: str, summary: dict) -> None:
+    """Print mean±stdev across repeated benchmark runs. See --repeat."""
+    print(f"\n{'─' * 60}")
+    print(f"Variância entre runs — {label} (N={len(summary['raw_runs'])})")
+    print(f"{'─' * 60}")
+    for metric_name, stats in summary["aggregate"].items():
+        if stats["mean"] is None:
+            print(f"  {metric_name:<28} indefinido em todas as {stats['n_runs']} runs")
+            continue
+        print(
+            f"  {metric_name:<28} {stats['mean']:.3f} ± {stats['stdev']:.3f}"
+            f"  (definido em {stats['n_defined']}/{stats['n_runs']} runs)"
+        )
+    print(f"{'─' * 60}")
 
 
 # ---------------------------------------------------------------------------
@@ -740,6 +769,13 @@ def mode_benchmark_v1(args: argparse.Namespace) -> int:
     if args.resume and not args.report:
         print("--resume no modo benchmark requer --report para localizar o checkpoint.", file=sys.stderr)
         return 1
+    if args.repeat > 1 and args.resume:
+        # --resume reads per-case results from a checkpoint written by ONE
+        # earlier run. Combined with --repeat it would silently reuse that
+        # run's LLM answer for some cases while re-querying others, breaking
+        # the "N independent trials" premise the variance summary relies on.
+        print("--repeat > 1 não pode ser combinado com --resume (veja --repeat --help).", file=sys.stderr)
+        return 1
     # --ground-truth tem prioridade; fallback para --input (compatibilidade retroativa)
     gt_raw = getattr(args, "ground_truth", None) or args.input[0]
     gt_path = Path(gt_raw)
@@ -766,25 +802,42 @@ def mode_benchmark_v1(args: argparse.Namespace) -> int:
         per_file_dir = Path(report_arg).parent / "per_file" / Path(report_arg).stem.removeprefix("benchmark_")
 
 
-    counts, cis = evaluate_model(
-        ground_truth_path=gt_path,
-        backend=backend,
-        model=model or "",
-        anthropic_api_key=anthropic_key,
-        openai_api_key=openai_key,
-        google_api_key=google_key,
-        ollama_base_url=args.ollama_base_url,
-        esbmc_command=args.esbmc_command,
-        bound=args.bound,
-        timeout_seconds=args.timeout,
-        llm_timeout_seconds=args.llm_timeout,
-        verbose=args.verbose,
-        output_dir=per_file_dir,
-        resume=args.resume,
-    )
+    def _run_once() -> tuple[EvalCounts, dict]:
+        return evaluate_model(
+            ground_truth_path=gt_path,
+            backend=backend,
+            model=model or "",
+            anthropic_api_key=anthropic_key,
+            openai_api_key=openai_key,
+            google_api_key=google_key,
+            ollama_base_url=args.ollama_base_url,
+            esbmc_command=args.esbmc_command,
+            bound=args.bound,
+            timeout_seconds=args.timeout,
+            llm_timeout_seconds=args.llm_timeout,
+            verbose=args.verbose,
+            output_dir=per_file_dir,
+            resume=args.resume,
+        )
 
+    repeated_summary: dict | None = None
+    if args.repeat > 1:
+        runs: list[tuple[EvalCounts, dict]] = []
+        for run_index in range(1, args.repeat + 1):
+            print(f"\n=== Run {run_index}/{args.repeat} ===")
+            runs.append(_run_once())
+        counts, cis = runs[-1]  # table/report below show the last run in full detail
+        repeated_summary = summarize_repeated_runs([c for c, _ in runs])
+        _print_repeated_summary(label, repeated_summary)
+    else:
+        counts, cis = _run_once()
 
     _print_benchmark_table(label, counts, cis)
+
+    if report_arg and repeated_summary is not None:
+        raw_runs_path = Path(report_arg).parent / f"raw_runs_{Path(report_arg).stem}.json"
+        _write_json_atomic(raw_runs_path, repeated_summary)
+        print(f"Outcomes brutos ({args.repeat} runs): {raw_runs_path}")
 
     if report_arg:
         fcr = formal_confirmation_rate_defined(counts)
@@ -967,19 +1020,20 @@ def mode_v2(args: argparse.Namespace) -> int:
 
     model = _resolve_model(args.model, "openai") or "gpt-4o-mini"
     backend: Backend = args.backend or _infer_backend(model)
-    if backend == "codex" and not args.model:
+    if backend in {"codex", "claude_cli"} and not args.model:
         model = ""
-    if backend not in {"openai", "ollama", "google", "codex"}:
+    if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
         print(
-            "O modo V2 detecta via OpenAI, Gemini, Ollama ou Codex CLI.",
+            "O modo V2 detecta via OpenAI, Gemini, Ollama, Codex CLI ou Claude CLI.",
             file=sys.stderr,
         )
         return 1
 
     synth_backend = args.synth_backend or backend
-    # 'model' is resolved against OpenAI/Ollama naming; codex has its own model
-    # namespace, so only fall back to it when synth_backend wasn't overridden.
-    synth_model = args.synth_model or ("" if args.synth_backend == "codex" else model)
+    # 'model' is resolved against OpenAI/Ollama naming; codex/claude_cli have
+    # their own model namespace, so only fall back to it when synth_backend
+    # wasn't overridden.
+    synth_model = args.synth_model or ("" if args.synth_backend in {"codex", "claude_cli"} else model)
 
     anthropic_key, openai_key, google_key = _resolve_keys(args)
     try:

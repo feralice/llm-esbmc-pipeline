@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+from .categories import FORMAL_CATEGORIES, SMELL_CATEGORIES
+
+# Single source of truth for the category enum: categories.py, system_prompt.txt,
+# and this schema must agree on the same 11 names, or OpenAI's strict-mode
+# schema silently rejects a category the prompt just asked the model to use.
+# Deriving the enum here (instead of a fourth hardcoded copy) removes one of
+# the three places that had to be kept in sync by hand.
+_CATEGORY_ENUM: list[str] = sorted(FORMAL_CATEGORIES | SMELL_CATEGORIES)
+
 FINDINGS_JSON_SCHEMA: dict = {
     "name": "pipeline_findings",
     "schema": {
@@ -21,19 +30,7 @@ FINDINGS_JSON_SCHEMA: dict = {
                         },
                         "category": {
                             "type": "string",
-                            "enum": [
-                                "assertion_violation",
-                                "division_by_zero",
-                                "out_of_bounds",
-                                "none_misuse",
-                                "type_mismatch",
-                                "invalid_precondition",
-                                "variable_misuse",
-                                "integer_overflow",
-                                "long_method",
-                                "many_parameters",
-                                "complex_conditional",
-                            ],
+                            "enum": _CATEGORY_ENUM,
                         },
                         "explanation": {"type": "string"},
                         "verifiable":  {"type": "boolean"},

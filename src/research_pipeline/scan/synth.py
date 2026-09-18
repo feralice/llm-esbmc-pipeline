@@ -158,10 +158,12 @@ class HarnessSynthesizer:
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 120,
         codex_command: str = "codex",
+        claude_command: str = "claude",
     ) -> None:
-        if backend not in {"openai", "ollama", "google", "codex"}:
+        if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
             raise ValueError(
-                f"synth backend {backend!r} not supported yet; use 'openai', 'google', 'ollama' or 'codex'."
+                f"synth backend {backend!r} not supported yet; "
+                "use 'openai', 'google', 'ollama', 'codex' or 'claude_cli'."
             )
         self.backend = backend
         self.model = model
@@ -172,6 +174,7 @@ class HarnessSynthesizer:
         )
         self.timeout_seconds = timeout_seconds
         self.codex_command = codex_command
+        self.claude_command = claude_command
         self.api_key = api_key or os.environ.get(
             "GEMINI_API_KEY" if backend == "google" else "OPENAI_API_KEY"
         )
@@ -224,11 +227,12 @@ class HarnessSynthesizer:
 
         started = time.monotonic()
         try:
-            raw_response = (
-                self._run_codex(system_prompt, user_prompt)
-                if self.backend == "codex"
-                else self._post_json(payload)
-            )
+            if self.backend == "codex":
+                raw_response = self._run_codex(system_prompt, user_prompt)
+            elif self.backend == "claude_cli":
+                raw_response = self._run_claude_cli(system_prompt, user_prompt)
+            else:
+                raw_response = self._post_json(payload)
         except Exception as exc:
             event = response_event(
                 provider=self.backend, requested_model=self.model,
@@ -319,6 +323,63 @@ class HarnessSynthesizer:
         return {
             "output_text": output_text,
             "model": returned_model or self.model,
+            "usage": {
+                "input_tokens": usage.get("input_tokens"),
+                "output_tokens": usage.get("output_tokens"),
+            },
+        }
+
+    def _run_claude_cli(self, system_prompt: str, user_prompt: str) -> dict:
+        """Synthesize via the local `claude -p` CLI instead of a metered API call.
+
+        Unlike `_run_codex`, no --json-schema here: the harness is free-form
+        Python wrapped in a ```python fence, not a JSON object, so the plain
+        text `result` field is what _extract_output_text()/_strip_fence()
+        already expect from every other backend.
+        """
+        command = [
+            self.claude_command, "--print",
+            "--output-format", "json",
+            "--disallowed-tools", "Read Write Edit Bash Glob Grep WebFetch WebSearch Task",
+            "--permission-prompts", "none",
+            "--no-session-persistence",
+        ]
+        if self.model:
+            command += ["--model", self.model]
+        command.append(f"{system_prompt}\n\n{user_prompt}")
+
+        try:
+            completed = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=self.timeout_seconds,
+                stdin=subprocess.DEVNULL,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise TimeoutError(f"Timeout ao chamar {self.claude_command} -p.") from exc
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"Comando {self.claude_command!r} não encontrado no PATH.") from exc
+
+        if completed.returncode != 0:
+            raise RuntimeError(
+                f"{self.claude_command} -p saiu com código {completed.returncode}: "
+                f"{completed.stderr.strip()[:500]}"
+            )
+        try:
+            envelope = json.loads(completed.stdout)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                f"{self.claude_command} -p não retornou JSON válido: {completed.stdout[:500]}"
+            ) from exc
+        if envelope.get("is_error"):
+            raise RuntimeError(f"{self.claude_command} -p: turno falhou: {envelope.get('result')}")
+
+        usage = envelope.get("usage") or {}
+        return {
+            "output_text": envelope.get("result", ""),
+            "model": self.model,
             "usage": {
                 "input_tokens": usage.get("input_tokens"),
                 "output_tokens": usage.get("output_tokens"),

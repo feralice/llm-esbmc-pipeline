@@ -61,7 +61,9 @@ classificação da categoria pela LLM, não a execução do harness.
 
 ---
 
-## Dataset (70 arquivos)
+## Dataset
+
+### V1 — sintético (`dataset/labeled/`, 70 arquivos)
 
 | Categoria | Arquivos | Verificável |
 |---|---|---|
@@ -74,6 +76,28 @@ classificação da categoria pela LLM, não a execução do harness.
 | `many_parameters` | mp_01–mp_05 | LLM heurístico |
 
 Cada arquivo contém exatamente 1 função e 0 ou 1 bug. Sem `len()` (limitação do frontend Python do ESBMC).
+
+### V2 — mundo real (`dataset/v2_real_world/`, 123 bugs, 42 repositórios)
+
+Cada item é um bug real minerado de um projeto Python público, com o commit
+buggy e o commit de correção registrados em `manifest.json` (campo
+`provenance`). Fontes, por número de bugs:
+
+| Origem | Bugs | Como foi identificado |
+|---|---|---|
+| BugsInPy | 91 | `provenance.bugsinpy_id` |
+| Mineração manual de commit de correção | 27 | commit pai do fix, sem dataset intermediário (inclui `esbmc`, `nki-samples`, `consensus-specs`) |
+| GitHub issue/PR direto | 4 | `provenance.issue_url` / `pr_url` |
+| PyBugHive | 1 | `provenance.pybughive_issue` |
+
+Repositórios com mais bugs: `scrapy` (16), `thefuck` (11), `luigi` (10),
+`youtube-dl` (9), `tornado` (9), `matplotlib` (7). Lista completa de projetos
+e links em `dataset/v2_real_world/manifest.json` (`provenance.repo_url` por
+item).
+
+`dataset/v2_real_world/detection/` traz o arquivo sem o gabarito (o que a LLM
+recebe pra detectar); `dataset/v2_real_world/bugs/` traz o harness de
+referência; `ground_truths.json` é o gabarito usado pelo benchmark.
 
 ---
 
@@ -313,19 +337,34 @@ llm-esbmc-pipeline/
 │   │   ├── prompts.py              # build_user_prompt(), prompt modes
 │   │   └── schema.py               # FINDINGS_JSON_SCHEMA
 │   ├── prompts/
-│   │   └── system_prompt.txt       # System prompt (role + CoT)
+│   │   ├── system_prompt.txt       # System prompt de detecção (role + CoT)
+│   │   ├── synth_prompt.txt        # Síntese de harness, estilo scalar
+│   │   ├── driver_prompt.txt       # Síntese de harness, estilo verbatim-driver
+│   │   └── synth_prompt_loop.txt   # Síntese de harness, estilo loop bounded
+│   ├── scan/                       # V2: geração e validação de harness
+│   │   ├── pipeline.py             # Orquestra driver → síntese scalar/loop → ESBMC
+│   │   ├── synth.py                # HarnessSynthesizer: chama a LLM (openai/google/ollama/codex/claude_cli)
+│   │   ├── compat.py               # check_harness(): valida o harness gerado via AST antes do ESBMC
+│   │   ├── driver_check.py         # Validador próprio do estilo verbatim-driver
+│   │   ├── guards.py               # Extrai preconditions reais do código pro prompt
+│   │   └── ablation.py             # Testa se um __ESBMC_assume mascarou o bug
 │   └── verification/
 │       └── esbmc_runner.py         # run_esbmc_on_function(), run_esbmc_function_baseline()
 ├── dataset/
-│   └── labeled/
-│       ├── ok/                     # 70 arquivos Python
-│       └── ground_truths/          # 1 JSON por categoria
+│   ├── labeled/                    # V1: 70 arquivos sintéticos
+│   │   ├── ok/
+│   │   └── ground_truths/
+│   └── v2_real_world/              # V2: 123 bugs reais, 42 repositórios (ver seção Dataset)
+│       ├── detection/              # arquivo sem gabarito (entrada da LLM)
+│       ├── bugs/                   # harness de referência
+│       ├── manifest.json           # metadados + provenance por item
+│       └── ground_truths.json
 ├── reports/
 │   └── json/v1_benchmark/          # benchmark_*.json por modelo
 ├── scripts/
 │   └── compare_benchmarks.py       # Compara JSONs entre modelos
 ├── tests/
-│   └── test_research_pipeline.py   # 38 passed, 2 skipped (sem API)
+│   └── test_research_pipeline.py   # suíte V1; scan/V2 tem test_scan_*.py e test_main_v2.py em paralelo
 ├── docs/                           # Documentação técnica
 ├── .env.example
 └── requirements.txt

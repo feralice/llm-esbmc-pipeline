@@ -41,6 +41,15 @@ class CodeUnit:
 # LLM layer
 # ---------------------------------------------------------------------------
 
+# Finding.confidence_source values. Keep in one place so a groupby over
+# "accuracy by confidence" (or any future consumer) can filter by source
+# instead of trusting the confidence string alone.
+CONFIDENCE_SOURCE_LLM_SELF_REPORT = "llm_self_report"      # model's own "low"/"medium"/"high" guess
+CONFIDENCE_SOURCE_FORMAL_VERIFICATION = "formal_verification"  # ESBMC proved the violation directly
+CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER = "pipeline_placeholder"  # pre-verification scan default, not a claim
+CONFIDENCE_SOURCE_UNSPECIFIED = "unspecified"               # constructed before this taxonomy existed
+
+
 @dataclass
 class Finding:
     """A candidate issue reported by the LLM or synthesized by the pipeline."""
@@ -55,6 +64,7 @@ class Finding:
     verifiable: bool    # True when the finding can be sent to ESBMC.
     confidence: str
     metadata: dict[str, object] = field(default_factory=dict) # Extra data: expression, line, function, etc.
+    confidence_source: str = CONFIDENCE_SOURCE_UNSPECIFIED
 
 
 # ---------------------------------------------------------------------------
