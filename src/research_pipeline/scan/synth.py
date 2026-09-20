@@ -159,6 +159,7 @@ class HarnessSynthesizer:
         timeout_seconds: int = 120,
         codex_command: str = "codex",
         claude_command: str = "claude",
+        request_delay: float = 0.0,
     ) -> None:
         if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
             raise ValueError(
@@ -167,6 +168,7 @@ class HarnessSynthesizer:
             )
         self.backend = backend
         self.model = model
+        self.request_delay = request_delay
         self.base_url = (
             base_url.rstrip("/") + "/chat/completions"
             if backend in {"ollama", "google"} and not base_url.rstrip("/").endswith("/chat/completions")
@@ -387,6 +389,8 @@ class HarnessSynthesizer:
         }
 
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:
+        if self.request_delay > 0:
+            time.sleep(self.request_delay)
         body = json.dumps(payload).encode("utf-8")
         for attempt in range(_retries):
             req = request.Request(
@@ -403,7 +407,8 @@ class HarnessSynthesizer:
                     return json.loads(response.read().decode("utf-8"))
             except error.HTTPError as exc:
                 if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
-                    time.sleep(2 ** attempt)
+                    sleep_time = 45 if exc.code == 429 else 2 ** (attempt + 2)
+                    time.sleep(sleep_time)
                     continue
                 details = exc.read().decode("utf-8", errors="replace")
                 raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc

@@ -51,7 +51,7 @@ from research_pipeline.evaluator import (
     run_repeated,
     summarize_repeated_runs,
 )
-from research_pipeline.llm.backends.factory import build_analyzer
+from research_pipeline.llm.backends.factory import _GEMINI_OPENAI_BASE_URL, build_analyzer
 from research_pipeline.pipeline import (
     Backend,
     run_pipeline_esbmc_direct,
@@ -1055,10 +1055,11 @@ def mode_v2(args: argparse.Namespace) -> int:
             else "ollama",
             base_url=(args.ollama_base_url or "http://localhost:11434/v1")
             if synth_backend == "ollama"
-            else "https://generativelanguage.googleapis.com/v1beta/openai/"
+            else _GEMINI_OPENAI_BASE_URL
             if synth_backend == "google"
             else "https://api.openai.com/v1/responses",
             timeout_seconds=args.llm_timeout,
+            request_delay=4.0 if synth_backend == "google" else 0.0,
         )
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
