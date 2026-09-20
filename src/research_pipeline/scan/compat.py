@@ -153,7 +153,31 @@ def _bounded_loop_reasons(tree: ast.Module) -> list[str]:
         and all(isinstance(a, ast.Constant) and isinstance(a.value, int) for a in it.args)
     ):
         return ["loop harness `for` must iterate `range(<int literal>...)`"]
-    return []
+    return _container_shape_reasons(tree)
+
+
+def _container_shape_reasons(tree: ast.Module) -> list[str]:
+    """synth_prompt_loop.txt rule 2: containers must be a flat list literal of
+    fresh nondet_*() values -- no comprehension, dict, set, or nested list.
+
+    Nothing enforced this before; the LLM could ignore rule 2 and the harness
+    would still pass check_harness(), spending a real ESBMC call on an
+    undocumented/unstable model shape instead of being caught deterministically.
+    """
+    reasons: list[str] = []
+    if any(
+        isinstance(n, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp))
+        for n in ast.walk(tree)
+    ):
+        reasons.append("loop harness container must not be built from a comprehension (rule 2)")
+    if any(isinstance(n, (ast.Dict, ast.Set)) for n in ast.walk(tree)):
+        reasons.append("loop harness allows no dicts or sets, only a flat list (rule 2)")
+    if any(
+        isinstance(n, ast.List) and any(isinstance(elt, ast.List) for elt in n.elts)
+        for n in ast.walk(tree)
+    ):
+        reasons.append("loop harness container must not be a nested list (rule 2)")
+    return reasons
 
 
 def check_harness(

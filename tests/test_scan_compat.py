@@ -565,3 +565,23 @@ def test_loop_harness_still_rejects_esbmc_cover():
     r = check_harness(src, allow_bounded_loop=True)
     assert not r.ok
     assert "outside the scalar harness property profile" in r.reasons[0]
+
+
+@pytest.mark.parametrize(
+    "container_expr, expected",
+    [
+        ("[nondet_int() for _ in range(3)]", "comprehension"),
+        ("{1: a, 2: b, 3: c}", "dicts or sets"),
+        ("{a, b, c}", "dicts or sets"),
+        ("[[a], [b], [c]]", "nested list"),
+    ],
+)
+def test_loop_harness_rejects_bad_container_shapes(container_expr: str, expected: str):
+    """synth_prompt_loop.txt rule 2 says the container must be a flat list
+    literal of fresh nondet_*() values -- nothing enforced this before, so a
+    harness violating it would have passed check_harness() and spent a real
+    ESBMC call on an undocumented model shape."""
+    src = _LOOP_HARNESS.replace("xs: list[int] = [a, b, c]\n", f"xs = {container_expr}\n")
+    r = check_harness(src, allow_bounded_loop=True)
+    assert not r.ok
+    assert expected in " ".join(r.reasons)
