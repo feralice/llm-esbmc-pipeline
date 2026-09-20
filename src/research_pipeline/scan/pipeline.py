@@ -868,6 +868,16 @@ def _try_driver(
         )
 
         if esbmc.status == "violation_found":
+            if not _violation_matches_driver_assert(esbmc.details, check.assert_linenos):
+                base.classification = CONFIRMED_UNVERIFIED
+                base.compat_reasons = [
+                    "violated property location does not match any of the harness's "
+                    f"own asserts (expected lines {list(check.assert_linenos)}, ESBMC "
+                    f"reported {esbmc.details.get('violated_locations')}); the driver "
+                    "body kept the real function's own code, so a native check "
+                    "unrelated to the modeled bug may have fired instead"
+                ]
+                return base, "conclusive"
             if candidate.category in OUTCOME_CATEGORIES:
                 grounding = check_outcome_grounding(synth.harness)
                 if grounding.ok:
@@ -1050,6 +1060,28 @@ def _looks_like_cover_negation(property_kind: str) -> bool:
     key) never take this shape. See docs/v2/experiment_log.md EXP-01.
     """
     return property_kind.startswith("assertion !(")
+
+
+def _violation_matches_driver_assert(details: dict, assert_linenos: tuple[int, ...]) -> bool:
+    """True when one of ESBMC's violated properties is at one of the driver
+    harness's own assert lines.
+
+    The driver style keeps the real function body verbatim -- no
+    __ESBMC_cover, no message marker (driver_prompt.txt rule 6) -- so unlike
+    the scalar style there is no EXPECTED_PROPERTY_MARKER to grep for, and a
+    harness can legitimately carry more than one assert (e.g. a type-tag
+    check plus a result check, see test_differently_typed_stand_in_isinstance_is_ok).
+    --multi-property can report a native check (out-of-bounds, division by
+    zero) that fires somewhere else in the sliced real body as a SEPARATE
+    violated property; without this location check that unrelated violation
+    would be counted as confirming the modeled bug.
+    """
+    if not assert_linenos:
+        return False
+    suffixes = tuple(f"linha {n}" for n in assert_linenos)
+    return any(
+        (loc or "").endswith(suffixes) for loc in details.get("violated_locations") or ()
+    )
 
 
 def _classify_esbmc(status: str) -> str:

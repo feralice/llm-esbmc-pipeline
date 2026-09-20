@@ -75,6 +75,7 @@ class DriverCheckResult:
     ok: bool
     verdict: str
     reasons: list[str] = field(default_factory=list)
+    assert_linenos: tuple[int, ...] = ()
 
 
 class _CollapseAccess(ast.NodeTransformer):
@@ -351,7 +352,8 @@ def check_driver_harness(
             False, VERDICT_INVALID, ["slice result is not asserted on (it will be sliced away)"]
         )
 
-    if not [n for n in ast.walk(tree) if isinstance(n, ast.Assert)]:
+    asserts = [n for n in ast.walk(tree) if isinstance(n, ast.Assert)]
+    if not asserts:
         return DriverCheckResult(False, VERDICT_INVALID, ["harness has no assert (nothing to check)"])
 
     taut = _tautological_type_checks(tree)
@@ -362,4 +364,6 @@ def check_driver_harness(
     if not survived:
         return DriverCheckResult(False, VERDICT_INVALID, [why])
 
-    return DriverCheckResult(True, VERDICT_OK, [])
+    return DriverCheckResult(
+        True, VERDICT_OK, [], assert_linenos=tuple(n.lineno for n in asserts)
+    )

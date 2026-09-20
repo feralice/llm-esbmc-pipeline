@@ -528,6 +528,7 @@ def _extract_esbmc_details(
         "warnings": warnings,
         "counterexample": counterexample[:6],
         "violated_properties": [v["kind"] for v in violated_properties],
+        "violated_locations": [v["location"] for v in violated_properties],
         "property_kind": property_kind,
         "property_text": property_text,
         "location": location,

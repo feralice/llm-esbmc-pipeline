@@ -199,11 +199,12 @@ class _DriverSynth:
         return SynthResult(self._harness, self._harness, self.model, {"total_tokens": 10})
 
 
-def _esbmc(status: str):
+def _esbmc(status: str, *, violated_locations: list[str] | None = None):
     from research_pipeline.models import ESBMCDirectResult
 
     return ESBMCDirectResult(
-        source_file="x.py", status=status, command=["esbmc"], returncode=0, summary=status
+        source_file="x.py", status=status, command=["esbmc"], returncode=0, summary=status,
+        details={"violated_locations": violated_locations} if violated_locations else {},
     )
 
 
@@ -238,12 +239,29 @@ def _run(tmp_path, monkeypatch, esbmc_fn, *, category="assertion_violation", har
 
 def test_driver_violation_confirms(tmp_path, monkeypatch):
     result, synth = _run(
-        tmp_path, monkeypatch, lambda *a, **k: _esbmc("violation_found"), category="division_by_zero"
+        tmp_path, monkeypatch,
+        lambda *a, **k: _esbmc("violation_found", violated_locations=["slice_model, linha 11"]),
+        category="division_by_zero",
     )
     assert result.classification == CONFIRMED_DRIVER
     assert result.compat_verdict == "driver"
     assert result.driver_note == "conclusive"
     assert synth.seen_styles == [STYLE_DRIVER]
+
+
+def test_driver_violation_at_unrelated_location_is_unverified(tmp_path, monkeypatch):
+    """The driver body keeps the real function's own code verbatim, so
+    --multi-property can report a violation from a native check (e.g.
+    out-of-bounds) that fires somewhere else in the sliced body -- unrelated
+    to the modeled bug at the harness's own assert line. That must not count
+    as a confirmation."""
+    result, _ = _run(
+        tmp_path, monkeypatch,
+        lambda *a, **k: _esbmc("violation_found", violated_locations=["slice_model, linha 2"]),
+        category="division_by_zero",
+    )
+    assert result.classification == CONFIRMED_UNVERIFIED
+    assert "does not match" in " ".join(result.compat_reasons)
 
 
 def test_driver_violation_in_outcome_category_is_demoted(tmp_path, monkeypatch):
@@ -255,7 +273,7 @@ def test_differential_driver_violation_in_outcome_category_confirms(tmp_path, mo
     result, _ = _run(
         tmp_path,
         monkeypatch,
-        lambda *a, **k: _esbmc("violation_found"),
+        lambda *a, **k: _esbmc("violation_found", violated_locations=["slice_model, linha 14"]),
         harness=_DIFFERENTIAL_SLICE_HARNESS,
     )
     assert result.classification == CONFIRMED_DRIVER
