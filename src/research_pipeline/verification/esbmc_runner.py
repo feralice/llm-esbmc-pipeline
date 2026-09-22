@@ -67,6 +67,7 @@ def run_esbmc_direct(
             command=command,
             returncode=None,
             summary="ESBMC não encontrado no PATH. Verificação direta não executada.",
+            details=_verification_metadata("skipped", bound, timeout_seconds),
         )
 
     start = time.monotonic()
@@ -87,6 +88,7 @@ def run_esbmc_direct(
             returncode=None,
             summary=f"ESBMC direto excedeu o tempo limite de {timeout_seconds}s.",
             time_seconds=float(timeout_seconds),
+            details=_verification_metadata("timeout", bound, timeout_seconds),
         )
 
     stdout = completed.stdout or ""
@@ -103,6 +105,8 @@ def run_esbmc_direct(
     # ESBMC returned SUCCESSFUL but issued no verification conditions — not a proof of safety
     if status == "no_violation_found" and details["zero_vccs"]:
         status = "no_vcc_generated"
+
+    details.update(_verification_metadata(status, bound, timeout_seconds))
 
     raw_log_path = _write_direct_log(file_path, combined, output_dir)
 
@@ -157,6 +161,9 @@ def _summarize_direct(status: str, details: dict, timeout_seconds: int = 30) -> 
                 "ESBMC direto: sem violação, mas 0 VCCs geradas — prova pode ser vazia "
                 "(nenhuma computação relevante sobreviveu ao slicer)."
             )
+        bound = details.get("bound")
+        if bound is not None:
+            return f"ESBMC direto: sem violação até o bound analisado (k={bound})."
         return "ESBMC direto: sem violação no bound analisado."
     if status == "no_vcc_generated":
         return "ESBMC direto: 0 VCCs geradas — arquivo sem chamadas verificáveis no nível de módulo."
@@ -237,6 +244,7 @@ def run_esbmc_on_function(
             command=command,
             returncode=None,
             summary="ESBMC não encontrado no PATH. Verificação formal não executada.",
+            details=_verification_metadata("skipped", bound, timeout_seconds),
         )
 
     start = time.monotonic()
@@ -257,6 +265,7 @@ def run_esbmc_on_function(
             returncode=None,
             summary="ESBMC excedeu o tempo limite configurado.",
             time_seconds=float(timeout_seconds),
+            details=_verification_metadata("inconclusive", bound, timeout_seconds, "timeout"),
         )
 
     stdout = completed.stdout or ""
@@ -270,6 +279,7 @@ def run_esbmc_on_function(
 
     details = _extract_esbmc_details(combined, file_path)
     details["bound"] = bound
+    details.update(_verification_metadata(status, bound, timeout_seconds))
 
     logs_dir = (
         Path(output_dir)
@@ -441,6 +451,9 @@ def _summarize(status: str, details: dict[str, object]) -> str:
             base = f"ESBMC encontrou violação da propriedade {property_text}."
         return f"{base} Local: {location}." if location else base
     if status == "no_violation_found":
+        bound = details.get("bound")
+        if bound is not None:
+            return f"ESBMC não encontrou violação até o limite k={bound}."
         return "ESBMC não encontrou violação no escopo analisado."
     if status == "tool_error":
         return "ESBMC retornou erro interno (recurso não suportado ou código incompatível)."
@@ -534,6 +547,32 @@ def _extract_esbmc_details(
         "location": location,
         "function": function_name,
     }
+
+
+def _verification_metadata(
+    status: str,
+    bound: int,
+    timeout_seconds: int,
+    inconclusive_reason: str | None = None,
+) -> dict[str, object]:
+    """Return report-facing semantics without replacing ESBMC's raw status."""
+    if status == "violation_found":
+        outcome = "bug_confirmed"
+    elif status == "no_violation_found":
+        outcome = "not_confirmed_within_bound"
+    else:
+        outcome = "inconclusive"
+
+    metadata: dict[str, object] = {
+        "bound": bound,
+        "timeout_seconds": timeout_seconds,
+        "outcome": outcome,
+    }
+    if inconclusive_reason is not None:
+        metadata["inconclusive_reason"] = inconclusive_reason
+    elif outcome == "inconclusive":
+        metadata["inconclusive_reason"] = status
+    return metadata
 
 
 def _prettify_output(

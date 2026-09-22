@@ -44,6 +44,114 @@ def test_esbmc_command_applies_configured_bound(
     assert captured[captured.index("--max-k-step") + 1] == "7"
 
 
+def test_esbmc_success_records_bounded_interpretation_and_counterexample(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def f(divisor):\n    return 10 // divisor\n", encoding="utf-8")
+    monkeypatch.setattr(esbmc_runner.shutil, "which", lambda _name: "/usr/bin/esbmc")
+    monkeypatch.setattr(
+        esbmc_runner.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            stdout="Generated 1 VCC(s)\nVERIFICATION SUCCESSFUL\n",
+            stderr="",
+            returncode=0,
+        ),
+    )
+
+    result = esbmc_runner.run_esbmc_on_function(
+        source, "f", "finding-1", "division_by_zero", bound=10,
+        timeout_seconds=12, output_dir=tmp_path / "artifacts",
+    )
+
+    assert result.status == "no_violation_found"
+    assert result.details["bound"] == 10
+    assert result.details["timeout_seconds"] == 12
+    assert result.details["outcome"] == "not_confirmed_within_bound"
+    assert "até o limite k=10" in result.summary
+
+
+def test_esbmc_timeout_records_inconclusive_reason_and_limit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def f(x):\n    return x\n", encoding="utf-8")
+    monkeypatch.setattr(esbmc_runner.shutil, "which", lambda _name: "/usr/bin/esbmc")
+
+    def timeout(*_args, **_kwargs):
+        raise esbmc_runner.subprocess.TimeoutExpired("esbmc", 3)
+
+    monkeypatch.setattr(esbmc_runner.subprocess, "run", timeout)
+
+    result = esbmc_runner.run_esbmc_on_function(
+        source, "f", "finding-1", "division_by_zero", bound=3,
+        timeout_seconds=12, output_dir=tmp_path / "artifacts",
+    )
+
+    assert result.status == "inconclusive"
+    assert result.details["bound"] == 3
+    assert result.details["timeout_seconds"] == 12
+    assert result.details["outcome"] == "inconclusive"
+    assert result.details["inconclusive_reason"] == "timeout"
+
+
+def test_esbmc_violation_exposes_confirmed_outcome_and_counterexample(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def f(divisor):\n    return 10 // divisor\n", encoding="utf-8")
+    monkeypatch.setattr(esbmc_runner.shutil, "which", lambda _name: "/usr/bin/esbmc")
+    monkeypatch.setattr(
+        esbmc_runner.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            stdout=(
+                "VERIFICATION FAILED\n"
+                "State 1 file sample.py function f thread 0 line 2 column 15\n"
+                "divisor = 0\n"
+            ),
+            stderr="",
+            returncode=10,
+        ),
+    )
+
+    result = esbmc_runner.run_esbmc_on_function(
+        source, "f", "finding-1", "division_by_zero", bound=5,
+        output_dir=tmp_path / "artifacts",
+    )
+
+    assert result.status == "violation_found"
+    assert result.details["outcome"] == "bug_confirmed"
+    assert result.details["counterexample"] == ["divisor = 0"]
+
+
+def test_direct_esbmc_reports_no_violation_only_within_bound(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def f(x):\n    return x + 1\n", encoding="utf-8")
+    monkeypatch.setattr(esbmc_runner.shutil, "which", lambda _name: "/usr/bin/esbmc")
+    monkeypatch.setattr(
+        esbmc_runner.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            stdout="Generated 1 VCC(s)\nVERIFICATION SUCCESSFUL\n",
+            stderr="",
+            returncode=0,
+        ),
+    )
+
+    result = esbmc_runner.run_esbmc_direct(
+        source, bound=4, timeout_seconds=9, output_dir=tmp_path / "artifacts",
+    )
+
+    assert result.status == "no_violation_found"
+    assert result.details["outcome"] == "not_confirmed_within_bound"
+    assert result.details["timeout_seconds"] == 9
+    assert "até o bound analisado" in result.summary
+
+
 @pytest.mark.parametrize("bound", [0, -1, True])
 def test_invalid_bound_fails_before_esbmc(bound) -> None:
     with pytest.raises(ValueError, match="bound"):
