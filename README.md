@@ -153,6 +153,29 @@ codex login
 Use `--synth-backend codex` (ou `--backend codex` também na detecção, pra não
 depender de `OPENAI_API_KEY` em nenhuma etapa) pra rodar por aí.
 
+Pra usar a assinatura Claude já paga em vez da API Anthropic cobrada por
+token, instale o [Claude Code CLI](https://claude.com/claude-code):
+
+```bash
+npm install -g @anthropic-ai/claude-code
+claude   # primeira execução abre o fluxo de login no navegador
+```
+
+Use `--backend claude_cli` (detecção) e/ou `--synth-backend claude_cli`
+(síntese). O pipeline chama `claude -p` local e filtra `ANTHROPIC_API_KEY` do
+ambiente do subprocesso, então não precisa da chave em nenhuma etapa.
+
+Pra usar o Gemini CLI (conta pessoal ou empresarial) em vez da API Gemini
+cobrada por token:
+
+```bash
+npm install -g @google/gemini-cli
+gemini   # primeira execução pede pra escolher o método de autenticação
+```
+
+Use `--backend gemini_cli` e/ou `--synth-backend gemini_cli`. Precisa estar
+autenticado e rodando num diretório onde o CLI headless funcione.
+
 ---
 
 ## Configuração
@@ -162,17 +185,20 @@ cp .env.example .env
 ```
 
 ```env
-OPENAI_API_KEY=       # para gpt-*
-ANTHROPIC_API_KEY=    # para claude-*
+OPENAI_API_KEY=       # para gpt-* e --backend openai
+ANTHROPIC_API_KEY=    # para claude-* e --backend anthropic
+GEMINI_API_KEY=       # para --backend google
 # OLLAMA_BASE_URL=    # opcional, padrão: http://localhost:11434
 ```
 
-No modo `v2`, a detecção usa `gpt-4o-mini` via OpenAI por padrão mesmo quando
-`--synth-backend codex` só troca a síntese do harness: `OPENAI_API_KEY`
-continua exigida a menos que `--backend` (detecção) também seja `ollama` ou
-`codex`. Nenhuma chave é necessária pra rodar o V2 inteiro com
-`--backend codex --synth-backend codex`, ou com `--backend ollama` pra modelo
-local em ambas as etapas.
+No modo `hybrid` (V2), a detecção usa `gpt-4o-mini` via OpenAI por padrão
+mesmo quando `--synth-backend codex` só troca a síntese do harness:
+`OPENAI_API_KEY` continua exigida a menos que `--backend` (detecção) também
+seja `ollama`, `codex`, `claude_cli` ou `gemini_cli`. Nenhuma chave é
+necessária pra rodar o V2 inteiro com `--backend codex --synth-backend codex`,
+`--backend claude_cli --synth-backend claude_cli`,
+`--backend gemini_cli --synth-backend gemini_cli`, ou com `--backend ollama`
+pra modelo local em ambas as etapas.
 
 ---
 
