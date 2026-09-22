@@ -51,7 +51,7 @@ from research_pipeline.evaluator import (
     run_repeated,
     summarize_repeated_runs,
 )
-from research_pipeline.llm.backends.factory import _GEMINI_OPENAI_BASE_URL, build_analyzer
+from research_pipeline.llm.backends.factory import _DEFAULT_MODEL, _GEMINI_OPENAI_BASE_URL, build_analyzer
 from research_pipeline.pipeline import (
     Backend,
     run_pipeline_esbmc_direct,
@@ -1030,8 +1030,8 @@ def mode_v2(args: argparse.Namespace) -> int:
             print("Nenhum arquivo V2 elegível sem contexto do patch.", file=sys.stderr)
             return 1
 
-    model = _resolve_model(args.model, "openai") or "gpt-4o-mini"
-    backend: Backend = args.backend or _infer_backend(model)
+    backend: Backend = args.backend or _infer_backend(args.model or "")
+    model = _resolve_model(args.model, backend)
     if backend in {"codex", "claude_cli"} and not args.model:
         model = ""
     if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
@@ -1045,7 +1045,10 @@ def mode_v2(args: argparse.Namespace) -> int:
     # 'model' is resolved against OpenAI/Ollama naming; codex/claude_cli have
     # their own model namespace, so only fall back to it when synth_backend
     # wasn't overridden.
-    synth_model = args.synth_model or ("" if args.synth_backend in {"codex", "claude_cli"} else model)
+    synth_model = args.synth_model or (
+        "" if args.synth_backend in {"codex", "claude_cli"}
+        else model or _DEFAULT_MODEL.get(synth_backend, "")
+    )
 
     anthropic_key, openai_key, google_key = _resolve_keys(args)
     try:
