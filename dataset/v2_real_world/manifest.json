@@ -1999,34 +1999,6 @@
       }
     },
     {
-      "id": "ip_real_27",
-      "detection_file": "detection/ip_real_27.py",
-      "harness_file": "bugs/ip_real_27.py",
-      "function": "HTTP1Connection.write_headers",
-      "categories": [
-        "invalid_precondition"
-      ],
-      "expression": "\"Transfer-Encoding\" not in headers",
-      "provenance": {
-        "project": "tornado",
-        "bugsinpy_id": 2,
-        "source_file": "tornado/http1connection.py",
-        "source_function": "HTTP1Connection.write_headers",
-        "repo_url": "https://github.com/tornadoweb/tornado",
-        "buggy_commit": "2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
-        "fixed_commit": "4f486a4aec746e9d66441600ee3b0743228b061c"
-      },
-      "oracle": {
-        "kind": "synthesized_expected_value",
-        "expression": "",
-        "source": "See harness file for full reasoning."
-      },
-      "abstraction": {
-        "used": true,
-        "description": "See harness file comment for full reasoning."
-      }
-    },
-    {
       "id": "ip_real_24",
       "detection_file": "detection/ip_real_24.py",
       "harness_file": "bugs/ip_real_24.py",
@@ -3372,7 +3344,9 @@
       "detection_file": "detection/oob_real_06.py",
       "harness_file": "bugs/oob_real_06.py",
       "function": "merge_configs",
-      "categories": ["out_of_bounds"],
+      "categories": [
+        "out_of_bounds"
+      ],
       "expression": "default[k]",
       "provenance": {
         "project": "cookiecutter",
@@ -3394,63 +3368,13 @@
       }
     },
     {
-      "id": "nm_real_26",
-      "detection_file": "detection/nm_real_26.py",
-      "harness_file": "bugs/nm_real_26.py",
-      "function": "request_httprepr",
-      "categories": ["none_misuse"],
-      "expression": "to_bytes(parsed.hostname)",
-      "provenance": {
-        "project": "scrapy",
-        "bugsinpy_id": 29,
-        "source_file": "scrapy/utils/request.py",
-        "source_function": "request_httprepr",
-        "repo_url": "https://github.com/scrapy/scrapy",
-        "buggy_commit": "5c4666a3d489bd3efa2e188de58721a125a5bfad",
-        "fixed_commit": "8d45b3c4810cb5304ba1193b45697a0df1157326"
-      },
-      "oracle": {
-        "kind": "native_property",
-        "expression": "assert not hostname_is_none",
-        "source": "The real fix guards parsed.hostname with `or b''`; the pre-fix call passes a legitimate None host to a bytes conversion."
-      },
-      "abstraction": {
-        "used": true,
-        "description": "The optional hostname returned by urlparse is modeled as a boolean liveness flag, isolating the missing None guard."
-      }
-    },
-    {
-      "id": "tm_real_14",
-      "detection_file": "detection/tm_real_14.py",
-      "harness_file": "bugs/tm_real_14.py",
-      "function": "read_conllx",
-      "categories": ["type_mismatch"],
-      "expression": "int(head)",
-      "provenance": {
-        "project": "spacy",
-        "bugsinpy_id": 4,
-        "source_file": "spacy/cli/converters/conllu2json.py",
-        "source_function": "read_conllx",
-        "repo_url": "https://github.com/explosion/spaCy",
-        "buggy_commit": "abd5c06374eab5db0cf897b73543b1f3eb007e12",
-        "fixed_commit": "9fa9d7f2cb52ce6a70c264d4e57c7f190d7686bf"
-      },
-      "oracle": {
-        "kind": "native_property",
-        "expression": "assert not head_is_underscore",
-        "source": "The real fix excludes the valid CONLL-U placeholder `_` before converting head to int."
-      },
-      "abstraction": {
-        "used": true,
-        "description": "The input token is modeled as a boolean indicating whether head is the non-integer `_` placeholder."
-      }
-    },
-    {
       "id": "vm_real_09",
       "detection_file": "detection/vm_real_09.py",
       "harness_file": "bugs/vm_real_09.py",
       "function": "__len__",
-      "categories": ["variable_misuse"],
+      "categories": [
+        "variable_misuse"
+      ],
       "expression": "self.total",
       "provenance": {
         "project": "tqdm",

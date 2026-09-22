@@ -1540,38 +1540,6 @@
       }
     },
     {
-      "id": "ip_real_27",
-      "file": "ip_real_27.py",
-      "function": "HTTP1Connection.write_headers",
-      "verifiable": true,
-      "expression": "\"Transfer-Encoding\" not in headers",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "tornado",
-        "bugsinpy_id": 2,
-        "source_file": "tornado/http1connection.py",
-        "source_function": "HTTP1Connection.write_headers",
-        "repo_url": "https://github.com/tornadoweb/tornado",
-        "buggy_commit": "2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
-        "buggy_commit_url": "https://github.com/tornadoweb/tornado/commit/2ca8821d006f6693f920a4b183a3a7c985a5c8ad",
-        "fixed_commit": "4f486a4aec746e9d66441600ee3b0743228b061c"
-      },
-      "abstraction_notes": "Old code disabled chunked-transfer whenever ANY Transfer-Encoding header was present; fix allows it through when the header's value is specifically 'chunked'. Modeled as a bool-predicate pair.",
-      "categories": [
-        "invalid_precondition"
-      ],
-      "harness_file": "ip_real_27.py",
-      "harness_function": "compute_chunking_buggy",
-      "harness_expression": "\"Transfer-Encoding\" not in headers",
-      "harness_line": 2,
-      "audit": {
-        "source_expression": "\"Transfer-Encoding\" not in headers",
-        "harness_property": "\"Transfer-Encoding\" not in headers",
-        "provenance_complete": false
-      }
-    },
-    {
       "id": "ip_real_28",
       "file": "ip_real_28.py",
       "function": "IOLoop.initialize",
@@ -2461,7 +2429,7 @@
         "fixed_commit": "213791d3c2af379ffa37a140735998736b41912e"
       },
       "abstraction_notes": "Faithful to the real code -- str.split() is natively modeled by ESBMC-Python, no stubbing needed.",
-      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N times out in split()/strcmp internals; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError)",
+      "recommended_flags": "--incremental-bmc (2026-09-11 audit: at any --unwind N tried, incl. with __ESBMC_assume(len(script) <= 10) added to main(), the split()/strcmp internals still fully unwind and time out before the real property is checked; --incremental-bmc confirms VERIFICATION FAILED at k=1 on the real IndexError)",
       "categories": [
         "out_of_bounds"
       ],
@@ -2469,7 +2437,6 @@
       "harness_function": "is_stash_command",
       "harness_expression": "tokens[1]",
       "harness_line": 7,
-      "recommended_flags": "--incremental-bmc (2026-09-11 audit: at any --unwind N tried, incl. with __ESBMC_assume(len(script) <= 10) added to main(), the split()/strcmp internals still fully unwind and time out before the real property is checked; --incremental-bmc confirms VERIFICATION FAILED at k=1 on the real IndexError)",
       "audit": {
         "source_expression": "command.script.split()[1]",
         "harness_property": "tokens[1]",
@@ -3841,7 +3808,9 @@
         "fixed_commit": "cc92e3cc00a3d2acd1ef6d38cf5731478dade3cb"
       },
       "abstraction_notes": "PyBugHive issue #1513: merge_configs used default[k] for a nested override key that may not exist in default, producing KeyError. The ESBMC harness models the relevant dictionary-key existence condition as default_has_key and asserts it, avoiding the large recursive dict model.",
-      "categories": ["out_of_bounds"],
+      "categories": [
+        "out_of_bounds"
+      ],
       "harness_file": "oob_real_06.py",
       "harness_function": "merge_nested_config",
       "harness_expression": "assert default_has_key",
@@ -3849,64 +3818,6 @@
       "audit": {
         "source_expression": "default[k]",
         "harness_property": "assert default_has_key",
-        "provenance_complete": true
-      }
-    },
-    {
-      "id": "nm_real_26",
-      "file": "nm_real_26.py",
-      "function": "request_httprepr",
-      "verifiable": true,
-      "expression": "to_bytes(parsed.hostname)",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "scrapy",
-        "bugsinpy_id": 29,
-        "source_file": "scrapy/utils/request.py",
-        "source_function": "request_httprepr",
-        "repo_url": "https://github.com/scrapy/scrapy",
-        "buggy_commit": "5c4666a3d489bd3efa2e188de58721a125a5bfad",
-        "fixed_commit": "8d45b3c4810cb5304ba1193b45697a0df1157326"
-      },
-      "abstraction_notes": "The pre-fix code passes parsed.hostname directly to to_bytes even when the parsed URL has no hostname; the fix uses parsed.hostname or b''. The harness models the optional None host with hostname_is_none.",
-      "categories": ["none_misuse"],
-      "harness_file": "nm_real_26.py",
-      "harness_function": "format_host_header",
-      "harness_expression": "assert not hostname_is_none",
-      "harness_line": 5,
-      "audit": {
-        "source_expression": "to_bytes(parsed.hostname)",
-        "harness_property": "assert not hostname_is_none",
-        "provenance_complete": true
-      }
-    },
-    {
-      "id": "tm_real_14",
-      "file": "tm_real_14.py",
-      "function": "read_conllx",
-      "verifiable": true,
-      "expression": "int(head)",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "spacy",
-        "bugsinpy_id": 4,
-        "source_file": "spacy/cli/converters/conllu2json.py",
-        "source_function": "read_conllx",
-        "repo_url": "https://github.com/explosion/spaCy",
-        "buggy_commit": "abd5c06374eab5db0cf897b73543b1f3eb007e12",
-        "fixed_commit": "9fa9d7f2cb52ce6a70c264d4e57c7f190d7686bf"
-      },
-      "abstraction_notes": "The pre-fix branch converts head with int(head) whenever head != '0', although CONLL-U uses '_' as a valid missing-head placeholder. The harness models that input shape with head_is_underscore.",
-      "categories": ["type_mismatch"],
-      "harness_file": "tm_real_14.py",
-      "harness_function": "convert_head_is_safe",
-      "harness_expression": "assert not head_is_underscore",
-      "harness_line": 5,
-      "audit": {
-        "source_expression": "int(head)",
-        "harness_property": "assert not head_is_underscore",
         "provenance_complete": true
       }
     },
@@ -3928,7 +3839,9 @@
         "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9"
       },
       "abstraction_notes": "The pre-fix final branch reads self.total when iterable has no __len__ and no explicit total exists, causing AttributeError. The harness models that optional attribute state with total_is_defined.",
-      "categories": ["variable_misuse"],
+      "categories": [
+        "variable_misuse"
+      ],
       "harness_file": "vm_real_09.py",
       "harness_function": "length_without_total",
       "harness_expression": "assert total_is_defined",
