@@ -404,6 +404,18 @@ def _write_json_atomic(path: Path, payload: object) -> None:
     temporary.replace(path)
 
 
+def _save_checkpoint(path: Path, payload: object) -> None:
+    """Best-effort checkpoint save inside a per-unit loop.
+
+    A transient OSError here (e.g. ENOMEM) must not abort the whole batch:
+    the data is still in memory and the next iteration will retry the save.
+    """
+    try:
+        _write_json_atomic(path, payload)
+    except OSError as exc:
+        print(f"Aviso: falha transitória ao salvar checkpoint ({exc}); seguindo sem persistir.", file=sys.stderr)
+
+
 def _v2_candidate_dict(candidate: ScanCandidate) -> dict[str, str]:
     return {
         "file": candidate.file,
@@ -1163,7 +1175,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                     {"file": str(file_path), "function": unit.qualname, "error": str(exc)}
                 )
                 capture_telemetry()
-                _write_json_atomic(checkpoint_path, checkpoint)
+                _save_checkpoint(checkpoint_path, checkpoint)
                 continue
             unit_candidates: list[ScanCandidate] = []
             unit_rejections: list[dict[str, str]] = []
@@ -1203,7 +1215,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                 "rejected_findings": unit_rejections,
             }
             capture_telemetry()
-            _write_json_atomic(checkpoint_path, checkpoint)
+            _save_checkpoint(checkpoint_path, checkpoint)
 
     if detection_errors:
         checkpoint["status"] = "partial_detection"
@@ -1255,7 +1267,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         checkpoint["synthesis_results"][str(index)] = result.to_dict()
         checkpoint["status"] = "running"
         capture_telemetry()
-        _write_json_atomic(checkpoint_path, checkpoint)
+        _save_checkpoint(checkpoint_path, checkpoint)
 
     results = run_pipeline_scan(
         candidates,

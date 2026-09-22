@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 from urllib import error, request
 
+from ..llm.rate_limit import is_daily_quota_exhausted
 from ..llm.telemetry import response_event
 from ..models import CodeUnit, Finding
 from .guards import format_precondition_block
@@ -350,6 +351,11 @@ class HarnessSynthesizer:
             command += ["--model", self.model]
         command.append(f"{system_prompt}\n\n{user_prompt}")
 
+        # See backends/claude_cli.py: strip ANTHROPIC_API_KEY (leaked in via
+        # main.py's load_dotenv) so `claude -p` uses the CLI's own subscription
+        # login instead of that possibly-dead API key.
+        env = {key: value for key, value in os.environ.items() if key != "ANTHROPIC_API_KEY"}
+
         try:
             completed = subprocess.run(
                 command,
@@ -358,6 +364,7 @@ class HarnessSynthesizer:
                 text=True,
                 timeout=self.timeout_seconds,
                 stdin=subprocess.DEVNULL,
+                env=env,
             )
         except subprocess.TimeoutExpired as exc:
             raise TimeoutError(f"Timeout ao chamar {self.claude_command} -p.") from exc
@@ -406,11 +413,13 @@ class HarnessSynthesizer:
                 with request.urlopen(req, timeout=self.timeout_seconds) as response:
                     return json.loads(response.read().decode("utf-8"))
             except error.HTTPError as exc:
+                details = exc.read().decode("utf-8", errors="replace")
+                if exc.code == 429 and is_daily_quota_exhausted(details):
+                    raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
                 if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
                     sleep_time = 45 if exc.code == 429 else 2 ** (attempt + 2)
                     time.sleep(sleep_time)
                     continue
-                details = exc.read().decode("utf-8", errors="replace")
                 raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
             except error.URLError as exc:
                 if attempt < _retries - 1:

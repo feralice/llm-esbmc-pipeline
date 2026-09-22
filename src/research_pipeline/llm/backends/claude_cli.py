@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import time
 
@@ -80,6 +81,12 @@ class ClaudeCliAnalyzer:
             command += ["--model", self.model]
         command.append(f"{system_prompt}\n\n{user_prompt}")
 
+        # main.py's load_dotenv() puts .env's ANTHROPIC_API_KEY in this process's
+        # environment for the openai/anthropic backends; inherited as-is, it makes
+        # `claude -p` bill/authenticate against that (possibly dead) API key instead
+        # of the CLI's own subscription login, defeating this backend's purpose.
+        env = {key: value for key, value in os.environ.items() if key != "ANTHROPIC_API_KEY"}
+
         try:
             completed = subprocess.run(
                 command,
@@ -88,6 +95,7 @@ class ClaudeCliAnalyzer:
                 text=True,
                 timeout=self.timeout_seconds,
                 stdin=subprocess.DEVNULL,
+                env=env,
             )
         except subprocess.TimeoutExpired as exc:
             raise TimeoutError(f"Timeout ao chamar {self.claude_command} -p.") from exc
