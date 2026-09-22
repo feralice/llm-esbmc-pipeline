@@ -1024,7 +1024,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         print("--v2-stage synthesis requer --ground-truth.", file=sys.stderr)
         return 1
     all_input_paths = input_paths
-    if args.v2_stage == "detection" and args.ground_truth:
+    if args.v2_stage == "end-to-end" and args.ground_truth:
         input_paths = _v2_detection_input_paths(args.ground_truth, input_paths)
         if not input_paths:
             print("Nenhum arquivo V2 elegível sem contexto do patch.", file=sys.stderr)

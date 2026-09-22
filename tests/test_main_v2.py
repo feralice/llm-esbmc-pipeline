@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import main
@@ -128,6 +129,55 @@ def test_v2_resume_does_not_repeat_completed_detection(tmp_path: Path, monkeypat
     assert _Analyzer.calls == 1
     assert main.mode_v2(parser.parse_args([*base, "--resume"])) == 0
     assert _Analyzer.calls == 1
+
+
+def test_v2_end_to_end_excludes_patch_context_items_from_detection(
+    tmp_path: Path, monkeypatch
+) -> None:
+    detection_dir = tmp_path / "detection"
+    detection_dir.mkdir()
+    (detection_dir / "a.py").write_text(
+        "def divide(x: int, y: int) -> int:\n    return x // y\n",
+        encoding="utf-8",
+    )
+    (detection_dir / "b.py").write_text(
+        "def divide2(x: int, y: int) -> int:\n    return x // y\n",
+        encoding="utf-8",
+    )
+    manifest = {
+        "evaluation_policy": {"patch_context_items": ["b"]},
+        "items": [
+            {"id": "a", "detection_file": "detection/a.py", "categories": ["division_by_zero"], "function": "divide"},
+            {"id": "b", "detection_file": "detection/b.py", "categories": ["division_by_zero"], "function": "divide2"},
+        ],
+    }
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    ground_truth = tmp_path / "ground_truths.json"
+    ground_truth.write_text(json.dumps({"items": [{"id": "a"}, {"id": "b"}]}), encoding="utf-8")
+
+    captured = {}
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "HarnessSynthesizer", _Synthesizer)
+
+    def fake_pipeline(candidates, **kwargs):
+        captured["candidates"] = candidates
+        return []
+
+    monkeypatch.setattr(main, "run_pipeline_scan", fake_pipeline)
+
+    args = main.build_parser().parse_args(
+        [
+            "--mode", "hybrid",
+            "--input", str(detection_dir),
+            "--ground-truth", str(ground_truth),
+            "--output-dir", str(tmp_path / "out"),
+        ]
+    )
+
+    assert main.mode_v2(args) == 0
+    analyzed_files = {c.file for c in captured["candidates"]}
+    assert analyzed_files == {str(detection_dir / "a.py")}
 
 
 def test_summarize_v2_telemetry_reports_cache_hit_rate_per_stage():
