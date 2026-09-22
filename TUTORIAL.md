@@ -11,6 +11,16 @@ esbmc --version
 python -m pytest
 ```
 
+Para usar a conta empresarial autenticada no Gemini CLI:
+
+```bash
+gemini --version
+```
+
+O backend `gemini_cli` usa o login do executável local e não usa
+`GEMINI_API_KEY`. Ele roda em modo headless, com saída JSON e aprovação
+somente de leitura. Não é necessário adicionar uma chave ao `.env`.
+
 O pytest padrão não chama APIs reais. Para executar explicitamente essas
 integrações, use `python -m pytest -m live_llm`.
 
@@ -53,6 +63,28 @@ PYTHONPATH=src .venv/bin/python src/main.py \
 ```
 
 Esse modo não mede a detecção autônoma da LLM.
+
+### V2 E2E usando Gemini CLI empresarial
+
+Este é o comando recomendado para executar o fluxo completo usando o Gemini
+CLI, tanto na detecção quanto na síntese dos harnesses:
+
+```bash
+PYTHONPATH=src .venv/bin/python src/main.py \
+  --mode hybrid \
+  --v2-stage end-to-end \
+  --input dataset/v2_real_world/detection \
+  --ground-truth dataset/v2_real_world/ground_truths.json \
+  --backend gemini_cli \
+  --synth-backend gemini_cli \
+  --output-dir artifacts/v2/e2e-gemini-cli \
+  --verbose
+```
+
+O processo gera `v2_report.json`, `v2_checkpoint.json`, `harnesses/` e
+`llm_telemetry.json`. Se for interrompido, repita o mesmo comando acrescentando
+`--resume`. O CLI Gemini precisa estar autenticado na conta empresarial e o
+diretório precisa estar disponível para o modo headless.
 
 ---
 

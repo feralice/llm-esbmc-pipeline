@@ -7,9 +7,10 @@ from .anthropic import AnthropicAnalyzer
 from .chat_completions import ChatCompletionsAnalyzer
 from .claude_cli import ClaudeCliAnalyzer
 from .codex import CodexAnalyzer
+from .gemini_cli import GeminiCliAnalyzer
 from .openai import OpenAIResponsesAnalyzer
 
-Backend = Literal["openai", "anthropic", "ollama", "google", "codex", "claude_cli"]
+Backend = Literal["openai", "anthropic", "ollama", "google", "codex", "claude_cli", "gemini_cli"]
 
 _DEFAULT_MODEL: dict[str, str] = {
     "openai":     "gpt-5.5",
@@ -18,6 +19,7 @@ _DEFAULT_MODEL: dict[str, str] = {
     "google":     "gemini-2.5-flash",
     "codex":      "",
     "claude_cli": "",
+    "gemini_cli": "",
 }
 
 _DEFAULT_OLLAMA_URL = "http://localhost:11434/v1"
@@ -36,7 +38,7 @@ def build_analyzer(
 ) -> LLMAnalyzer:
     if backend not in _DEFAULT_MODEL:
         raise ValueError(
-            f"Backend desconhecido: {backend!r}. Use 'openai', 'anthropic', 'ollama', 'google', 'codex' ou 'claude_cli'."
+            f"Backend desconhecido: {backend!r}. Use 'openai', 'anthropic', 'ollama', 'google', 'codex', 'claude_cli' ou 'gemini_cli'."
         )
     model = llm_model or _DEFAULT_MODEL[backend]
     if backend == "openai":
@@ -73,4 +75,6 @@ def build_analyzer(
         return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells)
     if backend == "claude_cli":
         return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells)
+    if backend == "gemini_cli":
+        return GeminiCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells)
     raise AssertionError(f"unreachable: {backend!r} passed the _DEFAULT_MODEL membership check above")

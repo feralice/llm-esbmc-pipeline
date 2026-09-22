@@ -125,13 +125,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--backend",
-        choices=["openai", "anthropic", "ollama", "google", "codex", "claude_cli"],
+        choices=["openai", "anthropic", "ollama", "google", "codex", "claude_cli", "gemini_cli"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
     )
     parser.add_argument(
         "--synth-backend",
-        choices=["openai", "ollama", "google", "codex", "claude_cli"],
+        choices=["openai", "ollama", "google", "codex", "claude_cli", "gemini_cli"],
         default=None,
         help=(
             "Backend só para a síntese de harness no modo V2 (padrão: mesmo de --backend). "
@@ -350,6 +350,8 @@ def _infer_backend(model: str | None) -> Backend:
     m = model.lower()
     if "claude" in m:
         return "anthropic"
+    if "gemini_cli" in m:
+        return "gemini_cli"
     if "gemini" in m:
         return "google"
     if any(x in m for x in ("gpt", "o1", "o3", "o4")):
@@ -1032,9 +1034,9 @@ def mode_v2(args: argparse.Namespace) -> int:
 
     backend: Backend = args.backend or _infer_backend(args.model or "")
     model = _resolve_model(args.model, backend)
-    if backend in {"codex", "claude_cli"} and not args.model:
+    if backend in {"codex", "claude_cli", "gemini_cli"} and not args.model:
         model = ""
-    if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
+    if backend not in {"openai", "ollama", "google", "codex", "claude_cli", "gemini_cli"}:
         print(
             "O modo V2 detecta via OpenAI, Gemini, Ollama, Codex CLI ou Claude CLI.",
             file=sys.stderr,
@@ -1046,7 +1048,7 @@ def mode_v2(args: argparse.Namespace) -> int:
     # their own model namespace, so only fall back to it when synth_backend
     # wasn't overridden.
     synth_model = args.synth_model or (
-        "" if args.synth_backend in {"codex", "claude_cli"}
+        "" if args.synth_backend in {"codex", "claude_cli", "gemini_cli"}
         else model or _DEFAULT_MODEL.get(synth_backend, "")
     )
 

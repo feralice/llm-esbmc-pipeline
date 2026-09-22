@@ -160,12 +160,13 @@ class HarnessSynthesizer:
         timeout_seconds: int = 120,
         codex_command: str = "codex",
         claude_command: str = "claude",
+        gemini_command: str = "gemini",
         request_delay: float = 0.0,
     ) -> None:
-        if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
+        if backend not in {"openai", "ollama", "google", "codex", "claude_cli", "gemini_cli"}:
             raise ValueError(
                 f"synth backend {backend!r} not supported yet; "
-                "use 'openai', 'google', 'ollama', 'codex' or 'claude_cli'."
+                "use 'openai', 'google', 'ollama', 'codex', 'claude_cli' or 'gemini_cli'."
             )
         self.backend = backend
         self.model = model
@@ -178,6 +179,7 @@ class HarnessSynthesizer:
         self.timeout_seconds = timeout_seconds
         self.codex_command = codex_command
         self.claude_command = claude_command
+        self.gemini_command = gemini_command
         self.api_key = api_key or os.environ.get(
             "GEMINI_API_KEY" if backend == "google" else "OPENAI_API_KEY"
         )
@@ -234,6 +236,8 @@ class HarnessSynthesizer:
                 raw_response = self._run_codex(system_prompt, user_prompt)
             elif self.backend == "claude_cli":
                 raw_response = self._run_claude_cli(system_prompt, user_prompt)
+            elif self.backend == "gemini_cli":
+                raw_response = self._run_gemini_cli(system_prompt, user_prompt)
             else:
                 raw_response = self._post_json(payload)
         except Exception as exc:
@@ -393,6 +397,46 @@ class HarnessSynthesizer:
                 "input_tokens": usage.get("input_tokens"),
                 "output_tokens": usage.get("output_tokens"),
             },
+        }
+
+    def _run_gemini_cli(self, system_prompt: str, user_prompt: str) -> dict:
+        command = [
+            self.gemini_command,
+            "--prompt", f"{system_prompt}\n\n{user_prompt}",
+            "--output-format", "json",
+            "--approval-mode", "plan",
+            "--skip-trust",
+        ]
+        if self.model:
+            command += ["--model", self.model]
+        env = {key: value for key, value in os.environ.items()
+               if key not in {"GEMINI_API_KEY", "GOOGLE_API_KEY"}}
+        try:
+            completed = subprocess.run(
+                command, check=False, capture_output=True, text=True,
+                timeout=self.timeout_seconds, stdin=subprocess.DEVNULL, env=env,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise TimeoutError(f"Timeout ao chamar {self.gemini_command}.") from exc
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"Comando {self.gemini_command!r} não encontrado no PATH.") from exc
+        if completed.returncode != 0:
+            raise RuntimeError(
+                f"{self.gemini_command} saiu com código {completed.returncode}: "
+                f"{completed.stderr.strip()[:500]}"
+            )
+        try:
+            envelope = json.loads(completed.stdout)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                f"{self.gemini_command} não retornou JSON válido: {completed.stdout[:500]}"
+            ) from exc
+        if envelope.get("error"):
+            raise RuntimeError(f"{self.gemini_command}: {envelope['error']}")
+        return {
+            "output_text": str(envelope.get("response", "")),
+            "model": self.model,
+            "usage": envelope.get("stats") or {},
         }
 
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:

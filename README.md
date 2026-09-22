@@ -153,6 +153,27 @@ codex login
 Use `--synth-backend codex` (ou `--backend codex` também na detecção, pra não
 depender de `OPENAI_API_KEY` em nenhuma etapa) pra rodar por aí.
 
+Para usar o Gemini CLI empresarial já autenticado, use `gemini_cli` nas duas
+etapas. Esse backend chama o executável local em modo headless e não usa a
+`GEMINI_API_KEY` do `.env`:
+
+```bash
+gemini --version
+
+PYTHONPATH=src .venv/bin/python src/main.py \
+  --mode hybrid \
+  --v2-stage end-to-end \
+  --input dataset/v2_real_world/detection \
+  --ground-truth dataset/v2_real_world/ground_truths.json \
+  --backend gemini_cli \
+  --synth-backend gemini_cli \
+  --output-dir artifacts/v2/e2e-gemini-cli \
+  --verbose
+```
+
+Para retomar uma execução interrompida, acrescente `--resume` mantendo o
+mesmo `--output-dir` e a mesma configuração.
+
 ---
 
 ## Configuração
