@@ -19,10 +19,20 @@ from research_pipeline.scan.pipeline import (
     ScanCandidate,
     ScanCaseResult,
     _classify_esbmc,
+    _category_extra_flags,
     _find_unit,
     load_candidates,
     run_pipeline_scan,
 )
+
+
+def test_category_extra_flags_enable_type_and_integer_checks() -> None:
+    assert _category_extra_flags("type_mismatch") == ["--is-instance-check"]
+    assert _category_extra_flags("integer_overflow") == [
+        "--overflow-check",
+        "--unsigned-overflow-check",
+    ]
+    assert _category_extra_flags("none_misuse") == []
 from research_pipeline.scan.synth import STYLE_LOOP, SynthResult
 
 _GOOD_HARNESS = (
@@ -163,6 +173,56 @@ def test_confirmed_on_abstraction(tmp_path, monkeypatch):
     result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
     assert result.classification == CONFIRMED_ON_ABSTRACTION
     assert result.synth_total_tokens == 123
+
+
+def test_pytest_generation_metadata_is_recorded_without_changing_classification(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    generated = tmp_path / "pytest" / "counterexample.py"
+    monkeypatch.setattr(
+        scan_pipeline,
+        "generate_pytest_testcase",
+        lambda *a, **k: {
+            "status": "generated",
+            "path": str(generated),
+            "summary": "generated",
+        },
+    )
+
+    result = _run(
+        tmp_path,
+        _GOOD_HARNESS,
+        _candidate(tmp_path),
+        generate_pytest_tests=True,
+        pytest_output_dir=tmp_path / "pytest",
+    )
+
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert result.pytest_generation_status == "generated"
+    assert result.pytest_test_path == str(generated)
+
+
+def test_pytest_generation_failure_preserves_esbmc_classification(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    monkeypatch.setattr(
+        scan_pipeline,
+        "generate_pytest_testcase",
+        lambda *a, **k: {
+            "status": "timeout",
+            "path": "",
+            "summary": "generation timed out",
+        },
+    )
+
+    result = _run(
+        tmp_path,
+        _GOOD_HARNESS,
+        _candidate(tmp_path),
+        generate_pytest_tests=True,
+    )
+
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert result.pytest_generation_status == "timeout"
+    assert result.pytest_test_path == ""
 
 
 def test_different_violated_property_is_not_confirmation(tmp_path, monkeypatch):
@@ -349,6 +409,7 @@ def test_native_violation_confirms_without_calling_synthesizer(tmp_path, monkeyp
         output_dir=tmp_path / "out",
     )[0]
     assert result.classification == CONFIRMED_NATIVE
+    assert result.harness_tier == "native"
     assert synthesizer._calls == 0
 
 
@@ -383,6 +444,19 @@ def test_native_no_violation_falls_through_for_outcome_category(tmp_path, monkey
     # assertion_violation confirmation (EXP-03), proving native's
     # no_violation_found was correctly NOT trusted as a safe verdict.
     assert result.classification == CONFIRMED_UNVERIFIED
+
+
+def test_scalar_synthesis_records_scalar_harness_tier(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    result = _run(
+        tmp_path,
+        _GOOD_HARNESS,
+        _candidate(tmp_path),
+        use_driver=False,
+        use_real_driver=False,
+    )
+    assert result.harness_tier == "scalar"
+    assert result.verification_target == "scalar_harness"
 
 
 def test_outcome_category_with_differential_assertion_confirms_strongly(tmp_path, monkeypatch):

@@ -48,6 +48,7 @@ aparece de novo no início da seção ou subseção correspondente no corpo do t
 | 6.1 a 6.7 | síntese de harness, triagem LLM, CEGAR, SpecGen, limitações ESBMC, ordem de leitura | [NÚCLEO] |
 | 7. Estado da literatura para o V2 | revisão mais recente, sustenta a lacuna atual | [NÚCLEO] |
 | 7.1 a 7.9 | EVA, FalseCrashReducer, onda 2025, avaliação sem gabarito, mapa e pendências | [NÚCLEO] |
+| 7.5a | Localização e classificação de bugs por LLM | [NÚCLEO] |
 | 8. Trabalhos agênticos de nível de repositório | trabalho relacionado mais recente | [NÚCLEO] |
 | 8.1 | RepoAudit | [NÚCLEO] |
 | 8.2 | Revelio | [NÚCLEO] |
@@ -722,6 +723,98 @@ O que essa onda diz para a pesquisa:
   preprint arXiv 2504.13474, cópia local em `artigos_estudo/`. Discute avaliação quando não há
   rótulo de recall: amostragem aleatória, auditoria manual de exploração e alcançabilidade,
   protocolo com revisor humano. É a base metodológica que falta para a métrica-manchete do `scan`.
+
+### 7.5a Localização e classificação de bugs por LLM
+
+**[NÚCLEO]**
+
+Esta subseção sustenta a decisão experimental de separar "encontrar o trecho suspeito" de
+"atribuir uma categoria ao defeito". A literatura já pede, em alguns benchmarks, que a LLM informe
+localização e tipo, mas isso não significa que acertar uma dimensão implique acertar a outra.
+
+#### An Insight into Security Code Review with LLMs: Capabilities, Obstacles and Influential Factors
+
+- Autores: Jiaxin Yu, Peng Liang, Yujia Fu, Amjed Tahir, Mojtaba Shahin, Chong Wang e Yangxiao Cai.
+- Ano/estado: 2024, preprint arXiv.
+- Link: <https://arxiv.org/abs/2401.16310>
+- O estudo avalia sete LLMs em 614 comentários de revisão de segurança de quatro projetos open
+  source, com 15 tipos de defeito. O prompt pede localização, tipo, descrição e correção, em vez
+  de apenas uma decisão binária.
+- Achado útil: listas de categorias CWE e outras informações auxiliares alteram o desempenho;
+  as respostas também apresentam vagueza, detalhes incorretos e inconsistência entre execuções.
+  Isso é um precedente para medir separadamente localização e classificação, e para usar few-shots
+  específicos na etapa de classificação.
+- Diferença para esta pesquisa: o benchmark é de defeitos de segurança em code review, enquanto
+  aqui são bugs reais de Python com oito categorias e confirmação pelo ESBMC-Python. O artigo não
+  compara diretamente uma chamada conjunta com duas chamadas.
+
+#### Bug In The Code Stack: Can LLMs Find Bugs in Large Python Code Stacks?
+
+- Autores: Hokyung Lee, Sumanyu Sharma e Bing Hu.
+- Ano/estado: 2024, preprint arXiv.
+- Link: <https://arxiv.org/abs/2406.15325>
+- O benchmark BICS insere sete tipos de bug sintático em pilhas de código Python e pede que a LLM
+  informe a linha e o tipo do bug. O objetivo é testar detecção em contexto grande, não apenas em
+  snippets isolados.
+- Achado útil: o trabalho torna explícita a separação entre localização e tipo e mostra que o
+  desempenho muda conforme o tamanho do contexto e o modelo. No pipeline atual, isso sugere salvar
+  a expressão/linha encontrada mesmo quando a categoria for `unknown`, e só então executar a
+  classificação.
+- Diferença para esta pesquisa: os bugs são inseridos artificialmente e sintáticos; o dataset
+  daqui contém bugs reais, categorias semânticas e uma etapa de harness/verificação formal. O
+  resultado é motivação metodológica, não baseline numérico direto.
+
+#### Can Open Large Language Models Catch Vulnerabilities? (2025)
+
+- Autores: Diogo Gaspar Lopes, Tiago Espinha Gasiba, Sathwik Amburi e Maria Pinto-Albuquerque.
+- Evento: ICPEC 2025.
+- DOI e texto aberto: <https://doi.org/10.4230/OASIcs.ICPEC.2025.4>
+- O trabalho avalia Llama 3, Codestral e DeepSeek R1 em um subconjunto do Big-Vul com oito
+  categorias CWE. O experimento separa a detecção da presença de uma vulnerabilidade da
+  classificação da categoria, em um cenário fechado em que a LLM deve escolher uma classe da
+  lista fornecida.
+- Resultado principal: a detecção alcança taxas altas, mas a classificação correta fica próxima
+  de 16% para os três modelos. Os autores observam sobre-generalização, viés para algumas classes
+  e muitos falsos positivos em código seguro.
+- Relação com esta pesquisa: é o precedente mais direto para a hipótese de que a LLM pode
+  encontrar "alguma coisa errada" e ainda assim errar a categoria. Também apoia o uso de uma lista
+  fechada de oito categorias no segundo estágio.
+- Prompt: o artigo mostra que a lista de categorias, a ordem das opções e a instrução de retornar
+  apenas uma classe influenciam o resultado. Isso sugere um experimento controlado com o mesmo
+  conjunto de casos e variações de prompt, mantendo a ordem das categorias balanceada ou
+  randomizada.
+- Diferença para esta pesquisa: eles usam C/C++ e CWE, com snippets do Big-Vul; aqui usamos Python,
+  bugs reais de 42 repositórios e validação adicional por harness e ESBMC-Python.
+
+#### Exploring Fine-Grained Bug Report Categorization with Large Language Models and Prompt Engineering: An Empirical Study (2026)
+
+- Autora: Anil Koyuncu. ACM Transactions on Software Engineering and Methodology, vol. 35, n. 3.
+- DOI: <https://doi.org/10.1145/3736408>
+- O estudo avalia categorização fina de bug reports com 1.024 relatórios e 221.184 rótulos gerados
+  por LLMs sob diferentes estratégias de prompt. Analisa consistência, controle do formato da
+  saída, concordância com anotadores humanos e erros de classificação.
+- Resultado principal: a escolha do modelo e do prompt altera significativamente a consistência
+  e a capacidade de classificação; algumas estratégias estabilizam as respostas, enquanto outras
+  aumentam a variabilidade.
+- Relação com esta pesquisa: fornece base metodológica para tratar o prompt como variável
+  experimental, e não como detalhe fixo. Para o V2, registrar a versão do prompt, a ordem das
+  categorias, os few-shots e a saída bruta é essencial para comparar `joint` e `two-stage`.
+- Limitação: o objeto é o texto de bug reports, não o código nem a localização de expressões. O
+  resultado serve para justificar o desenho do experimento de prompt e a avaliação da classificação,
+  não para fornecer um baseline direto de detecção de bugs Python.
+
+Consequência para o V2:
+
+- `joint`: baseline atual, em que uma chamada localiza e classifica;
+- `two-stage`: primeira chamada localiza o possível bug; segunda chamada classifica entre as oito
+  categorias;
+- medir localização, classificação, harness compatível e confirmação formal como métricas
+  distintas;
+- aplicar few-shots de `variable_misuse` e `integer_overflow` principalmente na etapa de
+  classificação;
+- tratar a ordem da lista de categorias, o formato de saída e os few-shots como variáveis
+  controladas do experimento;
+- manter o `joint` como controle para verificar se a separação realmente melhora o resultado.
 
 ### 7.6 Lacuna de pesquisa revisada
 

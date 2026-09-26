@@ -187,6 +187,19 @@ def test_classify_verification_failed_is_violation_found() -> None:
     assert _classify_esbmc_direct_result(output, 1) == "violation_found"
 
 
+def test_classify_incremental_unknown_is_inconclusive() -> None:
+    """--incremental-bmc prints SUCCESSFUL per k-step; the final UNKNOWN verdict wins."""
+    output = (
+        "*** K-Induction Loop Iteration 5 ***\n"
+        "  NOT CHECKED  [strcmp.assertion.1]  line 104  unwinding assertion loop 130\n"
+        "VERIFICATION SUCCESSFUL\n"
+        "Unable to prove or falsify the program, giving up.\n"
+        "VERIFICATION UNKNOWN\n"
+    )
+    assert _classify_esbmc_result(output, 0) == "inconclusive"
+    assert _classify_esbmc_direct_result(output, 0) == "inconclusive"
+
+
 def test_classify_zero_vcc_is_no_vcc_generated() -> None:
     """VERIFICATION SUCCESSFUL com 0 VCCs → status deve ser no_vcc_generated (após override)."""
     output = (

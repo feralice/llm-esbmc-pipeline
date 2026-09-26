@@ -8,6 +8,12 @@ from urllib import error, request
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
+from ..staged import (
+    build_stage_system_prompt,
+    build_stage_user_prompt,
+    parse_stage_payload,
+    stage_schema,
+)
 from ..rate_limit import is_daily_quota_exhausted
 from ..schema import FINDINGS_JSON_SCHEMA
 from ..telemetry import response_event
@@ -68,6 +74,20 @@ class OpenAIResponsesAnalyzer:
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)
 
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        payload = {
+            "model": self.model,
+            "input": [
+                {"role": "system", "content": [{"type": "input_text", "text": build_stage_system_prompt(stage)}]},
+                {"role": "user", "content": [{"type": "input_text", "text": build_stage_user_prompt(unit, stage=stage, candidates=candidates)}]},
+            ],
+            "text": {"format": {"type": "json_schema", **stage_schema(stage)}},
+        }
+        raw_response = self._post_json(payload)
+        return parse_stage_payload(
+            self._extract_json_payload(raw_response), stage=stage, candidates=candidates,
+        )
+
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         body = json.dumps(payload).encode("utf-8")
         for attempt in range(_retries):
@@ -104,14 +124,15 @@ class OpenAIResponsesAnalyzer:
         raise RuntimeError("OpenAI API falhou após todas as tentativas de retry.")
 
     def _extract_findings_payload(self, response_data: dict) -> list[dict]:
+        return coerce_findings_payload(self._extract_json_payload(response_data))
+
+    def _extract_json_payload(self, response_data: dict) -> dict:
         if isinstance(response_data.get("output_text"), str):
-            parsed = json.loads(response_data["output_text"])
-            return coerce_findings_payload(parsed)
+            return json.loads(response_data["output_text"])
 
         for item in response_data.get("output", []):
             for content in item.get("content", []):
                 if content.get("type") in {"output_text", "text"} and content.get("text"):
-                    parsed = json.loads(content["text"])
-                    return coerce_findings_payload(parsed)
+                    return json.loads(content["text"])
 
         raise RuntimeError("A resposta da OpenAI não contém texto JSON analisável.")

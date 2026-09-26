@@ -20,6 +20,12 @@ FINDINGS_JSON_SCHEMA: dict = {
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    # Property order is generation order under OpenAI strict
+                    # mode: metadata (the evidence) and explanation come
+                    # before category, so the model commits to the concrete
+                    # expression/operands/guard before naming a category --
+                    # not the other way around (see system_prompt.txt's
+                    # evidence test, items 1-4 before item 5).
                     "properties": {
                         "finding_type": {
                             "type": "string",
@@ -28,11 +34,6 @@ FINDINGS_JSON_SCHEMA: dict = {
                                 "smell_heuristic"
                             ],
                         },
-                        "category": {
-                            "type": "string",
-                            "enum": _CATEGORY_ENUM,
-                        },
-                        "explanation": {"type": "string"},
                         "verifiable":  {"type": "boolean"},
                         "metadata": {
                             "type": "object",
@@ -61,10 +62,15 @@ FINDINGS_JSON_SCHEMA: dict = {
                                 "context_needed",
                             ],
                         },
+                        "explanation": {"type": "string"},
+                        "category": {
+                            "type": "string",
+                            "enum": _CATEGORY_ENUM,
+                        },
                     },
                     "required": [
-                        "finding_type", "category", "explanation",
-                        "verifiable", "metadata",
+                        "finding_type", "verifiable", "metadata",
+                        "explanation", "category",
                     ],
                 },
             }

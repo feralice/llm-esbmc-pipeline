@@ -193,15 +193,18 @@ Os resultados da V2 deveriam separar claramente:
 
 | Resultado | Significado |
 |---|---|
-| `confirmed_on_abstraction` | ESBMC confirmou a hipótese no harness gerado |
+| `confirmed_on_abstraction` | ESBMC confirmou a hipótese no harness escalar abstrato; não prova, sozinho, o código original |
+| `confirmed_native` / `confirmed_driver` com tier real | ESBMC confirmou uma hipótese após executar a função original ou um slice que preserva seu corpo |
 | `safe_on_abstraction` | ESBMC não encontrou violação dentro do bound |
 | `unsupported_harness` | O harness usa recurso não suportado pelo ESBMC |
 | `invalid_harness` | O harness gerado não executa ou não parseia |
 | `abstraction_gap` | A abstração removeu informação essencial do código original |
 | `timeout` | ESBMC excedeu o limite de tempo |
 
-> Confirmação em um harness sintetizado é uma evidência sobre a abstração,
-> não uma prova completa do programa Python original.
+> Confirmação em um harness escalar sintetizado é uma evidência sobre a
+> abstração, não uma prova completa do programa Python original. A métrica
+> end-to-end conta como confirmação do código real apenas os tiers `native`,
+> `real_body` e `driver`.
 
 ---
 
@@ -224,7 +227,8 @@ Além das classificações da V1, a V2 precisaria separar:
 
 | Classificação | Significado |
 |---|---|
-| `confirmed_on_abstraction` | ESBMC confirmou a hipótese no harness gerado |
+| `confirmed_on_abstraction` | ESBMC confirmou a hipótese no harness escalar abstrato |
+| `confirmed_native` / `confirmed_driver` com tier real | ESBMC confirmou a hipótese executando o código original ou um slice preservado |
 | `safe_on_abstraction` | ESBMC não encontrou violação dentro do bound |
 | `unsupported_harness` | O harness usa recurso não suportado pelo ESBMC |
 | `invalid_harness` | O harness gerado não executa ou não parseia |
@@ -259,11 +263,12 @@ A V1 continua sendo a base experimental mais controlada:
 hipótese da LLM + confirmação formal no arquivo original
 ```
 
-A V2 seria uma extensão natural:
+A V2 é uma extensão natural, com duas forças de evidência:
 
 ```
-hipótese da LLM + síntese de harness + confirmação formal na abstração
+hipótese da LLM + driver que preserva o corpo + confirmação formal no código real
+hipótese da LLM + síntese escalar + confirmação formal na abstração
 ```
 
-Por isso, a V2 deve ser apresentada como trabalho futuro ou como uma segunda
-fase experimental, não como parte dos resultados atuais.
+Os dois resultados devem permanecer separados nas métricas: o segundo é
+diagnóstico da abstração e não confirmação do programa original.

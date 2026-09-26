@@ -14,6 +14,11 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
+from ..staged import (
+    build_stage_system_prompt,
+    build_stage_user_prompt,
+    parse_stage_payload,
+)
 from ..telemetry import response_event
 
 
@@ -62,6 +67,14 @@ class CodexAnalyzer:
             response=response,
         ))
         return result
+
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        response = self._run_cli(
+            build_stage_system_prompt(stage),
+            build_stage_user_prompt(unit, stage=stage, candidates=candidates),
+        )
+        payload = json.loads(strip_markdown_json(response["output_text"]))
+        return parse_stage_payload(payload, stage=stage, candidates=candidates)
 
     def _run_cli(self, system_prompt: str, user_prompt: str) -> dict:
         with tempfile.NamedTemporaryFile(

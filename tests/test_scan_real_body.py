@@ -162,6 +162,7 @@ def test_list_param_violation_confirmed_without_llm(tmp_path, monkeypatch):
         output_dir=tmp_path / "out",
     )[0]
     assert result.classification == CONFIRMED_DRIVER
+    assert result.harness_tier == "real_body"
     assert result.compat_verdict == "real_body_driver"
     assert "nondet_list" in result.harness
     assert "def get_at(values: list[int], index: int) -> int:" in result.harness

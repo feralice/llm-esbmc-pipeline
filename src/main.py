@@ -66,7 +66,11 @@ from research_pipeline.scan.pipeline import (
     run_pipeline_scan,
 )
 from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
-from research_pipeline.v2_evaluator import evaluate_v2_results
+from research_pipeline.v2_evaluator import (
+    evaluate_v2_results,
+    is_real_body_confirmation,
+    is_scalar_abstraction_confirmation,
+)
 from research_pipeline.voting import aggregate_votes, write_vote_report
 
 # ---------------------------------------------------------------------------
@@ -128,6 +132,12 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["openai", "anthropic", "ollama", "google", "codex", "claude_cli"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
+    )
+    parser.add_argument(
+        "--detection-strategy",
+        choices=["single", "two_stage"],
+        default="single",
+        help="Estratégia de detecção V2: uma chamada ou localização seguida de classificação.",
     )
     parser.add_argument(
         "--synth-backend",
@@ -291,6 +301,17 @@ def build_parser() -> argparse.ArgumentParser:
             "Modo V2: tentativas extras de síntese quando uma falha é "
             "recuperável (harness inválido, erro do ESBMC). (padrão: 1)"
         ),
+    )
+    parser.add_argument(
+        "--generate-pytest-testcase",
+        action="store_true",
+        help="Modo V2: gerar um contra-teste Pytest com os valores encontrados pelo ESBMC.",
+    )
+    parser.add_argument(
+        "--pytest-output-dir",
+        default=None,
+        metavar="DIR",
+        help="Diretório para os contra-testes Pytest gerados pelo ESBMC.",
     )
     parser.add_argument(
         "--v2-stage",
@@ -1061,6 +1082,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             ollama_base_url=args.ollama_base_url,
             timeout_seconds=args.llm_timeout,
             include_smells=False,
+            detection_strategy=args.detection_strategy,
         )
         synthesizer = HarnessSynthesizer(
             backend=synth_backend,
@@ -1086,6 +1108,7 @@ def mode_v2(args: argparse.Namespace) -> int:
     config = {
         "model": model,
         "backend": backend,
+        "detection_strategy": args.detection_strategy,
         "synth_backend": synth_backend,
         "synth_model": synth_model,
         "v2_stage": args.v2_stage,
@@ -1285,6 +1308,8 @@ def mode_v2(args: argparse.Namespace) -> int:
         use_driver=not args.no_driver,
         use_real_driver=not args.no_real_driver,
         synth_retries=args.synth_retries,
+        generate_pytest_tests=args.generate_pytest_testcase,
+        pytest_output_dir=args.pytest_output_dir,
         completed_results=completed_results,
         on_result=save_synthesis_result,
     )
@@ -1301,6 +1326,10 @@ def mode_v2(args: argparse.Namespace) -> int:
     if summary.get("driver_notes"):
         print("\n  tier driver (por que aplicou ou não):")
         for k, v in sorted(summary["driver_notes"].items()):
+            print(f"    {k:26s} {v}")
+    if summary.get("harness_tiers"):
+        print("\n  evidência por tier:")
+        for k, v in sorted(summary["harness_tiers"].items()):
             print(f"    {k:26s} {v}")
     print("\n  por categoria (confirmado / total, nativo e não-verificado entre parênteses):")
     for cat, d in sorted(summary["by_category"].items()):
@@ -1409,17 +1438,25 @@ def _scan_summary(results) -> dict:
     for r in results:
         cat = r.candidate.category
         d = by_cat.setdefault(
-            cat, {"total": 0, "confirmed": 0, "native": 0, "driver": 0, "unverified": 0}
+            cat,
+            {
+                "total": 0,
+                "confirmed": 0,
+                "native": 0,
+                "driver": 0,
+                "abstraction_only": 0,
+                "unverified": 0,
+            },
         )
         d["total"] += 1
-        if r.classification == "confirmed_native":
+        if is_real_body_confirmation(r) and r.classification == "confirmed_native":
             d["confirmed"] += 1
             d["native"] += 1
-        elif r.classification == "confirmed_driver":
+        elif is_real_body_confirmation(r) and r.classification == "confirmed_driver":
             d["confirmed"] += 1
             d["driver"] += 1
-        elif r.classification == "confirmed_on_abstraction":
-            d["confirmed"] += 1
+        elif is_scalar_abstraction_confirmation(r):
+            d["abstraction_only"] += 1
         elif r.classification == "confirmed_unverified":
             d["unverified"] += 1
     driver_notes = Counter(
@@ -1431,6 +1468,9 @@ def _scan_summary(results) -> dict:
     abstraction_levels = Counter(
         r.abstraction_level or "unknown" for r in results
     )
+    harness_tiers = Counter(
+        r.harness_tier or "unknown" for r in results
+    )
     total_tokens = sum(r.synth_total_tokens or 0 for r in results)
     total_synth_seconds = sum(r.synth_seconds for r in results)
     total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
@@ -1441,6 +1481,7 @@ def _scan_summary(results) -> dict:
         "driver_notes": dict(driver_notes),
         "verification_targets": dict(verification_targets),
         "abstraction_levels": dict(abstraction_levels),
+        "harness_tiers": dict(harness_tiers),
         "total_synth_tokens": total_tokens,
         "total_synth_seconds": round(total_synth_seconds, 3),
         "total_esbmc_seconds": round(total_esbmc_seconds, 3),

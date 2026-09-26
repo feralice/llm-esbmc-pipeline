@@ -13,6 +13,11 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
+from ..staged import (
+    build_stage_system_prompt,
+    build_stage_user_prompt,
+    parse_stage_payload,
+)
 from ..telemetry import response_event
 
 
@@ -67,6 +72,20 @@ class AnthropicAnalyzer:
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)
 
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        payload = {
+            "model": self.model,
+            "max_tokens": 4096,
+            "system": build_stage_system_prompt(stage),
+            "messages": [
+                {"role": "user", "content": build_stage_user_prompt(unit, stage=stage, candidates=candidates)},
+            ],
+        }
+        raw_response = self._post_json(payload)
+        return parse_stage_payload(
+            self._extract_json_payload(raw_response), stage=stage, candidates=candidates,
+        )
+
     def _post_json(self, payload: dict) -> dict:
         body = json.dumps(payload).encode("utf-8")
         req = request.Request(
@@ -89,8 +108,10 @@ class AnthropicAnalyzer:
             raise RuntimeError(f"Falha de rede ao chamar Anthropic API: {exc.reason}") from exc
 
     def _extract_findings_payload(self, response_data: dict) -> list[dict]:
+        return coerce_findings_payload(self._extract_json_payload(response_data))
+
+    def _extract_json_payload(self, response_data: dict) -> dict:
         for block in response_data.get("content", []):
             if block.get("type") == "text":
-                parsed = json.loads(strip_markdown_json(block["text"]))
-                return coerce_findings_payload(parsed)
+                return json.loads(strip_markdown_json(block["text"]))
         raise RuntimeError("A resposta da Anthropic não contém texto JSON analisável.")

@@ -34,6 +34,36 @@ def _signature(file: str, category: str) -> tuple[str, str]:
     return str(Path(file).resolve()), category
 
 
+_CONFIRMATION_CLASSIFICATIONS = frozenset(
+    {"confirmed_native", "confirmed_driver", "confirmed_on_abstraction"}
+)
+_REAL_BODY_TIERS = frozenset({"native", "real_body", "driver"})
+
+
+def is_real_body_confirmation(result) -> bool:
+    """Return whether the result is a confirmation backed by real code."""
+    return (
+        result.classification in {"confirmed_native", "confirmed_driver"}
+        and getattr(result, "harness_tier", "") in _REAL_BODY_TIERS
+    )
+
+
+def is_scalar_abstraction_confirmation(result) -> bool:
+    """Return whether ESBMC confirmed only the scalar abstraction."""
+    return (
+        result.classification == "confirmed_on_abstraction"
+        and getattr(result, "harness_tier", "") == "scalar"
+    )
+
+
+def _is_unknown_confirmation(result) -> bool:
+    return (
+        result.classification in _CONFIRMATION_CLASSIFICATIONS
+        and not is_real_body_confirmation(result)
+        and not is_scalar_abstraction_confirmation(result)
+    )
+
+
 def _failure_stage(result) -> str:
     """Read the explicit stage, with a compatibility fallback for old reports."""
     stage = str(getattr(result, "failure_stage", "") or "")
@@ -137,27 +167,31 @@ def evaluate_v2_results(
     )
     confirmed_native = sum(r.classification == "confirmed_native" for r in true_positive_results)
     confirmed_driver = sum(r.classification == "confirmed_driver" for r in true_positive_results)
-    confirmed = confirmed_native + confirmed_driver + sum(
-        r.classification == "confirmed_on_abstraction" for r in true_positive_results
+    confirmed_on_real_body = sum(is_real_body_confirmation(r) for r in true_positive_results)
+    confirmed_on_abstraction = sum(
+        is_scalar_abstraction_confirmation(r) for r in true_positive_results
     )
+    unknown_evidence = sum(_is_unknown_confirmation(r) for r in true_positive_results)
     unverified = sum(r.classification == "confirmed_unverified" for r in true_positive_results)
     over_restricted = sum(r.classification == "over_restricted" for r in true_positive_results)
     repaired = sum(
-        r.classification == "confirmed_on_abstraction" and r.attempts > 1
+        is_scalar_abstraction_confirmation(r) and r.attempts > 1
         for r in true_positive_results
     )
 
-    end_to_end_tp = confirmed
+    end_to_end_tp = confirmed_on_real_body
     end_to_end_fp = sum(
-        r.classification in {"confirmed_on_abstraction", "confirmed_native", "confirmed_driver"}
+        is_real_body_confirmation(r)
         for r in false_hypothesis_results
     )
     end_to_end_fn = sum(expected.values()) - end_to_end_tp
     stage_losses = Counter()
     for result in true_positive_results:
-        if result.classification not in {
-            "confirmed_native", "confirmed_driver", "confirmed_on_abstraction"
-        }:
+        if is_scalar_abstraction_confirmation(result):
+            stage_losses["abstraction_only"] += 1
+        elif _is_unknown_confirmation(result):
+            stage_losses["unknown_evidence"] += 1
+        elif not is_real_body_confirmation(result):
             stage_losses[_failure_stage(result)] += 1
     if grounding_unprocessed:
         stage_losses[FAILURE_GROUNDING] += grounding_unprocessed
@@ -182,8 +216,11 @@ def evaluate_v2_results(
             "n": len(true_positive_results),
             "compatible": compatible,
             "compatibility_rate": compatible / len(true_positive_results) if true_positive_results else None,
-            "confirmed_on_abstraction": confirmed,
-            "confirmation_rate": confirmed / len(true_positive_results) if true_positive_results else None,
+            "confirmed_on_real_body": confirmed_on_real_body,
+            "confirmed_on_abstraction": confirmed_on_abstraction,
+            "unknown_evidence": unknown_evidence,
+            "confirmation_rate": confirmed_on_real_body / len(true_positive_results) if true_positive_results else None,
+            "abstraction_only_rate": confirmed_on_abstraction / len(true_positive_results) if true_positive_results else None,
             "confirmed_native": confirmed_native,
             "confirmed_driver": confirmed_driver,
             "repaired_then_confirmed": repaired,

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from research_pipeline.scan.pipeline import ScanCandidate, ScanCaseResult
 from research_pipeline.v2_evaluator import evaluate_v2_results
 
@@ -27,8 +29,8 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
     correct = ScanCandidate(str(source), "f", "division_by_zero")
     false_positive = ScanCandidate(str(source), "f", "out_of_bounds")
     results = [
-        ScanCaseResult(correct, "confirmed_on_abstraction", compat_verdict="ok"),
-        ScanCaseResult(false_positive, "confirmed_on_abstraction", compat_verdict="ok"),
+        ScanCaseResult(correct, "confirmed_on_abstraction", compat_verdict="ok", harness_tier="scalar"),
+        ScanCaseResult(false_positive, "confirmed_on_abstraction", compat_verdict="ok", harness_tier="scalar"),
     ]
 
     metrics = evaluate_v2_results(
@@ -41,10 +43,69 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
     assert metrics["detection"]["fp"] == 1
     assert metrics["detection"]["fn"] == 0
     assert metrics["synthesis_given_correct_detection"]["confirmed_on_abstraction"] == 1
+    assert metrics["synthesis_given_correct_detection"]["confirmed_on_real_body"] == 0
+    assert metrics["end_to_end"]["tp"] == 0
+    assert metrics["end_to_end"]["fp"] == 0
+    assert metrics["pipeline_stage_losses"]["by_stage"]["abstraction_only"] == 1
     assert metrics["end_to_end"] == {
-        "tp": 1, "fp": 1, "fn": 0,
-        "precision": 0.5, "recall": 1.0, "f1": 2 / 3,
+        "tp": 0, "fp": 0, "fn": 1,
+        "precision": None, "recall": 0.0, "f1": None,
     }
+
+
+def _single_case_fixture(tmp_path, category="division_by_zero"):
+    detection = tmp_path / "detection"
+    detection.mkdir()
+    source = detection / "bug.py"
+    source.write_text("def f(x: int) -> int:\n    return 1 // x\n", encoding="utf-8")
+    (tmp_path / "ground_truths.json").write_text(
+        json.dumps({"items": [{"id": "b1", "categories": [category]}]}),
+        encoding="utf-8",
+    )
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"items": [{
+            "id": "b1", "detection_file": "detection/bug.py",
+            "harness_file": "bugs/bug.py", "categories": [category],
+        }]}),
+        encoding="utf-8",
+    )
+    candidate = ScanCandidate(str(source), "f", category)
+    return candidate, tmp_path / "ground_truths.json"
+
+
+@pytest.mark.parametrize(
+    ("tier", "classification"),
+    [
+        ("native", "confirmed_native"),
+        ("real_body", "confirmed_driver"),
+        ("driver", "confirmed_driver"),
+    ],
+)
+def test_real_body_tiers_are_end_to_end_confirmation(tmp_path, tier, classification):
+    candidate, ground_truth = _single_case_fixture(tmp_path)
+    metrics = evaluate_v2_results(
+        candidates=[candidate],
+        results=[ScanCaseResult(candidate, classification, harness_tier=tier)],
+        ground_truth_path=ground_truth,
+    )
+
+    assert metrics["synthesis_given_correct_detection"]["confirmed_on_real_body"] == 1
+    assert metrics["end_to_end"]["tp"] == 1
+
+
+def test_missing_tier_is_unknown_evidence_not_real_confirmation(tmp_path):
+    candidate, ground_truth = _single_case_fixture(tmp_path)
+    result = ScanCaseResult(candidate, "confirmed_on_abstraction")
+
+    metrics = evaluate_v2_results(
+        candidates=[candidate], results=[result], ground_truth_path=ground_truth,
+    )
+
+    synthesis = metrics["synthesis_given_correct_detection"]
+    assert synthesis["unknown_evidence"] == 1
+    assert synthesis["confirmed_on_real_body"] == 0
+    assert synthesis["confirmed_on_abstraction"] == 0
+    assert metrics["end_to_end"]["tp"] == 0
 
 
 def test_v2_excludes_patch_context_items_from_detection_metrics(tmp_path) -> None:

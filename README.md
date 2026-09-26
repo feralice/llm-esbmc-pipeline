@@ -44,10 +44,16 @@ processadas, 100 hipóteses foram geradas e as 100 passaram pela síntese. Entre
 as hipóteses sintetizadas, houve 71 confirmações pelo driver, 14 confirmações
 na abstração, 5 casos seguros pelo driver, 4 inconclusivos, 3 confirmações sem
 grounding independente, 2 casos super-restritos e 1 caso seguro na abstração.
+As confirmações na abstração são mantidas como resultado diagnóstico; a
+métrica atualizada de confirmação end-to-end conta separadamente apenas os
+tiers que executam ou preservam o código original.
 
-Na avaliação sem gabarito, 28 casos tiveram unidade e categoria corretas; 23
-foram confirmados pelo ESBMC no fluxo completo. O principal gargalo atual é a
-classificação da categoria pela LLM, não a execução do harness.
+Na avaliação sem gabarito, 28 casos tiveram unidade e categoria corretas. O
+relatório histórico registrou 23 confirmações no fluxo completo, mas esse valor
+deve ser lido junto da separação entre corpo real e abstração; a métrica
+atualizada evita contar uma confirmação escalar como prova do código original.
+O principal gargalo atual é a classificação da categoria pela LLM, não a
+execução do harness.
 
 | Fluxo | Modo | Descrição |
 |---|---|---|
@@ -406,6 +412,43 @@ python -m pytest -q
 # Somente quando quiser chamar APIs reais:
 python -m pytest -m live_llm -q
 ```
+
+### Contra-testes Pytest gerados pelo ESBMC
+
+No modo V2, a geração de um teste concreto a partir do contraexemplo do ESBMC
+é opcional e não altera a classificação formal da hipótese:
+
+```bash
+PYTHONPATH=src python3 src/main.py \
+  --mode hybrid --v2-stage end-to-end \
+  --input dataset/v2_real_world/detection \
+  --ground-truth dataset/v2_real_world/ground_truths.json \
+  --generate-pytest-testcase \
+  --pytest-output-dir artifacts/v2/pytest
+```
+
+O arquivo gerado é um artefato de reprodução dos valores concretos encontrados
+pelo ESBMC. Ele não substitui a geração do harness pela LLM nem as flags da
+verificação formal; o caminho e o status ficam registrados no relatório V2.
+O pipeline também valida a sintaxe do arquivo emitido: se o ESBMC gerar Python
+inválido, o status será `invalid_generated_test`, sem alterar a classificação
+formal.
+
+### Detecção em duas etapas
+
+Para experimentar a separação entre localização e classificação da hipótese:
+
+```bash
+PYTHONPATH=src python3 src/main.py \
+  --mode hybrid --v2-stage end-to-end \
+  --detection-strategy two_stage \
+  --input dataset/v2_real_world/detection \
+  --ground-truth dataset/v2_real_world/ground_truths.json
+```
+
+Essa opção faz duas chamadas de detecção por unidade quando existe candidato.
+Ela é experimental; compare múltiplas rodadas com a estratégia `single` antes
+de interpretar qualquer diferença como ganho de qualidade.
 
 ---
 

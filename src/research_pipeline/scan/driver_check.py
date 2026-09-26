@@ -153,8 +153,8 @@ def _shadows_intrinsic(tree: ast.Module) -> list[str]:
     )
 
 
-def _result_is_live(tree: ast.Module) -> bool:
-    """True if a non-intrinsic call's return is bound to a name and asserted on."""
+def _call_bound_names(tree: ast.Module) -> set[str]:
+    """Names assigned the return value of a non-intrinsic call."""
     bound: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
@@ -171,12 +171,36 @@ def _result_is_live(tree: ast.Module) -> bool:
         for target in targets:
             if isinstance(target, ast.Name):
                 bound.add(target.id)
+    return bound
+
+
+def _asserted_names(tree: ast.Module) -> set[str]:
+    names: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Assert):
-            names = {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
-            if names & bound:
-                return True
-    return False
+            names |= {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
+    return names
+
+
+def _result_is_live(tree: ast.Module) -> bool:
+    """True if a non-intrinsic call's return is bound to a name and asserted on."""
+    return bool(_call_bound_names(tree) & _asserted_names(tree))
+
+
+LIVENESS_REASON = "slice result is not asserted on (it will be sliced away)"
+
+
+def force_result_liveness(source: str) -> str | None:
+    """Do not repair missing liveness with a vacuous assertion.
+
+    The previous implementation appended ``assert result == result``. That
+    kept the call syntactically live, but it also allowed a harness without a
+    meaningful property to reach ESBMC and be reported as a confirmation.
+    Missing liveness must instead trigger synthesis feedback or a lower
+    evidence tier.
+    """
+    _ = source
+    return None
 
 
 def _type_map(tree: ast.Module) -> dict[str, str]:
@@ -249,6 +273,31 @@ def _tautological_type_checks(tree: ast.Module) -> list[str]:
                 f"{have}); model the wrong-type case with a differently-typed nondet_*()"
             )
     return list(dict.fromkeys(out))
+
+
+def _tautological_assertions(tree: ast.Module) -> list[str]:
+    """Reject assertions that cannot falsify for the harness's result.
+
+    In particular, ``assert result == result`` is a liveness marker, not a
+    property about the suspected bug. It must never be accepted as evidence.
+    """
+    reasons: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assert):
+            continue
+        test = node.test
+        if isinstance(test, ast.Constant) and test.value is True:
+            reasons.append("assertion is tautological (assert True checks no bug property)")
+            continue
+        if not isinstance(test, ast.Compare) or len(test.ops) != 1 or len(test.comparators) != 1:
+            continue
+        op = test.ops[0]
+        right = test.comparators[0]
+        if isinstance(op, (ast.Eq, ast.Is)) and ast.dump(test.left) == ast.dump(right):
+            reasons.append(
+                "assertion is tautological (the same expression appears on both sides)"
+            )
+    return list(dict.fromkeys(reasons))
 
 
 def _harness_expr_lines(tree: ast.Module) -> list[str]:
@@ -348,9 +397,7 @@ def check_driver_harness(
         )
 
     if not _result_is_live(tree):
-        return DriverCheckResult(
-            False, VERDICT_INVALID, ["slice result is not asserted on (it will be sliced away)"]
-        )
+        return DriverCheckResult(False, VERDICT_INVALID, [LIVENESS_REASON])
 
     asserts = [n for n in ast.walk(tree) if isinstance(n, ast.Assert)]
     if not asserts:
@@ -359,6 +406,10 @@ def check_driver_harness(
     taut = _tautological_type_checks(tree)
     if taut:
         return DriverCheckResult(False, VERDICT_INVALID, taut)
+
+    tautological = _tautological_assertions(tree)
+    if tautological:
+        return DriverCheckResult(False, VERDICT_INVALID, tautological)
 
     survived, why = _arithmetic_survived(tree, expression, real_source)
     if not survived:

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import main
 from research_pipeline.models import Finding
+from research_pipeline.scan.pipeline import ScanCandidate, ScanCaseResult
 
 
 class _Analyzer:
@@ -26,6 +27,24 @@ class _Analyzer:
                 metadata={"expression": "x // y"},
             )
         ]
+
+
+def test_parser_accepts_pytest_counterexample_options() -> None:
+    args = main.build_parser().parse_args([
+        "--mode", "hybrid", "--input", "sample.py",
+        "--generate-pytest-testcase", "--pytest-output-dir", "artifacts/pytest",
+    ])
+    assert args.generate_pytest_testcase is True
+    assert args.pytest_output_dir == "artifacts/pytest"
+
+
+def test_parser_accepts_two_stage_detection_strategy() -> None:
+    parser = main.build_parser()
+    assert parser.parse_args(["--mode", "hybrid", "--input", "sample.py"]).detection_strategy == "single"
+    assert parser.parse_args([
+        "--mode", "hybrid", "--input", "sample.py",
+        "--detection-strategy", "two_stage",
+    ]).detection_strategy == "two_stage"
 
 
 class _Synthesizer:
@@ -206,3 +225,21 @@ def test_print_cache_summary_shows_rate_and_missing_data(capsys):
     assert "detection: 40%" in out
     assert "64/160 tokens" in out
     assert "synthesis: sem dado de cache" in out
+
+
+def test_scan_summary_counts_harness_tiers(tmp_path: Path) -> None:
+    candidate = ScanCandidate(file=str(tmp_path / "x.py"), function="f", category="division_by_zero")
+    results = [
+        ScanCaseResult(candidate, "confirmed_native", harness_tier="native"),
+        ScanCaseResult(candidate, "confirmed_on_abstraction", harness_tier="scalar"),
+        ScanCaseResult(candidate, "invalid_harness", harness_tier="scalar"),
+    ]
+
+    summary = main._scan_summary(results)
+
+    assert summary["harness_tiers"] == {
+        "native": 1,
+        "scalar": 2,
+    }
+    assert summary["by_category"]["division_by_zero"]["confirmed"] == 1
+    assert summary["by_category"]["division_by_zero"]["abstraction_only"] == 1

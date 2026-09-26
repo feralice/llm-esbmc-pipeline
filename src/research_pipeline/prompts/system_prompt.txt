@@ -44,9 +44,12 @@ Reporte apenas quando parâmetro livre (sem restrição de constante) pode causa
 
 Não use nenhuma outra categoria além das 11 acima (8 bugs formais e 3 smells).
 
-## TESTE DE EVIDÊNCIA — aplique internamente antes de gerar o JSON
+## TESTE DE EVIDÊNCIA — aplique internamente antes de gerar o JSON, NESTA ORDEM
 
-Para cada possível bug encontrado, responda:
+Primeiro decida se existe uma falha alcançável, sem pensar em qual das 8
+categorias é ainda. Só depois de responder sim ao item 4, escolha a
+categoria no item 5. Não pule para a categoria antes de fechar os itens
+1 a 4.
 
 1. O operando é controlado por parâmetro livre? (livre = vem de fora sem restrição de constante)
 2. Existe guarda que bloqueia EXATAMENTE o valor problemático em TODOS os caminhos?
@@ -54,7 +57,13 @@ Para cada possível bug encontrado, responda:
    `if a > 0 or b > 0` não impede `b=0` quando só `a>0`.
 3. A exceção é capturada por try/except? Se sim, não reporte como bug.
 4. Existe valor concreto dos parâmetros que passa pela guarda E causa a falha?
-5. A expressão reportada existe literalmente no código e representa o mecanismo da categoria escolhida?
+   Identifique a expressão exata, a linha e os operandos agora, antes do item 5.
+5. Categoria: dado o mecanismo já identificado nos itens 1 a 4, qual das 8
+   categorias melhor descreve essa falha? Quando mais de uma categoria
+   descrever o mesmo bug (ex.: um valor `None` que chega a um `assert` pode
+   ser lido como `none_misuse` ou como `assertion_violation`), escolha a
+   categoria mais próxima da expressão que efetivamente falha, não da causa
+   mais distante na cadeia.
 
 Reporte bug apenas se a resposta ao item 4 for sim. Se faltar contexto de um
 helper, classe, import ou contrato externo, não invente a semântica: use
@@ -64,13 +73,16 @@ Para smells, avalie a função como um todo (não operação por operação).
 
 ## SAÍDA — JSON válido, sem markdown
 
+Preencha os campos do JSON na ordem em que aparecem abaixo: `metadata`
+primeiro (evidência dos itens 1 a 4), `category` por último (item 5). Essa
+ordem existe para que a categoria seja escolhida depois da evidência
+concreta já estar registrada, não antes.
+
 {
   "findings": [
     {
       "finding_type": "suspected_bug" | "smell_heuristic",
-      "category": "<uma das 11 categorias>",
       "verifiable": true | false,
-      "explanation": "<raciocínio dos itens 1-5 em 2-4 frases>",
       "metadata": {
         "expression": "<expressão ou statement exato copiado do código>",
         "line": 0,
@@ -78,7 +90,9 @@ Para smells, avalie a função como um todo (não operação por operação).
         "guard_evidence": "<guarda literal ou 'none'>",
         "missing_guard": "<proteção ausente ou 'none'>",
         "context_needed": ["<helper/import/classe necessária, se houver>"]
-      }
+      },
+      "explanation": "<raciocínio dos itens 1-4 em 2-4 frases, escrito antes de decidir a categoria>",
+      "category": "<uma das 11 categorias, decidida por último, no item 5>"
     }
   ]
 }

@@ -15,6 +15,12 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
+from ..staged import (
+    build_stage_system_prompt,
+    build_stage_user_prompt,
+    parse_stage_payload,
+    stage_schema,
+)
 from ..rate_limit import is_daily_quota_exhausted
 from ..telemetry import response_event
 
@@ -69,6 +75,24 @@ class ChatCompletionsAnalyzer:
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)
 
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        if self.request_delay > 0:
+            time.sleep(self.request_delay)
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": build_stage_system_prompt(stage)},
+                {"role": "user", "content": build_stage_user_prompt(unit, stage=stage, candidates=candidates)},
+            ],
+            "response_format": {"type": "json_schema", "json_schema": stage_schema(stage)},
+            "temperature": 0,
+            "stream": False,
+        }
+        raw_response = self._post_json(payload)
+        return parse_stage_payload(
+            self._extract_json_payload(raw_response), stage=stage, candidates=candidates,
+        )
+
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         body = json.dumps(payload).encode("utf-8")
         for attempt in range(_retries):
@@ -118,9 +142,25 @@ class ChatCompletionsAnalyzer:
             content = choices[0].get("message", {}).get("content", "")
             if content:
                 try:
-                    parsed = json.loads(strip_markdown_json(content))
-                    return coerce_findings_payload(parsed)
+                    return coerce_findings_payload(
+                        json.loads(strip_markdown_json(content))
+                    )
+                except (json.JSONDecodeError, RuntimeError) as exc:
+                    logger.warning(
+                        "JSON parse failed for model %s: %s | raw: %.200s",
+                        self.model, exc, content,
+                    )
+                    return []
+        return []
+
+    def _extract_json_payload(self, response_data: dict) -> dict:
+        choices = response_data.get("choices", [])
+        if choices:
+            content = choices[0].get("message", {}).get("content", "")
+            if content:
+                try:
+                    return json.loads(strip_markdown_json(content))
                 except (json.JSONDecodeError, RuntimeError) as exc:
                     logger.warning("JSON parse failed for model %s: %s | raw: %.200s", self.model, exc, content)
-                    return []
+                    raise RuntimeError("Resposta staged sem JSON válido") from exc
         return []

@@ -8,6 +8,12 @@ import time
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
+from ..staged import (
+    build_stage_system_prompt,
+    build_stage_user_prompt,
+    parse_stage_payload,
+    stage_schema,
+)
 from ..schema import FINDINGS_JSON_SCHEMA
 from ..telemetry import response_event
 
@@ -68,11 +74,20 @@ class ClaudeCliAnalyzer:
         ))
         return result
 
-    def _run_cli(self, system_prompt: str, user_prompt: str) -> dict:
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        response = self._run_cli(
+            build_stage_system_prompt(stage),
+            build_stage_user_prompt(unit, stage=stage, candidates=candidates),
+            schema=stage_schema(stage),
+        )
+        return parse_stage_payload(response["payload"], stage=stage, candidates=candidates)
+
+    def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
+        schema = schema or FINDINGS_JSON_SCHEMA["schema"]
         command = [
             self.claude_command, "--print",
             "--output-format", "json",
-            "--json-schema", json.dumps(FINDINGS_JSON_SCHEMA["schema"]),
+            "--json-schema", json.dumps(schema),
             "--disallowed-tools", _DENIED_TOOLS,
             "--permission-prompts", "none",
             "--no-session-persistence",

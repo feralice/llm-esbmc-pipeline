@@ -6,9 +6,11 @@ import pytest
 
 from research_pipeline.scan import pipeline as scan_pipeline
 from research_pipeline.scan.driver_check import (
+    LIVENESS_REASON,
     VERDICT_INVALID,
     VERDICT_UNSUPPORTED,
     check_driver_harness,
+    force_result_liveness,
 )
 from research_pipeline.scan.pipeline import (
     CONFIRMED_DRIVER,
@@ -133,6 +135,43 @@ def test_discarded_result_is_rejected():
     assert not _check(dead).ok
 
 
+# --- force_result_liveness -------------------------------------------------
+
+
+def test_force_result_liveness_does_not_invent_a_tautological_property():
+    unasserted = _SLICE_HARNESS.replace(
+        "    assert result * b >= a\n", "    assert b != 0\n"
+    )
+    assert _check(unasserted).reasons == [LIVENESS_REASON]
+
+    assert force_result_liveness(unasserted) is None
+
+
+def test_tautological_result_assertion_is_rejected():
+    tautological = _SLICE_HARNESS.replace(
+        "    assert result * b >= a\n", "    assert result == result\n"
+    )
+    result = _check(tautological)
+    assert not result.ok
+    assert "tautological" in " ".join(result.reasons)
+
+
+def test_force_result_liveness_returns_none_when_result_fully_discarded():
+    dead = _SLICE_HARNESS.replace(
+        "    result = slice_model(a, b)\n    assert result * b >= a\n",
+        "    slice_model(a, b)\n    assert a >= 0\n",
+    )
+    assert force_result_liveness(dead) is None
+
+
+def test_force_result_liveness_returns_none_when_ambiguous():
+    two_candidates = _SLICE_HARNESS.replace(
+        "    result = slice_model(a, b)\n    assert result * b >= a\n",
+        "    result = slice_model(a, b)\n    other = slice_model(b, a)\n    assert a >= 0\n",
+    )
+    assert force_result_liveness(two_candidates) is None
+
+
 def test_empty_harness_is_rejected():
     res = _check("")
     assert not res.ok and res.verdict == VERDICT_INVALID
@@ -237,6 +276,21 @@ def _run(tmp_path, monkeypatch, esbmc_fn, *, category="assertion_violation", har
     return result, synth
 
 
+def test_missing_liveness_assert_is_not_auto_repaired(tmp_path, monkeypatch):
+    harness = _SLICE_HARNESS.replace(
+        "    assert result * b >= a\n", "    assert b != 0\n"
+    )
+    result, synth = _run(
+        tmp_path, monkeypatch,
+        lambda *a, **k: _esbmc("violation_found", violated_locations=["slice_model, linha 11"]),
+        category="division_by_zero",
+        harness=harness,
+    )
+    assert result.classification != CONFIRMED_DRIVER
+    assert "assert result == result" not in result.harness
+    assert result.attempts == 1
+
+
 def test_driver_violation_confirms(tmp_path, monkeypatch):
     result, synth = _run(
         tmp_path, monkeypatch,
@@ -244,6 +298,7 @@ def test_driver_violation_confirms(tmp_path, monkeypatch):
         category="division_by_zero",
     )
     assert result.classification == CONFIRMED_DRIVER
+    assert result.harness_tier == "driver"
     assert result.compat_verdict == "driver"
     assert result.driver_note == "conclusive"
     assert synth.seen_styles == [STYLE_DRIVER]

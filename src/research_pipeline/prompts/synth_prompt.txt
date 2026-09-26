@@ -129,6 +129,15 @@ RULES
      "the wrong type reaches here", use a DIFFERENT nondet type as the stand-in
      (e.g. `nondet_str()` for a value the real code treats as untyped/external)
      and check its shape instead of its Python type.
+   - type_mismatch specifically: `--is-instance-check` is passed to ESBMC for
+     this category, so when the REAL function's own signature already types
+     the suspect parameter as a Union/Optional (e.g. `x: str | None`), you may
+     instead call the real function directly with a nondet value of the OTHER
+     member type and `assert isinstance(x, ExpectedType)` right where the real
+     code uses it - ESBMC evaluates that against the value's real represented
+     type under this flag, so it is no longer vacuous in that specific case.
+     This does not apply when the parameter is typed as a single concrete T
+     with no Union: there, the shape-check stand-in above is still required.
    - The harness must contain exactly ONE Python assert. Give it the literal
      message `"LLM_ESBMC_EXPECTED_PROPERTY"`, for example:
      `assert divisor != 0, "LLM_ESBMC_EXPECTED_PROPERTY"`. This marker lets the

@@ -27,7 +27,11 @@ from pathlib import Path
 
 from ..models import CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER, Finding
 from ..preprocess import preprocess_file
-from ..verification.esbmc_runner import run_esbmc_direct, run_esbmc_on_function
+from ..verification.esbmc_runner import (
+    generate_pytest_testcase,
+    run_esbmc_direct,
+    run_esbmc_on_function,
+)
 from .ablation import FAILED, AblationReport, ablate
 from .compat import (
     EXPECTED_PROPERTY_MARKER,
@@ -37,7 +41,7 @@ from .compat import (
     check_outcome_grounding,
 )
 from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
-from .driver_check import check_driver_harness
+from .driver_check import LIVENESS_REASON, check_driver_harness, force_result_liveness
 from .synth import STYLE_DRIVER, STYLE_LOOP, STYLE_SCALAR, HarnessSynthesizer
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
@@ -171,6 +175,13 @@ class ScanCaseResult:
     # obtained from the original function body.
     verification_target: str = ""
     abstraction_level: str = ""
+    # Canonical evidence tier used for aggregation. Unlike classification,
+    # this says what code ESBMC actually executed for the result.
+    # Values: native, real_body, driver, scalar, unknown.
+    harness_tier: str = "unknown"
+    pytest_test_path: str = ""
+    pytest_generation_status: str = ""
+    pytest_generation_summary: str = ""
 
     def __post_init__(self) -> None:
         if not self.failure_stage:
@@ -201,6 +212,10 @@ class ScanCaseResult:
             driver_note=str(data.get("driver_note", "")),
             verification_target=str(data.get("verification_target", "")),
             abstraction_level=str(data.get("abstraction_level", "")),
+            harness_tier=str(data.get("harness_tier", "unknown")),
+            pytest_test_path=str(data.get("pytest_test_path", "")),
+            pytest_generation_status=str(data.get("pytest_generation_status", "")),
+            pytest_generation_summary=str(data.get("pytest_generation_summary", "")),
         )
 
     def to_dict(self) -> dict:
@@ -233,6 +248,10 @@ class ScanCaseResult:
             "driver_note": self.driver_note,
             "verification_target": self.verification_target,
             "abstraction_level": self.abstraction_level,
+            "harness_tier": self.harness_tier,
+            "pytest_test_path": self.pytest_test_path,
+            "pytest_generation_status": self.pytest_generation_status,
+            "pytest_generation_summary": self.pytest_generation_summary,
         }
 
 
@@ -301,6 +320,8 @@ def run_pipeline_scan(
     use_real_driver: bool = True,
     synth_retries: int = 1,
     loop_fallback: bool = True,
+    generate_pytest_tests: bool = False,
+    pytest_output_dir: str | Path | None = None,
     completed_results: dict[int, ScanCaseResult] | None = None,
     on_result: Callable[[int, ScanCaseResult], None] | None = None,
 ) -> list[ScanCaseResult]:
@@ -335,6 +356,8 @@ def run_pipeline_scan(
                 use_real_driver=use_real_driver,
                 synth_retries=synth_retries,
                 loop_fallback=loop_fallback,
+                generate_pytest_tests=generate_pytest_tests,
+                pytest_output_dir=pytest_output_dir,
             )
         results.append(result)
         if on_result is not None:
@@ -358,6 +381,8 @@ def _run_one(
     use_real_driver: bool = True,
     synth_retries: int = 1,
     loop_fallback: bool = True,
+    generate_pytest_tests: bool = False,
+    pytest_output_dir: str | Path | None = None,
 ) -> ScanCaseResult:
     started = time.monotonic()
 
@@ -444,6 +469,8 @@ def _run_one(
             use_compat=use_compat, use_guards=use_guards, use_ablation=use_ablation,
             repair_feedback=repair_feedback,
             previous_harness=previous_harness,
+            generate_pytest_tests=generate_pytest_tests,
+            pytest_output_dir=pytest_output_dir,
         )
         result.attempts = attempt + 1
         result.seconds = time.monotonic() - started
@@ -485,6 +512,8 @@ def _run_one(
             use_compat=use_compat, use_guards=use_guards, use_ablation=use_ablation,
             repair_feedback="", previous_harness="",
             style=STYLE_LOOP,
+            generate_pytest_tests=generate_pytest_tests,
+            pytest_output_dir=pytest_output_dir,
         )
         loop_result.attempts = (last.attempts or 1) + 1
         loop_result.attempt_history = [*history, {
@@ -583,7 +612,24 @@ def _try_native(
         attempts=0,
         verification_target="original_function",
         abstraction_level="none",
+        harness_tier="native",
     )
+
+
+def _category_extra_flags(category: str) -> list[str]:
+    """Extra ESBMC flags a category needs beyond the default harness run.
+
+    type_mismatch harnesses model a wrong-type value and check it with
+    isinstance(); --is-instance-check is what makes ESBMC actually evaluate
+    that isinstance() against the value's real declared type instead of
+    treating it as trivially true (2026-09-22 finding: 11 of 24 rejected
+    driver harnesses had a tautological isinstance() check).
+    """
+    if category == "type_mismatch":
+        return ["--is-instance-check"]
+    if category == "integer_overflow":
+        return ["--overflow-check", "--unsigned-overflow-check"]
+    return []
 
 
 _REAL_BODY_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds"})
@@ -772,6 +818,7 @@ def _try_real_body_driver(
         attempts=0,
         verification_target="original_function_body",
         abstraction_level="none",
+        harness_tier="real_body",
         driver_note="real-body-conclusive",
         masking_assumptions=list(ablation_report.masking_assumptions),
         ablation_per_assumption=dict(ablation_report.per_assumption),
@@ -824,10 +871,20 @@ def _try_driver(
         tokens += synth.telemetry.get("total_tokens") or 0
         synth_seconds += float(synth.telemetry.get("duration_seconds") or 0.0)
 
+        harness_source = synth.harness
         check = check_driver_harness(
-            synth.harness, real_source=unit.source, function_name=unit.name,
+            harness_source, real_source=unit.source, function_name=unit.name,
             expression=candidate.expression,
         )
+        if not check.ok and check.reasons == [LIVENESS_REASON]:
+            patched = force_result_liveness(harness_source)
+            if patched is not None:
+                retried = check_driver_harness(
+                    patched, real_source=unit.source, function_name=unit.name,
+                    expression=candidate.expression,
+                )
+                if retried.ok:
+                    harness_source, check = patched, retried
         if not check.ok:
             reason = "; ".join(check.reasons)
             if check.verdict == DRIVER_VERDICT_UNSUPPORTED:
@@ -839,7 +896,7 @@ def _try_driver(
             continue
 
         harness_path = harness_dir / f"scan_{index:03d}_{unit.name}_driver.py"
-        harness_path.write_text(synth.harness, encoding="utf-8")
+        harness_path.write_text(harness_source, encoding="utf-8")
 
         esbmc = run_esbmc_direct(
             harness_path,
@@ -847,13 +904,14 @@ def _try_driver(
             bound=bound,
             timeout_seconds=timeout_seconds,
             output_dir=str(harness_dir),
+            extra_flags=_category_extra_flags(candidate.category),
         )
         esbmc_seconds += esbmc.time_seconds
 
         base = ScanCaseResult(
             candidate=candidate,
             classification=CONFIRMED_DRIVER,
-            harness=synth.harness,
+            harness=harness_source,
             harness_path=str(harness_path),
             compat_verdict="driver",
             esbmc_status=esbmc.status,
@@ -863,8 +921,9 @@ def _try_driver(
             synth_seconds=synth_seconds,
             esbmc_seconds=esbmc_seconds,
             attempts=attempt + 1,
-            verification_target="verbatim_slice",
-            abstraction_level="slice",
+        verification_target="verbatim_slice",
+        abstraction_level="slice",
+        harness_tier="driver",
         )
 
         if esbmc.status == "violation_found":
@@ -879,7 +938,7 @@ def _try_driver(
                 ]
                 return base, "conclusive"
             if candidate.category in OUTCOME_CATEGORIES:
-                grounding = check_outcome_grounding(synth.harness)
+                grounding = check_outcome_grounding(harness_source)
                 if grounding.ok:
                     base.classification = CONFIRMED_DRIVER
                 else:
@@ -893,8 +952,9 @@ def _try_driver(
             base.classification = SAFE_DRIVER
             if use_ablation:
                 report = _ablate_harness(
-                    synth.harness, esbmc_command=esbmc_command,
+                    harness_source, esbmc_command=esbmc_command,
                     bound=bound, timeout_seconds=timeout_seconds,
+                    extra_flags=_category_extra_flags(candidate.category),
                 )
                 base.ablation_per_assumption = dict(report.per_assumption)
                 if report.over_restricted:
@@ -912,7 +972,7 @@ def _try_driver(
             )
         else:
             repair_feedback = f"ESBMC was inconclusive ({esbmc.summary})."
-        previous_harness = synth.harness
+        previous_harness = harness_source
 
     if invalid_count:
         return None, f"invalid x{invalid_count}: {invalid_reasons}"
@@ -937,6 +997,8 @@ def _one_attempt(
     repair_feedback: str,
     previous_harness: str,
     style: str = STYLE_SCALAR,
+    generate_pytest_tests: bool = False,
+    pytest_output_dir: str | Path | None = None,
 ) -> ScanCaseResult:
     started = time.monotonic()
     result = ScanCaseResult(
@@ -945,6 +1007,7 @@ def _one_attempt(
         synth_model=synthesizer.model,
         verification_target="scalar_harness",
         abstraction_level="scalar",
+        harness_tier="scalar",
     )
 
     try:
@@ -998,10 +1061,24 @@ def _one_attempt(
         bound=bound,
         timeout_seconds=timeout_seconds,
         output_dir=str(harness_dir),
+        extra_flags=_category_extra_flags(candidate.category),
     )
     result.esbmc_status = esbmc.status
     result.esbmc_summary = esbmc.summary
     result.esbmc_seconds = esbmc.time_seconds
+
+    if generate_pytest_tests:
+        pytest_dir = Path(pytest_output_dir or harness_dir / "pytest") / f"scan_{index:03d}"
+        pytest_result = generate_pytest_testcase(
+            harness_path,
+            esbmc_command=esbmc_command,
+            bound=bound,
+            timeout_seconds=timeout_seconds,
+            output_dir=pytest_dir,
+        )
+        result.pytest_test_path = str(pytest_result.get("path", ""))
+        result.pytest_generation_status = str(pytest_result.get("status", ""))
+        result.pytest_generation_summary = str(pytest_result.get("summary", ""))
 
     result.classification = _classify_esbmc(esbmc.status)
     if result.classification == CONFIRMED_ON_ABSTRACTION:
@@ -1039,6 +1116,7 @@ def _one_attempt(
             esbmc_command=esbmc_command,
             bound=bound,
             timeout_seconds=timeout_seconds,
+            extra_flags=_category_extra_flags(candidate.category),
         )
         result.ablation_per_assumption = dict(report.per_assumption)
         if report.over_restricted:
@@ -1102,6 +1180,7 @@ def _ablate_harness(
     esbmc_command: list[str] | None,
     bound: int,
     timeout_seconds: int,
+    extra_flags: list[str] | None = None,
 ) -> AblationReport:
     def run(variant_source: str) -> str:
         status = _verdict_on_source(
@@ -1109,6 +1188,7 @@ def _ablate_harness(
             esbmc_command=esbmc_command,
             bound=bound,
             timeout_seconds=timeout_seconds,
+            extra_flags=extra_flags,
         )
         return FAILED if status == "violation_found" else status.upper()
 
@@ -1121,6 +1201,7 @@ def _verdict_on_source(
     esbmc_command: list[str] | None,
     bound: int,
     timeout_seconds: int,
+    extra_flags: list[str] | None = None,
 ) -> str:
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "ablated.py"
@@ -1131,5 +1212,6 @@ def _verdict_on_source(
             bound=bound,
             timeout_seconds=timeout_seconds,
             output_dir=tmp,
+            extra_flags=extra_flags,
         )
     return esbmc.status

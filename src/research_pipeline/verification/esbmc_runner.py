@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+import ast
 import re
 import shutil
 import subprocess
@@ -47,6 +48,7 @@ def run_esbmc_direct(
     bound: int = 5,
     timeout_seconds: int = 30,
     output_dir: str | Path | None = None,
+    extra_flags: list[str] | None = None,
 ) -> ESBMCDirectResult:
     """Run ESBMC directly on the original Python file (no instrumentation)."""
     file_path = Path(file_path)
@@ -57,7 +59,10 @@ def run_esbmc_direct(
     # trip on the same input, so "Violated property" reports the cover's own text
     # instead of the marker. With it, both are reported separately (verified
     # empirically 2026-09-04; see docs/v2/experiment_log.md EXP-01).
-    command = [*base_command, *_bounded_incremental_flags(bound), "--multi-property", str(file_path)]
+    command = [
+        *base_command, *_bounded_incremental_flags(bound), "--multi-property",
+        *(extra_flags or []), str(file_path),
+    ]
 
     executable = shutil.which(command[0])
     if executable is None:
@@ -122,6 +127,81 @@ def run_esbmc_direct(
         details=details,
         raw_log_path=str(raw_log_path),
     )
+
+
+def generate_pytest_testcase(
+    file_path: str | Path,
+    *,
+    esbmc_command: list[str] | None = None,
+    bound: int = 5,
+    timeout_seconds: int = 30,
+    output_dir: str | Path,
+) -> dict[str, object]:
+    """Generate a concrete pytest file from ESBMC's symbolic witnesses."""
+    file_path = Path(file_path)
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    existing_pytest_files = {
+        path.resolve() for path in output_path.rglob("*.py")
+    }
+    base_command = list(esbmc_command or ["esbmc"])
+    command = [
+        *base_command,
+        *_bounded_incremental_flags(bound),
+        "--generate-pytest-testcase",
+        "--pytest-output-dir",
+        str(output_path),
+        str(file_path),
+    ]
+    expected_path = output_path / f"test_{file_path.name}"
+    if shutil.which(command[0]) is None:
+        return {"status": "skipped", "path": "", "summary": "ESBMC não encontrado no PATH.", "command": command}
+    started = time.monotonic()
+    try:
+        completed = subprocess.run(
+            command, check=False, capture_output=True, text=True, timeout=timeout_seconds
+        )
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timeout", "path": "",
+            "summary": f"Geração do contra-teste excedeu {timeout_seconds}s.",
+            "seconds": float(timeout_seconds), "command": command,
+        }
+    except OSError as exc:
+        return {
+            "status": "error", "path": "", "summary": str(exc),
+            "seconds": time.monotonic() - started, "command": command,
+        }
+    generated_paths = sorted(
+        path for path in output_path.rglob("*.py")
+        if path.resolve() not in existing_pytest_files
+    )
+    actual_path = (
+        generated_paths[0]
+        if generated_paths
+        else expected_path if expected_path.exists() else None
+    )
+    if actual_path is not None:
+        try:
+            ast.parse(actual_path.read_text(encoding="utf-8"), filename=str(actual_path))
+        except (OSError, SyntaxError) as exc:
+            return {
+                "status": "invalid_generated_test",
+                "path": str(actual_path),
+                "summary": f"ESBMC gerou Python inválido: {exc}",
+                "seconds": time.monotonic() - started,
+                "command": command,
+            }
+        return {
+            "status": "generated", "path": str(actual_path),
+            "summary": f"Contra-teste Pytest gerado: {actual_path}",
+            "seconds": time.monotonic() - started, "command": command,
+        }
+    output = f"{completed.stdout or ''}\n{completed.stderr or ''}".strip()
+    return {
+        "status": "not_generated", "path": "", "summary": output or "ESBMC não gerou arquivo Pytest.",
+        "seconds": time.monotonic() - started, "command": command,
+    }
 
 
 def _classify_esbmc_direct_result(output: str, returncode: int | None) -> str:
@@ -202,7 +282,11 @@ _FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
     "type_mismatch":       ["--assign-param-nondet"],
     "invalid_precondition": ["--assign-param-nondet"],
     "variable_misuse":     ["--assign-param-nondet"],
-    "integer_overflow":    ["--assign-param-nondet", "--overflow-check"],
+    "integer_overflow":    [
+        "--assign-param-nondet",
+        "--overflow-check",
+        "--unsigned-overflow-check",
+    ],
 }
 
 _FLOW_A_BASE_FLAGS: list[str] = ["--assign-param-nondet"]
@@ -424,13 +508,14 @@ def _summarize_function_baseline(
 # ---------------------------------------------------------------------------
 
 def _classify_esbmc_result(output: str, returncode: int | None) -> str:
-    normalized = output.lower()
-    # Use only "verification failed" — "violation" alone is too broad and matches
-    # file paths containing the word (e.g. "black_23_assertion_violation.py").
-    if "verification failed" in normalized:
-        return "violation_found"
-    if "verification successful" in normalized:
-        return "no_violation_found"
+    # --incremental-bmc prints a verdict per k-step; only the last one is final.
+    verdicts = re.findall(r"^VERIFICATION (FAILED|SUCCESSFUL|UNKNOWN)\b", output, re.MULTILINE)
+    if verdicts:
+        return {
+            "FAILED": "violation_found",
+            "SUCCESSFUL": "no_violation_found",
+            "UNKNOWN": "inconclusive",
+        }[verdicts[-1]]
     if returncode == 0:
         return "no_violation_found"
     return "inconclusive"
