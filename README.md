@@ -171,16 +171,9 @@ Use `--backend claude_cli` (detecção) e/ou `--synth-backend claude_cli`
 (síntese). O pipeline chama `claude -p` local e filtra `ANTHROPIC_API_KEY` do
 ambiente do subprocesso, então não precisa da chave em nenhuma etapa.
 
-Pra usar o Gemini CLI (conta pessoal ou empresarial) em vez da API Gemini
-cobrada por token:
-
-```bash
-npm install -g @google/gemini-cli
-gemini   # primeira execução pede pra escolher o método de autenticação
-```
-
-Use `--backend gemini_cli` e/ou `--synth-backend gemini_cli`. Precisa estar
-autenticado e rodando num diretório onde o CLI headless funcione.
+O backend Gemini disponível no pipeline é `google`, usando a API Gemini e
+`GEMINI_API_KEY`. Não há atualmente um backend `gemini_cli` implementado; a
+documentação anterior foi corrigida para não anunciar essa opção.
 
 ---
 
@@ -197,13 +190,13 @@ GEMINI_API_KEY=       # para --backend google
 # OLLAMA_BASE_URL=    # opcional, padrão: http://localhost:11434
 ```
 
-No modo `hybrid` (V2), a detecção usa `gpt-4o-mini` via OpenAI por padrão
+No modo `hybrid` (V2), a detecção usa o backend OpenAI por padrão
 mesmo quando `--synth-backend codex` só troca a síntese do harness:
 `OPENAI_API_KEY` continua exigida a menos que `--backend` (detecção) também
-seja `ollama`, `codex`, `claude_cli` ou `gemini_cli`. Nenhuma chave é
+seja `ollama`, `codex` ou `claude_cli`. Nenhuma chave é
 necessária pra rodar o V2 inteiro com `--backend codex --synth-backend codex`,
 `--backend claude_cli --synth-backend claude_cli`,
-`--backend gemini_cli --synth-backend gemini_cli`, ou com `--backend ollama`
+ou com `--backend ollama`
 pra modelo local em ambas as etapas.
 
 ---
@@ -458,5 +451,5 @@ de interpretar qualquer diferença como ganho de qualidade.
 |---|---|
 | [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) | Especificação dos fluxos, flags ESBMC, métricas e metodologia V1 |
 | [`docs/v1/pipeline_walkthrough.md`](docs/v1/pipeline_walkthrough.md) | Walkthrough arquivo por arquivo do pipeline V1 |
-| [`docs/v2/status_2026-09-05.md`](docs/v2/status_2026-09-05.md) | Estado técnico e resultados atuais da V2 |
-| [`docs/projeto/handoff_2026-09-08.md`](docs/projeto/handoff_2026-09-08.md) | Resultados end-to-end, decisões e pendências |
+| [`docs/v2/README.md`](docs/v2/README.md) | Estado técnico, fluxo e interpretação atuais da V2 |
+| [`docs/projeto/complemento_apresentacao_2026-09-23.md`](docs/projeto/complemento_apresentacao_2026-09-23.md) | Texto atualizado dos slides e resultados históricos |

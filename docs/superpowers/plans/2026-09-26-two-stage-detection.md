@@ -1,5 +1,12 @@
 # Detecção em duas etapas Implementation Plan
 
+> **Status (2026-09-27): concluído como infraestrutura experimental.** Schemas,
+> prompts, parsing estrito, wrapper, backends, CLI, checkpoints, telemetria e
+> documentação foram implementados e testados. A comparação de qualidade
+> `single` versus `two_stage` continua deliberadamente fora da implementação:
+> requer rodadas controladas com chamadas LLM reais e deve ser executada como
+> experimento separado.
+
 > For agentic workers: REQUIRED SUB-SKILL: Use superpowers:executing-plans (recommended) or superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking.
 
 **Goal:** Adicionar uma estratégia opt-in que localiza hipóteses de bug e classifica suas categorias em chamadas LLM separadas.
@@ -89,7 +96,7 @@
 **Files:**
 - Modify: README.md
 - Modify: docs/projeto/complemento_apresentacao_2026-09-23.md
-- Create: docs/projeto/two_stage_detection_experiment.md
+- Create: docs/v2/two_stage_detection.md
 - Test: tests/test_two_stage_analyzer.py
 
 - [ ] Documentar o comando opt-in e o aumento esperado de chamadas/custo.
@@ -97,4 +104,3 @@
 - [ ] Registrar que os resultados two_stage não devem ser apresentados como melhoria sem rodada experimental controlada.
 - [ ] Rodar a suíte completa com python3 -m pytest -q.
 - [ ] Não executar chamadas LLM reais como parte dos testes padrão.
-

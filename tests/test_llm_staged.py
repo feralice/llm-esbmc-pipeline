@@ -121,6 +121,24 @@ class _StagedBackend:
         return self.classifications
 
 
+class _FailingClassificationBackend(_StagedBackend):
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        self.calls.append((stage, candidates))
+        if stage == "localize":
+            return self.locations
+        raise RuntimeError("classification failed")
+
+
+class _TelemetryStagedBackend(_StagedBackend):
+    def __init__(self, locations, classifications):
+        super().__init__(locations, classifications)
+        self.telemetry_events = []
+
+    def analyze_stage(self, unit, *, stage, candidates=None):
+        self.telemetry_events.append({"status": "success", "provider": "fake"})
+        return super().analyze_stage(unit, stage=stage, candidates=candidates)
+
+
 def test_two_stage_analyzer_calls_localization_then_classification():
     location = LocationCandidate("c1", "1 // x", 2, ["x"], "none", "x != 0", [], "")
     classification = ClassificationResult("c1", "division_by_zero", True, "x may be zero")
@@ -142,3 +160,27 @@ def test_two_stage_analyzer_skips_classification_when_localization_is_empty():
 
     assert TwoStageAnalyzer(backend).analyze(_unit()) == []
     assert [call[0] for call in backend.calls] == ["localize"]
+
+
+def test_two_stage_analyzer_preserves_classification_failure():
+    location = LocationCandidate("c1", "1 // x", 2, ["x"], "none", "x != 0", [], "")
+    backend = _FailingClassificationBackend([location], [])
+
+    with pytest.raises(RuntimeError, match="classification failed"):
+        TwoStageAnalyzer(backend).analyze(_unit())
+
+    assert [call[0] for call in backend.calls] == ["localize", "classify"]
+
+
+def test_two_stage_analyzer_keeps_one_telemetry_event_per_provider_call():
+    location = LocationCandidate("c1", "1 // x", 2, ["x"], "none", "x != 0", [], "")
+    classification = ClassificationResult("c1", "division_by_zero", True, "x may be zero")
+    backend = _TelemetryStagedBackend([location], [classification])
+
+    analyzer = TwoStageAnalyzer(backend)
+    analyzer.analyze(_unit())
+
+    assert len(analyzer.telemetry_events) == 2
+    assert [event["analysis_stage"] for event in analyzer.telemetry_events] == [
+        "localize", "classify",
+    ]

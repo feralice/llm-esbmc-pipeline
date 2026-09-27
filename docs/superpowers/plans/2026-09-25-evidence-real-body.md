@@ -1,5 +1,9 @@
 # Evidência de código real versus abstração Implementation Plan
 
+> **Status (2026-09-27): concluído.** A avaliação, o resumo da CLI, a
+> documentação e os testes distinguem `scalar` de `native`, `real_body` e
+> `driver`. Evidência: testes focados e suíte completa passando.
+
 > For agentic workers: REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking.
 
 **Goal:** Separar, nas métricas e na documentação do V2, confirmações executadas no código original de confirmações obtidas apenas em harnesses escalares abstratos.

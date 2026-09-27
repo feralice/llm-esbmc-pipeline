@@ -1,274 +1,64 @@
-# Proposta V2 — Síntese de Harnesses Guiada por LLM
+# V2: síntese e verificação de harness
 
-> Nota de desenho para uma evolução futura do projeto. Este documento não
-> descreve o pipeline V1 atual — descreve uma direção de pesquisa possível.
+Este documento descreve a implementação atual, não uma proposta futura. O
+pipeline usa a LLM para construir um artefato pequeno e verificável a partir de
+uma hipótese formal já localizada e grounded no código.
 
----
+## Ordem dos tiers
 
-## 1. Motivação
+Para cada `ScanCandidate`, o pipeline tenta, conforme a configuração:
 
-O pipeline V1 avalia uma configuração controlada:
+1. `native`: execução direta da função original quando o caso é compatível;
+2. `real_body`: preservação do corpo original em um harness de corpo real;
+3. `driver`: Verbatim Driver, preservando o corpo e sintetizando entradas e
+   asserções;
+4. `scalar`: abstração da expressão suspeita, usada como fallback;
+5. `loop`: variante de reparo para casos com laços bounded quando habilitada.
 
-```
-função Python simples e compatível
-  → LLM propõe hipótese local de bug
-  → filtro AST valida se a expressão existe
-  → ESBMC roda no arquivo original com --function e parâmetros nondet
-  → benchmark compara com ground truth
-```
+Cada resultado informa `verification_target`, `abstraction_level` e
+`harness_tier`. A classificação `confirmed_on_abstraction` confirma apenas o
+modelo escalar; os tiers `native`, `real_body` e `driver` são os que podem
+sustentar a confirmação do código real.
 
-Essa abordagem é adequada para o benchmark atual, mas não resolve o problema
-de código Python complexo do mundo real. Projetos reais frequentemente usam
-I/O, bibliotecas externas, objetos dinâmicos, frameworks, banco de dados,
-rede, decorators, async/await e outros recursos que o frontend Python do ESBMC
-não suporta de forma ampla.
+## Validação antes do ESBMC
 
-A V2 investigaria a LLM como ponte entre código Python complexo e um modelo
-verificável pelo ESBMC.
+O validador estrutural verifica sintaxe, presença de driver/função, intrínsecos
+permitidos, propriedade esperada e compatibilidade com a categoria. O
+`driver_check` também verifica se o corpo real foi preservado. Compatibilidade
+não é prova semântica: apenas impede que um harness obviamente inválido seja
+contado como resultado formal.
 
----
+## Feedback e retries
 
-## 2. Ideia Central
+Uma falha recuperável gera novo attempt com feedback determinístico do
+validador ou do ESBMC. `results[].attempt_history` registra cada tentativa,
+incluindo:
 
-Na V2, a LLM não apenas apontaria uma hipótese de bug — ela também tentaria
-produzir uma abstração verificável:
+- número da tentativa e estilo do harness;
+- camada da falha e razões de compatibilidade;
+- status/resumo do ESBMC e Pytest quando solicitado;
+- tokens, duração e feedback usado.
 
-```
-código Python complexo
-  → LLM identifica trecho suspeito
-  → LLM extrai uma fatia verificável
-  → LLM substitui dependências por stubs/nondet/assume
-  → LLM gera harness compatível com ESBMC
-  → ESBMC confirma ou rejeita a hipótese
-```
+O texto do harness anterior pode ser fornecido para reparo, mas o novo attempt
+sempre executa novamente a validação e o ESBMC. Nenhum veredito ou assumption
+da tentativa anterior é reutilizado como evidência.
 
-Em outras palavras, a contribuição potencial seria transformar uma hipótese
-informal sobre código real em um programa pequeno, autocontido e verificável.
+## Ablação
 
----
+Quando o resultado parece seguro, cada `__ESBMC_assume` pode ser removido
+isoladamente. Se a violação aparece sem um assume, o resultado é marcado como
+`over_restricted`. A ablação é uma análise de confiança do harness; não é uma
+nova etapa de detecção.
 
-## 3. Diferença para a V1
+## Pytest
 
-| Aspecto | V1 atual | V2 proposta |
-|---|---|---|
-| Entrada | Função simples e compatível | Código Python mais complexo |
-| Papel da LLM | Propor hipótese local | Propor hipótese + abstração/harness |
-| Código verificado | Arquivo original | Modelo/harness sintetizado |
-| Dependências externas | Fora do escopo | Substituídas por stubs ou nondet |
-| ESBMC | `--function` no original | Verificação do harness gerado |
-| Risco principal | Hipótese falsa da LLM | Abstração incorreta ou incompleta |
+`--generate-pytest-testcase` é opcional e roda depois do ESBMC para materializar
+valores concretos do contraexemplo. O teste gerado é validado com `ast.parse` e
+fica registrado no resultado. Uma falha na geração do Pytest não altera o
+veredito formal original.
 
-A V1 não faz harness synthesis, model extraction ou stubbing. A V2 teria esses
-elementos como objeto de pesquisa.
+## Limitação metodológica
 
----
-
-## 4. Exemplo Conceitual
-
-Código original:
-
-```python
-def process_payment(user, cart, coupon, gateway):
-    total = cart.total()
-
-    if coupon:
-        total = total - coupon.discount
-
-    if total <= 0:
-        return False
-
-    response = gateway.charge(user.card, total)
-    return response.ok
-```
-
-Esse código é ruim para verificar diretamente porque depende de objetos e
-serviços externos. Uma abstração verificável poderia ser:
-
-```python
-from nondet import nondet_bool, nondet_int
-from esbmc import assume
-
-def process_payment_model(cart_total: int, has_coupon: bool, discount: int) -> bool:
-    total: int = cart_total
-
-    if has_coupon:
-        total = total - discount
-
-    if total <= 0:
-        return False
-
-    return True
-
-cart_total: int = nondet_int()
-discount: int = nondet_int()
-has_coupon: bool = nondet_bool()
-
-assume(cart_total >= 0)
-assume(discount >= 0)
-assume(discount <= cart_total)
-
-result: bool = process_payment_model(cart_total, has_coupon, discount)
-
-if has_coupon:
-    assert result == (cart_total - discount > 0)
-else:
-    assert result == (cart_total > 0)
-```
-
-O ESBMC verificaria o modelo, não o sistema original completo.
-
----
-
-## 5. Limites Práticos do ESBMC-Python
-
-A V2 precisa partir de uma premissa metodológica explícita: o ESBMC-Python não
-é um interpretador/verificador completo para qualquer programa Python. Ele é
-mais adequado para programas pequenos, autocontidos e com comportamento
-simbolicamente modelável.
-
-Portanto, a V2 não deve prometer verificar projetos Python complexos de ponta a ponta.
-O objetivo realista seria extrair de código complexo um modelo pequeno o suficiente para o ESBMC verificar.
-
-### 5.1 O que Tende a Funcionar
-
-Casos com maior chance de serem verificáveis:
-
-- Funções puras ou quase puras
-- Código com tipos primitivos: `int`, `float`, `bool`, `str`
-- Propriedades locais expressas com `assert`
-- Operações aritméticas, comparações e condicionais
-- Loops com bound pequeno via `--unwind`
-- Listas, tuplas, dicionários e strings quando usam operações modeladas
-- Funções em que parâmetros podem ser substituídos por valores nondet
-- Bugs como divisão por zero, out-of-bounds, assertion violation e overflow
-
-### 5.2 O que Deve Ser Abstraído
-
-Em código real, muitos elementos devem virar stubs, nondet ou assumptions:
-
-| Elemento no código real | Abstração possível |
-|---|---|
-| Entrada de usuário | `nondet_int`, `nondet_bool`, `nondet_*` |
-| Arquivo / JSON / CSV | Valores simbólicos com `assume` |
-| Banco de dados | Stub que retorna valor nondet dentro de um intervalo |
-| API HTTP | Stub com status/value nondet |
-| Objeto complexo | Campos primitivos relevantes |
-| Biblioteca externa | Modelo pequeno da função usada |
-| Configuração global | Constantes ou parâmetros simbólicos |
-
-### 5.3 O que Deve Ficar Fora do Escopo Inicial
-
-- Frameworks web completos: Django, Flask, FastAPI em execução real
-- I/O real: arquivos, rede, sockets, subprocessos
-- Banco de dados real
-- Pandas, TensorFlow, PyTorch, scikit-learn e bibliotecas grandes
-- `async`/`await`
-- `eval`, `exec`, reflexão e monkey patching
-- Decorators/metaclasses/descriptors complexos
-- Dependências dinâmicas carregadas em runtime
-- Concorrência Python real
-
-### 5.4 Escopo Recomendado para uma V2 Inicial
-
-```
-funções Python reais ou semi-reais
-  com dependências externas simples
-  convertidas em harnesses autocontidos
-  para confirmar bugs locais verificáveis
-```
-
-Categorias iniciais recomendadas:
-
-- `division_by_zero`
-- `out_of_bounds`
-- `assertion_violation`
-- `integer_overflow`
-- `none_misuse`
-- `type_mismatch`
-- `invalid_precondition`
-
-### 5.5 Como Reportar Resultados
-
-Os resultados da V2 deveriam separar claramente:
-
-| Resultado | Significado |
-|---|---|
-| `confirmed_on_abstraction` | ESBMC confirmou a hipótese no harness escalar abstrato; não prova, sozinho, o código original |
-| `confirmed_native` / `confirmed_driver` com tier real | ESBMC confirmou uma hipótese após executar a função original ou um slice que preserva seu corpo |
-| `safe_on_abstraction` | ESBMC não encontrou violação dentro do bound |
-| `unsupported_harness` | O harness usa recurso não suportado pelo ESBMC |
-| `invalid_harness` | O harness gerado não executa ou não parseia |
-| `abstraction_gap` | A abstração removeu informação essencial do código original |
-| `timeout` | ESBMC excedeu o limite de tempo |
-
-> Confirmação em um harness escalar sintetizado é uma evidência sobre a
-> abstração, não uma prova completa do programa Python original. A métrica
-> end-to-end conta como confirmação do código real apenas os tiers `native`,
-> `real_body` e `driver`.
-
----
-
-## 6. Componentes Necessários
-
-Uma implementação V2 provavelmente precisaria de:
-
-- **Detector de trechos-alvo:** identifica funções, branches ou expressões suspeitas
-- **Gerador de harness:** cria um arquivo Python autocontido para o ESBMC
-- **Gerador de stubs:** troca chamadas externas por valores nondet com `assume`
-- **Checador de compatibilidade:** rejeita harnesses com recursos não suportados
-- **Executor ESBMC:** roda o harness com flags adequadas
-- **Validador de abstração:** registra quais suposições foram feitas
-
----
-
-## 7. Classificações Sugeridas
-
-Além das classificações da V1, a V2 precisaria separar:
-
-| Classificação | Significado |
-|---|---|
-| `confirmed_on_abstraction` | ESBMC confirmou a hipótese no harness escalar abstrato |
-| `confirmed_native` / `confirmed_driver` com tier real | ESBMC confirmou a hipótese executando o código original ou um slice preservado |
-| `safe_on_abstraction` | ESBMC não encontrou violação dentro do bound |
-| `unsupported_harness` | O harness usa recurso não suportado pelo ESBMC |
-| `invalid_harness` | O harness gerado não executa ou não parseia |
-| `abstraction_gap` | A abstração removeu informação essencial do código original |
-| `timeout` | ESBMC excedeu o limite de tempo |
-
----
-
-## 8. Riscos Metodológicos
-
-- A LLM pode criar um harness que muda a semântica do código
-- Stubs muito permissivos podem gerar falsos positivos
-- Stubs muito restritivos podem esconder bugs reais
-- O ESBMC pode confirmar uma violação que só existe na abstração
-- Comparar resultados exige ground truth mais rico, incluindo o vínculo entre código original, hipótese, abstração e propriedade formal
-
----
-
-## 9. Possível Pergunta de Pesquisa
-
-> LLMs conseguem transformar hipóteses de bugs em código Python complexo em
-> harnesses verificáveis pelo ESBMC, preservando informação suficiente para
-> confirmar bugs reais com baixa taxa de falsos positivos?
-
----
-
-## 10. Relação com a V1
-
-A V1 continua sendo a base experimental mais controlada:
-
-```
-hipótese da LLM + confirmação formal no arquivo original
-```
-
-A V2 é uma extensão natural, com duas forças de evidência:
-
-```
-hipótese da LLM + driver que preserva o corpo + confirmação formal no código real
-hipótese da LLM + síntese escalar + confirmação formal na abstração
-```
-
-Os dois resultados devem permanecer separados nas métricas: o segundo é
-diagnóstico da abstração e não confirmação do programa original.
+Um harness escalar pode confirmar uma propriedade da abstração e ainda assim
+omitir o caminho real que contém o bug. Por isso os relatórios e as métricas
+separam confirmação do código real de confirmação apenas da abstração.

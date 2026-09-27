@@ -53,7 +53,7 @@ CONFIRMED_ON_ABSTRACTION = "confirmed_on_abstraction"
 # (compat.py's _unconstrained_outcome_reasons), but that check only catches the
 # harness's SYNTAX, not whether the grounding is real -- an LLM can satisfy it
 # with e.g. `assert x == True` and stay just as disconnected from the real bug
-# (EXP-03, docs/v2/experiment_log.md, 2026-09-04). A confirmation in these two
+# (EXP-03, empirical ESBMC probe, 2026-09-04). A confirmation in these two
 # categories is trusted only when check_outcome_grounding() finds a
 # buggy-vs-expected comparison; otherwise it is demoted to this report label.
 # The pipeline still runs end to end with no human input, it just declines to
@@ -580,7 +580,7 @@ def _try_native(
       there is no built-in property encoding the hypothesized "correct"
       behaviour (no assert exists on the real source), so an absence of
       violation here proves nothing -- same vacuous-claim risk EXP-03 found
-      for a bare assert on unconstrained input (docs/v2/experiment_log.md).
+      for a bare assert on unconstrained input (empirical ESBMC probe).
     """
     parts = candidate.function.split(".")
     function_name = parts[-1]
@@ -1135,7 +1135,7 @@ def _looks_like_cover_negation(property_kind: str) -> bool:
     Confirmed empirically (2026-09-04, real ESBMC 8.4.0, --multi-property): a
     tripped __ESBMC_cover always reports as "assertion !(<condition>)"; genuine
     exceptions (invalid int() conversion, uncaught exception on a missing dict
-    key) never take this shape. See docs/v2/experiment_log.md EXP-01.
+    key) never take this shape. See the EXP-01 empirical ESBMC probe.
     """
     return property_kind.startswith("assertion !(")
 

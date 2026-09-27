@@ -58,7 +58,7 @@ def run_esbmc_direct(
     # as an inverted assert) can shadow the harness's own marked assert when both
     # trip on the same input, so "Violated property" reports the cover's own text
     # instead of the marker. With it, both are reported separately (verified
-    # empirically 2026-09-04; see docs/v2/experiment_log.md EXP-01).
+    # empirically 2026-09-04 during the ESBMC probe EXP-01).
     command = [
         *base_command, *_bounded_incremental_flags(bound), "--multi-property",
         *(extra_flags or []), str(file_path),

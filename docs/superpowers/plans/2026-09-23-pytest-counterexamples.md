@@ -1,5 +1,10 @@
 # Pytest Counterexample Generation Implementation Plan
 
+> **Status (2026-09-27): concluído.** A opção opt-in, persistência de
+> metadados, tratamento não fatal, documentação e smoke test real foram
+> implementados. Evidência: testes focados e suíte completa passando; o
+> gerador do ESBMC também foi validado com um harness real.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Integrate ESBMC's `--generate-pytest-testcase` output into the V2 harness flow and document the feature in the presentation.

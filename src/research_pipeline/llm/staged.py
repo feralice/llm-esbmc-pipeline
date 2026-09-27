@@ -102,14 +102,36 @@ class TwoStageAnalyzer:
         self.backend = backend
         self.model = getattr(backend, "model", "")
         self.telemetry_events = getattr(backend, "telemetry_events", [])
+        self.detection_trace: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
-        candidates = self._analyze_stage(unit, stage="localize")
+        trace = {
+            "function": unit.qualname,
+            "strategy": "two_stage",
+            "located_candidates": 0,
+            "classified_candidates": 0,
+            "rejected_candidates": 0,
+        }
+        try:
+            candidates = self._analyze_stage(unit, stage="localize")
+        except Exception as exc:
+            trace.update({"failure_stage": "localize", "error": str(exc)})
+            self.detection_trace.append(trace)
+            raise
+        trace["located_candidates"] = len(candidates)
         if not candidates:
+            self.detection_trace.append(trace)
             return []
-        classifications = self._analyze_stage(
-            unit, stage="classify", candidates=candidates
-        )
+        try:
+            classifications = self._analyze_stage(
+                unit, stage="classify", candidates=candidates
+            )
+        except Exception as exc:
+            trace.update({"failure_stage": "classify", "error": str(exc)})
+            self.detection_trace.append(trace)
+            raise
+        trace["classified_candidates"] = len(classifications)
+        trace["rejected_candidates"] = len(candidates) - len(classifications)
         by_id = {candidate.candidate_id: candidate for candidate in candidates}
         findings: list[Finding] = []
         for classification in classifications:
@@ -136,30 +158,44 @@ class TwoStageAnalyzer:
                 confidence_source=CONFIDENCE_SOURCE_LLM_SELF_REPORT,
                 metadata=metadata,
             ))
-        return normalize_findings(unit, findings)
+        normalized = normalize_findings(unit, findings)
+        self.detection_trace.append(trace)
+        return normalized
 
     def _analyze_stage(self, unit, *, stage: Stage, candidates=None):
         started = time.monotonic()
+        before = len(self.telemetry_events)
         try:
             result = self.backend.analyze_stage(
                 unit, stage=stage, candidates=candidates
             )
         except Exception as exc:
+            new_events = self.telemetry_events[before:]
+            if new_events:
+                new_events[-1].setdefault("analysis_stage", stage)
+                new_events[-1].setdefault("status", "error")
+            else:
+                self.telemetry_events.append({
+                    "provider": getattr(self.backend, "model", "unknown"),
+                    "analysis_stage": stage,
+                    "status": "error",
+                    "error": str(exc),
+                    "duration_seconds": time.monotonic() - started,
+                })
+            raise
+        new_events = self.telemetry_events[before:]
+        if new_events:
+            new_events[-1].setdefault("analysis_stage", stage)
+            new_events[-1].setdefault("status", "success")
+            new_events[-1]["candidates"] = len(result)
+        else:
             self.telemetry_events.append({
                 "provider": getattr(self.backend, "model", "unknown"),
                 "analysis_stage": stage,
-                "status": "error",
-                "error": str(exc),
+                "status": "success",
                 "duration_seconds": time.monotonic() - started,
+                "candidates": len(result),
             })
-            raise
-        self.telemetry_events.append({
-            "provider": getattr(self.backend, "model", "unknown"),
-            "analysis_stage": stage,
-            "status": "success",
-            "duration_seconds": time.monotonic() - started,
-            "candidates": len(result),
-        })
         return result
 
 

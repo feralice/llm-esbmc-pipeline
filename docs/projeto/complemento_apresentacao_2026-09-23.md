@@ -1,7 +1,11 @@
 # Complemento da apresentação: 23/09/2026
 
-Texto pronto por slide, para colar no Canva. Continuação de
-[`complemento_apresentacao_2026-09-09.md`](complemento_apresentacao_2026-09-09.md).
+Texto pronto por slide, para colar no Canva. Este é o documento ativo da
+apresentação; resultados numéricos antigos estão marcados como históricos.
+
+> **Nota de atualização:** os números dos Slides 8 e 9 são da rodada
+> end-to-end anterior. Eles não representam ainda a nova rodada após as
+> melhorias de detecção, telemetria, retries e checkpoints.
 
 ---
 
@@ -47,11 +51,12 @@ Principais mudanças desde 09/09:
 
 **Slide 4: Novos backends**
 
-Adicionados `claude_cli` e `gemini_cli`, que chamam a assinatura já paga via
-CLI local em vez da API cobrada por token.
+Adicionado `claude_cli`, que chama a assinatura já paga via CLI local em vez
+da API cobrada por token. O Gemini continua disponível pelo backend `google`,
+via API Gemini.
 
-Com isso, três backends completos rodam detecção e síntese de harness sem
-nenhum custo por token: `codex`, `claude_cli` e `gemini_cli`.
+Com isso, dois backends completos rodam detecção e síntese de harness sem
+nenhum custo por token: `codex` e `claude_cli`.
 
 ---
 
@@ -93,9 +98,13 @@ ideia semelhante em C/C++, mas não cobre Python/ESBMC-Python.
 **Slide 7: Como a avaliação funciona**
 
 - A LLM analisa uma função e aponta uma categoria de bug.
-- O programa confere se o trecho indicado existe no código.
+- O programa confere por AST se o trecho indicado existe no código executável.
 - A LLM gera um harness para testar a hipótese.
 - O ESBMC verifica o harness formalmente.
+
+Na configuração padrão, `single` faz a detecção em uma chamada. A configuração
+experimental `two_stage` separa localização e classificação em duas chamadas,
+com trace e telemetria independentes.
 
 **Resumo:** a LLM propõe; o programa confere; o ESBMC decide.
 
@@ -273,12 +282,14 @@ confirmação da abstração e não aumenta a métrica end-to-end.
 **Slide 12: Próximos passos**
 
 **Prioridade alta:**
-- Separar a decisão da LLM: primeiro identificar se há bug e onde; depois
-  classificar uma das 8 categorias.
 - Executar a estratégia `two_stage` em rodadas controladas, comparando-a com a
   estratégia `single` e guardando os resultados brutos por rodada.
-- Criar few-shots específicos para `variable_misuse` e `integer_overflow`.
-- Preservar partes corretas do harness durante novas tentativas.
+- Não adicionar few-shots específicos por categoria; manter o prompt fechado,
+  auditável e comparável entre modelos.
+- Preservar partes corretas do harness durante novas tentativas, sem reutilizar
+  o veredito da tentativa anterior.
+- Atualizar o relatório com `detection.trace`, `trace_summary`, telemetria por
+  etapa e `attempt_history` antes da próxima rodada end-to-end.
 
 **Flags já incorporadas na verificação formal:**
 - `type_mismatch`: `--is-instance-check` orienta a verificação dos testes de

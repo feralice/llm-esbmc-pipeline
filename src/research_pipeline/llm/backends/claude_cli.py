@@ -75,12 +75,29 @@ class ClaudeCliAnalyzer:
         return result
 
     def analyze_stage(self, unit, *, stage, candidates=None):
-        response = self._run_cli(
-            build_stage_system_prompt(stage),
-            build_stage_user_prompt(unit, stage=stage, candidates=candidates),
-            schema=stage_schema(stage),
+        started = time.monotonic()
+        try:
+            response = self._run_cli(
+                build_stage_system_prompt(stage),
+                build_stage_user_prompt(unit, stage=stage, candidates=candidates),
+                schema=stage_schema(stage),
+            )
+            result = parse_stage_payload(response["payload"], stage=stage, candidates=candidates)
+        except Exception as exc:
+            event = response_event(
+                provider="claude_cli", requested_model=self.model,
+                duration_seconds=time.monotonic() - started, error=exc,
+            )
+            event["analysis_stage"] = stage
+            self.telemetry_events.append(event)
+            raise
+        event = response_event(
+            provider="claude_cli", requested_model=self.model,
+            duration_seconds=time.monotonic() - started, response=response,
         )
-        return parse_stage_payload(response["payload"], stage=stage, candidates=candidates)
+        event["analysis_stage"] = stage
+        self.telemetry_events.append(event)
+        return result
 
     def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
         schema = schema or FINDINGS_JSON_SCHEMA["schema"]

@@ -81,10 +81,27 @@ class AnthropicAnalyzer:
                 {"role": "user", "content": build_stage_user_prompt(unit, stage=stage, candidates=candidates)},
             ],
         }
-        raw_response = self._post_json(payload)
-        return parse_stage_payload(
-            self._extract_json_payload(raw_response), stage=stage, candidates=candidates,
+        started = time.monotonic()
+        try:
+            raw_response = self._post_json(payload)
+            result = parse_stage_payload(
+                self._extract_json_payload(raw_response), stage=stage, candidates=candidates,
+            )
+        except Exception as exc:
+            event = response_event(
+                provider="anthropic", requested_model=self.model,
+                duration_seconds=time.monotonic() - started, error=exc,
+            )
+            event["analysis_stage"] = stage
+            self.telemetry_events.append(event)
+            raise
+        event = response_event(
+            provider="anthropic", requested_model=self.model,
+            duration_seconds=time.monotonic() - started, response=raw_response,
         )
+        event["analysis_stage"] = stage
+        self.telemetry_events.append(event)
+        return result
 
     def _post_json(self, payload: dict) -> dict:
         body = json.dumps(payload).encode("utf-8")

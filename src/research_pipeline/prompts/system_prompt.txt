@@ -28,7 +28,7 @@ diferentes e não complete uma cota com palpites.
 
 Reporte apenas quando parâmetro livre (sem restrição de constante) pode causar a falha:
 - division_by_zero: denominador de /, //, % pode ser zero → ZeroDivisionError
-- out_of_bounds: índice de lst[i] pode sair de [0, len(lst)-1] → IndexError
+- out_of_bounds: índice de lst[i] pode ser menor que -len(lst) ou maior/igual a len(lst) → IndexError; índices negativos válidos dentro desse intervalo não são bug
 - assertion_violation: assert cond alcançável com cond falso, ou raise AssertionError alcançável → AssertionError
 - none_misuse: None alcança operação que exige valor concreto (atributo, chamada, len, aritmética etc.)
 - type_mismatch: valor de tipo incompatível alcança uma operação ou chamada e causa falha ou resultado semanticamente errado
@@ -43,6 +43,8 @@ Reporte apenas quando parâmetro livre (sem restrição de constante) pode causa
 - complex_conditional: aplique o limiar operacional de operadores and/or informado
 
 Não use nenhuma outra categoria além das 11 acima (8 bugs formais e 3 smells).
+Não use few-shots, exemplos de categoria ou pistas do dataset para decidir o
+rótulo; use somente a evidência da função recebida e as definições acima.
 
 ## TESTE DE EVIDÊNCIA — aplique internamente antes de gerar o JSON, NESTA ORDEM
 

@@ -47,6 +47,17 @@ def test_parser_accepts_two_stage_detection_strategy() -> None:
     ]).detection_strategy == "two_stage"
 
 
+def test_v2_telemetry_separates_two_stage_detection_calls() -> None:
+    summary = main._summarize_v2_telemetry([
+        {"stage": "detection", "analysis_stage": "localize", "status": "success"},
+        {"stage": "detection", "analysis_stage": "classify", "status": "success"},
+        {"stage": "detection", "analysis_stage": "classify", "status": "error"},
+    ])
+
+    assert summary["detection"]["localization_calls"] == 1
+    assert summary["detection"]["classification_calls"] == 2
+
+
 class _Synthesizer:
     def __init__(self, **kwargs):
         self.model = kwargs["model"]
@@ -214,6 +225,31 @@ def test_summarize_v2_telemetry_reports_cache_hit_rate_per_stage():
     assert summary["detection"]["cache_hit_rate"] == 0.4
     assert summary["synthesis"]["calls_with_cache_data"] == 0
     assert summary["synthesis"]["cache_hit_rate"] is None
+
+
+def test_summarize_detection_trace_keeps_failures_distinct():
+    summary = main._summarize_detection_trace([
+        {
+            "function": "f",
+            "located_candidates": 2,
+            "classified_candidates": 1,
+            "rejected_candidates": 1,
+        },
+        {
+            "function": "g",
+            "failure_stage": "classify",
+            "error": "invalid JSON",
+        },
+    ])
+
+    assert summary == {
+        "units": 2,
+        "located_candidates": 2,
+        "classified_candidates": 1,
+        "rejected_candidates": 1,
+        "localization_failures": 0,
+        "classification_failures": 1,
+    }
 
 
 def test_print_cache_summary_shows_rate_and_missing_data(capsys):

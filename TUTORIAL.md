@@ -238,7 +238,6 @@ python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 | `ollama` | Ollama local | `--ollama-base-url` (padrão `http://localhost:11434/v1`) |
 | `codex` | `codex exec` local | assinatura Codex já paga, sem token de API |
 | `claude_cli` | `claude -p` local | assinatura Claude já paga; `ANTHROPIC_API_KEY` é filtrado do ambiente do subprocesso, não é lido |
-| `gemini_cli` | Gemini CLI local | conta autenticada (pessoal ou empresarial); precisa do CLI headless disponível no diretório de execução |
 
 `--backend` escolhe quem detecta; `--synth-backend` escolhe quem sintetiza o
 harness na V2 (padrão: mesmo valor de `--backend`). Combinações mistas são

@@ -543,10 +543,15 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
             {
                 "calls": 0, "failed_calls": 0, "tokens": 0, "prompt_tokens": 0,
                 "cached_tokens": 0, "calls_with_cache_data": 0, "seconds": 0.0,
+                "localization_calls": 0, "classification_calls": 0,
             },
         )
         totals["calls"] += 1
         totals["failed_calls"] += int(event.get("status") != "success")
+        if event.get("analysis_stage") == "localize":
+            totals["localization_calls"] += 1
+        elif event.get("analysis_stage") == "classify":
+            totals["classification_calls"] += 1
         totals["tokens"] += int(event.get("total_tokens") or 0)
         totals["prompt_tokens"] += int(event.get("prompt_tokens") or 0)
         totals["seconds"] += float(event.get("duration_seconds") or 0.0)
@@ -564,6 +569,27 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
             else None
         )
     return by_stage
+
+
+def _summarize_detection_trace(trace: list[dict]) -> dict:
+    """Aggregate auditable detection counts without inventing measurements."""
+    summary = {
+        "units": len(trace),
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "localization_failures": 0,
+        "classification_failures": 0,
+    }
+    for item in trace:
+        summary["located_candidates"] += int(item.get("located_candidates", 0) or 0)
+        summary["classified_candidates"] += int(item.get("classified_candidates", 0) or 0)
+        summary["rejected_candidates"] += int(item.get("rejected_candidates", 0) or 0)
+        if item.get("failure_stage") == "localize":
+            summary["localization_failures"] += 1
+        elif item.get("failure_stage") == "classify":
+            summary["classification_failures"] += 1
+    return summary
 
 
 
@@ -1140,6 +1166,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         checkpoint = {
             "fingerprint": fingerprint,
             "detection_units": {},
+            "detection_trace": [],
             "synthesis_results": {},
             "status": "running",
             "telemetry_events": [],
@@ -1170,6 +1197,10 @@ def mode_v2(args: argparse.Namespace) -> int:
         else []
     )
     rejected_findings: list[dict[str, str]] = []
+    # Rebuild the trace from per-unit checkpoint entries so --resume cannot
+    # append the same trace twice when the checkpoint already contains an
+    # aggregate copy.
+    detection_trace: list[dict] = []
     formal_bug_categories = {
         "assertion_violation", "division_by_zero", "out_of_bounds",
         "none_misuse", "type_mismatch", "invalid_precondition",
@@ -1191,18 +1222,39 @@ def mode_v2(args: argparse.Namespace) -> int:
             if saved_unit is not None:
                 candidates.extend(ScanCandidate.from_dict(item) for item in saved_unit["candidates"])
                 rejected_findings.extend(saved_unit.get("rejected_findings", []))
+                if saved_unit.get("trace"):
+                    detection_trace.append(saved_unit["trace"])
                 print(f"  [{file_index}/{len(input_paths)}] Retomada: {file_path.name}::{unit.qualname}")
                 continue
             print(f"  [{file_index}/{len(input_paths)}] Analisando {file_path.name}::{unit.qualname}...")
             try:
                 findings = analyzer.analyze(unit)
             except Exception as exc:  # noqa: BLE001 - one API failure must not discard other units
+                analyzer_trace = getattr(analyzer, "detection_trace", [])
+                trace = dict(analyzer_trace[-1]) if analyzer_trace else {
+                    "function": unit.qualname,
+                    "strategy": args.detection_strategy,
+                    "located_candidates": 0,
+                    "classified_candidates": 0,
+                    "rejected_candidates": 0,
+                }
+                trace.update({"error": str(exc), "failure_stage": trace.get("failure_stage", "detection")})
+                detection_trace.append(trace)
                 detection_errors.append(
                     {"file": str(file_path), "function": unit.qualname, "error": str(exc)}
                 )
+                checkpoint["detection_trace"] = detection_trace
                 capture_telemetry()
                 _save_checkpoint(checkpoint_path, checkpoint)
                 continue
+            analyzer_trace = getattr(analyzer, "detection_trace", [])
+            trace = dict(analyzer_trace[-1]) if analyzer_trace else {
+                "function": unit.qualname,
+                "strategy": args.detection_strategy,
+                "located_candidates": len(findings),
+                "classified_candidates": len(findings),
+                "rejected_candidates": 0,
+            }
             unit_candidates: list[ScanCandidate] = []
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:
@@ -1236,10 +1288,15 @@ def mode_v2(args: argparse.Namespace) -> int:
                 )
             candidates.extend(unit_candidates)
             rejected_findings.extend(unit_rejections)
+            if not analyzer_trace:
+                trace["rejected_candidates"] = len(unit_rejections)
+            detection_trace.append(trace)
             checkpoint["detection_units"][unit_key] = {
                 "candidates": [_v2_candidate_dict(candidate) for candidate in unit_candidates],
                 "rejected_findings": unit_rejections,
+                "trace": trace,
             }
+            checkpoint["detection_trace"] = detection_trace
             capture_telemetry()
             _save_checkpoint(checkpoint_path, checkpoint)
 
@@ -1264,6 +1321,8 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "errors": detection_errors,
                     "candidates": [_v2_candidate_dict(c) for c in candidates],
                     "rejected_findings": rejected_findings,
+                    "trace": detection_trace,
+                    "trace_summary": _summarize_detection_trace(detection_trace),
                 },
                 "summary": _scan_summary([]),
                 "telemetry": telemetry_summary,
@@ -1380,6 +1439,8 @@ def mode_v2(args: argparse.Namespace) -> int:
                     for c in candidates
                 ],
                 "rejected_findings": rejected_findings,
+                "trace": detection_trace,
+                "trace_summary": _summarize_detection_trace(detection_trace),
             },
             "summary": summary,
             "telemetry": telemetry_summary,

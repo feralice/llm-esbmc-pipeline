@@ -6,7 +6,7 @@
 
 **Architecture:** Nenhuma mudança de arquitetura no pipeline. A pipeline já existente (`src/main.py --mode hybrid`, `research_pipeline/scan/`) roda sem alteração sobre um novo diretório de dataset (`dataset/disciplina_pgene601/geral/`), seguindo o mesmo esquema de `manifest.json` já usado em `dataset/v2_real_world/manifest.json` (campos `id`, `detection_file`, `harness_file`, `categories`, `expression`, `provenance`, `oracle`). O trabalho novo é inteiramente de dados (seleção de corpus, mineração de bugs, preparação de arquivos de detecção neutros) e de análise (comparação de métricas, discussão de limitações), não de código de pipeline.
 
-**Tech Stack:** Python 3.9+, ESBMC-Python (frontend Python do ESBMC), o backend de LLM já configurado no `.env` (qualquer um dos suportados: openai, anthropic, google, ollama, codex, claude_cli, gemini_cli).
+**Tech Stack:** Python 3.9+, ESBMC-Python (frontend Python do ESBMC), o backend de LLM já configurado no `.env` (qualquer um dos suportados: openai, anthropic, google, ollama, codex ou claude_cli).
 
 **Spec:** Definida nesta conversa, sem documento de especificação separado. Resumo: o método de síntese de harness guiada por LLM, já validado em Python de propósito geral (dataset V2), deve ser reavaliado sobre software Python de contexto ciber-físico ou embarcado, para verificar se a taxa de confirmação formal se mantém e se surgem categorias de bug ou limitações específicas do domínio.
 
@@ -322,7 +322,7 @@ Perguntar à aluna antes de commitar.
 **Interfaces:**
 - Consumes: a taxa de confirmação formal do corpus novo (Task 3) e os
   números já publicados do corpus geral em
-  `docs/projeto/complemento_apresentacao_2026-09-09.md` (recall ponta a
+  `docs/projeto/complemento_apresentacao_2026-09-23.md` (recall ponta a
   ponta de 22,1% sobre 104 casos, 23 confirmações formais de 28 hipóteses
   corretas).
 - Produces: uma tabela comparativa, usada como uma das seções do artigo (Task 6).
