@@ -166,7 +166,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--timeout",
         type=_positive_int,
         default=60,
-        help="Timeout em segundos para cada chamada ao ESBMC. (padrão: 30)",
+        help="Timeout em segundos para cada chamada ao ESBMC. (padrão: 60)",
     )
     parser.add_argument(
         "--llm-timeout",
