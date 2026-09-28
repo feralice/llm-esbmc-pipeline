@@ -93,18 +93,33 @@ def build_variants(harness: str) -> list[AblatedVariant]:
 
 
 def _is_nan_guard(call: ast.Call) -> bool:
-    """True for `__ESBMC_assume(x == x)` / `... and y == y` NaN exclusions."""
+    """True for NaN/Inf exclusions: `x == x`, `x - x == 0`, and `and` chains of them."""
     if not call.args:
         return False
+
+    def _is_self_difference(node: ast.expr) -> bool:
+        return (
+            isinstance(node, ast.BinOp)
+            and isinstance(node.op, ast.Sub)
+            and ast.unparse(node.left) == ast.unparse(node.right)
+        )
 
     def _all_self_eq(node: ast.expr) -> bool:
         if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
             return all(_all_self_eq(v) for v in node.values)
-        return (
+        if not (
             isinstance(node, ast.Compare)
             and len(node.ops) == 1
             and isinstance(node.ops[0], ast.Eq)
-            and ast.unparse(node.left) == ast.unparse(node.comparators[0])
+        ):
+            return False
+        left, right = node.left, node.comparators[0]
+        if ast.unparse(left) == ast.unparse(right):
+            return True
+        return (
+            _is_self_difference(left)
+            and isinstance(right, ast.Constant)
+            and right.value == 0
         )
 
     return _all_self_eq(call.args[0])

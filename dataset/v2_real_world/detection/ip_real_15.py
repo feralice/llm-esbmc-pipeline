@@ -1,4 +1,13 @@
 class EmptyLineTracker:
+    def _update_empty_lines(self, current_line):
+        # Pre-fix caller from black.py: subtracts previous_after even for
+        # the first line, when previous_line is None.
+        before, after = self._maybe_empty_lines(current_line)
+        before -= self.previous_after
+        self.previous_after = after
+        self.previous_line = current_line
+        return before, after
+
     def _maybe_empty_lines(self, current_line: Line) -> Tuple[int, int]:
         max_allowed = 1
         if current_line.depth == 0:

@@ -16,6 +16,7 @@ from research_pipeline.scan.pipeline import (
     OVER_RESTRICTED,
     SAFE_NATIVE,
     SAFE_ON_ABSTRACTION,
+    UNSUPPORTED_HARNESS,
     ScanCandidate,
     ScanCaseResult,
     _classify_esbmc,
@@ -148,6 +149,35 @@ def test_load_candidates_missing_field(tmp_path: Path):
         load_candidates(bad)
 
 
+def test_scan_candidate_serializes_four_value_harness_strategy():
+    candidate = ScanCandidate(
+        file="a.py", function="f", category="native_runtime",
+        harness_strategy="native_runtime",
+    )
+
+    restored = ScanCandidate.from_dict(candidate.to_dict())
+
+    assert restored.harness_strategy == "native_runtime"
+    assert restored.to_dict() == candidate.to_dict()
+
+
+def test_scan_candidate_migrates_legacy_category_to_strategy():
+    restored = ScanCandidate.from_dict({
+        "file": "a.py", "function": "f", "category": "division_by_zero",
+    })
+
+    assert restored.category == "division_by_zero"
+    assert restored.harness_strategy == "native_runtime"
+
+
+def test_scan_candidate_rejects_invalid_harness_strategy():
+    with pytest.raises(ValueError, match="harness_strategy"):
+        ScanCandidate.from_dict({
+            "file": "a.py", "function": "f", "category": "native_runtime",
+            "harness_strategy": "made_up",
+        })
+
+
 def test_find_unit_by_name_and_qualname():
     class U:
         def __init__(self, name, qualname):
@@ -166,6 +196,23 @@ def test_classify_esbmc_mapping():
     assert _classify_esbmc("skipped") == "esbmc_unavailable"
     assert _classify_esbmc("timeout") == "esbmc_inconclusive"
     assert _classify_esbmc("no_vcc_generated") == "no_property"
+
+
+def test_unsupported_strategy_is_reported_without_synthesis(tmp_path: Path):
+    candidate = ScanCandidate(
+        file=str(tmp_path / "missing.py"), function="f", category="unsupported",
+        harness_strategy="unsupported",
+    )
+
+    result = run_pipeline_scan(
+        [candidate],
+        synthesizer=_FakeSynthesizer(_GOOD_HARNESS),
+        output_dir=tmp_path / "out",
+        synth_retries=0,
+        use_driver=False,
+    )[0]
+
+    assert result.classification == UNSUPPORTED_HARNESS
 
 
 def test_confirmed_on_abstraction(tmp_path, monkeypatch):
@@ -552,3 +599,35 @@ def test_loop_fallback_can_be_disabled_for_ablation(tmp_path, monkeypatch):
     )[0]
     assert STYLE_LOOP not in synth.seen_styles
     assert result.classification == SAFE_ON_ABSTRACTION
+
+
+@pytest.mark.parametrize(
+    ("property_kind", "evidence", "esbmc_category"),
+    [
+        ("uncaught exception: ZeroDivisionError", "esbmc_native", "division_by_zero"),
+        ("uncaught exception: IndexError", "category_mismatch", "out_of_bounds"),
+    ],
+)
+def test_native_violation_records_whether_esbmc_agrees_on_category(
+    tmp_path, monkeypatch, property_kind, evidence, esbmc_category
+):
+    native = _native_result("violation_found")
+    native.details = {"property_kind": property_kind}
+    _patch_native(monkeypatch, lambda *a, **k: native)
+    result = run_pipeline_scan(
+        [_candidate(tmp_path)],
+        synthesizer=_RetrySynthesizer(fail_times=0),
+        output_dir=tmp_path / "out",
+    )[0]
+    assert result.classification == CONFIRMED_NATIVE
+    assert result.category_evidence == evidence
+    assert result.esbmc_category == esbmc_category
+    assert ScanCaseResult.from_dict(result.to_dict()).category_evidence == evidence
+    assert ScanCaseResult.from_dict(result.to_dict()).esbmc_category == result.esbmc_category
+
+
+def test_marked_assert_confirmation_records_marked_assertion(tmp_path, monkeypatch):
+    _patch_esbmc(monkeypatch, lambda *a, **k: _esbmc("violation_found"))
+    result = _run(tmp_path, _GOOD_HARNESS, _candidate(tmp_path))
+    assert result.classification == CONFIRMED_ON_ABSTRACTION
+    assert result.category_evidence == "marked_assertion"

@@ -1,0 +1,606 @@
+{
+  "evaluation_policy": {
+    "detection_scope": "only items not requiring patch context",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "patch_context_items": []
+  },
+  "description": "ESBMC-verifiable subset of v2_real_world (18 of 120 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
+  "items": [
+    {
+      "id": "dz_real_02",
+      "file": "dz_real_02.py",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "verifiable": true,
+      "expression": "float(not_parsed)/float(num_substrings)",
+      "expected_type": "ZeroDivisionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "dateparser",
+        "repo_url": "https://github.com/scrapinghub/dateparser",
+        "commit_hash": "7098f6359033294c605ce4f8cbdb89a1d6d42055",
+        "source_file": "dateparser/search/search.py",
+        "source_function": "ExactLanguageSearch.choose_best_split"
+      },
+      "abstraction_notes": "num_substrings = len(possible_substrings_splits[i]) can legitimately be 0 (an empty split option) -- nothing upstream of the real division guards against it. Manual assert added because ESBMC-Python's `/` is not covered by the default division-by-zero check. Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED.",
+      "categories": [
+        "division_by_zero"
+      ],
+      "harness_file": "dz_real_02.py",
+      "harness_function": "rating_ratio",
+      "harness_expression": "float(not_parsed) / float(num_substrings)",
+      "harness_line": 7,
+      "audit": {
+        "source_expression": "float(not_parsed)/float(num_substrings)",
+        "harness_property": "float(not_parsed) / float(num_substrings)",
+        "provenance_complete": false
+      },
+      "esbmc_property": "ZeroDivisionError",
+      "eligibility_reason": "Divisão real por num_substrings == 0; fix protege a divisão. invalid_precondition removida no elegível: não há evidência independente (o fix é um guard local, não validação de entrada)."
+    },
+    {
+      "id": "dz_real_03",
+      "file": "dz_real_03.py",
+      "function": "HashExpander.do",
+      "verifiable": true,
+      "expression": "(crc >> idx) % (range_end - range_begin + 1)",
+      "expected_type": "ZeroDivisionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "croniter",
+        "repo_url": "https://github.com/kiorky/croniter",
+        "commit_hash": "7d319c510b863827073d42ecee787f3c5a046f7c",
+        "source_file": "src/croniter/croniter.py",
+        "source_function": "HashExpander (range hashing helper)",
+        "buggy_commit": "6343c5b2fc65a0ed488793ab55f88be4bc330155",
+        "fixed_commit": "7d319c510b863827073d42ecee787f3c5a046f7c",
+        "buggy_commit_url": "https://github.com/kiorky/croniter/commit/6343c5b2fc65a0ed488793ab55f88be4bc330155",
+        "fixed_commit_url": "https://github.com/kiorky/croniter/commit/7d319c510b863827073d42ecee787f3c5a046f7c"
+      },
+      "abstraction_notes": "A hashed cron field with a malformed/inverted range (e.g. \"* * R/0 * *\") makes range_end - range_begin + 1 == 0; nothing before the real `%` rejects that. Manual assert isolates the real ZeroDivisionError trigger (int `%` is not the checked `//`). Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED.",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
+      ],
+      "harness_file": "dz_real_03.py",
+      "harness_function": "hash_expand_range",
+      "harness_expression": "(crc >> idx) % rng",
+      "harness_line": 8,
+      "audit": {
+        "source_expression": "(crc >> idx) % (range_end - range_begin + 1)",
+        "harness_property": "(crc >> idx) % rng",
+        "provenance_complete": true
+      },
+      "esbmc_property": "ZeroDivisionError",
+      "eligibility_reason": "Módulo por zero real; o fix valida a faixa e lança CroniterBadCronError, o que é evidência independente de precondição de entrada."
+    },
+    {
+      "id": "ip_real_17",
+      "file": "ip_real_17.py",
+      "function": "response_status_message",
+      "verifiable": true,
+      "expression": "http.RESPONSES.get(int(status))",
+      "expected_type": "TypeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": "17",
+        "source_file": "scrapy/utils/response.py",
+        "source_function": "response_status_message",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "ebef6d7c6dd8922210db8a4a44f48fe27ee0cd16",
+        "fixed_commit": "65c7c05060fd2d1fc161d4904243d5e0b31e202b"
+      },
+      "abstraction_notes": "dict.get() with no default returned None for status codes outside the known table, crashing downstream string formatting; fix adds an 'Unknown Status' default. Modeled as a bool precondition (was the status in the table), no scrapy-internal types needed.",
+      "categories": [
+        "none_misuse"
+      ],
+      "harness_file": "ip_real_17.py",
+      "harness_function": "response_status_message",
+      "harness_expression": "responses.get(status)",
+      "harness_line": 15,
+      "audit": {
+        "source_expression": "http.RESPONSES.get(int(status))",
+        "harness_property": "responses.get(status)",
+        "provenance_complete": false
+      },
+      "esbmc_property": "TypeError",
+      "eligibility_reason": "TypeError real: dict.get sem default devolve None para to_native_str. invalid_precondition removida no elegível: mesma evidência da none_misuse."
+    },
+    {
+      "id": "ip_real_21",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "verifiable": true,
+      "expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
+      "expected_type": "KeyError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "sortedcontainers",
+        "repo_url": "https://github.com/grantjenks/python-sortedcontainers",
+        "commit_hash": "a04f4a68188fea6797fe3e5f16f388086e405e62",
+        "parent_commit": "7495364027feeeebcfc5cab1330d4ffd1b89b538",
+        "source_file": "sortedcontainers/sorteddict.py",
+        "source_function": "SortedDict.__eq__ / __ne__"
+      },
+      "abstraction_notes": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError.",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
+      "harness_file": "ip_real_21.py",
+      "harness_function": "sorted_dict_eq",
+      "harness_expression": "self_d[key] != that_d[key]",
+      "harness_line": 8,
+      "audit": {
+        "source_expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
+        "harness_property": "self_d[key] != that_d[key]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "KeyError",
+      "eligibility_reason": "KeyError nativo com dicts de mesmo tamanho e chaves diferentes (harness corrigido: o anterior tinha tamanhos diferentes, que o código real curto-circuita)."
+    },
+    {
+      "id": "ip_real_28",
+      "file": "ip_real_28.py",
+      "function": "IOLoop.initialize",
+      "verifiable": true,
+      "expression": "IOLoop.current(instance=False) is None",
+      "expected_type": "RuntimeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "tornado",
+        "bugsinpy_id": 14,
+        "source_file": "tornado/ioloop.py",
+        "source_function": "IOLoop.initialize",
+        "repo_url": "https://github.com/tornadoweb/tornado",
+        "buggy_commit": "81ee310adcd905fbdf7c98d9fb6ef0c5a46026c2",
+        "fixed_commit": "1d02ed606f1c52636462633d009bdcbaac644331"
+      },
+      "abstraction_notes": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair.",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "harness_file": "ip_real_28.py",
+      "harness_function": "initialize",
+      "harness_expression": "if not current_exists:",
+      "harness_line": 6,
+      "audit": {
+        "source_expression": "IOLoop.current(instance=False) is None",
+        "harness_property": "if not current_exists:",
+        "provenance_complete": false
+      },
+      "esbmc_property": "RuntimeError",
+      "eligibility_reason": "RuntimeError real lançado com condição invertida em entrada válida; fix inverte o teste."
+    },
+    {
+      "id": "nm_real_12",
+      "file": "nm_real_12.py",
+      "function": "PamdService.remove",
+      "verifiable": true,
+      "expression": "current_line.next.prev = current_line.prev",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "ansible",
+        "bugsinpy_id": 10,
+        "buggy_commit": "e368f788f71c338cd3f049d5d6bdc643a51c0514",
+        "fixed_commit": "a4b59d021368285490f7cda50c11ac4f7a8030b5",
+        "source_file": "lib/ansible/modules/system/pamd.py",
+        "source_function": "PamdService.remove",
+        "repo_url": "https://github.com/ansible/ansible",
+        "buggy_commit_url": "https://github.com/ansible/ansible/commit/e368f788f71c338cd3f049d5d6bdc643a51c0514",
+        "fixed_commit_url": "https://github.com/ansible/ansible/commit/a4b59d021368285490f7cda50c11ac4f7a8030b5"
+      },
+      "abstraction_notes": "The doubly-linked PamdRule list reduced to a single bool (next_is_none) standing in for 'current_line is the last node'; the real prev/next pointer rewiring is omitted since the bug is purely the missing None-guard on current_line.next before dereferencing .prev on it.",
+      "categories": [
+        "none_misuse"
+      ],
+      "harness_file": "nm_real_12.py",
+      "harness_function": "unlink",
+      "harness_expression": "current_line.next.prev = current_line.prev",
+      "harness_line": 15,
+      "audit": {
+        "source_expression": "current_line.next.prev = current_line.prev",
+        "harness_property": "current_line.next.prev = current_line.prev",
+        "provenance_complete": true
+      },
+      "esbmc_property": "null_dereference",
+      "eligibility_reason": "NULL dereference nativo ao acessar current_line.next.prev com next None; fix adiciona o guard."
+    },
+    {
+      "id": "nm_real_21",
+      "file": "nm_real_21.py",
+      "function": "_Projection.get_index",
+      "verifiable": true,
+      "expression": "if matches:\n            return self.__class__(matches)",
+      "expected_type": "AssertionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "jmespath.py",
+        "commit_hash": "8f14a303bf9c953e1762c116c446542d68e1ab5d",
+        "source_file": "jmespath/ast.py",
+        "source_function": "_Projection.get_index",
+        "repo_url": "https://github.com/jmespath/jmespath.py",
+        "buggy_commit": "365c9b886858bcdb6da2bc29a6bd60331dab705c",
+        "fixed_commit": "8f14a303bf9c953e1762c116c446542d68e1ab5d",
+        "buggy_commit_url": "https://github.com/jmespath/jmespath.py/commit/365c9b886858bcdb6da2bc29a6bd60331dab705c",
+        "fixed_commit_url": "https://github.com/jmespath/jmespath.py/commit/8f14a303bf9c953e1762c116c446542d68e1ab5d"
+      },
+      "abstraction_notes": "Function builds a matches list, then only returns inside `if matches:` with no else -- when matches is empty, implicitly returns None instead of []. Real GitHub issue #18. Verified via ESBMC's missing-return-statement detection (120 VCCs generated, 26 after simplification).",
+      "categories": [
+        "none_misuse"
+      ],
+      "harness_file": "nm_real_21.py",
+      "harness_function": "multi_get",
+      "harness_expression": "if matches: return matches",
+      "harness_line": 3,
+      "audit": {
+        "source_expression": "if matches:\n            return self.__class__(matches)",
+        "harness_property": "if matches: return matches",
+        "provenance_complete": true
+      },
+      "esbmc_property": "missing_return",
+      "eligibility_reason": "Missing return nativo: caminho sem return devolve None; fix sempre retorna a lista."
+    },
+    {
+      "id": "oob_real_04",
+      "file": "oob_real_04.py",
+      "function": "SortedCorrectedCommandsSequence._realise",
+      "verifiable": true,
+      "expression": "self._cached[0]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "thefuck",
+        "bugsinpy_id": 22,
+        "buggy_commit": "faa7ee603057fa98c25507d30180c055d10d13d4",
+        "fixed_commit": "e2e8b6fc865452b4cfc1bed70e5b9b49807258ae",
+        "source_file": "thefuck/types.py",
+        "source_function": "SortedCorrectedCommandsSequence._realise",
+        "repo_url": "https://github.com/nvbn/thefuck",
+        "buggy_commit_url": "https://github.com/nvbn/thefuck/commit/faa7ee603057fa98c25507d30180c055d10d13d4",
+        "fixed_commit_url": "https://github.com/nvbn/thefuck/commit/e2e8b6fc865452b4cfc1bed70e5b9b49807258ae"
+      },
+      "abstraction_notes": "Verbatim: indexes self._cached[0] unconditionally; real fix guards with `if self._cached:`. Reproduced directly with an empty list literal, no stubbing needed.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_04.py",
+      "harness_function": "buggy_realise",
+      "harness_expression": "cached[0]",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "self._cached[0]",
+        "harness_property": "cached[0]",
+        "provenance_complete": true
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_05",
+      "file": "oob_real_05.py",
+      "function": "lib2to3_parse",
+      "verifiable": true,
+      "expression": "src_txt[-1]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "black",
+        "bugsinpy_id": 17,
+        "buggy_commit": "bbc09a4f013f2a584f143f3f5e3f76f6082367d4",
+        "fixed_commit": "7fc6ce990669464f5172b63fafa3724f5f308be3",
+        "source_file": "black.py",
+        "source_function": "lib2to3_parse",
+        "repo_url": "https://github.com/psf/black",
+        "buggy_commit_url": "https://github.com/psf/black/commit/bbc09a4f013f2a584f143f3f5e3f76f6082367d4",
+        "fixed_commit_url": "https://github.com/psf/black/commit/7fc6ce990669464f5172b63fafa3724f5f308be3"
+      },
+      "abstraction_notes": "Verbatim: src_txt[-1] on an empty string raises IndexError; real fix uses the slice src_txt[-1:], which is safe on an empty string. Reproduced directly with an empty string literal, no stubbing needed.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_05.py",
+      "harness_function": "buggy_check",
+      "harness_expression": "src_txt[-1]",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "src_txt[-1]",
+        "harness_property": "src_txt[-1]",
+        "provenance_complete": true
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_09",
+      "file": "oob_real_09.py",
+      "function": "parser._parse",
+      "verifiable": true,
+      "expression": "l[i + 4]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "dateutil",
+        "repo_url": "https://github.com/dateutil/dateutil",
+        "commit_hash": "6222418b231461f73ff97a84c6739fa33d2aca4b",
+        "source_file": "dateutil/parser.py",
+        "source_function": "parser._parse (minute/second HHMM branch)"
+      },
+      "abstraction_notes": "Real code guarded l[i+4] with 'i+3 < len_l' instead of 'i+4 < len_l'; when len_l == i+4 exactly the guard passes but the index is out of range. Modeled as a plain int-indexed list, no dateutil token types needed.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_09.py",
+      "harness_function": "parse_minute_second",
+      "harness_expression": "l[i + 4]",
+      "harness_line": 3,
+      "audit": {
+        "source_expression": "l[i + 4]",
+        "harness_property": "l[i + 4]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_10",
+      "file": "oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "verifiable": true,
+      "expression": "list_of_lists[0]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "python-tabulate",
+        "repo_url": "https://github.com/astanin/python-tabulate",
+        "commit_hash": "20c6370d5da2dae89b305bfb6c7f12a0f8b7236c",
+        "source_file": "tabulate/__init__.py",
+        "source_function": "_wrap_text_to_colwidths"
+      },
+      "abstraction_notes": "list_of_lists[0] accessed unconditionally to infer column count; empty input list raises IndexError. Real GitHub issue #180, upstream regression test. [AUDITADO 2026-08-23: default --timeout 20s da falso timeout, nao chega no contraexemplo. Confirmado real com --timeout 60s (mesmo --unwind 6). Usar timeout maior ao reproduzir.]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_10.py",
+      "harness_function": "compute_num_cols",
+      "harness_expression": "list_of_lists[0]",
+      "harness_line": 2,
+      "audit": {
+        "source_expression": "list_of_lists[0]",
+        "harness_property": "list_of_lists[0]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_11",
+      "file": "oob_real_11.py",
+      "function": "wcswidth",
+      "verifiable": true,
+      "expression": "pwcs[idx]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "wcwidth",
+        "repo_url": "https://github.com/jquast/wcwidth",
+        "commit_hash": "4c914039ba6c70ea2508420b591e3319683d5185",
+        "source_file": "wcwidth/_wcswidth.py",
+        "source_function": "wcswidth / wcstwidth"
+      },
+      "abstraction_notes": "end was set directly to the caller-supplied n without clamping to len(pwcs); when n exceeds the string length the loop indexes past the end. Fixes real issue #228, has an upstream regression test.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_11.py",
+      "harness_function": "wcswidth_loop",
+      "harness_expression": "pwcs[i]",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "pwcs[idx]",
+        "harness_property": "pwcs[i]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_12",
+      "file": "oob_real_12.py",
+      "function": "fast_float",
+      "verifiable": true,
+      "expression": "x[0]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "natsort",
+        "repo_url": "https://github.com/SethMMorton/natsort",
+        "commit_hash": "441d1a74093ba3aaa48e4d88a0eb457bac0e05b3",
+        "source_file": "natsort/compat/fake_fastnumbers.py",
+        "source_function": "fast_float / fast_int"
+      },
+      "abstraction_notes": "x[0] accessed unconditionally; natsort's own regex splitting can produce an empty string, which then IndexErrors here. Fix adds an 'if not x' guard. Issue-linked, has a regression test.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_12.py",
+      "harness_function": "fast_float",
+      "harness_expression": "x[0]",
+      "harness_line": 2,
+      "audit": {
+        "source_expression": "x[0]",
+        "harness_property": "x[0]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_13",
+      "file": "oob_real_13.py",
+      "function": "tokenize",
+      "verifiable": true,
+      "expression": "result[-1]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "emoji",
+        "repo_url": "https://github.com/carpedm20/emoji",
+        "commit_hash": "14a3a1621673a9e98f8b8976dfc6d99038bbe267",
+        "source_file": "emoji/tokenizer.py",
+        "source_function": "tokenize"
+      },
+      "abstraction_notes": "In the ZWJ branch, result[-1] and string[i-1] are accessed with no non-empty/i>0 guard; a string starting with a zero-width-joiner triggers IndexError on the first char. Real issue #263, has a regression test. Reproduced verbatim with the deterministic empty-result/i=0 trigger case.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_13.py",
+      "harness_function": "tokenize_zwj_branch",
+      "harness_expression": "result[-1]",
+      "harness_line": 2,
+      "audit": {
+        "source_expression": "result[-1]",
+        "harness_property": "result[-1]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "oob_real_14",
+      "file": "oob_real_14.py",
+      "function": "LinuxDistribution._parse_uname_content",
+      "verifiable": true,
+      "expression": "lines[0]",
+      "expected_type": "IndexError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "distro",
+        "repo_url": "https://github.com/python-distro/distro",
+        "commit_hash": "d3e919410b5a759de554eb73c959e16f3fd481ad",
+        "source_file": "distro.py",
+        "source_function": "LinuxDistribution._parse_uname_content"
+      },
+      "abstraction_notes": "lines[0] indexed with no empty-list check; raises IndexError when 'uname -rs' produces no output. Pure Sequence[str] function, no subprocess dependency at this level. Fixes real GitHub issue #304/#264.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "harness_file": "oob_real_14.py",
+      "harness_function": "parse_uname_content",
+      "harness_expression": "lines[0]",
+      "harness_line": 2,
+      "audit": {
+        "source_expression": "lines[0]",
+        "harness_property": "lines[0]",
+        "provenance_complete": false
+      },
+      "esbmc_property": "IndexError",
+      "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
+    },
+    {
+      "id": "tm_real_10",
+      "file": "tm_real_10.py",
+      "function": "MetricsHandler.get",
+      "verifiable": true,
+      "expression": "metrics.configure_http_handler(self)",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "luigi",
+        "bugsinpy_id": "1",
+        "source_file": "luigi/server.py",
+        "source_function": "MetricsHandler.get",
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "1164eb6b85b8a70f596dbb99452bec513e72c12e",
+        "buggy_commit_url": "https://github.com/spotify/luigi/commit/1164eb6b85b8a70f596dbb99452bec513e72c12e",
+        "fixed_commit": "aec5dc2ed8db53fc282a0bd24aabe59031b6d1ba"
+      },
+      "abstraction_notes": "Real code called configure_http_handler() on the metrics VALUE returned by generate_latest() instead of on the metrics_collector object that actually defines that method. Modeled with two minimal classes (Metrics with no such method, MetricsCollector with it) -- ESBMC-Python's class model raises AttributeError on the wrong-object call, near-verbatim reproduction.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "harness_file": "tm_real_10.py",
+      "harness_function": "get_handler_buggy",
+      "harness_expression": "metrics.configure_http_handler(self)",
+      "harness_line": 11,
+      "audit": {
+        "source_expression": "metrics.configure_http_handler(self)",
+        "harness_property": "metrics.configure_http_handler(self)",
+        "provenance_complete": false
+      },
+      "esbmc_property": "AttributeError",
+      "eligibility_reason": "AttributeError nativo: método chamado no objeto errado; fix chama no coletor."
+    },
+    {
+      "id": "dz_real_04",
+      "file": "dz_real_04.py",
+      "function": "interpolate_bilinear_2x_fwd",
+      "verifiable": true,
+      "expression": "(h_src - wdw_size) / step_size",
+      "expected_type": "ZeroDivisionError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "nki-samples",
+        "repo_url": "https://github.com/aws-neuron/nki-samples",
+        "source_file": "contributed/interpolate_bilinear_fwd.py",
+        "source_function": "interpolate_bilinear_2x_fwd",
+        "buggy_commit": "a87aaa44f7b26241bdb152af8838e287669c3947",
+        "fixed_commit": "d631c8815da107186164d5bfd62c7ed0825eca90",
+        "issue_url": "https://github.com/aws-neuron/nki-samples/issues/125",
+        "pr_url": "https://github.com/aws-neuron/nki-samples/pull/126",
+        "buggy_commit_url": "https://github.com/aws-neuron/nki-samples/commit/a87aaa44f7b26241bdb152af8838e287669c3947",
+        "fixed_commit_url": "https://github.com/aws-neuron/nki-samples/commit/d631c8815da107186164d5bfd62c7ed0825eca90"
+      },
+      "abstraction_notes": "Isolated the scalar step_size computation from an NKI hardware kernel (tensor/tile ops, out of ESBMC-Python's scope, left untouched in detection/). Real caller precondition (h_src > 0, chunk_size > 0, default chunk_size=10) preserved via __ESBMC_assume; no lower bound of 2 on chunk_size existed pre-fix, so chunk_size == 1 collapses step_size to 0. Manual assert added because ESBMC-Python's `/` lowers to ieee_div and is not covered by the default division-by-zero check. Issue #125 filed by Lucas Cordeiro (formal verification researcher), fixed by PR #126 (assert chunk_size >= 2). Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED, counterexample chunk_size=1.",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
+      ],
+      "harness_file": "dz_real_04.py",
+      "harness_function": "interpolate_step_ratio",
+      "harness_expression": "(h_src - wdw_size) / step_size",
+      "harness_line": 12,
+      "audit": {
+        "source_expression": "(h_src - wdw_size) / step_size",
+        "harness_property": "(h_src - wdw_size) / step_size",
+        "provenance_complete": true
+      },
+      "esbmc_property": "ZeroDivisionError",
+      "eligibility_reason": "Divisão por step_size == 0; o fix (PR #126) acrescenta assert chunk_size >= 2 na entrada, evidência independente de precondição."
+    },
+    {
+      "id": "tm_real_13",
+      "file": "tm_real_13.py",
+      "function": "XmlItemExporter._export_xml_field",
+      "verifiable": true,
+      "expression": "self._xg_characters(serialized_value)",
+      "expected_type": "AttributeError",
+      "should_go_to_esbmc": true,
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": 22,
+        "source_file": "scrapy/exporters.py",
+        "source_function": "XmlItemExporter._export_xml_field",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "a35aec71e96b0c0288c370afa425e8e700dca8b3",
+        "fixed_commit": "bb2cf7c0d7199fffe0aa100e5c8a51c6b4b82fc2"
+      },
+      "abstraction_notes": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'.",
+      "categories": [
+        "type_mismatch"
+      ],
+      "harness_file": "tm_real_13.py",
+      "harness_function": "xg_characters",
+      "harness_expression": "serialized_value.decode(\"utf-8\")",
+      "harness_line": 5,
+      "audit": {
+        "source_expression": "self._xg_characters(serialized_value)",
+        "harness_property": "serialized_value.decode(\"utf-8\")",
+        "provenance_complete": true
+      },
+      "esbmc_property": "AttributeError",
+      "eligibility_reason": "AttributeError nativo: .decode() em valor int; fix converte com str()."
+    }
+  ]
+}

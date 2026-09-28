@@ -161,6 +161,33 @@ def test_v2_resume_does_not_repeat_completed_detection(tmp_path: Path, monkeypat
     assert _Analyzer.calls == 1
 
 
+def test_v2_marks_checkpoint_interrupted_when_synthesis_is_cancelled(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text(
+        "def divide(x: int, y: int) -> int:\n    return x // y\n",
+        encoding="utf-8",
+    )
+    output = tmp_path / "out"
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "HarnessSynthesizer", _Synthesizer)
+
+    def interrupted_pipeline(candidates, **kwargs):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(main, "run_pipeline_scan", interrupted_pipeline)
+    args = main.build_parser().parse_args(
+        ["--mode", "hybrid", "--input", str(source), "--output-dir", str(output)]
+    )
+
+    assert main.mode_v2(args) == 2
+    checkpoint = json.loads((output / "v2_checkpoint.json").read_text(encoding="utf-8"))
+    assert checkpoint["status"] == "interrupted"
+    assert "interrupted_at" in checkpoint
+
+
 def test_v2_end_to_end_excludes_patch_context_items_from_detection(
     tmp_path: Path, monkeypatch
 ) -> None:

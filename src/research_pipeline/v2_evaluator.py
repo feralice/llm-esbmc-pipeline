@@ -34,6 +34,110 @@ def _signature(file: str, category: str) -> tuple[str, str]:
     return str(Path(file).resolve()), category
 
 
+def _bug_detection_metrics(
+    expected_items: list[dict], candidates: list, base: Path,
+    rejected_findings: list[dict] | None = None,
+) -> dict:
+    """Measure case localization independently from category classification."""
+    expected = [
+        {
+            "file": str((base / item["detection_file"]).resolve()),
+            "function": str(item.get("function", "")),
+            "expression": str(item.get("expression", "")),
+            "categories": {str(category) for category in item.get("categories", [])},
+        }
+        for item in expected_items
+        if item.get("categories")
+    ]
+    generated = [
+        {
+            "file": str(Path(candidate["file"]).resolve())
+            if isinstance(candidate, dict)
+            else str(Path(candidate.file).resolve()),
+            "function": str(candidate.get("function", ""))
+            if isinstance(candidate, dict)
+            else str(candidate.function),
+            "expression": str(candidate.get("expression", ""))
+            if isinstance(candidate, dict)
+            else str(candidate.expression),
+            "category": str(candidate.get("category", ""))
+            if isinstance(candidate, dict)
+            else str(candidate.category),
+        }
+        for candidate in [*candidates, *(rejected_findings or [])]
+    ]
+
+    def count_matches(predicate) -> dict[str, float | None | int]:
+        matched = sum(
+            any(predicate(item, candidate) for candidate in generated)
+            for item in expected
+        )
+        false_positives = sum(
+            not any(predicate(item, candidate) for item in expected)
+            for candidate in generated
+        )
+        false_negatives = len(expected) - matched
+        return {
+            "tp": matched,
+            "fp": false_positives,
+            "fn": false_negatives,
+            **_prf(matched, false_positives, false_negatives),
+        }
+
+    def matches_primary_location(item: dict, candidate: dict) -> bool:
+        """Match the strongest location fields available in the manifest."""
+        if candidate["file"] != item["file"]:
+            return False
+        if item["function"] and candidate["function"] != item["function"]:
+            return False
+        if item["expression"] and candidate["expression"] != item["expression"]:
+            return False
+        return True
+
+    file_metrics = count_matches(lambda item, candidate: candidate["file"] == item["file"])
+    location_metrics = count_matches(
+        lambda item, candidate: (
+            candidate["file"] == item["file"]
+            and candidate["function"] == item["function"]
+        )
+    )
+    expression_metrics = count_matches(
+        lambda item, candidate: (
+            candidate["file"] == item["file"]
+            and candidate["function"] == item["function"]
+            and candidate["expression"] == item["expression"]
+        )
+    )
+    detection_metrics = count_matches(matches_primary_location)
+    category_given_location = {
+        "tp": sum(
+            any(
+                candidate["file"] == item["file"]
+                and candidate["function"] == item["function"]
+                and candidate["category"] in item["categories"]
+                for candidate in generated
+            )
+            for item in expected
+        ),
+    }
+    category_given_location["fp"] = 0
+    category_given_location["fn"] = len(expected) - category_given_location["tp"]
+    category_given_location.update(
+        _prf(
+            category_given_location["tp"],
+            category_given_location["fp"],
+            category_given_location["fn"],
+        )
+    )
+    return {
+        "detection": detection_metrics,
+        "file": file_metrics,
+        "location": location_metrics,
+        "expression": expression_metrics,
+        "category_given_location": category_given_location,
+    }
+
+
 _CONFIRMATION_CLASSIFICATIONS = frozenset(
     {"confirmed_native", "confirmed_driver", "confirmed_on_abstraction"}
 )
@@ -133,6 +237,21 @@ def evaluate_v2_results(
     detection_fp = sum((generated - expected).values())
     detection_fn = sum((expected - generated).values())
 
+    location_detection = _bug_detection_metrics(
+        [
+            item
+            for item in manifest_items
+            if str(item.get("id")) not in patch_context_ids
+            and (
+                allowed_sources is None
+                or str((base / item["detection_file"]).resolve()) in allowed_sources
+            )
+        ],
+        candidates,
+        base,
+        rejected_findings,
+    )
+
     result_by_signature: dict[tuple[str, str], list] = {}
     for result in results:
         sig = _signature(result.candidate.file, result.candidate.category)
@@ -173,6 +292,11 @@ def evaluate_v2_results(
     )
     unknown_evidence = sum(_is_unknown_confirmation(r) for r in true_positive_results)
     unverified = sum(r.classification == "confirmed_unverified" for r in true_positive_results)
+    category_evidence = Counter(
+        getattr(r, "category_evidence", "") or "unrecorded"
+        for r in true_positive_results
+        if is_real_body_confirmation(r) or is_scalar_abstraction_confirmation(r)
+    )
     over_restricted = sum(r.classification == "over_restricted" for r in true_positive_results)
     repaired = sum(
         is_scalar_abstraction_confirmation(r) and r.attempts > 1
@@ -198,10 +322,11 @@ def evaluate_v2_results(
     if other_unprocessed:
         stage_losses[FAILURE_UNATTRIBUTED] += other_unprocessed
     stage_loss_total = sum(stage_losses.values())
-    detection_metrics = {
-        "tp": detection_tp, "fp": detection_fp, "fn": detection_fn,
-        **_prf(detection_tp, detection_fp, detection_fn),
-    } if evaluate_detection else {"status": "not_evaluated_oracle_seeded"}
+    detection_metrics = (
+        location_detection["detection"]
+        if evaluate_detection
+        else {"status": "not_evaluated_oracle_seeded"}
+    )
     end_to_end_metrics = {
         "tp": end_to_end_tp, "fp": end_to_end_fp, "fn": end_to_end_fn,
         **_prf(end_to_end_tp, end_to_end_fp, end_to_end_fn),
@@ -212,6 +337,7 @@ def evaluate_v2_results(
         "excluded_patch_context_items": len(patch_context_ids),
         "expected_labels": sum(expected.values()),
         "detection": detection_metrics,
+        "bug_detection": location_detection,
         "synthesis_given_correct_detection": {
             "n": len(true_positive_results),
             "compatible": compatible,
@@ -226,6 +352,7 @@ def evaluate_v2_results(
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,
             "unverified": unverified,
+            "category_evidence": dict(sorted(category_evidence.items())),
         },
         "pipeline_stage_losses": {
             "correct_detection_labels": detection_tp,

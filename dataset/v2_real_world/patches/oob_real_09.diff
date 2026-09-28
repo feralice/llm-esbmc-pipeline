@@ -1,0 +1,14 @@
+# source: https://github.com/dateutil/dateutil/commit/6222418b231461f73ff97a84c6739fa33d2aca4b
+diff --git a/dateutil/parser.py b/dateutil/parser.py
+index 18c1c071c..520ec320a 100644
+--- a/dateutil/parser.py
++++ b/dateutil/parser.py
+@@ -825,7 +825,7 @@ def _parse(self, timestr, dayfirst=None, yearfirst=None, fuzzy=False,
+                         value = float(l[i+2])
+                         (res.minute, res.second) = _parse_min_sec(value)
+ 
+-                        if i+3 < len_l and l[i+3] == ':':
++                        if i+4 < len_l and l[i+3] == ':':
+                             res.second, res.microsecond = _parsems(l[i+4])
+                             i += 2
+ 

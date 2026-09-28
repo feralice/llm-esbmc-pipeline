@@ -15,7 +15,11 @@ from .models import (
     Finding,
 )
 from .preprocess import preprocess_file
-from .report import _category_from_esbmc_property, _esbmc_result_matches_category
+from .report import (
+    UNWINDING_BOUND,
+    _category_from_esbmc_property,
+    _esbmc_result_matches_category,
+)
 from .verification.esbmc_runner import (
     run_esbmc_function_baseline,
     run_esbmc_on_function,
@@ -890,6 +894,8 @@ def _flow_a_findings_from_direct(direct: ESBMCDirectResult | None) -> list[Findi
             for key in ("property_kind", "property_text")
         )
         category = _category_from_esbmc_property(property_text)
+        if category == UNWINDING_BOUND:
+            continue
         findings.append(
             Finding(
                 id=f"flow_a_{item.get('name', len(findings))}",

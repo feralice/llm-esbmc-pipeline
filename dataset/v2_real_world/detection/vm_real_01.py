@@ -6,6 +6,7 @@ class tqdm:
         The real code splits a custom format into user-provided halves, then
         mistakenly formats the stale default l_bar/r_bar variables.
         """
-        l_bar_user, r_bar_user = bar_format.split("{bar}")
-        _ = l_bar_user, r_bar_user
+        bar_args = {}
+        l_bar_user, r_bar_user = bar_format.split('{bar}')
+        l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)
         return l_bar + r_bar

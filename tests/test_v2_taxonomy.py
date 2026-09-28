@@ -5,13 +5,14 @@ from pathlib import Path
 import pytest
 
 from research_pipeline.ast_utils import expression_exists_in_executable_ast
-from research_pipeline.evaluator import load_ground_truth_cases
+from research_pipeline.evaluator import _flow_a_findings_from_direct, load_ground_truth_cases
 from research_pipeline.llm.categories import FORMAL_CATEGORIES, SUPPORTED_CATEGORIES
 from research_pipeline.llm.findings import normalize_findings
 from research_pipeline.llm.prompts import load_system_prompt
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
-from research_pipeline.models import Finding
+from research_pipeline.models import ESBMCDirectResult, Finding
 from research_pipeline.preprocess import preprocess_file
+from research_pipeline.report import UNWINDING_BOUND, _esbmc_result_matches_category
 
 V2_CATEGORIES = {
     "assertion_violation",
@@ -174,3 +175,44 @@ def test_v2_ground_truth_loader_prefers_harness_aliases(tmp_path: Path) -> None:
     assert cases[0][1][0]["function"] == "oracle_sample"
     assert cases[0][1][0]["expression"] == "len(value)"
     assert cases[0][1][0]["line"] == 2
+
+
+@pytest.mark.parametrize(
+    ("property_kind", "property_text", "expected"),
+    [
+        ("assertion x != 5", "x != 5", "assertion_violation"),
+        ("uncaught exception: ZeroDivisionError", "!(c:@__ESBMC_exc_thrown)", "division_by_zero"),
+        ("uncaught exception: IndexError", "!(c:@__ESBMC_exc_thrown)", "out_of_bounds"),
+        ("uncaught exception: KeyError", "!(c:@__ESBMC_exc_thrown)", "out_of_bounds"),
+        ("uncaught exception: TypeError", "!(c:@__ESBMC_exc_thrown)", "type_mismatch"),
+        ("arithmetic overflow on mul", "!overflow(\"*\", x, 2)", "integer_overflow"),
+        ("dereference failure: NULL pointer", "", "none_misuse"),
+        ("unwinding assertion loop 187", "", UNWINDING_BOUND),
+        ("uncaught exception: ValueError", "!(c:@__ESBMC_exc_thrown)", "unknown_esbmc_violation"),
+    ],
+)
+def test_esbmc_python_property_maps_to_category(
+    property_kind: str, property_text: str, expected: str
+) -> None:
+    details = {"property_kind": property_kind, "property_text": property_text}
+    assert _esbmc_result_matches_category(details, expected)
+
+
+def test_unwinding_assertion_is_not_a_flow_a_finding() -> None:
+    direct = ESBMCDirectResult(
+        source_file="x.py",
+        status="violation_found",
+        command=["esbmc"],
+        returncode=1,
+        summary="v",
+        details={
+            "functions": [
+                {"name": "f", "status": "violation_found",
+                 "property_kind": "unwinding assertion loop 3"},
+                {"name": "g", "status": "violation_found",
+                 "property_kind": "uncaught exception: IndexError"},
+            ]
+        },
+    )
+    findings = _flow_a_findings_from_direct(direct)
+    assert [(f.metadata["function"], f.category) for f in findings] == [("g", "out_of_bounds")]

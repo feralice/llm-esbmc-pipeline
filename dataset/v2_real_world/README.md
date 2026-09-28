@@ -507,3 +507,24 @@ reduction.
   (automatic `__get__` dispatch via attribute access isn't in ESBMC-Python's documented feature
   list, and CPython's descriptor protocol requires exactly that dispatch to trigger). `scrapy/21`
   dropped: the real bug is a Twisted-Deferred reentrant-callback race, not scalar logic.
+
+## Verifiable-subset audit (2026-09-28, ESBMC 8.5.0)
+
+The full corpus above is preserved; eligibility is decided per item, never by deleting files.
+
+- `bugs/<id>_fixed.py`: the same harness with the real fix applied (same `main`, same property).
+  A pair is confirmed when ESBMC reports FAILED on `<id>.py` with a native check and SUCCESSFUL
+  on `<id>_fixed.py`. A first line `# esbmc: <flags>` sets the flags for both runs.
+- `patches/<id>.diff`: the real fix hunks for the source file (BugsInPy `bug_patch.txt` or the
+  upstream commit), the offline evidence behind `provenance`.
+- `esbmc_audit.json`: verdict and violated property (`esbmc_property`, the symptom as ESBMC prints
+  it) for every buggy/fixed pair, written by `scripts/audit_v2_buggy_fixed.py`.
+- `eligibility.json`: one decision per item (`eligible`, `needs_review`, `unsupported_by_esbmc`,
+  `rejected`) with the reason, the categories kept and the expected symptom.
+- `../v2_real_world_eligible/`: optional convenience subset containing cases whose
+  reference harnesses currently pass all ESBMC gates. This is **not** the ground-truth
+  corpus and does not mean that the remaining real bugs are invalid. The full corpus
+  remains the 120 items in this directory; `tests/test_v2_eligibility.py` only keeps
+  this ready-to-run baseline subset in sync.
+
+Full per-item report: `docs/projeto/auditoria_dataset_verificavel_v2.md`.

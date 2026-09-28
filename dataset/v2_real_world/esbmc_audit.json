@@ -1,0 +1,2908 @@
+{
+  "default_timeout": "20s",
+  "esbmc_flags": [
+    "--z3",
+    "--unwind",
+    "6"
+  ],
+  "results": {
+    "av_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 11,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_01.py line 11 column 4 function cli_bool_option_value | assertion ISINSTANCE(param, 0) | ISINSTANCE(param, 0)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_01_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 9,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_01_fixed.py line 9 column 4 function cli_bool_option_value | assertion ISINSTANCE(param, 0) | ISINSTANCE(param, 0)"
+      },
+      "id": "av_real_01"
+    },
+    "av_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 8,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_02.py line 8 column 4 function set_nodelay_guard | assertion stream_not_none | stream_not_none"
+      },
+      "fixed": null,
+      "id": "av_real_02"
+    },
+    "av_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 12,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_03.py line 12 column 4 function to_timestamp_guard | assertion index_type_tag == PERIOD_INDEX | index_type_tag == PERIOD_INDEX"
+      },
+      "fixed": null,
+      "id": "av_real_03"
+    },
+    "av_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 5 properties failed, 4 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          25
+        ],
+        "verdict": "failed",
+        "violated_line": 28,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_04.py line 28 column 4 function main | assertion return_value$_strcmp$1 == 0 | return_value$_strcmp$1 == 0"
+      },
+      "fixed": null,
+      "id": "av_real_04"
+    },
+    "av_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_05.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 26,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_05.py line 26 column 4 function main | assertion result == iterable_len | result == iterable_len"
+      },
+      "fixed": null,
+      "id": "av_real_05"
+    },
+    "av_real_06": {
+      "buggy": {
+        "command": "esbmc --z3 --incremental-bmc --timeout 20s dataset/v2_real_world/bugs/av_real_06.py",
+        "conversion_error": true,
+        "esbmc_property": "",
+        "tail": [
+          "Unwinding loop 74 iteration 4   file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 880 column 9 function __python_str_replace",
+          "ERROR: Timed out",
+          "Unwinding loop 74 iteration 5   file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 880 column 9 function __python_str_replace"
+        ],
+        "vccs": [
+          49,
+          47,
+          84,
+          83,
+          119,
+          118,
+          154,
+          153,
+          189,
+          188,
+          224,
+          223,
+          259,
+          258,
+          294,
+          293,
+          329,
+          328,
+          364,
+          363,
+          399,
+          398,
+          434,
+          433,
+          469,
+          468,
+          504,
+          503,
+          539,
+          538,
+          574,
+          573,
+          609,
+          608,
+          644,
+          643,
+          679,
+          678
+        ],
+        "verdict": "timeout",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "fixed": null,
+      "id": "av_real_06"
+    },
+    "av_real_07": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_07.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          171
+        ],
+        "verdict": "failed",
+        "violated_line": 14,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_07.py line 14 column 4 function main | assertion (signed int)return_value$_buggy_match$1 == (signed int)return_value$_correct_match$2 | (signed int)return_value$_buggy_match$1 == (signed int)return_value$_correct_match$2"
+      },
+      "fixed": null,
+      "id": "av_real_07"
+    },
+    "av_real_08": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_08.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 30,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_08.py line 30 column 4 function main | assertion return_value$_buggy_merge$1 == return_value$_correct_merge$2 | return_value$_buggy_merge$1 == return_value$_correct_merge$2"
+      },
+      "fixed": null,
+      "id": "av_real_08"
+    },
+    "av_real_09": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_09.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_09.py line 18 column 4 function main | assertion return_value$_buggy_bounds$1 == return_value$_correct_bounds$2 | return_value$_buggy_bounds$1 == return_value$_correct_bounds$2"
+      },
+      "fixed": null,
+      "id": "av_real_09"
+    },
+    "av_real_10": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_10.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 20,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_10.py line 20 column 4 function main | assertion return_value$_buggy_column$1 == return_value$_correct_column$2 | return_value$_buggy_column$1 == return_value$_correct_column$2"
+      },
+      "fixed": null,
+      "id": "av_real_10"
+    },
+    "av_real_11": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_11.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          76
+        ],
+        "verdict": "failed",
+        "violated_line": 509,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 509 column 3 function __python_str_lower | unwinding assertion loop 68"
+      },
+      "fixed": null,
+      "id": "av_real_11"
+    },
+    "av_real_12": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_12.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "** 1 of 9 properties failed, 8 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          123
+        ],
+        "verdict": "failed",
+        "violated_line": 235,
+        "violated_property": "file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr | unwinding assertion loop 134"
+      },
+      "fixed": null,
+      "id": "av_real_12"
+    },
+    "av_real_13": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_13.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "** 1 of 9 properties failed, 8 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          83
+        ],
+        "verdict": "failed",
+        "violated_line": 235,
+        "violated_property": "file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr | unwinding assertion loop 134"
+      },
+      "fixed": null,
+      "id": "av_real_13"
+    },
+    "av_real_14": {
+      "buggy": {
+        "command": "esbmc --z3 --incremental-bmc --timeout 20s dataset/v2_real_world/bugs/av_real_14.py",
+        "conversion_error": true,
+        "esbmc_property": "",
+        "tail": [
+          "Checking base case, k = 19",
+          "Starting Bounded Model Checking",
+          "ERROR: Timed out"
+        ],
+        "vccs": [
+          40,
+          40,
+          66,
+          67,
+          92,
+          93,
+          118,
+          119,
+          144,
+          145,
+          170,
+          171,
+          196,
+          197,
+          222,
+          223,
+          248,
+          249,
+          274,
+          275,
+          300,
+          301,
+          326,
+          327,
+          352,
+          353,
+          378,
+          379,
+          404,
+          405,
+          430,
+          431,
+          456,
+          457,
+          482,
+          483
+        ],
+        "verdict": "timeout",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "fixed": null,
+      "id": "av_real_14"
+    },
+    "av_real_15": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_15.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          55
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 18 column 3 function __python_strnlen_bounded | unwinding assertion loop 108"
+      },
+      "fixed": null,
+      "id": "av_real_15"
+    },
+    "av_real_17": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_17.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 13,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_17.py line 13 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "av_real_17"
+    },
+    "av_real_19": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_19.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 16,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_19.py line 16 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "av_real_19"
+    },
+    "av_real_20": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_20.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 13 properties failed, 12 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          43
+        ],
+        "verdict": "failed",
+        "violated_line": 20,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_20.py line 20 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "av_real_20"
+    },
+    "av_real_21": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_21.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 15,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_21.py line 15 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "av_real_21"
+    },
+    "dz_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/dz_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "failed",
+        "violated_line": 12,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/dz_real_01.py line 12 column 4 function color_interp_distance | assertion x_ind != x_ind_prev | x_ind != x_ind_prev"
+      },
+      "fixed": null,
+      "id": "dz_real_01"
+    },
+    "dz_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 150s dataset/v2_real_world/bugs/dz_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "ZeroDivisionError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          2
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/dz_real_02.py line 7 column 11 function rating_ratio | uncaught exception: ZeroDivisionError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 16)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 150s dataset/v2_real_world/bugs/dz_real_02_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 2 properties failed, 2 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          2
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "dz_real_02"
+    },
+    "dz_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/dz_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "ZeroDivisionError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: ZeroDivisionError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 16)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/dz_real_03_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 10 properties failed, 10 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          11
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "dz_real_03"
+    },
+    "dz_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/dz_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "ZeroDivisionError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          4
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: ZeroDivisionError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 16)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/dz_real_04_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 9 properties failed, 9 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          10
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "dz_real_04"
+    },
+    "io_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/io_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          3
+        ],
+        "verdict": "failed",
+        "violated_line": 16,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/io_real_01.py line 16 column 4 function nonsingular_magnitude | assertion magnitude >= 0 | magnitude >= 0"
+      },
+      "fixed": null,
+      "id": "io_real_01"
+    },
+    "io_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/io_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 16,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/io_real_02.py line 16 column 4 function integer_squareroot_first_step | assertion x != TYPE_MAX | x != TYPE_MAX"
+      },
+      "fixed": null,
+      "id": "io_real_02"
+    },
+    "ip_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 22,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_01.py line 22 column 4 function main | assertion (signed int)b == (signed int)c | (signed int)b == (signed int)c"
+      },
+      "fixed": null,
+      "id": "ip_real_01"
+    },
+    "ip_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_03.py line 19 column 4 function main | assertion (signed int)b == (signed int)c | (signed int)b == (signed int)c"
+      },
+      "fixed": null,
+      "id": "ip_real_03"
+    },
+    "ip_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          26
+        ],
+        "verdict": "failed",
+        "violated_line": 104,
+        "violated_property": "file /esbmc-vfs/libc/library/string.c line 104 column 3 function strcmp | unwinding assertion loop 130"
+      },
+      "fixed": null,
+      "id": "ip_real_04"
+    },
+    "ip_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_05.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_05.py line 18 column 4 function main | assertion (signed int)r1 == (signed int)r2 | (signed int)r1 == (signed int)r2"
+      },
+      "fixed": null,
+      "id": "ip_real_05"
+    },
+    "ip_real_06": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_06.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 25,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_06.py line 25 column 4 function main | assertion b == c | b == c"
+      },
+      "fixed": null,
+      "id": "ip_real_06"
+    },
+    "ip_real_07": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_07.py",
+        "conversion_error": false,
+        "esbmc_property": "model_check",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          44
+        ],
+        "verdict": "failed",
+        "violated_line": 1367,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 1367 column 5 function __python_chr | chr() arg is a surrogate code point | 0"
+      },
+      "fixed": null,
+      "id": "ip_real_07"
+    },
+    "ip_real_08": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_08.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          38
+        ],
+        "verdict": "failed",
+        "violated_line": 22,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_08.py line 22 column 4 function main | assertion return_value$_strcmp$1 == 0 | return_value$_strcmp$1 == 0"
+      },
+      "fixed": null,
+      "id": "ip_real_08"
+    },
+    "ip_real_09": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_09.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 20,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_09.py line 20 column 4 function main | assertion (signed int)b == (signed int)c | (signed int)b == (signed int)c"
+      },
+      "fixed": null,
+      "id": "ip_real_09"
+    },
+    "ip_real_10": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_10.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_10.py line 19 column 4 function main | assertion result == manager_val | result == manager_val"
+      },
+      "fixed": null,
+      "id": "ip_real_10"
+    },
+    "ip_real_11": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_11.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_11.py line 18 column 4 function main | assertion (signed int)should_raise == (signed int)auto_error | (signed int)should_raise == (signed int)auto_error"
+      },
+      "fixed": null,
+      "id": "ip_real_11"
+    },
+    "ip_real_12": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_12.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_12.py line 19 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "ip_real_12"
+    },
+    "ip_real_13": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_13.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 35,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_13.py line 35 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "ip_real_13"
+    },
+    "ip_real_14": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_14.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          7
+        ],
+        "verdict": "failed",
+        "violated_line": 32,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_14.py line 32 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ip_real_14"
+    },
+    "ip_real_15": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_15.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_15.py line 19 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ip_real_15"
+    },
+    "ip_real_16": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_16.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 15,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_16.py line 15 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "ip_real_16"
+    },
+    "ip_real_17": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 40 --timeout 150s dataset/v2_real_world/bugs/ip_real_17.py",
+        "conversion_error": false,
+        "esbmc_property": "TypeError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          2441
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: TypeError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 12)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 40 --timeout 150s dataset/v2_real_world/bugs/ip_real_17_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 105 properties failed, 105 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          3478
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "ip_real_17"
+    },
+    "ip_real_18": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_18.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          7
+        ],
+        "verdict": "failed",
+        "violated_line": 16,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_18.py line 16 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ip_real_18"
+    },
+    "ip_real_19": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_19.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 12,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_19.py line 12 column 4 function main | assertion (signed int)return_value$_keep_buggy$1 == (signed int)return_value$_keep_correct$2 | (signed int)return_value$_keep_buggy$1 == (signed int)return_value$_keep_correct$2"
+      },
+      "fixed": null,
+      "id": "ip_real_19"
+    },
+    "ip_real_20": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_20.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          170
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 18 column 3 function __python_strnlen_bounded | unwinding assertion loop 108"
+      },
+      "fixed": null,
+      "id": "ip_real_20"
+    },
+    "ip_real_21": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 150s dataset/v2_real_world/bugs/ip_real_21.py",
+        "conversion_error": false,
+        "esbmc_property": "KeyError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          2232
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: KeyError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 15)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 150s dataset/v2_real_world/bugs/ip_real_21_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 86 properties failed, 86 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          2556
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "ip_real_21"
+    },
+    "ip_real_22": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_22.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          142
+        ],
+        "verdict": "failed",
+        "violated_line": 509,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 509 column 3 function __python_str_lower | unwinding assertion loop 68"
+      },
+      "fixed": null,
+      "id": "ip_real_22"
+    },
+    "ip_real_23": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_23.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          112
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_23.py line 19 column 4 function main | assertion /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_23.py:$dict_eq_result$155 | /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_23.py:$dict_eq_result$155"
+      },
+      "fixed": null,
+      "id": "ip_real_23"
+    },
+    "ip_real_24": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_24.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 15,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_24.py line 15 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "ip_real_24"
+    },
+    "ip_real_25": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_25.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 16,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_25.py line 16 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "ip_real_25"
+    },
+    "ip_real_26": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_26.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 17,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_26.py line 17 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "ip_real_26"
+    },
+    "ip_real_28": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_28.py",
+        "conversion_error": false,
+        "esbmc_property": "RuntimeError",
+        "tail": [
+          "** 1 of 5 properties failed, 4 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: RuntimeError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 24)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_28_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 5 properties failed, 5 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "ip_real_28"
+    },
+    "ip_real_31": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_31.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 17,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_31.py line 17 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ip_real_31"
+    },
+    "ip_real_32": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_32.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 2 of 2 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          2
+        ],
+        "verdict": "failed",
+        "violated_line": 17,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_32.py line 17 column 4 function main | assertion 0 <= buggy && buggy <= 23 | 0 <= buggy && buggy <= 23"
+      },
+      "fixed": null,
+      "id": "ip_real_32"
+    },
+    "ip_real_33": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_33.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 17,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_33.py line 17 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ip_real_33"
+    },
+    "ip_real_34": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_34.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 21,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_34.py line 21 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ip_real_34"
+    },
+    "ir_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ir_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "** 2 of 9 properties failed, 7 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          10
+        ],
+        "verdict": "failed",
+        "violated_line": 73,
+        "violated_property": "file /esbmc-vfs/libc/library/libm/exp.c line 73 column 3 function expm1 | unwinding assertion loop 124"
+      },
+      "fixed": null,
+      "id": "ir_real_01"
+    },
+    "ir_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ir_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          3
+        ],
+        "verdict": "failed",
+        "violated_line": 9,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ir_real_02.py line 9 column 4 function main | assertion abs(IEEE_SUB(pi_buggy, 3.141593e+0)) < 1.000000e-9 | abs(IEEE_SUB(pi_buggy, 3.141593e+0)) < 1.000000e-9"
+      },
+      "fixed": null,
+      "id": "ir_real_02"
+    },
+    "ir_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ir_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 5 properties failed, 4 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "failed",
+        "violated_line": 40,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ir_real_03.py line 40 column 4 function main | assertion r == 1 | r == 1"
+      },
+      "fixed": null,
+      "id": "ir_real_03"
+    },
+    "ir_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ir_real_05.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 34,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ir_real_05.py line 34 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "ir_real_05"
+    },
+    "nm_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 8,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_01.py line 8 column 4 function decode_header_value | assertion !value_is_none | !value_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_01"
+    },
+    "nm_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 6,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_02.py line 6 column 4 function scale_total | assertion !total_is_none | !total_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_02"
+    },
+    "nm_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 100 --timeout 150s dataset/v2_real_world/bugs/nm_real_03.py",
+        "conversion_error": true,
+        "esbmc_property": "",
+        "tail": [
+          "Encoding to solver time: 0.430s",
+          "Solving with solver Z3 v4.13.3",
+          "ERROR: Timed out"
+        ],
+        "vccs": [
+          5133
+        ],
+        "verdict": "timeout",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 100 --timeout 150s dataset/v2_real_world/bugs/nm_real_03_fixed.py",
+        "conversion_error": true,
+        "esbmc_property": "",
+        "tail": [
+          "Encoding to solver time: 0.130s",
+          "Solving with solver Z3 v4.13.3",
+          "ERROR: Timed out"
+        ],
+        "vccs": [
+          5133
+        ],
+        "verdict": "timeout",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "nm_real_03"
+    },
+    "nm_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 14,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_04.py line 14 column 4 function check_allowed_domain | assertion !domain_is_none | !domain_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_04"
+    },
+    "nm_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_05.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 10,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_05.py line 10 column 4 function follow_url | assertion !url_is_none | !url_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_05"
+    },
+    "nm_real_06": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_06.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 9,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_06.py line 9 column 4 function create_instance | assertion !constructor_returns_none | !constructor_returns_none"
+      },
+      "fixed": null,
+      "id": "nm_real_06"
+    },
+    "nm_real_07": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_07.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 10,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_07.py line 10 column 4 function url_concat | assertion !args_is_none | !args_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_07"
+    },
+    "nm_real_08": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_08.py",
+        "conversion_error": false,
+        "esbmc_property": "AttributeError",
+        "tail": [
+          "** 1 of 7 properties failed, 6 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          8
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: AttributeError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 13)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_08_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 8 properties failed, 8 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          9
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "nm_real_08"
+    },
+    "nm_real_09": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_09.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 11,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_09.py line 11 column 4 function tqdm_len | assertion !total_not_yet_set | !total_not_yet_set"
+      },
+      "fixed": null,
+      "id": "nm_real_09"
+    },
+    "nm_real_10": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_10.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          16
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_10.py line 7 column 4 function insert_colnames | assertion !columns_is_none | !columns_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_10"
+    },
+    "nm_real_11": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_11.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 6,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_11.py line 6 column 4 function setitem_evict | assertion !limit_is_none | !limit_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_11"
+    },
+    "nm_real_12": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_12.py",
+        "conversion_error": false,
+        "esbmc_property": "null_dereference",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          37
+        ],
+        "verdict": "failed",
+        "violated_line": 15,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_12.py line 15 column 8 function unlink | dereference failure: NULL pointer | CWE: CWE-476"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_12_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 25 properties failed, 25 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          40
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "nm_real_12"
+    },
+    "nm_real_13": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_13.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 31,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_13.py line 31 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "nm_real_13"
+    },
+    "nm_real_14": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 40 --timeout 150s dataset/v2_real_world/bugs/nm_real_14.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 29 properties failed, 29 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          1062
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 40 --timeout 150s dataset/v2_real_world/bugs/nm_real_14_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 29 properties failed, 29 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          1224
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "nm_real_14"
+    },
+    "nm_real_15": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_15.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_15.py line 18 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "nm_real_15"
+    },
+    "nm_real_16": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_16.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 17,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_16.py line 17 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "nm_real_16"
+    },
+    "nm_real_17": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_17.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 5,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_17.py line 5 column 4 function type_of | assertion !is_none | !is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_17"
+    },
+    "nm_real_18": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_18.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 5,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_18.py line 5 column 4 function format_seconds | assertion !seconds_is_none | !seconds_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_18"
+    },
+    "nm_real_19": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_19.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 5,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_19.py line 5 column 4 function is_file_check | assertion !v_is_none | !v_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_19"
+    },
+    "nm_real_20": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_20.py",
+        "conversion_error": false,
+        "esbmc_property": "null_dereference",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          128
+        ],
+        "verdict": "failed",
+        "violated_line": 92,
+        "violated_property": "file /esbmc-vfs/libc/library/string.c line 92 column 3 function strlen | dereference failure: NULL pointer | CWE: CWE-476"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_20_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "null_dereference",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          128
+        ],
+        "verdict": "failed",
+        "violated_line": 92,
+        "violated_property": "file /esbmc-vfs/libc/library/string.c line 92 column 3 function strlen | dereference failure: NULL pointer | CWE: CWE-476"
+      },
+      "id": "nm_real_20"
+    },
+    "nm_real_21": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_21.py",
+        "conversion_error": false,
+        "esbmc_property": "missing_return",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          134
+        ],
+        "verdict": "failed",
+        "violated_line": 1,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_21.py line 1 column 0 function multi_get | Missing return statement detected in function 'multi_get' | 0"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_21_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 36 properties failed, 36 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          125
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "nm_real_21"
+    },
+    "nm_real_22": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_22.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 6,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_22.py line 6 column 4 function to_env_filtered | assertion !value_is_none | !value_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_22"
+    },
+    "nm_real_23": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_23.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_23.py line 7 column 4 function html_class_str_from_tag | assertion !html_classes_is_none | !html_classes_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_23"
+    },
+    "nm_real_24": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_24.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_24.py line 7 column 4 function reformat_many_finally | assertion !executor_is_none | !executor_is_none"
+      },
+      "fixed": null,
+      "id": "nm_real_24"
+    },
+    "nm_real_25": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/nm_real_25.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 8,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/nm_real_25.py line 8 column 4 function check_keep_alive | assertion is_request_line | is_request_line"
+      },
+      "fixed": null,
+      "id": "nm_real_25"
+    },
+    "oob_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          144
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": null,
+      "id": "oob_real_01"
+    },
+    "oob_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --incremental-bmc --timeout 20s dataset/v2_real_world/bugs/oob_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "VERIFICATION FAILED",
+          "",
+          "Bug found (k = 1)"
+        ],
+        "vccs": [
+          26
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --incremental-bmc --timeout 20s dataset/v2_real_world/bugs/oob_real_02_fixed.py",
+        "conversion_error": true,
+        "esbmc_property": "",
+        "tail": [
+          "Encoding to solver time: 0.035s",
+          "Solving with solver Z3 v4.13.3",
+          "ERROR: Timed out"
+        ],
+        "vccs": [
+          26,
+          29,
+          306,
+          315,
+          498,
+          512,
+          738
+        ],
+        "verdict": "timeout",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_02"
+    },
+    "oob_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "model_check",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          469
+        ],
+        "verdict": "failed",
+        "violated_line": 845,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 845 column 3 function __ESBMC_list_pop | IndexError: pop index out of range | actual_index < l->size"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_03_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "model_check",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          469
+        ],
+        "verdict": "failed",
+        "violated_line": 845,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 845 column 3 function __ESBMC_list_pop | IndexError: pop index out of range | actual_index < l->size"
+      },
+      "id": "oob_real_03"
+    },
+    "oob_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          18
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_04_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 16 properties failed, 16 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          18
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_04"
+    },
+    "oob_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_05.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "** 1 of 6 properties failed, 5 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          6
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_05_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 9 properties failed, 9 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          12
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_05"
+    },
+    "oob_real_06": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_06.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 4,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/oob_real_06.py line 4 column 4 function merge_nested_config | assertion default_has_key | default_has_key"
+      },
+      "fixed": null,
+      "id": "oob_real_06"
+    },
+    "oob_real_09": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 12 --timeout 150s dataset/v2_real_world/bugs/oob_real_09.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          534
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 12 --timeout 150s dataset/v2_real_world/bugs/oob_real_09_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 48 properties failed, 48 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          534
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_09"
+    },
+    "oob_real_10": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 5 --timeout 250s dataset/v2_real_world/bugs/oob_real_10.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          652
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 5 --timeout 250s dataset/v2_real_world/bugs/oob_real_10_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 51 properties failed, 51 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          656
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_10"
+    },
+    "oob_real_11": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 12 --timeout 150s dataset/v2_real_world/bugs/oob_real_11.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1154
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 12 --timeout 150s dataset/v2_real_world/bugs/oob_real_11_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 48 properties failed, 48 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          1162
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_11"
+    },
+    "oob_real_12": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_12.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          130
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_12_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 21 properties failed, 21 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          155
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_12"
+    },
+    "oob_real_13": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_13.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          18
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_13_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 16 properties failed, 16 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          18
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_13"
+    },
+    "oob_real_14": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_14.py",
+        "conversion_error": false,
+        "esbmc_property": "IndexError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          18
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: IndexError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 14)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_14_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 16 properties failed, 16 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          18
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_14"
+    },
+    "oob_real_15": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_15.py",
+        "conversion_error": false,
+        "esbmc_property": "KeyError",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          177
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: KeyError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 15)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_15_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 64 properties failed, 64 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          256
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "oob_real_15"
+    },
+    "oob_real_16": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/oob_real_16.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/oob_real_16.py line 19 column 4 function main | assertion buggy == correct | buggy == correct"
+      },
+      "fixed": null,
+      "id": "oob_real_16"
+    },
+    "tm_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "model_check",
+        "tail": [
+          "   (this mode stops at the first violation; use --multi-property for a verdict on every property)",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          230
+        ],
+        "verdict": "failed",
+        "violated_line": 1217,
+        "violated_property": "file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/string.c line 1217 column 7 function __python_int | invalid literal for int() - invalid character | 0"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_01_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 87 properties failed, 87 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          515
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "tm_real_01"
+    },
+    "tm_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "unwinding_assertion",
+        "tail": [
+          "** 2 of 10 properties failed, 8 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          76
+        ],
+        "verdict": "failed",
+        "violated_line": 235,
+        "violated_property": "file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr | unwinding assertion loop 134"
+      },
+      "fixed": null,
+      "id": "tm_real_02"
+    },
+    "tm_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 13,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_03.py line 13 column 4 function main | assertion !result | !result"
+      },
+      "fixed": null,
+      "id": "tm_real_03"
+    },
+    "tm_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 8,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_04.py line 8 column 4 function str_to_int_guard | assertion is_str | is_str"
+      },
+      "fixed": null,
+      "id": "tm_real_04"
+    },
+    "tm_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_05.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 9,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_05.py line 9 column 4 function build_recipients | assertion to_is_list | to_is_list"
+      },
+      "fixed": null,
+      "id": "tm_real_05"
+    },
+    "tm_real_06": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_06.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 15,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_06.py line 15 column 4 function main | assertion (signed int)result == 1 | (signed int)result == 1"
+      },
+      "fixed": null,
+      "id": "tm_real_06"
+    },
+    "tm_real_07": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_07.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 18,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_07.py line 18 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "tm_real_07"
+    },
+    "tm_real_08": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_08.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 6,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_08.py line 6 column 4 function format_headers | assertion !headerrow_is_none | !headerrow_is_none"
+      },
+      "fixed": null,
+      "id": "tm_real_08"
+    },
+    "tm_real_09": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_09.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 5,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_09.py line 5 column 4 function convert_float | assertion raw_val_is_floatlike | raw_val_is_floatlike"
+      },
+      "fixed": null,
+      "id": "tm_real_09"
+    },
+    "tm_real_10": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_10.py",
+        "conversion_error": false,
+        "esbmc_property": "AttributeError",
+        "tail": [
+          "** 1 of 5 properties failed, 4 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: AttributeError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 13)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_10_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "BMC program time: 0.002s",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          0
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "tm_real_10"
+    },
+    "tm_real_11": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_11.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 8,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_11.py line 8 column 4 function sitemap_urls_from_robots_ok | assertion passed_text | passed_text"
+      },
+      "fixed": null,
+      "id": "tm_real_11"
+    },
+    "tm_real_12": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_12.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/tm_real_12.py line 7 column 4 function read_s3_load_path | assertion !called_as_function | !called_as_function"
+      },
+      "fixed": null,
+      "id": "tm_real_12"
+    },
+    "tm_real_13": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_13.py",
+        "conversion_error": false,
+        "esbmc_property": "AttributeError",
+        "tail": [
+          "** 1 of 5 properties failed, 4 passed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          5
+        ],
+        "verdict": "failed",
+        "violated_line": null,
+        "violated_property": "uncaught exception: AttributeError | !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 13)"
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/tm_real_13_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "BMC program time: 0.002s",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          0
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "tm_real_13"
+    },
+    "vm_real_01": {
+      "buggy": {
+        "command": "esbmc --z3 --incremental-bmc --timeout 20s dataset/v2_real_world/bugs/vm_real_01.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "VERIFICATION FAILED",
+          "",
+          "Bug found (k = 2)"
+        ],
+        "vccs": [
+          93,
+          85,
+          151
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_01.py line 19 column 4 function main | assertion return_value$_strcmp$3 == 0 | return_value$_strcmp$3 == 0"
+      },
+      "fixed": null,
+      "id": "vm_real_01"
+    },
+    "vm_real_02": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_02.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 11,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_02.py line 11 column 8 function validate_dict_entry | assertion skey_assigned | skey_assigned"
+      },
+      "fixed": null,
+      "id": "vm_real_02"
+    },
+    "vm_real_03": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_03.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 11,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_03.py line 11 column 4 function pipe_call_order_ok | assertion !args_swapped | !args_swapped"
+      },
+      "fixed": null,
+      "id": "vm_real_03"
+    },
+    "vm_real_04": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_04.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 19,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_04.py line 19 column 4 function main | assertion (signed int)buggy == (signed int)correct | (signed int)buggy == (signed int)correct"
+      },
+      "fixed": null,
+      "id": "vm_real_04"
+    },
+    "vm_real_05": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_05.py",
+        "conversion_error": true,
+        "esbmc_property": "",
+        "tail": [
+          "Parsing /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_05.py",
+          "Converting",
+          "ERROR: Could not resolve type of receiver in member call '.fs.mkdir()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed."
+        ],
+        "vccs": [],
+        "verdict": "error",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "fixed": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_05_fixed.py",
+        "conversion_error": false,
+        "esbmc_property": "",
+        "tail": [
+          "** 0 of 2 properties failed, 2 passed",
+          "",
+          "VERIFICATION SUCCESSFUL"
+        ],
+        "vccs": [
+          8
+        ],
+        "verdict": "successful",
+        "violated_line": null,
+        "violated_property": ""
+      },
+      "id": "vm_real_05"
+    },
+    "vm_real_06": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_06.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 9,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_06.py line 9 column 4 function crawler_process_init | assertion !settings_is_dict | !settings_is_dict"
+      },
+      "fixed": null,
+      "id": "vm_real_06"
+    },
+    "vm_real_07": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_07.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_07.py line 7 column 4 function pick_validation_enqueuer | assertion !uses_train_generator | !uses_train_generator"
+      },
+      "fixed": null,
+      "id": "vm_real_07"
+    },
+    "vm_real_08": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_08.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 7,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_08.py line 7 column 4 function open_output_file | assertion !uses_undefined_name | !uses_undefined_name"
+      },
+      "fixed": null,
+      "id": "vm_real_08"
+    },
+    "vm_real_09": {
+      "buggy": {
+        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_09.py",
+        "conversion_error": false,
+        "esbmc_property": "assertion",
+        "tail": [
+          "** 1 of 1 properties failed",
+          "",
+          "VERIFICATION FAILED"
+        ],
+        "vccs": [
+          1
+        ],
+        "verdict": "failed",
+        "violated_line": 5,
+        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_09.py line 5 column 4 function length_without_total | assertion total_is_defined | total_is_defined"
+      },
+      "fixed": null,
+      "id": "vm_real_09"
+    }
+  }
+}

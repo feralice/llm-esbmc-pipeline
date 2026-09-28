@@ -1,0 +1,23 @@
+# source: https://github.com/SethMMorton/natsort/commit/441d1a74093ba3aaa48e4d88a0eb457bac0e05b3
+diff --git a/natsort/compat/fake_fastnumbers.py b/natsort/compat/fake_fastnumbers.py
+index 6080df8..51faed2 100644
+--- a/natsort/compat/fake_fastnumbers.py
++++ b/natsort/compat/fake_fastnumbers.py
+@@ -66,6 +66,8 @@ def fast_float(
+     *str* or *float*
+ 
+     """
++    if not x:
++        return key(x)
+     if x[0] in _first_char or x.lstrip()[:3] in _nan_inf:
+         try:
+             ret = float(x)
+@@ -107,6 +109,8 @@ def fast_int(
+     *str* or *int*
+ 
+     """
++    if not x:
++        return key(x)
+     if x[0] in _first_char:
+         try:
+             return int(x)

@@ -230,8 +230,25 @@ def _esbmc_result_matches_category(details: dict[str, object], expected_category
     return _category_from_esbmc_property(text) == expected_category
 
 
+UNWINDING_BOUND = "unwinding_bound"
+
+
 def _category_from_esbmc_property(text: str) -> str:
     normalized = text.lower()
+    # An unwinding assertion is a bound artefact of --unwind, not a program bug;
+    # it must be tested before the generic "assertion" substring.
+    if "unwinding assertion" in normalized:
+        return UNWINDING_BOUND
+    if "zerodivisionerror" in normalized:
+        return "division_by_zero"
+    if "indexerror" in normalized or "keyerror" in normalized:
+        return "out_of_bounds"
+    if "typeerror" in normalized:
+        return "type_mismatch"
+    if "arithmetic overflow" in normalized:
+        return "integer_overflow"
+    if "null pointer" in normalized:
+        return "none_misuse"
     if "assertion" in normalized:
         return "assertion_violation"
     if "division_by_zero" in normalized or "division by zero" in normalized or "divisor" in normalized:
@@ -240,12 +257,6 @@ def _category_from_esbmc_property(text: str) -> str:
         return "out_of_bounds"
     if "dereference" in normalized:
         return "out_of_bounds"
-    if "indexerror" in normalized:
-        return "out_of_bounds"
-    if "zerodivisionerror" in normalized:
-        return "division_by_zero"
-    if "assertionerror" in normalized:
-        return "assertion_violation"
     return "unknown_esbmc_violation"
 
 

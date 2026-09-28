@@ -1,0 +1,606 @@
+{
+  "esbmc_version": "8.5.0",
+  "policy": {
+    "eligible": "Bug validado por terceiros (BugsInPy ou fix mergeado no repositório oficial), categoria formal, detection igual ao código bugado do commit, harness bugado com FAILED em checagem nativa compatível com a categoria, e harness <id>_fixed.py com SUCCESSFUL usando a mesma main.",
+    "needs_review": "Bug validado, mas o harness ou a categoria ainda não passa em todos os portões.",
+    "unsupported_by_esbmc": "Bug validado e harness fiel, mas o ESBMC 8.5.0 não consegue verificar (falso positivo, falso negativo, construção não suportada ou timeout).",
+    "rejected": "Fora do escopo: categoria não formal, bug sem falha de runtime, dependência externa, duplicata ou detection inconsistente com o patch."
+  },
+  "symptoms_for_category": {
+    "division_by_zero": [
+      "ZeroDivisionError"
+    ],
+    "out_of_bounds": [
+      "IndexError"
+    ],
+    "none_misuse": [
+      "null_dereference",
+      "missing_return",
+      "TypeError",
+      "AttributeError"
+    ],
+    "type_mismatch": [
+      "TypeError",
+      "AttributeError"
+    ],
+    "invalid_precondition": [
+      "ZeroDivisionError",
+      "IndexError",
+      "KeyError",
+      "TypeError",
+      "ValueError",
+      "AttributeError",
+      "RuntimeError",
+      "assertion"
+    ],
+    "variable_misuse": [
+      "AttributeError",
+      "TypeError",
+      "IndexError",
+      "KeyError",
+      "NameError"
+    ],
+    "assertion_violation": [
+      "assertion"
+    ],
+    "integer_overflow": [
+      "arithmetic_overflow"
+    ]
+  },
+  "items": {
+    "av_real_01": {
+      "status": "unsupported_by_esbmc",
+      "reason": "ESBMC acusa isinstance(param, bool) mesmo com param=True (falso positivo em variável bool|None); o fix também falha."
+    },
+    "av_real_02": {
+      "status": "needs_review",
+      "reason": "Bug real dispara o assert do próprio código (AssertionError), mas o harness só testa flags booleanas; reescrever com o objeto real."
+    },
+    "av_real_03": {
+      "status": "rejected",
+      "reason": "O fix só troca AssertionError por TypeError: o código corrigido continua lançando exceção na mesma entrada."
+    },
+    "av_real_04": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "av_real_05": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_06": {
+      "status": "rejected",
+      "reason": "Resultado de string errado (incorrect_result de fato) e bugado não termina no ESBMC."
+    },
+    "av_real_07": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_08": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_09": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "av_real_10": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "av_real_11": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_12": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_13": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_14": {
+      "status": "rejected",
+      "reason": "Resultado de string errado (incorrect_result de fato) e bugado não termina no ESBMC."
+    },
+    "av_real_15": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_17": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "av_real_19": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "av_real_20": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "av_real_21": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "dz_real_01": {
+      "status": "rejected",
+      "reason": "O patch trata N == 1; o harness modela x duplicado (que o fix não cobre) e a divisão NumPy real dá nan, não exceção."
+    },
+    "dz_real_02": {
+      "status": "eligible",
+      "reason": "Divisão real por num_substrings == 0; fix protege a divisão. invalid_precondition removida no elegível: não há evidência independente (o fix é um guard local, não validação de entrada).",
+      "categories": [
+        "division_by_zero"
+      ],
+      "esbmc_property": "ZeroDivisionError"
+    },
+    "dz_real_03": {
+      "status": "eligible",
+      "reason": "Módulo por zero real; o fix valida a faixa e lança CroniterBadCronError, o que é evidência independente de precondição de entrada.",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
+      ],
+      "esbmc_property": "ZeroDivisionError"
+    },
+    "dz_real_04": {
+      "status": "eligible",
+      "reason": "Divisão por step_size == 0; o fix (PR #126) acrescenta assert chunk_size >= 2 na entrada, evidência independente de precondição.",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
+      ],
+      "esbmc_property": "ZeroDivisionError"
+    },
+    "io_real_01": {
+      "status": "rejected",
+      "reason": "Overflow depende de int8 do NumPy, codificado à mão no harness."
+    },
+    "io_real_02": {
+      "status": "rejected",
+      "reason": "Overflow depende do uint64 da remerkleable, reduzido a 255 e codificado com assert."
+    },
+    "ip_real_01": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_03": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_04": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_05": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result. Além disso, o detection não reproduz o trecho bugado do commit."
+    },
+    "ip_real_06": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_07": {
+      "status": "unsupported_by_esbmc",
+      "reason": "chr() fora da faixa vira assert interno do modelo, não ValueError capturável; o modelo também rejeita surrogates que o CPython aceita."
+    },
+    "ip_real_08": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ip_real_09": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ip_real_10": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_11": {
+      "status": "needs_review",
+      "reason": "Exceção real (HTTPException) lançada com auto_error=False; harness diferencial, reescrever como ip_real_28."
+    },
+    "ip_real_12": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ip_real_13": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_14": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_15": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result. Além disso, o detection não reproduz o trecho bugado do commit."
+    },
+    "ip_real_16": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_17": {
+      "status": "eligible",
+      "reason": "TypeError real: dict.get sem default devolve None para to_native_str. invalid_precondition removida no elegível: mesma evidência da none_misuse.",
+      "categories": [
+        "none_misuse"
+      ],
+      "esbmc_property": "TypeError"
+    },
+    "ip_real_18": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_19": {
+      "status": "needs_review",
+      "reason": "Com patch == 0, filter(None) descarta a parte e o código lança IndexError; harness atual é diferencial."
+    },
+    "ip_real_20": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ip_real_21": {
+      "status": "eligible",
+      "reason": "KeyError nativo com dicts de mesmo tamanho e chaves diferentes (harness corrigido: o anterior tinha tamanhos diferentes, que o código real curto-circuita).",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "esbmc_property": "KeyError"
+    },
+    "ip_real_22": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_23": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_24": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_25": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_26": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ip_real_28": {
+      "status": "eligible",
+      "reason": "RuntimeError real lançado com condição invertida em entrada válida; fix inverte o teste.",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "esbmc_property": "RuntimeError"
+    },
+    "ip_real_31": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ip_real_32": {
+      "status": "needs_review",
+      "reason": "hour == 24 faz datetime lançar ValueError no código real; harness codifica o contrato do datetime com assert."
+    },
+    "ip_real_33": {
+      "status": "rejected",
+      "reason": "Falha depende da API de lixeira do Windows, não isolável."
+    },
+    "ip_real_34": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "ir_real_01": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ir_real_02": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ir_real_03": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "ir_real_05": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "nm_real_01": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Chamada de método em None dá SUCCESSFUL no ESBMC 8.5.0 (falso negativo medido)."
+    },
+    "nm_real_02": {
+      "status": "unsupported_by_esbmc",
+      "reason": "None * int derruba o Z3 ('ast is not an expression')."
+    },
+    "nm_real_03": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Bugado confirma, mas o fixed não termina em 850s (modelo de string)."
+    },
+    "nm_real_04": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "nm_real_05": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Depende de urllib.parse / os.path, não modelados."
+    },
+    "nm_real_06": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "nm_real_07": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "nm_real_08": {
+      "status": "needs_review",
+      "reason": "Par confirmado (AttributeError / SUCCESSFUL), mas o bug é atributo inexistente, não None; categoria none_misuse questionável. Leitura do atributo foi separada do `in` para contornar falso negativo do ESBMC."
+    },
+    "nm_real_09": {
+      "status": "unsupported_by_esbmc",
+      "reason": "O fix usa getattr(obj, nome, default), que o ESBMC não suporta."
+    },
+    "nm_real_10": {
+      "status": "unsupported_by_esbmc",
+      "reason": "len(None) dá SUCCESSFUL no ESBMC 8.5.0 (falso negativo medido)."
+    },
+    "nm_real_11": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Comparação int >= None dá SUCCESSFUL no ESBMC 8.5.0 (falso negativo medido)."
+    },
+    "nm_real_12": {
+      "status": "eligible",
+      "reason": "NULL dereference nativo ao acessar current_line.next.prev com next None; fix adiciona o guard.",
+      "categories": [
+        "none_misuse"
+      ],
+      "esbmc_property": "null_dereference"
+    },
+    "nm_real_13": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "nm_real_14": {
+      "status": "unsupported_by_esbmc",
+      "reason": "CPython lança TypeError, mas o ESBMC dá SUCCESSFUL no bugado: falso negativo com Optional[str] (issue aberta pela autora)."
+    },
+    "nm_real_15": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "nm_real_16": {
+      "status": "rejected",
+      "reason": "Categoria incorrect_result não é formal."
+    },
+    "nm_real_17": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "nm_real_18": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Formatação % com argumento não constante não é suportada."
+    },
+    "nm_real_19": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Depende de urllib.parse / os.path, não modelados."
+    },
+    "nm_real_20": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Fixed continua acusando NULL deref depois de `if decimal is None: return`: falso positivo com Optional[str]."
+    },
+    "nm_real_21": {
+      "status": "eligible",
+      "reason": "Missing return nativo: caminho sem return devolve None; fix sempre retorna a lista.",
+      "categories": [
+        "none_misuse"
+      ],
+      "esbmc_property": "missing_return"
+    },
+    "nm_real_22": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "nm_real_23": {
+      "status": "unsupported_by_esbmc",
+      "reason": "`in` sobre None derruba o ESBMC (irep2_cast_error)."
+    },
+    "nm_real_24": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Chamada de método em None dá SUCCESSFUL no ESBMC 8.5.0 (falso negativo medido)."
+    },
+    "nm_real_25": {
+      "status": "unsupported_by_esbmc",
+      "reason": "O fix usa getattr(obj, nome, default), que o ESBMC não suporta."
+    },
+    "oob_real_01": {
+      "status": "needs_review",
+      "reason": "IndexError nativo, mas a causa é a regex de re.findall, que o ESBMC não modela; o fix muda só a regex e não é representável."
+    },
+    "oob_real_02": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Bugado confirma, mas o fixed não termina em 850s (modelo de string)."
+    },
+    "oob_real_03": {
+      "status": "unsupported_by_esbmc",
+      "reason": "list.pop fora da faixa vira assert interno (list.c), não IndexError capturável pelo except do fix."
+    },
+    "oob_real_04": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_05": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_06": {
+      "status": "needs_review",
+      "reason": "KeyError real em default[k], mas o harness é `assert default_has_key`; reescrever com o merge recursivo. Além disso, o detection é uma reconstrução sintética (com main própria), não o código real de cookiecutter/config.py."
+    },
+    "oob_real_09": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_10": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_11": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_12": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_13": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_14": {
+      "status": "eligible",
+      "reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main.",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "esbmc_property": "IndexError"
+    },
+    "oob_real_15": {
+      "status": "needs_review",
+      "reason": "Par buggy/fixed confirmado (KeyError / SUCCESSFUL), mas out_of_bounds é definido no pipeline como IndexError em subscrito; decidir se KeyError conta."
+    },
+    "oob_real_16": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "tm_real_01": {
+      "status": "needs_review",
+      "reason": "Fixed confirma, mas o sintoma é ValueError de int('_') (checagem interna do modelo), não type_mismatch."
+    },
+    "tm_real_02": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "tm_real_03": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "tm_real_04": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Depende de re.sub, não suportado pelo modelo de re."
+    },
+    "tm_real_05": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "tm_real_06": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "tm_real_07": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "tm_real_08": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "tm_real_09": {
+      "status": "unsupported_by_esbmc",
+      "reason": "float('abc') dá SUCCESSFUL no ESBMC 8.5.0 (falso negativo medido)."
+    },
+    "tm_real_10": {
+      "status": "eligible",
+      "reason": "AttributeError nativo: método chamado no objeto errado; fix chama no coletor.",
+      "categories": [
+        "variable_misuse"
+      ],
+      "esbmc_property": "AttributeError"
+    },
+    "tm_real_11": {
+      "status": "rejected",
+      "reason": "O fix (BugsInPy scrapy/20) altera o chamador em scrapy/spiders/sitemap.py; o detection mostra uma função que o patch não toca."
+    },
+    "tm_real_12": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Chamar uma string (propriedade chamada como método) dá SUCCESSFUL (falso negativo medido)."
+    },
+    "tm_real_13": {
+      "status": "eligible",
+      "reason": "AttributeError nativo: .decode() em valor int; fix converte com str().",
+      "categories": [
+        "type_mismatch"
+      ],
+      "esbmc_property": "AttributeError"
+    },
+    "vm_real_01": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result. Além disso, o detection não reproduz o trecho bugado do commit."
+    },
+    "vm_real_02": {
+      "status": "unsupported_by_esbmc",
+      "reason": "UnboundLocalError não é modelado: variável não ligada vira valor arbitrário."
+    },
+    "vm_real_03": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "vm_real_04": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "vm_real_05": {
+      "status": "unsupported_by_esbmc",
+      "reason": "Frontend recusa self.fs.mkdir(): 'Could not resolve type of receiver'."
+    },
+    "vm_real_06": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "vm_real_07": {
+      "status": "rejected",
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
+    },
+    "vm_real_08": {
+      "status": "needs_review",
+      "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
+    },
+    "vm_real_09": {
+      "status": "rejected",
+      "reason": "Duplicata de nm_real_09: mesmo commit do tqdm (a4b9c86 -> 6dad2e8). Além disso, o detection não reproduz o trecho bugado do commit."
+    }
+  }
+}

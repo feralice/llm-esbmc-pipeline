@@ -1,0 +1,14 @@
+# source: https://github.com/kiorky/croniter/commit/f329964223eeb29e7788b1a9d615b525148fec96
+diff --git a/src/croniter/croniter.py b/src/croniter/croniter.py
+index f73a6a9..fde0afc 100644
+--- a/src/croniter/croniter.py
++++ b/src/croniter/croniter.py
+@@ -1273,7 +1273,7 @@ def _get_low_from_current_date_number(cls, field_index, step, from_timestamp):
+         if field_index == DAY_FIELD:
+             return ((dt.day - 1) % step) + 1
+         if field_index == MONTH_FIELD:
+-            return dt.month % step
++            return ((dt.month - 1) % step) + 1
+         if field_index == DOW_FIELD:
+             return (dt.weekday() + 1) % step
+ 

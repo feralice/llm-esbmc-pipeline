@@ -1,0 +1,17 @@
+# source: https://github.com/jaraco/inflect/commit/f799157f68d5e7e1c59b5f8ecd51530c4b6e20a5
+diff --git a/inflect.py b/inflect.py
+index 5d7e19d6..450fdee3 100644
+--- a/inflect.py
++++ b/inflect.py
+@@ -2101,7 +2101,10 @@ def numwords(self, num, wantlist=False,
+         else:
+             signout = "%s " % sign if sign else ''
+             num = "%s%s" % (signout, numchunks.pop(0))
+-            first = not num.endswith(decimal)
++            if decimal is None:
++                first = True
++            else:
++                first = not num.endswith(decimal)
+             for nc in numchunks:
+                 if nc == decimal:
+                     num += " %s" % nc

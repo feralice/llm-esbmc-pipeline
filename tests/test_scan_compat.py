@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from research_pipeline.scan.compat import (
+    exclude_nan_inputs,
     EXPECTED_PROPERTY_MARKER,
     VERDICT_INVALID,
     VERDICT_OK,
@@ -161,7 +162,7 @@ def test_known_esbmc_incompatibilities_are_rejected(snippet: str, expected: str)
     src = (
         "def f(x: int) -> int:\n"
         f"    {snippet}"
-        "    assert x == x, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    assert x != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
         "    return x\n"
         "f(nondet_int())\n"
     )
@@ -179,7 +180,7 @@ def test_esbmc_cover_is_allowed_alongside_marked_assert():
     src = (
         "def f(x: int) -> int:\n"
         "    __ESBMC_cover(x == 0)\n"
-        "    assert x == x, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    assert x != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
         "    return x\n"
         "f(nondet_int())\n"
     )
@@ -199,7 +200,7 @@ def test_esbmc_cover_is_still_rejected_for_loop_style():
         "    for i in range(3):\n"
         "        __ESBMC_cover(total == 0)\n"
         "        total = total + xs[i]\n"
-        "    assert total == total, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    assert total != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
         "    return total\n"
         "f([nondet_int(), nondet_int(), nondet_int()])\n"
     )
@@ -212,7 +213,7 @@ def test_unsupported_esbmc_assigns_is_not_whitelisted():
     src = (
         "def f(x: int) -> int:\n"
         "    __ESBMC_assigns(x)\n"
-        "    assert x == x, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    assert x != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
         "    return x\n"
         "f(nondet_int())\n"
     )
@@ -270,7 +271,7 @@ def test_symbolic_integer_subscript_is_invalid():
     src = (
         "def f(x: int) -> int:\n"
         "    y: int = x[0]\n"
-        f"    assert y == y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        f"    assert y != 0, {EXPECTED_PROPERTY_MARKER!r}\n"
         "    return y\n"
         "f(nondet_int())\n"
     )
@@ -290,7 +291,7 @@ def test_scalar_attribute_method_is_allowed():
     src = (
         "def f(x: str) -> bool:\n"
         "    y: bool = x.isdigit()\n"
-        f"    assert y == y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        f"    assert y != 0, {EXPECTED_PROPERTY_MARKER!r}\n"
         "    return y\n"
         "f(nondet_str())\n"
     )
@@ -325,7 +326,7 @@ def test_isinstance_against_a_different_type_is_not_flagged():
         "def f() -> None:\n"
         "    x: int = nondet_int()\n"
         "    y: bool = isinstance(x, str)\n"
-        f"    assert y == y, {EXPECTED_PROPERTY_MARKER!r}\n"
+        f"    assert y != 0, {EXPECTED_PROPERTY_MARKER!r}\n"
         "f()\n"
     )
     assert check_harness(src).ok
@@ -585,3 +586,94 @@ def test_loop_harness_rejects_bad_container_shapes(container_expr: str, expected
     r = check_harness(src, allow_bounded_loop=True)
     assert not r.ok
     assert expected in " ".join(r.reasons)
+
+
+_IDENTICAL_SIDES = '''def model():
+    vmax: float = nondet_float()
+    expander: float = nondet_float()
+    buggy: float = vmax + expander * abs(vmax)
+    correct: float = vmax + expander * abs(vmax)
+    assert buggy == correct, "LLM_ESBMC_EXPECTED_PROPERTY"
+
+def main():
+    model()
+
+main()
+'''
+
+_CONSTANT_ASSERT = '''def model():
+    make_current: bool = nondet_bool()
+    __ESBMC_cover(make_current)
+    assert False, "LLM_ESBMC_EXPECTED_PROPERTY"
+
+def main():
+    model()
+
+main()
+'''
+
+_DIFFERENTIAL = '''def model():
+    x: int = nondet_int()
+    buggy: int = x // 2
+    correct: int = (x + 1) // 2
+    assert buggy == correct, "LLM_ESBMC_EXPECTED_PROPERTY"
+
+def main():
+    model()
+
+main()
+'''
+
+
+@pytest.mark.parametrize(
+    ("harness", "reason"),
+    [(_IDENTICAL_SIDES, "identical expressions"), (_CONSTANT_ASSERT, "constant False")],
+)
+def test_vacuous_expected_assertion_is_rejected(harness: str, reason: str) -> None:
+    result = check_harness(harness)
+    assert not result.ok
+    assert reason in result.reasons[0]
+
+
+def test_differential_expected_assertion_is_accepted() -> None:
+    assert check_harness(_DIFFERENTIAL).ok
+
+
+def test_assumptions_after_expected_assertion_are_rejected() -> None:
+    source = '''def model():
+    x: int = nondet_int()
+    assert x != 0, "LLM_ESBMC_EXPECTED_PROPERTY"
+    __ESBMC_assume(x >= 0)
+
+def main():
+    model()
+
+main()
+'''
+    result = check_harness(source)
+    assert not result.ok
+    assert "after the expected assertion" in " ".join(result.reasons)
+
+
+def test_unreachable_cover_condition_is_rejected() -> None:
+    source = '''def model():
+    index: int = 1
+    __ESBMC_cover(index < 0)
+    assert index >= 0, "LLM_ESBMC_EXPECTED_PROPERTY"
+
+def main():
+    model()
+
+main()
+'''
+    result = check_harness(source)
+    assert not result.ok
+    assert "cover condition" in " ".join(result.reasons)
+
+
+def test_exclude_nan_inputs_guards_every_nondet_float() -> None:
+    patched = exclude_nan_inputs(_IDENTICAL_SIDES)
+    lines = patched.splitlines()
+    assert lines[2] == "    __ESBMC_assume(vmax - vmax == 0)"
+    assert lines[4] == "    __ESBMC_assume(expander - expander == 0)"
+    assert exclude_nan_inputs(_DIFFERENTIAL) == _DIFFERENTIAL

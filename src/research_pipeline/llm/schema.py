@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from copy import deepcopy
+
 from .categories import FORMAL_CATEGORIES, SMELL_CATEGORIES
 
 # Single source of truth for the category enum: categories.py, system_prompt.txt,
@@ -79,3 +81,9 @@ FINDINGS_JSON_SCHEMA: dict = {
     },
     "strict": True,
 }
+
+V2_FINDINGS_JSON_SCHEMA: dict = deepcopy(FINDINGS_JSON_SCHEMA)
+V2_FINDINGS_JSON_SCHEMA["name"] = "pipeline_v2_findings"
+V2_FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"]["properties"]["category"]["enum"] = [
+    "native_runtime", "explicit_assertion", "differential_assertion", "unsupported",
+]

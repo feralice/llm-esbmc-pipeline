@@ -54,6 +54,19 @@ def test_nan_guard_is_not_ablated():
     assert [v.assumption for v in build_variants(src)] == ["abs(x) <= 1000"]
 
 
+def test_finite_guard_is_not_ablated_but_other_differences_are():
+    src = (
+        "def main() -> None:\n"
+        "    x: float = nondet_float()\n"
+        "    y: float = nondet_float()\n"
+        "    __ESBMC_assume(x - x == 0)\n"
+        "    __ESBMC_assume(x - y == 0)\n"
+        "    __ESBMC_assume(x - x == 1)\n\n"
+        "main()\n"
+    )
+    assert [v.assumption for v in build_variants(src)] == ["x - y == 0", "x - x == 1"]
+
+
 def test_ablate_flags_the_masking_assumption():
     # `h >= 1` is the invented precondition; dropping it exposes h == 0.
     def fake_run(source: str) -> str:

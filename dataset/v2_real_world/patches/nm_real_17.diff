@@ -1,0 +1,25 @@
+# source: https://github.com/astanin/python-tabulate/commit/3b356a8beca036fac7fd5ede951062c580b4fca1
+diff --git a/tabulate.py b/tabulate.py
+index c43853ac..ca28921e 100644
+--- a/tabulate.py
++++ b/tabulate.py
+@@ -143,7 +143,9 @@ def _isint(string):
+ 
+ def _type(string):
+     "The least generic type (int, float, str, unicode)."
+-    if _isint(string):
++    if string is None:
++        return _text_type
++    elif _isint(string):
+         return int
+     elif _isnumber(string):
+         return float
+@@ -257,6 +259,8 @@ def _column_type(strings):
+     True
+     >>> _column_type(["four", u'\u043f\u044f\u0442\u044c']) is _text_type
+     True
++    >>> _column_type([None, "brux"]) is _text_type
++    True
+ 
+     """
+     types = map(_type, strings)

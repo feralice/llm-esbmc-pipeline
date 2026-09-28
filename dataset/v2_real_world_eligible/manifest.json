@@ -1,0 +1,523 @@
+{
+  "evaluation_policy": {
+    "detection_scope": "only items not requiring patch context",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "patch_context_items": []
+  },
+  "description": "ESBMC-verifiable subset of v2_real_world (18 of 120 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
+  "items": [
+    {
+      "id": "dz_real_02",
+      "detection_file": "detection/dz_real_02.py",
+      "harness_file": "bugs/dz_real_02.py",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "categories": [
+        "division_by_zero"
+      ],
+      "expression": "float(not_parsed)/float(num_substrings)",
+      "provenance": {
+        "project": "dateparser",
+        "repo_url": "https://github.com/scrapinghub/dateparser",
+        "commit_hash": "7098f6359033294c605ce4f8cbdb89a1d6d42055",
+        "source_file": "dateparser/search/search.py",
+        "source_function": "ExactLanguageSearch.choose_best_split"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "ZeroDivisionError on float(not_parsed)/float(num_substrings) when num_substrings == 0",
+        "source": "Same ieee_div gap as dz_real_01; harness adds explicit assert"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Reduced from dateparser search-scoring context to the scalar division term."
+      },
+      "esbmc_property": "ZeroDivisionError"
+    },
+    {
+      "id": "dz_real_03",
+      "detection_file": "detection/dz_real_03.py",
+      "harness_file": "bugs/dz_real_03.py",
+      "function": "HashExpander.do",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
+      ],
+      "expression": "(crc >> idx) % (range_end - range_begin + 1)",
+      "provenance": {
+        "project": "croniter",
+        "repo_url": "https://github.com/kiorky/croniter",
+        "commit_hash": "7d319c510b863827073d42ecee787f3c5a046f7c",
+        "source_file": "src/croniter/croniter.py",
+        "source_function": "HashExpander (range hashing helper)",
+        "buggy_commit": "6343c5b2fc65a0ed488793ab55f88be4bc330155",
+        "fixed_commit": "7d319c510b863827073d42ecee787f3c5a046f7c",
+        "_correction_note": "buggy_commit was originally mislabeled as the fix commit itself; corrected 2026-08-23 by checking the actual commit message (\"Fix ZeroDivisionError...\") and using its parent instead."
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "ZeroDivisionError on (crc >> idx) % rng when rng == 0",
+        "source": "Same ieee_div gap; harness adds explicit assert"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Reduced from croniter HashExpander to scalar int arithmetic."
+      },
+      "esbmc_property": "ZeroDivisionError"
+    },
+    {
+      "id": "oob_real_04",
+      "detection_file": "detection/oob_real_04.py",
+      "harness_file": "bugs/oob_real_04.py",
+      "function": "SortedCorrectedCommandsSequence._realise",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "self._cached[0]",
+      "provenance": {
+        "project": "thefuck",
+        "bugsinpy_id": 22,
+        "buggy_commit": "faa7ee603057fa98c25507d30180c055d10d13d4",
+        "fixed_commit": "e2e8b6fc865452b4cfc1bed70e5b9b49807258ae",
+        "source_file": "thefuck/types.py",
+        "source_function": "SortedCorrectedCommandsSequence._realise",
+        "repo_url": "https://github.com/nvbn/thefuck"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "IndexError on cached[0] when cached is empty",
+        "source": "ESBMC-Python native list-indexing bounds check"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "oob_real_05",
+      "detection_file": "detection/oob_real_05.py",
+      "harness_file": "bugs/oob_real_05.py",
+      "function": "lib2to3_parse",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "src_txt[-1]",
+      "provenance": {
+        "project": "black",
+        "bugsinpy_id": 17,
+        "buggy_commit": "bbc09a4f013f2a584f143f3f5e3f76f6082367d4",
+        "fixed_commit": "7fc6ce990669464f5172b63fafa3724f5f308be3",
+        "source_file": "black.py",
+        "source_function": "lib2to3_parse",
+        "repo_url": "https://github.com/psf/black"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "IndexError on src_txt[-1] when src_txt is empty",
+        "source": "ESBMC-Python native string-indexing bounds check"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "tm_real_10",
+      "detection_file": "detection/tm_real_10.py",
+      "harness_file": "bugs/tm_real_10.py",
+      "function": "MetricsHandler.get",
+      "categories": [
+        "variable_misuse"
+      ],
+      "expression": "metrics.configure_http_handler(self)",
+      "provenance": {
+        "project": "luigi",
+        "bugsinpy_id": "1",
+        "source_file": "luigi/server.py",
+        "source_function": "MetricsHandler.get",
+        "repo_url": "https://github.com/spotify/luigi",
+        "buggy_commit": "1164eb6b85b8a70f596dbb99452bec513e72c12e",
+        "fixed_commit": "aec5dc2ed8db53fc282a0bd24aabe59031b6d1ba"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "AttributeError on wrong-typed metrics object calling configure_http_handler",
+        "source": "ESBMC-Python native attribute-call error (modeled as a wrong-object dispatch)."
+      },
+      "abstraction": {
+        "used": false,
+        "description": "See harness file comment for full reasoning."
+      },
+      "esbmc_property": "AttributeError"
+    },
+    {
+      "id": "nm_real_12",
+      "detection_file": "detection/nm_real_12.py",
+      "harness_file": "bugs/nm_real_12.py",
+      "function": "PamdService.remove",
+      "categories": [
+        "none_misuse"
+      ],
+      "expression": "current_line.next.prev = current_line.prev",
+      "provenance": {
+        "project": "ansible",
+        "bugsinpy_id": 10,
+        "buggy_commit": "e368f788f71c338cd3f049d5d6bdc643a51c0514",
+        "fixed_commit": "a4b59d021368285490f7cda50c11ac4f7a8030b5",
+        "source_file": "lib/ansible/modules/system/pamd.py",
+        "source_function": "PamdService.remove",
+        "repo_url": "https://github.com/ansible/ansible"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "TypeError/AttributeError-shaped crash on the None case, exposed via the harness's manual assert on the abstracted bool flag",
+        "source": "Real bug mechanism (unconditional operation on a value that can legitimately be None)"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
+      },
+      "esbmc_property": "null_dereference"
+    },
+    {
+      "id": "nm_real_21",
+      "detection_file": "detection/nm_real_21.py",
+      "harness_file": "bugs/nm_real_21.py",
+      "function": "_Projection.get_index",
+      "categories": [
+        "none_misuse"
+      ],
+      "expression": "if matches:\n            return self.__class__(matches)",
+      "provenance": {
+        "project": "jmespath.py",
+        "commit_hash": "8f14a303bf9c953e1762c116c446542d68e1ab5d",
+        "source_file": "jmespath/ast.py",
+        "source_function": "_Projection.get_index",
+        "repo_url": "https://github.com/jmespath/jmespath.py",
+        "buggy_commit": "365c9b886858bcdb6da2bc29a6bd60331dab705c",
+        "fixed_commit": "8f14a303bf9c953e1762c116c446542d68e1ab5d",
+        "_correction_note": "Originally recorded commit_hash was the FIX commit itself; corrected to use its parent as the true pre-fix buggy state."
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "TypeError/AttributeError-shaped crash on the None case, exposed via the harness's manual assert on the abstracted bool flag",
+        "source": "Real bug mechanism (unconditional operation on a value that can legitimately be None)"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
+      },
+      "esbmc_property": "missing_return"
+    },
+    {
+      "id": "oob_real_09",
+      "detection_file": "detection/oob_real_09.py",
+      "harness_file": "bugs/oob_real_09.py",
+      "function": "parser._parse",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "l[i + 4]",
+      "provenance": {
+        "project": "dateutil",
+        "repo_url": "https://github.com/dateutil/dateutil",
+        "commit_hash": "6222418b231461f73ff97a84c6739fa33d2aca4b",
+        "source_file": "dateutil/parser.py",
+        "source_function": "parser._parse (minute/second HHMM branch)"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "see harness file",
+        "source": "derived from the real fix commit"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "385-line real parser reduced to the specific HHMM-branch indexing bug."
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "oob_real_10",
+      "detection_file": "detection/oob_real_10.py",
+      "harness_file": "bugs/oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "list_of_lists[0]",
+      "provenance": {
+        "project": "python-tabulate",
+        "repo_url": "https://github.com/astanin/python-tabulate",
+        "commit_hash": "20c6370d5da2dae89b305bfb6c7f12a0f8b7236c",
+        "source_file": "tabulate/__init__.py",
+        "source_function": "_wrap_text_to_colwidths"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "see harness file",
+        "source": "derived from the real fix commit"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "oob_real_11",
+      "detection_file": "detection/oob_real_11.py",
+      "harness_file": "bugs/oob_real_11.py",
+      "function": "wcswidth",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "pwcs[idx]",
+      "provenance": {
+        "project": "wcwidth",
+        "repo_url": "https://github.com/jquast/wcwidth",
+        "commit_hash": "4c914039ba6c70ea2508420b591e3319683d5185",
+        "source_file": "wcwidth/_wcswidth.py",
+        "source_function": "wcswidth / wcstwidth"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "see harness file",
+        "source": "derived from the real fix commit"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "oob_real_12",
+      "detection_file": "detection/oob_real_12.py",
+      "harness_file": "bugs/oob_real_12.py",
+      "function": "fast_float",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "x[0]",
+      "provenance": {
+        "project": "natsort",
+        "repo_url": "https://github.com/SethMMorton/natsort",
+        "commit_hash": "441d1a74093ba3aaa48e4d88a0eb457bac0e05b3",
+        "source_file": "natsort/compat/fake_fastnumbers.py",
+        "source_function": "fast_float / fast_int"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "see harness file",
+        "source": "derived from the real fix commit"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "oob_real_13",
+      "detection_file": "detection/oob_real_13.py",
+      "harness_file": "bugs/oob_real_13.py",
+      "function": "tokenize",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "result[-1]",
+      "provenance": {
+        "project": "emoji",
+        "repo_url": "https://github.com/carpedm20/emoji",
+        "commit_hash": "14a3a1621673a9e98f8b8976dfc6d99038bbe267",
+        "source_file": "emoji/tokenizer.py",
+        "source_function": "tokenize"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "see harness file",
+        "source": "derived from the real fix commit"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "oob_real_14",
+      "detection_file": "detection/oob_real_14.py",
+      "harness_file": "bugs/oob_real_14.py",
+      "function": "LinuxDistribution._parse_uname_content",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "expression": "lines[0]",
+      "provenance": {
+        "project": "distro",
+        "repo_url": "https://github.com/python-distro/distro",
+        "commit_hash": "d3e919410b5a759de554eb73c959e16f3fd481ad",
+        "source_file": "distro.py",
+        "source_function": "LinuxDistribution._parse_uname_content"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "see harness file",
+        "source": "derived from the real fix commit"
+      },
+      "abstraction": {
+        "used": false,
+        "description": ""
+      },
+      "esbmc_property": "IndexError"
+    },
+    {
+      "id": "ip_real_17",
+      "detection_file": "detection/ip_real_17.py",
+      "harness_file": "bugs/ip_real_17.py",
+      "function": "response_status_message",
+      "categories": [
+        "none_misuse"
+      ],
+      "expression": "http.RESPONSES.get(int(status))",
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": "17",
+        "source_file": "scrapy/utils/response.py",
+        "source_function": "response_status_message",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "ebef6d7c6dd8922210db8a4a44f48fe27ee0cd16",
+        "fixed_commit": "65c7c05060fd2d1fc161d4904243d5e0b31e202b"
+      },
+      "oracle": {
+        "kind": "fixed_version_equivalence",
+        "expression": "see harness bugs/ip_real_17.py",
+        "source": "Reference/oracle extracted from the real fix commit or ESBMC's native check; abstraction detailed in ground_truths.json abstraction_notes"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "dict.get() with no default returned None for status codes outside the known table, crashing downstream string formatting; fix adds an 'Unknown Status' default. Modeled as a bool precondition (was the status in the table), no scrapy-internal types needed."
+      },
+      "esbmc_property": "TypeError"
+    },
+    {
+      "id": "ip_real_21",
+      "detection_file": "detection/ip_real_21.py",
+      "harness_file": "bugs/ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
+      "provenance": {
+        "project": "sortedcontainers",
+        "repo_url": "https://github.com/grantjenks/python-sortedcontainers",
+        "commit_hash": "a04f4a68188fea6797fe3e5f16f388086e405e62",
+        "parent_commit": "7495364027feeeebcfc5cab1330d4ffd1b89b538",
+        "source_file": "sortedcontainers/sorteddict.py",
+        "source_function": "SortedDict.__eq__ / __ne__"
+      },
+      "oracle": {
+        "kind": "fixed_version_equivalence",
+        "expression": "see harness bugs/ip_real_21.py",
+        "source": "Reference/oracle extracted from the real fix commit or ESBMC's native check; abstraction detailed in ground_truths.json abstraction_notes"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError."
+      },
+      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
+      "esbmc_property": "KeyError"
+    },
+    {
+      "id": "ip_real_28",
+      "detection_file": "detection/ip_real_28.py",
+      "harness_file": "bugs/ip_real_28.py",
+      "function": "IOLoop.initialize",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "expression": "IOLoop.current(instance=False) is None",
+      "provenance": {
+        "project": "tornado",
+        "bugsinpy_id": 14,
+        "source_file": "tornado/ioloop.py",
+        "source_function": "IOLoop.initialize",
+        "repo_url": "https://github.com/tornadoweb/tornado",
+        "buggy_commit": "81ee310adcd905fbdf7c98d9fb6ef0c5a46026c2",
+        "fixed_commit": "1d02ed606f1c52636462633d009bdcbaac644331"
+      },
+      "oracle": {
+        "kind": "fixed_version_equivalence",
+        "expression": "see harness bugs/ip_real_28.py",
+        "source": "Reference/oracle extracted from the real fix commit or ESBMC's native check; abstraction detailed in ground_truths.json abstraction_notes"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair."
+      },
+      "esbmc_property": "RuntimeError"
+    },
+    {
+      "id": "dz_real_04",
+      "detection_file": "detection/dz_real_04.py",
+      "harness_file": "bugs/dz_real_04.py",
+      "function": "interpolate_bilinear_2x_fwd",
+      "categories": [
+        "division_by_zero",
+        "invalid_precondition"
+      ],
+      "expression": "(h_src - wdw_size) / step_size",
+      "provenance": {
+        "project": "nki-samples",
+        "repo_url": "https://github.com/aws-neuron/nki-samples",
+        "source_file": "contributed/interpolate_bilinear_fwd.py",
+        "source_function": "interpolate_bilinear_2x_fwd",
+        "buggy_commit": "a87aaa44f7b26241bdb152af8838e287669c3947",
+        "fixed_commit": "d631c8815da107186164d5bfd62c7ed0825eca90",
+        "issue_url": "https://github.com/aws-neuron/nki-samples/issues/125",
+        "pr_url": "https://github.com/aws-neuron/nki-samples/pull/126"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "ZeroDivisionError on (h_src - wdw_size) / step_size when chunk_size == 1 (step_size == 0)",
+        "source": "ESBMC-Python default division check does not cover ieee_div (float /); a manual assert in the harness makes it checkable -- see dz_real_01/02/03 for the same pattern."
+      },
+      "abstraction": {
+        "used": true,
+        "description": "Real caller precondition (h_src > 0, chunk_size > 0) modeled via __ESBMC_assume in the harness; detection file keeps the full real NKI kernel function untouched (tensor/tile ops out of ESBMC-Python's scope)."
+      },
+      "esbmc_property": "ZeroDivisionError"
+    },
+    {
+      "id": "tm_real_13",
+      "detection_file": "detection/tm_real_13.py",
+      "harness_file": "bugs/tm_real_13.py",
+      "function": "XmlItemExporter._export_xml_field",
+      "categories": [
+        "type_mismatch"
+      ],
+      "expression": "self._xg_characters(serialized_value)",
+      "provenance": {
+        "project": "scrapy",
+        "bugsinpy_id": 22,
+        "source_file": "scrapy/exporters.py",
+        "source_function": "XmlItemExporter._export_xml_field",
+        "repo_url": "https://github.com/scrapy/scrapy",
+        "buggy_commit": "a35aec71e96b0c0288c370afa425e8e700dca8b3",
+        "fixed_commit": "bb2cf7c0d7199fffe0aa100e5c8a51c6b4b82fc2"
+      },
+      "oracle": {
+        "kind": "native_property",
+        "expression": "AttributeError on .decode() called on a non-text value, exposed via the harness's manual assert on the abstracted bool flag",
+        "source": "Real bug mechanism (unconditional text-only operation on a value that can legitimately be non-text, e.g. an int/float item field)"
+      },
+      "abstraction": {
+        "used": true,
+        "description": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'."
+      },
+      "esbmc_property": "AttributeError"
+    }
+  ]
+}

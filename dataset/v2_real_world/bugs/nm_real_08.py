@@ -1,18 +1,19 @@
-def url_for(server_name_missing: bool) -> None:
-    # Real code (sanic/request.py, Request.url_for, BugsInPy sanic#4):
-    # pre-fix, `if "//" in self.app.config.SERVER_NAME:` accesses
-    # SERVER_NAME unguarded; SERVER_NAME may not be set on the app's
-    # dynamic config object at all (AttributeError), not merely None. The
-    # fix wraps the access in try/except AttributeError. ESBMC-Python
-    # doesn't model dynamic per-instance attribute existence for a config
-    # object shaped this way, so the crash is made explicit via assert on
-    # the real precondition (config attribute present or not).
-    assert not server_name_missing
+class AppConfig:
+    # Real code (sanic/request.py, Request.url_for, pre-fix e81a8ce0): SERVER_NAME
+    # is only set on the app config when the user configures it.
+    def __init__(self) -> None:
+        self.KEEP_ALIVE: bool = True
+
+
+def url_for(config: AppConfig) -> bool:
+    server_name: str = config.SERVER_NAME
+    if "//" in server_name:
+        return True
+    return False
 
 
 def main() -> None:
-    server_name_missing: bool = nondet_bool()
-    url_for(server_name_missing)
+    url_for(AppConfig())
 
 
 main()

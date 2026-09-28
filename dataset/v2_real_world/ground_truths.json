@@ -693,7 +693,7 @@
       "harness_file": "dz_real_02.py",
       "harness_function": "rating_ratio",
       "harness_expression": "float(not_parsed) / float(num_substrings)",
-      "harness_line": 9,
+      "harness_line": 7,
       "audit": {
         "source_expression": "float(not_parsed)/float(num_substrings)",
         "harness_property": "float(not_parsed) / float(num_substrings)",
@@ -1232,7 +1232,7 @@
       "function": "response_status_message",
       "verifiable": true,
       "expression": "http.RESPONSES.get(int(status))",
-      "expected_type": "AssertionError",
+      "expected_type": "TypeError",
       "should_go_to_esbmc": true,
       "provenance": {
         "project": "scrapy",
@@ -1249,12 +1249,12 @@
         "none_misuse"
       ],
       "harness_file": "ip_real_17.py",
-      "harness_function": "status_message_is_known",
-      "harness_expression": "http.RESPONSES.get(int(status))",
-      "harness_line": 12,
+      "harness_function": "response_status_message",
+      "harness_expression": "responses.get(status)",
+      "harness_line": 15,
       "audit": {
         "source_expression": "http.RESPONSES.get(int(status))",
-        "harness_property": "http.RESPONSES.get(int(status))",
+        "harness_property": "responses.get(status)",
         "provenance_complete": false
       }
     },
@@ -1357,7 +1357,7 @@
       "file": "ip_real_21.py",
       "function": "SortedDict.__eq__",
       "verifiable": true,
-      "expression": "len(self._dict) == len(that) and all((key in that and self[key] == that[key] for key in self))",
+      "expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
       "expected_type": "KeyError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -1374,11 +1374,11 @@
       ],
       "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
       "harness_file": "ip_real_21.py",
-      "harness_function": "dicts_equal_buggy",
+      "harness_function": "sorted_dict_eq",
       "harness_expression": "self_d[key] != that_d[key]",
-      "harness_line": 3,
+      "harness_line": 8,
       "audit": {
-        "source_expression": "len(self._dict) == len(that) and all((key in that and self[key] == that[key] for key in self))",
+        "source_expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
         "harness_property": "self_d[key] != that_d[key]",
         "provenance_complete": false
       }
@@ -1545,7 +1545,7 @@
       "function": "IOLoop.initialize",
       "verifiable": true,
       "expression": "IOLoop.current(instance=False) is None",
-      "expected_type": "AssertionError",
+      "expected_type": "RuntimeError",
       "should_go_to_esbmc": true,
       "provenance": {
         "project": "tornado",
@@ -1561,12 +1561,12 @@
         "invalid_precondition"
       ],
       "harness_file": "ip_real_28.py",
-      "harness_function": "should_raise_buggy",
-      "harness_expression": "if IOLoop.current(instance=False) is None:",
-      "harness_line": 2,
+      "harness_function": "initialize",
+      "harness_expression": "if not current_exists:",
+      "harness_line": 6,
       "audit": {
         "source_expression": "IOLoop.current(instance=False) is None",
-        "harness_property": "if IOLoop.current(instance=False) is None:",
+        "harness_property": "if not current_exists:",
         "provenance_complete": false
       }
     },
@@ -1912,11 +1912,11 @@
       ],
       "harness_file": "nm_real_08.py",
       "harness_function": "url_for",
-      "harness_expression": "assert not server_name_missing",
+      "harness_expression": "config.SERVER_NAME",
       "harness_line": 9,
       "audit": {
         "source_expression": "\"//\" in self.app.config.SERVER_NAME",
-        "harness_property": "assert not server_name_missing",
+        "harness_property": "config.SERVER_NAME",
         "provenance_complete": false
       }
     },
@@ -2042,12 +2042,12 @@
         "none_misuse"
       ],
       "harness_file": "nm_real_12.py",
-      "harness_function": "unlink_middle",
-      "harness_expression": "assert not next_is_none",
-      "harness_line": 9,
+      "harness_function": "unlink",
+      "harness_expression": "current_line.next.prev = current_line.prev",
+      "harness_line": 15,
       "audit": {
         "source_expression": "current_line.next.prev = current_line.prev",
-        "harness_property": "assert not next_is_none",
+        "harness_property": "current_line.next.prev = current_line.prev",
         "provenance_complete": true
       }
     },
@@ -2108,12 +2108,12 @@
         "none_misuse"
       ],
       "harness_file": "nm_real_14.py",
-      "harness_function": "encode_hostname",
-      "harness_expression": "to_bytes(parsed.hostname)",
-      "harness_line": 9,
+      "harness_function": "host_header",
+      "harness_expression": "to_bytes(hostname)",
+      "harness_line": 17,
       "audit": {
         "source_expression": "to_bytes(parsed.hostname)",
-        "harness_property": "to_bytes(parsed.hostname)",
+        "harness_property": "to_bytes(hostname)",
         "provenance_complete": false
       }
     },
@@ -2286,7 +2286,7 @@
       "function": "engine.numwords",
       "verifiable": true,
       "expression": "first = not num.endswith(decimal)",
-      "expected_type": "AssertionError",
+      "expected_type": "TypeError",
       "should_go_to_esbmc": true,
       "provenance": {
         "project": "inflect",
@@ -2305,9 +2305,9 @@
         "none_misuse"
       ],
       "harness_file": "nm_real_20.py",
-      "harness_function": "check_decimal_suffix",
+      "harness_function": "first_chunk_flag",
       "harness_expression": "num.endswith(decimal)",
-      "harness_line": 1,
+      "harness_line": 7,
       "audit": {
         "source_expression": "first = not num.endswith(decimal)",
         "harness_property": "num.endswith(decimal)",
@@ -3379,7 +3379,7 @@
       "harness_file": "dz_real_04.py",
       "harness_function": "interpolate_step_ratio",
       "harness_expression": "(h_src - wdw_size) / step_size",
-      "harness_line": 15,
+      "harness_line": 12,
       "audit": {
         "source_expression": "(h_src - wdw_size) / step_size",
         "harness_property": "(h_src - wdw_size) / step_size",
@@ -3563,12 +3563,12 @@
         "variable_misuse"
       ],
       "harness_file": "vm_real_05.py",
-      "harness_function": "move_creates_dir",
-      "harness_expression": "assert not uses_self_fs",
-      "harness_line": 5,
+      "harness_function": "LocalFileSystem.move",
+      "harness_expression": "self.fs.mkdir(new_dir)",
+      "harness_line": 9,
       "audit": {
         "source_expression": "self.fs.mkdir(d)",
-        "harness_property": "assert not uses_self_fs",
+        "harness_property": "self.fs.mkdir(new_dir)",
         "provenance_complete": true
       }
     },
@@ -3719,12 +3719,12 @@
         "type_mismatch"
       ],
       "harness_file": "tm_real_13.py",
-      "harness_function": "export_xml_field_value",
-      "harness_expression": "assert is_text",
-      "harness_line": 9,
+      "harness_function": "xg_characters",
+      "harness_expression": "serialized_value.decode(\"utf-8\")",
+      "harness_line": 5,
       "audit": {
         "source_expression": "self._xg_characters(serialized_value)",
-        "harness_property": "assert is_text",
+        "harness_property": "serialized_value.decode(\"utf-8\")",
         "provenance_complete": true
       }
     },
@@ -3800,7 +3800,7 @@
       "should_go_to_esbmc": true,
       "provenance": {
         "project": "cookiecutter",
-        "bugsinpy_id": 1513,
+        "pybughive_issue": 1513,
         "source_file": "cookiecutter/config.py",
         "source_function": "merge_configs",
         "repo_url": "https://github.com/cookiecutter/cookiecutter",

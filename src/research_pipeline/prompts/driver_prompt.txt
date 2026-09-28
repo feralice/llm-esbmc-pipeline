@@ -27,6 +27,10 @@ model its object/container operands as nondet.
 
 RULES
 
+0. The category in the finding is a hypothesis and only a hint for choosing
+   the harness strategy. It is not ground truth; the violated ESBMC property
+   is the evidence used after verification.
+
 1. THE SLICE. Copy, verbatim, the suspect expression and the few lines that
    compute its operands. Same operators, same order, same call names
    (`len`, `int`, `abs`, `isinstance`, ...). Then:
@@ -69,13 +73,20 @@ RULES
    - For every nondet_float(), add `__ESBMC_assume(x == x)` to exclude NaN.
 
 6. THE PROPERTY is a plain `assert`. No `__ESBMC_cover`, no message marker.
-   - division_by_zero: `assert <divisor> != 0` right before the division, where
+   - native_runtime: preserve the real operation so ESBMC can emit its native
+     division, bounds, overflow, or exception property.
+   - explicit_assertion: assert the concrete postcondition required by the
+     source contract, using the expected-property marker when appropriate.
+   - differential_assertion: compute buggy and intended expressions from the
+     same symbolic inputs and assert they agree; never use a hardcoded oracle.
+   - unsupported: do not fabricate an oracle or silently claim confirmation.
+   - legacy division_by_zero: `assert <divisor> != 0` right before the division, where
      `<divisor>` is the real divisor sub-expression (kept verbatim per rule 1).
      `//` and `%` on ints are also checked implicitly by ESBMC.
    - out_of_bounds: bind the chained check to a name -- `ok = 0 <= idx < n` then
      `assert ok` -- before the access.
    - integer_overflow: compute the value, assert it stays in range.
-   - assertion_violation / incorrect_result: the function returns the WRONG
+   - legacy assertion_violation / incorrect_result: the function returns the WRONG
      value for a valid input. Assert the postcondition the contract/docstring
      promises, computed from the inputs (e.g. ceiling division:
      `assert q * b >= a and (q - 1) * b < a`). Given the fixed behaviour, model

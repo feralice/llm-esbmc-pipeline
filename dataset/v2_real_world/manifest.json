@@ -2567,7 +2567,7 @@
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "len(self._dict) == len(that) and all((key in that and self[key] == that[key] for key in self))",
+      "expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
       "provenance": {
         "project": "sortedcontainers",
         "repo_url": "https://github.com/grantjenks/python-sortedcontainers",

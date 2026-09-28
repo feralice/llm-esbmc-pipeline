@@ -24,6 +24,11 @@ Produce ONE Python file, a harness, following every rule below.
 
 RULES
 
+0. The category in the finding is a hypothesis supplied to help choose the
+   harness strategy. It is not ground truth. The harness must establish the
+   stated property from the expression and inputs; ESBMC's violated property
+   is the evidence used by the pipeline after verification.
+
 1. Model ONLY the single expression that carries the hypothesized bug plus the
    few lines that compute its operands. Drop everything else: no numpy, pandas,
    torch, I/O, objects, decorators, external libraries. Setup code that does NOT
@@ -95,14 +100,26 @@ RULES
    registered when execution starts at module level.
 
 9. State the property being checked:
-   - division_by_zero: model ONLY the divisor. Rebuild it from fresh nondet
+   - native_runtime: prefer ESBMC's built-in checks for division by zero,
+     bounds, overflow, and exceptions. Keep the real operation and do not
+     replace it with a hardcoded result. If a property is not emitted by
+     ESBMC automatically, use an explicit assertion around the operation.
+   - explicit_assertion: model the suspect result and assert the concrete
+     property that the source contract requires, using the marker below.
+   - differential_assertion: model the buggy and intended expressions from
+     the SAME symbolic inputs and assert they agree. The intended expression
+     must not be a hardcoded constant.
+   - unsupported: do not invent a semantic oracle. Produce the smallest
+     harness that makes the limitation explicit only if the surrounding
+     pipeline requests synthesis for this category.
+   - legacy division_by_zero: model ONLY the divisor. Rebuild it from fresh nondet
      operands (rule 5b), then write `assert <divisor> != 0` and a line that uses
      it, e.g. `q: float = 1.0 / <divisor>`. The dividend is irrelevant to
      division by zero - drop it. ESBMC-Python does not check `/` automatically
      (`//` and `%` on ints it does); the explicit assert makes every case
      checkable (esbmc-python-guide gotcha 3).
-   - out_of_bounds: assert 0 <= <index> < <length> before the access.
-   - assertion_violation / incorrect_result: these two categories mean "the
+   - legacy out_of_bounds: assert 0 <= <index> < <length> before the access.
+   - legacy assertion_violation / incorrect_result: these two categories mean "the
      function computes the WRONG VALUE for a valid input", not "an unchecked
      precondition lets a bad value through" - a bare assert on an unconstrained
      nondet_*() proves nothing here (it is falsifiable by any arbitrary input,

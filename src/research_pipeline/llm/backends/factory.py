@@ -35,6 +35,7 @@ def build_analyzer(
     timeout_seconds: int = 300,
     include_smells: bool = True,
     detection_strategy: str = "single",
+    v2_categories: bool = False,
 ) -> LLMAnalyzer:
     if backend not in _DEFAULT_MODEL:
         raise ValueError(
@@ -53,6 +54,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
+            v2_categories=v2_categories,
         ))
     if backend == "anthropic":
         return wrap(AnthropicAnalyzer(
@@ -60,6 +62,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
+            v2_categories=v2_categories,
         ))
     if backend == "ollama":
         return wrap(ChatCompletionsAnalyzer(
@@ -67,6 +70,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
+            v2_categories=v2_categories,
         ))
     if backend == "google":
         return wrap(ChatCompletionsAnalyzer(
@@ -76,9 +80,10 @@ def build_analyzer(
             timeout_seconds=timeout_seconds,
             request_delay=4.0,
             include_smells=include_smells,
+            v2_categories=v2_categories,
         ))
     if backend == "codex":
-        return wrap(CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells))
+        return wrap(CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_categories=v2_categories))
     if backend == "claude_cli":
-        return wrap(ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells))
+        return wrap(ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_categories=v2_categories))
     raise AssertionError(f"unreachable: {backend!r} passed the _DEFAULT_MODEL membership check above")

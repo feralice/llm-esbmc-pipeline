@@ -1,0 +1,22 @@
+# source: https://github.com/grantjenks/python-sortedcontainers/commit/a04f4a68188fea6797fe3e5f16f388086e405e62
+diff --git a/sortedcontainers/sorteddict.py b/sortedcontainers/sorteddict.py
+index 3706a207..54c9942d 100644
+--- a/sortedcontainers/sorteddict.py
++++ b/sortedcontainers/sorteddict.py
+@@ -121,12 +121,14 @@ def __getitem__(self, key):
+     def __eq__(self, that):
+         """Compare two iterables for equality."""
+         return (len(self._dict) == len(that)
+-                and all(self[key] == that[key] for key in self))
++                and all((key in that) and (self[key] == that[key])
++                        for key in self))
+ 
+     def __ne__(self, that):
+         """Compare two iterables for inequality."""
+         return (len(self._dict) != len(that)
+-                or any(self[key] != that[key] for key in self))
++                or any((key not in that) or (self[key] != that[key])
++                       for key in self))
+ 
+     def __iter__(self):
+         """Create an iterator over the sorted keys of the dictionary."""

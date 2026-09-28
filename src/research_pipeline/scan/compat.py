@@ -285,6 +285,14 @@ def check_harness(
     if assertion_reasons:
         return CompatResult(False, VERDICT_INVALID, assertion_reasons)
 
+    property_order_reasons = _property_order_reasons(tree)
+    if property_order_reasons:
+        return CompatResult(False, VERDICT_INVALID, property_order_reasons)
+
+    cover_reasons = _cover_grounding_reasons(tree)
+    if cover_reasons:
+        return CompatResult(False, VERDICT_INVALID, cover_reasons)
+
     outcome_reasons = _unconstrained_outcome_reasons(tree, category)
     if outcome_reasons:
         return CompatResult(False, VERDICT_INVALID, outcome_reasons)
@@ -326,7 +334,159 @@ def _check_expected_assertion(tree: ast.Module) -> list[str]:
         ]
     if len(assertions) != 1:
         return ["harness contains additional unmarked assertions"]
+    return _vacuous_assertion_reasons(tree, marked[0].test)
+
+
+def _single_assignments(tree: ast.Module) -> dict[str, ast.expr]:
+    """Names bound exactly once, mapped to the expression they are bound to."""
+    bound: dict[str, list[ast.expr]] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value = node.targets[0], node.value
+        elif isinstance(node, ast.AnnAssign) and node.value is not None:
+            target, value = node.target, node.value
+        else:
+            continue
+        if isinstance(target, ast.Name):
+            bound.setdefault(target.id, []).append(value)
+    return {name: values[0] for name, values in bound.items() if len(values) == 1}
+
+
+def _vacuous_assertion_reasons(tree: ast.Module, test: ast.expr) -> list[str]:
+    """Reject a marked assertion whose verdict does not depend on the modelled bug."""
+    if isinstance(test, ast.Constant):
+        return [
+            f"expected assertion is the constant {test.value!r}; its verdict does not "
+            "depend on the suspect expression"
+        ]
+    if isinstance(test, ast.Compare) and len(test.ops) == 1:
+        values = _single_assignments(tree)
+        sides = [
+            values.get(side.id, side) if isinstance(side, ast.Name) else side
+            for side in (test.left, test.comparators[0])
+        ]
+        if ast.dump(sides[0]) == ast.dump(sides[1]):
+            return [
+                "expected assertion compares two identical expressions; only a NaN "
+                "input can make it fail, not the suspected bug"
+            ]
     return []
+
+
+def _property_order_reasons(tree: ast.Module) -> list[str]:
+    """Reject assumptions that occur after the assertion they should constrain."""
+    marked = [
+        node for node in ast.walk(tree)
+        if isinstance(node, ast.Assert)
+        and isinstance(node.msg, ast.Constant)
+        and node.msg.value == EXPECTED_PROPERTY_MARKER
+    ]
+    if not marked:
+        return []
+    assertion_line = marked[0].lineno
+    late_assumes = [
+        node for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "__ESBMC_assume"
+        and node.lineno > assertion_line
+    ]
+    if late_assumes:
+        return [
+            "harness places __ESBMC_assume after the expected assertion; "
+            "assumptions must constrain inputs before the property is checked"
+        ]
+    return []
+
+
+def _cover_grounding_reasons(tree: ast.Module) -> list[str]:
+    """Reject cover goals that cannot depend on a symbolic input."""
+    symbolic_names: set[str] = set()
+    assignments = [
+        node for node in ast.walk(tree)
+        if isinstance(node, ast.Assign) and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+    ]
+    for node in assignments:
+        value = node.value
+        if (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id in _VALID_NONDET
+        ):
+            symbolic_names.add(node.targets[0].id)
+
+    function_params = {
+        node.name: [arg.arg for arg in node.args.args]
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name):
+            continue
+        params = function_params.get(node.func.id, [])
+        for param, argument in zip(params, node.args):
+            if (
+                isinstance(argument, ast.Call)
+                and isinstance(argument.func, ast.Name)
+                and argument.func.id in _VALID_NONDET
+            ):
+                symbolic_names.add(param)
+
+    changed = True
+    while changed:
+        changed = False
+        for node in assignments:
+            names = _expr_names(node.value)
+            if names & symbolic_names and node.targets[0].id not in symbolic_names:
+                symbolic_names.add(node.targets[0].id)
+                changed = True
+
+    for node in ast.walk(tree):
+        if not (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "__ESBMC_cover"
+        ):
+            continue
+        if not node.args or not (_expr_names(node.args[0]) & symbolic_names):
+            return [
+                "cover condition does not depend on a symbolic input; "
+                "the reachability check is vacuous or unreachable"
+            ]
+    return []
+
+
+def exclude_nan_inputs(source: str) -> str:
+    """Insert `__ESBMC_assume(v - v == 0)` after every `v = nondet_float()`.
+
+    nondet_float() ranges over NaN and +-Inf, and either one makes a float
+    comparison fail regardless of the suspected bug (0 * Inf is NaN, so
+    excluding NaN alone is not enough). `v - v == 0` holds only for finite v.
+    Ablation skips these guards.
+    """
+    lines = source.splitlines()
+    inserts: list[tuple[int, str]] = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value = node.targets[0], node.value
+        elif isinstance(node, ast.AnnAssign):
+            target, value = node.target, node.value
+        else:
+            continue
+        if (
+            isinstance(target, ast.Name)
+            and isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id == "nondet_float"
+        ):
+            indent = " " * node.col_offset
+            inserts.append(
+                (node.end_lineno, f"{indent}__ESBMC_assume({target.id} - {target.id} == 0)")
+            )
+    for lineno, text in sorted(inserts, reverse=True):
+        lines.insert(lineno, text)
+    return "\n".join(lines) + ("\n" if source.endswith("\n") else "")
 
 
 def _unsupported_construct_reasons(tree: ast.Module) -> list[str]:

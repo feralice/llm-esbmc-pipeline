@@ -1,0 +1,15 @@
+# source: https://github.com/astanin/python-tabulate/commit/41a6db29b666f0c0eedec40efb5bc3af4f411a56
+diff --git a/tabulate.py b/tabulate.py
+index b68416a1..b5c385f6 100644
+--- a/tabulate.py
++++ b/tabulate.py
+@@ -196,7 +196,8 @@ def simple_separated_format(separator):
+ 
+     """
+     return TableFormat(None, None, None, None,
+-                       headerrow=None, datarow=DataRow('', separator, ''),
++                       headerrow=DataRow('', separator, ''),
++                       datarow=DataRow('', separator, ''),
+                        padding=0, with_header_hide=None)
+ 
+ 

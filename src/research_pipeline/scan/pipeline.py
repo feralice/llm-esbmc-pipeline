@@ -26,7 +26,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..models import CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER, Finding
+from ..llm.categories import HARNESS_STRATEGIES, harness_strategy_for_category
 from ..preprocess import preprocess_file
+from ..report import _category_from_esbmc_property, _esbmc_result_matches_category
 from ..verification.esbmc_runner import (
     generate_pytest_testcase,
     run_esbmc_direct,
@@ -39,6 +41,7 @@ from .compat import (
     VERDICT_UNSUPPORTED,
     check_harness,
     check_outcome_grounding,
+    exclude_nan_inputs,
 )
 from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
 from .driver_check import LIVENESS_REASON, check_driver_harness, force_result_liveness
@@ -78,6 +81,14 @@ SAFE_NATIVE = "safe_native"
 # real function to convert under ESBMC-Python (same gate as _try_native).
 CONFIRMED_DRIVER = "confirmed_driver"
 SAFE_DRIVER = "safe_driver"
+
+# What backs the candidate's category on a confirmation. ESBMC has no category
+# of its own: only its built-in checks (ZeroDivisionError, IndexError, overflow,
+# ...) name the bug kind. A harness assert confirms the violation, while the
+# category stays the LLM's hypothesis.
+CATEGORY_EVIDENCE_NATIVE = "esbmc_native"
+CATEGORY_EVIDENCE_MISMATCH = "category_mismatch"
+CATEGORY_EVIDENCE_MARKED = "marked_assertion"
 OVER_RESTRICTED = "over_restricted"
 SAFE_ON_ABSTRACTION = "safe_on_abstraction"
 INVALID_HARNESS = "invalid_harness"
@@ -116,6 +127,8 @@ _CONFIRMATIONS = frozenset(
     {CONFIRMED_ON_ABSTRACTION, CONFIRMED_UNVERIFIED, CONFIRMED_DRIVER, CONFIRMED_NATIVE}
 )
 
+_OUTCOME_STRATEGIES = OUTCOME_CATEGORIES | frozenset({"explicit_assertion", "differential_assertion"})
+
 
 @dataclass
 class ScanCandidate:
@@ -124,18 +137,34 @@ class ScanCandidate:
     file: str
     function: str
     category: str
+    harness_strategy: str = ""
     expression: str = ""
     note: str = ""
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "file": self.file,
+            "function": self.function,
+            "category": self.category,
+            "harness_strategy": self.harness_strategy or harness_strategy_for_category(self.category),
+            "expression": self.expression,
+            "note": self.note,
+        }
 
     @classmethod
     def from_dict(cls, data: dict) -> ScanCandidate:
         need = [k for k in ("file", "function", "category") if not data.get(k)]
         if need:
             raise ValueError(f"candidate missing field(s): {', '.join(need)}")
+        category = str(data["category"])
+        strategy = str(data.get("harness_strategy", "")) or harness_strategy_for_category(category)
+        if strategy not in HARNESS_STRATEGIES:
+            raise ValueError(f"candidate has invalid harness_strategy: {strategy!r}")
         return cls(
             file=str(data["file"]),
             function=str(data["function"]),
-            category=str(data["category"]),
+            category=category,
+            harness_strategy=strategy,
             expression=str(data.get("expression", "")),
             note=str(data.get("note", "")),
         )
@@ -179,6 +208,11 @@ class ScanCaseResult:
     # this says what code ESBMC actually executed for the result.
     # Values: native, real_body, driver, scalar, unknown.
     harness_tier: str = "unknown"
+    # One of the CATEGORY_EVIDENCE_* values on a confirmation, "" otherwise.
+    category_evidence: str = ""
+    # Category inferred from ESBMC's violated property, when it names a
+    # built-in runtime property. This is separate from the LLM hypothesis.
+    esbmc_category: str = ""
     pytest_test_path: str = ""
     pytest_generation_status: str = ""
     pytest_generation_summary: str = ""
@@ -213,6 +247,8 @@ class ScanCaseResult:
             verification_target=str(data.get("verification_target", "")),
             abstraction_level=str(data.get("abstraction_level", "")),
             harness_tier=str(data.get("harness_tier", "unknown")),
+            category_evidence=str(data.get("category_evidence", "")),
+            esbmc_category=str(data.get("esbmc_category", "")),
             pytest_test_path=str(data.get("pytest_test_path", "")),
             pytest_generation_status=str(data.get("pytest_generation_status", "")),
             pytest_generation_summary=str(data.get("pytest_generation_summary", "")),
@@ -224,6 +260,7 @@ class ScanCaseResult:
                 "file": self.candidate.file,
                 "function": self.candidate.function,
                 "category": self.candidate.category,
+                "harness_strategy": self.candidate.harness_strategy or harness_strategy_for_category(self.candidate.category),
                 "expression": self.candidate.expression,
                 "note": self.candidate.note,
             },
@@ -249,6 +286,8 @@ class ScanCaseResult:
             "verification_target": self.verification_target,
             "abstraction_level": self.abstraction_level,
             "harness_tier": self.harness_tier,
+            "category_evidence": self.category_evidence,
+            "esbmc_category": self.esbmc_category,
             "pytest_test_path": self.pytest_test_path,
             "pytest_generation_status": self.pytest_generation_status,
             "pytest_generation_summary": self.pytest_generation_summary,
@@ -385,6 +424,15 @@ def _run_one(
     pytest_output_dir: str | Path | None = None,
 ) -> ScanCaseResult:
     started = time.monotonic()
+
+    if (candidate.harness_strategy or harness_strategy_for_category(candidate.category)) == "unsupported":
+        return _early(
+            candidate,
+            synthesizer.model,
+            UNSUPPORTED_HARNESS,
+            "the LLM classified this hypothesis as unsupported for safe ESBMC modeling",
+            started,
+        )
 
     source_path = Path(candidate.file)
     if not source_path.exists():
@@ -596,15 +644,21 @@ def _try_native(
         timeout_seconds=timeout_seconds,
         output_dir=str(harness_dir),
     )
+    category_evidence = ""
+    esbmc_category = ""
     if result.status == "violation_found":
         classification = CONFIRMED_NATIVE
-    elif result.status == "no_violation_found" and candidate.category not in OUTCOME_CATEGORIES:
+        category_evidence = _native_category_evidence(candidate.category, result.details)
+        esbmc_category = _observed_esbmc_category(result.details)
+    elif result.status == "no_violation_found" and candidate.category not in _OUTCOME_STRATEGIES:
         classification = SAFE_NATIVE
     else:
         return None
     return ScanCaseResult(
         candidate=candidate,
         classification=classification,
+        category_evidence=category_evidence,
+        esbmc_category=esbmc_category,
         compat_verdict="native_function",
         esbmc_status=result.status,
         esbmc_summary=result.summary,
@@ -614,6 +668,19 @@ def _try_native(
         abstraction_level="none",
         harness_tier="native",
     )
+
+
+def _native_category_evidence(category: str, details: dict[str, object]) -> str:
+    if _esbmc_result_matches_category(details, category):
+        return CATEGORY_EVIDENCE_NATIVE
+    return CATEGORY_EVIDENCE_MISMATCH
+
+
+def _observed_esbmc_category(details: dict[str, object]) -> str:
+    """Return only a category explicitly recognizable in ESBMC's property text."""
+    text = " ".join(str(details.get(key, "")) for key in ("property_kind", "property_text"))
+    category = _category_from_esbmc_property(text)
+    return "" if category in {"unknown_esbmc_violation", "unwinding_bound"} else category
 
 
 def _category_extra_flags(category: str) -> list[str]:
@@ -632,7 +699,7 @@ def _category_extra_flags(category: str) -> list[str]:
     return []
 
 
-_REAL_BODY_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds"})
+_REAL_BODY_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds", "native_runtime"})
 _REAL_BODY_SCALAR_TYPES = frozenset({"int", "float", "bool", "str"})
 # nondet_list (esbmc/src/python-frontend/models/nondet.py) builds monomorphic
 # int/bool/str elements soundly by calling the matching nondet_* once per
@@ -809,6 +876,16 @@ def _try_real_body_driver(
     return ScanCaseResult(
         candidate=candidate,
         classification=classification,
+        category_evidence=(
+            _native_category_evidence(candidate.category, esbmc.details)
+            if classification == CONFIRMED_DRIVER
+            else ""
+        ),
+        esbmc_category=(
+            _observed_esbmc_category(esbmc.details)
+            if classification == CONFIRMED_DRIVER
+            else ""
+        ),
         harness=harness,
         harness_path=str(harness_path),
         compat_verdict="real_body_driver",
@@ -937,7 +1014,7 @@ def _try_driver(
                     "unrelated to the modeled bug may have fired instead"
                 ]
                 return base, "conclusive"
-            if candidate.category in OUTCOME_CATEGORIES:
+            if candidate.category in _OUTCOME_STRATEGIES:
                 grounding = check_outcome_grounding(harness_source)
                 if grounding.ok:
                     base.classification = CONFIRMED_DRIVER
@@ -946,6 +1023,8 @@ def _try_driver(
                     base.compat_reasons = list(grounding.reasons)
             else:
                 base.classification = CONFIRMED_DRIVER
+            if base.classification == CONFIRMED_DRIVER:
+                base.category_evidence = CATEGORY_EVIDENCE_MARKED
             return base, "conclusive"
 
         if esbmc.status == "no_violation_found":
@@ -1048,6 +1127,9 @@ def _one_attempt(
     else:
         result.compat_verdict = "skipped"
 
+    synth_result.harness = exclude_nan_inputs(synth_result.harness)
+    result.harness = synth_result.harness
+
     suffix = f"_try{attempt}" if attempt else ""
     if style == STYLE_LOOP:
         suffix += "_loop"
@@ -1066,6 +1148,7 @@ def _one_attempt(
     result.esbmc_status = esbmc.status
     result.esbmc_summary = esbmc.summary
     result.esbmc_seconds = esbmc.time_seconds
+    result.esbmc_category = _observed_esbmc_category(esbmc.details)
 
     if generate_pytest_tests:
         pytest_dir = Path(pytest_output_dir or harness_dir / "pytest") / f"scan_{index:03d}"
@@ -1104,11 +1187,13 @@ def _one_attempt(
                         f"({violated[0] if violated else 'unknown'}), not the marked expected assertion"
                     )
                 ]
-    if result.classification == CONFIRMED_ON_ABSTRACTION and candidate.category in OUTCOME_CATEGORIES:
+    if result.classification == CONFIRMED_ON_ABSTRACTION and candidate.category in _OUTCOME_STRATEGIES:
         grounding = check_outcome_grounding(synth_result.harness)
         if not grounding.ok:
             result.compat_reasons = list(grounding.reasons)
             result.classification = CONFIRMED_UNVERIFIED
+    if result.classification == CONFIRMED_ON_ABSTRACTION:
+        result.category_evidence = CATEGORY_EVIDENCE_MARKED
 
     if use_ablation and result.classification == SAFE_ON_ABSTRACTION:
         report = _ablate_harness(

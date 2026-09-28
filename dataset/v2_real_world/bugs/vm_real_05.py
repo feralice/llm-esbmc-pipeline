@@ -1,13 +1,16 @@
-def move_creates_dir(uses_self_fs: bool) -> None:
-    # Real code (luigi/file.py:LocalFileSystem.move, BugsInPy luigi bug #13):
-    # `self.fs.mkdir(d)` -- LocalFileSystem has no `fs` attribute at all;
-    # `mkdir` is defined directly on `self`. Real fix: `self.mkdir(d)`.
-    assert not uses_self_fs
+class LocalFileSystem:
+    # Real code (luigi/file.py, LocalFileSystem.move, pre-fix a8e64fe7): the class
+    # defines mkdir itself and has no `fs` attribute.
+    def mkdir(self, path: str) -> None:
+        pass
+
+    def move(self, new_dir: str) -> None:
+        if new_dir:
+            self.fs.mkdir(new_dir)
 
 
 def main() -> None:
-    uses_self_fs: bool = nondet_bool()
-    move_creates_dir(uses_self_fs)
+    LocalFileSystem().move("out")
 
 
 main()

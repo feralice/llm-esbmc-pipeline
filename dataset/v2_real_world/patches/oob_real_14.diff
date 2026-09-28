@@ -1,0 +1,33 @@
+# source: https://github.com/python-distro/distro/commit/d3e919410b5a759de554eb73c959e16f3fd481ad
+diff --git a/distro.py b/distro.py
+index 77b9fdb2..4d4b614d 100755
+--- a/distro.py
++++ b/distro.py
+@@ -1134,6 +1134,8 @@ def _uname_info(self) -> Dict[str, str]:
+ 
+     @staticmethod
+     def _parse_uname_content(lines: Sequence[str]) -> Dict[str, str]:
++        if not lines:
++            return {}
+         props = {}
+         match = re.search(r"^([^\s]+)\s+([\d\.]+)", lines[0].strip())
+         if match:
+diff --git a/tests/test_distro.py b/tests/test_distro.py
+index bc65de30..6d397617 100644
+--- a/tests/test_distro.py
++++ b/tests/test_distro.py
+@@ -716,6 +716,14 @@ def test_bad_uname(self):
+         assert self.distro.uname_attr("name") == ""
+         assert self.distro.uname_attr("release") == ""
+ 
++    def test_empty_uname(self):
++        self._setup_for_distro(os.path.join(TESTDISTROS, "distro", "emptyuname"))
++        self.distro = distro.LinuxDistribution()
++
++        assert self.distro.uname_attr("id") == ""
++        assert self.distro.uname_attr("name") == ""
++        assert self.distro.uname_attr("release") == ""
++
+     def test_usrlibosreleaseonly(self):
+         self._setup_for_distro(
+             os.path.join(TESTDISTROS, "distro", "usrlibosreleaseonly")

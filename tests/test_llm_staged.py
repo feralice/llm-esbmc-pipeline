@@ -42,8 +42,7 @@ def test_stage_schemas_have_distinct_contracts_without_fake_category():
     assert "findings" in classification_properties
     categories = classification_properties["findings"]["items"]["properties"]["category"]["enum"]
     assert set(categories) == {
-        "assertion_violation", "division_by_zero", "out_of_bounds", "none_misuse",
-        "type_mismatch", "invalid_precondition", "variable_misuse", "integer_overflow",
+        "native_runtime", "explicit_assertion", "differential_assertion", "unsupported",
     }
     assert "unclassified" not in categories
 
@@ -97,7 +96,7 @@ def test_parse_classification_rejects_unknown_candidate_or_category():
 
     with pytest.raises(ValueError, match="candidate_id"):
         parse_classification_payload({
-            "findings": [{"candidate_id": "missing", "category": "division_by_zero", "verifiable": True, "explanation": ""}]
+            "findings": [{"candidate_id": "missing", "category": "native_runtime", "verifiable": True, "explanation": ""}]
         }, candidates)
 
     with pytest.raises(ValueError, match="categoria"):
@@ -141,14 +140,14 @@ class _TelemetryStagedBackend(_StagedBackend):
 
 def test_two_stage_analyzer_calls_localization_then_classification():
     location = LocationCandidate("c1", "1 // x", 2, ["x"], "none", "x != 0", [], "")
-    classification = ClassificationResult("c1", "division_by_zero", True, "x may be zero")
+    classification = ClassificationResult("c1", "native_runtime", True, "x may be zero")
     backend = _StagedBackend([location], [classification])
     analyzer = TwoStageAnalyzer(backend)
 
     findings = analyzer.analyze(_unit())
 
     assert [call[0] for call in backend.calls] == ["localize", "classify"]
-    assert findings[0].category == "division_by_zero"
+    assert findings[0].category == "native_runtime"
     assert findings[0].metadata["two_stage_candidate_id"] == "c1"
     assert [event["analysis_stage"] for event in analyzer.telemetry_events] == [
         "localize", "classify",
@@ -174,7 +173,7 @@ def test_two_stage_analyzer_preserves_classification_failure():
 
 def test_two_stage_analyzer_keeps_one_telemetry_event_per_provider_call():
     location = LocationCandidate("c1", "1 // x", 2, ["x"], "none", "x != 0", [], "")
-    classification = ClassificationResult("c1", "division_by_zero", True, "x may be zero")
+    classification = ClassificationResult("c1", "native_runtime", True, "x may be zero")
     backend = _TelemetryStagedBackend([location], [classification])
 
     analyzer = TwoStageAnalyzer(backend)

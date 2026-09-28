@@ -14,7 +14,7 @@ from ..staged import (
     parse_stage_payload,
     stage_schema,
 )
-from ..schema import FINDINGS_JSON_SCHEMA
+from ..schema import FINDINGS_JSON_SCHEMA, V2_FINDINGS_JSON_SCHEMA
 from ..telemetry import response_event
 
 # Tools this analysis task never needs: the function source is already in the
@@ -42,19 +42,21 @@ class ClaudeCliAnalyzer:
         timeout_seconds: int = 300,
         claude_command: str = "claude",
         include_smells: bool = True,
+        v2_categories: bool = False,
     ) -> None:
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.claude_command = claude_command
         self.include_smells = include_smells
+        self.v2_categories = v2_categories
         self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         started = time.monotonic()
         try:
             response = self._run_cli(
-                load_system_prompt(include_smells=self.include_smells),
-                build_user_prompt(unit, include_smells=self.include_smells),
+                load_system_prompt(include_smells=self.include_smells, v2_categories=self.v2_categories),
+                build_user_prompt(unit, include_smells=self.include_smells, v2_categories=self.v2_categories),
             )
             findings = [finding_from_dict(item) for item in coerce_findings_payload(response["payload"])]
             result = normalize_findings(unit, findings)
@@ -100,7 +102,7 @@ class ClaudeCliAnalyzer:
         return result
 
     def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
-        schema = schema or FINDINGS_JSON_SCHEMA["schema"]
+        schema = schema or (V2_FINDINGS_JSON_SCHEMA if self.v2_categories else FINDINGS_JSON_SCHEMA)["schema"]
         command = [
             self.claude_command, "--print",
             "--output-format", "json",

@@ -26,6 +26,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -65,6 +66,7 @@ from research_pipeline.scan.pipeline import (
     ScanCaseResult,
     run_pipeline_scan,
 )
+from research_pipeline.llm.categories import FORMAL_CATEGORIES, HARNESS_STRATEGIES, harness_strategy_for_category
 from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
 from research_pipeline.v2_evaluator import (
     evaluate_v2_results,
@@ -438,13 +440,7 @@ def _save_checkpoint(path: Path, payload: object) -> None:
 
 
 def _v2_candidate_dict(candidate: ScanCandidate) -> dict[str, str]:
-    return {
-        "file": candidate.file,
-        "function": candidate.function,
-        "category": candidate.category,
-        "expression": candidate.expression,
-        "note": candidate.note,
-    }
+    return candidate.to_dict()
 
 
 def _v2_detection_input_paths(
@@ -1109,6 +1105,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             timeout_seconds=args.llm_timeout,
             include_smells=False,
             detection_strategy=args.detection_strategy,
+            v2_categories=True,
         )
         synthesizer = HarnessSynthesizer(
             backend=synth_backend,
@@ -1201,11 +1198,9 @@ def mode_v2(args: argparse.Namespace) -> int:
     # append the same trace twice when the checkpoint already contains an
     # aggregate copy.
     detection_trace: list[dict] = []
-    formal_bug_categories = {
-        "assertion_violation", "division_by_zero", "out_of_bounds",
-        "none_misuse", "type_mismatch", "invalid_precondition",
-        "variable_misuse", "integer_overflow",
-    }
+    # Accept legacy labels from test doubles/checkpoints while requiring new
+    # V2 model responses to use the four ESBMC-oriented categories.
+    formal_bug_categories = set(HARNESS_STRATEGIES) | set(FORMAL_CATEGORIES)
     detection_errors: list[dict[str, str]] = []
     analyzed_units = 0
     detection_inputs = [] if args.v2_stage == "synthesis" else input_paths
@@ -1282,6 +1277,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                         file=str(file_path),
                         function=unit.qualname,
                         category=finding.category,
+                        harness_strategy=harness_strategy_for_category(finding.category),
                         expression=str(finding.metadata.get("expression", "")),
                         note=finding.explanation,
                     )
@@ -1354,24 +1350,33 @@ def mode_v2(args: argparse.Namespace) -> int:
         capture_telemetry()
         _save_checkpoint(checkpoint_path, checkpoint)
 
-    results = run_pipeline_scan(
-        candidates,
-        synthesizer=synthesizer,
-        esbmc_command=args.esbmc_command,
-        bound=args.bound,
-        timeout_seconds=args.timeout,
-        output_dir=output_dir,
-        use_compat=not args.no_compat,
-        use_guards=not args.no_guards,
-        use_ablation=not args.no_ablation,
-        use_driver=not args.no_driver,
-        use_real_driver=not args.no_real_driver,
-        synth_retries=args.synth_retries,
-        generate_pytest_tests=args.generate_pytest_testcase,
-        pytest_output_dir=args.pytest_output_dir,
-        completed_results=completed_results,
-        on_result=save_synthesis_result,
-    )
+    try:
+        results = run_pipeline_scan(
+            candidates,
+            synthesizer=synthesizer,
+            esbmc_command=args.esbmc_command,
+            bound=args.bound,
+            timeout_seconds=args.timeout,
+            output_dir=output_dir,
+            use_compat=not args.no_compat,
+            use_guards=not args.no_guards,
+            use_ablation=not args.no_ablation,
+            use_driver=not args.no_driver,
+            use_real_driver=not args.no_real_driver,
+            synth_retries=args.synth_retries,
+            generate_pytest_tests=args.generate_pytest_testcase,
+            pytest_output_dir=args.pytest_output_dir,
+            completed_results=completed_results,
+            on_result=save_synthesis_result,
+        )
+    except KeyboardInterrupt:
+        checkpoint["status"] = "interrupted"
+        checkpoint["interrupted_at"] = datetime.now(timezone.utc).isoformat()
+        checkpoint["interruption_reason"] = "keyboard_interrupt"
+        capture_telemetry()
+        _write_json_atomic(checkpoint_path, checkpoint)
+        print("Execução V2 interrompida; retome com --resume.", file=sys.stderr)
+        return 2
 
     summary = _scan_summary(results)
     if args.verbose:

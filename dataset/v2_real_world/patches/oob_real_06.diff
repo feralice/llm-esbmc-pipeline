@@ -1,0 +1,14 @@
+# source: https://github.com/cookiecutter/cookiecutter/commit/cc92e3cc00a3d2acd1ef6d38cf5731478dade3cb
+diff --git a/cookiecutter/config.py b/cookiecutter/config.py
+index a07aa1a8b..d93501f36 100644
+--- a/cookiecutter/config.py
++++ b/cookiecutter/config.py
+@@ -45,7 +45,7 @@ def merge_configs(default, overwrite):
+         # Make sure to preserve existing items in
+         # nested dicts, for example `abbreviations`
+         if isinstance(v, dict):
+-            new_config[k] = merge_configs(default[k], v)
++            new_config[k] = merge_configs(default.get(k, {}), v)
+         else:
+             new_config[k] = v
+ 

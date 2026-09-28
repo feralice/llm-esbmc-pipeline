@@ -1,0 +1,17 @@
+# source: https://github.com/trentm/python-markdown2/commit/3c53c6aed381ac284d3fb25945ce709a99c83195
+diff --git a/lib/markdown2.py b/lib/markdown2.py
+index be5d80c2..f8b0b485 100755
+--- a/lib/markdown2.py
++++ b/lib/markdown2.py
+@@ -1935,8 +1935,9 @@ def _html_class_str_from_tag(self, tag):
+         except TypeError:
+             return ""
+         else:
+-            if tag in html_classes_from_tag:
+-                return ' class="%s"' % html_classes_from_tag[tag]
++            if isinstance(html_classes_from_tag, dict):
++                if tag in html_classes_from_tag:
++                    return ' class="%s"' % html_classes_from_tag[tag]
+         return ""
+ 
+     def _do_code_blocks(self, text):

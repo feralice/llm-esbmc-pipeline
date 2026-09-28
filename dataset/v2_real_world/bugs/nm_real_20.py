@@ -1,13 +1,17 @@
-def check_decimal_suffix(decimal_is_none: bool) -> None:
-    # Real code (inflect.py, engine.number_to_words): num.endswith(decimal)
-    # runs unconditionally; decimal=None disables decimal-word substitution
-    # by caller convention, but str.endswith(None) raises TypeError.
-    assert not decimal_is_none
+from typing import Optional
+
+
+def first_chunk_flag(num: str, decimal: Optional[str]) -> bool:
+    # Real code (inflect.py, numwords, pre-fix f799157f): decimal=None is a valid
+    # argument, but num.endswith(decimal) is called unconditionally.
+    return not num.endswith(decimal)
 
 
 def main() -> None:
-    decimal_is_none: bool = nondet_bool()
-    check_decimal_suffix(decimal_is_none)
+    decimal: Optional[str] = None
+    if nondet_bool():
+        decimal = "point"
+    first_chunk_flag("one", decimal)
 
 
 main()

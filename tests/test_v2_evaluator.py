@@ -40,7 +40,7 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
     )
 
     assert metrics["detection"]["tp"] == 1
-    assert metrics["detection"]["fp"] == 1
+    assert metrics["detection"]["fp"] == 0
     assert metrics["detection"]["fn"] == 0
     assert metrics["synthesis_given_correct_detection"]["confirmed_on_abstraction"] == 1
     assert metrics["synthesis_given_correct_detection"]["confirmed_on_real_body"] == 0
@@ -51,6 +51,40 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
         "tp": 0, "fp": 0, "fn": 1,
         "precision": None, "recall": 0.0, "f1": None,
     }
+
+
+def test_v2_reports_location_even_when_category_is_wrong(tmp_path) -> None:
+    detection = tmp_path / "detection"
+    detection.mkdir()
+    source = detection / "bug.py"
+    source.write_text("def f(x: int) -> int:\n    return 1 // x\n", encoding="utf-8")
+    (tmp_path / "ground_truths.json").write_text(
+        json.dumps({"items": [{"id": "b1", "categories": ["division_by_zero"]}]}),
+        encoding="utf-8",
+    )
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"items": [{
+            "id": "b1", "detection_file": "detection/bug.py", "function": "f",
+            "expression": "1 // x", "harness_file": "bugs/bug.py",
+            "categories": ["division_by_zero"],
+        }]}),
+        encoding="utf-8",
+    )
+    wrong_category = ScanCandidate(str(source), "f", "none_misuse", expression="1 // x")
+
+    metrics = evaluate_v2_results(
+        candidates=[wrong_category], results=[],
+        ground_truth_path=tmp_path / "ground_truths.json",
+    )
+
+    assert metrics["detection"]["tp"] == 1
+    assert metrics["detection"]["fp"] == 0
+    assert metrics["detection"]["fn"] == 0
+    assert metrics["bug_detection"]["file"]["tp"] == 1
+    assert metrics["bug_detection"]["location"]["tp"] == 1
+    assert metrics["bug_detection"]["expression"]["tp"] == 1
+    assert metrics["bug_detection"]["category_given_location"]["tp"] == 0
+    assert metrics["bug_detection"]["category_given_location"]["fn"] == 1
 
 
 def _single_case_fixture(tmp_path, category="division_by_zero"):

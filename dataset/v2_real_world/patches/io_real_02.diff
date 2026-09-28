@@ -1,0 +1,44 @@
+# source: https://github.com/ethereum/consensus-specs/commit/f82a3af97852867e8922b57ccc6815f9659c209a
+diff --git a/specs/phase0/beacon-chain.md b/specs/phase0/beacon-chain.md
+index bdfb0783800..536bba33642 100644
+--- a/specs/phase0/beacon-chain.md
++++ b/specs/phase0/beacon-chain.md
+@@ -178,6 +178,7 @@ The following values are (non-configurable) constants used throughout the specif
+ 
+ | Name | Value |
+ | - | - |
++| `MAX_UINT_64` | `uint64(2**64 - 1)` |
+ | `GENESIS_SLOT` | `Slot(0)` |
+ | `GENESIS_EPOCH` | `Epoch(0)` |
+ | `FAR_FUTURE_EPOCH` | `Epoch(2**64 - 1)` |
+@@ -599,6 +600,8 @@ def integer_squareroot(n: uint64) -> uint64:
+     """
+     Return the largest integer ``x`` such that ``x**2 <= n``.
+     """
++    if n == MAX_UINT_64:
++        return uint64(4294967295)
+     x = n
+     y = (x + 1) // 2
+     while y < x:
+diff --git a/specs/phase0/beacon-chain.md b/specs/phase0/beacon-chain.md
+index 536bba33642..572f46246c8 100644
+--- a/specs/phase0/beacon-chain.md
++++ b/specs/phase0/beacon-chain.md
+@@ -178,7 +178,7 @@ The following values are (non-configurable) constants used throughout the specif
+ 
+ | Name | Value |
+ | - | - |
+-| `MAX_UINT_64` | `uint64(2**64 - 1)` |
++| `UINT64_MAX` | `uint64(2**64 - 1)` |
+ | `GENESIS_SLOT` | `Slot(0)` |
+ | `GENESIS_EPOCH` | `Epoch(0)` |
+ | `FAR_FUTURE_EPOCH` | `Epoch(2**64 - 1)` |
+@@ -600,7 +600,7 @@ def integer_squareroot(n: uint64) -> uint64:
+     """
+     Return the largest integer ``x`` such that ``x**2 <= n``.
+     """
+-    if n == MAX_UINT_64:
++    if n == UINT64_MAX:
+         return uint64(4294967295)
+     x = n
+     y = (x + 1) // 2

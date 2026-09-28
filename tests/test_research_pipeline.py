@@ -917,3 +917,46 @@ def test_prompt_truncation_is_explicit(tmp_path: Path) -> None:
 
     assert "PROMPT_CONTEXT_TRUNCATED" in prompt
     assert "não inferir achados" in prompt
+
+
+_UNSUPPORTED_ONLY = """Violated property:
+  file tm_real_04.py line 5 column 14 function str_to_int
+  Unsupported function 'sub' is reached
+  0
+
+VERIFICATION FAILED
+"""
+
+_UNSUPPORTED_AND_REAL = _UNSUPPORTED_ONLY.replace("\nVERIFICATION FAILED\n", """
+Violated property:
+  file tm_real_04.py line 7 column 4 function str_to_int
+  uncaught exception: ZeroDivisionError
+  0
+
+VERIFICATION FAILED
+""")
+
+
+def test_unsupported_function_violation_is_not_a_bug() -> None:
+    assert _classify_esbmc_result(_UNSUPPORTED_ONLY, 1) == "unsupported_case"
+
+
+def test_real_violation_next_to_unsupported_function_is_still_a_bug() -> None:
+    assert _classify_esbmc_result(_UNSUPPORTED_AND_REAL, 1) == "violation_found"
+
+
+@pytest.mark.parametrize(
+    "block",
+    [
+        "  uncaught exception: ZeroDivisionError\n",
+        "  file divzero.py line 2 column 9\n  uncaught exception: ZeroDivisionError\n",
+    ],
+    ids=["esbmc-8.5.0", "module-level-location-line"],
+)
+def test_module_level_location_line_is_not_the_property_kind(block: str) -> None:
+    output = (
+        "Violated property:\n" + block
+        + "  !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 16)\n\nVERIFICATION FAILED\n"
+    )
+    details = _extract_esbmc_details(output, "divzero.py")
+    assert details["property_kind"] == "uncaught exception: ZeroDivisionError"

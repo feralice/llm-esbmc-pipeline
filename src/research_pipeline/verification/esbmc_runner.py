@@ -510,6 +510,8 @@ def _summarize_function_baseline(
 def _classify_esbmc_result(output: str, returncode: int | None) -> str:
     # --incremental-bmc prints a verdict per k-step; only the last one is final.
     verdicts = re.findall(r"^VERIFICATION (FAILED|SUCCESSFUL|UNKNOWN)\b", output, re.MULTILINE)
+    if verdicts and verdicts[-1] == "FAILED" and _only_unsupported_function_failed(output):
+        return "unsupported_case"
     if verdicts:
         return {
             "FAILED": "violation_found",
@@ -519,6 +521,16 @@ def _classify_esbmc_result(output: str, returncode: int | None) -> str:
     if returncode == 0:
         return "no_violation_found"
     return "inconclusive"
+
+
+def _only_unsupported_function_failed(output: str) -> bool:
+    """ESBMC-Python turns a call it cannot model into a failing property
+    ("Unsupported function 'X' is reached"); that is a frontend limit, not a bug."""
+    kinds = [
+        match.group(1).strip()
+        for match in re.finditer(r"Violated property:\n(?:[ \t]+file .*\n)?[ \t]+(.*)\n", output)
+    ]
+    return bool(kinds) and all(k.startswith("Unsupported function") for k in kinds)
 
 
 def _summarize(status: str, details: dict[str, object]) -> str:
@@ -597,7 +609,8 @@ def _extract_esbmc_details(
         block_location = ""
         block_function = ""
         for ln in block_lines:
-            if " function " in ln and " line " in ln:
+            # A module-level violation has a location line with no " function ".
+            if ln.startswith("file ") and " line " in ln:
                 fm = re.search(r"function ([^ ]+)", ln)
                 lm = re.search(r" line (\d+)", ln)
                 if fm:

@@ -49,27 +49,40 @@ def _reasoning_steps(*, include_smells: bool = True) -> str:
     )
 
 
-@lru_cache(maxsize=2)
-def load_system_prompt(*, include_smells: bool = True) -> str:
+@lru_cache(maxsize=4)
+def load_system_prompt(*, include_smells: bool = True, v2_categories: bool = False) -> str:
     """Load the system prompt once and reuse it across LLM calls."""
     prompt = (PROMPTS_DIR / "system_prompt.txt").read_text(encoding="utf-8").strip()
     if include_smells:
-        return prompt
-    start = prompt.index("## CODE SMELLS")
-    end = prompt.index("## TESTE DE EVIDÊNCIA", start)
-    prompt = prompt[:start] + prompt[end:]
-    prompt = prompt.replace(
-        "identificar dois tipos de problemas.",
-        "identificar bugs formais verificáveis.",
-    )
-    prompt = prompt.replace(
-        '"suspected_bug" | "smell_heuristic"',
-        '"suspected_bug"',
-    )
+        pass
+    else:
+        start = prompt.index("## CODE SMELLS")
+        end = prompt.index("## TESTE DE EVIDÊNCIA", start)
+        prompt = prompt[:start] + prompt[end:]
+        prompt = prompt.replace(
+            "identificar dois tipos de problemas.",
+            "identificar bugs formais verificáveis.",
+        )
+        prompt = prompt.replace(
+            '"suspected_bug" | "smell_heuristic"',
+            '"suspected_bug"',
+        )
+    if v2_categories:
+        start = prompt.index("## BUGS FORMAIS")
+        end = prompt.index("## TESTE DE EVIDÊNCIA", start)
+        prompt = prompt[:start] + (
+            "## CATEGORIAS ORIENTADAS AO ESBMC\n\n"
+            "Para cada hipótese formal alcançável, escolha exatamente uma categoria:\n"
+            "- native_runtime: a propriedade nativa do ESBMC deve detectar a falha, como divisão por zero, limites, overflow ou exceção.\n"
+            "- explicit_assertion: é necessário sintetizar uma asserção explícita para expressar a propriedade.\n"
+            "- differential_assertion: compare a saída buggy com a saída pretendida usando as mesmas entradas simbólicas.\n"
+            "- unsupported: não há modelagem segura suficiente para gerar um harness.\n\n"
+            "Não use categorias semânticas antigas nem invente outros labels. A categoria é uma hipótese de estratégia; a propriedade violada pelo ESBMC será a evidência formal.\n\n"
+        ) + prompt[end:]
     return prompt
 
 
-def build_user_prompt(unit: CodeUnit, *, include_smells: bool = True) -> str:
+def build_user_prompt(unit: CodeUnit, *, include_smells: bool = True, v2_categories: bool = False) -> str:
     """Build the leakage-resistant user prompt for one CodeUnit."""
     subject = "unidade de módulo" if unit.kind == "module" else "função"
     source = _bounded_source(_source_for_llm(unit))

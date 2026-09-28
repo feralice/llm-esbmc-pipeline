@@ -1,0 +1,19 @@
+# source: https://github.com/kiorky/croniter/commit/7d319c510b863827073d42ecee787f3c5a046f7c
+diff --git a/src/croniter/croniter.py b/src/croniter/croniter.py
+index 3890c4e2..0d3324e4 100644
+--- a/src/croniter/croniter.py
++++ b/src/croniter/croniter.py
+@@ -851,7 +851,12 @@ def do(self, idx, hash_type="h", hash_id=None, range_end=None, range_begin=None)
+             crc = random.randint(0, 0xFFFFFFFF)
+         else:
+             crc = binascii.crc32(hash_id) & 0xFFFFFFFF
+-        return ((crc >> idx) % (range_end - range_begin + 1)) + range_begin
++
++        rng = range_end - range_begin + 1
++        if rng == 0:
++            raise CroniterBadCronError("Bad range")
++
++        return ((crc >> idx) % rng) + range_begin
+ 
+     def match(self, efl, idx, expr, hash_id=None, **kw):
+         return hash_expression_re.match(expr)

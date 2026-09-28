@@ -1,0 +1,22 @@
+# source: https://github.com/arsenetar/send2trash/commit/4b9bc4bc31c0269d92ed0373824e4e3dca1c3fa4
+diff --git a/send2trash/win/legacy.py b/send2trash/win/legacy.py
+index 5bb3d69..56a4b36 100644
+--- a/send2trash/win/legacy.py
++++ b/send2trash/win/legacy.py
+@@ -6,6 +6,7 @@
+ 
+ from __future__ import unicode_literals
+ import os.path as op
++
+ from send2trash.compat import text_type
+ from send2trash.util import preprocess_paths
+ 
+@@ -142,6 +143,8 @@ def get_short_path_name(long_name):
+ 
+ def send2trash(paths):
+     paths = preprocess_paths(paths)
++    if not paths:
++        return
+     # convert data type
+     paths = [text_type(path, "mbcs") if not isinstance(path, text_type) else path for path in paths]
+     # convert to full paths

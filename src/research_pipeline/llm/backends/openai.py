@@ -15,7 +15,7 @@ from ..staged import (
     stage_schema,
 )
 from ..rate_limit import is_daily_quota_exhausted
-from ..schema import FINDINGS_JSON_SCHEMA
+from ..schema import FINDINGS_JSON_SCHEMA, V2_FINDINGS_JSON_SCHEMA
 from ..telemetry import response_event
 
 
@@ -29,12 +29,14 @@ class OpenAIResponsesAnalyzer:
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
         include_smells: bool = True,
+        v2_categories: bool = False,
     ) -> None:
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self.model = model
         self.base_url = base_url
         self.timeout_seconds = timeout_seconds
         self.include_smells = include_smells
+        self.v2_categories = v2_categories
         if not self.api_key:
             raise ValueError(
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -47,14 +49,14 @@ class OpenAIResponsesAnalyzer:
             "input": [
                 {
                     "role": "system",
-                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells)}],
+                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells, v2_categories=self.v2_categories)}],
                 },
                 {
                     "role": "user",
-                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells)}],
+                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells, v2_categories=self.v2_categories)}],
                 },
             ],
-            "text": {"format": {"type": "json_schema", **FINDINGS_JSON_SCHEMA}},
+            "text": {"format": {"type": "json_schema", **(V2_FINDINGS_JSON_SCHEMA if self.v2_categories else FINDINGS_JSON_SCHEMA)}},
         }
 
         started = time.monotonic()
