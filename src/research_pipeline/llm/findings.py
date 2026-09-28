@@ -6,6 +6,7 @@ import json
 from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
 from ..models import CONFIDENCE_SOURCE_LLM_SELF_REPORT, CodeUnit, Finding
 from .categories import (
+    HARNESS_STRATEGIES,
     SOURCE_GROUNDED_CATEGORIES,
     SUPPORTED_CATEGORIES,
     VERIFIABLE_OPERATION_KIND,
@@ -97,7 +98,12 @@ def normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]
             used_ids=seen_ids,
         )
 
-        if finding.category not in SUPPORTED_CATEGORIES:
+        # V2 detection deliberately classifies a finding by harness strategy
+        # (native_runtime/explicit_assertion/...), while the legacy detector
+        # uses the semantic eight-category taxonomy.  Both are valid inputs to
+        # this shared normalizer; strategy findings are checked later by the
+        # harness synthesizer and ESBMC, not by the legacy AST category rules.
+        if finding.category not in SUPPORTED_CATEGORIES | HARNESS_STRATEGIES:
             normalized.append(_out_of_scope_finding(finding, finding_id))
             continue
 
@@ -198,7 +204,16 @@ def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: s
     finding_type = finding.finding_type
     verifiable = finding.verifiable
 
-    if verifiable:
+    if finding.category in HARNESS_STRATEGIES:
+        # V2 categories describe how synthesis should model the hypothesis;
+        # they are not semantic AST categories.  Do not run the legacy
+        # expression/category matcher here.  ``unsupported`` remains visible
+        # to the V2 report but cannot enter ESBMC as a candidate.
+        if finding.category == "unsupported":
+            finding_type, verifiable = "suspected_bug", False
+        elif verifiable:
+            finding_type, verifiable = "suspected_bug", True
+    elif verifiable:
         finding_type, verifiable = _normalize_operation_finding(unit, finding.category, metadata)
 
     return Finding(

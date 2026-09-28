@@ -6,7 +6,11 @@ import pytest
 
 from research_pipeline.ast_utils import expression_exists_in_executable_ast
 from research_pipeline.evaluator import _flow_a_findings_from_direct, load_ground_truth_cases
-from research_pipeline.llm.categories import FORMAL_CATEGORIES, SUPPORTED_CATEGORIES
+from research_pipeline.llm.categories import (
+    FORMAL_CATEGORIES,
+    HARNESS_STRATEGIES,
+    SUPPORTED_CATEGORIES,
+)
 from research_pipeline.llm.findings import normalize_findings
 from research_pipeline.llm.prompts import load_system_prompt
 from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
@@ -96,6 +100,35 @@ def test_v2_semantic_category_rejects_expression_not_in_source(tmp_path: Path) -
     )[0]
 
     assert normalized.finding_type == "llm_false_positive"
+    assert normalized.verifiable is False
+
+
+@pytest.mark.parametrize("strategy", sorted(HARNESS_STRATEGIES - {"unsupported"}))
+def test_v2_harness_strategy_survives_shared_finding_normalizer(tmp_path: Path, strategy: str) -> None:
+    path = tmp_path / "sample.py"
+    path.write_text(
+        "def sample(value: int) -> int:\n    return value + 1\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(path)[0]
+
+    normalized = normalize_findings(unit, [_finding(strategy, "value + 1")])[0]
+
+    assert normalized.finding_type == "suspected_bug"
+    assert normalized.verifiable is True
+
+
+def test_v2_unsupported_strategy_is_reported_but_not_sent_to_esbmc(tmp_path: Path) -> None:
+    path = tmp_path / "sample.py"
+    path.write_text(
+        "def sample(value: int) -> int:\n    return value + 1\n",
+        encoding="utf-8",
+    )
+    unit = preprocess_file(path)[0]
+
+    normalized = normalize_findings(unit, [_finding("unsupported", "value + 1")])[0]
+
+    assert normalized.finding_type == "suspected_bug"
     assert normalized.verifiable is False
 
 
