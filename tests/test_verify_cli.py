@@ -76,3 +76,13 @@ def test_verification_source_falls_back_to_the_detection_file(tmp_path: Path) ->
     (tmp_path / "full").mkdir()
     (tmp_path / "full" / "a.py").write_text("", encoding="utf-8")
     assert verification_source(h, tmp_path / "full") == tmp_path / "full" / "a.py"
+
+
+def test_strict_verification_sources_skip_cases_without_a_file(tmp_path: Path) -> None:
+    from research_pipeline.verify.loop import run_verify
+
+    (tmp_path / "a.py").write_text("def f(a):\n    return 1 // a\n", encoding="utf-8")
+    (tmp_path / "fixed").mkdir()
+    results = run_verify([BugHypothesis(str(tmp_path / "a.py"), "f", "1 // a")], llm=None, output_dir=tmp_path,
+                         verification_sources=tmp_path / "fixed", strict_sources=True)
+    assert results[0]["verdict"] == "NO_SOURCE"

@@ -366,6 +366,11 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--verification-sources-strict",
+        action="store_true",
+        help="Motor verify: pula a hipótese sem arquivo em --verification-sources em vez de usar o recorte.",
+    )
+    parser.add_argument(
         "--spec-strategy",
         choices=["repair", "resample"],
         default="repair",
@@ -1144,6 +1149,7 @@ def _mode_v2_verify(
         bound=args.bound,
         timeout_seconds=args.timeout,
         strategy=args.spec_strategy,
+        strict_sources=args.verification_sources_strict,
     )
     capture_telemetry()
     checkpoint["status"] = "complete"
@@ -1269,6 +1275,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             "v2_engine": "verify",
             "verification_sources": args.verification_sources,
             "spec_strategy": args.spec_strategy,
+            "verification_sources_strict": args.verification_sources_strict,
             "esbmc_command": args.esbmc_command or ["esbmc"],
         })
     fingerprint = _v2_fingerprint(config, input_paths)

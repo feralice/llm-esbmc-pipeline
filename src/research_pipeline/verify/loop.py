@@ -18,6 +18,7 @@ from .hypothesis import BugHypothesis
 from .outcome import (
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
+    NO_SOURCE,
     PIPELINE_ERROR,
     SPEC_FAILED,
     UNSUPPORTED,
@@ -197,14 +198,24 @@ def verification_source(h: BugHypothesis, verification_sources: Path | None) -> 
 
 def run_verify(
     hypotheses: list[BugHypothesis], *, llm: SpecLLM, output_dir: Path, verification_sources: Path | None = None,
-    completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None, **kwargs,
+    completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None,
+    strict_sources: bool = False, **kwargs,
 ) -> list[dict]:
+    """``strict_sources`` skips a hypothesis with no file in ``verification_sources`` instead of
+    falling back to its detection file (needed when those files are, e.g., the fixed versions)."""
     results: list[dict] = []
     for index, h in enumerate(hypotheses):
         if completed and index in completed:
             results.append(completed[index])
             continue
-        source = verification_source(h, verification_sources).read_text(encoding="utf-8", errors="replace")
+        path = verification_source(h, verification_sources)
+        if strict_sources and path == Path(h.file):
+            data = VerifyResult(h, NO_SOURCE, "no file in the verification sources").to_dict()
+            results.append(data)
+            if on_result is not None:
+                on_result(index, data)
+            continue
+        source = path.read_text(encoding="utf-8", errors="replace")
         print(f"[{index + 1}/{len(hypotheses)}] {Path(h.file).name}::{h.function}")
         try:
             data = verify_hypothesis(h, llm=llm, source=source, work_dir=Path(output_dir) / "programs",
