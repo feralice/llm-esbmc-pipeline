@@ -125,3 +125,16 @@ def test_hypothesis_is_identical_in_every_attempt(tmp_path, monkeypatch):
     assert result.to_dict()["hypothesis"]["hypothesis_id"] == BugHypothesis(
         "r.py", "ratio", "total // count", category="division_by_zero").hypothesis_id
     assert all("total // count" in prompt for prompt in llm.prompts)
+
+
+def test_resample_strategy_never_shows_the_previous_error(tmp_path, monkeypatch):
+    llm = FakeLLM([json.dumps({"params": {"total": "dict"}}), GOOD])
+    monkeypatch.setattr(loop, "run_esbmc_direct", _esbmc("violation_found"))
+    monkeypatch.setattr(loop, "concrete_replay", lambda program, function, **_: REPRODUCED)
+    hypothesis = BugHypothesis("r.py", "ratio", "total // count", category="division_by_zero")
+    result = loop.verify_hypothesis(hypothesis, llm=llm, source=SOURCE, esbmc_command=["esbmc"], bound=5,
+                                    timeout_seconds=30, work_dir=tmp_path, strategy="resample")
+    assert result.verdict == CONFIRMED
+    assert len(llm.prompts) == 2
+    assert llm.prompts[0] == llm.prompts[1]
+    assert "rejected" not in llm.prompts[1]

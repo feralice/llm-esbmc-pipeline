@@ -366,6 +366,13 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--spec-strategy",
+        choices=["repair", "resample"],
+        default="repair",
+        help="Motor verify: 'repair' mostra o erro anterior à LLM; 'resample' faz amostras independentes "
+             "com o mesmo orçamento (linha de base do reparo).",
+    )
+    parser.add_argument(
         "--verification-sources",
         default=None,
         metavar="DIR",
@@ -1136,6 +1143,7 @@ def _mode_v2_verify(
         esbmc_command=args.esbmc_command,
         bound=args.bound,
         timeout_seconds=args.timeout,
+        strategy=args.spec_strategy,
     )
     capture_telemetry()
     checkpoint["status"] = "complete"
@@ -1260,6 +1268,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         config.update({
             "v2_engine": "verify",
             "verification_sources": args.verification_sources,
+            "spec_strategy": args.spec_strategy,
             "esbmc_command": args.esbmc_command or ["esbmc"],
         })
     fingerprint = _v2_fingerprint(config, input_paths)

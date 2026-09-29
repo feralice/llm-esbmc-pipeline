@@ -30,6 +30,7 @@ from .replay import ReplayVerdict, concrete_replay
 from .spec import InputSpec, parse_spec, resolved_types, spec_problems
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
+STRATEGIES = ("repair", "resample")
 _INTRINSICS = {"nondet_int", "nondet_float", "nondet_bool", "nondet_str", "nondet_list", "__ESBMC_assume"}
 
 
@@ -120,7 +121,12 @@ def precheck(h: BugHypothesis, source: str) -> tuple[Grounded | None, str, str]:
 def verify_hypothesis(
     h: BugHypothesis, *, llm: SpecLLM, source: str, esbmc_command: list[str] | None, bound: int,
     timeout_seconds: int, work_dir: Path, max_repairs: int = 2, replay_runs: int = 400,
+    strategy: str = "repair",
 ) -> VerifyResult:
+    """``strategy="resample"`` spends the same call budget on independent samples that never see
+    the previous error: the baseline a guided repair has to beat (Olausson et al., ICLR 2024)."""
+    if strategy not in STRATEGIES:
+        raise ValueError(f"strategy must be one of {STRATEGIES}")
     started = time.monotonic()
     result = VerifyResult(h, "")
 
@@ -135,7 +141,8 @@ def verify_hypothesis(
     work_dir.mkdir(parents=True, exist_ok=True)
     previous, feedback, last_problems = "", "", []
     for attempt in range(1 + max_repairs):
-        reply = llm.complete(SYSTEM_PROMPT, _user_prompt(grounded, previous, feedback), json_mode=True)
+        shown_previous, shown_feedback = (previous, feedback) if strategy == "repair" else ("", "")
+        reply = llm.complete(SYSTEM_PROMPT, _user_prompt(grounded, shown_previous, shown_feedback), json_mode=True)
         result.tokens += int((reply.telemetry or {}).get("total_tokens") or 0)
         record: dict = {"attempt": attempt, "spec": reply.harness, "feedback_given": feedback}
         result.attempts.append(record)
