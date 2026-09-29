@@ -91,3 +91,21 @@ Para refazer a coleta:
 python scripts/collect_validated_bugs.py bugsinpy
 python scripts/collect_validated_bugs.py prs dataset/v2_candidates/pr_sources.json
 ```
+
+## Rotulagem (`labels.json`, 29/09/2026)
+
+Gerada por `scripts/label_candidates.py`, sem LLM: a LLM é o que o dataset avalia, então não pode
+escrever o gabarito.
+
+- **Expressão suspeita**, tirada da própria correção (arquivo com bug contra arquivo corrigido):
+  a linha alterada ou removida (`changed_line`, 169 casos; em `if`/`while`/`for`, só a condição
+  ou o iterável); quando a correção só insere código, o primeiro comando do arquivo com bug depois
+  do ponto de inserção, que é o que roda sem a proteção (`statement_after_insertion`, 20 casos).
+  Mudanças só em docstring são ignoradas. Sem comando no trecho alterado: 9; função não achada: 1.
+- **Aterramento:** 176 de 199 expressões existem na função pelo mesmo critério do pipeline
+  (`grounded`).
+- **Categoria:** regra sobre o código que a correção acrescentou (`is None`, `== 0`, `len(`,
+  `isinstance`, ...). Quando nenhuma regra casa, fica `unclassified` (150 casos). Marcada como
+  `heuristic_from_fix_diff`; a categoria é só metadado no motor verify.
+- Todo rótulo está com `review: pending` e precisa de revisão humana antes de entrar em
+  `dataset/v2_real_world`.
