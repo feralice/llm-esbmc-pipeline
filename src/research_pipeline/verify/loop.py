@@ -1,0 +1,211 @@
+"""One bounded attempt loop per hypothesis: spec (LLM) -> program -> ESBMC -> replay -> verdict."""
+
+from __future__ import annotations
+
+import re
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Protocol
+
+from research_pipeline.scan.rewrite_guard import _undefined_globals
+from research_pipeline.scan.synth import SynthResult, _bound_untrusted
+from research_pipeline.verification.esbmc_runner import run_esbmc_direct
+
+from .grounding import Grounded, GroundingFailure, ground
+from .hypothesis import BugHypothesis
+from .outcome import (
+    GROUNDING_FAILED,
+    MISSING_DEPENDENCY,
+    PIPELINE_ERROR,
+    SPEC_FAILED,
+    UNSUPPORTED,
+    EsbmcReading,
+    classify_esbmc,
+    final_verdict,
+)
+from .render import Program, RenderError, render_program
+from .replay import ReplayVerdict, concrete_replay
+from .spec import InputSpec, parse_spec, resolved_types, spec_problems
+
+SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
+_INTRINSICS = {"nondet_int", "nondet_float", "nondet_bool", "nondet_str", "nondet_list", "__ESBMC_assume"}
+
+
+class SpecLLM(Protocol):
+    model: str
+
+    def complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False) -> SynthResult: ...
+
+
+@dataclass
+class VerifyResult:
+    hypothesis: BugHypothesis
+    verdict: str
+    reason: str = ""
+    attempts: list[dict] = field(default_factory=list)
+    transforms: tuple[str, ...] = ()
+    program_path: str = ""
+    replay: dict = field(default_factory=dict)
+    tokens: int = 0
+    seconds: float = 0.0
+
+    def to_dict(self) -> dict:
+        return {
+            "hypothesis": self.hypothesis.to_dict(), "verdict": self.verdict, "reason": self.reason,
+            "attempts": self.attempts, "llm_calls": sum(1 for a in self.attempts if "spec" in a),
+            "transforms": list(self.transforms), "program_path": self.program_path, "replay": self.replay,
+            "tokens": self.tokens, "seconds": round(self.seconds, 3),
+        }
+
+
+def _user_prompt(grounded: Grounded, previous: str, feedback: str) -> str:
+    h = grounded.hypothesis
+    params = {p.name: p.annotation or "" for p in grounded.params}
+    attrs = {a: grounded.attr_annotations.get(a, "") for a in grounded.receiver_attrs}
+    needed_params, needed_attrs = resolved_types(InputSpec({}, {}, ()), grounded)
+    parts = [
+        f"Function: {h.function}",
+        f"Suspect expression (line {h.line or 'unknown'}): {h.suspect_expression}",
+        f"Hypothesis: {h.trigger_condition or 'not given'}",
+        "Parameters needing a type: " + (", ".join(n for n, t in needed_params.items() if not t) or "none")
+        + f"  (declared: {params})",
+        "Receiver attributes needing a type: " + (", ".join(n for n, t in needed_attrs.items() if not t) or "none")
+        + f"  (declared: {attrs})",
+        "Library calls replaced by stubs, needing a return type: " + (", ".join(grounded.stub_keys) or "none"),
+        "Members used on inputs (type them only if you choose object for that input): "
+        + ("; ".join(f"{key}: " + ", ".join(f"{m}()" if call else m for m, call in sorted(members.items()))
+                     for key, members in sorted(grounded.object_members.items())) or "none"),
+        "Code (verbatim slice of the real module):\n```python\n" + _bound_untrusted(grounded.module) + "\n```",
+    ]
+    if previous:
+        parts.append(f"Previous attempt:\n{previous}\nError:\n{feedback}")
+    return "\n\n".join(parts)
+
+
+def _placeholder_spec(grounded: Grounded) -> InputSpec:
+    params, attrs = resolved_types(InputSpec({}, {}, ()), grounded)
+    return InputSpec({n: "int" for n, t in params.items() if not t}, {n: "int" for n, t in attrs.items() if not t},
+                     (), {key: "int" for key in grounded.stub_keys})
+
+
+def _with_line_context(message: str, program: Program) -> str:
+    match = re.search(r"line (\d+)", message)
+    if not match:
+        return message
+    number = int(match.group(1))
+    lines = program.source.splitlines()
+    if not 1 <= number <= len(lines):
+        return message
+    region = "generated driver" if number >= program.driver_start else "original code"
+    return f"{message}\n(program line {number}, {region}: {lines[number - 1].strip()})"
+
+
+def precheck(h: BugHypothesis, source: str) -> tuple[Grounded | None, str, str]:
+    """Everything decidable before spending an LLM call; returns (grounded, "", "") when ready."""
+    grounded = ground(h, source)
+    if isinstance(grounded, GroundingFailure):
+        return None, UNSUPPORTED if grounded.unsupported else GROUNDING_FAILED, grounded.reason
+    try:
+        probe = render_program(grounded, _placeholder_spec(grounded))
+    except RenderError as exc:
+        return None, UNSUPPORTED, str(exc)
+    undefined = _undefined_globals(probe.source, "program.py") - _INTRINSICS
+    if undefined:
+        return None, MISSING_DEPENDENCY, "undefined name(s): " + ", ".join(sorted(undefined))
+    return grounded, "", ""
+
+
+def verify_hypothesis(
+    h: BugHypothesis, *, llm: SpecLLM, source: str, esbmc_command: list[str] | None, bound: int,
+    timeout_seconds: int, work_dir: Path, max_repairs: int = 2, replay_runs: int = 400,
+) -> VerifyResult:
+    started = time.monotonic()
+    result = VerifyResult(h, "")
+
+    def finish(verdict: str, reason: str = "") -> VerifyResult:
+        result.verdict, result.reason, result.seconds = verdict, reason, time.monotonic() - started
+        return result
+
+    grounded, verdict, reason = precheck(h, source)
+    if grounded is None:
+        return finish(verdict, reason)
+
+    work_dir.mkdir(parents=True, exist_ok=True)
+    previous, feedback, last_problems = "", "", []
+    for attempt in range(1 + max_repairs):
+        reply = llm.complete(SYSTEM_PROMPT, _user_prompt(grounded, previous, feedback), json_mode=True)
+        result.tokens += int((reply.telemetry or {}).get("total_tokens") or 0)
+        record: dict = {"attempt": attempt, "spec": reply.harness, "feedback_given": feedback}
+        result.attempts.append(record)
+        previous = reply.harness
+        try:
+            spec = parse_spec(reply.harness)
+            problems = spec_problems(spec, grounded)
+        except ValueError as exc:
+            problems = [str(exc)]
+        if problems:
+            record["problems"] = problems
+            feedback = "The JSON was rejected: " + "; ".join(problems)
+            last_problems = problems
+            continue
+        last_problems = []
+        program = render_program(grounded, spec)
+        path = work_dir / f"{h.hypothesis_id}_a{attempt}.py"
+        path.write_text(program.source, encoding="utf-8")
+        result.program_path, result.transforms = str(path), program.transforms
+        # Incremental BMC with --multi-property prints FAILED and UNKNOWN together (measured 2026-09-29).
+        esbmc = run_esbmc_direct(path, esbmc_command=esbmc_command, bound=bound,
+                                 timeout_seconds=timeout_seconds, output_dir=work_dir,
+                                 bound_flags=["--unwind", str(bound)])
+        reading = classify_esbmc(esbmc)
+        record.update({"esbmc_status": esbmc.status, "reading": reading.kind, "message": reading.message})
+        if reading.kind == "repairable" and attempt < max_repairs:
+            feedback = "ESBMC rejected the program: " + _with_line_context(reading.message, program)
+            continue
+        replay = _replay_if_checked(reading, program, grounded, replay_runs)
+        result.replay = replay.to_dict()
+        return finish(final_verdict(reading, replay), reading.message)
+    if last_problems and all("unsupported type" in p for p in last_problems):
+        # The model kept naming a real type the harness cannot build: a method limit, not a model error.
+        return finish(UNSUPPORTED, "input type outside the supported subset: " + "; ".join(last_problems))
+    return finish(SPEC_FAILED, feedback)
+
+
+def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Grounded, runs: int) -> ReplayVerdict:
+    if reading.kind not in {"violation", "artifact", "safe"}:
+        return ReplayVerdict("unavailable", reason="ESBMC produced no verdict to validate")
+    return concrete_replay(program, grounded.method_name, max_runs=runs)
+
+
+def verification_source(h: BugHypothesis, verification_sources: Path | None) -> Path:
+    """Detection may run on a slice; verification prefers the full file of the same name."""
+    if verification_sources is not None:
+        full = Path(verification_sources) / Path(h.file).name
+        if full.exists():
+            return full
+    return Path(h.file)
+
+
+def run_verify(
+    hypotheses: list[BugHypothesis], *, llm: SpecLLM, output_dir: Path, verification_sources: Path | None = None,
+    completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None, **kwargs,
+) -> list[dict]:
+    results: list[dict] = []
+    for index, h in enumerate(hypotheses):
+        if completed and index in completed:
+            results.append(completed[index])
+            continue
+        source = verification_source(h, verification_sources).read_text(encoding="utf-8", errors="replace")
+        print(f"[{index + 1}/{len(hypotheses)}] {Path(h.file).name}::{h.function}")
+        try:
+            data = verify_hypothesis(h, llm=llm, source=source, work_dir=Path(output_dir) / "programs",
+                                     **kwargs).to_dict()
+        except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
+            data = VerifyResult(h, PIPELINE_ERROR, f"{type(exc).__name__}: {exc}").to_dict()
+        print(f"    -> {data['verdict']} {data['reason'][:120]}")
+        results.append(data)
+        if on_result is not None:
+            on_result(index, data)
+    return results
