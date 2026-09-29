@@ -270,3 +270,66 @@ def test_stage_losses_account_for_correct_detection_labels(tmp_path) -> None:
     assert losses["confirmed_end_to_end"] == 0
     assert losses["total_losses"] == 2
     assert losses["by_stage"] == {"grounding": 1, "verification": 1}
+
+
+def _single_label_dataset(tmp_path):
+    detection = tmp_path / "detection"
+    detection.mkdir()
+    source = detection / "bug.py"
+    source.write_text("def f(x):\n    return 1 // x\n", encoding="utf-8")
+    (tmp_path / "ground_truths.json").write_text(
+        json.dumps({"items": [{"id": "b1", "categories": ["division_by_zero"]}]}), encoding="utf-8",
+    )
+    (tmp_path / "manifest.json").write_text(json.dumps({"items": [{
+        "id": "b1", "detection_file": "detection/bug.py",
+        "harness_file": "bugs/bug.py", "categories": ["division_by_zero"],
+    }]}), encoding="utf-8")
+    return source
+
+
+@pytest.mark.parametrize("classification,end_to_end,stage", [
+    ("confirmed_original", 1, None),
+    ("rewrite_violation_empirical", 0, "rewrite_only"),
+])
+def test_rewrite_tiers_are_counted_separately(tmp_path, classification, end_to_end, stage) -> None:
+    source = _single_label_dataset(tmp_path)
+    candidate = ScanCandidate(str(source), "f", "division_by_zero")
+    result = ScanCaseResult(
+        candidate, classification, harness_tier="rewrite", rewrite_status=classification,
+    )
+    metrics = evaluate_v2_results(
+        candidates=[candidate], results=[result], ground_truth_path=tmp_path / "ground_truths.json",
+    )
+    synthesis = metrics["synthesis_given_correct_detection"]
+    assert synthesis[classification] == 1
+    assert synthesis["unknown_evidence"] == 0
+    assert metrics["end_to_end"]["tp"] == end_to_end
+    if stage:
+        assert metrics["pipeline_stage_losses"]["by_stage"] == {stage: 1}
+    assert synthesis["rewrite_status"] == {classification: 1}
+
+
+def test_scalar_result_keeps_rewrite_attempt_status(tmp_path) -> None:
+    source = _single_label_dataset(tmp_path)
+    candidate = ScanCandidate(str(source), "f", "division_by_zero")
+    result = ScanCaseResult(
+        candidate, "confirmed_on_abstraction", harness_tier="scalar",
+        rewrite_status="rewrite_rejected", rewrite_evidence={"reason": "static gate"},
+    )
+    metrics = evaluate_v2_results(
+        candidates=[candidate], results=[result], ground_truth_path=tmp_path / "ground_truths.json",
+    )
+    assert metrics["synthesis_given_correct_detection"]["rewrite_status"] == {"rewrite_rejected": 1}
+    assert metrics["end_to_end"]["tp"] == 0
+
+
+def test_checkpoint_roundtrip_keeps_rewrite_evidence() -> None:
+    candidate = ScanCandidate("a.py", "f", "division_by_zero")
+    result = ScanCaseResult(
+        candidate, "rewrite_violation_empirical", harness_tier="rewrite",
+        rewrite_status="rewrite_violation_empirical",
+        rewrite_evidence={"artifacts": {"rewritten.py": {"sha256": "abc"}}},
+    )
+    again = ScanCaseResult.from_dict(json.loads(json.dumps(result.to_dict())))
+    assert again.rewrite_status == "rewrite_violation_empirical"
+    assert again.rewrite_evidence == result.rewrite_evidence

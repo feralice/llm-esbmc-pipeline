@@ -26,8 +26,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..models import CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER, Finding
 from ..llm.categories import HARNESS_STRATEGIES, harness_strategy_for_category
+from ..models import CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER, Finding
 from ..preprocess import preprocess_file
 from ..report import _category_from_esbmc_property, _esbmc_result_matches_category
 from ..verification.esbmc_runner import (
@@ -37,6 +37,7 @@ from ..verification.esbmc_runner import (
     run_esbmc_on_function,
 )
 from .ablation import FAILED, AblationReport, ablate
+from .capability import CapabilityDiagnostic, diagnose_esbmc
 from .compat import (
     EXPECTED_PROPERTY_MARKER,
     OUTCOME_CATEGORIES,
@@ -45,8 +46,15 @@ from .compat import (
     check_outcome_grounding,
     exclude_nan_inputs,
 )
-from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
 from .driver_check import LIVENESS_REASON, check_driver_harness, force_result_liveness
+from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
+from .replay import UnavailableReplayExecutor
+from .rewrite_stage import (
+    REWRITE_CONFIRMED_ORIGINAL,
+    REWRITE_VIOLATION_EMPIRICAL,
+    RewriteStageResult,
+    run_rewrite_stage,
+)
 from .synth import STYLE_DRIVER, STYLE_LOOP, STYLE_SCALAR, HarnessSynthesizer
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
@@ -82,6 +90,9 @@ SAFE_NATIVE = "safe_native"
 # arise. Tried after _try_native, before the scalar synth fallback. Needs the
 # real function to convert under ESBMC-Python (same gate as _try_native).
 CONFIRMED_DRIVER = "confirmed_driver"
+REWRITE_MODES = ("off", "validated")
+# The witness only attributes ESBMC's native exception properties for these.
+_REWRITE_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds"})
 SAFE_DRIVER = "safe_driver"
 
 # What backs the candidate's category on a confirmation. ESBMC has no category
@@ -218,6 +229,10 @@ class ScanCaseResult:
     pytest_test_path: str = ""
     pytest_generation_status: str = ""
     pytest_generation_summary: str = ""
+    # Outcome of the validated-rewrite stage (--rewrite-mode validated), kept
+    # even when the final classification comes from a later tier.
+    rewrite_status: str = ""
+    rewrite_evidence: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.failure_stage:
@@ -254,6 +269,8 @@ class ScanCaseResult:
             pytest_test_path=str(data.get("pytest_test_path", "")),
             pytest_generation_status=str(data.get("pytest_generation_status", "")),
             pytest_generation_summary=str(data.get("pytest_generation_summary", "")),
+            rewrite_status=str(data.get("rewrite_status", "")),
+            rewrite_evidence=dict(data.get("rewrite_evidence", {})),
         )
 
     def to_dict(self) -> dict:
@@ -293,6 +310,8 @@ class ScanCaseResult:
             "pytest_test_path": self.pytest_test_path,
             "pytest_generation_status": self.pytest_generation_status,
             "pytest_generation_summary": self.pytest_generation_summary,
+            "rewrite_status": self.rewrite_status,
+            "rewrite_evidence": self.rewrite_evidence,
         }
 
 
@@ -330,6 +349,7 @@ def _failure_stage_for_classification(classification: str) -> str:
         OVER_RESTRICTED,
         ESBMC_INCONCLUSIVE,
         ESBMC_UNAVAILABLE,
+        REWRITE_VIOLATION_EMPIRICAL,
     }:
         return FAILURE_VERIFICATION
     return ""
@@ -365,6 +385,9 @@ def run_pipeline_scan(
     pytest_output_dir: str | Path | None = None,
     completed_results: dict[int, ScanCaseResult] | None = None,
     on_result: Callable[[int, ScanCaseResult], None] | None = None,
+    rewrite_mode: str = "off",
+    replay_executor=None,
+    rewrite_repairs: int = 1,
 ) -> list[ScanCaseResult]:
     """Run the scan flow over every candidate and return one result each.
 
@@ -373,8 +396,13 @@ def run_pipeline_scan(
     is the number of extra synthesis attempts allowed when an attempt ends in a
     recoverable failure (invalid harness, ESBMC error) rather than a verdict.
     """
+    if rewrite_mode not in REWRITE_MODES:
+        raise ValueError(f"rewrite_mode must be one of {REWRITE_MODES}")
     harness_dir = Path(output_dir) / "harnesses"
     harness_dir.mkdir(parents=True, exist_ok=True)
+    rewrite_dir = Path(output_dir) / "rewrites"
+    if rewrite_mode == "validated" and replay_executor is None:
+        replay_executor = UnavailableReplayExecutor("no isolated replay runtime configured")
 
     results: list[ScanCaseResult] = []
     for index, candidate in enumerate(candidates):
@@ -399,6 +427,10 @@ def run_pipeline_scan(
                 loop_fallback=loop_fallback,
                 generate_pytest_tests=generate_pytest_tests,
                 pytest_output_dir=pytest_output_dir,
+                rewrite_mode=rewrite_mode,
+                replay_executor=replay_executor,
+                rewrite_repairs=rewrite_repairs,
+                rewrite_dir=rewrite_dir,
             )
         results.append(result)
         if on_result is not None:
@@ -424,8 +456,13 @@ def _run_one(
     loop_fallback: bool = True,
     generate_pytest_tests: bool = False,
     pytest_output_dir: str | Path | None = None,
+    rewrite_mode: str = "off",
+    replay_executor=None,
+    rewrite_repairs: int = 1,
+    rewrite_dir: Path | None = None,
 ) -> ScanCaseResult:
     started = time.monotonic()
+    diagnostics: list[CapabilityDiagnostic] = []
 
     if (candidate.harness_strategy or harness_strategy_for_category(candidate.category)) == "unsupported":
         return _early(
@@ -453,6 +490,7 @@ def _run_one(
         bound=bound,
         timeout_seconds=timeout_seconds,
         harness_dir=harness_dir,
+        diagnostics=diagnostics,
     )
     if native is not None:
         native.synth_model = synthesizer.model
@@ -484,6 +522,7 @@ def _run_one(
             timeout_seconds=timeout_seconds,
             harness_dir=harness_dir,
             use_ablation=use_ablation,
+            diagnostics=diagnostics,
         )
         if real_driver is not None:
             real_driver.seconds = time.monotonic() - started
@@ -502,6 +541,20 @@ def _run_one(
             driver.driver_note = driver_note
             driver.seconds = time.monotonic() - started
             return driver
+
+    rewrite: RewriteStageResult | None = None
+    if rewrite_mode == "validated":
+        rewrite = _try_rewrite(
+            candidate, unit, finding, diagnostics,
+            finding_id=f"scan_{index:03d}_rewrite", synthesizer=synthesizer,
+            executor=replay_executor, esbmc_command=esbmc_command, bound=bound,
+            timeout_seconds=timeout_seconds, rewrite_dir=rewrite_dir, repairs=rewrite_repairs,
+        )
+        if rewrite.status in {REWRITE_CONFIRMED_ORIGINAL, REWRITE_VIOLATION_EMPIRICAL}:
+            result = _rewrite_result(candidate, synthesizer.model, rewrite)
+            result.driver_note = driver_note
+            result.seconds = time.monotonic() - started
+            return result
 
     history: list[dict] = []
     total_tokens = 0
@@ -578,8 +631,82 @@ def _run_one(
         loop_result.driver_note = driver_note
         loop_result.seconds = time.monotonic() - started
         if loop_result.classification in _CONFIRMATIONS:
-            return loop_result
-    return last
+            return _with_rewrite(loop_result, rewrite)
+    return _with_rewrite(last, rewrite)
+
+
+def _most_informative(diagnostics: list[CapabilityDiagnostic]) -> CapabilityDiagnostic:
+    known = [diagnostic for diagnostic in diagnostics if diagnostic.kind != "unknown"]
+    if known:
+        return known[0]
+    if diagnostics:
+        return diagnostics[-1]
+    return CapabilityDiagnostic("unknown", "no native ESBMC attempt produced a diagnostic")
+
+
+def _try_rewrite(
+    candidate: ScanCandidate,
+    unit,
+    finding: Finding,
+    diagnostics: list[CapabilityDiagnostic],
+    *,
+    finding_id: str,
+    synthesizer,
+    executor,
+    esbmc_command: list[str] | None,
+    bound: int,
+    timeout_seconds: int,
+    rewrite_dir: Path,
+    repairs: int,
+) -> RewriteStageResult:
+    if getattr(unit, "kind", "function") == "module":
+        return RewriteStageResult("inconclusive", "module-level unit has no entry function to rewrite")
+    if candidate.category not in _REWRITE_CATEGORIES:
+        return RewriteStageResult("inconclusive", "category has no native ESBMC property for witness attribution")
+    if not candidate.expression.strip():
+        return RewriteStageResult("inconclusive", "candidate has no suspect expression to anchor the rewrite")
+    return run_rewrite_stage(
+        candidate, unit, finding, _most_informative(diagnostics),
+        synthesizer=synthesizer, executor=executor, esbmc_command=esbmc_command,
+        bound=bound, timeout_seconds=timeout_seconds, output_dir=rewrite_dir,
+        finding_id=finding_id, max_repairs=repairs,
+    )
+
+
+def _rewrite_result(candidate: ScanCandidate, model: str, rewrite: RewriteStageResult) -> ScanCaseResult:
+    confirmed = rewrite.status == REWRITE_CONFIRMED_ORIGINAL
+    harness_path = rewrite.evidence.get("artifacts", {}).get("rewritten.py", {}).get("path", "")
+    return _with_rewrite(ScanCaseResult(
+        candidate=candidate,
+        classification=rewrite.status,
+        # The witness only accepts the category's own native exception property.
+        category_evidence=CATEGORY_EVIDENCE_NATIVE,
+        esbmc_category=candidate.category,
+        harness=Path(harness_path).read_text(encoding="utf-8") if harness_path else "",
+        harness_path=harness_path,
+        compat_verdict="validated_rewrite",
+        esbmc_status=rewrite.esbmc_status,
+        esbmc_summary=rewrite.esbmc_summary,
+        synth_model=model,
+        synth_total_tokens=rewrite.tokens or None,
+        synth_seconds=rewrite.synth_seconds,
+        esbmc_seconds=rewrite.esbmc_seconds,
+        attempts=len(rewrite.attempts),
+        attempt_history=list(rewrite.attempts),
+        verification_target="original_function" if confirmed else "rewritten_function",
+        abstraction_level="compatibility_rewrite",
+        harness_tier="rewrite",
+    ), rewrite)
+
+
+def _with_rewrite(result: ScanCaseResult, rewrite: RewriteStageResult | None) -> ScanCaseResult:
+    if rewrite is not None:
+        result.rewrite_status = rewrite.status
+        result.rewrite_evidence = {
+            "reason": rewrite.reason, "esbmc_status": rewrite.esbmc_status,
+            "tokens": rewrite.tokens, "attempts": rewrite.attempts, **rewrite.evidence,
+        }
+    return result
 
 
 def _repair_feedback(result: ScanCaseResult) -> str:
@@ -616,6 +743,7 @@ def _try_native(
     bound: int,
     timeout_seconds: int,
     harness_dir: Path,
+    diagnostics: list[CapabilityDiagnostic] | None = None,
 ) -> ScanCaseResult | None:
     """Try ESBMC's own --function/--assign-param-nondet on the real source
     first (Flow B, verification/esbmc_runner.py) -- no LLM harness, no
@@ -648,6 +776,10 @@ def _try_native(
     )
     category_evidence = ""
     esbmc_category = ""
+    if diagnostics is not None and result.status not in {"violation_found", "no_violation_found"}:
+        diagnostics.append(diagnose_esbmc(
+            result.status, result.stdout, result.stderr, result.raw_log_path, summary=result.summary,
+        ))
     if result.status == "violation_found" and only_verifier_artifacts(result.details):
         return None
     if result.status == "violation_found":
@@ -832,6 +964,7 @@ def _try_real_body_driver(
     timeout_seconds: int,
     harness_dir: Path,
     use_ablation: bool,
+    diagnostics: list[CapabilityDiagnostic] | None = None,
 ) -> ScanCaseResult | None:
     """Verify the original CodeUnit body with a generated module-level driver.
 
@@ -865,6 +998,10 @@ def _try_real_body_driver(
         output_dir=str(harness_dir),
     )
     if esbmc.status not in {"violation_found", "no_violation_found"}:
+        if diagnostics is not None:
+            diagnostics.append(diagnose_esbmc(
+                esbmc.status, esbmc.stdout, esbmc.stderr, esbmc.raw_log_path, summary=esbmc.summary,
+            ))
         return None
     if esbmc.status == "violation_found" and only_verifier_artifacts(esbmc.details):
         return None

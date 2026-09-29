@@ -168,10 +168,16 @@ _REAL_BODY_TIERS = frozenset({"native", "real_body", "driver"})
 
 
 def is_real_body_confirmation(result) -> bool:
-    """Return whether the result is a confirmation backed by real code."""
+    """Return whether the result is a confirmation backed by real code.
+
+    ``confirmed_original`` counts because its ESBMC witness was replayed on the
+    original code and raised the same exception at the suspect operation;
+    ``rewrite_violation_empirical`` never does.
+    """
+    tier = getattr(result, "harness_tier", "")
     return (
-        result.classification in {"confirmed_native", "confirmed_driver"}
-        and getattr(result, "harness_tier", "") in _REAL_BODY_TIERS
+        (result.classification in {"confirmed_native", "confirmed_driver"} and tier in _REAL_BODY_TIERS)
+        or (result.classification == "confirmed_original" and tier == "rewrite")
     )
 
 
@@ -319,6 +325,13 @@ def evaluate_v2_results(
     )
     confirmed_native = sum(r.classification == "confirmed_native" for r in true_positive_results)
     confirmed_driver = sum(r.classification == "confirmed_driver" for r in true_positive_results)
+    confirmed_original = sum(r.classification == "confirmed_original" for r in true_positive_results)
+    rewrite_violation_empirical = sum(
+        r.classification == "rewrite_violation_empirical" for r in true_positive_results
+    )
+    rewrite_status = Counter(
+        r.rewrite_status for r in true_positive_results if getattr(r, "rewrite_status", "")
+    )
     confirmed_on_real_body = sum(is_real_body_confirmation(r) for r in true_positive_results)
     confirmed_on_abstraction = sum(
         is_scalar_abstraction_confirmation(r) for r in true_positive_results
@@ -346,6 +359,8 @@ def evaluate_v2_results(
     for result in true_positive_results:
         if is_scalar_abstraction_confirmation(result):
             stage_losses["abstraction_only"] += 1
+        elif result.classification == "rewrite_violation_empirical":
+            stage_losses["rewrite_only"] += 1
         elif _is_unknown_confirmation(result):
             stage_losses["unknown_evidence"] += 1
         elif not is_real_body_confirmation(result):
@@ -382,6 +397,9 @@ def evaluate_v2_results(
             "abstraction_only_rate": confirmed_on_abstraction / len(true_positive_results) if true_positive_results else None,
             "confirmed_native": confirmed_native,
             "confirmed_driver": confirmed_driver,
+            "confirmed_original": confirmed_original,
+            "rewrite_violation_empirical": rewrite_violation_empirical,
+            "rewrite_status": dict(sorted(rewrite_status.items())),
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,
             "unverified": unverified,

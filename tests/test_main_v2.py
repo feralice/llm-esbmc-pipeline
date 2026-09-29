@@ -306,3 +306,23 @@ def test_scan_summary_counts_harness_tiers(tmp_path: Path) -> None:
     }
     assert summary["by_category"]["division_by_zero"]["confirmed"] == 1
     assert summary["by_category"]["division_by_zero"]["abstraction_only"] == 1
+
+
+def test_rewrite_mode_defaults_off_and_is_forwarded(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
+    captured = {}
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "HarnessSynthesizer", _Synthesizer)
+    monkeypatch.setattr(main, "run_pipeline_scan", lambda candidates, **kwargs: captured.update(kwargs) or [])
+    parser = main.build_parser()
+    base = ["--mode", "hybrid", "--input", str(source), "--output-dir", str(tmp_path / "out")]
+
+    assert parser.parse_args(base).rewrite_mode == "off"
+    assert main.mode_v2(parser.parse_args([*base, "--rewrite-mode", "validated"])) == 0
+    assert captured["rewrite_mode"] == "validated"
+    assert captured["replay_executor"].run("", "f", None).kind == "unavailable"
+    config = json.loads((tmp_path / "out" / "v2_report.json").read_text(encoding="utf-8"))["config"]
+    assert config["rewrite_mode"] == "validated"
+    assert config["replay_image"] == ""

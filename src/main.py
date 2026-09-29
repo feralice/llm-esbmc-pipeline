@@ -40,6 +40,7 @@ from dotenv import load_dotenv
 load_dotenv(REPO_ROOT / ".env")
 
 
+from research_pipeline.dataset_audit import match_unit
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy_defined,
@@ -52,14 +53,22 @@ from research_pipeline.evaluator import (
     run_repeated,
     summarize_repeated_runs,
 )
-from research_pipeline.llm.backends.factory import _DEFAULT_MODEL, _GEMINI_OPENAI_BASE_URL, build_analyzer
+from research_pipeline.llm.backends.factory import (
+    _DEFAULT_MODEL,
+    _GEMINI_OPENAI_BASE_URL,
+    build_analyzer,
+)
+from research_pipeline.llm.categories import (
+    FORMAL_CATEGORIES,
+    HARNESS_STRATEGIES,
+    harness_strategy_for_category,
+)
 from research_pipeline.pipeline import (
     Backend,
     run_pipeline_esbmc_direct,
     run_pipeline_llm_only,
     run_pipeline_multi,
 )
-from research_pipeline.dataset_audit import match_unit
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.pipeline import (
     SYNTH_FAILED,
@@ -67,7 +76,10 @@ from research_pipeline.scan.pipeline import (
     ScanCaseResult,
     run_pipeline_scan,
 )
-from research_pipeline.llm.categories import FORMAL_CATEGORIES, HARNESS_STRATEGIES, harness_strategy_for_category
+from research_pipeline.scan.replay import (
+    ContainerReplayExecutor,
+    UnavailableReplayExecutor,
+)
 from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
 from research_pipeline.v2_evaluator import (
     evaluate_v2_results,
@@ -294,6 +306,31 @@ def build_parser() -> argparse.ArgumentParser:
             "Modo V2: não tenta anexar um driver determinístico ao corpo original; "
             "use apenas o driver/slice gerado pela LLM."
         ),
+    )
+    parser.add_argument(
+        "--rewrite-mode",
+        choices=["off", "validated"],
+        default="off",
+        help=(
+            "Modo V2: 'validated' pede à LLM uma reescrita de compatibilidade "
+            "quando o corpo original falha no ESBMC, e só aceita o resultado após "
+            "portão AST, replay diferencial isolado e testemunha no original. "
+            "Custa chamadas de API adicionais."
+        ),
+    )
+    parser.add_argument(
+        "--replay-image",
+        default="",
+        help=(
+            "Imagem de contêiner Python já instalada localmente para o replay "
+            "isolado (sem pull automático). Sem ela, o replay fica indisponível e "
+            "a reescrita termina inconclusiva."
+        ),
+    )
+    parser.add_argument(
+        "--replay-runtime",
+        default="",
+        help="Runtime de contêiner para o replay (podman/docker); padrão: o primeiro encontrado.",
     )
     parser.add_argument(
         "--synth-retries",
@@ -1129,6 +1166,9 @@ def mode_v2(args: argparse.Namespace) -> int:
         "ablation": not args.no_ablation,
         "driver": not args.no_driver,
         "real_driver": not args.no_real_driver,
+        "rewrite_mode": args.rewrite_mode,
+        "replay_image": args.replay_image,
+        "replay_runtime": args.replay_runtime,
         "synth_retries": args.synth_retries,
         "bound": args.bound,
         "timeout": args.timeout,
@@ -1351,6 +1391,8 @@ def mode_v2(args: argparse.Namespace) -> int:
             use_driver=not args.no_driver,
             use_real_driver=not args.no_real_driver,
             synth_retries=args.synth_retries,
+            rewrite_mode=args.rewrite_mode,
+            replay_executor=_replay_executor(args),
             generate_pytest_tests=args.generate_pytest_testcase,
             pytest_output_dir=args.pytest_output_dir,
             completed_results=completed_results,
@@ -1381,6 +1423,10 @@ def mode_v2(args: argparse.Namespace) -> int:
     if summary.get("harness_tiers"):
         print("\n  evidência por tier:")
         for k, v in sorted(summary["harness_tiers"].items()):
+            print(f"    {k:26s} {v}")
+    if summary.get("rewrite_status"):
+        print("\n  estágio de reescrita (original vs só reescrita, contados à parte):")
+        for k, v in sorted(summary["rewrite_status"].items()):
             print(f"    {k:26s} {v}")
     print("\n  por categoria (confirmado / total, nativo e não-verificado entre parênteses):")
     for cat, d in sorted(summary["by_category"].items()):
@@ -1483,6 +1529,14 @@ def _print_cache_summary(telemetry_summary: dict) -> None:
         print("\n".join(lines))
 
 
+def _replay_executor(args):
+    if args.rewrite_mode != "validated":
+        return None
+    if not args.replay_image:
+        return UnavailableReplayExecutor("no --replay-image configured")
+    return ContainerReplayExecutor(runtime=args.replay_runtime or None, image=args.replay_image)
+
+
 def _scan_summary(results) -> dict:
     from collections import Counter
 
@@ -1508,6 +1562,8 @@ def _scan_summary(results) -> dict:
         elif is_real_body_confirmation(r) and r.classification == "confirmed_driver":
             d["confirmed"] += 1
             d["driver"] += 1
+        elif is_real_body_confirmation(r):
+            d["confirmed"] += 1
         elif is_scalar_abstraction_confirmation(r):
             d["abstraction_only"] += 1
         elif r.classification == "confirmed_unverified":
@@ -1524,6 +1580,7 @@ def _scan_summary(results) -> dict:
     harness_tiers = Counter(
         r.harness_tier or "unknown" for r in results
     )
+    rewrite_status = Counter(r.rewrite_status for r in results if r.rewrite_status)
     total_tokens = sum(r.synth_total_tokens or 0 for r in results)
     total_synth_seconds = sum(r.synth_seconds for r in results)
     total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
@@ -1535,6 +1592,7 @@ def _scan_summary(results) -> dict:
         "verification_targets": dict(verification_targets),
         "abstraction_levels": dict(abstraction_levels),
         "harness_tiers": dict(harness_tiers),
+        "rewrite_status": dict(rewrite_status),
         "total_synth_tokens": total_tokens,
         "total_synth_seconds": round(total_synth_seconds, 3),
         "total_esbmc_seconds": round(total_esbmc_seconds, 3),
