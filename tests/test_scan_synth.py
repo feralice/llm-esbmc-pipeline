@@ -295,3 +295,21 @@ def test_synthesize_with_mocked_api(tmp_path: Path, monkeypatch):
     assert result.model == "gpt-4o-mini"
     assert result.telemetry["total_tokens"] == 380
     assert result.telemetry["status"] == "success"
+
+
+def test_openai_rewrite_requests_json_mode(tmp_path: Path, monkeypatch):
+    unit = _unit(tmp_path, "def f(value):\n    return value / 2\n")
+    synth = HarnessSynthesizer(backend="openai", model="gpt-4o-mini", api_key="k")
+    sent = {}
+    monkeypatch.setattr(synth, "_post_json", lambda payload: sent.update(payload) or {"output_text": "{}"})
+    with pytest.raises(ValueError):
+        synth.synthesize_rewrite(unit, _finding("division_by_zero", "value / 2"),
+                                 CapabilityDiagnostic("annotation", "x"), module_source="def f(value): ...")
+    assert sent["text"] == {"format": {"type": "json_object"}}
+
+
+@pytest.mark.parametrize("style,included", [
+    (STYLE_REWRITE, True), (STYLE_DRIVER, True), (STYLE_SCALAR, False), (STYLE_LOOP, False),
+])
+def test_esbmc_knowledge_is_shared_by_real_body_prompts(style, included):
+    assert ("ESBMC-PYTHON FACTS" in load_synth_prompt(style)) is included

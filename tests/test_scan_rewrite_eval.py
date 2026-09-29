@@ -79,3 +79,44 @@ def test_aggregate_keeps_original_and_rewrite_counts_separate(tmp_path):
     saved = json.loads((tmp_path / "out" / "summary.json").read_text(encoding="utf-8"))
     assert saved["config"]["per_case_timeout"] == 20
     assert len(saved["inputs"]) == 2 and all(len(h) == 64 for h in saved["inputs"].values())
+
+
+class _CountingSynth:
+    model = "fake"
+
+    def __init__(self):
+        self.calls = 0
+
+    def synthesize_rewrite(self, *args, **kwargs):
+        self.calls += 1
+        raise ValueError("rewrite response must be JSON")
+
+
+def test_rewrite_runs_only_on_eligible_cases_and_resumes(tmp_path, monkeypatch):
+    manifest = _dataset(tmp_path)
+    monkeypatch.setattr(scan_pipeline, "run_esbmc_on_function", _timeout_native)
+    synth = _CountingSynth()
+    summary = evaluate_offline(str(manifest), str(tmp_path / "out"), per_case_timeout=5, synthesizer=synth)
+    assert synth.calls == 8  # two eligible cases, four rounds each
+    assert summary["rewrite_stage"]["by_status"] == {"inconclusive": 2}
+    evaluate_offline(str(manifest), str(tmp_path / "out"), per_case_timeout=5, synthesizer=synth)
+    assert synth.calls == 8
+
+
+def test_token_cap_stops_new_rewrites(tmp_path, monkeypatch):
+    from research_pipeline.scan import rewrite_eval
+    manifest = _dataset(tmp_path)
+    monkeypatch.setattr(scan_pipeline, "run_esbmc_on_function", _timeout_native)
+    real_try = rewrite_eval._try_rewrite
+
+    def costly(*args, **kwargs):
+        stage = real_try(*args, **kwargs)
+        stage.tokens = 100
+        return stage
+
+    monkeypatch.setattr(rewrite_eval, "_try_rewrite", costly)
+    synth = _CountingSynth()
+    summary = evaluate_offline(str(manifest), str(tmp_path / "out"), per_case_timeout=5,
+                               synthesizer=synth, max_total_tokens=50)
+    assert synth.calls == 4
+    assert summary["rewrite_stage"]["not_run_budget"] == 1

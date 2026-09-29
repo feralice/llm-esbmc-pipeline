@@ -50,7 +50,6 @@ from research_pipeline.evaluator import (
     mcc_defined,
     noise_reduction_rate_defined,
     prf_defined,
-    run_repeated,
     summarize_repeated_runs,
 )
 from research_pipeline.llm.backends.factory import (
@@ -78,7 +77,7 @@ from research_pipeline.scan.pipeline import (
 )
 from research_pipeline.scan.replay import (
     ContainerReplayExecutor,
-    UnavailableReplayExecutor,
+    LocalReplayExecutor,
 )
 from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
 from research_pipeline.v2_evaluator import (
@@ -1533,7 +1532,7 @@ def _replay_executor(args):
     if args.rewrite_mode != "validated":
         return None
     if not args.replay_image:
-        return UnavailableReplayExecutor("no --replay-image configured")
+        return LocalReplayExecutor()
     return ContainerReplayExecutor(runtime=args.replay_runtime or None, image=args.replay_image)
 
 

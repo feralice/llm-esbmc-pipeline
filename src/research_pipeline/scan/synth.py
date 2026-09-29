@@ -48,9 +48,17 @@ _PROMPT_FILES = {
 }
 
 
+# Styles that verify the real body get the shared ESBMC-Python facts appended.
+_KNOWLEDGE_STYLES = frozenset({STYLE_REWRITE, STYLE_DRIVER})
+
+
 def load_synth_prompt(style: str = STYLE_SCALAR) -> str:
     path = _PROMPT_DIR / _PROMPT_FILES.get(style, _PROMPT_FILES[STYLE_SCALAR])
-    return path.read_text(encoding="utf-8").strip()
+    prompt = path.read_text(encoding="utf-8").strip()
+    if style in _KNOWLEDGE_STYLES:
+        knowledge = (_PROMPT_DIR / "esbmc_python_knowledge.txt").read_text(encoding="utf-8").strip()
+        prompt = f"{prompt}\n\n{knowledge}"
+    return prompt
 
 
 def _strip_fence(text: str) -> str:
@@ -249,6 +257,8 @@ class HarnessSynthesizer:
                     {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
                 ],
             }
+            if style == STYLE_REWRITE:
+                payload["text"] = {"format": {"type": "json_object"}}
         elif self.backend in {"ollama", "google"}:
             payload = {
                 "model": self.model,

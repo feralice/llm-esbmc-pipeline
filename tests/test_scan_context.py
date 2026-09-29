@@ -103,3 +103,28 @@ def test_top_level_item_assignment_is_kept_verbatim():
 def test_unrelated_side_effect_and_docstring_are_fine():
     source = '"""doc."""\nimport os\nLIMIT = 3\nprint(os.getcwd())\n\n\ndef f(x):\n    return x // LIMIT\n'
     assert "LIMIT = 3" in context_module(source, "f")
+
+
+def test_dropped_statement_that_only_calls_a_kept_module_is_fine():
+    source = "import re\n\nPATTERN = re.compile('x')\n\n\ndef f(s):\n    return re.match('a', s)\n"
+    module = context_module(source, "f")
+    assert "import re" in module and "PATTERN" not in module
+
+
+def test_conditional_import_block_binding_a_kept_name_is_kept_whole():
+    source = (
+        "import sys\n\nif sys.version_info[0] == 3:\n    text = str\nelse:\n    text = unicode\n\n\n"
+        "def f(x):\n    return text(x)\n"
+    )
+    module = context_module(source, "f")
+    assert "if sys.version_info[0] == 3:" in module and "import sys" in module
+
+
+def test_try_import_block_is_kept_whole():
+    source = "try:\n    import json\nexcept ImportError:\n    json = None\n\n\ndef f(s):\n    return json.loads(s)\n"
+    assert "except ImportError:" in context_module(source, "f")
+
+
+def test_top_level_call_passing_kept_data_still_refuses():
+    source = "ITEMS = []\nregister(ITEMS)\n\n\ndef f(i):\n    return ITEMS[i]\n"
+    assert context_module(source, "f") == ""

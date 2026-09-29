@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from dataclasses import dataclass
@@ -36,10 +37,16 @@ def _json_payload(raw: str) -> dict[str, Any]:
     fence = re.fullmatch(r"```(?:json)?\s*\n?(.*?)\n?```", content, re.DOTALL | re.IGNORECASE)
     if fence:
         content = fence.group(1).strip()
+    if not content.startswith("{") and "{" in content and "}" in content:
+        content = content[content.index("{"):content.rindex("}") + 1]
     try:
         payload = json.loads(content)
     except json.JSONDecodeError as exc:
-        raise ValueError(f"rewrite response must be JSON: {exc.msg}") from exc
+        try:
+            # Models sometimes emit Python literals (None/True) inside the JSON.
+            payload = ast.literal_eval(content)
+        except (ValueError, SyntaxError, MemoryError, RecursionError):
+            raise ValueError(f"rewrite response must be JSON: {exc.msg}") from exc
     if not isinstance(payload, dict):
         raise ValueError("rewrite response JSON must be an object")
     return payload
@@ -63,8 +70,8 @@ def parse_rewrite_proposal(raw: str) -> RewriteProposal:
         raise ValueError("driver_source must be a non-empty string")
 
     raw_changes = payload["changes"]
-    if not isinstance(raw_changes, list) or not raw_changes:
-        raise ValueError("changes must be a non-empty list")
+    if not isinstance(raw_changes, list):
+        raise ValueError("changes must be a list")
     changes: list[RewriteChange] = []
     for index, item in enumerate(raw_changes):
         if not isinstance(item, dict) or set(item) != {"before", "after", "reason"}:

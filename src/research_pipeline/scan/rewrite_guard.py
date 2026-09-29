@@ -6,6 +6,7 @@ import ast
 import builtins
 import copy
 import symtable
+import textwrap
 from dataclasses import dataclass
 
 from .rewrite import RewriteProposal
@@ -22,6 +23,9 @@ class GuardReport:
     reasons: tuple[str, ...] = ()
     suspect_rewrite_line: int | None = None
     risk: str = "semantic"
+    manifest_matches: bool = True
+    suspect_rewrite_end_line: int | None = None
+    stubs: tuple[str, ...] = ()
 
 
 def _find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | None:
@@ -40,13 +44,21 @@ def _find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | N
 
 
 def _expression_nodes(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
+    """Nodes equal to the suspect; datasets give either an expression or one statement."""
     try:
-        suspect = ast.parse(expression, mode="eval").body
+        suspect: ast.AST = ast.parse(expression, mode="eval").body
+        kind: type = ast.expr
     except SyntaxError:
-        return []
+        try:
+            body = ast.parse(textwrap.dedent(expression).strip()).body
+        except SyntaxError:
+            return []
+        if len(body) != 1:
+            return []
+        suspect, kind = body[0], ast.stmt
     wanted = ast.dump(suspect, include_attributes=False)
     return [node for node in ast.walk(function)
-            if isinstance(node, ast.expr) and ast.dump(node, include_attributes=False) == wanted]
+            if isinstance(node, kind) and ast.dump(node, include_attributes=False) == wanted]
 
 
 def _step(node: ast.AST, field: str, index: int) -> str | None:
@@ -177,7 +189,8 @@ def _nondet_flows_into(driver: ast.Module, call: ast.Call) -> bool:
         if not _is_nondet(node) or id(node) in inline:
             continue
         owner = next((stmt for stmt in ast.walk(driver)
-                      if isinstance(stmt, (ast.Assign, ast.AnnAssign)) and stmt.value is node), None)
+                      if isinstance(stmt, (ast.Assign, ast.AnnAssign)) and stmt.value is not None
+                      and any(child is node for child in ast.walk(stmt.value))), None)
         targets = [] if owner is None else owner.targets if isinstance(owner, ast.Assign) else [owner.target]
         if not (len(targets) == 1 and isinstance(targets[0], ast.Name) and targets[0].id in bound):
             return False
@@ -212,6 +225,112 @@ def _bound_names(node: ast.stmt) -> set[str]:
     if isinstance(node, (ast.Import, ast.ImportFrom)):
         return {(alias.asname or alias.name).split(".")[0] for alias in node.names}
     return {child.id for child in ast.walk(node) if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Store)}
+
+
+# Modules ESBMC-Python models (src/python-frontend/models); their imports must stay.
+_MODELED_MODULES = frozenset({
+    "builtins", "cmath", "collections", "dataclasses", "datetime", "decimal", "enum", "heapq",
+    "math", "numpy", "os", "queue", "random", "re", "string", "sys", "threading", "time", "typing",
+})
+
+
+def _import_bindings(tree: ast.Module) -> dict[str, str]:
+    """Top-level imported name -> root module."""
+    bound = {}
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                bound[(alias.asname or alias.name).split(".")[0]] = alias.name.split(".")[0]
+        elif isinstance(node, ast.ImportFrom):
+            root = "." if node.level else (node.module or "").split(".")[0]
+            for alias in node.names:
+                bound[alias.asname or alias.name] = root
+    return bound
+
+
+def _is_havoc_value(node: ast.AST | None) -> bool:
+    """None, a constant, a nondet call, or a container of those: no computation."""
+    if node is None or isinstance(node, ast.Constant) or _is_nondet(node):
+        return True
+    if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+        return all(_is_havoc_value(element) for element in node.elts)
+    if isinstance(node, ast.Dict):
+        return all(_is_havoc_value(part) for part in [*node.keys, *node.values])
+    return False
+
+
+def _is_stub_function(node: ast.FunctionDef) -> bool:
+    body = node.body
+    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant):
+        body = body[1:]
+    return len(body) == 1 and (
+        isinstance(body[0], ast.Pass)
+        or (isinstance(body[0], ast.Return) and _is_havoc_value(body[0].value))
+    )
+
+
+def _top_level(tree: ast.Module) -> dict[str, ast.stmt]:
+    named = {}
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            named[node.name] = node
+        elif isinstance(node, (ast.Assign, ast.AnnAssign)):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            for target in targets:
+                if isinstance(target, ast.Name):
+                    named[target.id] = node
+    return named
+
+
+def _stub_report(original: ast.Module, rewritten: ast.Module, function: str):
+    """Validate havoc stubs for names the original cannot resolve.
+
+    A stub may only stand for a name the original leaves undefined or imports
+    from a module ESBMC does not model, and its body is a nondet/constant
+    return. With stubs, every other original definition must stay unchanged
+    apart from annotations, because the original can no longer be replayed.
+    """
+    original_imports = _import_bindings(original)
+    rewritten_imports = _import_bindings(rewritten)
+    problems: list[str] = []
+    for name, module in original_imports.items():
+        if name not in rewritten_imports and module in _MODELED_MODULES:
+            problems.append(f"removed import of ESBMC-modeled module {module!r}")
+    unmodeled = {name for name, module in original_imports.items() if module not in _MODELED_MODULES}
+    try:
+        undefined = _undefined_globals(ast.unparse(original), "<original>")
+    except SyntaxError:
+        undefined = set()
+    stubbable = (unmodeled - set(rewritten_imports)) | undefined
+
+    original_defs = _top_level(original)
+    stubs: list[str] = []
+    stub_nodes: list[ast.stmt] = []
+    for name, node in _top_level(rewritten).items():
+        if name in original_defs:
+            continue
+        if name not in stubbable:
+            problems.append(f"new definition {name!r} is not a stub for an unresolved name")
+            continue
+        valid = (_is_stub_function(node) if isinstance(node, ast.FunctionDef)
+                 else isinstance(node, (ast.Assign, ast.AnnAssign)) and _is_havoc_value(node.value))
+        if not valid:
+            problems.append(f"stub {name!r} must only return a nondet value, a constant or None")
+            continue
+        stubs.append(name)
+        stub_nodes.append(node)
+    if stubs:
+        target = function.split(".")[0]
+        rewritten_defs = _top_level(rewritten)
+        for name, node in original_defs.items():
+            if name == target or name not in rewritten_defs:
+                continue
+            before, after = copy.deepcopy(node), copy.deepcopy(rewritten_defs[name])
+            _StripAnnotations().visit(before)
+            _StripAnnotations().visit(after)
+            if ast.dump(before, include_attributes=False) != ast.dump(after, include_attributes=False):
+                problems.append(f"definition {name!r} changed beyond annotations in a stubbed rewrite")
+    return tuple(sorted(stubs)), stub_nodes, problems
 
 
 def _manifest_reconstructs(original_source: str, rewritten_source: str, proposal: RewriteProposal) -> bool:
@@ -269,8 +388,8 @@ def validate_rewrite(
     except SyntaxError as exc:
         return GuardReport(False, (f"invalid Python syntax: {exc.msg}",))
 
-    if not _manifest_reconstructs(original_source, proposal.rewritten_source, proposal):
-        reasons.append("rewrite differs from the exact changes declared in the manifest")
+    # The stage records the computed diff, so an inexact LLM manifest is noted, not fatal.
+    manifest_matches = _manifest_reconstructs(original_source, proposal.rewritten_source, proposal)
 
     original_function = _find_function(original_tree, function)
     rewritten_function = _find_function(rewritten_tree, function)
@@ -288,8 +407,6 @@ def validate_rewrite(
           != _control_path(rewritten_function, rewritten_suspects[0])):
         reasons.append("suspect expression moved to a different control-flow position")
 
-    if proposal.assumptions:
-        reasons.append("unjustified assumptions are not accepted by the static gate")
     if proposal.oracle_ref is not None and proposal.oracle_ref != trusted_oracle:
         reasons.append("LLM oracle reference is not trusted configuration")
 
@@ -320,11 +437,18 @@ def validate_rewrite(
     if undefined:
         reasons.append("undefined name(s): " + ", ".join(sorted(undefined)))
 
-    added_nondet = set(_nondet_calls(rewritten_tree)) - set(_nondet_calls(original_tree))
+    stubs, stub_nodes, stub_problems = _stub_report(original_tree, rewritten_tree, function)
+    reasons.extend(stub_problems)
+    stub_ids = {id(node) for stub in stub_nodes for node in ast.walk(stub)}
+    added_nondet = {
+        node.func.id for node in ast.walk(rewritten_tree)
+        if _is_nondet(node) and id(node) not in stub_ids
+    } - set(_nondet_calls(original_tree))
     if added_nondet:
         reasons.append("rewritten source introduced nondet call(s): " + ", ".join(sorted(added_nondet)))
 
     line = rewritten_suspects[0].lineno if len(rewritten_suspects) == 1 else None
+    end_line = rewritten_suspects[0].end_lineno if len(rewritten_suspects) == 1 else None
     original_copy = copy.deepcopy(original_function)
     rewritten_copy = copy.deepcopy(rewritten_function)
     _StripAnnotations().visit(original_copy)
@@ -332,6 +456,8 @@ def validate_rewrite(
     risk = "structural" if ast.dump(original_copy, include_attributes=False) == ast.dump(
         rewritten_copy, include_attributes=False
     ) else "semantic"
+    if stubs:
+        risk = "stubbed"
     if category == "" or not expression.strip():
         reasons.append("candidate category/expression is missing")
-    return GuardReport(not reasons, tuple(reasons), line, risk)
+    return GuardReport(not reasons, tuple(reasons), line, risk, manifest_matches, end_line, stubs)

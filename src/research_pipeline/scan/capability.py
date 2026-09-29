@@ -76,3 +76,32 @@ def diagnose_esbmc(
             if pattern.search(combined):
                 return CapabilityDiagnostic(kind, message, _line_number(combined), raw)
     return CapabilityDiagnostic("unknown", message, None, raw)
+
+
+# Typical fixes, in the order checked; each names a construct the rewrite may change.
+_FIX_HINTS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"Return type undefined", re.IGNORECASE),
+     "Add a return annotation (-> T, or -> None) to every function and method in the module."),
+    (re.compile(r"not a @staticmethod", re.IGNORECASE),
+     "Call the method through an instance in main(): obj = ClassName() then obj.method(...)."),
+    (re.compile(r'(?:Object|Function) "[^"]+" not found|not defined|NameError', re.IGNORECASE),
+     "That name is not modeled by ESBMC-Python or is missing from the module. Do not invent helpers. "
+     "If it is a library call, replace only that call with an equivalent pure-Python expression in place; "
+     "if no equivalent exists, return the same rewrite unchanged."),
+    (re.compile(r"list indices must be integers|Cannot unpack|DictComp|ListComp", re.IGNORECASE),
+     "Give every list/dict parameter a precise element type (for example list[dict[str, int]] instead of "
+     "list) and build the driver input as a literal container of that exact shape with nondet leaves."),
+    (re.compile(r"Type inference failed|Could not resolve type", re.IGNORECASE),
+     "Annotate every parameter and every local whose type ESBMC cannot infer."),
+    (re.compile(r"unsupported|not supported|GeneratorExp", re.IGNORECASE),
+     "Replace the unsupported construct with an equivalent supported one (an explicit loop instead of a "
+     "generator or comprehension, str concatenation instead of % formatting)."),
+)
+
+
+def fix_hint(diagnostic: CapabilityDiagnostic) -> str:
+    """Typical fix for a conversion failure, for the rewrite feedback prompt."""
+    for pattern, hint in _FIX_HINTS:
+        if pattern.search(diagnostic.message):
+            return hint
+    return ""

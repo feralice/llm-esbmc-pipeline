@@ -15,16 +15,34 @@ class WitnessAssessment:
     status: str
     case: ReplayCase | None
     reason: str
+    exception: str = ""
+    # Whether the native exception is a usual symptom of the hypothesized
+    # category; recorded like category_evidence, never used to reject.
+    category_match: bool | None = None
 
 
-_CATEGORY_PROPERTIES = {
-    "division_by_zero": ("division by zero", "uncaught exception: zerodivisionerror"),
-    "out_of_bounds": ("index out of bounds", "uncaught exception: indexerror"),
-}
+# Categories whose bug is a wrong value, not an exception: they need an oracle.
+ORACLE_CATEGORIES = frozenset({"assertion_violation", "incorrect_result"})
 _CATEGORY_EXCEPTIONS = {
     "division_by_zero": {"ZeroDivisionError"},
-    "out_of_bounds": {"IndexError"},
+    "out_of_bounds": {"IndexError", "KeyError"},
+    "none_misuse": {"AttributeError", "TypeError"},
+    "type_mismatch": {"TypeError", "AttributeError", "ValueError"},
+    "invalid_precondition": {"ValueError", "TypeError", "IndexError", "KeyError", "AssertionError"},
+    "integer_overflow": {"OverflowError"},
 }
+
+
+def _native_exception(kind: str) -> str | None:
+    match = re.match(r"uncaught exception: ([A-Za-z_]\w*)", kind.strip(), re.IGNORECASE)
+    if match:
+        return match.group(1)
+    lowered = kind.lower()
+    if "division by zero" in lowered:
+        return "ZeroDivisionError"
+    if "index out of bounds" in lowered or "array bounds" in lowered:
+        return "IndexError"
+    return None
 _SCALAR_TYPES = (str, int, float, bool, type(None))
 
 
@@ -155,31 +173,40 @@ def assess_witness(
     original_line: int | None = None,
     original_column: int | None = None,
     driver_source: str = "",
+    rewritten_end_line: int | None = None,
+    original_end_line: int | None = None,
 ) -> WitnessAssessment:
-    if original_line is None or original_column is None:
+    """A statement anchor (``*_end_line`` given) matches any operation inside its lines;
+    an expression anchor must match line and column exactly."""
+    if original_line is None or (original_column is None and original_end_line is None):
         return WitnessAssessment("unattributed", None, "original suspect location is required")
-    property_matches = _CATEGORY_PROPERTIES.get(expected_category)
-    exception_matches = _CATEGORY_EXCEPTIONS.get(expected_category)
-    if not property_matches or not exception_matches:
-        return WitnessAssessment("unattributed", None, "category has no trusted native-property mapping")
+    if expected_category in ORACLE_CATEGORIES:
+        return WitnessAssessment("unattributed", None, "category needs an independent oracle, not a native property")
 
     properties = details.get("violated_property_records")
     if not isinstance(properties, list):
         return WitnessAssessment("unattributed", None, "per-property evidence is missing")
-    targets = []
-    for prop in properties:
-        if not isinstance(prop, dict):
-            continue
-        if (not _same_file(str(prop.get("file", "")), rewritten_file)
-                or _line(prop.get("location")) != rewritten_line):
-            continue
-        kind = str(prop.get("kind", "")).lower()
-        if any(expected in kind for expected in property_matches):
-            targets.append(prop)
-    if len(targets) != 1:
-        return WitnessAssessment("unattributed", None, "violated property is missing or ambiguous at the suspect line")
+    targets = [
+        prop for prop in properties
+        if isinstance(prop, dict)
+        and _same_file(str(prop.get("file", "")), rewritten_file)
+        and _line(prop.get("location")) is not None
+        and rewritten_line <= _line(prop.get("location")) <= (rewritten_end_line or rewritten_line)
+        and _native_exception(str(prop.get("kind", "")))
+    ]
+    raised = {_native_exception(str(prop.get("kind", ""))) for prop in targets}
+    if len(raised) != 1:
+        return WitnessAssessment("unattributed", None, "native violation is missing or ambiguous at the suspect line")
+    exception = raised.pop()
+    exception_matches = {exception}
+    category_match = exception in _CATEGORY_EXCEPTIONS.get(expected_category, set())
+    targets = targets[-1:]
+
+    def assessment(status: str, case: ReplayCase | None, reason: str) -> WitnessAssessment:
+        return WitnessAssessment(status, case, reason, exception, category_match)
+
     if "." in function:
-        return WitnessAssessment("rewrite_only", None, "object entry state cannot be reconstructed")
+        return assessment("rewrite_only", None, "object entry state cannot be reconstructed")
 
     if driver_source:
         driver_values = _driver_values(targets[0])
@@ -187,30 +214,32 @@ def assess_witness(
             original_source, function, driver_source, driver_values
         )
         if case is None:
-            return WitnessAssessment("rewrite_only", None, "driver arguments have no concrete counterexample values")
+            return assessment("rewrite_only", None, "driver arguments have no concrete counterexample values")
     else:
         values = _scalar_assignments(targets[0].get("counterexample"))
         if values is None:
-            return WitnessAssessment("rewrite_only", None, "counterexample has no concrete scalar assignments")
+            return assessment("rewrite_only", None, "counterexample has no concrete scalar assignments")
         case = _case_for(original_source, function, values)
         if case is None:
-            return WitnessAssessment("unattributed", None, "counterexample cannot reconstruct the original entry arguments")
+            return assessment("unattributed", None, "counterexample cannot reconstruct the original entry arguments")
 
     outcome = executor.run(original_source, function, case)
     if outcome.kind in {"unavailable", "timeout"}:
-        return WitnessAssessment("rewrite_only", case, f"original replay {outcome.kind}: {outcome.exception_message}")
+        return assessment("rewrite_only", case, f"original replay {outcome.kind}: {outcome.exception_message}")
     if outcome.phase != "call":
-        return WitnessAssessment("rewrite_only", case, "original replay has no target-call provenance")
+        return assessment("rewrite_only", case, "original replay has no target-call provenance")
     if outcome.kind == "exception" and outcome.exception_type not in exception_matches:
         # A different failure means the input never reached the operation; it neither confirms nor refutes.
-        return WitnessAssessment("unattributed", case, f"original raised {outcome.exception_type} instead")
+        return assessment("unattributed", case, f"original raised {outcome.exception_type} instead")
     if outcome.kind == "exception":
         location = outcome.exception_location
         scope = str(location.get("function", ""))
         if (location.get("file") == "<candidate>"
                 and (scope == function or scope.startswith(f"{function}.<locals>."))
-                and location.get("line") == original_line and location.get("column") == original_column):
-            return WitnessAssessment("reproduced_original", case, "native exception reproduced at the original suspect operation")
+                and (original_line <= int(location.get("line") or 0) <= original_end_line
+                     if original_end_line is not None
+                     else location.get("line") == original_line and location.get("column") == original_column)):
+            return assessment("reproduced_original", case, "native exception reproduced at the original suspect operation")
         if not outcome.exception_location:
-            return WitnessAssessment("rewrite_only", case, "original exception location is unavailable")
-    return WitnessAssessment("contradicted", case, "original replay did not reproduce the expected native exception")
+            return assessment("rewrite_only", case, "original exception location is unavailable")
+    return assessment("contradicted", case, "original replay did not reproduce the expected native exception")

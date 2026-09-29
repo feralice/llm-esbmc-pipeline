@@ -329,6 +329,7 @@ def evaluate_v2_results(
     rewrite_violation_empirical = sum(
         r.classification == "rewrite_violation_empirical" for r in true_positive_results
     )
+    confirmed_with_stubs = sum(r.classification == "confirmed_with_stubs" for r in true_positive_results)
     rewrite_status = Counter(
         r.rewrite_status for r in true_positive_results if getattr(r, "rewrite_status", "")
     )
@@ -361,6 +362,8 @@ def evaluate_v2_results(
             stage_losses["abstraction_only"] += 1
         elif result.classification == "rewrite_violation_empirical":
             stage_losses["rewrite_only"] += 1
+        elif result.classification == "confirmed_with_stubs":
+            stage_losses["stubbed_environment"] += 1
         elif _is_unknown_confirmation(result):
             stage_losses["unknown_evidence"] += 1
         elif not is_real_body_confirmation(result):
@@ -399,6 +402,7 @@ def evaluate_v2_results(
             "confirmed_driver": confirmed_driver,
             "confirmed_original": confirmed_original,
             "rewrite_violation_empirical": rewrite_violation_empirical,
+            "confirmed_with_stubs": confirmed_with_stubs,
             "rewrite_status": dict(sorted(rewrite_status.items())),
             "repaired_then_confirmed": repaired,
             "over_restricted": over_restricted,

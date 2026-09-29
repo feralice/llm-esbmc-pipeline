@@ -322,7 +322,7 @@ def test_rewrite_mode_defaults_off_and_is_forwarded(tmp_path: Path, monkeypatch)
     assert parser.parse_args(base).rewrite_mode == "off"
     assert main.mode_v2(parser.parse_args([*base, "--rewrite-mode", "validated"])) == 0
     assert captured["rewrite_mode"] == "validated"
-    assert captured["replay_executor"].run("", "f", None).kind == "unavailable"
+    assert type(captured["replay_executor"]).__name__ == "LocalReplayExecutor"
     config = json.loads((tmp_path / "out" / "v2_report.json").read_text(encoding="utf-8"))["config"]
     assert config["rewrite_mode"] == "validated"
     assert config["replay_image"] == ""

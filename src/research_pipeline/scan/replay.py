@@ -116,6 +116,93 @@ class UnavailableReplayExecutor:
         return ReplayOutcome("unavailable", exception_message=self.reason)
 
 
+# Pure-computation stdlib modules; anything that reaches files, processes or
+# the network makes the source ineligible for host replay.
+_SAFE_MODULES = frozenset({
+    "abc", "bisect", "collections", "copy", "dataclasses", "decimal", "enum", "fractions",
+    "functools", "heapq", "itertools", "json", "math", "numbers", "operator", "re",
+    "statistics", "string", "textwrap", "typing", "typing_extensions", "unicodedata",
+})
+_UNSAFE_NAMES = frozenset({
+    "open", "eval", "exec", "compile", "__import__", "globals", "locals", "vars",
+    "input", "breakpoint", "exit", "quit", "__builtins__",
+})
+
+
+def host_replay_problem(source: str) -> str:
+    """Why ``source`` must not run on the host, or "" when it only computes."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        return f"syntax error: {exc.msg}"
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            names = [alias.name for alias in node.names] if isinstance(node, ast.Import) else [node.module or ""]
+            unsafe = [name for name in names if name.split(".")[0] not in _SAFE_MODULES]
+            if unsafe or (isinstance(node, ast.ImportFrom) and node.level):
+                return f"imports {', '.join(unsafe) or 'a relative module'}"
+        elif isinstance(node, ast.Name) and node.id in _UNSAFE_NAMES:
+            return f"uses {node.id}"
+        elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr not in {"__init__", "__name__", "__class__"}:
+            return f"uses dunder attribute {node.attr}"
+    return ""
+
+
+class LocalReplayExecutor:
+    """Replay in a separate, time- and memory-limited Python process on the host.
+
+    Weaker than a container: safety rests on host_replay_problem refusing any
+    source that can reach files, processes or the network.
+    """
+
+    def __init__(self, *, timeout_seconds: int = 10, memory_bytes: int = 512 * 1024 * 1024) -> None:
+        self.timeout_seconds = timeout_seconds
+        self.memory_bytes = memory_bytes
+
+    def _limits(self) -> None:
+        import resource
+        resource.setrlimit(resource.RLIMIT_AS, (self.memory_bytes, self.memory_bytes))
+        resource.setrlimit(resource.RLIMIT_CPU, (self.timeout_seconds, self.timeout_seconds))
+        resource.setrlimit(resource.RLIMIT_NPROC, (0, 0))
+
+    def run(self, source: str, function: str, case: ReplayCase) -> ReplayOutcome:
+        problem = host_replay_problem(source)
+        if problem:
+            return ReplayOutcome("unavailable", exception_message=f"not replayed on host: {problem}")
+        if not _entry_is_constructible(source, function):
+            return ReplayOutcome("unavailable", exception_message="entry point is missing or cannot be constructed")
+        worker = Path(__file__).with_name("replay_worker.py")
+        try:
+            with tempfile.TemporaryDirectory(prefix="llm-esbmc-replay-") as temp_dir:
+                directory = Path(temp_dir)
+                source_path = directory / "candidate.py"
+                output_path = directory / "result.json"
+                source_path.write_text(source, encoding="utf-8")
+                import sys
+                completed = subprocess.run(
+                    [sys.executable, "-I", "-S", str(worker), str(source_path), function,
+                     json.dumps(list(case.args)), json.dumps(case.kwargs), str(output_path)],
+                    cwd=directory, env={}, capture_output=True, text=True,
+                    timeout=self.timeout_seconds, check=False, preexec_fn=self._limits,
+                )
+                if not output_path.exists() or not output_path.stat().st_size:
+                    return ReplayOutcome("unavailable", exception_message=(completed.stderr or "no result")[:1000])
+                payload = json.loads(output_path.read_text(encoding="utf-8"))
+        except subprocess.TimeoutExpired:
+            return ReplayOutcome("timeout", exception_message="host replay timed out")
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            return ReplayOutcome("unavailable", exception_message=str(exc)[:1000])
+        return ReplayOutcome(
+            kind=str(payload.get("kind", "unavailable")),
+            value=payload.get("value"),
+            exception_type=str(payload.get("exception_type", "")),
+            exception_message=str(payload.get("exception_message", "")),
+            effects=dict(payload.get("effects", {})),
+            phase=str(payload.get("phase", "")),
+            exception_location=dict(payload.get("exception_location", {})),
+        )
+
+
 def _entry_is_constructible(source: str, function: str) -> bool:
     parts = function.split(".")
     if len(parts) == 1:

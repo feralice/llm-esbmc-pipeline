@@ -106,7 +106,7 @@ def test_concrete_original_replay_counts_as_confirmed_original(tmp_path):
     assert result.status == REWRITE_CONFIRMED_ORIGINAL, result.reason
     assert result.evidence["witness"]["case"]["args"][1] == 0
     for name in ("original.py", "rewritten.py", "rewrite.diff", "proposal.json"):
-        assert (tmp_path / "out" / "case_0" / name).exists()
+        assert (tmp_path / "out" / "case_0" / "round_1" / name).exists()
 
 
 def test_prompt_gets_context_module_without_side_effects(tmp_path):
@@ -119,15 +119,15 @@ def test_guard_rejection_skips_esbmc_and_feeds_repair(tmp_path, monkeypatch):
     from research_pipeline.scan import rewrite_stage
     monkeypatch.setattr(rewrite_stage, "run_esbmc_direct", lambda *a, **k: pytest.fail("ESBMC must not run"))
     bad = _proposal(driver="def main() -> None:\n    assert False\n    ratio(1, 0)\n\n\nmain()\n")
-    synth = _FakeSynth(bad, bad)
+    synth = _FakeSynth(bad, bad, bad, bad)
     result = _run(tmp_path, synth, UnavailableReplayExecutor("none"))
     assert result.status == REWRITE_REJECTED
     assert "assert" in synth.calls[1]["feedback"]
-    assert len(result.attempts) == 2
+    assert len(result.attempts) == 4
 
 
 def test_malformed_proposal_is_inconclusive_not_rejected(tmp_path):
-    synth = _FakeSynth(ValueError("rewrite response must be JSON"), ValueError("rewrite response must be JSON"))
+    synth = _FakeSynth(*[ValueError("rewrite response must be JSON")] * 4)
     result = _run(tmp_path, synth, UnavailableReplayExecutor("none"))
     assert result.status == REWRITE_INCONCLUSIVE
     assert "JSON" in result.reason
@@ -150,9 +150,11 @@ def test_replay_divergence_rejects_rewrite(tmp_path, monkeypatch):
     )
     proposal = _proposal(rewritten=changed, changes=(change,), cases=({"args": [-7, 2], "kwargs": {}},))
     executor = _TrustedFixtureExecutor(tmp_path, {FREE_MODULE, changed})
-    result = _run(tmp_path, _FakeSynth(proposal), executor)
+    synth = _FakeSynth(*[proposal] * 4)
+    result = _run(tmp_path, synth, executor)
     assert result.status == REWRITE_REJECTED
     assert result.evidence["replay"]["status"] == "diverged"
+    assert "behaves differently" in synth.calls[1]["feedback"]
 
 
 @needs_esbmc
@@ -267,5 +269,76 @@ def test_empirical_tier_needs_independent_replay_cases(tmp_path):
 def test_tokens_of_malformed_paid_response_are_counted(tmp_path):
     from research_pipeline.scan.synth import RewriteParseError
     error = RewriteParseError("rewrite response must be JSON", SynthResult("x", "x", "m", {"total_tokens": 42}))
-    result = _run(tmp_path, _FakeSynth(error, error), UnavailableReplayExecutor("none"))
-    assert result.tokens == 84
+    result = _run(tmp_path, _FakeSynth(*[error] * 4), UnavailableReplayExecutor("none"))
+    assert result.tokens == 168
+
+
+@needs_esbmc
+def test_esbmc_conversion_error_is_fed_back_until_it_parses(tmp_path, monkeypatch):
+    from research_pipeline.models import ESBMCDirectResult
+    from research_pipeline.scan import rewrite_stage
+    real = rewrite_stage.run_esbmc_direct
+    calls = []
+
+    def flaky(path, **kwargs):
+        calls.append(path)
+        if len(calls) == 1:
+            log = Path(kwargs["output_dir"]) / "first.log"
+            log.write_text('ERROR: Object "helper" not found.\n', encoding="utf-8")
+            return ESBMCDirectResult(
+                source_file=str(path), status="tool_error", command=[], returncode=1,
+                summary="erro", raw_log_path=str(log),
+            )
+        return real(path, **kwargs)
+
+    monkeypatch.setattr(rewrite_stage, "run_esbmc_direct", flaky)
+    synth = _FakeSynth(_proposal(), _proposal())
+    executor = _TrustedFixtureExecutor(tmp_path, {FREE_MODULE, FREE_REWRITE})
+    result = _run(tmp_path, synth, executor)
+    assert result.status == REWRITE_CONFIRMED_ORIGINAL, result.reason
+    assert 'Object "helper" not found' in synth.calls[1]["feedback"]
+    assert result.evidence["rounds"] == 2
+
+
+def test_rounds_are_capped(tmp_path, monkeypatch):
+    from research_pipeline.models import ESBMCDirectResult
+    from research_pipeline.scan import rewrite_stage
+    monkeypatch.setattr(rewrite_stage, "run_esbmc_direct", lambda path, **k: ESBMCDirectResult(
+        source_file=str(path), status="tool_error", command=[], returncode=1, summary="ERROR: unsupported: x",
+    ))
+    synth = _FakeSynth(*[_proposal()] * 5)
+    result = _run(tmp_path, synth, UnavailableReplayExecutor("none"))
+    assert result.status == REWRITE_INCONCLUSIVE
+    assert len(synth.calls) == 4
+
+
+STUB_SOURCE = "from proj.utils import helper\n\n\ndef get(items, i):\n    first = items[i]\n    return helper(first)\n"
+STUB_REWRITE = (
+    "def helper(x: int) -> int:\n    return nondet_int()\n\n\n"
+    "def get(items: list[int], i: int) -> int:\n    first = items[i]\n    return helper(first)\n"
+)
+STUB_DRIVER = (
+    "def main() -> None:\n    items: list[int] = [nondet_int(), nondet_int()]\n"
+    "    i: int = nondet_int()\n    get(items, i)\n\n\nmain()\n"
+)
+
+
+@needs_esbmc
+def test_violation_in_target_with_havoc_stub_is_its_own_tier(tmp_path):
+    from research_pipeline.scan.rewrite_stage import REWRITE_CONFIRMED_WITH_STUBS
+    path = tmp_path / "target.py"
+    path.write_text(STUB_SOURCE, encoding="utf-8")
+    unit = next(u for u in preprocess_file(path) if u.name == "get")
+    candidate = ScanCandidate(str(path), "get", "out_of_bounds", expression="items[i]")
+    finding = Finding(id="f", stage="s", finding_type="suspected_bug", category="out_of_bounds", title="",
+                      explanation="", evidence=[], verifiable=True, confidence="medium",
+                      metadata={"expression": "items[i]"})
+    proposal = RewriteProposal(STUB_REWRITE, STUB_DRIVER, (), ({"args": [[1], 0], "kwargs": {}},), (), None)
+    result = run_rewrite_stage(
+        candidate, unit, finding, CapabilityDiagnostic("dependency", "Module 'proj' not found"),
+        synthesizer=_FakeSynth(proposal), executor=UnavailableReplayExecutor("none"), esbmc_command=None,
+        bound=3, timeout_seconds=20, output_dir=tmp_path / "out", finding_id="c",
+    )
+    assert result.status == REWRITE_CONFIRMED_WITH_STUBS, result.reason
+    assert result.evidence["stubs"] == ["helper"]
+    assert result.evidence["replay"]["status"] == "skipped_stubbed"

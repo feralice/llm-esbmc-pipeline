@@ -333,3 +333,15 @@ def test_checkpoint_roundtrip_keeps_rewrite_evidence() -> None:
     again = ScanCaseResult.from_dict(json.loads(json.dumps(result.to_dict())))
     assert again.rewrite_status == "rewrite_violation_empirical"
     assert again.rewrite_evidence == result.rewrite_evidence
+
+
+def test_stubbed_confirmation_is_counted_apart_from_end_to_end(tmp_path) -> None:
+    source = _single_label_dataset(tmp_path)
+    candidate = ScanCandidate(str(source), "f", "division_by_zero")
+    result = ScanCaseResult(candidate, "confirmed_with_stubs", harness_tier="rewrite",
+                            rewrite_status="confirmed_with_stubs")
+    metrics = evaluate_v2_results(candidates=[candidate], results=[result],
+                                  ground_truth_path=tmp_path / "ground_truths.json")
+    assert metrics["synthesis_given_correct_detection"]["confirmed_with_stubs"] == 1
+    assert metrics["end_to_end"]["tp"] == 0
+    assert metrics["pipeline_stage_losses"]["by_stage"] == {"stubbed_environment": 1}

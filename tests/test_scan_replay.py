@@ -127,3 +127,25 @@ def test_unavailable_executor_never_runs_code():
     outcome = UnavailableReplayExecutor("no image configured").run("def f(): 1/0", "f", ReplayCase((), {}))
     assert outcome.kind == "unavailable"
     assert "no image" in outcome.exception_message
+
+
+def test_local_executor_runs_worker_in_temp_dir(tmp_path):
+    from research_pipeline.scan.replay import LocalReplayExecutor
+    outcome = LocalReplayExecutor(timeout_seconds=5).run("def f(x):\n    return 10 // x\n", "f", ReplayCase((0,), {}))
+    assert outcome.kind == "exception"
+    assert outcome.exception_type == "ZeroDivisionError"
+    assert outcome.exception_location["line"] == 2
+
+
+def test_local_executor_times_out():
+    from research_pipeline.scan.replay import LocalReplayExecutor
+    outcome = LocalReplayExecutor(timeout_seconds=1).run("def f():\n    while True:\n        pass\n", "f", ReplayCase((), {}))
+    assert outcome.kind == "timeout"
+
+
+def test_local_executor_refuses_source_with_host_access():
+    from research_pipeline.scan.replay import LocalReplayExecutor
+    for source in ("import os\ndef f():\n    return 1\n", "def f():\n    return open('x').read()\n",
+                   "def f():\n    return __import__('os')\n", "def f():\n    return eval('1')\n"):
+        outcome = LocalReplayExecutor().run(source, "f", ReplayCase((), {}))
+        assert outcome.kind == "unavailable", source

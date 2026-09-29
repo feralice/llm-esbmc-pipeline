@@ -41,3 +41,14 @@ def test_invalid_input_case_shape_is_rejected() -> None:
     payload["input_cases"] = [{"args": "not-a-list", "kwargs": {}}]
     with pytest.raises(ValueError, match="args"):
         parse_rewrite_proposal(json.dumps(payload))
+
+
+def test_json_surrounded_by_prose_is_extracted() -> None:
+    proposal = parse_rewrite_proposal("Here is the rewrite:\n" + json.dumps(_payload()) + "\nDone.")
+    assert proposal.rewritten_source.startswith("def ratio")
+
+
+def test_python_literals_inside_json_are_accepted() -> None:
+    raw = json.dumps(_payload()).replace('"input_cases": [{"args": [1.0, 2.0]', '"input_cases": [{"args": [None, True]')
+    raw = raw.replace("null", "None")
+    assert parse_rewrite_proposal(raw).input_cases[0]["args"] == [None, True]

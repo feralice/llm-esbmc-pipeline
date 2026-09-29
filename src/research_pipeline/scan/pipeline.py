@@ -46,16 +46,19 @@ from .compat import (
     check_outcome_grounding,
     exclude_nan_inputs,
 )
+from .context import context_module
 from .driver_check import LIVENESS_REASON, check_driver_harness, force_result_liveness
 from .driver_check import VERDICT_UNSUPPORTED as DRIVER_VERDICT_UNSUPPORTED
-from .replay import UnavailableReplayExecutor
+from .replay import LocalReplayExecutor, _entry_is_constructible
 from .rewrite_stage import (
     REWRITE_CONFIRMED_ORIGINAL,
+    REWRITE_CONFIRMED_WITH_STUBS,
     REWRITE_VIOLATION_EMPIRICAL,
     RewriteStageResult,
     run_rewrite_stage,
 )
 from .synth import STYLE_DRIVER, STYLE_LOOP, STYLE_SCALAR, HarnessSynthesizer
+from .witness import ORACLE_CATEGORIES
 
 # Scan-specific classifications. Distinct from the V1 constants in models.py
 # because "confirmed" here means "on the synthesized abstraction", not "on the
@@ -91,8 +94,6 @@ SAFE_NATIVE = "safe_native"
 # real function to convert under ESBMC-Python (same gate as _try_native).
 CONFIRMED_DRIVER = "confirmed_driver"
 REWRITE_MODES = ("off", "validated")
-# The witness only attributes ESBMC's native exception properties for these.
-_REWRITE_CATEGORIES = frozenset({"division_by_zero", "out_of_bounds"})
 SAFE_DRIVER = "safe_driver"
 
 # What backs the candidate's category on a confirmation. ESBMC has no category
@@ -387,7 +388,7 @@ def run_pipeline_scan(
     on_result: Callable[[int, ScanCaseResult], None] | None = None,
     rewrite_mode: str = "off",
     replay_executor=None,
-    rewrite_repairs: int = 1,
+    rewrite_rounds: int = 4,
 ) -> list[ScanCaseResult]:
     """Run the scan flow over every candidate and return one result each.
 
@@ -402,7 +403,7 @@ def run_pipeline_scan(
     harness_dir.mkdir(parents=True, exist_ok=True)
     rewrite_dir = Path(output_dir) / "rewrites"
     if rewrite_mode == "validated" and replay_executor is None:
-        replay_executor = UnavailableReplayExecutor("no isolated replay runtime configured")
+        replay_executor = LocalReplayExecutor()
 
     results: list[ScanCaseResult] = []
     for index, candidate in enumerate(candidates):
@@ -429,7 +430,7 @@ def run_pipeline_scan(
                 pytest_output_dir=pytest_output_dir,
                 rewrite_mode=rewrite_mode,
                 replay_executor=replay_executor,
-                rewrite_repairs=rewrite_repairs,
+                rewrite_rounds=rewrite_rounds,
                 rewrite_dir=rewrite_dir,
             )
         results.append(result)
@@ -458,7 +459,7 @@ def _run_one(
     pytest_output_dir: str | Path | None = None,
     rewrite_mode: str = "off",
     replay_executor=None,
-    rewrite_repairs: int = 1,
+    rewrite_rounds: int = 4,
     rewrite_dir: Path | None = None,
 ) -> ScanCaseResult:
     started = time.monotonic()
@@ -548,9 +549,9 @@ def _run_one(
             candidate, unit, finding, diagnostics,
             finding_id=f"scan_{index:03d}_rewrite", synthesizer=synthesizer,
             executor=replay_executor, esbmc_command=esbmc_command, bound=bound,
-            timeout_seconds=timeout_seconds, rewrite_dir=rewrite_dir, repairs=rewrite_repairs,
+            timeout_seconds=timeout_seconds, rewrite_dir=rewrite_dir, rounds=rewrite_rounds,
         )
-        if rewrite.status in {REWRITE_CONFIRMED_ORIGINAL, REWRITE_VIOLATION_EMPIRICAL}:
+        if rewrite.status in {REWRITE_CONFIRMED_ORIGINAL, REWRITE_VIOLATION_EMPIRICAL, REWRITE_CONFIRMED_WITH_STUBS}:
             result = _rewrite_result(candidate, synthesizer.model, rewrite)
             result.driver_note = driver_note
             result.seconds = time.monotonic() - started
@@ -657,19 +658,19 @@ def _try_rewrite(
     bound: int,
     timeout_seconds: int,
     rewrite_dir: Path,
-    repairs: int,
+    rounds: int,
 ) -> RewriteStageResult:
     if getattr(unit, "kind", "function") == "module":
         return RewriteStageResult("inconclusive", "module-level unit has no entry function to rewrite")
-    if candidate.category not in _REWRITE_CATEGORIES:
-        return RewriteStageResult("inconclusive", "category has no native ESBMC property for witness attribution")
+    if candidate.category in ORACLE_CATEGORIES:
+        return RewriteStageResult("inconclusive", "category needs an independent oracle, not a native property")
     if not candidate.expression.strip():
         return RewriteStageResult("inconclusive", "candidate has no suspect expression to anchor the rewrite")
     return run_rewrite_stage(
         candidate, unit, finding, _most_informative(diagnostics),
         synthesizer=synthesizer, executor=executor, esbmc_command=esbmc_command,
         bound=bound, timeout_seconds=timeout_seconds, output_dir=rewrite_dir,
-        finding_id=finding_id, max_repairs=repairs,
+        finding_id=finding_id, max_rounds=rounds,
     )
 
 
@@ -679,9 +680,11 @@ def _rewrite_result(candidate: ScanCandidate, model: str, rewrite: RewriteStageR
     return _with_rewrite(ScanCaseResult(
         candidate=candidate,
         classification=rewrite.status,
-        # The witness only accepts the category's own native exception property.
-        category_evidence=CATEGORY_EVIDENCE_NATIVE,
-        esbmc_category=candidate.category,
+        category_evidence=(
+            CATEGORY_EVIDENCE_NATIVE if rewrite.evidence.get("witness", {}).get("category_match")
+            else CATEGORY_EVIDENCE_MISMATCH
+        ),
+        esbmc_category=str(rewrite.evidence.get("witness", {}).get("exception", "")),
         harness=Path(harness_path).read_text(encoding="utf-8") if harness_path else "",
         harness_path=harness_path,
         compat_verdict="validated_rewrite",
@@ -936,6 +939,44 @@ def _real_body_parameters(unit) -> list[tuple[str, _Shape]] | None:
     return params
 
 
+def _driver_body(params: list[tuple[str, _Shape]], call: str) -> list[str]:
+    lines = []
+    for name, shape in params:
+        lines.append(f"    {name}: {_annotation_source(shape)} = {_nondet_for_shape(shape)}")
+        if shape == ("float",):
+            lines.append(f"    __ESBMC_assume({name} == {name})")
+    return [*lines, f"    {call}({', '.join(name for name, _ in params)})"]
+
+
+def _method_driver_harness(source: str, function: str) -> str | None:
+    """Context module + a main() that builds the object with no arguments and calls the method.
+
+    Refuses when the constructor needs arguments or a parameter lacks a
+    supported annotation: inventing either would stop being the real body.
+    """
+    parts = function.split(".")
+    if len(parts) != 2:
+        return None
+    module = context_module(source, function)
+    if not module or not _entry_is_constructible(module, function):
+        return None
+    tree = ast.parse(module)
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == parts[0])
+    method = next((n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == parts[1]), None)
+    if (method is None or method.decorator_list or method.args.vararg or method.args.kwarg
+            or method.args.kwonlyargs or method.args.posonlyargs or not method.args.args):
+        return None
+    params: list[tuple[str, _Shape]] = []
+    for arg in method.args.args[1:]:
+        shape = _annotation_shape(arg.annotation) if arg.annotation is not None else None
+        if shape is None:
+            return None
+        params.append((arg.arg, shape))
+    lines = [module.rstrip(), "", "", "def main() -> None:", f"    obj = {parts[0]}()"]
+    lines += _driver_body(params, f"obj.{parts[1]}")
+    return "\n".join([*lines, "", "", "main()", ""])
+
+
 def _nondet_for_type(type_name: str) -> str:
     return {
         "int": "nondet_int()",
@@ -975,18 +1016,16 @@ def _try_real_body_driver(
     """
     if candidate.category not in _REAL_BODY_CATEGORIES:
         return None
-    params = _real_body_parameters(unit)
-    if params is None:
-        return None
-
-    lines = [unit.source.rstrip(), "", "def main() -> None:"]
-    for name, shape in params:
-        lines.append(f"    {name}: {_annotation_source(shape)} = {_nondet_for_shape(shape)}")
-        if shape == ("float",):
-            lines.append(f"    __ESBMC_assume({name} == {name})")
-    call = ", ".join(name for name, _ in params)
-    lines.extend([f"    {unit.name}({call})", "", "main()", ""])
-    harness = "\n".join(lines)
+    if "." in candidate.function:
+        harness = _method_driver_harness(Path(candidate.file).read_text(encoding="utf-8"), candidate.function)
+        if harness is None:
+            return None
+    else:
+        params = _real_body_parameters(unit)
+        if params is None:
+            return None
+        lines = [unit.source.rstrip(), "", "def main() -> None:", *_driver_body(params, unit.name)]
+        harness = "\n".join([*lines, "", "main()", ""])
 
     harness_path = harness_dir / f"{finding_id}.py"
     harness_path.write_text(harness, encoding="utf-8")

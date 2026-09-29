@@ -50,7 +50,8 @@ def test_undeclared_change_is_rejected():
         category="division_by_zero",
     )
     assert not report.ok
-    assert any("manifest" in reason for reason in report.reasons)
+    assert any("suspect" in reason for reason in report.reasons)
+    assert not report.manifest_matches
 
 
 def test_removed_suspect_expression_is_rejected():
@@ -292,3 +293,99 @@ def test_driver_cannot_shadow_or_rebind_module_names(driver):
     )
     assert not report.ok
     assert any("driver" in reason for reason in report.reasons)
+
+
+def test_nondet_leaves_inside_container_local_are_connected():
+    driver = (
+        "def main():\n    items: list[dict[str, int]] = [{'k': nondet_int()}, {'k': nondet_int()}]\n"
+        "    i: int = nondet_int()\n    pick(items, i)\nmain()\n"
+    )
+    report = _annotated(
+        "def pick(items, i):\n    return items[i]\n",
+        "def pick(items, i):", "def pick(items: list[dict[str, int]], i: int):", driver,
+        function="pick", expression="items[i]", category="out_of_bounds",
+    )
+    assert report.ok, report.reasons
+
+
+@pytest.mark.parametrize("statement", [
+    "head = (int(head) - 1) if head != '0' else 0",
+    "if head is None:\n        return None",
+])
+def test_statement_suspect_is_recognized(statement):
+    original = "def f(head):\n    if head is None:\n        return None\n    head = (int(head) - 1) if head != '0' else 0\n    return head\n"
+    report = _annotated(
+        original, "def f(head):", "def f(head: str):",
+        "def main():\n    h: str = nondet_str()\n    f(h)\nmain()\n",
+        function="f", expression=statement, category="type_mismatch",
+    )
+    assert report.ok, report.reasons
+    assert report.suspect_rewrite_end_line >= report.suspect_rewrite_line
+
+
+STUB_ORIGINAL = (
+    "import re\nfrom thefuck.utils import replace_argument\n\n\n"
+    "def get(output, script):\n"
+    "    broken = re.findall('x', output)[0]\n"
+    "    return replace_argument(script, broken)\n"
+)
+STUB_DRIVER = "def main() -> None:\n    o: str = nondet_str()\n    s: str = nondet_str()\n    get(o, s)\n\n\nmain()\n"
+
+
+def _stubbed(stub: str, *, drop_import="from thefuck.utils import replace_argument\n", target=None):
+    rewritten = STUB_ORIGINAL.replace(drop_import, "").replace(
+        "def get(output, script):", stub + "\n\ndef get(output: str, script: str) -> str:"
+    )
+    if target:
+        rewritten = rewritten.replace("    broken = re.findall('x', output)[0]", target)
+    return validate_rewrite(
+        STUB_ORIGINAL, _proposal(rewritten, STUB_DRIVER, "x", "y"),
+        function="get", expression="re.findall('x', output)[0]", category="out_of_bounds",
+    )
+
+
+def test_nondet_stub_for_unmodeled_import_is_accepted():
+    report = _stubbed("def replace_argument(script: str, broken: str) -> str:\n    return nondet_str()\n")
+    assert report.ok, report.reasons
+    assert report.stubs == ("replace_argument",)
+    assert report.risk == "stubbed"
+
+
+@pytest.mark.parametrize("stub", [
+    "def replace_argument(script: str, broken: str) -> str:\n    return script + broken\n",
+    "def replace_argument(script: str, broken: str) -> str:\n    if broken:\n        return ''\n    return nondet_str()\n",
+])
+def test_stub_with_logic_is_rejected(stub):
+    report = _stubbed(stub)
+    assert not report.ok
+    assert any("stub" in reason for reason in report.reasons)
+
+
+def test_stub_cannot_replace_a_modeled_module():
+    report = _stubbed("def findall(p: str, s: str) -> list[str]:\n    return nondet_list()\n",
+                      drop_import="import re\n")
+    assert not report.ok
+
+
+def test_stub_cannot_shadow_a_real_definition():
+    original = "def helper(x):\n    return x\n\n\ndef get(a):\n    return helper(a)[0]\n"
+    rewritten = "def helper(x: str) -> str:\n    return nondet_str()\n\n\ndef get(a: str) -> str:\n    return helper(a)[0]\n"
+    report = validate_rewrite(
+        original, _proposal(rewritten, "def main() -> None:\n    a: str = nondet_str()\n    get(a)\n\n\nmain()\n", "x", "y"),
+        function="get", expression="helper(a)[0]", category="out_of_bounds",
+    )
+    assert not report.ok
+
+
+def test_nondet_inside_target_is_still_rejected():
+    report = _stubbed("def replace_argument(script: str, broken: str) -> str:\n    return nondet_str()\n",
+                      target="    output = nondet_str()\n    broken = re.findall('x', output)[0]")
+    assert not report.ok
+
+
+def test_declared_assumptions_are_recorded_not_fatal():
+    original, proposal = _faithful_case()
+    proposal = _proposal(proposal.rewritten_source, proposal.driver_source,
+                         "def ratio(a, b):", "def ratio(a: float, b: float):", assumptions=["b is a float"])
+    report = validate_rewrite(original, proposal, function="ratio", expression="a / b", category="division_by_zero")
+    assert report.ok, report.reasons

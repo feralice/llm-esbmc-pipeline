@@ -263,3 +263,30 @@ def test_suspect_inside_nested_scope_matches_by_position(tmp_path):
         executor=_TrustedFixtureExecutor(tmp_path, source),
     )
     assert assessment.status == "reproduced_original", assessment.reason
+
+
+def test_any_native_exception_at_suspect_line_is_replayed(tmp_path):
+    source = "def f(x):\n    return len(x) + x\n"
+    trace = _trace(assignments=["x = 0"], kind="uncaught exception: TypeError")
+    assessment = assess_witness(
+        _extract_esbmc_details(trace, Path("rewrite.py")),
+        expected_category="division_by_zero", rewritten_file="rewrite.py", rewritten_line=2,
+        original_source=source, function="f", original_line=2, original_column=11,
+        executor=_TrustedFixtureExecutor(tmp_path, source),
+    )
+    assert assessment.status == "reproduced_original", assessment.reason
+    assert assessment.exception == "TypeError"
+    assert assessment.category_match is False
+
+
+def test_statement_anchor_matches_any_operation_inside_its_lines(tmp_path):
+    source = "def f(x):\n    y = (10 // x,\n         20)\n    return y\n"
+    trace = _trace(line=2)
+    assessment = assess_witness(
+        _extract_esbmc_details(trace, Path("rewrite.py")),
+        expected_category="division_by_zero", rewritten_file="rewrite.py", rewritten_line=2,
+        rewritten_end_line=3, original_source=source, function="f",
+        original_line=2, original_column=None, original_end_line=3,
+        executor=_TrustedFixtureExecutor(tmp_path, source),
+    )
+    assert assessment.status == "reproduced_original", assessment.reason

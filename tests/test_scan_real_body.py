@@ -200,3 +200,59 @@ def test_dict_param_falls_through_to_llm_tier_at_zero_esbmc_cost(tmp_path, monke
     )
     assert spy.called
     assert esbmc_calls == 0  # dict is refused before any ESBMC invocation
+
+
+# --- methods: the class is built with no arguments, the body stays intact -----
+
+_needs_esbmc = pytest.mark.skipif(
+    __import__("shutil").which("esbmc") is None, reason="ESBMC binary unavailable"
+)
+
+_METHOD_SOURCE = (
+    "LIMIT = 3\n\n\n"
+    "class Rates:\n"
+    "    def per(self, total: int, count: int) -> int:\n"
+    "        return total // count + LIMIT\n"
+)
+
+
+def _scan_method(tmp_path, source, function, category="division_by_zero"):
+    path = tmp_path / "rates.py"
+    path.write_text(source, encoding="utf-8")
+    candidate = ScanCandidate(str(path), function, category, expression="total // count")
+    return run_pipeline_scan(
+        [candidate], synthesizer=_RefusingSynthesizer(), bound=3, timeout_seconds=20,
+        output_dir=tmp_path / "out", use_driver=False, loop_fallback=False, synth_retries=0,
+    )[0]
+
+
+@_needs_esbmc
+def test_typed_method_is_confirmed_on_real_body_without_llm(tmp_path):
+    result = _scan_method(tmp_path, _METHOD_SOURCE, "Rates.per")
+    assert result.classification == CONFIRMED_DRIVER, result.esbmc_summary
+    assert result.harness_tier == "real_body"
+    assert "obj = Rates()" in result.harness
+    assert "return total // count + LIMIT" in result.harness
+
+
+def test_method_with_untyped_parameter_is_refused():
+    from research_pipeline.scan.pipeline import _method_driver_harness
+    source = "class Rates:\n    def per(self, total, count: int):\n        return total // count\n"
+    assert _method_driver_harness(source, "Rates.per") is None
+
+
+def test_method_whose_constructor_needs_arguments_is_refused():
+    from research_pipeline.scan.pipeline import _method_driver_harness
+    source = (
+        "class Rates:\n    def __init__(self, base):\n        self.base = base\n"
+        "    def per(self, total: int, count: int):\n        return total // count\n"
+    )
+    assert _method_driver_harness(source, "Rates.per") is None
+
+
+def test_method_harness_calls_on_instance_with_nondet_inputs():
+    from research_pipeline.scan.pipeline import _method_driver_harness
+    harness = _method_driver_harness(_METHOD_SOURCE, "Rates.per")
+    assert "    total: int = nondet_int()" in harness
+    assert "    obj.per(total, count)" in harness
+    assert harness.rstrip().endswith("main()")
