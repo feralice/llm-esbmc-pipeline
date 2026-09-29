@@ -52,7 +52,7 @@
     },
     {
       "id": "dz_real_02",
-      "detection_file": "detection/dz_real_02.py",
+      "detection_file": "detection_full/dz_real_02.py",
       "harness_file": "bugs/dz_real_02.py",
       "function": "ExactLanguageSearch.choose_best_split",
       "categories": [
@@ -1925,7 +1925,7 @@
     },
     {
       "id": "oob_real_09",
-      "detection_file": "detection/oob_real_09.py",
+      "detection_file": "detection_full/oob_real_09.py",
       "harness_file": "bugs/oob_real_09.py",
       "function": "parser._parse",
       "categories": [
@@ -1954,7 +1954,7 @@
     },
     {
       "id": "oob_real_10",
-      "detection_file": "detection/oob_real_10.py",
+      "detection_file": "detection_full/oob_real_10.py",
       "harness_file": "bugs/oob_real_10.py",
       "function": "_wrap_text_to_colwidths",
       "categories": [
@@ -1983,7 +1983,7 @@
     },
     {
       "id": "oob_real_11",
-      "detection_file": "detection/oob_real_11.py",
+      "detection_file": "detection_full/oob_real_11.py",
       "harness_file": "bugs/oob_real_11.py",
       "function": "wcswidth",
       "categories": [
@@ -2012,7 +2012,7 @@
     },
     {
       "id": "oob_real_12",
-      "detection_file": "detection/oob_real_12.py",
+      "detection_file": "detection_full/oob_real_12.py",
       "harness_file": "bugs/oob_real_12.py",
       "function": "fast_float",
       "categories": [
@@ -2041,7 +2041,7 @@
     },
     {
       "id": "oob_real_13",
-      "detection_file": "detection/oob_real_13.py",
+      "detection_file": "detection_full/oob_real_13.py",
       "harness_file": "bugs/oob_real_13.py",
       "function": "tokenize",
       "categories": [
@@ -2070,7 +2070,7 @@
     },
     {
       "id": "oob_real_14",
-      "detection_file": "detection/oob_real_14.py",
+      "detection_file": "detection_full/oob_real_14.py",
       "harness_file": "bugs/oob_real_14.py",
       "function": "LinuxDistribution._parse_uname_content",
       "categories": [
@@ -2130,7 +2130,7 @@
     },
     {
       "id": "oob_real_16",
-      "detection_file": "detection/oob_real_16.py",
+      "detection_file": "detection_full/oob_real_16.py",
       "harness_file": "bugs/oob_real_16.py",
       "function": "IndexedSet.__getitem__",
       "categories": [
@@ -3020,7 +3020,7 @@
     },
     {
       "id": "ip_real_33",
-      "detection_file": "detection/ip_real_33.py",
+      "detection_file": "detection_full/ip_real_33.py",
       "harness_file": "bugs/ip_real_33.py",
       "function": "send2trash",
       "categories": [
@@ -3173,7 +3173,7 @@
     },
     {
       "id": "nm_real_23",
-      "detection_file": "detection/nm_real_23.py",
+      "detection_file": "detection_full/nm_real_23.py",
       "harness_file": "bugs/nm_real_23.py",
       "function": "Markdown._html_class_str_from_tag",
       "categories": [

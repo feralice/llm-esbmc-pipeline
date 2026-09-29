@@ -62,21 +62,42 @@ def _download(url: str) -> str | None:
         return None
 
 
+def _parent(repo_url: str, commit: str) -> str | None:
+    """First parent via the public GitHub API: some manifests record the fix commit as buggy."""
+    owner_repo = repo_url.rstrip("/").removeprefix("https://github.com/").removesuffix(".git")
+    url = f"https://api.github.com/repos/{owner_repo}/commits/{commit}"
+    try:
+        with request.urlopen(url, timeout=30) as response:  # noqa: S310 -- fixed https host
+            parents = json.loads(response.read().decode("utf-8")).get("parents") or []
+    except (error.URLError, TimeoutError, ValueError):
+        return None
+    return parents[0]["sha"] if parents else None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", default="dataset/v2_real_world")
+    parser.add_argument("--only-unmatched", action="store_true",
+                        help="keep existing matches; retry the rest, adding each commit's parent")
     args = parser.parse_args()
     root = Path(args.dataset)
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     out = root / "detection_full"
     out.mkdir(exist_ok=True)
+    previous_path = out / "fetch_report.json"
+    previous = json.loads(previous_path.read_text(encoding="utf-8")) if previous_path.exists() else {}
     report = {}
     for item in manifest["items"]:
         case_id = str(item["id"])
+        if args.only_unmatched and str(previous.get(case_id, "")).startswith("matched"):
+            report[case_id] = previous[case_id]
+            continue
         prov = item.get("provenance", {})
         detection = (root / item["detection_file"]).read_text(encoding="utf-8")
         expected = _function(detection, str(item["function"]))
         commits = [prov[key] for key in ("buggy_commit", "parent_commit", "commit_hash") if prov.get(key)]
+        if args.only_unmatched:
+            commits += [parent for parent in (_parent(prov["repo_url"], c) for c in commits[:1]) if parent]
         status = "no_commit" if not commits else "fetch_failed"
         for commit in dict.fromkeys(commits):
             source = _download(_raw_url(prov["repo_url"], commit, prov["source_file"]))
