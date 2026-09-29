@@ -85,6 +85,9 @@ from research_pipeline.v2_evaluator import (
     is_real_body_confirmation,
     is_scalar_abstraction_confirmation,
 )
+from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.loop import run_verify
+from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.voting import aggregate_votes, write_vote_report
 
 # ---------------------------------------------------------------------------
@@ -351,6 +354,22 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="DIR",
         help="Diretório para os contra-testes Pytest gerados pelo ESBMC.",
+    )
+    parser.add_argument(
+        "--v2-engine",
+        choices=["legacy", "verify"],
+        default="legacy",
+        help=(
+            "Modo V2: 'legacy' usa a cascata de síntese antiga; 'verify' verifica cada hipótese no "
+            "código original (LLM só descreve tipos de entrada, harness montado por código, "
+            "reexecução no CPython valida o veredito do ESBMC)."
+        ),
+    )
+    parser.add_argument(
+        "--verification-sources",
+        default=None,
+        metavar="DIR",
+        help="Motor verify: verifica no arquivo de mesmo nome deste diretório (ex.: detection_full) quando existir.",
     )
     parser.add_argument(
         "--v2-stage",
@@ -1081,6 +1100,66 @@ def mode_ensemble(args: argparse.Namespace) -> int:
     return 0
 
 
+# The release build; ~/.local/bin/esbmc may shadow it with a development build.
+_VERIFY_DEFAULT_ESBMC = "/usr/local/bin/esbmc"
+
+
+def _esbmc_version(command: list[str]) -> str:
+    import subprocess
+    try:
+        completed = subprocess.run([*command[:1], "--version"], capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return f"unavailable: {exc}"
+    lines = (completed.stdout or completed.stderr or "").strip().splitlines()
+    return lines[0] if lines else ""
+
+
+def _mode_v2_verify(
+    args: argparse.Namespace, *, candidates, llm, output_path: Path, config: dict, checkpoint: dict,
+    checkpoint_path: Path, capture_telemetry, input_paths, rejected_findings, detection: dict,
+) -> int:
+    hypotheses = [BugHypothesis.from_candidate(c) for c in candidates]
+    print(f"\nModo V2 (motor verify): {len(hypotheses)} hipótese(s) → especificação de entrada com {llm.model}")
+
+    def save(index: int, data: dict) -> None:
+        checkpoint.setdefault("verify_results", {})[str(index)] = data
+        capture_telemetry()
+        _save_checkpoint(checkpoint_path, checkpoint)
+
+    results = run_verify(
+        hypotheses,
+        llm=llm,
+        output_dir=output_path,
+        verification_sources=Path(args.verification_sources) if args.verification_sources else None,
+        completed={int(i): d for i, d in checkpoint.get("verify_results", {}).items()},
+        on_result=save,
+        esbmc_command=args.esbmc_command,
+        bound=args.bound,
+        timeout_seconds=args.timeout,
+    )
+    capture_telemetry()
+    checkpoint["status"] = "complete"
+    _write_json_atomic(checkpoint_path, checkpoint)
+    telemetry_events = checkpoint["telemetry_events"]
+    _write_json_atomic(output_path / "llm_telemetry.json", telemetry_events)
+    report_path = Path(args.report) if args.report else output_path / "v2_verify_report.json"
+    summary = summarize(results)
+    _write_json_atomic(report_path, {
+        "config": {**config, "esbmc_version": _esbmc_version(args.esbmc_command or ["esbmc"])},
+        "detection": detection,
+        "verification": summary,
+        "telemetry": _summarize_v2_telemetry(telemetry_events),
+        "evaluation": (
+            evaluate_verify(results, candidates, args.ground_truth, input_paths, rejected_findings)
+            if args.ground_truth and args.v2_stage == "end-to-end" else None
+        ),
+        "results": results,
+    })
+    print("\nVereditos:", {k: v for k, v in summary["by_verdict"].items() if v})
+    print(f"Relatório JSON: {report_path}")
+    return 0
+
+
 def mode_v2(args: argparse.Namespace) -> int:
     input_paths = _resolve_input_paths(args.input)
     if not input_paths:
@@ -1175,6 +1254,14 @@ def mode_v2(args: argparse.Namespace) -> int:
         "include_smells": False,
         "esbmc_command": args.esbmc_command or ["esbmc"],
     }
+    if args.v2_engine == "verify":
+        if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
+            args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
+        config.update({
+            "v2_engine": "verify",
+            "verification_sources": args.verification_sources,
+            "esbmc_command": args.esbmc_command or ["esbmc"],
+        })
     fingerprint = _v2_fingerprint(config, input_paths)
     checkpoint_path = output_path / "v2_checkpoint.json"
     if args.resume:
@@ -1353,6 +1440,30 @@ def mode_v2(args: argparse.Namespace) -> int:
         )
         print("Execução V2 parcial na detecção; retome com --resume.", file=sys.stderr)
         return 2
+
+    if args.v2_engine == "verify":
+        return _mode_v2_verify(
+            args,
+            candidates=candidates,
+            llm=synthesizer,
+            output_path=output_path,
+            config=config,
+            checkpoint=checkpoint,
+            checkpoint_path=checkpoint_path,
+            capture_telemetry=capture_telemetry,
+            input_paths=input_paths,
+            rejected_findings=rejected_findings,
+            detection={
+                "evaluated": args.v2_stage == "end-to-end",
+                "oracle_seeded": args.v2_stage == "synthesis",
+                "analyzed_units": analyzed_units,
+                "hypotheses": len(candidates),
+                "failed_units": len(detection_errors),
+                "candidates": [_v2_candidate_dict(c) for c in candidates],
+                "rejected_findings": rejected_findings,
+                "trace_summary": _summarize_detection_trace(detection_trace),
+            },
+        )
 
     layers = "".join(
         f" +{name}" for name in ("real-driver", "driver", "compat", "guards", "ablation")
