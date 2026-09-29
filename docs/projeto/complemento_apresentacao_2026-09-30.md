@@ -3,10 +3,8 @@
 Texto pronto por slide, para colar no Canva. Continua a apresentação de
 23/09/2026 (disponível no histórico do git).
 
-> **Nota:** números medidos em 29/09/2026 com gpt-4o-mini e ESBMC 8.5.0 oficial. As rodadas
-> r5 usaram o motor antes dos últimos contornos (cadeias de biblioteca, construtores, anotações);
-> a reexecução dos casos que pararam, com o motor completo, está em andamento e pode alterar os
-> números dos Slides 12 e 13.
+> **Nota:** números medidos em 29/09/2026 com gpt-4o-mini e ESBMC 8.5.0 oficial. Slides 12 e 13:
+> rodadas com o motor completo; Slide 14: experimentos de controle com a versão final do motor.
 
 ---
 
@@ -231,6 +229,31 @@ como até 23/09, subestimava a localização; por isso a categoria deixou de gui
 | | RQ2 (localização do gabarito dada) | RQ3 (ponta a ponta) |
 |---|---|---|
 | hipóteses | 125 | 138 |
+| chegaram à especificação pela LLM | 91 | 79 |
+| **confirmadas no código original** | **3** | **1** (condicional) |
+| falso negativo do ESBMC (execução reproduz, ESBMC não) | 0 | 1 |
+| ESBMC aponta, execução não reproduz | 2 | 0 |
+| não confirmadas (nenhum dos dois encontra) | 6 | 4 |
+| paradas por limite do ESBMC ou do harness | 63 | 60 |
+| dependência ausente | 26 | 21 |
+| especificação inválida | 14 | 21 |
+| tempo esgotado ou erro do ESBMC | 9 | 5 |
+| localização inválida | 2 | 25 |
+
+Verificação com veredito em até 1, 2 e 3 chamadas da LLM: 3%, 9% e 12% (RQ2); 5%, 6% e 8% (RQ3).
+
+**Confirmações no código original:**
+- `cli_bool_option` (youtube-dl, BugsInPy 17): o ESBMC acusa a falha do `assert isinstance(param, bool)`
+  do próprio código, e a execução reproduz `AssertionError` na mesma linha.
+- `match` (thefuck, BugsInPy 21): `command.script.split()[1]` com comando de uma palavra só; ESBMC
+  e execução concordam no `IndexError`.
+- `WebSocketHandler.set_nodelay` (tornado): `AssertionError` com o estado do objeto e a classe base
+  substituídos; é a confirmação da ponta a ponta, condicional a esse estado.
+
+**Leitura honesta:** o gargalo está no alcance do ESBMC-Python sobre código real, e não na LLM.
+
+---|---|---|
+| hipóteses | 125 | 138 |
 | chegaram à especificação pela LLM | 76 | 64 |
 | **confirmadas no código original** | **1** | 0 |
 | falso negativo do ESBMC (execução reproduz, ESBMC não) | 0 | 1 |
@@ -255,7 +278,28 @@ especificação).
 
 ---
 
-**Slide 14: Limites do ESBMC-Python documentados**
+**Slide 14: Experimentos de controle**
+
+Mesmas 125 hipóteses do gabarito (RQ2), gpt-4o-mini, mesmo orçamento de até 3 chamadas:
+
+| | Reparo guiado (vê o erro do ESBMC) | Amostragem independente |
+|---|---|---|
+| veredito do ESBMC em até 1 / 2 / 3 chamadas | 3,3% / 8,8% / 12,1% | 3,3% / 4,4% / 4,4% |
+| confirmados no código original | 3 | 2 |
+| especificações inválidas | 14 | 35 |
+| tokens | 346 mil | 354 mil |
+
+**Reparo:** com o mesmo custo, mostrar o erro do ESBMC quase triplica a taxa de verificação em três
+tentativas (comparação pedida por Olausson et al., ICLR 2024). Uma rodada por braço; repetir para
+medir a variação.
+
+**Confirmação falsa:** nas 107 versões corrigidas dos bugs, **nenhuma confirmação**. Na versão
+corrigida de `cli_bool_option`, o ESBMC ainda acusa violação, mas a execução não reproduz: o caso
+fica como não validado. A validação por execução evitou um falso positivo real.
+
+---
+
+**Slide 15: Limites do ESBMC-Python documentados**
 
 Série de dez reprodutores mínimos, comparando a versão 8.5.0 com a PR #8014:
 
@@ -270,7 +314,7 @@ Cada limite tem o caso do dataset onde apareceu, e todos são candidatos a issue
 
 ---
 
-**Slide 15: Braço experimental com agente**
+**Slide 16: Braço experimental com agente**
 
 - Para os casos que o harness automático não alcança, um agente (Claude Code com o plugin ESBMC)
   tenta construir o harness de forma interativa.
@@ -282,7 +326,7 @@ Cada limite tem o caso do dataset onde apareceu, e todos são candidatos a issue
 
 ---
 
-**Slide 16: Literatura que fundamenta as decisões**
+**Slide 17: Literatura que fundamenta as decisões**
 
 - **Beyer et al. (TAP 2018):** validação de contraexemplos por execução.
 - **Clarke et al. (CAV 2000):** contraexemplos espúrios em abstrações.
@@ -295,14 +339,12 @@ Cada limite tem o caso do dataset onde apareceu, e todos são candidatos a issue
 
 ---
 
-**Slide 17: Próximos passos**
+**Slide 18: Próximos passos**
 
 **Prioridade alta:**
-- Concluir a reexecução dos casos parados com o harness completo e rodar o braço do agente nos
+- Repetir reparo e amostragem 2 a 3 vezes para medir a variação, e rodar o braço do agente nos
   casos restantes.
 - Testar o pipeline num repositório Python completo fora do dataset, que é o objetivo final.
-- Comparar reparo guiado contra três amostras independentes de mesmo custo.
-- Medir a taxa de confirmação falsa nas versões corrigidas dos bugs.
 
 **Decisões para discutir:**
 1. Usar a localização do gabarito como entrada controlada para a RQ2?
