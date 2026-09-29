@@ -1,0 +1,3833 @@
+[
+  {
+    "id": "bip_ansible_1",
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "1",
+    "repo_url": "https://github.com/ansible/ansible",
+    "buggy_commit": "25c5388fdec9e56517a93feb5e8d485680946c25",
+    "fixed_commit": "343ffaa18b63c92e182b16c3ad84b8d81ca4df69",
+    "source_file": "lib/ansible/galaxy/collection.py",
+    "function": "verify_collections",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/units/galaxy/test_collection.py"
+    }
+  },
+  {
+    "id": "bip_ansible_3",
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/ansible/ansible",
+    "buggy_commit": "70219df9056ffb1e2766f572fbe71f7a1800c9f5",
+    "fixed_commit": "9d48884e36fb4fd9551f000b87d264383de74e75",
+    "source_file": "lib/ansible/module_utils/facts/system/distribution.py",
+    "function": "DistributionFiles.parse_distribution_file_Debian",
+    "removed_lines": [
+      "elif path == '/etc/lsb-release' and 'Kali' in data:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/units/module_utils/test_distribution_version.py"
+    }
+  },
+  {
+    "id": "bip_ansible_5",
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "5",
+    "repo_url": "https://github.com/ansible/ansible",
+    "buggy_commit": "2af76f16be8cf2239daaec4c2f31c3dcb4e3469e",
+    "fixed_commit": "3c3ffc09c203d1b2262f6a319cceadd727749761",
+    "source_file": "lib/ansible/module_utils/common/validation.py",
+    "function": "check_required_arguments",
+    "removed_lines": [
+      "msg = \"missing required arguments: %s\" % \", \".join(missing)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/units/module_utils/common/validation/test_check_required_arguments.py"
+    }
+  },
+  {
+    "id": "bip_ansible_16",
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "16",
+    "repo_url": "https://github.com/ansible/ansible",
+    "buggy_commit": "2a9964ede8b2b77a62a005f6f5abc964b2819b0e",
+    "fixed_commit": "93d9d640380252084855885ad27873b4377898ec",
+    "source_file": "lib/ansible/module_utils/facts/hardware/linux.py",
+    "function": "LinuxHardware.get_cpu_facts",
+    "removed_lines": [
+      "# Always use 'processor' count for ARM systems",
+      "if collected_facts.get('ansible_architecture', '').startswith(('armv', 'aarch')):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/units/module_utils/facts/hardware/test_linux_get_cpu_info.py"
+    }
+  },
+  {
+    "id": "bip_black_2",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "2",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "c8ca6b2b9ff3510bee12129824cebfc2fc51e5b2",
+    "fixed_commit": "892eddacd215d685e136686b7f629ade70adca83",
+    "source_file": "black.py",
+    "function": "generate_ignored_nodes",
+    "removed_lines": [
+      "is_fmt_on = False",
+      "for comment in list_comments(container.prefix, is_endmarker=False):",
+      "if comment.value in FMT_ON:",
+      "is_fmt_on = True",
+      "elif comment.value in FMT_OFF:",
+      "is_fmt_on = False",
+      "if is_fmt_on:",
+      "yield container",
+      "container = container.next_sibling"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_3",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "8126b4f6a9342290de4655e6a8a78cd288ce7daa",
+    "fixed_commit": "7a14a37981862ef418f3cdb4a7e2375856f97529",
+    "source_file": "black.py",
+    "function": "main",
+    "removed_lines": [
+      "exists=False, file_okay=True, dir_okay=False, readable=True, allow_dash=False"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_7",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "7",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "18119d38466652ae818436cb497f601294ed4558",
+    "fixed_commit": "de806405d2934b629d67e2a6317ad7e826765a20",
+    "source_file": "black.py",
+    "function": "normalize_invisible_parens",
+    "removed_lines": [
+      "node.insert_child(index, Node(syms.atom, [lpar, child, rpar]))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/data/tupleassign.py;tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_8",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "e6ddb68c786256e1cb0c76b42d10c212ef34cb2a",
+    "fixed_commit": "6b994fdb8ab70ce4c2eafb8f2f0ff2648f3ff1ef",
+    "source_file": "black.py",
+    "function": "bracket_split_build_line",
+    "removed_lines": [
+      "# Ensure a trailing comma when expected.",
+      "if leaves[-1].type != token.COMMA:",
+      "leaves.append(Leaf(token.COMMA, \",\"))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/data/comments7.py;tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_9",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "9",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "026c81b83454f176a9f9253cbfb70be2c159d822",
+    "fixed_commit": "d6db1c12a8e14833fe22da377cddc2bd1f43dc14",
+    "source_file": "black.py",
+    "function": "get_grammars",
+    "removed_lines": [
+      "# Python 2-compatible code, so don't try Python 3 grammar.",
+      "return [pygram.python_grammar]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/data/python2_print_function.py;tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_13",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "13",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "b719d85ccc330170e40b2617307a7e3b2a0bab14",
+    "fixed_commit": "883689366ce0f0e0ddd66d81360c61abfd19b01a",
+    "source_file": "blib2to3/pgen2/tokenize.py",
+    "function": "generate_tokens",
+    "removed_lines": [
+      "if token == 'def':",
+      "async_def = True",
+      "async_def_indent = indents[-1]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/data/python37.py;tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_16",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "16",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "fb34c9e19589d05f92084a28940837151251ebd6",
+    "fixed_commit": "42a3fe53319a8c02858c2a96989ed1339f84515a",
+    "source_file": "black.py",
+    "function": "gen_python_files_in_dir",
+    "removed_lines": [
+      "normalized_path = \"/\" + child.resolve().relative_to(root).as_posix()"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_19",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "19",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "337a4199f90ca48a19cf26511e0cec330b13bd4e",
+    "fixed_commit": "29e97d1d4a7717f1bd0ca35cacf2f2ce6d815b0c",
+    "source_file": "black.py",
+    "function": "EmptyLineTracker._maybe_empty_lines",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/comments6.py;tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_20",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "20",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "2e52a2b3ecc0fe025439c3db05a4457ab14f167b",
+    "fixed_commit": "06e95b1e9bcd43c4574840f8174ba4b2c5d281bd",
+    "source_file": "black.py",
+    "function": "format_file_in_place",
+    "removed_lines": [
+      "src_name = f\"{src.name}  (original)\"",
+      "dst_name = f\"{src.name}  (formatted)\""
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_black_21",
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "21",
+    "repo_url": "https://github.com/psf/black",
+    "buggy_commit": "c071af761e1550c6e4ebab8e5af747d2d8fdd48e",
+    "fixed_commit": "8e7848c63efe36f09e4651bece8c0efc34a1c3e1",
+    "source_file": "black.py",
+    "function": "dump_to_file",
+    "removed_lines": [
+      "mode=\"w\", prefix=\"blk_\", suffix=\".log\", delete=False"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_black.py"
+    }
+  },
+  {
+    "id": "bip_cookiecutter_1",
+    "source": "bugsinpy",
+    "project": "cookiecutter",
+    "bugsinpy_id": "1",
+    "repo_url": "https://github.com/cookiecutter/cookiecutter",
+    "buggy_commit": "c15633745df6abdb24e02746b82aadb20b8cdf8c",
+    "fixed_commit": "7f6804c4953a18386809f11faf4d86898570debc",
+    "source_file": "cookiecutter/generate.py",
+    "function": "generate_context",
+    "removed_lines": [
+      "with open(context_file) as file_handle:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_generate_context.py"
+    }
+  },
+  {
+    "id": "bip_cookiecutter_3",
+    "source": "bugsinpy",
+    "project": "cookiecutter",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/cookiecutter/cookiecutter",
+    "buggy_commit": "5c282f020a8db7e5e7c4e7b51b010556ca31fb7f",
+    "fixed_commit": "7129d474206761a6156925db78eee4b62a0e3944",
+    "source_file": "cookiecutter/prompt.py",
+    "function": "read_user_choice",
+    "removed_lines": [
+      "prompt, type=click.Choice(choices), default=default"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_read_user_choice.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_2",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "2",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "210af1fd3dc0f612a08fa02a0cb3f5adb81e5bfb",
+    "fixed_commit": "02441ff0313d5b471b662293244c53e712f1243f",
+    "source_file": "fastapi/routing.py",
+    "function": "APIRouter.add_api_websocket_route",
+    "removed_lines": [
+      "route = APIWebSocketRoute(path, endpoint=endpoint, name=name)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_ws_router.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_4",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "4",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "7ccd81f70653857bd8f3a15ee946aa3fb0edc2cb",
+    "fixed_commit": "74c4d1c1dbe6bfdb05d6e4fc767ffe062398f0a3",
+    "source_file": "fastapi/openapi/utils.py",
+    "function": "get_openapi_path",
+    "removed_lines": [
+      "operation[\"parameters\"] = parameters"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_param_in_path_and_dependency.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_5",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "5",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "7cea84b74ca3106a7f861b774e9d215e5228728f",
+    "fixed_commit": "75a07f24bf01a31225ee687f3e2b3fc1981b67ab",
+    "source_file": "fastapi/utils.py",
+    "function": "create_cloned_field",
+    "removed_lines": [
+      "use_type.__fields__[f.name] = f"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_filter_pydantic_sub_model.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_6",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "6",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "5db99a27cf640864b4793807811848698c5ff4a2",
+    "fixed_commit": "874d24181e779ebc6e1c52afb7d6598f863fd6a8",
+    "source_file": "fastapi/dependencies/utils.py",
+    "function": "request_body_to_args",
+    "removed_lines": [
+      "if field.shape in sequence_shapes and isinstance(",
+      "received_body, FormData",
+      "):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_forms_from_non_typing_sequences.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_9",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "9",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "a7a92bc63768ccee3f3afc2b73b2c581928dfe75",
+    "fixed_commit": "c5817912d2be25bb310bf9da517882f57bbe7bb5",
+    "source_file": "fastapi/dependencies/utils.py",
+    "function": "get_body_field",
+    "removed_lines": [
+      "schema=BodySchema(None),"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_request_body_parameters_media_type.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_10",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "b77a43bcac3ec8e7edbe82543e777c60ae85c178",
+    "fixed_commit": "38495fffa560fa57a8f0e6437d8e43c36c8e5612",
+    "source_file": "fastapi/routing.py",
+    "function": "serialize_response",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_skip_defaults.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_11",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "11",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "bf229ad5d830eb5320f966d51a55e590e8d57008",
+    "fixed_commit": "06eb4219345a77d23484528c9d164eb8d2097fec",
+    "source_file": "fastapi/dependencies/utils.py",
+    "function": "is_scalar_field",
+    "removed_lines": [
+      "return (",
+      ")"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_union_body.py;tests/test_union_inherited_body.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_15",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "15",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "b16ca54c30644667ab9f65a712704850666a039c",
+    "fixed_commit": "6d77e2ac5f2cadc63424f2d85d8d8cded2975922",
+    "source_file": "fastapi/routing.py",
+    "function": "APIRouter.include_router",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_ws_router.py"
+    }
+  },
+  {
+    "id": "bip_fastapi_16",
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "16",
+    "repo_url": "https://github.com/tiangolo/fastapi",
+    "buggy_commit": "92c825be6a7362099400c9c3fe8b01ea13add3dc",
+    "fixed_commit": "9745a5d1ae86a7fefacf79bdde8e5dd2d59fa2f4",
+    "source_file": "fastapi/encoders.py",
+    "function": "jsonable_encoder",
+    "removed_lines": [
+      "if not obj.Config.json_encoders:",
+      "return jsonable_encoder(",
+      "obj.dict(include=include, exclude=exclude, by_alias=by_alias),",
+      "include_none=include_none,",
+      ")",
+      "else:",
+      "return jsonable_encoder(",
+      "obj.dict(include=include, exclude=exclude, by_alias=by_alias),",
+      "include_none=include_none,",
+      "custom_encoder=obj.Config.json_encoders,",
+      ")"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_datetime_custom_encoder.py;tests/test_jsonable_encoder.py"
+    }
+  },
+  {
+    "id": "bip_httpie_4",
+    "source": "bugsinpy",
+    "project": "httpie",
+    "bugsinpy_id": "4",
+    "repo_url": "https://github.com/jakubroztocil/httpie/",
+    "buggy_commit": "8c892edd4fe700a7ca5cc733dcb4817831d253e2",
+    "fixed_commit": "040d981f00c3f6830b2d0db3daf3c64c080e96e3",
+    "source_file": "httpie/models.py",
+    "function": "HTTPRequest.headers",
+    "removed_lines": [
+      "if 'Host' not in headers:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_regressions.py"
+    }
+  },
+  {
+    "id": "bip_keras_3",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "c0d1709cbae3d05efc6dd224230012bc120be8e5",
+    "fixed_commit": "c13d2723d01212d09dfdda39b0ad439803ec9230",
+    "source_file": "keras/models.py",
+    "function": "_clone_functional_model",
+    "removed_lines": [
+      "output_masks = to_list(",
+      "layer.compute_mask(computed_tensor,",
+      "computed_mask))",
+      "output_masks = to_list(",
+      "layer.compute_mask(computed_tensors,",
+      "computed_masks))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/test_sequential_model.py"
+    }
+  },
+  {
+    "id": "bip_keras_4",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "4",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "b0bfd5201da2bfced84028bcc5bda05bdfd75af7",
+    "fixed_commit": "4185cbb50bfcae9cc30b0fc7b67e81d67a50a8ac",
+    "source_file": "keras/optimizers.py",
+    "function": "TFOptimizer.get_updates",
+    "removed_lines": [
+      "grads = self.optimizer.compute_gradients(loss, params)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/optimizers_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_5",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "5",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "b847b4601d608050bab6eccd049fce28b7bf1b1f",
+    "fixed_commit": "e11c48d9ce3ee47bb8a966549b14cbd5b10ee70d",
+    "source_file": "keras/utils/data_utils.py",
+    "function": "get_file",
+    "removed_lines": [
+      "cache_dir = os.path.join(os.path.expanduser('~'), '.keras')"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/utils/data_utils_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_6",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "6",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "88af7d0c97497b5c3a198ee9416b2accfbc72c36",
+    "fixed_commit": "4b54657ab4806b0aaef8f8eeb973edb83c3d3483",
+    "source_file": "keras/engine/training_utils.py",
+    "function": "weighted_masked_objective",
+    "removed_lines": [
+      "score_array /= K.mean(mask)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_loss_masking.py"
+    }
+  },
+  {
+    "id": "bip_keras_7",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "7",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "26b620fb37c885d60183f83abc744f43775ce75a",
+    "fixed_commit": "c05ef1fd95a6024155ab59656fef8dac5a45c335",
+    "source_file": "keras/wrappers/scikit_learn.py",
+    "function": "KerasRegressor.predict",
+    "removed_lines": [
+      "return np.squeeze(self.model.predict(x, **kwargs))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/wrappers/scikit_learn_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_8",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "87540a2a2f42e00c4a2ca7ca35d19f96e62e6cb0",
+    "fixed_commit": "d78c982b326adeed6ac25200dc6892ff8f518ca6",
+    "source_file": "keras/engine/network.py",
+    "function": "Network.from_config",
+    "removed_lines": [
+      "add_unprocessed_node(layer, node_data)",
+      "return",
+      "for node_data in unprocessed_nodes.pop(layer):",
+      "process_node(layer, node_data)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/engine/test_topology.py"
+    }
+  },
+  {
+    "id": "bip_keras_9",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "9",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "0cd3b07eb5de1aaaad84d1ff7f7c2ed7dab4b23c",
+    "fixed_commit": "0505393746d56ddacc34bb1c016dba79429c9ac9",
+    "source_file": "docs/autogen.py",
+    "function": "process_list_block",
+    "removed_lines": [
+      "block = docstring[starting_point:(None if ending_point == -1 else",
+      "ending_point - 1)]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_doc_auto_generation.py"
+    }
+  },
+  {
+    "id": "bip_keras_10",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "8f41e41eda6e8ea96403cae5798a5a89c8bb5605",
+    "fixed_commit": "c1c4afe60b1355a6c0e83577791a0423f37a3324",
+    "source_file": "keras/engine/training_utils.py",
+    "function": "standardize_weights",
+    "removed_lines": [
+      "weight array.",
+      "if sample_weight is not None and class_weight is not None:",
+      "warnings.warn('Found both `sample_weight` and `class_weight`: '",
+      "'`class_weight` argument will be ignored.')",
+      "return sample_weight",
+      "elif isinstance(class_weight, dict):",
+      "if y.shape[1] > 1:",
+      "y_classes = np.argmax(y, axis=1)",
+      "elif y.shape[1] == 1:",
+      "y_classes = np.reshape(y, y.shape[0])",
+      "weights = np.asarray([class_weight[cls] for cls in y_classes",
+      "if cls in class_weight])",
+      "if len(weights) != len(y_classes):",
+      "return weights",
+      "if sample_weight_mode is None:",
+      "return np.ones((y.shape[0],), dtype=K.floatx())",
+      "else:",
+      "return np.ones((y.shape[0], y.shape[1]), dtype=K.floatx())"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/engine/test_training.py"
+    }
+  },
+  {
+    "id": "bip_keras_14",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "14",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "98465b85d020f1326bcef7632f1261a9a7a84e92",
+    "fixed_commit": "02bc5010a04bb11c8e91835cc9775c8149dec754",
+    "source_file": "keras/metrics.py",
+    "function": "sparse_top_k_categorical_accuracy",
+    "removed_lines": [
+      "return K.mean(K.in_top_k(y_pred, K.cast(K.max(y_true, axis=-1), 'int32'), k),"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/metrics_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_17",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "17",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "c913b6da92f6ab9a3f4c897caa4085e782a14680",
+    "fixed_commit": "5a6af4bc6d44e9adbc2a21804bfcd18c4ce849ef",
+    "source_file": "keras/metrics.py",
+    "function": "sparse_categorical_accuracy",
+    "removed_lines": [
+      "return K.cast(K.equal(K.max(y_true, axis=-1),"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/metrics_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_22",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "22",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "54386efa549f850dff13f79fc3af67799a4e5d4f",
+    "fixed_commit": "ee02d256611b17d11e37b86bd4f618d7f2a37d84",
+    "source_file": "keras/engine/input_layer.py",
+    "function": "InputLayer.__init__",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/layers/core_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_23",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "23",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "3dcd9c767ce6875fc8b69c74971ac8a552e23131",
+    "fixed_commit": "69c30a150f0b2caee7961ca1c0080960ef5ad6f6",
+    "source_file": "keras/engine/sequential.py",
+    "function": "Sequential.add",
+    "removed_lines": [
+      "batch_shape = first_layer.batch_input_shape",
+      "dtype = first_layer.dtype"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/test_sequential_model.py"
+    }
+  },
+  {
+    "id": "bip_keras_24",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "24",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "d7884570b10951d156aa086ee29a4df9eab79cf3",
+    "fixed_commit": "bcf0031b54d555179be81c088cc3df0a723d7907",
+    "source_file": "keras/callbacks.py",
+    "function": "TensorBoard.set_model",
+    "removed_lines": [
+      "tf.summary.histogram('{}_out'.format(layer.name),",
+      "layer.output)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/test_callbacks.py"
+    }
+  },
+  {
+    "id": "bip_keras_25",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "25",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "b470a595f7278acf5e7e47521edf25d3c4f479f1",
+    "fixed_commit": "84e168b5fa55933e02e767ff7c86fcc0232aecc6",
+    "source_file": "keras/applications/imagenet_utils.py",
+    "function": "_preprocess_numpy_input",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/applications/imagenet_utils_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_26",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "26",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "87417470c8168772559be0531e297120c569a422",
+    "fixed_commit": "97d5fa920e4f8248128f7c1b460fd9bb20d3478f",
+    "source_file": "keras/backend/tensorflow_backend.py",
+    "function": "rnn",
+    "removed_lines": [
+      "new_states = [tf.where(tiled_mask_t, new_states[i], states[i]) for i in range(len(states))]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/backend/backend_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_31",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "31",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "ced81968b0e9d8b1389e6580721ac60d9cf3ca60",
+    "fixed_commit": "e2a10a5e6e156a45e946c4d08db7133f997c1f9a",
+    "source_file": "keras/backend/tensorflow_backend.py",
+    "function": "ctc_batch_cost",
+    "removed_lines": [
+      "label_length = tf.to_int32(tf.squeeze(label_length))",
+      "input_length = tf.to_int32(tf.squeeze(input_length))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/backend/backend_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_33",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "33",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "1c9a49781da2101507db23e2014e4e5d16bd2e52",
+    "fixed_commit": "70ad0d6e4a569701ef106058397ad0540ec08340",
+    "source_file": "keras/preprocessing/text.py",
+    "function": "text_to_word_sequence",
+    "removed_lines": [
+      "if sys.version_info < (3,) and isinstance(text, unicode):",
+      "translate_map = dict((ord(c), unicode(split)) for c in filters)",
+      "translate_map = maketrans(filters, split * len(filters))",
+      "text = text.translate(translate_map)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/preprocessing/text_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_36",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "36",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "85f011df5a5c0fcf1f01b39eca338eb6b7e58401",
+    "fixed_commit": "fb1887d132a8ce8548ff53d868a6ba531cd63b34",
+    "source_file": "keras/backend/tensorflow_backend.py",
+    "function": "separable_conv1d",
+    "removed_lines": [
+      "strides = (1, 1) + strides + (1,)",
+      "strides = (1, 1, 1) + strides"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/layers/convolutional_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_38",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "38",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "53ec990d54130dd0a457dd235c93d39de32d571d",
+    "fixed_commit": "64f80d6077edd5f277a1181df94bf4510ea0517a",
+    "source_file": "keras/layers/recurrent.py",
+    "function": "StackedRNNCells.build",
+    "removed_lines": [
+      "input_shape = (input_shape[0], input_shape[1], output_dim)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/layers/recurrent_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_39",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "39",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "3a431ea52d090fb3ef8a1e0e5d7f796d9a42e097",
+    "fixed_commit": "a5ecde595c47f35fd7293d52eba48efd687ca94e",
+    "source_file": "keras/utils/generic_utils.py",
+    "function": "Progbar.update",
+    "removed_lines": [
+      "current < self.target):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/utils/generic_utils_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_40",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "40",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "871007dbb0e6211459b9d16244cc3c9683459df7",
+    "fixed_commit": "4cad455ef4da600c96ddc69800bab39d0e52b677",
+    "source_file": "keras/layers/recurrent.py",
+    "function": "RNN.compute_output_shape",
+    "removed_lines": [
+      "output_dim = self.cell.state_size[0]",
+      "output_dim = self.cell.state_size",
+      "state_shape = [(input_shape[0], output_dim) for _ in self.states]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/layers/recurrent_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_43",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "43",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "e3e97c401aa8251e957b73fba8ed4d108c106f12",
+    "fixed_commit": "b17169ca5d6cd1c8aeb237fc2bb0555c9e1b6a02",
+    "source_file": "keras/utils/np_utils.py",
+    "function": "to_categorical",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/utils/np_utils_test.py"
+    }
+  },
+  {
+    "id": "bip_keras_45",
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "45",
+    "repo_url": "https://github.com/keras-team/keras",
+    "buggy_commit": "d368dc870bfd8fdd4ca0ff82bd5b61aa549291c5",
+    "fixed_commit": "159bb1aac17a8de0f96997d35703b8f26926a848",
+    "source_file": "keras/layers/recurrent.py",
+    "function": "LSTMCell.call",
+    "removed_lines": [
+      "x_i = K.dot(inputs_i, self.kernel_i) + self.bias_i",
+      "x_f = K.dot(inputs_f, self.kernel_f) + self.bias_f",
+      "x_c = K.dot(inputs_c, self.kernel_c) + self.bias_c",
+      "x_o = K.dot(inputs_o, self.kernel_o) + self.bias_o"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/keras/layers/recurrent_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_3",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "a0f1db01ddab5b4b2bda3fbe58bad09a6d94a7b4",
+    "fixed_commit": "3a0bfbff69addfb3be1107adab3d4914bcae3e4b",
+    "source_file": "luigi/parameter.py",
+    "function": "TupleParameter.parse",
+    "removed_lines": [
+      "except ValueError:",
+      "return literal_eval(x)  # if this causes an error, let that error be raised."
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/parameter_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_8",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "61ee32e9968978c32be12a6af0affa3a5750e87e",
+    "fixed_commit": "8874b93165953c4f6bbe7b747804654d13290018",
+    "source_file": "luigi/contrib/redshift.py",
+    "function": "S3CopyToTable.does_table_exist",
+    "removed_lines": [
+      "\"where table_schema = %s and table_name = %s limit 1\")",
+      "\"where tablename = %s limit 1\")"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/contrib/redshift_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_10",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "f538d1b3d473d542a19d508e5f7e0809b1dfe5ef",
+    "fixed_commit": "3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614",
+    "source_file": "luigi/scheduler.py",
+    "function": "Worker.get_pending_tasks",
+    "removed_lines": [
+      "return state.get_pending_tasks()"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/scheduler_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_11",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "11",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "bf8b5cba573d5d6cd11f7f10a03b458aeaf955c1",
+    "fixed_commit": "70d8734d60e168389f425082b41b1936d63c028e",
+    "source_file": "luigi/scheduler.py",
+    "function": "Scheduler.get_work",
+    "removed_lines": [
+      "task.params.get(name) == value for name, value in unbatched_params.items())):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/scheduler_api_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_16",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "16",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "e38392a1381dd8daee0f180f0ac7f651edb88e0c",
+    "fixed_commit": "96f2b5a97c2cc5f63bea0f422c57f93dcec0ebac",
+    "source_file": "luigi/scheduler.py",
+    "function": "CentralPlannerScheduler.prune",
+    "removed_lines": [
+      "if task.id not in necessary_tasks and self._state.prune(task, self._config):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/central_planner_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_17",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "17",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "c39922350cba3a93c96c2ed223283bf8cf315a7d",
+    "fixed_commit": "e38392a1381dd8daee0f180f0ac7f651edb88e0c",
+    "source_file": "luigi/interface.py",
+    "function": "_WorkerSchedulerFactory.create_local_scheduler",
+    "removed_lines": [
+      "return scheduler.CentralPlannerScheduler(prune_on_get_work=True)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/scheduler_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_18",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "18",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "6cffbf438d023441f7f42c2019a51c62eecd9018",
+    "fixed_commit": "c521d59c5eacf6c19ce3c17a62f73e042fa0556e",
+    "source_file": "luigi/scheduler.py",
+    "function": "SimpleTaskState.set_status",
+    "removed_lines": [
+      "elif task.scheduler_disable_time is not None:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/central_planner_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_19",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "19",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "3d2f75224c7649402927a5ef57558d8c3717cd94",
+    "fixed_commit": "6cffbf438d023441f7f42c2019a51c62eecd9018",
+    "source_file": "luigi/scheduler.py",
+    "function": "SimpleTaskState.set_status",
+    "removed_lines": [
+      "if new_status == FAILED and task.can_disable():"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/central_planner_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_21",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "21",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "b7768da963570bd2223d97c1035f811c2eaf30b4",
+    "fixed_commit": "1a6a89d8b510089392bb407d4ec660451deb1f23",
+    "source_file": "luigi/interface.py",
+    "function": "run",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/interface_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_22",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "22",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "9c4c47ae449593c55fb67ce51115d0be1fecb163",
+    "fixed_commit": "2db9768958c9665c2bb78f040054a25534205fc4",
+    "source_file": "luigi/scheduler.py",
+    "function": "Worker.__init__",
+    "removed_lines": [
+      "def __init__(self, worker_id, last_active=None):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/scheduler_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_24",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "24",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "572fce617a3b8133983cdee2b2cc336a65af5abe",
+    "fixed_commit": "8a4f73296f237fcf8182c342e62c2cb201c717df",
+    "source_file": "luigi/contrib/spark.py",
+    "function": "SparkSubmitTask._dict_arg",
+    "removed_lines": [
+      "command += [name, '\"{0}={1}\"'.format(prop, value)]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/contrib/spark_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_26",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "26",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "ed351ca3c3baf3657de584db08dfe0414fa000a3",
+    "fixed_commit": "13673fd488c25325db633b1d49e664fb937fabc2",
+    "source_file": "luigi/contrib/hadoop_jar.py",
+    "function": "HadoopJarJobRunner.run_job",
+    "removed_lines": [
+      "if not job.jar() or not os.path.exists(job.jar()):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/contrib/hadoop_jar_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_29",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "29",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "07efdd9136966ffe143ea57e15b1a57b5698fd5a",
+    "fixed_commit": "2898a2d2d178499435892d7a69bb1dfc90c70b29",
+    "source_file": "luigi/task_register.py",
+    "function": "Register.__get_reg",
+    "removed_lines": [
+      "if cls.run == NotImplemented:",
+      "continue"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/task_test.py"
+    }
+  },
+  {
+    "id": "bip_luigi_30",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "30",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "97fa4afea3748f0d714482d2c97990bb467bc9d1",
+    "fixed_commit": "f1e3fb48fe9877e511a2d079636fd75eaaba4573",
+    "source_file": "luigi/worker.py",
+    "function": "TaskProcess.run",
+    "removed_lines": [
+      "try:",
+      "new_deps = self._run_get_new_deps()",
+      "if new_deps is None:",
+      "status = RUNNING",
+      "else:",
+      "status = SUSPENDED",
+      "logger.info(",
+      "'[pid %s] Worker %s new requirements      %s',",
+      "os.getpid(), self.worker_id, self.task.task_id)",
+      "return",
+      "finally:",
+      "if status != SUSPENDED:",
+      "self.task.trigger_event(",
+      "Event.PROCESSING_TIME, self.task, time.time() - t0)",
+      "error_message = json.dumps(self.task.on_success())",
+      "logger.info('[pid %s] Worker %s done      %s', os.getpid(),",
+      "self.worker_id, self.task.task_id)",
+      "self.task.trigger_event(Event.SUCCESS, self.task)",
+      "status = DONE"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_event_callbacks.py"
+    }
+  },
+  {
+    "id": "bip_luigi_33",
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "33",
+    "repo_url": "https://github.com/spotify/luigi",
+    "buggy_commit": "a7c0662eab78fd226fd7ef6b4461d7199336cbb1",
+    "fixed_commit": "fccb631a14e1d52138d39f06004be14ca8f3337d",
+    "source_file": "luigi/task.py",
+    "function": "Task.get_param_values",
+    "removed_lines": [
+      "positional_params = [(n, p) for n, p in params if p.significant]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/parameter_test.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_2",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "2",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "2a3707d9c3472b1a010492322b6946388d4989ae",
+    "fixed_commit": "d86cc2bab8183fd3288ed474e4dfd33e0f018908",
+    "source_file": "lib/matplotlib/axes/_axes.py",
+    "function": "Axes.scatter",
+    "removed_lines": [
+      "For non-filled markers, the *edgecolors* kwarg is ignored and",
+      "forced to 'face' internally.",
+      "edgecolors = 'face'",
+      "facecolors=colors,",
+      "edgecolors=edgecolors,"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_6",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "6",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "fb9e72309aeefb51d1a56ecbdb1e7399d105ff06",
+    "fixed_commit": "d84f4a7ac8d43d1288cb8ce11ab60ae557306b7e",
+    "source_file": "lib/matplotlib/axes/_axes.py",
+    "function": "Axes._parse_scatter_color_args",
+    "removed_lines": [
+      "if c.size == xsize:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_7",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "7",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "969513e2a5227331a2eb9e4bc4ba8448a0f9831d",
+    "fixed_commit": "ac400b51bb31b91920ee9aae02a0606a67983a8f",
+    "source_file": "lib/matplotlib/colors.py",
+    "function": "LightSource.shade_rgb",
+    "removed_lines": [
+      "if hasattr(intensity, 'mask'):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_colors.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_9",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "9",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "8673167d4c44dc2ede02fedd718dadf7f88e102d",
+    "fixed_commit": "c01f9d3eff9b6239446c1bb2d205eccd69054aeb",
+    "source_file": "lib/matplotlib/projections/polar.py",
+    "function": "PolarAxes.draw",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_polar.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_10",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "b31d64ce3910e8d297d8300690e459587f77181f",
+    "fixed_commit": "1986da3968ee76c6bce8f4c04aed80e23bd4ecfa",
+    "source_file": "lib/matplotlib/axis.py",
+    "function": "Axis.set_tick_params",
+    "removed_lines": [
+      "# special-case label color to also apply to the offset text"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_11",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "11",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "f8459a513c3f67447ceb1a07c29760d504517ff2",
+    "fixed_commit": "af745264376a10782bd0d8b96d255f958c2950f3",
+    "source_file": "lib/matplotlib/text.py",
+    "function": "Text.get_window_extent",
+    "removed_lines": [
+      "if dpi is not None:",
+      "dpi_orig = self.figure.dpi",
+      "self.figure.dpi = dpi",
+      "tx, ty = self._get_xy_display()",
+      "return Bbox.from_bounds(tx, ty, 0, 0)",
+      "bbox, info, descent = self._get_layout(self._renderer)",
+      "x, y = self.get_unitless_position()",
+      "x, y = self.get_transform().transform((x, y))",
+      "bbox = bbox.translated(x, y)",
+      "if dpi is not None:",
+      "self.figure.dpi = dpi_orig",
+      "return bbox"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_text.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_13",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "13",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "2c845db9d961ddea6e072c3e6dbb0bec823ac25e",
+    "fixed_commit": "eb4b15b47a4d019f0e9edb2fb0587aebc2dbd8e8",
+    "source_file": "lib/matplotlib/path.py",
+    "function": "Path.make_compound_path",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_path.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_14",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "14",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "dbc35a9d625e162445f864b9f463c9961888e901",
+    "fixed_commit": "c986a12b6d0d0d44f5a87f7cd4408f38040e2537",
+    "source_file": "lib/matplotlib/text.py",
+    "function": "Text.update",
+    "removed_lines": [
+      "# Update bbox last, as it depends on font properties."
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_text.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_16",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "16",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "89ff308306bafac22647c050a42141f040210216",
+    "fixed_commit": "5d99e151be80bcb0b3b6d081fd3038330f573d94",
+    "source_file": "lib/matplotlib/transforms.py",
+    "function": "nonsingular",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_colorbar.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_17",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "17",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "58c66982d98851c56b045137ced803fd62c6c5e8",
+    "fixed_commit": "05a5db0fec2eced55076736f0b9520641b279ad6",
+    "source_file": "lib/matplotlib/transforms.py",
+    "function": "nonsingular",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_colorbar.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_21",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "21",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "e240493a899ac05cb992cdb88f5487386586090e",
+    "fixed_commit": "6fceb054369445d0b20d2864957e8bcfd8d2cb87",
+    "source_file": "lib/matplotlib/axes/_axes.py",
+    "function": "Axes.bxp",
+    "removed_lines": [
+      "def line_props_with_rcdefaults(subkey, explicit, zdelta=0):",
+      "final_boxprops = line_props_with_rcdefaults('boxprops', boxprops)",
+      "'whiskerprops', whiskerprops)",
+      "'capprops', capprops)",
+      "'medianprops', medianprops, zdelta)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_22",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "22",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "a87cd8a4c43688137155accdc57ed64fb95e2d40",
+    "fixed_commit": "2349d826a170a10510d1ee8be02eaff51f7ee89f",
+    "source_file": "lib/matplotlib/axes/_axes.py",
+    "function": "Axes.hist",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_23",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "23",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "bb6a4af984778dbac55c8391ae29fa2b5b201361",
+    "fixed_commit": "418a1adf597b4d7759dcd64b864bd64cc1b507f4",
+    "source_file": "lib/matplotlib/axes/_base.py",
+    "function": "_AxesBase.apply_aspect",
+    "removed_lines": [
+      "x0, x1 = map(x_trf.inverted().transform, dL.intervalx)",
+      "y0, y1 = map(y_trf.inverted().transform, dL.intervaly)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_25",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "25",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "9a5473dbac05f3d6773b42c8e16d58a7dc3159b8",
+    "fixed_commit": "184225bc5639fbd2f29c1253602806a8b6462d9f",
+    "source_file": "lib/matplotlib/collections.py",
+    "function": "EventCollection.__init__",
+    "removed_lines": [
+      "if positions is None or len(positions) == 0:",
+      "elif hasattr(positions, 'ndim') and positions.ndim > 1:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_collections.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_26",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "26",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "04d9d28b820af0b4df230a3c67314ed5b0af8fdd",
+    "fixed_commit": "557375ff91f64c1b827f6014da2d369513a69316",
+    "source_file": "lib/matplotlib/axis.py",
+    "function": "_make_getset_interval",
+    "removed_lines": [
+      "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_27",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "27",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "11269123d516cda369764a081ddfb8c1a10ddc53",
+    "fixed_commit": "02f25d60139b160fd9b321802b4a2f6c6f3f8672",
+    "source_file": "lib/matplotlib/colorbar.py",
+    "function": "ColorbarBase.set_label",
+    "removed_lines": [
+      "self._label = str(label)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_colorbar.py"
+    }
+  },
+  {
+    "id": "bip_matplotlib_28",
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "28",
+    "repo_url": "https://github.com/matplotlib/matplotlib",
+    "buggy_commit": "896fb8140a600341ebb5eaa4191584f23df2d2a0",
+    "fixed_commit": "94ac78a47cfaed9a09e5fd8295b88e8248b67f55",
+    "source_file": "lib/matplotlib/axes/_base.py",
+    "function": "_AxesBase.set_xlim",
+    "removed_lines": [
+      "if self.get_xscale() == 'log':"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "lib/matplotlib/tests/test_axes.py"
+    }
+  },
+  {
+    "id": "bip_pandas_1",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "1",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "3fd150c",
+    "fixed_commit": "e41ee47a90bb1d8a1fa28fcefcd45ed8ef5cb946",
+    "source_file": "pandas/core/dtypes/common.py",
+    "function": "is_string_dtype",
+    "removed_lines": [
+      "is_excluded_checks = (is_period_dtype, is_interval_dtype)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/dtypes/test_dtypes.py"
+    }
+  },
+  {
+    "id": "bip_pandas_4",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "4",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "cca710b",
+    "fixed_commit": "2250ddfaff92abaff20a5bcd78315f5d4bd44981",
+    "source_file": "pandas/core/indexes/base.py",
+    "function": "Index._join_multi",
+    "removed_lines": [
+      "return multi_join_idx, lidx, ridx"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/multi/test_join.py"
+    }
+  },
+  {
+    "id": "bip_pandas_6",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "6",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "21a10d1",
+    "fixed_commit": "8cd8ed3657e52ad9f67e17b7f5c20f7340ab6a2c",
+    "source_file": "pandas/core/groupby/grouper.py",
+    "function": "get_grouper",
+    "removed_lines": [
+      "except (KeyError, IndexError):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_size.py"
+    }
+  },
+  {
+    "id": "bip_pandas_7",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "7",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "27f365d",
+    "fixed_commit": "64336ff8414f8977ff94adb9a5bc000a3a4ef454",
+    "source_file": "pandas/core/indexes/base.py",
+    "function": "Index._get_nearest_indexer",
+    "removed_lines": [
+      "target = np.asarray(target)",
+      "left_distances = abs(self.values[left_indexer] - target)",
+      "right_distances = abs(self.values[right_indexer] - target)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/indexing/test_indexing.py"
+    }
+  },
+  {
+    "id": "bip_pandas_8",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "ddbeca6",
+    "fixed_commit": "d09f20e29bdfa82f5efc071986e2633001d552f6",
+    "source_file": "pandas/core/internals/blocks.py",
+    "function": "Block.replace",
+    "removed_lines": [
+      "if not mask.any():",
+      "if inplace:",
+      "return [self]",
+      "return [self.copy()]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/methods/test_replace.py"
+    }
+  },
+  {
+    "id": "bip_pandas_10",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "de8ca78",
+    "fixed_commit": "e1ee2b0679e5999c993a787606d30e75faaba7a2",
+    "source_file": "pandas/core/internals/blocks.py",
+    "function": "ExtensionBlock.putmask",
+    "removed_lines": [
+      "if isinstance(new, np.ndarray) and len(new) == len(mask):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/methods/test_update.py"
+    }
+  },
+  {
+    "id": "bip_pandas_11",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "11",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "1c88e6a",
+    "fixed_commit": "b7f061c3d24df943e16918ad3932e767f5639a38",
+    "source_file": "pandas/core/reshape/concat.py",
+    "function": "_make_concat_multiindex",
+    "removed_lines": [
+      "try:",
+      "i = level.get_loc(key)",
+      "except KeyError as err:",
+      "raise ValueError(f\"Key {key} not in level {level}\") from err"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/reshape/test_concat.py"
+    }
+  },
+  {
+    "id": "bip_pandas_14",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "14",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "e7b23d4",
+    "fixed_commit": "dd71064327721c1ec7366000f357b0c08bcec4d2",
+    "source_file": "pandas/core/ops/dispatch.py",
+    "function": "should_series_dispatch",
+    "removed_lines": [
+      "if is_datetime64_dtype(ldtype) and is_object_dtype(rdtype):",
+      "# in particular case where right is an array of DateOffsets"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/arithmetic/test_datetime64.py;pandas/tests/arithmetic/test_timedelta64.py"
+    }
+  },
+  {
+    "id": "bip_pandas_19",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "19",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "17dc6b0",
+    "fixed_commit": "c6a1638bcd99df677a8f76f036c0b30027eb243c",
+    "source_file": "pandas/core/indexing.py",
+    "function": "_LocIndexer._getitem_axis",
+    "removed_lines": [
+      "# convert various list-like indexers",
+      "# to a list of keys",
+      "# we will use the *values* of the object",
+      "# and NOT the index if its a PandasObject",
+      "if isinstance(labels, ABCMultiIndex):",
+      "if isinstance(key, (ABCSeries, np.ndarray)) and key.ndim <= 1:",
+      "# Series, or 0,1 ndim ndarray",
+      "# GH 14730",
+      "key = list(key)",
+      "elif isinstance(key, ABCDataFrame):",
+      "# GH 15438",
+      "raise NotImplementedError(",
+      "\"Indexing a MultiIndex with a \"",
+      "\"DataFrame key is not \"",
+      "\"implemented\"",
+      ")",
+      "elif hasattr(key, \"ndim\") and key.ndim > 1:",
+      "raise NotImplementedError(",
+      "\"Indexing a MultiIndex with a \"",
+      "\"multidimensional key is not \"",
+      "\"implemented\"",
+      ")",
+      "if (",
+      "not isinstance(key, tuple)",
+      "and len(key)",
+      "and not isinstance(key[0], tuple)",
+      "):",
+      "key = tuple([key])"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexing/multiindex/test_loc.py;pandas/tests/indexing/multiindex/test_slice.py;pandas/tests/series/indexing/test_getitem.py"
+    }
+  },
+  {
+    "id": "bip_pandas_21",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "21",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "4071c3b",
+    "fixed_commit": "56d0934092b8296c90f940c56fce3b731e0de81b",
+    "source_file": "pandas/core/series.py",
+    "function": "Series._get_with",
+    "removed_lines": [
+      "if isinstance(key, list):",
+      "# handle the dup indexing case GH#4246",
+      "return self.loc[key]",
+      "return self.reindex(key)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/indexing/test_boolean.py;pandas/tests/series/indexing/test_getitem.py"
+    }
+  },
+  {
+    "id": "bip_pandas_23",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "23",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "ab9f3c9",
+    "fixed_commit": "38b669a206b151e0a2bb985200d4a493c4ac078f",
+    "source_file": "pandas/core/indexes/datetimelike.py",
+    "function": "DatetimeTimedeltaMixin.intersection",
+    "removed_lines": [
+      "return type(self)(data=[])",
+      "left_chunk = left.values[lslice]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/datetimes/test_setops.py"
+    }
+  },
+  {
+    "id": "bip_pandas_24",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "24",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "91dcc3a",
+    "fixed_commit": "6367bd23b935a85f1bcd2ae762c7f08433d0efbd",
+    "source_file": "pandas/core/arrays/datetimes.py",
+    "function": "DatetimeArray.tz_localize",
+    "removed_lines": [
+      "dtype='datetime64[ns, US/Eastern]', freq='D')",
+      "dtype='datetime64[ns]', freq='D')",
+      "return self._simple_new(new_dates, dtype=dtype, freq=self.freq)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/datetimes/test_timezones.py"
+    }
+  },
+  {
+    "id": "bip_pandas_25",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "25",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "ecc3b2e",
+    "fixed_commit": "73d614403759831814ef7ab83ef1e4aaa645b33a",
+    "source_file": "pandas/core/arrays/datetimes.py",
+    "function": "DatetimeArray.isocalendar",
+    "removed_lines": [
+      "sarray = fields.build_isocalendar_sarray(self.asi8)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/datetimes/test_misc.py"
+    }
+  },
+  {
+    "id": "bip_pandas_28",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "28",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "40fd73a",
+    "fixed_commit": "ef9b9387c88cf12b20dd8656dfedfc236e0f3352",
+    "source_file": "pandas/core/strings.py",
+    "function": "StringMethods._get_series_list",
+    "removed_lines": [
+      "return [Series(others._values, index=others)]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/test_strings.py"
+    }
+  },
+  {
+    "id": "bip_pandas_29",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "29",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "6e3537d",
+    "fixed_commit": "4334482c348c3adc69683c8332295e22092c1b57",
+    "source_file": "pandas/core/arrays/interval.py",
+    "function": "IntervalArray.__setitem__",
+    "removed_lines": [
+      "if needs_float_conversion:",
+      "left = left.astype(\"float\")",
+      "left.values[key] = value_left",
+      "if needs_float_conversion:",
+      "right = right.astype(\"float\")",
+      "right.values[key] = value_right"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/arrays/interval/test_interval.py;pandas/tests/series/methods/test_convert_dtypes.py"
+    }
+  },
+  {
+    "id": "bip_pandas_30",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "30",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "60d6f28",
+    "fixed_commit": "d857cd12b3ae11be788ba96015383a5b7464ecc9",
+    "source_file": "pandas/io/json/_json.py",
+    "function": "Parser._try_convert_to_date",
+    "removed_lines": [
+      "except (ValueError, OverflowError):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/io/json/test_pandas.py"
+    }
+  },
+  {
+    "id": "bip_pandas_33",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "33",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "03dacc1",
+    "fixed_commit": "89d8aba76a2bb930e520590d145e3d67b2046e39",
+    "source_file": "pandas/core/arrays/integer.py",
+    "function": "IntegerArray._values_for_argsort",
+    "removed_lines": [
+      "data[self._mask] = data.min() - 1"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/arrays/integer/test_function.py"
+    }
+  },
+  {
+    "id": "bip_pandas_34",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "34",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "02a134b",
+    "fixed_commit": "cf9ec7854ecb80709804178e769425f02ddf8c64",
+    "source_file": "pandas/core/resample.py",
+    "function": "TimeGrouper._get_time_bins",
+    "removed_lines": [
+      "ambiguous=\"infer\","
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/resample/test_datetime_index.py"
+    }
+  },
+  {
+    "id": "bip_pandas_35",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "35",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "a7dd3ea",
+    "fixed_commit": "f10ec595eccaf86a9f52fe9683e1181a51ba675b",
+    "source_file": "pandas/core/indexes/period.py",
+    "function": "PeriodIndex._engine",
+    "removed_lines": [
+      "# To avoid a reference cycle, pass a weakref of self to _engine_type.",
+      "period = weakref.ref(self)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/multi/test_get_level_values.py"
+    }
+  },
+  {
+    "id": "bip_pandas_39",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "39",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "8a5f291",
+    "fixed_commit": "a3097b5bd172e76dd3524eb5dbe18b6b4c22df50",
+    "source_file": "pandas/core/ops/methods.py",
+    "function": "add_special_arithmetic_methods",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame//test_axis_select_reindex.py"
+    }
+  },
+  {
+    "id": "bip_pandas_42",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "42",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "b3a0fe4",
+    "fixed_commit": "05780a760400e42ce1b00200dd8204ae4f94044a",
+    "source_file": "pandas/_testing.py",
+    "function": "assert_series_equal",
+    "removed_lines": [
+      "elif is_interval_dtype(left.dtype) or is_interval_dtype(right.dtype):",
+      "elif is_extension_array_dtype(left.dtype) or is_extension_array_dtype(right.dtype):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/util/test_assert_frame_equal.py;pandas/tests/util/test_assert_series_equal.py"
+    }
+  },
+  {
+    "id": "bip_pandas_48",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "48",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "9bc3ee0",
+    "fixed_commit": "9e7cb7c102655d0ba92d2561c178da9254d5cef5",
+    "source_file": "pandas/core/groupby/generic.py",
+    "function": "DataFrameGroupBy._cython_agg_blocks",
+    "removed_lines": [
+      "except ValueError:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_function.py"
+    }
+  },
+  {
+    "id": "bip_pandas_49",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "49",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "113c255",
+    "fixed_commit": "37659d47a685ecc5f5117aa56526ece0106c6d0f",
+    "source_file": "pandas/core/strings.py",
+    "function": "str_repeat",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/test_strings.py"
+    }
+  },
+  {
+    "id": "bip_pandas_50",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "50",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "ebf9668",
+    "fixed_commit": "821aa25c9039e72da9a7b236cf2f9e7d549cbb7b",
+    "source_file": "pandas/core/arrays/categorical.py",
+    "function": "_cat_compare_op",
+    "removed_lines": [
+      "ret[mask] = False"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/extension/test_categorical.py"
+    }
+  },
+  {
+    "id": "bip_pandas_52",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "52",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "20a84a5",
+    "fixed_commit": "7017599821e02ba95282848c12f7d3b5f2ce670a",
+    "source_file": "pandas/core/groupby/generic.py",
+    "function": "SeriesGroupBy.nunique",
+    "removed_lines": [
+      "# GH 27951",
+      "# temporary fix while we wait for NumPy bug 12629 to be fixed",
+      "val[isna(val)] = np.datetime64(\"NaT\")",
+      "try:",
+      "sorter = np.lexsort((val, ids))",
+      "except TypeError:  # catches object dtypes",
+      "msg = f\"val.dtype must be object, got {val.dtype}\"",
+      "assert val.dtype == object, msg",
+      "val, _ = algorithms.factorize(val, sort=False)",
+      "sorter = np.lexsort((val, ids))",
+      "_isna = lambda a: a == -1",
+      "else:",
+      "_isna = isna",
+      "ids, val = ids[sorter], val[sorter]",
+      "inc = np.r_[1, val[1:] != val[:-1]]",
+      "mask = _isna(val)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_function.py"
+    }
+  },
+  {
+    "id": "bip_pandas_58",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "58",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "634a41f",
+    "fixed_commit": "16684f2affaf901b42a12e50f9c29e7c034ad7ea",
+    "source_file": "pandas/core/arrays/categorical.py",
+    "function": "Categorical.from_codes",
+    "removed_lines": [
+      "codes = np.asarray(codes)  # #21767"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/arrays/categorical/test_constructors.py"
+    }
+  },
+  {
+    "id": "bip_pandas_59",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "59",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "292a993",
+    "fixed_commit": "8dd9fabd2ad9104e747084437b9ad436d5be087a",
+    "source_file": "pandas/core/window/rolling.py",
+    "function": "_Rolling_and_Expanding.corr",
+    "removed_lines": [
+      "window = self._get_window(other)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/window/test_pairwise.py"
+    }
+  },
+  {
+    "id": "bip_pandas_60",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "60",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "6bc2dca",
+    "fixed_commit": "fcf7258c19b0a6a712f33fb0bcefdae426be7e7f",
+    "source_file": "pandas/core/window/rolling.py",
+    "function": "_Rolling_and_Expanding.apply",
+    "removed_lines": [
+      "# name=func for WindowGroupByMixin._apply"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/window/test_grouper.py"
+    }
+  },
+  {
+    "id": "bip_pandas_61",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "61",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "74dad82",
+    "fixed_commit": "f7e2b74f1bcc1d1cbebbc42481e33f0abb2843dc",
+    "source_file": "pandas/core/series.py",
+    "function": "Series._get_with",
+    "removed_lines": [
+      "return self._get_values(key)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexing/test_indexing.py"
+    }
+  },
+  {
+    "id": "bip_pandas_63",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "63",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "e5c65bf",
+    "fixed_commit": "e1ca66bae38b8026079dfcbe0edad5f278546608",
+    "source_file": "pandas/core/indexing.py",
+    "function": "_AtIndexer._convert_key",
+    "removed_lines": [
+      "for ax, i in zip(self.obj.axes, key):",
+      "if ax.is_integer():",
+      "if not is_integer(i):",
+      "raise ValueError(",
+      "\"At based indexing on an integer index \"",
+      "\"can only have integer indexers\"",
+      ")",
+      "else:",
+      "if is_integer(i) and not (ax.holds_integer() or ax.is_floating()):",
+      "raise ValueError(",
+      "\"At based indexing on an non-integer \"",
+      "\"index can only have non-integer \"",
+      "\"indexers\"",
+      ")",
+      "return key"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexing/test_scalar.py"
+    }
+  },
+  {
+    "id": "bip_pandas_64",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "64",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "31c1856",
+    "fixed_commit": "d0c84ce57d23a409169daf7232ec7681e42363fe",
+    "source_file": "pandas/io/formats/excel.py",
+    "function": "ExcelFormatter.__init__",
+    "removed_lines": [
+      "self.df = df"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/io/excel/test_writers.py"
+    }
+  },
+  {
+    "id": "bip_pandas_69",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "69",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "426d445",
+    "fixed_commit": "948f95756c79543bb089a94a85e73011a3730b2d",
+    "source_file": "pandas/core/indexing.py",
+    "function": "_AtIndexer._convert_key",
+    "removed_lines": [
+      "if is_integer(i) and not ax.holds_integer():"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/test_numeric.py"
+    }
+  },
+  {
+    "id": "bip_pandas_76",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "76",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "4da554f",
+    "fixed_commit": "47922d3b00edfc264f73b1484589734bbd077c11",
+    "source_file": "pandas/io/json/_json.py",
+    "function": "Parser._try_convert_data",
+    "removed_lines": [
+      "except (TypeError, ValueError):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/io/json/test_pandas.py"
+    }
+  },
+  {
+    "id": "bip_pandas_78",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "78",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "f5aa542",
+    "fixed_commit": "bd6b395a1e8fb7d099fa17a0e24f8fe3b628822c",
+    "source_file": "pandas/core/frame.py",
+    "function": "DataFrame._reduce",
+    "removed_lines": [
+      "result = Series(result, index=labels)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_subclass.py"
+    }
+  },
+  {
+    "id": "bip_pandas_84",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "84",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "469b4b7",
+    "fixed_commit": "24d7c06130f9c2aeebedc26971b244ce076f7d0a",
+    "source_file": "pandas/core/reshape/reshape.py",
+    "function": "_unstack_multiple",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_reshape.py"
+    }
+  },
+  {
+    "id": "bip_pandas_85",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "85",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "f1aaf62",
+    "fixed_commit": "29edd119d31a9ee7d4f89e8c1dc8af96f0c19dce",
+    "source_file": "pandas/core/indexes/multi.py",
+    "function": "MultiIndex._get_grouper_for_level",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_apply.py"
+    }
+  },
+  {
+    "id": "bip_pandas_87",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "87",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "641346c",
+    "fixed_commit": "a890239b7020dec714d9819b718d83f786bfda34",
+    "source_file": "pandas/core/reshape/pivot.py",
+    "function": "crosstab",
+    "removed_lines": [
+      "\"__dummy__\","
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/reshape/test_pivot.py"
+    }
+  },
+  {
+    "id": "bip_pandas_88",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "88",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "698920f",
+    "fixed_commit": "586bcb16023ae870b0ad7769f6d9077903705486",
+    "source_file": "pandas/core/reshape/pivot.py",
+    "function": "pivot_table",
+    "removed_lines": [
+      "if table.index.nlevels > 1:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/reshape/test_pivot.py"
+    }
+  },
+  {
+    "id": "bip_pandas_89",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "89",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "0dc317f",
+    "fixed_commit": "feaa5033b7810f7775fd4806c27b2f9f1e9b5051",
+    "source_file": "pandas/core/reshape/reshape.py",
+    "function": "_unstack_multiple",
+    "removed_lines": [
+      "result = result.unstack(val)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_reshape.py"
+    }
+  },
+  {
+    "id": "bip_pandas_91",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "91",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "5c12d4f",
+    "fixed_commit": "cb9a1c7d0319c34a97247973ca96af53ead8033a",
+    "source_file": "pandas/core/indexes/timedeltas.py",
+    "function": "TimedeltaIndex.searchsorted",
+    "removed_lines": [
+      "value = np.array(value, dtype=_TD_DTYPE, copy=False)",
+      "else:",
+      "value = Timedelta(value).asm8.view(_TD_DTYPE)",
+      "return self.values.searchsorted(value, side=side, sorter=sorter)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/arrays/test_timedeltas.py"
+    }
+  },
+  {
+    "id": "bip_pandas_95",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "95",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "036dc88",
+    "fixed_commit": "c99dfea33612f44e97c2365f78c0ca6d5754a1bc",
+    "source_file": "pandas/core/arrays/period.py",
+    "function": "_period_array_cmp",
+    "removed_lines": [
+      "ordinal_op = getattr(self.asi8, opname)",
+      "elif isinstance(other, int):",
+      "# TODO: sure we want to allow this?  we dont for DTA/TDA",
+      "#  2 tests rely on this",
+      "other = Period(other, freq=self.freq)",
+      "result = ordinal_op(other.ordinal)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/arithmetic/test_period.py"
+    }
+  },
+  {
+    "id": "bip_pandas_98",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "98",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "8105a7e",
+    "fixed_commit": "09e4b780f09c5aa72bb2a6ae2832612f81dc047f",
+    "source_file": "pandas/core/indexes/base.py",
+    "function": "Index.__new__",
+    "removed_lines": [
+      "elif (",
+      "is_interval_dtype(data) or is_interval_dtype(dtype)",
+      ") and not is_object_dtype(dtype):",
+      "closed = kwargs.get(\"closed\", None)",
+      "return IntervalIndex(data, dtype=dtype, name=name, copy=copy, closed=closed)",
+      "elif is_period_dtype(data) and not is_object_dtype(dtype):",
+      "return PeriodIndex(data, copy=copy, name=name, **kwargs)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/period/test_constructors.py"
+    }
+  },
+  {
+    "id": "bip_pandas_102",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "102",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "efaadd5",
+    "fixed_commit": "765d8db7eef1befef33f4c99d3e206d26e8444c8",
+    "source_file": "pandas/core/internals/construction.py",
+    "function": "init_ndarray",
+    "removed_lines": [
+      "columns = [0]",
+      "return arrays_to_mgr([values], columns, index, columns, dtype=dtype)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_constructors.py"
+    }
+  },
+  {
+    "id": "bip_pandas_104",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "104",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "f738581",
+    "fixed_commit": "8e9b3eee812b70197341c26c40200d8a1a77ed9c",
+    "source_file": "pandas/core/groupby/groupby.py",
+    "function": "GroupBy.quantile",
+    "removed_lines": [
+      "order = np.roll(list(range(result.index.nlevels)), -1)",
+      "result = result.reorder_levels(order)",
+      "result = result.reindex(q, level=-1)",
+      "# fix order.",
+      "hi = len(q) * self.ngroups",
+      "arr = np.arange(0, hi, self.ngroups)",
+      "arrays = []",
+      "for i in range(self.ngroups):",
+      "arr2 = arr + i",
+      "arrays.append(arr2)",
+      "indices = np.concatenate(arrays)",
+      "assert len(indices) == len(result)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_function.py"
+    }
+  },
+  {
+    "id": "bip_pandas_106",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "106",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "114d552",
+    "fixed_commit": "e46026ff4669a30192b91e362ce8cdcbc9693870",
+    "source_file": "pandas/core/indexes/base.py",
+    "function": "Index.get_indexer_non_unique",
+    "removed_lines": [
+      "elif self.is_all_dates:"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/multi/test_drop.py"
+    }
+  },
+  {
+    "id": "bip_pandas_107",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "107",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "47ac4b3",
+    "fixed_commit": "fa4949f27ccfbc255bb8dbcd5ec5464b8663f1d2",
+    "source_file": "pandas/core/frame.py",
+    "function": "DataFrame.append",
+    "removed_lines": [
+      "if other.name is None:",
+      "index = None",
+      "else:",
+      "# other must have the same index name as self, otherwise",
+      "# index name will be reset",
+      "index = Index([other.name], name=self.index.name)",
+      "other = other.reindex(combined_columns, copy=False)",
+      "other = DataFrame(",
+      "other.values.reshape((1, len(other))),",
+      "index=index,",
+      "columns=combined_columns,",
+      "other = other._convert(datetime=True, timedelta=True)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_combine_concat.py"
+    }
+  },
+  {
+    "id": "bip_pandas_115",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "115",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "ed20822",
+    "fixed_commit": "386494d0dc851be9e86b1576f30fa8705df4d47b",
+    "source_file": "pandas/core/missing.py",
+    "function": "interpolate_1d",
+    "removed_lines": [
+      "result[invalid] = np.interp(inds[invalid], inds[valid], yvalues[valid])"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_missing.py"
+    }
+  },
+  {
+    "id": "bip_pandas_116",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "116",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "9333e3d",
+    "fixed_commit": "c4fa6a52f7737aecda08f6b0f2d6c27476298ae1",
+    "source_file": "pandas/core/reshape/merge.py",
+    "function": "_MergeOperation._get_merge_keys",
+    "removed_lines": [
+      "left_keys = [self.left.index.values]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/reshape/merge/test_merge_asof.py"
+    }
+  },
+  {
+    "id": "bip_pandas_117",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "117",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "fc100fe",
+    "fixed_commit": "f98d2b6587b74c9a640b062d94911b199d962119",
+    "source_file": "pandas/core/dtypes/missing.py",
+    "function": "_isna_old",
+    "removed_lines": [
+      "elif isinstance(obj, (ABCSeries, np.ndarray, ABCIndexClass)):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_analytics.py"
+    }
+  },
+  {
+    "id": "bip_pandas_119",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "119",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "3f69d62",
+    "fixed_commit": "e0bd4d5dd07cc481cb52de3cf3c7bf199cb2df07",
+    "source_file": "pandas/core/reshape/pivot.py",
+    "function": "_add_margins",
+    "removed_lines": [
+      "margin_dummy[cols] = margin_dummy[cols].astype(dtype)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/reshape/test_pivot.py"
+    }
+  },
+  {
+    "id": "bip_pandas_127",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "127",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "f7d6b58",
+    "fixed_commit": "710d82c0d393c9031e469ec0371660d8187b7dc3",
+    "source_file": "pandas/core/generic.py",
+    "function": "NDFrame.pct_change",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_timeseries.py"
+    }
+  },
+  {
+    "id": "bip_pandas_128",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "128",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "794a1c2",
+    "fixed_commit": "112e6b8d054f9adc1303138533ed6506975f94db",
+    "source_file": "pandas/io/json/_json.py",
+    "function": "read_json",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/io/json/test_readlines.py"
+    }
+  },
+  {
+    "id": "bip_pandas_133",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "133",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "343544d",
+    "fixed_commit": "c983d52e3a3a8a191359814417f375b1dc8b04c1",
+    "source_file": "pandas/core/generic.py",
+    "function": "NDFrame.interpolate",
+    "removed_lines": [
+      "else:",
+      "_maybe_transposed_self = self"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_missing.py"
+    }
+  },
+  {
+    "id": "bip_pandas_139",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "139",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "7705cd2",
+    "fixed_commit": "0ffdbe36f0df732f2700cda4a84be758084ff901",
+    "source_file": "pandas/core/groupby/grouper.py",
+    "function": "Grouping.__init__",
+    "removed_lines": [
+      ")"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_categorical.py"
+    }
+  },
+  {
+    "id": "bip_pandas_141",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "141",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "b298696",
+    "fixed_commit": "411dd249e755d7e281603fe3e0ab9e0e48383df9",
+    "source_file": "pandas/core/indexes/range.py",
+    "function": "RangeIndex.get_indexer",
+    "removed_lines": [
+      "# Work on reversed range for simplicity:",
+      "start, stop, step = (self.stop - self.step, self.start + 1, -self.step)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/indexes/test_range.py"
+    }
+  },
+  {
+    "id": "bip_pandas_142",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "142",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "7721f31",
+    "fixed_commit": "65815e6f33e25991e3d40a53c581ffb3c7daf70f",
+    "source_file": "pandas/core/algorithms.py",
+    "function": "diff",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_analytics.py"
+    }
+  },
+  {
+    "id": "bip_pandas_143",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "143",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "c13c13b",
+    "fixed_commit": "df918becf698741861da0e9b7e810d477b0eb194",
+    "source_file": "pandas/core/indexes/range.py",
+    "function": "RangeIndex.get_indexer",
+    "removed_lines": [
+      "if not (method is None and tolerance is None and is_list_like(target)):",
+      "return super().get_indexer(target, method=method, tolerance=tolerance)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_indexing.py;pandas/tests/indexes/test_range.py"
+    }
+  },
+  {
+    "id": "bip_pandas_144",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "144",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "b106108",
+    "fixed_commit": "ffe6cfdbf82d663c3f77567bde11f1666de1df38",
+    "source_file": "pandas/plotting/_matplotlib/core.py",
+    "function": "BarPlot._decorate_ticks",
+    "removed_lines": [
+      "ax.set_xticks(self.tick_pos)",
+      "ax.set_xticklabels(ticklabels)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/plotting/test_series.py"
+    }
+  },
+  {
+    "id": "bip_pandas_145",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "145",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "3bd222d",
+    "fixed_commit": "f08a1e62e31fc11e7e5bd7bec72b7e6d86473423",
+    "source_file": "pandas/core/ops/__init__.py",
+    "function": "dispatch_to_series",
+    "removed_lines": [
+      "def column_op(a, b):",
+      "return {i: func(a.iloc[:, i], b.iloc[i]) for i in range(len(a.columns))}"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_arithmetic.py"
+    }
+  },
+  {
+    "id": "bip_pandas_148",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "148",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "4ac7f9d",
+    "fixed_commit": "95edcf1cbee630e42daca0404c44d8128ea156fb",
+    "source_file": "pandas/core/apply.py",
+    "function": "FrameApply.apply_empty_result",
+    "removed_lines": [
+      "EMPTY_SERIES = Series([])",
+      "r = self.f(EMPTY_SERIES, *self.args, **self.kwds)",
+      "return self.obj._constructor_sliced(np.nan, index=self.agg_axis)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_apply.py"
+    }
+  },
+  {
+    "id": "bip_pandas_152",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "152",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "eb8cce0",
+    "fixed_commit": "f61deb962ac0853595a43ad024c482b018d1792b",
+    "source_file": "pandas/core/series.py",
+    "function": "Series.append",
+    "removed_lines": [
+      "to_concat = [self] + to_append"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_combine_concat.py"
+    }
+  },
+  {
+    "id": "bip_pandas_154",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "154",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "3f5b5c4",
+    "fixed_commit": "e0c63b4cfaa821dfe310f4a8a1f84929ced5f5bd",
+    "source_file": "pandas/core/groupby/groupby.py",
+    "function": "GroupBy._get_cythonized_result",
+    "removed_lines": [
+      "result_sz = len(obj.values)",
+      "cython_dtype = obj.values.dtype",
+      "vals = obj.values",
+      "mask = isna(obj.values).view(np.uint8)",
+      "result = algorithms.take_nd(obj.values, result)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_groupby.py"
+    }
+  },
+  {
+    "id": "bip_pandas_155",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "155",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "4252ab7",
+    "fixed_commit": "0bde7cedf46209a9fd4fa8c7f9fbce8b49aa78cd",
+    "source_file": "pandas/core/window/rolling.py",
+    "function": "Rolling._on",
+    "removed_lines": [
+      "return self.obj.index"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/window/test_rolling.py"
+    }
+  },
+  {
+    "id": "bip_pandas_158",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "158",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "a76df79",
+    "fixed_commit": "b1c871ce4b5e76b3cffe1ebd4216d36379872352",
+    "source_file": "pandas/core/series.py",
+    "function": "Series.rename",
+    "removed_lines": [
+      "non_mapping = is_scalar(index) or (",
+      "is_list_like(index) and not is_dict_like(index)",
+      ")",
+      "if non_mapping:",
+      "return super().rename(index=index, **kwargs)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_alter_axes.py"
+    }
+  },
+  {
+    "id": "bip_pandas_160",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "160",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "489d1ff",
+    "fixed_commit": "fb62fcf91c874e9c24fa83693c4e6e613f35f864",
+    "source_file": "pandas/core/computation/expressions.py",
+    "function": "_can_use_numexpr",
+    "removed_lines": [
+      "if hasattr(o, \"dtypes\"):",
+      "elif isinstance(o, np.ndarray):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/test_expressions.py"
+    }
+  },
+  {
+    "id": "bip_pandas_161",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "161",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "a818281",
+    "fixed_commit": "ca5198a6daa7757e398112a17ccadc9e7d078d96",
+    "source_file": "pandas/core/arrays/categorical.py",
+    "function": "Categorical.fillna",
+    "removed_lines": [
+      "indexer = np.where(values_codes != -1)",
+      "codes[indexer] = values_codes[values_codes != -1]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/series/test_missing.py"
+    }
+  },
+  {
+    "id": "bip_pandas_162",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "162",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "341043d",
+    "fixed_commit": "640d9e1f5fe8ab64d1f6496b8216c28185e53225",
+    "source_file": "pandas/core/reshape/pivot.py",
+    "function": "_normalize",
+    "removed_lines": [
+      "column_margin = table.loc[:, margins_name].drop(margins_name)",
+      "index_margin = table.loc[margins_name, :].drop(margins_name)",
+      "table = table.drop(margins_name, axis=1).drop(margins_name)",
+      "# to keep index and columns names",
+      "table_index_names = table.index.names",
+      "table_columns_names = table.columns.names",
+      "table.index.names = table_index_names",
+      "table.columns.names = table_columns_names"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/reshape/test_pivot.py"
+    }
+  },
+  {
+    "id": "bip_pandas_163",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "163",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "61819ab",
+    "fixed_commit": "f669f94a186ea444cc771985a915e90eecf218a9",
+    "source_file": "pandas/core/window.py",
+    "function": "_Window._prep_values",
+    "removed_lines": [
+      "# Always convert inf to nan",
+      "values[np.isinf(values)] = np.NaN"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/window/test_rolling.py"
+    }
+  },
+  {
+    "id": "bip_pandas_166",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "166",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "4056ded",
+    "fixed_commit": "d44fb07063e9a8bd8a209ddce35b40d8a56c8d02",
+    "source_file": "pandas/core/frame.py",
+    "function": "DataFrame._join_compat",
+    "removed_lines": [
+      "res = concat(frames, axis=1, join=\"outer\", verify_integrity=True)",
+      "return concat(frames, axis=1, join=how, verify_integrity=True)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/frame/test_join.py"
+    }
+  },
+  {
+    "id": "bip_pandas_168",
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "168",
+    "repo_url": "https://github.com/pandas-dev/pandas",
+    "buggy_commit": "2de4fbb",
+    "fixed_commit": "1fa1ad91b29c5474cbb86cbcbcdcd50537cad0ae",
+    "source_file": "pandas/core/groupby/grouper.py",
+    "function": "_get_grouper",
+    "removed_lines": [
+      "obj._check_label_or_level_ambiguity(gpr)",
+      "elif obj._is_level_reference(gpr):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "pandas/tests/groupby/test_groupby.py"
+    }
+  },
+  {
+    "id": "bip_sanic_1",
+    "source": "bugsinpy",
+    "project": "sanic",
+    "bugsinpy_id": "1",
+    "repo_url": "https://github.com/huge-success/sanic",
+    "buggy_commit": "e7001b00747b659f7042b0534802b936ee8a53e0",
+    "fixed_commit": "44973125c15304b4262c51c78b5a86bd1daafa86",
+    "source_file": "sanic/app.py",
+    "function": "Sanic.register_named_middleware",
+    "removed_lines": [
+      "self.named_response_middleware[_rn].append(middleware)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_blueprints.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_6",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "6",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "8aa2e4f9976d31bbe3a0014b4f1f96ace1b87043",
+    "fixed_commit": "25f609e2a3c27ca7d7d98dbfddb2c049735935bb",
+    "source_file": "scrapy/pipelines/images.py",
+    "function": "ImagesPipeline.convert_image",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_pipeline_images.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_8",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "f2f9350c47db73bdfb60773601b59b0633e1595a",
+    "fixed_commit": "4e765acaed7a914630ee5320fa6f6523890a2b9d",
+    "source_file": "scrapy/item.py",
+    "function": "ItemMeta.__new__",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_item.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_15",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "15",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "b7925e42202d79d2ba9d00b6aded3a451c92fe81",
+    "fixed_commit": "1aec5200bc81493623f2a4e077b4e80e104e47d5",
+    "source_file": "scrapy/utils/url.py",
+    "function": "_safe_ParseResult",
+    "removed_lines": [
+      "to_native_str(parts.netloc.encode('idna')),"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_utils_url.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_18",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "18",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "41588397c04356f2b0c393b61ed68271a08d6ccd",
+    "fixed_commit": "cabed6f183cfb2ab778c57be8c75802fec5e54d4",
+    "source_file": "scrapy/responsetypes.py",
+    "function": "ResponseTypes.from_content_disposition",
+    "removed_lines": [
+      "filename = to_native_str(content_disposition).split(';')[1].split('=')[1]"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_responsetypes.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_21",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "21",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "43a53aca1207a82b663fe7a90c375546ce340a8e",
+    "fixed_commit": "a8a6f050e71fbb7881076a8d6e2867e868d26016",
+    "source_file": "scrapy/downloadermiddlewares/robotstxt.py",
+    "function": "RobotsTxtMiddleware._robots_error",
+    "removed_lines": [
+      "self._parsers.pop(netloc).callback(None)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_downloadermiddleware_robotstxt.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_27",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "27",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "280eab241680c93a763a3ef3a9ccd0c257259ca0",
+    "fixed_commit": "d164398a27736f75286cc435eca69b06ff7c1c06",
+    "source_file": "scrapy/downloadermiddlewares/redirect.py",
+    "function": "RedirectMiddleware.process_response",
+    "removed_lines": [
+      "response.status in getattr(spider, 'handle_httpstatus_list', [])):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_downloadermiddleware_redirect.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_28",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "28",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "e2f31f3018c0037f65982209c22f93b80a5d6e7b",
+    "fixed_commit": "457b97c13ccf9a84f3dc7800c180cf059822c09a",
+    "source_file": "scrapy/dupefilters.py",
+    "function": "RFPDupeFilter.__init__",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_dupefilters.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_38",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "38",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "6cc6bbb5fc5c102271829a554772effb0444023c",
+    "fixed_commit": "6c3970e6722191b642fd99c6c1bfed0d93010cab",
+    "source_file": "scrapy/http/request/form.py",
+    "function": "_get_clickable",
+    "removed_lines": [
+      "'descendant::*[(self::input or self::button)'",
+      "' and re:test(@type, \"^submit$\", \"i\")]'",
+      "'|descendant::button[not(@type)]',"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_http_request.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_39",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "39",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "692975acb40c6394424dfb728b1ffa46b3b3c55d",
+    "fixed_commit": "a1e8a8525d2312842c7e1cca8ba6e4e1a83084b7",
+    "source_file": "scrapy/spiders/__init__.py",
+    "function": "Spider.start_requests",
+    "removed_lines": [
+      "if self.make_requests_from_url is not Spider.make_requests_from_url:",
+      "\"Spider.make_requests_from_url method is deprecated; \"",
+      "\"it won't be called in future Scrapy releases. \"",
+      "\"Please override start_requests method instead.\""
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_spider.py"
+    }
+  },
+  {
+    "id": "bip_scrapy_40",
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "40",
+    "repo_url": "https://github.com/scrapy/scrapy",
+    "buggy_commit": "7d24df37380cd5a5b7394cd2534e240bd2eff0ca",
+    "fixed_commit": "f1d971a5c0cdfe0f4fe5619146cd6818324fc98e",
+    "source_file": "scrapy/exporters.py",
+    "function": "PythonItemExporter._serialize_value",
+    "removed_lines": [
+      "if self.binary:",
+      "return to_bytes(value, encoding=self.encoding)",
+      "else:",
+      "return to_unicode(value, encoding=self.encoding)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_exporters.py"
+    }
+  },
+  {
+    "id": "bip_spacy_1",
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "1",
+    "repo_url": "https://github.com/explosion/spaCy",
+    "buggy_commit": "9ce059dd067ecc3f097d04023e3cfa0d70d35bb8",
+    "fixed_commit": "a987e9e45d4084f30964a4cec9914ae6ed25a73c",
+    "source_file": "spacy/errors.py",
+    "function": "add_codes",
+    "removed_lines": [
+      "msg = getattr(err_cls, code)",
+      "return \"[{code}] {msg}\".format(code=code, msg=msg)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "spacy/tests/test_errors.py"
+    }
+  },
+  {
+    "id": "bip_spacy_2",
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "2",
+    "repo_url": "https://github.com/explosion/spaCy",
+    "buggy_commit": "efec28ce70a0ff69471cc379867deebe7eb881e0",
+    "fixed_commit": "cfdaf99b8029d6762730c5d5bd2b6f6c173c1241",
+    "source_file": "spacy/util.py",
+    "function": "load_model_from_path",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "spacy/tests/regression/test_issue5137.py"
+    }
+  },
+  {
+    "id": "bip_spacy_6",
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "6",
+    "repo_url": "https://github.com/explosion/spaCy",
+    "buggy_commit": "6b874ef09611ac32ad038203423d44087cbeb3ae",
+    "fixed_commit": "afe4a428f78abe45d6104d74ef42a066570fa43d",
+    "source_file": "spacy/language.py",
+    "function": "Language.remove_pipe",
+    "removed_lines": [
+      "return self.pipeline.pop(self.pipe_names.index(name))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "spacy/tests/pipeline/test_analysis.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_2",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "2",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "40ab4eb62db57627bff10cf029d29c94704086a2",
+    "fixed_commit": "78ef9eec88f43d5727986be2237f6e0e250cbbbc",
+    "source_file": "thefuck/utils.py",
+    "function": "get_all_executables",
+    "removed_lines": [
+      "for path in os.environ.get('PATH', '').split(':')"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_3",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "ac343fb1bd7dadbb9e1a9fd7e3071f5778e338a4",
+    "fixed_commit": "ce5feaebf7fd5c1190b5e14fbc1e962cc8db5f39",
+    "source_file": "thefuck/shells/fish.py",
+    "function": "Fish.info",
+    "removed_lines": [
+      "proc = Popen(['fish', '-c', 'echo $FISH_VERSION'],",
+      "version = proc.stdout.read().decode('utf-8').strip()"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/shells/test_fish.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_4",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "4",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "68949a592248913b52bfd50036893553153fcddb",
+    "fixed_commit": "8db3cf604865e559090412ce80b0640e290ad83a",
+    "source_file": "thefuck/shells/fish.py",
+    "function": "_get_aliases",
+    "removed_lines": [
+      "alias_out = proc.stdout.read().decode('utf-8').strip().split('\\n')",
+      "for alias in alias_out:",
+      "name, value = alias.replace('alias ', '', 1).split(' ', 1)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/shells/test_fish.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_10",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "8bd6c5da67e55c64257345efa4e3cc454c42475c",
+    "fixed_commit": "0c84eefa55fc1b4bc4940b41d74568884344e35c",
+    "source_file": "thefuck/rules/man.py",
+    "function": "get_new_command",
+    "removed_lines": [
+      "last_arg = command.script_parts[-1]",
+      "last_arg + ' --help',"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/rules/test_man.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_11",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "11",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "92f3c8fb52b32b79005b4864c31a5c2d8c45f4b1",
+    "fixed_commit": "db7dffdb44ae5c7be8de088765463fbda96197d1",
+    "source_file": "thefuck/rules/git_push.py",
+    "function": "get_new_command",
+    "removed_lines": [
+      "return replace_argument(command.script, 'push', push_upstream)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/rules/test_git_push.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_14",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "14",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "183b70c8b8885843efefd2bd4e74dc0a7d42d173",
+    "fixed_commit": "db6053b301e2b3f4363401e457b5dc4ad2e8429b",
+    "source_file": "thefuck/shells/fish.py",
+    "function": "Fish._get_overridden_aliases",
+    "removed_lines": [
+      "overridden_aliases = os.environ.get('TF_OVERRIDDEN_ALIASES', '').strip()",
+      "if overridden_aliases:",
+      "return [alias.strip() for alias in overridden_aliases.split(',')]",
+      "else:",
+      "return ['cd', 'grep', 'ls', 'man', 'open']"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/shells/test_fish.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_19",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "19",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "959b96cf6ec8cedda05dc58efe0e0f3bd6ed2f4e",
+    "fixed_commit": "dc23d67a42dad54308a753639edd1ea0d15cb2e7",
+    "source_file": "thefuck/rules/git_push_force.py",
+    "function": "get_new_command",
+    "removed_lines": [
+      "return replace_argument(command.script, 'push', 'push --force')"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/rules/test_git_push_force.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_25",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "25",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "42a8b4f639269886e468762e6d100b6f01aad8ab",
+    "fixed_commit": "298c04f89c081dc16c8653aa017ca85dd14bfad6",
+    "source_file": "thefuck/rules/mkdir_p.py",
+    "function": "get_new_command",
+    "removed_lines": [
+      "return re.sub('^mkdir (.*)', 'mkdir -p \\\\1', command.script)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/rules/test_mkdir_p.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_26",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "26",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "7cb0388ed0845545e878b29783bbf8e901a02745",
+    "fixed_commit": "feb3eee2a08f0cba4552373d728509bc90b561ab",
+    "source_file": "thefuck/rules/vagrant_up.py",
+    "function": "get_new_command",
+    "removed_lines": [
+      "machine = \"\"",
+      "return shells.and_(\"vagrant up \" +  machine, command.script)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/rules/test_vagrant_up.py"
+    }
+  },
+  {
+    "id": "bip_thefuck_30",
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "30",
+    "repo_url": "https://github.com/nvbn/thefuck",
+    "buggy_commit": "de513cacb150049e3f95434f8d6d30b7ed1e0ea7",
+    "fixed_commit": "43fead02d3a24fef71534116c5550def0f56830c",
+    "source_file": "thefuck/rules/fix_file.py",
+    "function": "match",
+    "removed_lines": [
+      "return 'EDITOR' in os.environ and _search(command.stderr)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tests/rules/test_fix_file.py"
+    }
+  },
+  {
+    "id": "bip_tornado_5",
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "5",
+    "repo_url": "https://github.com/tornadoweb/tornado",
+    "buggy_commit": "2d4053daa56c609d642b214399e046671d4a593e",
+    "fixed_commit": "886643965b5cb782503d8d7b374b7a794ec2077b",
+    "source_file": "tornado/ioloop.py",
+    "function": "PeriodicCallback._update_next",
+    "removed_lines": [
+      "callback_time_sec = self.callback_time / 1000.0"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tornado/test/ioloop_test.py"
+    }
+  },
+  {
+    "id": "bip_tornado_8",
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/tornadoweb/tornado",
+    "buggy_commit": "34c43f4775971ab9b2b8ed43356f218add6387b2",
+    "fixed_commit": "5d4a9ab26372efd255bbb29fde55c41395ed17b1",
+    "source_file": "tornado/websocket.py",
+    "function": "WebSocketProtocol13.accept_connection",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tornado/test/websocket_test.py"
+    }
+  },
+  {
+    "id": "bip_tqdm_1",
+    "source": "bugsinpy",
+    "project": "tqdm",
+    "bugsinpy_id": "1",
+    "repo_url": "https://github.com/tqdm/tqdm",
+    "buggy_commit": "8cc777fe8401a05d07f2c97e65d15e4460feab88",
+    "fixed_commit": "c0dcf39b046d1b4ff6de14ac99ad9a1b10487512",
+    "source_file": "tqdm/contrib/__init__.py",
+    "function": "tenumerate",
+    "removed_lines": [
+      "return enumerate(tqdm_class(iterable, start, **tqdm_kwargs))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "tqdm/tests/tests_contrib.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_2",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "2",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "84f085d4bdb66ee025fb337bcd571eab7469da97",
+    "fixed_commit": "9d6ac71c27b1dfb662c795ef598dbfd0286682da",
+    "source_file": "youtube_dl/extractor/common.py",
+    "function": "InfoExtractor._parse_mpd_formats",
+    "removed_lines": [
+      "try:",
+      "existing_format = next(",
+      "fo for fo in formats",
+      "if fo['format_id'] == representation_id)",
+      "except StopIteration:",
+      "full_info = formats_dict.get(representation_id, {}).copy()",
+      "full_info.update(f)",
+      "formats.append(full_info)",
+      "else:",
+      "existing_format.update(f)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_InfoExtractor.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_3",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "3",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "f5469da9e6e259c1690c7ef54f1da1c19f65036f",
+    "fixed_commit": "95f3f7c20a05e7ac490e768b8470b20538ef8581",
+    "source_file": "youtube_dl/utils.py",
+    "function": "unescapeHTML",
+    "removed_lines": [
+      "r'&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_4",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "4",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "bc40b3a5ba44006c23daf7fe0ed872af5e33bdc5",
+    "fixed_commit": "189935f15960300d316e8b07108b076ac6c2186a",
+    "source_file": "youtube_dl/jsinterp.py",
+    "function": "JSInterpreter.interpret_expression",
+    "removed_lines": [
+      "r'^(?P<func>%s)\\((?P<args>[a-zA-Z0-9_$,]+)\\)$' % _NAME_RE, expr)",
+      "for v in m.group('args').split(',')])"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_jsinterp.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_5",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "5",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "b02b960c6bba834d9e7199ac53430c7933079dc8",
+    "fixed_commit": "7dc2a74e0ac9cfa74cc9de6f586ffd5cc8bac0d9",
+    "source_file": "youtube_dl/utils.py",
+    "function": "unified_timestamp",
+    "removed_lines": [
+      "pm_delta = datetime.timedelta(hours=12 if re.search(r'(?i)PM', date_str) else 0)",
+      "dt = datetime.datetime.strptime(date_str, expression) - timezone + pm_delta",
+      "return calendar.timegm(timetuple.timetuple())"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_7",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "7",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "63a64948342ebfe46db8c258765e698a04a61904",
+    "fixed_commit": "d01949dc89feb2441f251e42e8a6bfa4711b9715",
+    "source_file": "youtube_dl/utils.py",
+    "function": "js_to_json",
+    "removed_lines": [
+      "return v",
+      "if v.startswith(\"'\"):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_8",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "8",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "cf2ac6df6896dac4d23918867bb86fac1e1088d9",
+    "fixed_commit": "f5f4a27a964b41646303921104f4d6d6fd2098e4",
+    "source_file": "youtube_dl/YoutubeDL.py",
+    "function": "YoutubeDL.build_format_selector",
+    "removed_lines": [
+      "current_selector = None",
+      "selectors.append(FormatSelector(PICKFIRST, (first_choice, second_choice), []))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_YoutubeDL.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_9",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "9",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "0130afb76e5cb6f470f39f127c8d09eea3e82d0d",
+    "fixed_commit": "cf2ac6df6896dac4d23918867bb86fac1e1088d9",
+    "source_file": "youtube_dl/YoutubeDL.py",
+    "function": "YoutubeDL.build_format_selector",
+    "removed_lines": [
+      "def _parse_format_selection(tokens, endwith=[]):",
+      "if string in endwith:",
+      "elif string == ')':",
+      "# ')' will be handled by the parentheses group",
+      "if string == ',':",
+      "second_choice = _parse_format_selection(tokens, [','])",
+      "current_selector = FormatSelector(GROUP, _parse_format_selection(tokens, [')']), [])",
+      "audio_selector = _parse_format_selection(tokens, [','])",
+      "current_selector = None",
+      "selectors.append(FormatSelector(MERGE, (video_selector, audio_selector), []))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_YoutubeDL.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_10",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "10",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "85d586617750d38d742a24f141b099f6b898d269",
+    "fixed_commit": "d305dd73a3d6927f0a2c63d08662a183fa173833",
+    "source_file": "youtube_dl/utils.py",
+    "function": "js_to_json",
+    "removed_lines": [
+      "\"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\\")?)*\"|",
+      "'(?:[^'\\\\]*(?:\\\\\\\\|\\\\')?)*'|"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_13",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "13",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "6945b9e78f38284eb4e440b7badea2fc60b66c2f",
+    "fixed_commit": "fad4ceb53404227f471af2f3544c4c14a5df4acb",
+    "source_file": "youtube_dl/utils.py",
+    "function": "urljoin",
+    "removed_lines": [
+      "if re.match(r'^(?:https?:)?//', path):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_15",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "15",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "e7f3529f68ee7c8ca78366d37f851cb31fa00f31",
+    "fixed_commit": "c384d537f882efab10a78a56ce6dcb0a30f54b47",
+    "source_file": "youtube_dl/utils.py",
+    "function": "js_to_json",
+    "removed_lines": [
+      "[a-zA-Z_][.a-zA-Z_0-9]*|"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_20",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "20",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "b6c9fe416243373bcb59eb8aa5ef0baca8f3c97c",
+    "fixed_commit": "609ff8ca19f1c4c168a81121074b91cc0f0d4c47",
+    "source_file": "youtube_dl/utils.py",
+    "function": "get_elements_by_attribute",
+    "removed_lines": [
+      "(?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?",
+      "(?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_21",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "21",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "96182695e4e37795a30ab143129c91dab18a9865",
+    "fixed_commit": "4b5de77bdb7765df4797bf068592926285ba709a",
+    "source_file": "youtube_dl/utils.py",
+    "function": "urljoin",
+    "removed_lines": [
+      "if not isinstance(base, compat_str) or not re.match(r'^(?:https?:)?//', base):"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_22",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "22",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "1bd05345ea4b91598ec04b8e0d33fd14f9e2eddc",
+    "fixed_commit": "db13c16ef8968613680e2bbc85f373c3e74faf98",
+    "source_file": "youtube_dl/utils.py",
+    "function": "_match_one",
+    "removed_lines": [
+      "if (m.group('strval') is not None or",
+      "comparison_value = m.group('strval') or m.group('intval')"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_YoutubeDL.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_23",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "23",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "a22b2fd19bd8c08d50f884d1903486d4f00f76ec",
+    "fixed_commit": "b3ee552e4b918fb720111b23147e24fa5475a74b",
+    "source_file": "youtube_dl/utils.py",
+    "function": "js_to_json",
+    "removed_lines": [
+      "elif v.startswith('/*') or v == ',':",
+      "/\\*.*?\\*/|,(?=\\s*[\\]}])|"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_24",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "24",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "2c6da7df4a4d69ec933688e3c53795fd3436a1c6",
+    "fixed_commit": "e5a088dc4be4fdcc96927a9f1b7284d4cd49c415",
+    "source_file": "youtube_dl/utils.py",
+    "function": "_match_one",
+    "removed_lines": [
+      "if m.group('strval') is not None:",
+      "comparison_value = m.group('strval')",
+      "actual_value = dct.get(m.group('key'))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_YoutubeDL.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_25",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "25",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "9e5751b9fe72f7425e4cb3f22a56b6a95b59e41d",
+    "fixed_commit": "e4659b45474acb563db0ab4284abdfc80837307e",
+    "source_file": "youtube_dl/utils.py",
+    "function": "js_to_json",
+    "removed_lines": [
+      "(r'^0[xX][0-9a-fA-F]+', 16),",
+      "(r'^0+[0-7]+', 8),",
+      "i = int(im.group(0), base)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_26",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "26",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "4c93ee8d14dc081d413304d2d2eb694cb62cc71a",
+    "fixed_commit": "47212f7bcbd59af40f91796562a6b72ba0439ac4",
+    "source_file": "youtube_dl/utils.py",
+    "function": "js_to_json",
+    "removed_lines": [
+      "(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\\s*:)?|"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_27",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "27",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "d631d5f9f27f93767226192e4288990413fa9dbd",
+    "fixed_commit": "db2fe38b5508cbd28b89893219d9cccd41406851",
+    "source_file": "youtube_dl/utils.py",
+    "function": "parse_dfxp_time_expr",
+    "removed_lines": [
+      "mobj = re.match(r'^(\\d+):(\\d\\d):(\\d\\d(?:\\.\\d+)?)$', time_expr)",
+      "return 3600 * int(mobj.group(1)) + 60 * int(mobj.group(2)) + float(mobj.group(3))"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_30",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "30",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "f5f4a27a964b41646303921104f4d6d6fd2098e4",
+    "fixed_commit": "bb8e55366289e0c129ef85abb8c1ac1cbae86a66",
+    "source_file": "youtube_dl/YoutubeDL.py",
+    "function": "YoutubeDL.build_format_selector",
+    "removed_lines": [],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_YoutubeDL.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_41",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "41",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "81c2f20b5386d89a62dc27293654d75b77f47473",
+    "fixed_commit": "026fcc04956f2077a50cd4b4e9b87f45d2bcddea",
+    "source_file": "youtube_dl/utils.py",
+    "function": "unified_strdate",
+    "removed_lines": [
+      "date_str = date_str.replace(',',' ')",
+      "date_str = re.sub(r' ?(\\+|-)[0-9:]*$', '', date_str)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  },
+  {
+    "id": "bip_youtube_dl_43",
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "43",
+    "repo_url": "https://github.com/ytdl-org/youtube-dl",
+    "buggy_commit": "cecaaf3f58ad9f544dbb79af1e565d9353fa2b2d",
+    "fixed_commit": "d6c7a367e88096bb17e323954002c084477fe908",
+    "source_file": "youtube_dl/utils.py",
+    "function": "url_basename",
+    "removed_lines": [
+      "m = re.match(r'(?:https?:|)//[^/]+/(?:[^/?#]+/)?([^/?#]+)/?(?:[?#]|$)', url)"
+    ],
+    "validation": {
+      "fix_in_official_history": true,
+      "failing_test": "test/test_utils.py"
+    }
+  }
+]

@@ -1,0 +1,1316 @@
+[
+  {
+    "source": "bugsinpy",
+    "project": "PySnooper",
+    "bugsinpy_id": "1",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "PySnooper",
+    "bugsinpy_id": "2",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "4",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "6",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "8",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "9",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "11",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "13",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "14",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "17",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "ansible",
+    "bugsinpy_id": "18",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "5",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "6",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "11",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "14",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "15",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "18",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "22",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "black",
+    "bugsinpy_id": "23",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "cookiecutter",
+    "bugsinpy_id": "4",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "1",
+    "reason": "fix touches 4 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "3",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "7",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "8",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "fastapi",
+    "bugsinpy_id": "14",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "httpie",
+    "bugsinpy_id": "1",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "httpie",
+    "bugsinpy_id": "2",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "httpie",
+    "bugsinpy_id": "5",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "1",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "2",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "11",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "12",
+    "reason": "fix touches 0 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "15",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "16",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "18",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "19",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "20",
+    "reason": "fix touches 5 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "21",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "27",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "29",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "30",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "32",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "34",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "35",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "37",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "41",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "42",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "keras",
+    "bugsinpy_id": "44",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "2",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "5",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "6",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "14",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "23",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "27",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "luigi",
+    "bugsinpy_id": "32",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "1",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "4",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "8",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "15",
+    "reason": "fix touches 4 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "18",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "19",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "20",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "matplotlib",
+    "bugsinpy_id": "29",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "2",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "9",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "13",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "15",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "16",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "17",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "18",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "20",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "22",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "26",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "27",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "31",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "32",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "36",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "37",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "40",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "41",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "43",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "44",
+    "reason": "fix touches 5 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "45",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "46",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "47",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "51",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "53",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "54",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "55",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "56",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "57",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "62",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "65",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "66",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "67",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "68",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "70",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "71",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "72",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "73",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "74",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "75",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "77",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "79",
+    "reason": "fix touches 4 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "80",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "81",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "82",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "83",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "90",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "92",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "93",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "94",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "96",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "97",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "99",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "100",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "101",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "103",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "105",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "108",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "109",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "110",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "111",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "112",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "113",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "114",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "118",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "120",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "121",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "122",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "123",
+    "reason": "fix touches 3 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "124",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "125",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "126",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "129",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "130",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "131",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "132",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "134",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "135",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "136",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "137",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "138",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "140",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "146",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "147",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "149",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "150",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "151",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "153",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "156",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "157",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "159",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "164",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "165",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "167",
+    "reason": "fix touches 4 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "169",
+    "reason": "buggy source not downloadable"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "sanic",
+    "bugsinpy_id": "2",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "sanic",
+    "bugsinpy_id": "5",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "3",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "7",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "10",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "13",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "14",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "16",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "19",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "23",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "24",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "25",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "26",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "30",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "31",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "33",
+    "reason": "fix touches 8 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "scrapy",
+    "bugsinpy_id": "34",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "3",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "7",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "8",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "9",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "spacy",
+    "bugsinpy_id": "10",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "6",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "8",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "13",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "15",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "16",
+    "reason": "fix touches 4 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "17",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "20",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "23",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "24",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "thefuck",
+    "bugsinpy_id": "28",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "6",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "7",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "10",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "12",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "15",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tornado",
+    "bugsinpy_id": "16",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tqdm",
+    "bugsinpy_id": "2",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tqdm",
+    "bugsinpy_id": "3",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tqdm",
+    "bugsinpy_id": "7",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "tqdm",
+    "bugsinpy_id": "9",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "14",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "16",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "19",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "31",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "32",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "33",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "34",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "35",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "36",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "37",
+    "reason": "changed lines are not inside exactly one top-level function or method"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "38",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "40",
+    "reason": "fix touches 2 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "youtube-dl",
+    "bugsinpy_id": "42",
+    "reason": "fix touches 4 non-test Python files"
+  },
+  {
+    "source": "bugsinpy",
+    "project": "pandas",
+    "bugsinpy_id": "5",
+    "reason": "buggy_commit already contains the fix (buggy and fixed files identical)"
+  }
+]

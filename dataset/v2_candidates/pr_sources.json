@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://github.com/amazon-ion/ion-python/pull/448",
+    "note": "sugerido pela Fernanda em 2026-09-29; bug de limite de recursão (RecursionError em vez de IonException): fora do modelo do ESBMC, caso de controle"
+  }
+]
