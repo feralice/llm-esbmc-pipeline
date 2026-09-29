@@ -248,6 +248,10 @@ class HarnessSynthesizer:
             diagnostic=diagnostic,
             module_source=module_source,
         )
+        return self.complete(system_prompt, user_prompt, json_mode=style == STYLE_REWRITE)
+
+    def complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False) -> SynthResult:
+        """One call to the configured backend; the fence-stripped text lands in ``harness``."""
         payload: dict[str, Any] = {}
         if self.backend == "openai":
             payload = {
@@ -257,7 +261,7 @@ class HarnessSynthesizer:
                     {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
                 ],
             }
-            if style == STYLE_REWRITE:
+            if json_mode:
                 payload["text"] = {"format": {"type": "json_object"}}
         elif self.backend in {"ollama", "google"}:
             payload = {

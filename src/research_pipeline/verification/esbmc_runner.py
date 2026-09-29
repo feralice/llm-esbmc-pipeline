@@ -56,8 +56,12 @@ def run_esbmc_direct(
     output_dir: str | Path | None = None,
     extra_flags: list[str] | None = None,
     multi_property: bool = True,
+    bound_flags: list[str] | None = None,
 ) -> ESBMCDirectResult:
-    """Run ESBMC directly; disable multi-property only for exact native witnesses."""
+    """Run ESBMC directly; disable multi-property only for exact native witnesses.
+
+    ``bound_flags`` replaces the default incremental-BMC bound flags.
+    """
     file_path = Path(file_path)
     base_command = list(esbmc_command or ["esbmc"])
 
@@ -67,7 +71,7 @@ def run_esbmc_direct(
     # instead of the marker. With it, both are reported separately (verified
     # empirically 2026-09-04 during the ESBMC probe EXP-01).
     command = [
-        *base_command, *_bounded_incremental_flags(bound),
+        *base_command, *(bound_flags if bound_flags is not None else _bounded_incremental_flags(bound)),
         *(["--multi-property"] if multi_property else []),
         *(extra_flags or []), str(file_path),
     ]

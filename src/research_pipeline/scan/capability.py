@@ -20,8 +20,9 @@ _PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         "method_entry",
         re.compile(r"not a @staticmethod.*receiver is a class instance", re.IGNORECASE | re.DOTALL),
     ),
-    ("import", re.compile(r"Cannot open file|No module named|ModuleNotFoundError", re.IGNORECASE)),
-    ("dependency", re.compile(r'(?:Object|Function) "[^"]+" not found')),
+    ("import", re.compile(r"Cannot open file|No module named|ModuleNotFoundError|Module '[^']+' not found",
+                          re.IGNORECASE)),
+    ("dependency", re.compile(r'(?:Object|Function) "[^"]+" not found|Base class not found')),
     ("generator", re.compile(r"GeneratorExp|generator expression", re.IGNORECASE)),
     ("builtin", re.compile(r"Unsupported builtin|builtin.{0,50}not supported|ERROR: unsupported:", re.IGNORECASE)),
     ("container", re.compile(r"ListComp|list indices must be integers|object of this type has no len", re.IGNORECASE)),
@@ -41,9 +42,12 @@ def _line_number(output: str) -> int | None:
 def _error_message(output: str, summary: str, status: str) -> str:
     if status == "violation_found":
         return summary.strip() or "ESBMC reported a verifier property violation"
-    for line in output.splitlines():
-        if "ERROR:" in line or "error:" in line.lower():
-            return line.strip()
+    # ESBMC's own "ERROR:" line first: the "error:" lines before it are mypy's advisory output.
+    lines = output.splitlines()
+    traceback_errors = [ln for ln in lines if re.match(r"[A-Z]\w*(?:Error|Exception): ", ln)]
+    for line in [*(ln for ln in lines if "ERROR:" in ln), *traceback_errors,
+                 *(ln for ln in lines if "error:" in ln.lower())]:
+        return line.strip()
     return summary.strip() or f"ESBMC status: {status}"
 
 
