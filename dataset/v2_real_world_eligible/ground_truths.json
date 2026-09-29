@@ -1,10 +1,10 @@
 {
   "evaluation_policy": {
     "detection_scope": "only items not requiring patch context",
-    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/. 2026-09-28: 11 items whose bug is visible from the code alone returned to the detection metric (now scored by harness_strategies); the remaining ones need project-specific knowledge. Duplicates av_real_19, av_real_20, ip_real_31 and vm_real_09 were removed.",
     "patch_context_items": []
   },
-  "description": "ESBMC-verifiable subset of v2_real_world (18 of 120 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
+  "description": "ESBMC-verifiable subset of v2_real_world (18 of 116 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
   "items": [
     {
       "id": "dz_real_02",
@@ -24,6 +24,9 @@
       "abstraction_notes": "num_substrings = len(possible_substrings_splits[i]) can legitimately be 0 (an empty split option) -- nothing upstream of the real division guards against it. Manual assert added because ESBMC-Python's `/` is not covered by the default division-by-zero check. Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED.",
       "categories": [
         "division_by_zero"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "dz_real_02.py",
       "harness_function": "rating_ratio",
@@ -61,6 +64,9 @@
         "division_by_zero",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "dz_real_03.py",
       "harness_function": "hash_expand_range",
       "harness_expression": "(crc >> idx) % rng",
@@ -94,6 +100,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "ip_real_17.py",
       "harness_function": "response_status_message",
       "harness_expression": "responses.get(status)",
@@ -125,6 +134,9 @@
       "abstraction_notes": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
       "harness_file": "ip_real_21.py",
@@ -159,6 +171,9 @@
       "abstraction_notes": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "ip_real_28.py",
       "harness_function": "initialize",
@@ -195,6 +210,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_12.py",
       "harness_function": "unlink",
       "harness_expression": "current_line.next.prev = current_line.prev",
@@ -229,6 +247,9 @@
       "abstraction_notes": "Function builds a matches list, then only returns inside `if matches:` with no else -- when matches is empty, implicitly returns None instead of []. Real GitHub issue #18. Verified via ESBMC's missing-return-statement detection (120 VCCs generated, 26 after simplification).",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_21.py",
       "harness_function": "multi_get",
@@ -265,6 +286,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_04.py",
       "harness_function": "buggy_realise",
       "harness_expression": "cached[0]",
@@ -300,6 +324,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_05.py",
       "harness_function": "buggy_check",
       "harness_expression": "src_txt[-1]",
@@ -330,6 +357,9 @@
       "abstraction_notes": "Real code guarded l[i+4] with 'i+3 < len_l' instead of 'i+4 < len_l'; when len_l == i+4 exactly the guard passes but the index is out of range. Modeled as a plain int-indexed list, no dateutil token types needed.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_09.py",
       "harness_function": "parse_minute_second",
@@ -362,6 +392,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_10.py",
       "harness_function": "compute_num_cols",
       "harness_expression": "list_of_lists[0]",
@@ -392,6 +425,9 @@
       "abstraction_notes": "end was set directly to the caller-supplied n without clamping to len(pwcs); when n exceeds the string length the loop indexes past the end. Fixes real issue #228, has an upstream regression test.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_11.py",
       "harness_function": "wcswidth_loop",
@@ -424,6 +460,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_12.py",
       "harness_function": "fast_float",
       "harness_expression": "x[0]",
@@ -455,6 +494,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_13.py",
       "harness_function": "tokenize_zwj_branch",
       "harness_expression": "result[-1]",
@@ -485,6 +527,9 @@
       "abstraction_notes": "lines[0] indexed with no empty-list check; raises IndexError when 'uname -rs' produces no output. Pure Sequence[str] function, no subprocess dependency at this level. Fixes real GitHub issue #304/#264.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_14.py",
       "harness_function": "parse_uname_content",
@@ -519,6 +564,9 @@
       "abstraction_notes": "Real code called configure_http_handler() on the metrics VALUE returned by generate_latest() instead of on the metrics_collector object that actually defines that method. Modeled with two minimal classes (Metrics with no such method, MetricsCollector with it) -- ESBMC-Python's class model raises AttributeError on the wrong-object call, near-verbatim reproduction.",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "tm_real_10.py",
       "harness_function": "get_handler_buggy",
@@ -557,6 +605,9 @@
         "division_by_zero",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "dz_real_04.py",
       "harness_function": "interpolate_step_ratio",
       "harness_expression": "(h_src - wdw_size) / step_size",
@@ -589,6 +640,9 @@
       "abstraction_notes": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'.",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "tm_real_13.py",
       "harness_function": "xg_characters",

@@ -112,14 +112,6 @@
       "status": "rejected",
       "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
     },
-    "av_real_19": {
-      "status": "rejected",
-      "reason": "Categoria incorrect_result não é formal."
-    },
-    "av_real_20": {
-      "status": "rejected",
-      "reason": "Categoria incorrect_result não é formal."
-    },
     "av_real_21": {
       "status": "rejected",
       "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
@@ -176,7 +168,7 @@
     },
     "ip_real_05": {
       "status": "rejected",
-      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result. Além disso, o detection não reproduz o trecho bugado do commit."
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
     },
     "ip_real_06": {
       "status": "rejected",
@@ -216,7 +208,7 @@
     },
     "ip_real_15": {
       "status": "rejected",
-      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result. Além disso, o detection não reproduz o trecho bugado do commit."
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
     },
     "ip_real_16": {
       "status": "rejected",
@@ -277,10 +269,6 @@
         "invalid_precondition"
       ],
       "esbmc_property": "RuntimeError"
-    },
-    "ip_real_31": {
-      "status": "rejected",
-      "reason": "Categoria incorrect_result não é formal."
     },
     "ip_real_32": {
       "status": "needs_review",
@@ -448,7 +436,7 @@
     },
     "oob_real_06": {
       "status": "needs_review",
-      "reason": "KeyError real em default[k], mas o harness é `assert default_has_key`; reescrever com o merge recursivo. Além disso, o detection é uma reconstrução sintética (com main própria), não o código real de cookiecutter/config.py."
+      "reason": "KeyError real em default[k], mas o harness é `assert default_has_key`; reescrever com o merge recursivo."
     },
     "oob_real_09": {
       "status": "eligible",
@@ -551,8 +539,8 @@
       "esbmc_property": "AttributeError"
     },
     "tm_real_11": {
-      "status": "rejected",
-      "reason": "O fix (BugsInPy scrapy/20) altera o chamador em scrapy/spiders/sitemap.py; o detection mostra uma função que o patch não toca."
+      "status": "needs_review",
+      "reason": "Detection e GT corrigidos para o chamador real (SitemapSpider._parse_sitemap passa response.body, bytes, para sitemap_urls_from_robots). O bug real lança TypeError, mas o harness ainda é só `assert passed_text`; reescrever com a operação real."
     },
     "tm_real_12": {
       "status": "unsupported_by_esbmc",
@@ -568,7 +556,7 @@
     },
     "vm_real_01": {
       "status": "rejected",
-      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result. Além disso, o detection não reproduz o trecho bugado do commit."
+      "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
     },
     "vm_real_02": {
       "status": "unsupported_by_esbmc",
@@ -597,10 +585,6 @@
     "vm_real_08": {
       "status": "needs_review",
       "reason": "Bug real lança exceção, mas o harness só testa uma flag booleana; precisa ser reescrito com a operação real e medido no ESBMC."
-    },
-    "vm_real_09": {
-      "status": "rejected",
-      "reason": "Duplicata de nm_real_09: mesmo commit do tqdm (a4b9c86 -> 6dad2e8). Além disso, o detection não reproduz o trecho bugado do commit."
     }
   }
 }

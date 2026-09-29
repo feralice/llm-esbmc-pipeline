@@ -1,33 +1,19 @@
 {
   "evaluation_policy": {
     "detection_scope": "only items not requiring patch context",
-    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/. 2026-09-28: 11 items whose bug is visible from the code alone returned to the detection metric (now scored by harness_strategies); the remaining ones need project-specific knowledge. Duplicates av_real_19, av_real_20, ip_real_31 and vm_real_09 were removed.",
     "patch_context_items": [
-      "nm_real_15",
       "nm_real_16",
       "av_real_04",
-      "av_real_09",
       "av_real_10",
-      "av_real_19",
-      "av_real_20",
       "ip_real_08",
       "ip_real_09",
       "ip_real_12",
-      "ip_real_20",
-      "ip_real_31",
-      "ir_real_01",
-      "ir_real_02",
-      "ir_real_03",
-      "ir_real_05",
       "av_real_06",
-      "av_real_07",
       "av_real_08",
-      "av_real_11",
       "av_real_12",
       "av_real_13",
-      "av_real_14",
       "av_real_15",
-      "av_real_17",
       "av_real_21"
     ]
   },
@@ -53,6 +39,9 @@
       "abstraction_notes": "Zero external dependencies -- dict.get()'s None-on-missing-key behavior modeled directly with a nondet bool + nondet value, no stubbing needed.",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "av_real_01.py",
       "harness_function": "cli_bool_option_value",
@@ -85,6 +74,9 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "av_real_02.py",
       "harness_function": "set_nodelay_guard",
       "harness_expression": "assert self.stream is not None",
@@ -115,6 +107,11 @@
       "abstraction_notes": "pandas index type stubbed as an int tag (no pandas import) -- PeriodIndex vs. 'anything else' is the only distinction the real assert makes.",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "native_runtime",
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "av_real_03.py",
       "harness_function": "to_timestamp_guard",
@@ -147,6 +144,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_04.py",
       "harness_function": "summary_smiley",
       "harness_expression": "assert smiley == \":)\"",
@@ -177,6 +178,10 @@
       "abstraction_notes": "Near-zero stubbing: real bug is pure control-flow ordering (the `total = len(iterable)` computation sits below the `if disable: return` early-return branch in the real __init__), reproduced verbatim as an int/bool early-return structure -- `total_is_none`/`iterable_is_none` stand in for the real None-vs-set attribute state (ESBMC-Python has no None-typed int), `disable` and `iterable_len` are the real parameters unchanged. Real caller precondition: an iterable was passed and no explicit total was given; len() does not depend on `disable`, so the correct total should always resolve to the iterable's length regardless of the disable branch.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "av_real_05.py",
       "harness_function": "total_after_init",
@@ -210,6 +215,10 @@
       "abstraction_notes": "Verbatim string logic, no stubbing: buggy version appends '--staged' at the very end via string concatenation; fixed version inserts it right after 'diff' via .replace(). Modeled as a buggy/correct function pair with a concrete literal command that has trailing args after 'diff', where the two placements produce different strings. [AUDITADO 2026-08-23] BROKEN at default settings: default --unwind 6/--timeout 20s hits ESBMC's own string-model unwinding assertion (strncmp/strncmp/python str_concat internals), not the real assert -- a false VERIFICATION FAILED that does NOT demonstrate the claimed bug. Retested up to --unwind 40 --timeout 60s: still times out before reaching the real assert (same solver-cost class as the already-documented tqdm/9 and matplotlib.log rejections). Needs a much longer timeout or a lighter string-comparison harness to actually confirm this bug; do not cite this item's ESBMC result as confirmed until re-verified. [FIXED 2026-08-24: --incremental-bmc confirms the real property, no longer a false confirmation.]",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
       "harness_file": "av_real_06.py",
@@ -245,6 +254,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_07.py",
       "harness_function": "buggy_match",
       "harness_expression": "buggy_match(script) == correct_match(script)",
@@ -277,6 +290,10 @@
       "abstraction_notes": "The real code is `dict(self); conf.update(kwargs)` (Settings.update, a dict subclass method using **kwargs) -- kwargs is not modeled by ESBMC-Python's *args-only variadic support, so the two-dict merge is reduced to its scalar presence/value core: has_setting/has_override nondet bools plus nondet int values stand in for 'this key is set in self' / 'this key is set in kwargs'. Preserves the real bug exactly: kwargs (overrides) always wins over already-set settings, when the fix requires settings to win.",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "av_real_08.py",
       "harness_function": "buggy_merge",
@@ -311,6 +328,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_09.py",
       "harness_function": "buggy_bounds",
       "harness_expression": "buggy_bounds(...) == correct_bounds(...)",
@@ -344,6 +365,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_10.py",
       "harness_function": "buggy_column",
       "harness_expression": "buggy_column(...) == correct_column(...)",
@@ -357,7 +382,7 @@
     {
       "id": "av_real_11",
       "file": "av_real_11.py",
-      "function": "HTTP1Connection.write_headers",
+      "function": "HTTP1Connection._read_body",
       "verifiable": true,
       "expression": "headers.get(\"Transfer-Encoding\") == \"chunked\"",
       "expected_type": "AssertionError",
@@ -376,6 +401,10 @@
       "abstraction_notes": "Verbatim string logic, no stubbing: buggy case-sensitive comparison `headers.get(\"Transfer-Encoding\") == \"chunked\"` misses real-world 'Chunked'/'CHUNKED' header values; fixed version lowercases first. Concrete literal 'Chunked' demonstrates the divergence. [AUDITADO 2026-08-23: default --unwind 6 acerta uma unwinding assertion interna do ESBMC (string model), NAO o assert real -- falso VERIFICATION FAILED. Confirmado real com --unwind 40. Usar esse valor ao reproduzir.]",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "av_real_11.py",
       "harness_function": "buggy_is_chunked",
@@ -408,6 +437,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_12.py",
       "harness_function": "match_buggy",
       "harness_expression": "match_buggy(script) == match_correct(script)",
@@ -439,6 +472,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_13.py",
       "harness_function": "match_buggy",
       "harness_expression": "match_buggy(output) == match_correct(output)",
@@ -469,6 +506,10 @@
       "abstraction_notes": "Old code sliced off a fixed 5 chars ('open '); new code does script.replace('open ', 'open http://') which replaces every occurrence, not just the prefix. Modeled as buggy/correct string-function pair; deterministic literal 'open open google.com' makes the two diverge (slice only handles the first occurrence, replace rewrites both). [AUDITADO 2026-08-23] BROKEN at default settings: default --unwind 6/--timeout 20s hits ESBMC's own string-model unwinding assertion (__python_strnlen_bounded/strncmp internals), not the real assert -- a false VERIFICATION FAILED that does NOT demonstrate the claimed bug. Retested up to --unwind 40 --timeout 60s: still times out before reaching the real assert. Needs a much longer timeout or a lighter string-comparison harness; do not cite this item's ESBMC result as confirmed until re-verified. [FIXED 2026-08-24: --incremental-bmc confirms the real property, no longer a false confirmation.]",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
       "harness_file": "av_real_14.py",
@@ -502,6 +543,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_15.py",
       "harness_function": "gunzip_buggy",
       "harness_expression": "output += f.extrabuf",
@@ -534,6 +579,10 @@
         "assertion_violation",
         "none_misuse"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "av_real_17.py",
       "harness_function": "unified_strdate_buggy",
       "harness_expression": "return compat_str(upload_date)",
@@ -541,68 +590,6 @@
       "audit": {
         "source_expression": "return compat_str(upload_date)",
         "harness_property": "return compat_str(upload_date)",
-        "provenance_complete": false
-      }
-    },
-    {
-      "id": "av_real_19",
-      "file": "av_real_09.py",
-      "function": "(duplicate real bug, see twin)",
-      "verifiable": true,
-      "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "matplotlib",
-        "bugsinpy_id": 24,
-        "source_file": "lib/matplotlib/axis.py",
-        "source_function": "_make_getset_interval",
-        "repo_url": "https://github.com/matplotlib/matplotlib",
-        "buggy_commit": "9a5473dbac05f3d6773b42c8e16d58a7dc3159b8",
-        "fixed_commit": "407a9fe71a4c0a8ba4914b8f54f21d32d6dd2d74"
-      },
-      "abstraction_notes": "Swapped which extra bound feeds max() vs min(): buggy code paired oldmax with max() and oldmin with min(); fix pairs oldmin with max() and oldmax with min(). Modeled as buggy/correct scalar function pair with literal float inputs.",
-      "categories": [
-        "incorrect_result"
-      ],
-      "harness_file": "av_real_19.py",
-      "harness_function": "make_interval_buggy",
-      "harness_expression": "max(vmin, vmax, oldmax)",
-      "harness_line": 2,
-      "audit": {
-        "source_expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
-        "harness_property": "max(vmin, vmax, oldmax)",
-        "provenance_complete": false
-      }
-    },
-    {
-      "id": "av_real_20",
-      "file": "av_real_10.py",
-      "function": "(duplicate real bug, see twin)",
-      "verifiable": true,
-      "expression": "current_column += 4",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "black",
-        "bugsinpy_id": 10,
-        "source_file": "blib2to3/pgen2/driver.py",
-        "source_function": "Driver.parse_tokens (column tracking)",
-        "repo_url": "https://github.com/psf/black",
-        "buggy_commit": "f6643c4f0cfbae1f2493fdfce46cfbae3d26f46b",
-        "fixed_commit": "66aa676278948368dff251dffd58c850cb8b889e"
-      },
-      "abstraction_notes": "Old code merged the space and tab cases into 'elif char in \\' \\t\\': current_column += 1', losing the tab-specific +4 that real terminals/editors use for column counting; fix keeps space and tab as separate cases. Modeled as buggy/correct scalar function pair with a literal tab character input.",
-      "categories": [
-        "incorrect_result"
-      ],
-      "harness_file": "av_real_20.py",
-      "harness_function": "advance_column_buggy",
-      "harness_expression": "return current_column + 4",
-      "harness_line": 5,
-      "audit": {
-        "source_expression": "current_column += 4",
-        "harness_property": "return current_column + 4",
         "provenance_complete": false
       }
     },
@@ -626,6 +613,10 @@
       "abstraction_notes": "Real code filtered only ('_type', 'url', 'ie_key') from force_properties before merging into new_result; fix extends the filter tuple to also drop ('id', 'extractor', 'extractor_key'), which previously leaked through. Modeled as a buggy/correct boolean pair over a single representative 'is this one of the newly-added keys' flag.",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "av_real_21.py",
       "harness_function": "is_filtered_key",
@@ -660,6 +651,9 @@
       "categories": [
         "division_by_zero"
       ],
+      "harness_strategies": [
+        "unsupported"
+      ],
       "harness_file": "dz_real_01.py",
       "harness_function": "color_interp_distance",
       "harness_expression": "(xind_i - x_ind_prev) / (x_ind - x_ind_prev)",
@@ -689,6 +683,9 @@
       "categories": [
         "division_by_zero",
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "dz_real_02.py",
       "harness_function": "rating_ratio",
@@ -724,6 +721,9 @@
         "division_by_zero",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "dz_real_03.py",
       "harness_function": "hash_expand_range",
       "harness_expression": "(crc >> idx) % rng",
@@ -756,6 +756,10 @@
       "abstraction_notes": "URL reduced to three boolean predicates (has_colon, has_dslash, starts_data) standing in for the actual string tests (':' in url, '://' in url, url.startswith('data:')); has_dslash implies has_colon is the only real invariant tying them together, encoded via __ESBMC_assume.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_01.py",
       "harness_function": "buggy_should_raise",
@@ -790,6 +794,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_03.py",
       "harness_function": "buggy_init_raises",
       "harness_expression": "b == c",
@@ -822,6 +830,10 @@
       "abstraction_notes": "Method-in-(POST,PUT,PATCH) check is real caller precondition, held fixed true and omitted from the model since the bug is entirely in the header logic; Transfer-Encoding header presence/value modeled as a bool + a held-constant string \"chunked\" (the one value the fix special-cases).",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_04.py",
       "harness_function": "buggy_should_chunk",
@@ -856,6 +868,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_05.py",
       "harness_function": "buggy_gt",
       "harness_expression": "r1 == r2",
@@ -888,6 +904,10 @@
       "abstraction_notes": "Reduced from a list comprehension over `clocs` to a single-element model (buggy_elem/correct_elem applied to one nondet v); ESBMC 8.3.0 crashes (internal type2t::symbolic_type_excp) on a symbolic list literal built inline in a for-loop with a list[int] return type, so the per-element scalar core is used instead of an actual list -- captures the same wrong-variable-reference bug (stale loop index `i` vs. current `val`) without the list.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_06.py",
       "harness_function": "buggy_elem",
@@ -922,6 +942,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "ip_real_07.py",
       "harness_function": "entity_codepoint",
       "harness_expression": "chr(codepoint)",
@@ -954,6 +977,10 @@
       "abstraction_notes": "uri.find('/')-based host/path splitting reduced to a bool (has_host) plus a held-constant string for the extracted host, since the bug is about whether the extracted host is ever consulted, not the string-splitting mechanics themselves.",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_08.py",
       "harness_function": "buggy_netloc",
@@ -988,6 +1015,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_09.py",
       "harness_function": "buggy_emits_removal",
       "harness_expression": "b == c",
@@ -1020,6 +1051,10 @@
       "abstraction_notes": "SPIDER_LOADER_CLASS/SPIDER_MANAGER_CLASS settings.get() chain reduced to two distinct int values with both 'set' (settings.get with a default only matters when the primary key is present too, which is exactly the case the real deprecation-window bug hits); the real load_object/verifyClass calls are omitted since the bug is purely which value wins.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_10.py",
       "harness_function": "get_loader_class",
@@ -1054,6 +1089,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "ip_real_11.py",
       "harness_function": "check_bearer",
       "harness_expression": "should_raise == auto_error",
@@ -1086,6 +1124,10 @@
       "abstraction_notes": "Pure bool-logic bug, isolable verbatim: the buggy guard skipped a state update whenever vrf also needed updating (`state_needs_update and not vrf_needs_update` instead of just `state_needs_update`). Modeled as buggy/correct function pair, no stubbing needed.",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_12.py",
       "harness_function": "buggy_should_update_state",
@@ -1120,6 +1162,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_13.py",
       "harness_function": "buggy_range_not_satisfiable",
       "harness_expression": "buggy == correct",
@@ -1153,6 +1199,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_14.py",
       "harness_function": "buggy_len",
       "harness_expression": "buggy == correct",
@@ -1166,9 +1216,9 @@
     {
       "id": "ip_real_15",
       "file": "ip_real_15.py",
-      "function": "EmptyLineTracker._maybe_empty_lines",
+      "function": "EmptyLineTracker.maybe_empty_lines",
       "verifiable": true,
-      "expression": "before = min(before, max_allowed)",
+      "expression": "before -= self.previous_after",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -1184,12 +1234,16 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_15.py",
       "harness_function": "maybe_empty_lines_before",
       "harness_expression": "before - previous_after",
       "harness_line": 10,
       "audit": {
-        "source_expression": "before = min(before, max_allowed)",
+        "source_expression": "before -= self.previous_after",
         "harness_property": "before - previous_after",
         "provenance_complete": false
       }
@@ -1215,6 +1269,11 @@
       "categories": [
         "invalid_precondition",
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime",
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_16.py",
       "harness_function": "pivot_raises_on_missing_columns",
@@ -1247,6 +1306,9 @@
       "categories": [
         "invalid_precondition",
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "ip_real_17.py",
       "harness_function": "response_status_message",
@@ -1282,6 +1344,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_18.py",
       "harness_function": "expand_month_step",
       "harness_expression": "buggy == correct",
@@ -1312,6 +1378,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "ip_real_19.py",
       "harness_function": "keep_buggy",
       "harness_expression": "bool(v)",
@@ -1327,7 +1396,7 @@
       "file": "ip_real_20.py",
       "function": "generate_sub_moved_events",
       "verifiable": true,
-      "expression": "src_dir_path + full_path[len(dest_dir_path):] if src_dir_path else \"\"",
+      "expression": "full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else \"\"",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -1342,12 +1411,16 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_20.py",
       "harness_function": "buggy_replace",
       "harness_expression": "buggy == correct",
       "harness_line": 16,
       "audit": {
-        "source_expression": "src_dir_path + full_path[len(dest_dir_path):] if src_dir_path else \"\"",
+        "source_expression": "full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else \"\"",
         "harness_property": "buggy == correct",
         "provenance_complete": false
       }
@@ -1371,6 +1444,9 @@
       "abstraction_notes": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
       "harness_file": "ip_real_21.py",
@@ -1404,6 +1480,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_22.py",
       "harness_function": "match_buggy",
       "harness_expression": "buggy == correct",
@@ -1434,6 +1514,10 @@
       "abstraction_notes": "Old code dropped the 'significant' guard, silently including insignificant params (used e.g. for retries/scheduling metadata) in the serialized/hashed param string. Modeled as a bool-guarded dict-build pair.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_23.py",
       "harness_function": "build_params_str_buggy",
@@ -1467,6 +1551,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_24.py",
       "harness_function": "in_workers_buggy",
       "harness_expression": "assistant or worker in task.workers",
@@ -1497,6 +1585,10 @@
       "abstraction_notes": "Old tuple membership check omitted UNKNOWN status, treating unknown-status tasks as always necessary; fix adds UNKNOWN to the exclusion tuple. Modeled status membership as bool flags.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "ip_real_25.py",
       "harness_function": "is_necessary_buggy",
@@ -1529,6 +1621,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_26.py",
       "harness_function": "allow_reschedule_buggy",
       "harness_expression": "task.status in (RUNNING, BATCH_RUNNING) and status == PENDING",
@@ -1560,6 +1656,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "ip_real_28.py",
       "harness_function": "initialize",
       "harness_expression": "if not current_exists:",
@@ -1567,37 +1666,6 @@
       "audit": {
         "source_expression": "IOLoop.current(instance=False) is None",
         "harness_property": "if not current_exists:",
-        "provenance_complete": false
-      }
-    },
-    {
-      "id": "ip_real_31",
-      "file": "ip_real_31.py",
-      "function": "_make_getset_interval",
-      "verifiable": true,
-      "expression": "max(vmin, vmax, oldmax)",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "matplotlib",
-        "bugsinpy_id": "26",
-        "source_file": "lib/matplotlib/axis.py",
-        "source_function": "_make_getset_interval",
-        "repo_url": "https://github.com/matplotlib/matplotlib",
-        "buggy_commit": "04d9d28b820af0b4df230a3c67314ed5b0af8fdd",
-        "fixed_commit": "557375ff91f64c1b827f6014da2d369513a69316"
-      },
-      "abstraction_notes": "Real code swapped oldmin/oldmax in the max()/min() call when computing the new axis interval bound (used max(vmin, vmax, oldmax) and min(vmin, vmax, oldmin) instead of the other way round). Modeled as pure float arithmetic, buggy vs. correct argument order.",
-      "categories": [
-        "incorrect_result"
-      ],
-      "harness_file": "ip_real_31.py",
-      "harness_function": "compute_limit_high_buggy",
-      "harness_expression": "max(vmin, vmax, oldmax)",
-      "harness_line": 2,
-      "audit": {
-        "source_expression": "getter",
-        "harness_property": "max(vmin, vmax, oldmax)",
         "provenance_complete": false
       }
     },
@@ -1623,6 +1691,9 @@
       "abstraction_notes": "Real code added 12 to the hour for PM times with no upper-bound check; when hour was already 12 (12 PM), the result (24) is out of datetime's valid 0..23 range (real GitHub issue #16). Fix subtracts 24 and rolls the day over when the sum exceeds 23. Modeled as pure int arithmetic, sidestepping the actual datetime.py operational model entirely (not yet confirmed to validate hour range) by asserting the 0..23 invariant directly.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "ip_real_32.py",
       "harness_function": "pm_hour_buggy",
@@ -1652,6 +1723,9 @@
       "abstraction_notes": "Real code passed an empty paths list straight into the Windows-specific batch-delete pipeline instead of returning early (real GitHub issue #71, has a regression test). Modeled as a bool precondition ('was the empty-list guard missing'), not the full Windows mbcs/path-resolution pipeline, since that part is out of ESBMC-Python's scope.",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "unsupported"
       ],
       "harness_file": "ip_real_33.py",
       "harness_function": "send2trash_buggy",
@@ -1686,6 +1760,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_01.py",
       "harness_function": "decode_header_value",
       "harness_expression": "assert not value_is_none",
@@ -1717,6 +1794,9 @@
       "abstraction_notes": "Reduced tqdm's `total *= unit_scale` to its scalar core. `total` defaults to None when the wrapped iterable has no __len__; the real code only guards `unit_scale not in (True, 1)` before scaling, not total's nullness. Real caller precondition (unit_scale already filtered to exclude True/1) preserved via __ESBMC_assume.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_02.py",
       "harness_function": "scale_total",
@@ -1750,6 +1830,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_03.py",
       "harness_function": "truncate_title",
       "harness_expression": "len(video_title)",
@@ -1781,6 +1864,9 @@
       "abstraction_notes": "Pre-fix, `url_pattern.match(domain)` runs on every entry of allowed_domains before the None-filter (which only applies in a later, separate list comprehension). A None entry reaches `.match()` unguarded. Tried modeling with the real re.match() call directly first; ESBMC-Python's re model type-validates and can raise TypeError for a None argument in isolation, but that didn't reliably trigger once domain passed through a function-parameter boundary in this shape during testing, so the crash is made explicit via assert on the real precondition instead (same pattern as nm_real_01/02).",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_04.py",
       "harness_function": "check_allowed_domain",
@@ -1814,6 +1900,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_05.py",
       "harness_function": "follow_url",
       "harness_expression": "assert not url_is_none",
@@ -1845,6 +1934,11 @@
       "abstraction_notes": "Pre-fix, create_instance() returns whatever from_crawler()/from_settings()/objcls() produced with no check that the result isn't None -- a misbehaving extension can legitimately return None and the caller receives it silently. The fix raises TypeError on a None result; modeled as an assert on that postcondition.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime",
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "nm_real_06.py",
       "harness_function": "create_instance",
@@ -1878,6 +1972,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_07.py",
       "harness_function": "url_concat",
       "harness_expression": "assert not args_is_none",
@@ -1910,6 +2007,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_08.py",
       "harness_function": "url_for",
       "harness_expression": "config.SERVER_NAME",
@@ -1941,6 +2041,9 @@
       "abstraction_notes": "Pre-fix, the __len__ fallback reads self.total directly; if __len__ is invoked before __init__ has assigned self.total at all (not merely set to None), that's an AttributeError, distinct from nm_real_02's None-value bug in the same project/file. The fix uses getattr(self, \"total\", None). ESBMC-Python's class model requires declared instance attributes, so it doesn't naturally represent 'attribute not yet assigned' -- modeled via assert on the real precondition.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_09.py",
       "harness_function": "tqdm_len",
@@ -1975,6 +2078,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_10.py",
       "harness_function": "insert_colnames",
       "harness_expression": "assert not columns_is_none",
@@ -2008,6 +2114,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_11.py",
       "harness_function": "setitem_evict",
       "harness_expression": "assert not limit_is_none",
@@ -2040,6 +2149,9 @@
       "abstraction_notes": "The doubly-linked PamdRule list reduced to a single bool (next_is_none) standing in for 'current_line is the last node'; the real prev/next pointer rewiring is omitted since the bug is purely the missing None-guard on current_line.next before dereferencing .prev on it.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_12.py",
       "harness_function": "unlink",
@@ -2075,6 +2187,9 @@
         "none_misuse",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_13.py",
       "harness_function": "buggy_should_raise",
       "harness_expression": "buggy == correct",
@@ -2106,6 +2221,9 @@
       "abstraction_notes": "urlparse(...).hostname is None for a URL with no netloc; to_bytes(None) crashes. ESBMC-Python does not model to_bytes() internals, so the crash is made explicit via the real precondition it depended on, same pattern as nm_real_01.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_14.py",
       "harness_function": "host_header",
@@ -2139,6 +2257,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "nm_real_15.py",
       "harness_function": "two_routes_buggy",
       "harness_expression": "responses = responses or route1_has_key",
@@ -2170,6 +2292,10 @@
       "abstraction_notes": "Real code overwrote any user-supplied linewidths unconditionally with the rcParam default when marker not filled, instead of only substituting for None entries. Modeled as int precondition pair.",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "nm_real_16.py",
       "harness_function": "get_linewidth_buggy",
@@ -2204,6 +2330,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_17.py",
       "harness_function": "type_of",
       "harness_expression": "_isint(string)",
@@ -2237,6 +2366,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_18.py",
       "harness_function": "format_seconds",
       "harness_expression": "'%s' % retry_state.seconds_since_start",
@@ -2269,6 +2401,9 @@
       "abstraction_notes": "os.path.isfile(v)/isdir(v)/exists(v) called directly on v without a None guard; real os.path functions raise TypeError on None. Fixes #204.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_19.py",
       "harness_function": "is_file_check",
@@ -2304,6 +2439,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_20.py",
       "harness_function": "first_chunk_flag",
       "harness_expression": "num.endswith(decimal)",
@@ -2336,6 +2474,9 @@
       "abstraction_notes": "Function builds a matches list, then only returns inside `if matches:` with no else -- when matches is empty, implicitly returns None instead of []. Real GitHub issue #18. Verified via ESBMC's missing-return-statement detection (120 VCCs generated, 26 after simplification).",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_21.py",
       "harness_function": "multi_get",
@@ -2370,6 +2511,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_22.py",
       "harness_function": "to_env_filtered",
       "harness_expression": "to_env(v)",
@@ -2400,6 +2544,9 @@
       "abstraction_notes": "re.findall() is not modeled by ESBMC-Python's re module (only match/search/fullmatch are), so its list-length effect is stubbed with a nondet bool standing in for 'did the narrow [a-z]+ pattern match real pip output'.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_01.py",
       "harness_function": "extract_broken_cmd",
@@ -2433,6 +2580,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_02.py",
       "harness_function": "is_stash_command",
       "harness_expression": "tokens[1]",
@@ -2463,6 +2613,9 @@
       "abstraction_notes": "script_parts list rebuilt via range()+append() with a nondet, bounded length (idx guaranteed valid before the first pop, matching the real precondition that idx was found by searching the original list).",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_03.py",
       "harness_function": "remove_upstream_option",
@@ -2497,6 +2650,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_04.py",
       "harness_function": "buggy_realise",
       "harness_expression": "cached[0]",
@@ -2530,6 +2686,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_05.py",
       "harness_function": "buggy_check",
       "harness_expression": "src_txt[-1]",
@@ -2558,6 +2717,9 @@
       "abstraction_notes": "Real code guarded l[i+4] with 'i+3 < len_l' instead of 'i+4 < len_l'; when len_l == i+4 exactly the guard passes but the index is out of range. Modeled as a plain int-indexed list, no dateutil token types needed.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_09.py",
       "harness_function": "parse_minute_second",
@@ -2588,6 +2750,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_10.py",
       "harness_function": "compute_num_cols",
       "harness_expression": "list_of_lists[0]",
@@ -2616,6 +2781,9 @@
       "abstraction_notes": "end was set directly to the caller-supplied n without clamping to len(pwcs); when n exceeds the string length the loop indexes past the end. Fixes real issue #228, has an upstream regression test.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_11.py",
       "harness_function": "wcswidth_loop",
@@ -2646,6 +2814,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_12.py",
       "harness_function": "fast_float",
       "harness_expression": "x[0]",
@@ -2675,6 +2846,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_13.py",
       "harness_function": "tokenize_zwj_branch",
       "harness_expression": "result[-1]",
@@ -2703,6 +2877,9 @@
       "abstraction_notes": "lines[0] indexed with no empty-list check; raises IndexError when 'uname -rs' produces no output. Pure Sequence[str] function, no subprocess dependency at this level. Fixes real GitHub issue #304/#264.",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "oob_real_14.py",
       "harness_function": "parse_uname_content",
@@ -2735,6 +2912,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_15.py",
       "harness_function": "get_begin_attr",
       "harness_expression": "attrs[\"begin\"]",
@@ -2764,6 +2944,10 @@
       "categories": [
         "out_of_bounds",
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "oob_real_16.py",
       "harness_function": "get_real_index_buggy",
@@ -2798,6 +2982,9 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "tm_real_01.py",
       "harness_function": "compute_head",
       "harness_expression": "int(head) - 1",
@@ -2831,6 +3018,10 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "tm_real_02.py",
       "harness_function": "table_exists",
       "harness_expression": "table in stdout",
@@ -2862,6 +3053,10 @@
       "abstraction_notes": "Isolated the '' UNARY_OPERATORS lambda as a standalone function; real fix distinguishes bool values (checks `v is True`) from other types (checks `v is not None`). Harness pins the bool branch, which is exactly what the buggy lambda got wrong.",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "tm_real_03.py",
       "harness_function": "unary_present",
@@ -2896,6 +3091,9 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "tm_real_04.py",
       "harness_function": "str_to_int_guard",
       "harness_expression": "assert is_str",
@@ -2928,6 +3126,10 @@
       "abstraction_notes": "'to' argument's list-vs-string shape reduced to a bool (to_is_list); the real str.join() char-by-char corruption is a silent wrong-value bug, not a raised exception, so expected_type is 'other' rather than a specific exception class.",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "tm_real_05.py",
       "harness_function": "build_recipients",
@@ -2962,6 +3164,10 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "tm_real_06.py",
       "harness_function": "build_exc_info",
       "harness_expression": "result == True",
@@ -2995,6 +3201,10 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "tm_real_07.py",
       "harness_function": "buggy_filled",
       "harness_expression": "buggy == correct",
@@ -3027,6 +3237,9 @@
         "type_mismatch",
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "tm_real_08.py",
       "harness_function": "format_headers",
       "harness_expression": "headerrow=None",
@@ -3057,6 +3270,9 @@
       "abstraction_notes": "format(float(raw_val), floatfmt) crashes when raw_val doesn't actually convert to float (e.g. bool-like strings); fix catches the error and falls back to str(val).",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "tm_real_09.py",
       "harness_function": "convert_float",
@@ -3090,6 +3306,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "tm_real_10.py",
       "harness_function": "get_handler_buggy",
       "harness_expression": "metrics.configure_http_handler(self)",
@@ -3105,7 +3324,7 @@
       "file": "vm_real_01.py",
       "function": "tqdm.format_meter",
       "verifiable": true,
-      "expression": "return l_bar + r_bar",
+      "expression": "l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -3123,13 +3342,17 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
       "harness_file": "vm_real_01.py",
       "harness_function": "pick_bar_halves",
       "harness_expression": "picked_l = l_bar",
       "harness_line": 7,
       "audit": {
-        "source_expression": "l_bar = (prefix if prefix else '') + '{0:3.0f}%|'.format(percentage)",
+        "source_expression": "l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)",
         "harness_property": "picked_l = l_bar",
         "provenance_complete": true
       }
@@ -3154,6 +3377,9 @@
       "abstraction_notes": "skey is only bound inside `for skey, svalue in s.items(): ...`; when the schema dict s is empty that loop body never runs, so the later `elif type(skey) is not Optional:` references skey before it was ever assigned -> UnboundLocalError. skey_assigned models whether the loop ran (equivalent to s being non-empty); the assert isolates that real crash trigger. Verified: esbmc --z3 --unwind 6 --timeout 20s -> VERIFICATION FAILED.",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "vm_real_02.py",
       "harness_function": "validate_dict_entry",
@@ -3188,6 +3414,9 @@
       "categories": [
         "integer_overflow"
       ],
+      "harness_strategies": [
+        "unsupported"
+      ],
       "harness_file": "io_real_01.py",
       "harness_function": "nonsingular_magnitude",
       "harness_expression": "numpy_int8_abs(vmin)",
@@ -3204,6 +3433,10 @@
       "function": "gamma / lgamma",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "verifiable": true,
       "expression": "sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
@@ -3232,9 +3465,13 @@
     {
       "id": "ir_real_02",
       "file": "ir_real_02.py",
-      "function": "module-level constants",
+      "function": "module-level",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "verifiable": true,
       "expression": "pi: float = 3.14153",
@@ -3267,6 +3504,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "verifiable": true,
       "expression": "pattern_len != 7",
       "expected_type": "AssertionError",
@@ -3298,6 +3539,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "verifiable": true,
       "expression": "alpha_len = len(alphabet)",
       "expected_type": null,
@@ -3327,6 +3572,9 @@
       "function": "Markdown._html_class_str_from_tag",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "verifiable": true,
       "expression": "tag in html_classes_from_tag",
@@ -3376,6 +3624,9 @@
         "division_by_zero",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "dz_real_04.py",
       "harness_function": "interpolate_step_ratio",
       "harness_expression": "(h_src - wdw_size) / step_size",
@@ -3406,6 +3657,9 @@
       "abstraction_notes": "ProcessPoolExecutor(...) can raise OSError on platforms without multiprocessing (e.g. AWS Lambda); the fix catches that and falls back to executor=None, but the pre-fix finally block called executor.shutdown() unconditionally, crashing on the very platform the fallback was meant to support. Harness abstracts the None-carrying value as a bool flag + nondet, same pattern as nm_real_01/02.",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "nm_real_24.py",
       "harness_function": "reformat_many_finally",
@@ -3438,6 +3692,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "vm_real_03.py",
       "harness_function": "pipe_call_order_ok",
       "harness_expression": "assert not args_swapped",
@@ -3469,6 +3726,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "nm_real_25.py",
       "harness_function": "check_keep_alive",
       "harness_expression": "assert is_request_line",
@@ -3482,16 +3742,16 @@
     {
       "id": "tm_real_11",
       "file": "tm_real_11.py",
-      "function": "sitemap_urls_from_robots",
+      "function": "SitemapSpider._parse_sitemap",
       "verifiable": true,
-      "expression": "line.lstrip().startswith('Sitemap:')",
+      "expression": "sitemap_urls_from_robots(response.body)",
       "expected_type": "TypeError",
       "should_go_to_esbmc": true,
       "provenance": {
         "project": "scrapy",
         "bugsinpy_id": 20,
-        "source_file": "scrapy/utils/sitemap.py",
-        "source_function": "sitemap_urls_from_robots",
+        "source_file": "scrapy/spiders/sitemap.py",
+        "source_function": "SitemapSpider._parse_sitemap",
         "repo_url": "https://github.com/scrapy/scrapy",
         "buggy_commit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
         "fixed_commit": "25c56159b86288311630cc0cf6db9d755aeeff1e"
@@ -3500,12 +3760,15 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "tm_real_11.py",
       "harness_function": "sitemap_urls_from_robots_ok",
       "harness_expression": "assert passed_text",
       "harness_line": 8,
       "audit": {
-        "source_expression": "line.lstrip().startswith('Sitemap:')",
+        "source_expression": "sitemap_urls_from_robots(response.body)",
         "harness_property": "assert passed_text",
         "provenance_complete": true
       }
@@ -3530,6 +3793,10 @@
       "abstraction_notes": "`lambda attr, value: not str_op` negates the str_op function object itself (always truthy, attr/value unused) instead of calling str_op(attr, value) and negating the result -- a negated string filter (e.g. \"ext!=mp4\") always evaluates to False. Visible from the real code alone: the lambda's own parameters are unused and str_op is referenced without being called. Modeled as buggy (constant False) vs correct (not attr_matches).",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "vm_real_04.py",
       "harness_function": "negated_filter_buggy",
@@ -3562,6 +3829,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "vm_real_05.py",
       "harness_function": "LocalFileSystem.move",
       "harness_expression": "self.fs.mkdir(new_dir)",
@@ -3593,6 +3863,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "vm_real_06.py",
       "harness_function": "crawler_process_init",
       "harness_expression": "assert not settings_is_dict",
@@ -3623,6 +3896,9 @@
       "abstraction_notes": "s3_load_path is declared as a property (abc.abstractproperty in the real code); self.s3_load_path already returns the load-path string, so calling self.s3_load_path() tries to call that string. Visible from the real code alone: the property decorator sits right above the erroneous call site in the same class. Modeled with a bool flag standing in for 'the property was called instead of accessed'.",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "harness_file": "tm_real_12.py",
       "harness_function": "read_s3_load_path",
@@ -3656,6 +3932,9 @@
       "categories": [
         "integer_overflow"
       ],
+      "harness_strategies": [
+        "unsupported"
+      ],
       "harness_file": "io_real_02.py",
       "harness_function": "integer_squareroot_first_step",
       "harness_expression": "assert x != TYPE_MAX",
@@ -3686,6 +3965,10 @@
       "abstraction_notes": "Inside the branch that builds the VALIDATION data enqueuer, `iter_sequence_infinite(generator)` reuses the TRAINING generator variable instead of `val_data`, so validation silently iterates over training data. Visible from the real code alone: `val_data = validation_data` is assigned on the line right above, unused. Modeled with a bool flag standing in for 'the wrong (training) generator variable was used'.",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "harness_file": "vm_real_07.py",
       "harness_function": "pick_validation_enqueuer",
@@ -3718,6 +4001,9 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "tm_real_13.py",
       "harness_function": "xg_characters",
       "harness_expression": "serialized_value.decode(\"utf-8\")",
@@ -3733,7 +4019,7 @@
       "file": "vm_real_08.py",
       "function": "get_write_function",
       "verifiable": true,
-      "expression": "with open(output_path, 'a') as output_file:",
+      "expression": "open(output_path, 'a')",
       "expected_type": "NameError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -3749,12 +4035,15 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "vm_real_08.py",
       "harness_function": "open_output_file",
       "harness_expression": "assert not uses_undefined_name",
       "harness_line": 7,
       "audit": {
-        "source_expression": "with open(output_path, 'a') as output_file:",
+        "source_expression": "open(output_path, 'a')",
         "harness_property": "assert not uses_undefined_name",
         "provenance_complete": true
       }
@@ -3780,6 +4069,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "harness_file": "ip_real_34.py",
       "harness_function": "hooks_run_buggy",
       "harness_expression": "assert buggy == correct",
@@ -3795,7 +4088,7 @@
       "file": "oob_real_06.py",
       "function": "merge_configs",
       "verifiable": true,
-      "expression": "default[k]",
+      "expression": "merge_configs(default[k], v)",
       "expected_type": "AssertionError",
       "should_go_to_esbmc": true,
       "provenance": {
@@ -3811,44 +4104,16 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "harness_file": "oob_real_06.py",
       "harness_function": "merge_nested_config",
       "harness_expression": "assert default_has_key",
       "harness_line": 4,
       "audit": {
-        "source_expression": "default[k]",
+        "source_expression": "merge_configs(default[k], v)",
         "harness_property": "assert default_has_key",
-        "provenance_complete": true
-      }
-    },
-    {
-      "id": "vm_real_09",
-      "file": "vm_real_09.py",
-      "function": "__len__",
-      "verifiable": true,
-      "expression": "self.total",
-      "expected_type": "AssertionError",
-      "should_go_to_esbmc": true,
-      "provenance": {
-        "project": "tqdm",
-        "pybughive_issue": 539,
-        "source_file": "tqdm/_tqdm.py",
-        "source_function": "__len__",
-        "repo_url": "https://github.com/tqdm/tqdm",
-        "buggy_commit": "a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
-        "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9"
-      },
-      "abstraction_notes": "The pre-fix final branch reads self.total when iterable has no __len__ and no explicit total exists, causing AttributeError. The harness models that optional attribute state with total_is_defined.",
-      "categories": [
-        "variable_misuse"
-      ],
-      "harness_file": "vm_real_09.py",
-      "harness_function": "length_without_total",
-      "harness_expression": "assert total_is_defined",
-      "harness_line": 5,
-      "audit": {
-        "source_expression": "self.total",
-        "harness_property": "assert total_is_defined",
         "provenance_complete": true
       }
     }

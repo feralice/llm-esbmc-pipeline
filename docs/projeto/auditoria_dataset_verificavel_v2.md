@@ -23,6 +23,15 @@ Categorias no conjunto pronto para baseline: out_of_bounds (8), invalid_precondi
 
 Validação externa: os 120 casos têm bug confirmado por terceiros. 87 vêm do BugsInPy, com commits conferidos contra o `bug.info`; os outros 33 têm o fix no branch principal do repositório oficial ou em PR mergeado. O gargalo não é a proveniência, e sim a fidelidade do harness e o suporte do ESBMC.
 
+## Atualização 28/09/2026 (noite)
+
+- **Duplicatas removidas**: `av_real_19` e `ip_real_31` (mesma linha corrigida de `av_real_09`, BugsInPy matplotlib/24 e /26), `av_real_20` (= `av_real_10`) e `vm_real_09` (= `nm_real_09`). O dataset passou de 120 para **116** casos.
+- **Gabarito nas 4 estratégias**: cada item ganhou `harness_strategies` (`native_runtime` para bug que quebra o programa; `explicit_assertion` ou `differential_assertion` para resultado errado; `unsupported` para dependência não modelada). `av_real_03`, `ip_real_16` e `nm_real_06` aceitam os dois tipos. As categorias antigas continuam como descrição da causa.
+- **`patch_context_items` de 26 para 12**: voltaram à métrica os 11 casos cujo bug é visível lendo só o código (`ir_real_01`, `ir_real_02`, `ir_real_03`, `ir_real_05`, `av_real_17`, `av_real_07`, `av_real_09`, `av_real_11`, `av_real_14`, `nm_real_15`, `ip_real_20`). Ficaram fora os 12 que dependem de conhecer regras do projeto.
+- **Detection corrigidos**: `ip_real_05` e `ip_real_15` (comentários que entregavam o bug), `ip_real_15`, `vm_real_01` e `oob_real_06` (código real do commit no lugar de código reduzido ou inventado), e expressões do gabarito em `ip_real_15`, `ip_real_20`, `vm_real_01`, `vm_real_08`, `oob_real_06` e `tm_real_11`.
+- **Nomes de função do gabarito**: `av_real_11` apontava `write_headers`, mas o fix está em `HTTP1Connection._read_body`; `ir_real_02` passou a `module-level`, o nome usado pelo pipeline. O evaluator aceita rótulos com alternativas (`gamma / lgamma`, `_Alpha.__gt__ / _Numeric.__gt__`), porque o bug aparece em cada função listada.
+- Resultado: 116 casos, **104 alvos no E2E**, auditor do projeto sem problemas nos 125 rótulos.
+
 ## Critérios
 
 Um caso é **pronto para o baseline ESBMC** somente se passa em todos os portões, verificados por `scripts/build_v2_eligible.py` (que se recusa a gerar o subconjunto se algum falhar) e por `tests/test_v2_eligibility.py`. Isso não define a validade do bug nem remove o caso do corpus: os 120 casos continuam sendo bugs reais validados externamente. O subconjunto `v2_real_world_eligible/` é apenas uma amostra conveniente de casos cujo harness de referência já está pronto para comparação.

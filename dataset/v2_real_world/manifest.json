@@ -1,33 +1,19 @@
 {
   "evaluation_policy": {
     "detection_scope": "only items not requiring patch context",
-    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/. 2026-09-28: 11 items whose bug is visible from the code alone returned to the detection metric (now scored by harness_strategies); the remaining ones need project-specific knowledge. Duplicates av_real_19, av_real_20, ip_real_31 and vm_real_09 were removed.",
     "patch_context_items": [
-      "nm_real_15",
       "nm_real_16",
       "av_real_04",
-      "av_real_09",
       "av_real_10",
-      "av_real_19",
-      "av_real_20",
       "ip_real_08",
       "ip_real_09",
       "ip_real_12",
-      "ip_real_20",
-      "ip_real_31",
-      "ir_real_01",
-      "ir_real_02",
-      "ir_real_03",
-      "ir_real_05",
       "av_real_06",
-      "av_real_07",
       "av_real_08",
-      "av_real_11",
       "av_real_12",
       "av_real_13",
-      "av_real_14",
       "av_real_15",
-      "av_real_17",
       "av_real_21"
     ]
   },
@@ -40,6 +26,9 @@
       "function": "makeMappingArray",
       "categories": [
         "division_by_zero"
+      ],
+      "harness_strategies": [
+        "unsupported"
       ],
       "expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
       "provenance": {
@@ -70,6 +59,9 @@
         "division_by_zero",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "float(not_parsed)/float(num_substrings)",
       "provenance": {
         "project": "dateparser",
@@ -96,6 +88,9 @@
       "categories": [
         "division_by_zero",
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "(crc >> idx) % (range_end - range_begin + 1)",
       "provenance": {
@@ -126,6 +121,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "re.findall(r'ERROR: unknown command \\\"([a-z]+)\\\"',\n                            command.output)[0]",
       "provenance": {
         "project": "thefuck",
@@ -153,6 +151,9 @@
       "function": "match",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "command.script.split()[1]",
       "provenance": {
@@ -183,6 +184,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "command.script_parts.pop(upstream_option_index)",
       "provenance": {
         "project": "thefuck",
@@ -210,6 +214,9 @@
       "function": "SortedCorrectedCommandsSequence._realise",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "self._cached[0]",
       "provenance": {
@@ -239,6 +246,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "src_txt[-1]",
       "provenance": {
         "project": "black",
@@ -266,6 +276,9 @@
       "function": "cli_bool_option",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "assert isinstance(param, bool)",
       "provenance": {
@@ -295,6 +308,9 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "assert self.stream is not None",
       "provenance": {
         "project": "tornado",
@@ -323,6 +339,11 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "native_runtime",
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "assert isinstance(self.index, PeriodIndex)",
       "provenance": {
         "project": "pandas",
@@ -350,6 +371,10 @@
       "function": "get_new_command",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "return '{} --staged'.format(command.script)",
       "provenance": {
@@ -381,6 +406,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "'ls' in command.script and not ('ls -' in command.script)",
       "provenance": {
         "project": "thefuck",
@@ -408,6 +437,10 @@
       "function": "Settings.update",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "conf.update(kwargs)",
       "provenance": {
@@ -437,6 +470,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "responses = {**responses, **route.responses}",
       "provenance": {
         "project": "fastapi",
@@ -464,6 +501,9 @@
       "function": "read_conllx",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "head = (int(head) - 1) if head != \"0\" else id_",
       "provenance": {
@@ -493,6 +533,10 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "return stdout and table in stdout",
       "provenance": {
         "project": "luigi",
@@ -520,6 +564,10 @@
       "function": "_match_one",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "UNARY_OPERATORS = {'': lambda v: v is not None, '!': lambda v: v is None}",
       "provenance": {
@@ -549,6 +597,9 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "if int_str is None:\n        return None",
       "provenance": {
         "project": "youtube-dl",
@@ -576,6 +627,10 @@
       "function": "MailSender.send",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "msg['To'] = COMMASPACE.join(to)",
       "provenance": {
@@ -605,6 +660,10 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "exc_info = failure.value, failure.type, failure.getTracebackObject()",
       "provenance": {
         "project": "scrapy",
@@ -632,6 +691,10 @@
       "function": "MarkerStyle._recache",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "self._filled = True",
       "provenance": {
@@ -662,6 +725,9 @@
         "type_mismatch",
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "TableFormat(None, None, None, None, headerrow=None, datarow=DataRow('', separator, ''), padding=0, with_header_hide=None)",
       "provenance": {
         "project": "python-tabulate",
@@ -689,6 +755,9 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "formatted_val = format(float(raw_val), floatfmt)",
       "provenance": {
         "project": "python-tabulate",
@@ -715,6 +784,9 @@
       "function": "MetricsHandler.get",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "metrics.configure_http_handler(self)",
       "provenance": {
@@ -744,7 +816,11 @@
       "categories": [
         "variable_misuse"
       ],
-      "expression": "return l_bar + r_bar",
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
+      "expression": "l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)",
       "provenance": {
         "project": "tqdm",
         "bugsinpy_id": 8,
@@ -773,6 +849,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "type(skey) is not Optional",
       "provenance": {
         "project": "schema",
@@ -799,6 +878,9 @@
       "function": "nonsingular",
       "categories": [
         "integer_overflow"
+      ],
+      "harness_strategies": [
+        "unsupported"
       ],
       "expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
       "provenance": {
@@ -828,6 +910,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "value = value.decode('utf8')",
       "provenance": {
         "project": "httpie",
@@ -855,6 +940,9 @@
       "function": "tqdm.format_meter",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "total *= unit_scale",
       "provenance": {
@@ -884,6 +972,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "len(video_title) > 80 + 3",
       "provenance": {
         "project": "youtube-dl",
@@ -911,6 +1002,9 @@
       "function": "OffsiteMiddleware.get_host_regex",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "url_pattern.match(domain)",
       "provenance": {
@@ -940,6 +1034,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "url = self.urljoin(url)",
       "provenance": {
         "project": "scrapy",
@@ -967,6 +1064,11 @@
       "function": "create_instance",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime",
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "return objcls.from_crawler(crawler, *args, **kwargs)",
       "provenance": {
@@ -996,6 +1098,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "isinstance(args, dict)",
       "provenance": {
         "project": "tornado",
@@ -1023,6 +1128,9 @@
       "function": "Request.url_for",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "\"//\" in self.app.config.SERVER_NAME",
       "provenance": {
@@ -1052,6 +1160,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "self.total if self.iterable is None else self.iterable.shape[0] if hasattr(self.iterable, \"shape\") else len(self.iterable) if hasattr(self.iterable, \"__len__\") else self.total",
       "provenance": {
         "project": "tqdm",
@@ -1079,6 +1190,9 @@
       "function": "S3CopyToTable.copy",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "len(self.columns)",
       "provenance": {
@@ -1108,6 +1222,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "len(self) >= self.limit",
       "provenance": {
         "project": "scrapy",
@@ -1135,6 +1252,9 @@
       "function": "PamdService.remove",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "current_line.next.prev = current_line.prev",
       "provenance": {
@@ -1165,6 +1285,9 @@
         "none_misuse",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "self._instance_cache.get(self.io_loop) is not self",
       "provenance": {
         "project": "tornado",
@@ -1192,6 +1315,9 @@
       "function": "request_httprepr",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "to_bytes(parsed.hostname)",
       "provenance": {
@@ -1221,6 +1347,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "linewidths = rcParams['lines.linewidth']",
       "provenance": {
         "project": "matplotlib",
@@ -1248,6 +1378,9 @@
       "function": "_type",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "_isint(string)",
       "provenance": {
@@ -1278,6 +1411,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "sec_format % retry_state.seconds_since_start",
       "provenance": {
         "project": "tenacity",
@@ -1306,6 +1442,9 @@
       "function": "IsFile",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "return os.path.isfile(v)",
       "provenance": {
@@ -1336,6 +1475,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "first = not num.endswith(decimal)",
       "provenance": {
         "project": "inflect",
@@ -1364,6 +1506,9 @@
       "function": "_Projection.get_index",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "if matches:\n            return self.__class__(matches)",
       "provenance": {
@@ -1394,6 +1539,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "dotenv_as_dict = dotenv_values(file)",
       "provenance": {
         "project": "python-dotenv",
@@ -1423,6 +1571,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "set_tasks[\"failed\"] = {task for (task, status, ext) in task_history if status == 'FAILED'}",
       "provenance": {
         "project": "luigi",
@@ -1450,6 +1602,10 @@
       "function": "tqdm.__init__",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "self.iterable = iterable",
       "provenance": {
@@ -1479,6 +1635,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
       "provenance": {
         "project": "matplotlib",
@@ -1507,6 +1667,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "current_column += 4",
       "provenance": {
         "project": "black",
@@ -1531,9 +1695,13 @@
       "id": "av_real_11",
       "detection_file": "detection/av_real_11.py",
       "harness_file": "bugs/av_real_11.py",
-      "function": "HTTP1Connection.write_headers",
+      "function": "HTTP1Connection._read_body",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "headers.get(\"Transfer-Encoding\") == \"chunked\"",
       "provenance": {
@@ -1564,6 +1732,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "\"php -s\" in command.script",
       "provenance": {
         "project": "thefuck",
@@ -1593,6 +1765,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "'set-upstream' in command.output",
       "provenance": {
         "project": "thefuck",
@@ -1621,6 +1797,10 @@
       "function": "get_new_command",
       "categories": [
         "assertion_violation"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "'open http://' + command.script[5:]",
       "provenance": {
@@ -1652,6 +1832,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "output += f.extrabuf",
       "provenance": {
         "project": "scrapy",
@@ -1682,6 +1866,10 @@
         "assertion_violation",
         "none_misuse"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "return compat_str(upload_date)",
       "line": 63,
       "provenance": {
@@ -1711,6 +1899,10 @@
       "categories": [
         "assertion_violation"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "del force_properties[f]",
       "provenance": {
         "project": "youtube-dl",
@@ -1739,6 +1931,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "l[i + 4]",
       "provenance": {
         "project": "dateutil",
@@ -1764,6 +1959,9 @@
       "function": "_wrap_text_to_colwidths",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "list_of_lists[0]",
       "provenance": {
@@ -1791,6 +1989,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "pwcs[idx]",
       "provenance": {
         "project": "wcwidth",
@@ -1816,6 +2017,9 @@
       "function": "fast_float",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "x[0]",
       "provenance": {
@@ -1843,6 +2047,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "result[-1]",
       "provenance": {
         "project": "emoji",
@@ -1869,6 +2076,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "lines[0]",
       "provenance": {
         "project": "distro",
@@ -1894,6 +2104,9 @@
       "function": "dfxp2srt",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "para.attrib['begin']",
       "provenance": {
@@ -1924,6 +2137,10 @@
         "out_of_bounds",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "self.item_list[real_index]",
       "provenance": {
         "project": "boltons",
@@ -1943,68 +2160,16 @@
       }
     },
     {
-      "id": "av_real_19",
-      "detection_file": "detection/av_real_09.py",
-      "harness_file": "bugs/av_real_19.py",
-      "function": "(duplicate real bug, see twin)",
-      "categories": [
-        "incorrect_result"
-      ],
-      "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
-      "provenance": {
-        "project": "matplotlib",
-        "bugsinpy_id": 24,
-        "source_file": "lib/matplotlib/axis.py",
-        "source_function": "_make_getset_interval",
-        "repo_url": "https://github.com/matplotlib/matplotlib",
-        "buggy_commit": "9a5473dbac05f3d6773b42c8e16d58a7dc3159b8",
-        "fixed_commit": "407a9fe71a4c0a8ba4914b8f54f21d32d6dd2d74"
-      },
-      "oracle": {
-        "kind": "fixed_version_equivalence",
-        "expression": "see harness file",
-        "source": "derived from the real fix commit"
-      },
-      "abstraction": {
-        "used": true,
-        "description": "DUPLICATE of av_real_09: matplotlib bug #24, same _make_getset_interval swap as av_real_09. Kept as a separate ground_truths.json entry (its own confirmed harness exists) but reuses the same detection/ file since it's the identical real source bug."
-      }
-    },
-    {
-      "id": "av_real_20",
-      "detection_file": "detection/av_real_10.py",
-      "harness_file": "bugs/av_real_20.py",
-      "function": "(duplicate real bug, see twin)",
-      "categories": [
-        "incorrect_result"
-      ],
-      "expression": "current_column += 4",
-      "provenance": {
-        "project": "black",
-        "bugsinpy_id": 10,
-        "source_file": "blib2to3/pgen2/driver.py",
-        "source_function": "Driver.parse_tokens (column tracking)",
-        "repo_url": "https://github.com/psf/black",
-        "buggy_commit": "f6643c4f0cfbae1f2493fdfce46cfbae3d26f46b",
-        "fixed_commit": "66aa676278948368dff251dffd58c850cb8b889e"
-      },
-      "oracle": {
-        "kind": "fixed_version_equivalence",
-        "expression": "see harness file",
-        "source": "derived from the real fix commit"
-      },
-      "abstraction": {
-        "used": true,
-        "description": "DUPLICATE of av_real_10: black bug #10, same tab-column-width bug as av_real_10. Kept as a separate ground_truths.json entry (its own confirmed harness exists) but reuses the same detection/ file since it's the identical real source bug."
-      }
-    },
-    {
       "id": "ip_real_24",
       "detection_file": "detection/ip_real_24.py",
       "harness_file": "bugs/ip_real_24.py",
       "function": "CentralPlannerScheduler.get_work",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "in_workers = assistant or worker in task.workers",
       "provenance": {
@@ -2033,6 +2198,10 @@
       "function": "croniter._get_low_from_current_date_number",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "return dt.month % step",
       "provenance": {
@@ -2063,6 +2232,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "':' not in self._url",
       "provenance": {
         "project": "scrapy",
@@ -2090,6 +2263,10 @@
       "function": "Selector.__init__",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "text = response.text",
       "provenance": {
@@ -2119,6 +2296,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "\"Transfer-Encoding\" not in headers",
       "provenance": {
         "project": "tornado",
@@ -2146,6 +2327,10 @@
       "function": "_Alpha.__gt__ / _Numeric.__gt__",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "return not self.__lt__(other)",
       "provenance": {
@@ -2175,6 +2360,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "clocs",
       "provenance": {
         "project": "pandas",
@@ -2202,6 +2391,9 @@
       "function": "_htmlentity_transform",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "compat_chr(int(numstr, base))",
       "provenance": {
@@ -2231,6 +2423,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "netloc = self.config.get(\"SERVER_NAME\", \"\")",
       "provenance": {
         "project": "sanic",
@@ -2258,6 +2454,10 @@
       "function": "generate_commands",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "commands.append(\"no {0}\".format(key))",
       "provenance": {
@@ -2287,6 +2487,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "settings.get('SPIDER_MANAGER_CLASS')",
       "provenance": {
         "project": "scrapy",
@@ -2314,6 +2518,9 @@
       "function": "HTTPBearer.__call__",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "scheme.lower() != \"bearer\"",
       "provenance": {
@@ -2343,6 +2550,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "needs_update('state') and not needs_update('vrf')",
       "provenance": {
         "project": "ansible",
@@ -2370,6 +2581,10 @@
       "function": "StaticFileHandler.get",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "(start is not None and start >= size) or end == 0",
       "provenance": {
@@ -2399,6 +2614,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "self.end_index - self.start_index",
       "provenance": {
         "project": "keras",
@@ -2423,11 +2642,15 @@
       "id": "ip_real_15",
       "detection_file": "detection/ip_real_15.py",
       "harness_file": "bugs/ip_real_15.py",
-      "function": "EmptyLineTracker._maybe_empty_lines",
+      "function": "EmptyLineTracker.maybe_empty_lines",
       "categories": [
         "invalid_precondition"
       ],
-      "expression": "before = min(before, max_allowed)",
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
+      "expression": "before -= self.previous_after",
       "provenance": {
         "project": "black",
         "bugsinpy_id": "4",
@@ -2455,6 +2678,11 @@
       "categories": [
         "invalid_precondition",
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime",
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "columns",
       "provenance": {
@@ -2485,6 +2713,9 @@
         "invalid_precondition",
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "http.RESPONSES.get(int(status))",
       "provenance": {
         "project": "scrapy",
@@ -2513,6 +2744,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "self.to_tuple()[index]",
       "provenance": {
         "project": "python-semver",
@@ -2540,7 +2774,11 @@
       "categories": [
         "incorrect_result"
       ],
-      "expression": "src_dir_path + full_path[len(dest_dir_path):] if src_dir_path else \"\"",
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
+      "expression": "full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else \"\"",
       "provenance": {
         "project": "watchdog",
         "repo_url": "https://github.com/gorakhargosh/watchdog",
@@ -2566,6 +2804,9 @@
       "function": "SortedDict.__eq__",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
       "provenance": {
@@ -2595,6 +2836,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "pattern.lower() in command.stderr.lower()",
       "provenance": {
         "project": "thefuck",
@@ -2622,6 +2867,10 @@
       "function": "Task.to_str_params",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "params[param_name].significant",
       "provenance": {
@@ -2651,6 +2900,10 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "necessary_tasks",
       "provenance": {
         "project": "luigi",
@@ -2678,6 +2931,10 @@
       "function": "Scheduler.add_task",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "worker is not None",
       "provenance": {
@@ -2707,6 +2964,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "IOLoop.current(instance=False) is None",
       "provenance": {
         "project": "tornado",
@@ -2728,40 +2988,15 @@
       }
     },
     {
-      "id": "ip_real_31",
-      "detection_file": "detection/ip_real_31.py",
-      "harness_file": "bugs/ip_real_31.py",
-      "function": "_make_getset_interval",
-      "categories": [
-        "incorrect_result"
-      ],
-      "expression": "max(vmin, vmax, oldmax)",
-      "provenance": {
-        "project": "matplotlib",
-        "bugsinpy_id": "26",
-        "source_file": "lib/matplotlib/axis.py",
-        "source_function": "_make_getset_interval",
-        "repo_url": "https://github.com/matplotlib/matplotlib",
-        "buggy_commit": "04d9d28b820af0b4df230a3c67314ed5b0af8fdd",
-        "fixed_commit": "557375ff91f64c1b827f6014da2d369513a69316"
-      },
-      "oracle": {
-        "kind": "fixed_version_equivalence",
-        "expression": "see harness bugs/ip_real_31.py",
-        "source": "Reference/oracle extracted from the real fix commit or ESBMC's native check; abstraction detailed in ground_truths.json abstraction_notes"
-      },
-      "abstraction": {
-        "used": true,
-        "description": "Real code swapped oldmin/oldmax in the max()/min() call when computing the new axis interval bound (used max(vmin, vmax, oldmax) and min(vmin, vmax, oldmin) instead of the other way round). Modeled as pure float arithmetic, buggy vs. correct argument order."
-      }
-    },
-    {
       "id": "ip_real_32",
       "detection_file": "detection/ip_real_32.py",
       "harness_file": "bugs/ip_real_32.py",
       "function": "date_convert",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "H += 12",
       "provenance": {
@@ -2791,6 +3026,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "unsupported"
+      ],
       "expression": "SHFileOperationW(byref(fileop))",
       "provenance": {
         "project": "send2trash",
@@ -2817,6 +3055,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
       "provenance": {
         "project": "esbmc",
@@ -2840,9 +3082,13 @@
       "id": "ir_real_02",
       "detection_file": "detection/ir_real_02.py",
       "harness_file": "bugs/ir_real_02.py",
-      "function": "module-level constants",
+      "function": "module-level",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "pi: float = 3.14153",
       "provenance": {
@@ -2871,6 +3117,10 @@
       "categories": [
         "incorrect_result"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "pattern_len != 7",
       "provenance": {
         "project": "esbmc",
@@ -2897,6 +3147,10 @@
       "function": "string_to_int",
       "categories": [
         "incorrect_result"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "alpha_len = len(alphabet)",
       "provenance": {
@@ -2925,6 +3179,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "tag in html_classes_from_tag",
       "provenance": {
         "project": "python-markdown2",
@@ -2952,6 +3209,9 @@
       "categories": [
         "division_by_zero",
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "(h_src - wdw_size) / step_size",
       "provenance": {
@@ -2982,6 +3242,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "executor.shutdown()",
       "provenance": {
         "project": "black",
@@ -3009,6 +3272,9 @@
       "function": "Language.pipe",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "docs = _pipe(pipe, docs, kwargs)",
       "provenance": {
@@ -3038,6 +3304,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "start_line.method in (\"HEAD\", \"GET\")",
       "provenance": {
         "project": "tornado",
@@ -3062,16 +3331,19 @@
       "id": "tm_real_11",
       "detection_file": "detection/tm_real_11.py",
       "harness_file": "bugs/tm_real_11.py",
-      "function": "sitemap_urls_from_robots",
+      "function": "SitemapSpider._parse_sitemap",
       "categories": [
         "type_mismatch"
       ],
-      "expression": "line.lstrip().startswith('Sitemap:')",
+      "harness_strategies": [
+        "native_runtime"
+      ],
+      "expression": "sitemap_urls_from_robots(response.body)",
       "provenance": {
         "project": "scrapy",
         "bugsinpy_id": 20,
-        "source_file": "scrapy/utils/sitemap.py",
-        "source_function": "sitemap_urls_from_robots",
+        "source_file": "scrapy/spiders/sitemap.py",
+        "source_function": "SitemapSpider._parse_sitemap",
         "repo_url": "https://github.com/scrapy/scrapy",
         "buggy_commit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
         "fixed_commit": "25c56159b86288311630cc0cf6db9d755aeeff1e"
@@ -3093,6 +3365,10 @@
       "function": "YoutubeDL._build_format_filter",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "op = lambda attr, value: not str_op",
       "provenance": {
@@ -3122,6 +3398,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "self.fs.mkdir(d)",
       "provenance": {
         "project": "luigi",
@@ -3149,6 +3428,9 @@
       "function": "CrawlerProcess.__init__",
       "categories": [
         "variable_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "configure_logging(settings)",
       "provenance": {
@@ -3178,6 +3460,9 @@
       "categories": [
         "type_mismatch"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "path = self.s3_load_path()",
       "provenance": {
         "project": "luigi",
@@ -3205,6 +3490,9 @@
       "function": "integer_squareroot",
       "categories": [
         "integer_overflow"
+      ],
+      "harness_strategies": [
+        "unsupported"
       ],
       "expression": "y = (x + 1) // 2",
       "provenance": {
@@ -3235,6 +3523,10 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
+      ],
       "expression": "val_enqueuer_gen = iter_sequence_infinite(generator)",
       "provenance": {
         "project": "keras",
@@ -3262,6 +3554,9 @@
       "function": "XmlItemExporter._export_xml_field",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "self._xg_characters(serialized_value)",
       "provenance": {
@@ -3291,7 +3586,10 @@
       "categories": [
         "variable_misuse"
       ],
-      "expression": "with open(output_path, 'a') as output_file:",
+      "harness_strategies": [
+        "native_runtime"
+      ],
+      "expression": "open(output_path, 'a')",
       "provenance": {
         "project": "PySnooper",
         "bugsinpy_id": 3,
@@ -3318,6 +3616,10 @@
       "function": "find_hook",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "explicit_assertion",
+        "differential_assertion"
       ],
       "expression": "return os.path.abspath(os.path.join(hooks_dir, hook_file))",
       "provenance": {
@@ -3347,7 +3649,10 @@
       "categories": [
         "out_of_bounds"
       ],
-      "expression": "default[k]",
+      "harness_strategies": [
+        "native_runtime"
+      ],
+      "expression": "merge_configs(default[k], v)",
       "provenance": {
         "project": "cookiecutter",
         "bugsinpy_id": 1513,
@@ -3365,34 +3670,6 @@
       "abstraction": {
         "used": true,
         "description": "The dictionary lookup is modeled by a boolean precondition because the full recursive configuration merge is outside the useful ESBMC-Python fragment; false means the nested key is absent from default."
-      }
-    },
-    {
-      "id": "vm_real_09",
-      "detection_file": "detection/vm_real_09.py",
-      "harness_file": "bugs/vm_real_09.py",
-      "function": "__len__",
-      "categories": [
-        "variable_misuse"
-      ],
-      "expression": "self.total",
-      "provenance": {
-        "project": "tqdm",
-        "pybughive_issue": 539,
-        "source_file": "tqdm/_tqdm.py",
-        "source_function": "__len__",
-        "repo_url": "https://github.com/tqdm/tqdm",
-        "buggy_commit": "a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
-        "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9"
-      },
-      "oracle": {
-        "kind": "native_property",
-        "expression": "assert total_is_defined",
-        "source": "PyBugHive issue #539 and its fix: use getattr(self, 'total', None) when the iterable has no length."
-      },
-      "abstraction": {
-        "used": true,
-        "description": "The existence of the optional total attribute is modeled as a boolean, isolating the undefined-attribute path without importing tqdm."
       }
     }
   ]

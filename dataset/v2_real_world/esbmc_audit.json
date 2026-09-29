@@ -413,46 +413,6 @@
       "fixed": null,
       "id": "av_real_17"
     },
-    "av_real_19": {
-      "buggy": {
-        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_19.py",
-        "conversion_error": false,
-        "esbmc_property": "assertion",
-        "tail": [
-          "** 1 of 1 properties failed",
-          "",
-          "VERIFICATION FAILED"
-        ],
-        "vccs": [
-          1
-        ],
-        "verdict": "failed",
-        "violated_line": 16,
-        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_19.py line 16 column 4 function main | assertion buggy == correct | buggy == correct"
-      },
-      "fixed": null,
-      "id": "av_real_19"
-    },
-    "av_real_20": {
-      "buggy": {
-        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_20.py",
-        "conversion_error": false,
-        "esbmc_property": "assertion",
-        "tail": [
-          "** 1 of 13 properties failed, 12 passed",
-          "",
-          "VERIFICATION FAILED"
-        ],
-        "vccs": [
-          43
-        ],
-        "verdict": "failed",
-        "violated_line": 20,
-        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/av_real_20.py line 20 column 4 function main | assertion buggy == correct | buggy == correct"
-      },
-      "fixed": null,
-      "id": "av_real_20"
-    },
     "av_real_21": {
       "buggy": {
         "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/av_real_21.py",
@@ -1202,26 +1162,6 @@
         "violated_property": ""
       },
       "id": "ip_real_28"
-    },
-    "ip_real_31": {
-      "buggy": {
-        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_31.py",
-        "conversion_error": false,
-        "esbmc_property": "assertion",
-        "tail": [
-          "** 1 of 1 properties failed",
-          "",
-          "VERIFICATION FAILED"
-        ],
-        "vccs": [
-          1
-        ],
-        "verdict": "failed",
-        "violated_line": 17,
-        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/ip_real_31.py line 17 column 4 function main | assertion buggy == correct | buggy == correct"
-      },
-      "fixed": null,
-      "id": "ip_real_31"
     },
     "ip_real_32": {
       "buggy": {
@@ -2883,26 +2823,6 @@
       },
       "fixed": null,
       "id": "vm_real_08"
-    },
-    "vm_real_09": {
-      "buggy": {
-        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/vm_real_09.py",
-        "conversion_error": false,
-        "esbmc_property": "assertion",
-        "tail": [
-          "** 1 of 1 properties failed",
-          "",
-          "VERIFICATION FAILED"
-        ],
-        "vccs": [
-          1
-        ],
-        "verdict": "failed",
-        "violated_line": 5,
-        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/vm_real_09.py line 5 column 4 function length_without_total | assertion total_is_defined | total_is_defined"
-      },
-      "fixed": null,
-      "id": "vm_real_09"
     }
   }
 }

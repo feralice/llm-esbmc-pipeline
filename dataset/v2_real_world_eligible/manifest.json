@@ -1,10 +1,10 @@
 {
   "evaluation_policy": {
     "detection_scope": "only items not requiring patch context",
-    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/.",
+    "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/. 2026-09-28: 11 items whose bug is visible from the code alone returned to the detection metric (now scored by harness_strategies); the remaining ones need project-specific knowledge. Duplicates av_real_19, av_real_20, ip_real_31 and vm_real_09 were removed.",
     "patch_context_items": []
   },
-  "description": "ESBMC-verifiable subset of v2_real_world (18 of 120 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
+  "description": "ESBMC-verifiable subset of v2_real_world (18 of 116 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
   "items": [
     {
       "id": "dz_real_02",
@@ -13,6 +13,9 @@
       "function": "ExactLanguageSearch.choose_best_split",
       "categories": [
         "division_by_zero"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "float(not_parsed)/float(num_substrings)",
       "provenance": {
@@ -41,6 +44,9 @@
       "categories": [
         "division_by_zero",
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "(crc >> idx) % (range_end - range_begin + 1)",
       "provenance": {
@@ -72,6 +78,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "self._cached[0]",
       "provenance": {
         "project": "thefuck",
@@ -100,6 +109,9 @@
       "function": "lib2to3_parse",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "src_txt[-1]",
       "provenance": {
@@ -130,6 +142,9 @@
       "categories": [
         "variable_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "metrics.configure_http_handler(self)",
       "provenance": {
         "project": "luigi",
@@ -159,6 +174,9 @@
       "categories": [
         "none_misuse"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "current_line.next.prev = current_line.prev",
       "provenance": {
         "project": "ansible",
@@ -187,6 +205,9 @@
       "function": "_Projection.get_index",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "if matches:\n            return self.__class__(matches)",
       "provenance": {
@@ -218,6 +239,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "l[i + 4]",
       "provenance": {
         "project": "dateutil",
@@ -244,6 +268,9 @@
       "function": "_wrap_text_to_colwidths",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "list_of_lists[0]",
       "provenance": {
@@ -272,6 +299,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "pwcs[idx]",
       "provenance": {
         "project": "wcwidth",
@@ -298,6 +328,9 @@
       "function": "fast_float",
       "categories": [
         "out_of_bounds"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "x[0]",
       "provenance": {
@@ -326,6 +359,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "result[-1]",
       "provenance": {
         "project": "emoji",
@@ -353,6 +389,9 @@
       "categories": [
         "out_of_bounds"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "lines[0]",
       "provenance": {
         "project": "distro",
@@ -379,6 +418,9 @@
       "function": "response_status_message",
       "categories": [
         "none_misuse"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "http.RESPONSES.get(int(status))",
       "provenance": {
@@ -409,6 +451,9 @@
       "categories": [
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
       "provenance": {
         "project": "sortedcontainers",
@@ -437,6 +482,9 @@
       "function": "IOLoop.initialize",
       "categories": [
         "invalid_precondition"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "IOLoop.current(instance=False) is None",
       "provenance": {
@@ -468,6 +516,9 @@
         "division_by_zero",
         "invalid_precondition"
       ],
+      "harness_strategies": [
+        "native_runtime"
+      ],
       "expression": "(h_src - wdw_size) / step_size",
       "provenance": {
         "project": "nki-samples",
@@ -497,6 +548,9 @@
       "function": "XmlItemExporter._export_xml_field",
       "categories": [
         "type_mismatch"
+      ],
+      "harness_strategies": [
+        "native_runtime"
       ],
       "expression": "self._xg_characters(serialized_value)",
       "provenance": {
