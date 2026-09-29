@@ -1,9 +1,9 @@
-# V2: verificação de hipótese de bug no código real (desenho final)
+# V2: verificação de hipótese de bug no código real (desenho)
 
-Data: 2026-09-29. Versão de trabalho (detalhada, com caminho de arquivo e comando).
-Substitui, no caminho principal, a cascata do `scan/pipeline.py` (native, real_body_driver,
-driver da LLM, reescrita, harness escalar, harness com loop). O código antigo continua
-no repositório, desligado, para servir de linha de base na comparação.
+Desenho do motor de verificação da V2 (`src/research_pipeline/verify/`), definido em 29/09/2026.
+Ele substituiu a cascata anterior de estratégias (harness escalar, driver escrito pela LLM,
+reescrita pela LLM), removida do código; o histórico fica no git. Guia de uso em
+[`README.md`](README.md).
 
 ## 1. Fluxo
 

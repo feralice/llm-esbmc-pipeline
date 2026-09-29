@@ -9,67 +9,63 @@ Pipeline de pesquisa que combina análise semântica por LLM com verificação f
 
 ## Pipeline atual
 
-O fluxo principal atualmente é a **V2 end-to-end**. A V1 continua disponível
-como baseline experimental, mas a avaliação mais recente mede o pipeline
-completo: a LLM detecta a hipótese sem receber o gabarito, uma segunda etapa
-gera o harness e o ESBMC faz a verificação formal.
+O fluxo principal é a **V2**: a LLM aponta onde está o bug no código real, o pipeline monta a
+verificação sem deixar a LLM escrever código, e o ESBMC confirma ou não. A V1 continua disponível
+como baseline experimental (seção de benchmark V1).
 
 ```mermaid
 flowchart TD
-    A[Arquivo Python] --> B[Preprocessamento + AST]
-    B --> C[LLM detecta unidade, categoria e expressão]
-    C --> D{Candidato aceito?}
-    D -- não --> R[Rejeição / telemetria]
-    D -- sim --> E[Verbatim-driver preserva o código real]
-    E --> F[Síntese escalar como fallback]
-    F --> G[Validação determinística do harness]
-    G -- inválido --> H[Nova tentativa ou classificação]
-    G -- válido --> I[ESBMC executa o harness]
-    I --> J{Resultado}
-    J --> K[Grounding diferencial]
-    K --> L[Ablação de __ESBMC_assume]
-    L --> M[Classificação por caso]
-    M --> N[(v2_report.json)]
+    A[Código Python real] --> B[LLM indica função, expressão suspeita e categoria]
+    B --> C[AST confere que a expressão existe na função]
+    C --> D[Recorte verbatim + stubs de bibliotecas + estado do objeto]
+    D --> E[LLM descreve só os tipos das entradas em JSON]
+    E --> F[Harness montado por código]
+    F --> G[ESBMC]
+    G --> H[Reexecução do mesmo programa no CPython]
+    H --> I[Veredito por hipótese]
+    G -- erro de conversão --> E
 ```
 
-Em cada candidato, o `verbatim-driver` é tentado antes da síntese escalar. O
-AST valida o vínculo entre a hipótese e o código, mas não prova a existência do
-bug. O veredito formal vem do ESBMC; a ablação verifica se um `assume` tornou o
-harness artificialmente restritivo.
+Regras que definem o método (detalhes em [`docs/v2/desenho_motor_verify.md`](docs/v2/desenho_motor_verify.md)):
 
-### Estado experimental atual
+- **A hipótese é congelada:** localização e expressão não mudam entre tentativas.
+- **A LLM não escreve código:** devolve só um JSON com tipos, pré-condições e o tipo de retorno de
+  chamadas de bibliotecas ausentes. O harness é gerado pelo pipeline.
+- **O código original entra sem alteração lógica:** as adaptações (estado do objeto, stubs de
+  bibliotecas, cadeias `lib.a.b` renomeadas, formatação `%` reescrita) são determinísticas e
+  ficam registradas em `transforms`.
+- **Confirmação exige acordo:** o ESBMC aponta a violação **e** a execução real do mesmo programa
+  reproduz a mesma exceção na linha da hipótese. Falsos positivos e falsos negativos do
+  ESBMC-Python ficam separados (`UNVALIDATED`, `ESBMC_MISSED`).
+- **Reparo limitado:** até 2 correções guiadas pelo erro do ESBMC; resultado seguro nunca é repetido.
+- **Categoria é metadado:** não participa da verificação; a detecção é medida por localização.
 
-O último end-to-end foi executado sobre 117 casos: 120 unidades AST foram
-processadas, 100 hipóteses foram geradas e as 100 passaram pela síntese. Entre
-as hipóteses sintetizadas, houve 71 confirmações pelo driver, 14 confirmações
-na abstração, 5 casos seguros pelo driver, 4 inconclusivos, 3 confirmações sem
-grounding independente, 2 casos super-restritos e 1 caso seguro na abstração.
-As confirmações na abstração são mantidas como resultado diagnóstico; a
-métrica atualizada de confirmação end-to-end conta separadamente apenas os
-tiers que executam ou preservam o código original.
-
-Na avaliação sem gabarito, 28 casos tiveram unidade e categoria corretas. O
-relatório histórico registrou 23 confirmações no fluxo completo, mas esse valor
-deve ser lido junto da separação entre corpo real e abstração; a métrica
-atualizada evita contar uma confirmação escalar como prova do código original.
-O principal gargalo atual é a classificação da categoria pela LLM, não a
-execução do harness.
+| Veredito | Significado |
+|---|---|
+| `CONFIRMED` | ESBMC e execução reproduzem a mesma exceção na linha da hipótese |
+| `ESBMC_MISSED` | a execução reproduz o bug e o ESBMC não detecta (falso negativo do verificador) |
+| `UNVALIDATED` | o ESBMC aponta violação que a execução não reproduz |
+| `OTHER_FAILURE` | a execução quebra em outra linha |
+| `NOT_CONFIRMED` | nenhum dos dois encontra o bug |
+| `UNSUPPORTED` / `MISSING_DEPENDENCY` | limite do ESBMC-Python ou do recorte |
+| `SPEC_FAILED` | a LLM não produziu uma especificação válida |
+| `GROUNDING_FAILED` | a expressão apontada não existe na função |
+| `ESBMC_TIMEOUT` / `ESBMC_ERROR` | tempo esgotado ou falha do verificador |
 
 | Fluxo | Modo | Descrição |
 |---|---|---|
-| **Flow A** | `--mode esbmc-only` | ESBMC puro: baseline formal sem LLM |
-| **Flow B legado** | `--mode hybrid-direct` | LLM indica categoria → ESBMC confirma no código original |
-| **Flow C** | `--mode llm-only` | LLM puro: baseline de qualidade da IA sem verificação formal |
-| **Híbrido principal (V2)** | `--mode hybrid` | LLM detecta → driver/síntese gera harness → validadores → ESBMC verifica → grounding e ablação classificam. |
-| **Benchmark legado V1** | `--mode benchmark-v1` | Avalia os fluxos antigos A+B+C com as métricas V1. |
-
-**Princípio central (Flows A/B/C):** A LLM faz triagem de categoria; o ESBMC decide com semântica formal própria. Na V2, a detecção permanece igual, mas uma segunda chamada à LLM transforma cada hipótese em um harness verificável; `compat.py`, `guards.py` e `ablation.py` controlam a abstração.
+| **V2 (principal)** | `--mode hybrid` / `--mode benchmark` | Detecção pela LLM e verificação pelo motor descrito acima |
+| **Flow A** | `--mode esbmc-only` | ESBMC puro: baseline formal sem LLM (V1) |
+| **Flow B** | `--mode hybrid-direct` | LLM indica categoria e o ESBMC roda direto na função (V1) |
+| **Flow C** | `--mode llm-only` | LLM pura, sem verificação formal (V1) |
+| **Benchmark V1** | `--mode benchmark-v1` | Avalia os fluxos A+B+C com as métricas V1 |
+| **Ensemble** | `--mode ensemble` | Voto entre modelos já rodados (V1) |
 
 ---
 
 ## Dataset
 
-### V1 — sintético (`dataset/labeled/`, 70 arquivos)
+### V1: sintético (`dataset/labeled/`, 70 arquivos)
 
 | Categoria | Arquivos | Verificável |
 |---|---|---|
@@ -83,27 +79,23 @@ execução do harness.
 
 Cada arquivo contém exatamente 1 função e 0 ou 1 bug. Sem `len()` (limitação do frontend Python do ESBMC).
 
-### V2 — mundo real (`dataset/v2_real_world/`, 123 bugs, 42 repositórios)
+### V2: mundo real (`dataset/v2_real_world/`, 116 bugs, 42 repositórios)
 
-Cada item é um bug real minerado de um projeto Python público, com o commit
-buggy e o commit de correção registrados em `manifest.json` (campo
-`provenance`). Fontes, por número de bugs:
+Cada item é um bug real de um projeto Python público, com o commit com bug e o commit de correção
+registrados em `manifest.json` (campo `provenance`): 84 vêm do BugsInPy e 32 de correções aceitas
+nos repositórios originais (commits, issues e pull requests). Repositórios com mais bugs: `scrapy`
+(15), `thefuck` (11), `luigi` (10), `youtube-dl` (9), `tornado` (8), `matplotlib` (5).
 
-| Origem | Bugs | Como foi identificado |
-|---|---|---|
-| BugsInPy | 91 | `provenance.bugsinpy_id` |
-| Mineração manual de commit de correção | 27 | commit pai do fix, sem dataset intermediário (inclui `esbmc`, `nki-samples`, `consensus-specs`) |
-| GitHub issue/PR direto | 4 | `provenance.issue_url` / `pr_url` |
-| PyBugHive | 1 | `provenance.pybughive_issue` |
+| Pasta ou arquivo | Conteúdo |
+|---|---|
+| `detection/` | recorte da função, entrada da detecção pela LLM |
+| `detection_full/` | arquivo completo no commit com bug (99 de 116), usado na verificação |
+| `fixed_full/` | arquivo completo no commit corrigido (98), para medir confirmação falsa |
+| `bugs/`, `patches/` | harness de referência e patch real de cada caso |
+| `ground_truths.json`, `manifest.json` | gabarito e proveniência, lidos só na avaliação |
 
-Repositórios com mais bugs: `scrapy` (16), `thefuck` (11), `luigi` (10),
-`youtube-dl` (9), `tornado` (9), `matplotlib` (7). Lista completa de projetos
-e links em `dataset/v2_real_world/manifest.json` (`provenance.repo_url` por
-item).
-
-`dataset/v2_real_world/detection/` traz o arquivo sem o gabarito (o que a LLM
-recebe pra detectar); `dataset/v2_real_world/bugs/` traz o harness de
-referência; `ground_truths.json` é o gabarito usado pelo benchmark.
+`dataset/v2_candidates/` guarda 199 bugs do BugsInPy validados pelos mantenedores e ainda não
+integrados ao dataset (ver o README da pasta).
 
 ---
 
@@ -134,10 +126,11 @@ pip install -r requirements.txt
 biblioteca padrão do Python (nenhum SDK de LLM é dependência, as chamadas vão
 por `urllib` puro).
 
-**Requisito externo:** ESBMC 8.0+ no PATH (validado contra 8.4.0).
+**Requisito externo:** ESBMC 8.5.0. A V2 usa o binário oficial em `/usr/local/bin/esbmc` quando ele
+existe (um build de desenvolvimento no PATH não é usado sem `--esbmc-command`).
 
 ```bash
-esbmc --version   # verificar instalação
+/usr/local/bin/esbmc --version   # verificar instalação
 ```
 
 Para modelos locais, instale o [Ollama](https://ollama.ai) e baixe os modelos:
@@ -147,7 +140,7 @@ ollama pull deepseek-r1:7b
 ollama pull qwen2.5-coder:7b
 ```
 
-Para a síntese de harness no modo V2 sem cobrança por token, instale o
+Para a etapa de especificação da V2 sem cobrança por token, instale o
 [Codex CLI](https://github.com/openai/codex) e autentique com a assinatura
 ChatGPT/Codex já paga (em vez da API OpenAI, cobrada por token):
 
@@ -168,7 +161,7 @@ claude   # primeira execução abre o fluxo de login no navegador
 ```
 
 Use `--backend claude_cli` (detecção) e/ou `--synth-backend claude_cli`
-(síntese). O pipeline chama `claude -p` local e filtra `ANTHROPIC_API_KEY` do
+(especificação). O pipeline chama `claude -p` local e filtra `ANTHROPIC_API_KEY` do
 ambiente do subprocesso, então não precisa da chave em nenhuma etapa.
 
 O backend Gemini disponível no pipeline é `google`, usando a API Gemini e
@@ -191,7 +184,7 @@ GEMINI_API_KEY=       # para --backend google
 ```
 
 No modo `hybrid` (V2), a detecção usa o backend OpenAI por padrão
-mesmo quando `--synth-backend codex` só troca a síntese do harness:
+mesmo quando `--synth-backend codex` só troca a etapa de especificação:
 `OPENAI_API_KEY` continua exigida a menos que `--backend` (detecção) também
 seja `ollama`, `codex` ou `claude_cli`. Nenhuma chave é
 necessária pra rodar o V2 inteiro com `--backend codex --synth-backend codex`,
@@ -203,25 +196,38 @@ pra modelo local em ambas as etapas.
 
 ## Como rodar
 
-### Híbrido V2 end-to-end (fluxo principal)
+### V2 ponta a ponta (fluxo principal)
 
 ```bash
 PYTHONPATH=src .venv/bin/python src/main.py \
-    --mode hybrid \
-    --v2-stage end-to-end \
+    --mode hybrid --v2-stage end-to-end \
     --input dataset/v2_real_world/detection \
     --ground-truth dataset/v2_real_world/ground_truths.json \
-    --synth-backend codex \
-    --output-dir artifacts/v2/end-to-end-117
+    --verification-sources dataset/v2_real_world/detection_full \
+    --model gpt-4o-mini --synth-backend openai --synth-model gpt-4o-mini \
+    --bound 5 --timeout 180 \
+    --output-dir artifacts/v2/e2e
 ```
 
-O relatório é escrito em `artifacts/v2/end-to-end-117/v2_report.json` e o
-checkpoint em `v2_checkpoint.json`. Para retomar uma execução interrompida,
-acrescente `--resume` com a mesma configuração.
+O relatório vai para `v2_verify_report.json` e o checkpoint para `v2_checkpoint.json`; para retomar,
+repita o comando com `--resume`. Opções da V2:
 
-Use `--v2-stage synthesis` com `--mode hybrid` para medir somente a geração e a verificação dos
-harnesses a partir de hipóteses conhecidas do gabarito. Essa variante não mede
-a capacidade de detecção da LLM.
+| Opção | Efeito |
+|---|---|
+| `--v2-stage synthesis` | usa as hipóteses do gabarito e mede só a verificação (RQ2) |
+| `--verification-sources DIR` | verifica no arquivo de mesmo nome em `DIR` (detecção segue no recorte) |
+| `--verification-sources-strict` | pula o caso sem arquivo em `DIR` em vez de usar o recorte |
+| `--spec-strategy resample` | amostras independentes com o mesmo orçamento, linha de base do reparo |
+
+Scripts da V2:
+
+| Script | Uso |
+|---|---|
+| `scripts/v2_verify_smoke.py` | funil sem LLM sobre o gabarito (e com ESBMC real usando `--esbmc`) |
+| `scripts/v2_reverdict.py` | recalcula vereditos de um relatório sem chamar LLM nem ESBMC |
+| `scripts/v2_agent_arm.py` | braço experimental: Claude Code + plugin ESBMC nos casos que o motor não roda |
+| `scripts/fetch_v2_full_sources.py`, `scripts/fetch_v2_fixed_sources.py` | baixam os arquivos completos com bug e corrigidos |
+| `scripts/collect_validated_bugs.py`, `scripts/label_candidates.py` | coletam e rotulam bugs validados em `dataset/v2_candidates/` |
 
 ### Benchmark V1 (baseline)
 
@@ -310,7 +316,7 @@ O `--bound N` da CLI é aplicado ao incremental BMC como `--max-k-step N`.
 
 ---
 
-## Classificações de resultado
+## Classificações de resultado (V1)
 
 | Classificação | Significado |
 |---|---|
@@ -324,7 +330,7 @@ O `--bound N` da CLI é aplicado ao incremental BMC como `--max-k-step N`.
 
 ---
 
-## Métricas
+## Métricas (V1)
 
 O modo `benchmark` calcula:
 
@@ -343,54 +349,40 @@ Ver [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) para a es
 ```
 llm-esbmc-pipeline/
 ├── src/
-│   └── main.py                     # CLI: --mode benchmark|benchmark-v1|hybrid|hybrid-direct|esbmc-only|llm-only|ensemble
-├── research_pipeline/
-│   ├── preprocess.py               # Extrai CodeUnit por função via AST
-│   ├── pipeline.py                 # Orquestra flows A/B/C
-│   ├── report.py                   # consolidate_result(): classificações finais
-│   ├── evaluator.py                # EvalCounts, prf(), mcc(), bootstrap_ci()
-│   ├── models.py                   # CodeUnit, Finding, ESBMCResult, FinalResult
-│   ├── ast_utils.py                # expression_exists_in_executable_ast()
-│   ├── llm/
-│   │   ├── backends/
-│   │   │   ├── openai.py           # Responses API (gpt-*)
-│   │   │   ├── anthropic.py        # Messages API (claude-*)
-│   │   │   ├── chat_completions.py # Ollama / OpenAI-compat
-│   │   │   └── factory.py          # build_analyzer(): detecta backend pelo modelo
-│   │   ├── categories.py           # SUPPORTED_CATEGORIES
-│   │   ├── findings.py             # Normalização, strip_markdown_json, validação AST
-│   │   ├── prompts.py              # build_user_prompt(), prompt modes
-│   │   └── schema.py               # FINDINGS_JSON_SCHEMA
-│   ├── prompts/
-│   │   ├── system_prompt.txt       # System prompt de detecção (role + CoT)
-│   │   ├── synth_prompt.txt        # Síntese de harness, estilo scalar
-│   │   ├── driver_prompt.txt       # Síntese de harness, estilo verbatim-driver
-│   │   └── synth_prompt_loop.txt   # Síntese de harness, estilo loop bounded
-│   ├── scan/                       # V2: geração e validação de harness
-│   │   ├── pipeline.py             # Orquestra driver → síntese scalar/loop → ESBMC
-│   │   ├── synth.py                # HarnessSynthesizer: chama a LLM (openai/google/ollama/codex/claude_cli)
-│   │   ├── compat.py               # check_harness(): valida o harness gerado via AST antes do ESBMC
-│   │   ├── driver_check.py         # Validador próprio do estilo verbatim-driver
-│   │   ├── guards.py               # Extrai preconditions reais do código pro prompt
-│   │   └── ablation.py             # Testa se um __ESBMC_assume mascarou o bug
-│   └── verification/
-│       └── esbmc_runner.py         # run_esbmc_on_function(), run_esbmc_function_baseline()
+│   ├── main.py                     # CLI: --mode hybrid|benchmark (V2), benchmark-v1|hybrid-direct|esbmc-only|llm-only|ensemble (V1)
+│   └── research_pipeline/
+│       ├── preprocess.py           # Extrai CodeUnit por função via AST
+│       ├── pipeline.py             # Orquestra os flows A/B/C da V1
+│       ├── report.py, evaluator.py # Classificações e métricas da V1
+│       ├── v2_evaluator.py         # Métricas de detecção da V2 (localização e categoria)
+│       ├── llm/                    # Backends da LLM de detecção (openai, anthropic, ollama, google, codex, claude_cli)
+│       ├── prompts/
+│       │   ├── system_prompt.txt       # Detecção
+│       │   └── input_spec_prompt.txt   # Especificação de entrada da V2
+│       ├── verification/
+│       │   └── esbmc_runner.py     # Chamada do ESBMC e leitura do resultado
+│       └── verify/                 # Motor de verificação da V2
+│           ├── grounding.py        # Aterramento, recorte verbatim, poda da classe
+│           ├── slicing.py          # Stubs de bibliotecas não modeladas
+│           ├── compat.py           # Reescritas equivalentes (formatação %)
+│           ├── spec.py             # Tipos aceitos e validação do JSON da LLM
+│           ├── render.py           # Montagem do harness
+│           ├── replay.py           # Reexecução no CPython
+│           ├── outcome.py          # Leitura do ESBMC e veredito
+│           ├── loop.py             # Laço especificação → ESBMC → reparo
+│           ├── report.py           # Resumo e avaliação
+│           └── agent_arm.py        # Braço experimental com agente
 ├── dataset/
 │   ├── labeled/                    # V1: 70 arquivos sintéticos
-│   │   ├── ok/
-│   │   └── ground_truths/
-│   └── v2_real_world/              # V2: 123 bugs reais, 42 repositórios (ver seção Dataset)
-│       ├── detection/              # arquivo sem gabarito (entrada da LLM)
-│       ├── bugs/                   # harness de referência
-│       ├── manifest.json           # metadados + provenance por item
-│       └── ground_truths.json
-├── reports/
-│   └── json/v1_benchmark/          # benchmark_*.json por modelo
-├── scripts/
-│   └── compare_benchmarks.py       # Compara JSONs entre modelos
+│   ├── v2_real_world/              # V2: 116 bugs reais (ver seção Dataset)
+│   └── v2_candidates/              # 199 bugs validados aguardando integração
+├── scripts/                        # Rodadas, coleta de dados e utilitários
 ├── tests/
-│   └── test_research_pipeline.py   # suíte V1; scan/V2 tem test_scan_*.py e test_main_v2.py em paralelo
-├── docs/                           # Documentação técnica
+├── docs/
+│   ├── v1/                         # Referência da V1
+│   ├── v2/                         # Desenho do motor de verificação da V2
+│   ├── esbmc/                      # Instalação e referência do frontend Python
+│   └── projeto/                    # Apresentação, auditorias, limites do ESBMC, leituras
 ├── .env.example
 └── requirements.txt
 ```
@@ -406,50 +398,15 @@ python -m pytest -q
 python -m pytest -m live_llm -q
 ```
 
-### Contra-testes Pytest gerados pelo ESBMC
-
-No modo V2, a geração de um teste concreto a partir do contraexemplo do ESBMC
-é opcional e não altera a classificação formal da hipótese:
-
-```bash
-PYTHONPATH=src python3 src/main.py \
-  --mode hybrid --v2-stage end-to-end \
-  --input dataset/v2_real_world/detection \
-  --ground-truth dataset/v2_real_world/ground_truths.json \
-  --generate-pytest-testcase \
-  --pytest-output-dir artifacts/v2/pytest
-```
-
-O arquivo gerado é um artefato de reprodução dos valores concretos encontrados
-pelo ESBMC. Ele não substitui a geração do harness pela LLM nem as flags da
-verificação formal; o caminho e o status ficam registrados no relatório V2.
-O pipeline também valida a sintaxe do arquivo emitido: se o ESBMC gerar Python
-inválido, o status será `invalid_generated_test`, sem alterar a classificação
-formal.
-
-### Detecção em duas etapas
-
-Para experimentar a separação entre localização e classificação da hipótese:
-
-```bash
-PYTHONPATH=src python3 src/main.py \
-  --mode hybrid --v2-stage end-to-end \
-  --detection-strategy two_stage \
-  --input dataset/v2_real_world/detection \
-  --ground-truth dataset/v2_real_world/ground_truths.json
-```
-
-Essa opção faz duas chamadas de detecção por unidade quando existe candidato.
-Ela é experimental; compare múltiplas rodadas com a estratégia `single` antes
-de interpretar qualquer diferença como ganho de qualidade.
-
 ---
 
 ## Documentação técnica
 
 | Documento | Conteúdo |
 |---|---|
+| [`docs/v2/desenho_motor_verify.md`](docs/v2/desenho_motor_verify.md) | Desenho do motor de verificação da V2, vereditos e limitações |
+| [`docs/v2/README.md`](docs/v2/README.md) | Como rodar a V2 e ler os resultados |
+| [`docs/projeto/complemento_apresentacao_2026-09-30.md`](docs/projeto/complemento_apresentacao_2026-09-30.md) | Apresentação com os resultados atuais |
+| [`docs/projeto/repro_esbmc_none/`](docs/projeto/repro_esbmc_none/) | Reprodutores mínimos de limites do ESBMC-Python |
 | [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) | Especificação dos fluxos, flags ESBMC, métricas e metodologia V1 |
 | [`docs/v1/pipeline_walkthrough.md`](docs/v1/pipeline_walkthrough.md) | Walkthrough arquivo por arquivo do pipeline V1 |
-| [`docs/v2/README.md`](docs/v2/README.md) | Estado técnico, fluxo e interpretação atuais da V2 |
-| [`docs/projeto/complemento_apresentacao_2026-09-23.md`](docs/projeto/complemento_apresentacao_2026-09-23.md) | Texto atualizado dos slides e resultados históricos |

@@ -4,7 +4,17 @@ Levantamento iniciado em 23 de agosto de 2026. Podado em 1 de setembro de 2026 p
 serve para evoluir o pipeline: localização de bug, síntese de harness, verificação formal,
 engenharia de prompt e avaliação. As leituras de code smells (Beyond Strict Rules, MLCQ,
 SmellDetector, Can Small LLMs Detect Code Smells), a ordem de leitura antiga e as perguntas
-bibliográficas centradas em smells foram para `docs/archive/leituras_code_smells.md`.
+bibliográficas centradas em smells foram removidas (ficam no histórico do git).
+
+> **Nota de 29/09/2026:** as seções que citam o modo `scan`, o harness escalar e os módulos
+> `compat.py`, `guards.py` e `ablation.py` descrevem o desenho anterior da V2, removido do código.
+> As leituras continuam valendo; a correspondência com o motor atual
+> (`src/research_pipeline/verify/`, desenho em `docs/v2/desenho_motor_verify.md`) é:
+> harness escalar sintetizado pela LLM → função original sem alteração e harness montado por
+> código; `compat.py` (validar o harness gerado) → `verify/spec.py` (validar o JSON de tipos) e
+> `verify/render.py`; `guards.py` (pré-condições tiradas do código) → pré-condições da LLM
+> restritas a entradas e `len()`; `ablation.py` (detectar `assume` que mascara o bug) → nunca
+> repetir um resultado seguro e exigir que a reexecução no CPython confirme o veredito.
 
 A lista prioriza artigos originais, páginas de conferências, documentação oficial e artefatos dos
 autores. Preprints são identificados para não serem apresentados como publicação revisada por pares

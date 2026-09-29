@@ -1,8 +1,7 @@
 # Complemento da apresentação: 30/09/2026
 
 Texto pronto por slide, para colar no Canva. Continua a apresentação de
-23/09/2026 (`complemento_apresentacao_2026-09-23.md`), que fica como registro
-histórico.
+23/09/2026 (disponível no histórico do git).
 
 > **Nota:** números medidos em 29/09/2026 com gpt-4o-mini e ESBMC 8.5.0 oficial. As rodadas
 > r5 usaram o motor antes dos últimos contornos (cadeias de biblioteca, construtores, anotações);
@@ -217,12 +216,13 @@ Rodada ponta a ponta (gpt-4o-mini, 104 arquivos avaliáveis, 138 hipóteses):
 |---|---|---|---|
 | arquivo com bug | 102 de 104 | 100% | 98% |
 | **função com bug** | **101 de 104** | **86%** | **97%** |
+| categoria certa no arquivo | 51 de 104 | 30% | 49% |
+| categoria certa, dado que a função está certa | 49 de 104 | | 47% |
 | expressão idêntica à do gabarito | 21 de 104 | 12% | 20% |
-| categoria idêntica à do gabarito (métrica anterior) | 21 de 104 | 12% | 20% |
 
-**Conclusão:** a LLM localiza a função defeituosa quase sempre. A métrica por categoria, usada
-até 23/09, escondia esse resultado. O ponto fraco é descrever o trecho exato e o tipo do defeito,
-e é por isso que a categoria deixou de guiar a verificação.
+**Conclusão:** a LLM localiza a função defeituosa quase sempre (97%), mas acerta a categoria em
+cerca de metade dos casos, e o trecho exato em um quinto. Medir a detecção só pela categoria,
+como até 23/09, subestimava a localização; por isso a categoria deixou de guiar a verificação.
 
 ---
 

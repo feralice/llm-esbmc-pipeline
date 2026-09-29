@@ -16,43 +16,41 @@ integrações, use `python -m pytest -m live_llm`.
 
 ---
 
-## 1. V2 end-to-end
+## 1. V2 ponta a ponta
 
-Esta execução mede o método completo. A LLM recebe os arquivos de detecção e
-precisa encontrar a unidade, a categoria e a expressão por conta própria.
+Mede o método completo: a LLM recebe o recorte de cada função, aponta a expressão suspeita, e o
+motor de verificação confirma no arquivo completo.
 
 ```bash
 PYTHONPATH=src .venv/bin/python src/main.py \
   --mode hybrid --v2-stage end-to-end \
   --input dataset/v2_real_world/detection \
   --ground-truth dataset/v2_real_world/ground_truths.json \
-  --synth-backend codex \
-  --output-dir artifacts/v2/end-to-end-117
+  --verification-sources dataset/v2_real_world/detection_full \
+  --model gpt-4o-mini --synth-backend openai --synth-model gpt-4o-mini \
+  --bound 5 --timeout 180 \
+  --output-dir artifacts/v2/e2e
 ```
 
-O pipeline executa: preprocessamento AST, detecção LLM, grounding da expressão,
-`verbatim-driver`, síntese escalar quando necessário, validação do harness,
-ESBMC, grounding diferencial e ablação de `__ESBMC_assume`.
+O pipeline executa: detecção pela LLM, aterramento da expressão no AST, recorte verbatim com
+stubs de bibliotecas, especificação das entradas pela LLM (JSON), montagem do harness, ESBMC com
+até 2 reparos, e reexecução no CPython para validar o veredito.
 
-Saídas principais: `v2_report.json`, `v2_checkpoint.json`, `harnesses/` e
-`llm_telemetry.json`. Para retomar uma execução interrompida, repita o comando
-com `--resume`; a configuração, as fontes e os prompts precisam ser os mesmos.
+Saídas: `v2_verify_report.json`, `v2_checkpoint.json`, `programs/` (cada programa verificado) e
+`llm_telemetry.json`. Para retomar, repita o comando com `--resume`.
 
-### Síntese isolada
+### Só verificação (hipóteses do gabarito)
 
-Para avaliar apenas a geração e a verificação dos harnesses, usando hipóteses
-conhecidas no gabarito:
+Troque `--v2-stage end-to-end` por `--v2-stage synthesis`. Mede a verificação isolada da detecção.
 
-```bash
-PYTHONPATH=src .venv/bin/python src/main.py \
-  --mode hybrid --v2-stage synthesis \
-  --input dataset/v2_real_world/detection \
-  --ground-truth dataset/v2_real_world/ground_truths.json \
-  --synth-backend codex \
-  --output-dir artifacts/v2/synthesis
-```
+### Experimentos
 
-Esse modo não mede a detecção autônoma da LLM.
+- `--spec-strategy resample`: amostras independentes com o mesmo orçamento (linha de base do reparo).
+- `--verification-sources dataset/v2_real_world/fixed_full --verification-sources-strict`: roda
+  nas versões corrigidas; todo `CONFIRMED` ali é confirmação falsa.
+- `python scripts/v2_agent_arm.py --report <relatório> --out <pasta>`: braço com agente nos casos
+  que o motor não roda.
+- `python scripts/v2_reverdict.py <relatório>`: recalcula vereditos sem LLM nem ESBMC.
 
 ---
 
@@ -187,7 +185,7 @@ python src/main.py \
 ```
 
 > `--mode hybrid` (sem `-direct`) não é o Flow B legado: ele cai no pipeline
-> V2 (`mode_v2`), que faz detecção + síntese de harness + ESBMC. Use
+> V2 (`mode_v2`), que faz detecção + especificação + ESBMC + reexecução. Use
 > `hybrid-direct` para o Flow A/B/C clássico da V1.
 
 ### Flow C: só LLM (sem ESBMC)
@@ -216,9 +214,9 @@ python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 
 | Modo | Função interna | O que faz |
 |---|---|---|
-| `hybrid` | `mode_v2` | V2 end-to-end: detecção LLM, grounding, síntese de harness, ESBMC. Seção 1. |
+| `hybrid` | `mode_v2` | V2: detecção pela LLM e motor de verificação. Seção 1. |
 | `benchmark` | `mode_v2` (força `--v2-stage end-to-end`) | Mesmo pipeline de `hybrid`, mas exige `--ground-truth`; é o nome usado pro benchmark V2/V1 "oficial" reportado. Seção 2. |
-| `hybrid-direct` | `mode_hybrid` | Flow B legado da V1: `run_pipeline_multi`, LLM aponta e ESBMC confirma num só passo, sem síntese de harness. Seção 6. |
+| `hybrid-direct` | `mode_hybrid` | Flow B da V1: `run_pipeline_multi`, LLM aponta e o ESBMC roda direto na função. Seção 6. |
 | `benchmark-v1` | `mode_benchmark_v1` | Benchmark V1 completo: roda Flow A + B + C juntos, imprime P/R/F1 dos três. |
 | `esbmc-only` | `mode_esbmc_only` | Só ESBMC, sem LLM (Flow A). Seção 6. |
 | `llm-only` | `mode_llm_only` | Só LLM, sem ESBMC (Flow C). Seção 6. |
@@ -226,7 +224,7 @@ python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 
 `hybrid` e `benchmark` caem na mesma função (`mode_v2`) porque `--mode benchmark`
 é um atalho que fixa `--v2-stage end-to-end` e obriga `--ground-truth`
-(`main.py:971-980`).
+(função `mode_benchmark` em `src/main.py`).
 
 ### Backends (`--backend` / `--synth-backend`)
 
@@ -239,8 +237,8 @@ python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
 | `codex` | `codex exec` local | assinatura Codex já paga, sem token de API |
 | `claude_cli` | `claude -p` local | assinatura Claude já paga; `ANTHROPIC_API_KEY` é filtrado do ambiente do subprocesso, não é lido |
 
-`--backend` escolhe quem detecta; `--synth-backend` escolhe quem sintetiza o
-harness na V2 (padrão: mesmo valor de `--backend`). Combinações mistas são
+`--backend` escolhe quem detecta; `--synth-backend` escolhe quem escreve a
+especificação de entrada na V2 (padrão: mesmo valor de `--backend`). Combinações mistas são
 válidas, ex: `--backend openai --synth-backend claude_cli`.
 
 ---

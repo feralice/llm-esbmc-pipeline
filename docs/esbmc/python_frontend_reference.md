@@ -5,8 +5,10 @@ limitations, random-operational-model, pytest-testgen) cruzado com
 `~/esbmc/src/python-frontend/README.md` e `~/esbmc/src/python-frontend/models/esbmc.py`.
 Versão do ESBMC conferida: 8.4.0. Última revisão: 2026-09-10.
 
-Serve para manter `src/research_pipeline/prompts/{synth_prompt,driver_prompt,synth_prompt_loop}.txt`
-alinhados com o que o frontend realmente aceita. Cada limitação abaixo aponta a
+Serve para manter o motor de verificação da V2 (`src/research_pipeline/verify/`, em especial os
+tipos de `spec.py`, os stubs de `slicing.py` e o prompt `input_spec_prompt.txt`) alinhado com o
+que o frontend realmente aceita. Os limites medidos em 29/09/2026 no ESBMC 8.5.0 estão em
+`docs/projeto/repro_esbmc_none/limitacoes_2026-09-29/`. Cada limitação abaixo aponta a
 issue que a fixa quando existe.
 
 ---
@@ -67,8 +69,8 @@ Regras que não mudam:
 
 ## 4. O que o frontend suporta hoje (mais do que o prompt escalar assume)
 
-O `synth_prompt.txt` bane loop, `range` e a maioria dos builtins de propósito,
-porque o rebuild escalar não precisa deles. Não é limitação do frontend. O
+O prompt do harness escalar antigo (removido em 29/09/2026) banía loop, `range` e a maioria dos
+builtins de propósito. Não era limitação do frontend. O
 frontend hoje modela:
 
 - `for` sobre `range()`, lista, string, tupla, `enumerate`, `zip`, `reversed`,
@@ -81,7 +83,7 @@ frontend hoje modela:
   `unittest`, `decimal`, `heapq`, `time`, `datetime` (só o construtor de 3 args),
   `numpy` (parcial, 1D/2D).
 
-O harness de loop limitado (`synth_prompt_loop.txt`) usa esse espaço: lista
+O antigo harness de loop limitado usava esse espaço: lista
 pequena de nondets frescos, índice real, loop com bound constante.
 
 ## 5. Módulo `random` já vem modelado
