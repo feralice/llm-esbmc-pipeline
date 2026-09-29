@@ -25,6 +25,12 @@ def _artifact_stem(file_path: Path) -> str:
     return f"{file_path.stem}_{digest}"
 
 
+def _timeout_text(value: str | bytes | None) -> str:
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value or ""
+
+
 def _esbmc_path(file_path: Path) -> Path:
     """Return path relative to cwd when possible — ESBMC behaves differently with absolute paths."""
     try:
@@ -49,8 +55,9 @@ def run_esbmc_direct(
     timeout_seconds: int = 30,
     output_dir: str | Path | None = None,
     extra_flags: list[str] | None = None,
+    multi_property: bool = True,
 ) -> ESBMCDirectResult:
-    """Run ESBMC directly on the original Python file (no instrumentation)."""
+    """Run ESBMC directly; disable multi-property only for exact native witnesses."""
     file_path = Path(file_path)
     base_command = list(esbmc_command or ["esbmc"])
 
@@ -60,7 +67,8 @@ def run_esbmc_direct(
     # instead of the marker. With it, both are reported separately (verified
     # empirically 2026-09-04 during the ESBMC probe EXP-01).
     command = [
-        *base_command, *_bounded_incremental_flags(bound), "--multi-property",
+        *base_command, *_bounded_incremental_flags(bound),
+        *(["--multi-property"] if multi_property else []),
         *(extra_flags or []), str(file_path),
     ]
 
@@ -85,7 +93,14 @@ def run_esbmc_direct(
             timeout=timeout_seconds,
         )
         elapsed = time.monotonic() - start
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
+        partial_stdout = _timeout_text(exc.stdout)
+        partial_stderr = _timeout_text(exc.stderr)
+        raw_log_path = _write_direct_log(
+            file_path, f"{partial_stdout}\n{partial_stderr}".strip(), output_dir
+        )
+        details = _verification_metadata("timeout", bound, timeout_seconds)
+        details["partial_output_available"] = bool(partial_stdout or partial_stderr)
         return ESBMCDirectResult(
             source_file=str(file_path),
             status="timeout",
@@ -93,7 +108,10 @@ def run_esbmc_direct(
             returncode=None,
             summary=f"ESBMC direto excedeu o tempo limite de {timeout_seconds}s.",
             time_seconds=float(timeout_seconds),
-            details=_verification_metadata("timeout", bound, timeout_seconds),
+            stdout=partial_stdout,
+            stderr=partial_stderr,
+            details=details,
+            raw_log_path=str(raw_log_path),
         )
 
     stdout = completed.stdout or ""
@@ -210,7 +228,7 @@ def _classify_esbmc_direct_result(output: str, returncode: int | None) -> str:
         r"Undefined function .*replacing with assert\(false\)", output, re.IGNORECASE
     ):
         return "unsupported_case"
-    if re.search(r"(?:ERROR:\s*)?TypeError:", output):
+    if "VERIFICATION" not in output and re.search(r"(?:ERROR:\s*)?TypeError:", output):
         return "tool_error"
     if "ERROR:" in output and "VERIFICATION" not in output:
         # Distinguish "unsupported" (missing module/feature) from generic crash
@@ -341,7 +359,21 @@ def run_esbmc_on_function(
             timeout=timeout_seconds,
         )
         elapsed = time.monotonic() - start
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
+        partial_stdout = _timeout_text(exc.stdout)
+        partial_stderr = _timeout_text(exc.stderr)
+        logs_dir = (
+            Path(output_dir)
+            if output_dir
+            else Path(tempfile.gettempdir()) / "llm-esbmc" / "esbmc_function_logs"
+        )
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        raw_log_path = logs_dir / f"{_artifact_stem(file_path)}_{finding_id}.log"
+        raw_log_path.write_text(
+            f"{partial_stdout}\n{partial_stderr}".strip(), encoding="utf-8"
+        )
+        details = _verification_metadata("inconclusive", bound, timeout_seconds, "timeout")
+        details["partial_output_available"] = bool(partial_stdout or partial_stderr)
         return ESBMCResult(
             finding_id=finding_id,
             status="inconclusive",
@@ -349,7 +381,10 @@ def run_esbmc_on_function(
             returncode=None,
             summary="ESBMC excedeu o tempo limite configurado.",
             time_seconds=float(timeout_seconds),
-            details=_verification_metadata("inconclusive", bound, timeout_seconds, "timeout"),
+            stdout=partial_stdout,
+            stderr=partial_stderr,
+            details=details,
+            raw_log_path=str(raw_log_path),
         )
 
     stdout = completed.stdout or ""
@@ -602,13 +637,39 @@ def _extract_esbmc_details(
     # Each block is "Violated property:\n" followed by consecutive indented
     # lines, ending at the next blank line.
     violated_properties: list[dict[str, str]] = []
+    property_records: list[dict[str, object]] = []
+    previous_block_end = 0
     for block_match in re.finditer(r"Violated property:\n((?:[ \t]+.*\n)+)", output):
+        trace = output[previous_block_end:block_match.start()]
+        previous_block_end = block_match.end()
+        # Each property owns its trace; never replay the six-line display summary.
+        trace = trace.rsplit("[Counterexample]", 1)[-1]
+        assignments = []
+        frames = []
+        state_function = ""
+        state_line = None
+        for raw in trace.splitlines():
+            state = re.match(r"State \d+ .*? line (\d+) column \d+(?: function ([^ ]+))? thread", raw)
+            if state:
+                state_line = int(state.group(1))
+                state_function = state.group(2) or ""
+                continue
+            match = re.fullmatch(r"\s+([A-Za-z_]\w*)\s*=\s*(.*?)\s*", raw)
+            if match:
+                value = re.sub(r"\s+\([01 ]+\)$", "", match.group(2))
+                assignments.append(f"{match.group(1)} = {value}")
+                frames.append({
+                    "function": state_function, "line": state_line,
+                    "name": match.group(1), "value": value,
+                })
         block_lines = [ln.strip() for ln in block_match.group(1).splitlines() if ln.strip()]
         block_kind = ""
         block_text = ""
         block_location = ""
         block_function = ""
         block_file = ""
+        block_line = None
+        block_column = None
         for ln in block_lines:
             # A module-level violation has a location line with no " function ".
             if ln.startswith("file ") and " line " in ln:
@@ -617,7 +678,10 @@ def _extract_esbmc_details(
                 block_file = ln[len("file "):ln.index(" line ")]
                 if fm:
                     block_function = fm.group(1)
+                cm = re.search(r" column (\d+)", ln)
+                block_column = int(cm.group(1)) if cm else None
                 if lm:
+                    block_line = int(lm.group(1))
                     block_location = f"linha {lm.group(1)}"
                     if block_function:
                         block_location = f"{block_function}, {block_location}"
@@ -628,10 +692,14 @@ def _extract_esbmc_details(
             if not block_text:
                 block_text = ln
                 break
-        if block_kind and block_kind not in {v["kind"] for v in violated_properties}:
-            violated_properties.append(
-                {"kind": block_kind, "text": block_text, "location": block_location, "file": block_file}
-            )
+        if block_kind:
+            record = {"kind": block_kind, "text": block_text, "location": block_location, "file": block_file}
+            property_records.append({
+                **record, "line": block_line, "column": block_column,
+                "counterexample": assignments, "assignments": frames,
+            })
+            if block_kind not in {v["kind"] for v in violated_properties}:
+                violated_properties.append(record)
 
     if violated_properties:
         property_kind = violated_properties[0]["kind"]
@@ -642,6 +710,7 @@ def _extract_esbmc_details(
     return {
         "warnings": warnings,
         "counterexample": counterexample[:6],
+        "violated_property_records": property_records,
         "violated_properties": [v["kind"] for v in violated_properties],
         "violated_locations": [v["location"] for v in violated_properties],
         "violated_files": [v["file"] for v in violated_properties],

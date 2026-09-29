@@ -63,6 +63,18 @@ def test_extract_esbmc_details_collects_every_multi_property_violation():
     assert details["property_kind"] == "LLM_ESBMC_EXPECTED_PROPERTY"
 
 
+def test_passed_typeerror_claim_does_not_hide_real_division_violation():
+    output = (
+        "PASSED [ratio.assertion.1] TypeError: object of this type has no len()\n"
+        "Violated property:\n"
+        "  file probe.py line 6 column 11 function ratio\n"
+        "  uncaught exception: ZeroDivisionError\n"
+        "  !(exception)\n\n"
+        "VERIFICATION FAILED\n"
+    )
+    assert _classify_esbmc_direct_result(output, 1) == "violation_found"
+
+
 def test_summarize_direct_warns_on_zero_vcc_success():
     """Regression: zero_vccs was computed but silently dropped from the summary
     text (found via ruff F841, 2026-09-03) -- exactly the vacuous-proof gotcha
