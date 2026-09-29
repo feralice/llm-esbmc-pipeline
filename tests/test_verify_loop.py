@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from research_pipeline.models import ESBMCDirectResult
-from research_pipeline.scan.synth import SynthResult
+from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify import loop
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.outcome import (

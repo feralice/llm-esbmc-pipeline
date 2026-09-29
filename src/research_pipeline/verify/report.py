@@ -6,7 +6,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from research_pipeline.v2_evaluator import _bug_detection_metrics, evaluate_v2_results
+from research_pipeline.v2_evaluator import _bug_detection_metrics, evaluate_detection
 
 from .outcome import CHECKED, CONFIRMED, VERDICTS
 
@@ -44,8 +44,8 @@ def _expected_items(ground_truth_path: Path, evaluated_sources: list) -> tuple[l
 
 def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: str | Path,
                 evaluated_sources: list, rejected_findings: list[dict]) -> dict:
-    detection = evaluate_v2_results(candidates=candidates, results=[], ground_truth_path=ground_truth_path,
-                                    evaluated_sources=evaluated_sources, rejected_findings=rejected_findings)
+    detection = evaluate_detection(candidates=candidates, ground_truth_path=ground_truth_path,
+                                   evaluated_sources=evaluated_sources, rejected_findings=rejected_findings)
     items, base = _expected_items(Path(ground_truth_path), evaluated_sources)
     confirmed = [
         {"file": r["hypothesis"]["file"], "function": r["hypothesis"]["function"],
@@ -53,7 +53,7 @@ def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: st
         for r in results if r["verdict"] == CONFIRMED
     ]
     return {
-        "detection_by_category": detection["detection"],
+        "detection_by_category_label": detection["category_label"],
         "detection_by_location": detection["bug_detection"],
         "confirmed_by_location": _bug_detection_metrics(items, confirmed, base),
     }

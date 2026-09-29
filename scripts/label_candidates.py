@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.scan.rewrite_guard import _expression_nodes, _find_function  # noqa: E402
+from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
 
 STAGING = ROOT / "dataset" / "v2_candidates"
 # First match wins: the most specific evidence first.
@@ -67,7 +67,7 @@ def label_pair(buggy: str, fixed: str, function_name: str) -> dict:
     result = {"expression": "", "expression_source": "", "category": "unclassified",
               "category_source": "heuristic_from_fix_diff", "grounded": False}
     try:
-        function = _find_function(ast.parse(buggy), function_name)
+        function = find_function(ast.parse(buggy), function_name)
     except SyntaxError:
         function = None
     if function is None:
@@ -93,7 +93,7 @@ def label_pair(buggy: str, fixed: str, function_name: str) -> dict:
         expression = _suspect(buggy, statement)
         if expression:
             result.update(expression=expression, expression_source=source_kind, line=line,
-                          grounded=bool(_expression_nodes(function, expression)))
+                          grounded=bool(expression_nodes(function, expression)))
             return result
     result["expression_source"] = "no_statement_at_change"
     return result

@@ -13,11 +13,6 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
-from ..staged import (
-    build_stage_system_prompt,
-    build_stage_user_prompt,
-    parse_stage_payload,
-)
 from ..telemetry import response_event
 
 
@@ -74,36 +69,6 @@ class AnthropicAnalyzer:
         findings = [finding_from_dict(item) for item in findings_data]
         return normalize_findings(unit, findings)
 
-    def analyze_stage(self, unit, *, stage, candidates=None):
-        payload = {
-            "model": self.model,
-            "max_tokens": 4096,
-            "system": build_stage_system_prompt(stage),
-            "messages": [
-                {"role": "user", "content": build_stage_user_prompt(unit, stage=stage, candidates=candidates)},
-            ],
-        }
-        started = time.monotonic()
-        try:
-            raw_response = self._post_json(payload)
-            result = parse_stage_payload(
-                self._extract_json_payload(raw_response), stage=stage, candidates=candidates,
-            )
-        except Exception as exc:
-            event = response_event(
-                provider="anthropic", requested_model=self.model,
-                duration_seconds=time.monotonic() - started, error=exc,
-            )
-            event["analysis_stage"] = stage
-            self.telemetry_events.append(event)
-            raise
-        event = response_event(
-            provider="anthropic", requested_model=self.model,
-            duration_seconds=time.monotonic() - started, response=raw_response,
-        )
-        event["analysis_stage"] = stage
-        self.telemetry_events.append(event)
-        return result
 
     def _post_json(self, payload: dict) -> dict:
         body = json.dumps(payload).encode("utf-8")

@@ -16,7 +16,6 @@ from research_pipeline.llm.findings import finding_from_dict, normalize_findings
 from research_pipeline.models import (
     CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
     CONFIDENCE_SOURCE_LLM_SELF_REPORT,
-    CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER,
     CONFIDENCE_SOURCE_UNSPECIFIED,
     CodeUnit,
     Finding,
@@ -71,38 +70,3 @@ def test_missed_bug_synthetic_finding_is_tagged_as_formal_verification():
     assert result.finding.confidence_source == CONFIDENCE_SOURCE_FORMAL_VERIFICATION
 
 
-def test_scan_placeholder_finding_is_tagged_as_pipeline_placeholder(tmp_path, monkeypatch):
-    # ScanCaseResult never carries the Finding it was built from -- it exists
-    # only to feed the synthesizer's prompt -- so the observable point is the
-    # argument the synthesizer actually receives, not the returned result.
-    from research_pipeline.models import ESBMCDirectResult, ESBMCResult
-    from research_pipeline.scan import pipeline as scan_pipeline
-    from research_pipeline.scan.pipeline import ScanCandidate, run_pipeline_scan
-    from research_pipeline.scan.synth import SynthResult
-
-    monkeypatch.setattr(
-        scan_pipeline, "run_esbmc_on_function",
-        lambda *a, **k: ESBMCResult(finding_id="n", status="skipped", command=["esbmc"], returncode=0, summary="skipped"),
-    )
-    monkeypatch.setattr(
-        scan_pipeline, "run_esbmc_direct",
-        lambda *a, **k: ESBMCDirectResult(source_file="x.py", status="violation_found", command=["esbmc"], returncode=0, summary="v"),
-    )
-
-    seen: list[Finding] = []
-
-    class _SpySynthesizer:
-        model = "spy"
-
-        def synthesize(self, unit, finding, **kwargs):
-            seen.append(finding)
-            return SynthResult("", "", self.model, {})
-
-    f = tmp_path / "mod.py"
-    f.write_text("def lookup(prices: dict, key):\n    return prices[key]\n", encoding="utf-8")
-    candidate = ScanCandidate(file=str(f), function="lookup", category="out_of_bounds")
-    run_pipeline_scan(
-        [candidate], synthesizer=_SpySynthesizer(), output_dir=tmp_path / "out",
-        use_driver=False, use_real_driver=False, synth_retries=0,
-    )
-    assert seen and seen[0].confidence_source == CONFIDENCE_SOURCE_PIPELINE_PLACEHOLDER

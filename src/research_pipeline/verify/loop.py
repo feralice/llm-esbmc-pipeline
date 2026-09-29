@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
 
-from research_pipeline.scan.rewrite_guard import _undefined_globals
-from research_pipeline.scan.synth import SynthResult, _bound_untrusted
+from .astutil import undefined_globals
+from .llm_client import SynthResult, _bound_untrusted
 from research_pipeline.verification.esbmc_runner import run_esbmc_direct
 
 from .grounding import Grounded, GroundingFailure, ground
@@ -113,7 +113,7 @@ def precheck(h: BugHypothesis, source: str) -> tuple[Grounded | None, str, str]:
         probe = render_program(grounded, _placeholder_spec(grounded))
     except RenderError as exc:
         return None, UNSUPPORTED, str(exc)
-    undefined = _undefined_globals(probe.source, "program.py") - _INTRINSICS
+    undefined = undefined_globals(probe.source, "program.py") - _INTRINSICS
     if undefined:
         return None, MISSING_DEPENDENCY, "undefined name(s): " + ", ".join(sorted(undefined))
     return grounded, "", ""

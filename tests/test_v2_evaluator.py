@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import json
 
-import pytest
 
-from research_pipeline.scan.pipeline import ScanCandidate, ScanCaseResult
-from research_pipeline.v2_evaluator import evaluate_v2_results
+from research_pipeline.v2_evaluator import evaluate_detection
+from research_pipeline.verify.candidate import Candidate
 
 
-def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> None:
+def test_detection_counts_one_true_positive_and_ignores_duplicates_by_location(tmp_path) -> None:
     detection = tmp_path / "detection"
     detection.mkdir()
     source = detection / "bug.py"
@@ -26,31 +25,15 @@ def test_v2_metrics_separate_detection_synthesis_and_end_to_end(tmp_path) -> Non
         }]}),
         encoding="utf-8",
     )
-    correct = ScanCandidate(str(source), "f", "division_by_zero")
-    false_positive = ScanCandidate(str(source), "f", "out_of_bounds")
-    results = [
-        ScanCaseResult(correct, "confirmed_on_abstraction", compat_verdict="ok", harness_tier="scalar"),
-        ScanCaseResult(false_positive, "confirmed_on_abstraction", compat_verdict="ok", harness_tier="scalar"),
-    ]
-
-    metrics = evaluate_v2_results(
-        candidates=[correct, false_positive],
-        results=results,
+    correct = Candidate(str(source), "f", "division_by_zero")
+    false_positive = Candidate(str(source), "f", "out_of_bounds")
+    metrics = evaluate_detection(candidates=[correct, false_positive],
         ground_truth_path=tmp_path / "ground_truths.json",
     )
 
     assert metrics["detection"]["tp"] == 1
     assert metrics["detection"]["fp"] == 0
     assert metrics["detection"]["fn"] == 0
-    assert metrics["synthesis_given_correct_detection"]["confirmed_on_abstraction"] == 1
-    assert metrics["synthesis_given_correct_detection"]["confirmed_on_real_body"] == 0
-    assert metrics["end_to_end"]["tp"] == 0
-    assert metrics["end_to_end"]["fp"] == 0
-    assert metrics["pipeline_stage_losses"]["by_stage"]["abstraction_only"] == 1
-    assert metrics["end_to_end"] == {
-        "tp": 0, "fp": 0, "fn": 1,
-        "precision": None, "recall": 0.0, "f1": None,
-    }
 
 
 def test_v2_reports_location_even_when_category_is_wrong(tmp_path) -> None:
@@ -70,10 +53,9 @@ def test_v2_reports_location_even_when_category_is_wrong(tmp_path) -> None:
         }]}),
         encoding="utf-8",
     )
-    wrong_category = ScanCandidate(str(source), "f", "none_misuse", expression="1 // x")
+    wrong_category = Candidate(str(source), "f", "none_misuse", expression="1 // x")
 
-    metrics = evaluate_v2_results(
-        candidates=[wrong_category], results=[],
+    metrics = evaluate_detection(candidates=[wrong_category],
         ground_truth_path=tmp_path / "ground_truths.json",
     )
 
@@ -85,61 +67,6 @@ def test_v2_reports_location_even_when_category_is_wrong(tmp_path) -> None:
     assert metrics["bug_detection"]["expression"]["tp"] == 1
     assert metrics["bug_detection"]["category_given_location"]["tp"] == 0
     assert metrics["bug_detection"]["category_given_location"]["fn"] == 1
-
-
-def _single_case_fixture(tmp_path, category="division_by_zero"):
-    detection = tmp_path / "detection"
-    detection.mkdir()
-    source = detection / "bug.py"
-    source.write_text("def f(x: int) -> int:\n    return 1 // x\n", encoding="utf-8")
-    (tmp_path / "ground_truths.json").write_text(
-        json.dumps({"items": [{"id": "b1", "categories": [category]}]}),
-        encoding="utf-8",
-    )
-    (tmp_path / "manifest.json").write_text(
-        json.dumps({"items": [{
-            "id": "b1", "detection_file": "detection/bug.py",
-            "harness_file": "bugs/bug.py", "categories": [category],
-        }]}),
-        encoding="utf-8",
-    )
-    candidate = ScanCandidate(str(source), "f", category)
-    return candidate, tmp_path / "ground_truths.json"
-
-
-@pytest.mark.parametrize(
-    ("tier", "classification"),
-    [
-        ("native", "confirmed_native"),
-        ("real_body", "confirmed_driver"),
-        ("driver", "confirmed_driver"),
-    ],
-)
-def test_real_body_tiers_are_end_to_end_confirmation(tmp_path, tier, classification):
-    candidate, ground_truth = _single_case_fixture(tmp_path)
-    metrics = evaluate_v2_results(
-        candidates=[candidate],
-        results=[ScanCaseResult(candidate, classification, harness_tier=tier)],
-        ground_truth_path=ground_truth,
-    )
-
-    assert metrics["synthesis_given_correct_detection"]["confirmed_on_real_body"] == 1
-    assert metrics["end_to_end"]["tp"] == 1
-
-
-def test_missing_tier_is_unknown_evidence_not_real_confirmation(tmp_path):
-    candidate, ground_truth = _single_case_fixture(tmp_path)
-    result = ScanCaseResult(candidate, "confirmed_on_abstraction")
-
-    metrics = evaluate_v2_results(
-        candidates=[candidate], results=[result], ground_truth_path=ground_truth,
-    )
-
-    synthesis = metrics["synthesis_given_correct_detection"]
-    assert synthesis["unknown_evidence"] == 1
-    assert synthesis["confirmed_on_real_body"] == 0
-    assert synthesis["confirmed_on_abstraction"] == 0
-    assert metrics["end_to_end"]["tp"] == 0
 
 
 def test_v2_excludes_patch_context_items_from_detection_metrics(tmp_path) -> None:
@@ -167,42 +94,13 @@ def test_v2_excludes_patch_context_items_from_detection_metrics(tmp_path) -> Non
         }),
         encoding="utf-8",
     )
-    candidate = ScanCandidate(str(first), "f", "division_by_zero")
-    metrics = evaluate_v2_results(
-        candidates=[candidate], results=[],
+    candidate = Candidate(str(first), "f", "division_by_zero")
+    metrics = evaluate_detection(candidates=[candidate],
         ground_truth_path=tmp_path / "ground_truths.json",
     )
     assert metrics["excluded_patch_context_items"] == 1
     assert metrics["detection"]["tp"] == 1
     assert metrics["detection"]["fn"] == 0
-
-
-def test_over_restricted_is_not_counted_as_confirmation(tmp_path) -> None:
-    detection = tmp_path / "detection"
-    detection.mkdir()
-    source = detection / "bug.py"
-    source.write_text("def f(x: int) -> int:\n    return x\n", encoding="utf-8")
-    (tmp_path / "ground_truths.json").write_text(
-        json.dumps({"items": [{"id": "b1", "categories": ["invalid_precondition"]}]}),
-        encoding="utf-8",
-    )
-    (tmp_path / "manifest.json").write_text(
-        json.dumps({"items": [{
-            "id": "b1", "detection_file": "detection/bug.py",
-            "harness_file": "bugs/bug.py", "categories": ["invalid_precondition"],
-        }]}),
-        encoding="utf-8",
-    )
-    candidate = ScanCandidate(str(source), "f", "invalid_precondition")
-    result = ScanCaseResult(candidate, "over_restricted", compat_verdict="ok")
-
-    metrics = evaluate_v2_results(
-        candidates=[candidate], results=[result],
-        ground_truth_path=tmp_path / "ground_truths.json",
-    )
-    assert metrics["synthesis_given_correct_detection"]["over_restricted"] == 1
-    assert metrics["end_to_end"]["tp"] == 0
-    assert metrics["end_to_end"]["fn"] == 1
 
 
 def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
@@ -220,8 +118,7 @@ def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
         }]}),
         encoding="utf-8",
     )
-    metrics = evaluate_v2_results(
-        candidates=[], results=[], ground_truth_path=tmp_path / "ground_truths.json",
+    metrics = evaluate_detection(candidates=[], ground_truth_path=tmp_path / "ground_truths.json",
         rejected_findings=[{
             "file": str(source), "category": "division_by_zero",
             "finding_type": "llm_false_positive",
@@ -230,118 +127,3 @@ def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
     assert metrics["detection"]["fp"] == 1
 
 
-def test_stage_losses_account_for_correct_detection_labels(tmp_path) -> None:
-    detection = tmp_path / "detection"
-    detection.mkdir()
-    first = detection / "first.py"
-    second = detection / "second.py"
-    source = "def f(x: int) -> int:\n    return 1 // x\n"
-    first.write_text(source, encoding="utf-8")
-    second.write_text(source, encoding="utf-8")
-    (tmp_path / "ground_truths.json").write_text(
-        json.dumps({"items": [{"id": "b1", "categories": ["division_by_zero"]},
-                               {"id": "b2", "categories": ["division_by_zero"]}]}),
-        encoding="utf-8",
-    )
-    (tmp_path / "manifest.json").write_text(
-        json.dumps({"items": [
-            {"id": "b1", "detection_file": "detection/first.py", "categories": ["division_by_zero"]},
-            {"id": "b2", "detection_file": "detection/second.py", "categories": ["division_by_zero"]},
-        ]}),
-        encoding="utf-8",
-    )
-    correct_but_safe = ScanCandidate(str(first), "f", "division_by_zero")
-    rejected_correct = {
-        "file": str(second),
-        "category": "division_by_zero",
-        "finding_type": "llm_false_positive",
-        "reason": "invalid_expression_syntax",
-    }
-
-    metrics = evaluate_v2_results(
-        candidates=[correct_but_safe],
-        results=[ScanCaseResult(correct_but_safe, "safe_driver")],
-        ground_truth_path=tmp_path / "ground_truths.json",
-        rejected_findings=[rejected_correct],
-    )
-
-    losses = metrics["pipeline_stage_losses"]
-    assert losses["correct_detection_labels"] == 2
-    assert losses["confirmed_end_to_end"] == 0
-    assert losses["total_losses"] == 2
-    assert losses["by_stage"] == {"grounding": 1, "verification": 1}
-
-
-def _single_label_dataset(tmp_path):
-    detection = tmp_path / "detection"
-    detection.mkdir()
-    source = detection / "bug.py"
-    source.write_text("def f(x):\n    return 1 // x\n", encoding="utf-8")
-    (tmp_path / "ground_truths.json").write_text(
-        json.dumps({"items": [{"id": "b1", "categories": ["division_by_zero"]}]}), encoding="utf-8",
-    )
-    (tmp_path / "manifest.json").write_text(json.dumps({"items": [{
-        "id": "b1", "detection_file": "detection/bug.py",
-        "harness_file": "bugs/bug.py", "categories": ["division_by_zero"],
-    }]}), encoding="utf-8")
-    return source
-
-
-@pytest.mark.parametrize("classification,end_to_end,stage", [
-    ("confirmed_original", 1, None),
-    ("rewrite_violation_empirical", 0, "rewrite_only"),
-])
-def test_rewrite_tiers_are_counted_separately(tmp_path, classification, end_to_end, stage) -> None:
-    source = _single_label_dataset(tmp_path)
-    candidate = ScanCandidate(str(source), "f", "division_by_zero")
-    result = ScanCaseResult(
-        candidate, classification, harness_tier="rewrite", rewrite_status=classification,
-    )
-    metrics = evaluate_v2_results(
-        candidates=[candidate], results=[result], ground_truth_path=tmp_path / "ground_truths.json",
-    )
-    synthesis = metrics["synthesis_given_correct_detection"]
-    assert synthesis[classification] == 1
-    assert synthesis["unknown_evidence"] == 0
-    assert metrics["end_to_end"]["tp"] == end_to_end
-    if stage:
-        assert metrics["pipeline_stage_losses"]["by_stage"] == {stage: 1}
-    assert synthesis["rewrite_status"] == {classification: 1}
-
-
-def test_scalar_result_keeps_rewrite_attempt_status(tmp_path) -> None:
-    source = _single_label_dataset(tmp_path)
-    candidate = ScanCandidate(str(source), "f", "division_by_zero")
-    result = ScanCaseResult(
-        candidate, "confirmed_on_abstraction", harness_tier="scalar",
-        rewrite_status="rewrite_rejected", rewrite_evidence={"reason": "static gate"},
-    )
-    metrics = evaluate_v2_results(
-        candidates=[candidate], results=[result], ground_truth_path=tmp_path / "ground_truths.json",
-    )
-    assert metrics["synthesis_given_correct_detection"]["rewrite_status"] == {"rewrite_rejected": 1}
-    assert metrics["end_to_end"]["tp"] == 0
-
-
-def test_checkpoint_roundtrip_keeps_rewrite_evidence() -> None:
-    candidate = ScanCandidate("a.py", "f", "division_by_zero")
-    result = ScanCaseResult(
-        candidate, "rewrite_violation_empirical", harness_tier="rewrite",
-        rewrite_status="rewrite_violation_empirical",
-        rewrite_evidence={"artifacts": {"rewritten.py": {"sha256": "abc"}}},
-    )
-    again = ScanCaseResult.from_dict(json.loads(json.dumps(result.to_dict())))
-    assert again.rewrite_status == "rewrite_violation_empirical"
-    assert again.rewrite_evidence == result.rewrite_evidence
-
-
-def test_stubbed_confirmation_is_counted_apart_from_end_to_end(tmp_path) -> None:
-    source = _single_label_dataset(tmp_path)
-    candidate = ScanCandidate(str(source), "f", "division_by_zero")
-    result = ScanCaseResult(candidate, "confirmed_with_stubs", harness_tier="rewrite",
-                            rewrite_status="confirmed_with_stubs")
-    metrics = evaluate_v2_results(candidates=[candidate], results=[result],
-                                  ground_truth_path=tmp_path / "ground_truths.json")
-    assert metrics["synthesis_given_correct_detection"]["confirmed_with_stubs"] == 1
-    assert metrics["end_to_end"]["tp"] == 0
-    assert metrics["pipeline_stage_losses"]["by_stage"] == {"stubbed_environment": 1}

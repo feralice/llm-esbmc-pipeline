@@ -1,6 +1,6 @@
 import ast
 
-from research_pipeline.scan.context import context_module
+from research_pipeline.verify.context import context_module
 
 SOURCE = '''import math
 import os

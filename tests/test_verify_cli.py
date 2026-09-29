@@ -5,7 +5,7 @@ from pathlib import Path
 
 import main
 from research_pipeline.models import ESBMCDirectResult, Finding
-from research_pipeline.scan.synth import SynthResult
+from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify import loop
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import verification_source
@@ -45,7 +45,7 @@ def test_verify_engine_verifies_detected_hypotheses_on_the_full_source(tmp_path:
                     encoding="utf-8")
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
-    monkeypatch.setattr(main, "HarnessSynthesizer", _SpecLLM)
+    monkeypatch.setattr(main, "LLMClient", _SpecLLM)
     monkeypatch.setattr(loop, "run_esbmc_direct", _esbmc)
     seen = {}
 
@@ -57,14 +57,13 @@ def test_verify_engine_verifies_detected_hypotheses_on_the_full_source(tmp_path:
     out = tmp_path / "out"
     args = main.build_parser().parse_args([
         "--mode", "hybrid", "--input", str(detection), "--output-dir", str(out),
-        "--v2-engine", "verify", "--verification-sources", str(full.parent), "--esbmc-command", "esbmc",
+        "--verification-sources", str(full.parent), "--esbmc-command", "esbmc",
     ])
 
     assert main.mode_v2(args) == 0
     report = json.loads((out / "v2_verify_report.json").read_text(encoding="utf-8"))
     assert report["verification"]["by_verdict"]["CONFIRMED"] == 1
     assert report["results"][0]["hypothesis"]["file"] == str(detection)
-    assert report["config"]["v2_engine"] == "verify"
     assert "def helper(v):" in seen["source"]
 
 

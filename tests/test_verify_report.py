@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from research_pipeline.scan.pipeline import ScanCandidate
+from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.report import evaluate_verify, summarize
 
 GT = Path("dataset/v2_real_world/ground_truths.json")
@@ -23,7 +23,7 @@ def test_summarize_counts_verdicts_and_success_at_k():
 
 
 def test_confirmed_hypothesis_at_the_true_location_counts_end_to_end():
-    candidates = [ScanCandidate(str(DETECTION), "cli_bool_option", "assertion_violation",
+    candidates = [Candidate(str(DETECTION), "cli_bool_option", "assertion_violation",
                                 expression="assert isinstance(param, bool)")]
     evaluation = evaluate_verify([_result("CONFIRMED", 1)], candidates, GT, [DETECTION], [])
     assert evaluation["confirmed_by_location"]["expression"]["tp"] == 1
@@ -31,7 +31,7 @@ def test_confirmed_hypothesis_at_the_true_location_counts_end_to_end():
 
 
 def test_unconfirmed_hypothesis_does_not_count_end_to_end():
-    candidates = [ScanCandidate(str(DETECTION), "cli_bool_option", "assertion_violation",
+    candidates = [Candidate(str(DETECTION), "cli_bool_option", "assertion_violation",
                                 expression="assert isinstance(param, bool)")]
     evaluation = evaluate_verify([_result("UNVALIDATED", 1)], candidates, GT, [DETECTION], [])
     assert evaluation["confirmed_by_location"]["expression"]["tp"] == 0

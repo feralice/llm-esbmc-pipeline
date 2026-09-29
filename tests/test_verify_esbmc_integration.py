@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from research_pipeline.scan.synth import SynthResult
+from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import verify_hypothesis
 from research_pipeline.verify.outcome import CONFIRMED, NOT_CONFIRMED, UNVALIDATED

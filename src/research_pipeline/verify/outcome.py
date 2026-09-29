@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass, field
 
 from research_pipeline.models import ESBMCDirectResult
-from research_pipeline.scan.capability import diagnose_esbmc
+from .diagnose import diagnose_esbmc
 from research_pipeline.verification.esbmc_runner import only_verifier_artifacts
 
 from .replay import ReplayVerdict

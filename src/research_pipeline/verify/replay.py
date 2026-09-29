@@ -9,7 +9,7 @@ import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from research_pipeline.scan.replay import LocalReplayExecutor, host_replay_problem
+from .sandbox import host_replay_problem, process_limits
 
 from .render import Program
 
@@ -31,7 +31,7 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
     problem = host_replay_problem(program.source)
     if problem:
         return ReplayVerdict("unavailable", reason=f"not executed on host: {problem}")
-    limits = LocalReplayExecutor(timeout_seconds=timeout_seconds)._limits
+    limits = process_limits(timeout_seconds)
     worker = Path(__file__).with_name("replay_worker.py")
     config = {"function": function, "spans": program.target_spans, "range": program.target_range,
               "max_runs": max_runs, "deadline_seconds": max(1, timeout_seconds - 3)}

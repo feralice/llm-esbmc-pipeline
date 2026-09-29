@@ -5,8 +5,8 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, field
 
-from research_pipeline.scan.context import context_module
-from research_pipeline.scan.rewrite_guard import _expression_nodes, _find_function
+from .context import context_module
+from .astutil import expression_nodes, find_function
 
 from .compat import rewrite_compat
 from .hypothesis import BugHypothesis
@@ -200,13 +200,13 @@ def ground(h: BugHypothesis, source: str) -> Grounded | GroundingFailure:
         tree = ast.parse(source)
     except SyntaxError as exc:
         return GroundingFailure(f"source does not parse: {exc.msg}")
-    function = _find_function(tree, h.function)
+    function = find_function(tree, h.function)
     if function is None:
         name = h.function.split(".")[-1]
         if any(isinstance(n, ast.AsyncFunctionDef) and n.name == name for n in ast.walk(tree)):
             return GroundingFailure("async entry point is not supported", unsupported=True)
         return GroundingFailure(f"function {h.function!r} not found (or ambiguous)")
-    nodes = _expression_nodes(function, h.suspect_expression)
+    nodes = expression_nodes(function, h.suspect_expression)
     if not nodes:
         return GroundingFailure(f"suspect expression not found in {h.function}")
     if h.line:

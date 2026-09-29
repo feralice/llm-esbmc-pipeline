@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import asdict, dataclass
 
-from research_pipeline.scan.pipeline import ScanCandidate
+from .candidate import Candidate
 
 
 @dataclass(frozen=True)
@@ -23,7 +23,7 @@ class BugHypothesis:
         return hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
 
     @classmethod
-    def from_candidate(cls, candidate: ScanCandidate, line: int = 0) -> BugHypothesis:
+    def from_candidate(cls, candidate: Candidate, line: int = 0) -> BugHypothesis:
         return cls(
             file=candidate.file,
             function=candidate.function,

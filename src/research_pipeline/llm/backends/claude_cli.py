@@ -8,12 +8,6 @@ import time
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
-from ..staged import (
-    build_stage_system_prompt,
-    build_stage_user_prompt,
-    parse_stage_payload,
-    stage_schema,
-)
 from ..schema import FINDINGS_JSON_SCHEMA, V2_FINDINGS_JSON_SCHEMA
 from ..telemetry import response_event
 
@@ -76,30 +70,6 @@ class ClaudeCliAnalyzer:
         ))
         return result
 
-    def analyze_stage(self, unit, *, stage, candidates=None):
-        started = time.monotonic()
-        try:
-            response = self._run_cli(
-                build_stage_system_prompt(stage),
-                build_stage_user_prompt(unit, stage=stage, candidates=candidates),
-                schema=stage_schema(stage),
-            )
-            result = parse_stage_payload(response["payload"], stage=stage, candidates=candidates)
-        except Exception as exc:
-            event = response_event(
-                provider="claude_cli", requested_model=self.model,
-                duration_seconds=time.monotonic() - started, error=exc,
-            )
-            event["analysis_stage"] = stage
-            self.telemetry_events.append(event)
-            raise
-        event = response_event(
-            provider="claude_cli", requested_model=self.model,
-            duration_seconds=time.monotonic() - started, response=response,
-        )
-        event["analysis_stage"] = stage
-        self.telemetry_events.append(event)
-        return result
 
     def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
         schema = schema or (V2_FINDINGS_JSON_SCHEMA if self.v2_categories else FINDINGS_JSON_SCHEMA)["schema"]

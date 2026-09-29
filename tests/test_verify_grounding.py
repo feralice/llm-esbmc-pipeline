@@ -1,4 +1,4 @@
-from research_pipeline.scan.pipeline import ScanCandidate
+from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.grounding import Grounded, GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 
@@ -46,7 +46,7 @@ def test_hypothesis_id_is_stable_and_depends_on_location():
 
 
 def test_from_candidate_keeps_expression_and_category():
-    candidate = ScanCandidate(file="a.py", function="f", category="none_misuse", expression="u.name", note="u may be None")
+    candidate = Candidate(file="a.py", function="f", category="none_misuse", expression="u.name", note="u may be None")
     h = BugHypothesis.from_candidate(candidate, line=7)
     assert (h.file, h.function, h.suspect_expression, h.line, h.category) == ("a.py", "f", "u.name", 7, "none_misuse")
     assert h.trigger_condition == "u may be None"

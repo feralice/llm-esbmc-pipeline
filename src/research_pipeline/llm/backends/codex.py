@@ -14,11 +14,6 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
-from ..staged import (
-    build_stage_system_prompt,
-    build_stage_user_prompt,
-    parse_stage_payload,
-)
 from ..telemetry import response_event
 
 
@@ -70,30 +65,6 @@ class CodexAnalyzer:
         ))
         return result
 
-    def analyze_stage(self, unit, *, stage, candidates=None):
-        started = time.monotonic()
-        try:
-            response = self._run_cli(
-                build_stage_system_prompt(stage),
-                build_stage_user_prompt(unit, stage=stage, candidates=candidates),
-            )
-            payload = json.loads(strip_markdown_json(response["output_text"]))
-            result = parse_stage_payload(payload, stage=stage, candidates=candidates)
-        except Exception as exc:
-            event = response_event(
-                provider="codex", requested_model=self.model,
-                duration_seconds=time.monotonic() - started, error=exc,
-            )
-            event["analysis_stage"] = stage
-            self.telemetry_events.append(event)
-            raise
-        event = response_event(
-            provider="codex", requested_model=self.model,
-            duration_seconds=time.monotonic() - started, response=response,
-        )
-        event["analysis_stage"] = stage
-        self.telemetry_events.append(event)
-        return result
 
     def _run_cli(self, system_prompt: str, user_prompt: str) -> dict:
         with tempfile.NamedTemporaryFile(

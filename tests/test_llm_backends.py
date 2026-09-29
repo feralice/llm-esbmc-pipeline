@@ -22,7 +22,6 @@ from research_pipeline.llm.backends.factory import (
     _GEMINI_OPENAI_BASE_URL,
     build_analyzer,
 )
-from research_pipeline.llm.staged import TwoStageAnalyzer
 from research_pipeline.models import CodeUnit
 
 
@@ -74,9 +73,6 @@ def test_unknown_backend_rejected():
         build_analyzer(backend="not-a-backend")
 
 
-def test_two_stage_factory_wraps_backend_without_changing_single_default():
-    assert isinstance(build_analyzer(backend="ollama", detection_strategy="two_stage"), TwoStageAnalyzer)
-    assert not isinstance(build_analyzer(backend="ollama"), TwoStageAnalyzer)
 
 
 # --- ChatCompletionsAnalyzer.analyze: shared by ollama and google -----------

@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.scan.pipeline import ScanCandidate  # noqa: E402
-from research_pipeline.scan.rewrite_guard import _expression_nodes, _find_function  # noqa: E402
+from research_pipeline.verify.candidate import Candidate  # noqa: E402
+from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
 from research_pipeline.verify.outcome import EsbmcReading, _python_exceptions, final_verdict  # noqa: E402
 from research_pipeline.verify.render import Program  # noqa: E402
 from research_pipeline.verify.replay import concrete_replay  # noqa: E402
@@ -29,10 +29,10 @@ _CHECKED_READINGS = {"violation", "artifact", "safe"}
 
 def _program(path: Path, hypothesis: dict) -> Program | None:
     source = path.read_text(encoding="utf-8")
-    function = _find_function(ast.parse(source), hypothesis["function"])
+    function = find_function(ast.parse(source), hypothesis["function"])
     if function is None:
         return None
-    nodes = _expression_nodes(function, hypothesis["suspect_expression"])
+    nodes = expression_nodes(function, hypothesis["suspect_expression"])
     if not nodes:
         return None
     spans = tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes}))
@@ -74,7 +74,7 @@ def main() -> int:
     report["verification"] = summarize(report["results"])
     detection = report.get("detection") or {}
     if report.get("evaluation") and detection.get("candidates"):
-        candidates = [ScanCandidate.from_dict(c) for c in detection["candidates"]]
+        candidates = [Candidate.from_dict(c) for c in detection["candidates"]]
         sources = report["config"]["input_files"]
         report["evaluation"] = evaluate_verify(report["results"], candidates, args.ground_truth, sources,
                                                detection.get("rejected_findings", []))

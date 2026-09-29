@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 from typing import Callable
 
-from research_pipeline.scan.rewrite_guard import _expression_nodes, _find_function
+from .astutil import expression_nodes, find_function
 from research_pipeline.verification.esbmc_runner import run_esbmc_direct
 
 from .hypothesis import BugHypothesis
@@ -78,7 +78,7 @@ def _body(function: ast.FunctionDef) -> list[str]:
 
 
 def _target(tree: ast.Module, qualified: str) -> ast.FunctionDef | None:
-    found = _find_function(tree, qualified)
+    found = find_function(tree, qualified)
     if found is not None:
         return found
     name = qualified.split(".")[-1]
@@ -125,7 +125,7 @@ def run_agent_arm(
     target = _target(harness_tree, h.function)
     if target is None:
         return finish(AGENT_FAILED, f"target {h.function} missing from the harness")
-    nodes = _expression_nodes(target, h.suspect_expression)
+    nodes = expression_nodes(target, h.suspect_expression)
     if not nodes:
         return finish(AGENT_FAILED, "suspect expression missing from the harness target")
     original_target = _target(original_tree, h.function)

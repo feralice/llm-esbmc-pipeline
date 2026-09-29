@@ -26,8 +26,8 @@ import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
 from hashlib import sha256
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -57,11 +57,7 @@ from research_pipeline.llm.backends.factory import (
     _GEMINI_OPENAI_BASE_URL,
     build_analyzer,
 )
-from research_pipeline.llm.categories import (
-    FORMAL_CATEGORIES,
-    HARNESS_STRATEGIES,
-    harness_strategy_for_category,
-)
+from research_pipeline.llm.categories import FORMAL_CATEGORIES, HARNESS_STRATEGIES
 from research_pipeline.pipeline import (
     Backend,
     run_pipeline_esbmc_direct,
@@ -69,23 +65,9 @@ from research_pipeline.pipeline import (
     run_pipeline_multi,
 )
 from research_pipeline.preprocess import preprocess_file
-from research_pipeline.scan.pipeline import (
-    SYNTH_FAILED,
-    ScanCandidate,
-    ScanCaseResult,
-    run_pipeline_scan,
-)
-from research_pipeline.scan.replay import (
-    ContainerReplayExecutor,
-    LocalReplayExecutor,
-)
-from research_pipeline.scan.synth import HarnessSynthesizer, load_synth_prompt
-from research_pipeline.v2_evaluator import (
-    evaluate_v2_results,
-    is_real_body_confirmation,
-    is_scalar_abstraction_confirmation,
-)
+from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.llm_client import LLMClient
 from research_pipeline.verify.loop import run_verify
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.voting import aggregate_votes, write_vote_report
@@ -149,12 +131,6 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["openai", "anthropic", "ollama", "google", "codex", "claude_cli"],
         default=None,
         help="Backend LLM. Inferido automaticamente do --model se omitido.",
-    )
-    parser.add_argument(
-        "--detection-strategy",
-        choices=["single", "two_stage"],
-        default="single",
-        help="Estratégia de detecção V2: uma chamada ou localização seguida de classificação.",
     )
     parser.add_argument(
         "--synth-backend",
@@ -279,93 +255,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--no-compat",
-        action="store_true",
-        help="Modo V2: pula a checagem de compatibilidade do harness.",
-    )
-    parser.add_argument(
-        "--no-guards",
-        action="store_true",
-        help="Modo V2: não passa a allowlist de precondição para a síntese.",
-    )
-    parser.add_argument(
-        "--no-ablation",
-        action="store_true",
-        help="Modo V2: não roda ablação nos vereditos SUCCESSFUL.",
-    )
-    parser.add_argument(
-        "--no-driver",
-        action="store_true",
-        help=(
-            "Modo V2: pula o driver gerado pela LLM (verbatim-slice) e vai direto "
-            "para a síntese escalar."
-        ),
-    )
-    parser.add_argument(
-        "--no-real-driver",
-        action="store_true",
-        help=(
-            "Modo V2: não tenta anexar um driver determinístico ao corpo original; "
-            "use apenas o driver/slice gerado pela LLM."
-        ),
-    )
-    parser.add_argument(
-        "--rewrite-mode",
-        choices=["off", "validated"],
-        default="off",
-        help=(
-            "Modo V2: 'validated' pede à LLM uma reescrita de compatibilidade "
-            "quando o corpo original falha no ESBMC, e só aceita o resultado após "
-            "portão AST, replay diferencial isolado e testemunha no original. "
-            "Custa chamadas de API adicionais."
-        ),
-    )
-    parser.add_argument(
-        "--replay-image",
-        default="",
-        help=(
-            "Imagem de contêiner Python já instalada localmente para o replay "
-            "isolado (sem pull automático). Sem ela, o replay fica indisponível e "
-            "a reescrita termina inconclusiva."
-        ),
-    )
-    parser.add_argument(
-        "--replay-runtime",
-        default="",
-        help="Runtime de contêiner para o replay (podman/docker); padrão: o primeiro encontrado.",
-    )
-    parser.add_argument(
-        "--synth-retries",
-        type=int,
-        default=1,
-        metavar="N",
-        help=(
-            "Modo V2: tentativas extras de síntese quando uma falha é "
-            "recuperável (harness inválido, erro do ESBMC). (padrão: 1)"
-        ),
-    )
-    parser.add_argument(
-        "--generate-pytest-testcase",
-        action="store_true",
-        help="Modo V2: gerar um contra-teste Pytest com os valores encontrados pelo ESBMC.",
-    )
-    parser.add_argument(
-        "--pytest-output-dir",
-        default=None,
-        metavar="DIR",
-        help="Diretório para os contra-testes Pytest gerados pelo ESBMC.",
-    )
-    parser.add_argument(
-        "--v2-engine",
-        choices=["legacy", "verify"],
-        default="legacy",
-        help=(
-            "Modo V2: 'legacy' usa a cascata de síntese antiga; 'verify' verifica cada hipótese no "
-            "código original (LLM só descreve tipos de entrada, harness montado por código, "
-            "reexecução no CPython valida o veredito do ESBMC)."
-        ),
-    )
-    parser.add_argument(
         "--verification-sources-strict",
         action="store_true",
         help="Motor verify: pula a hipótese sem arquivo em --verification-sources em vez de usar o recorte.",
@@ -418,19 +307,6 @@ def _resolve_input_paths(inputs: list[str]) -> list[Path]:
 
 
 
-def _infer_ground_truth_path(inputs: list[str]) -> Path | None:
-    for raw in inputs:
-        p = Path(raw)
-        parts = p.parts
-        if p.is_dir() and len(parts) >= 3 and parts[-2:] == ("ok", "bugs"):
-            candidate = p.parent.parent / "ground_truths" / p.name
-            if candidate.exists():
-                return candidate
-        if p.is_dir() and p.name == "bugs" and p.parent.name == "ok":
-            candidate = p.parent.parent / "ground_truths" / "bugs"
-            if candidate.exists():
-                return candidate
-    return None
 
 
 
@@ -507,7 +383,7 @@ def _save_checkpoint(path: Path, payload: object) -> None:
         print(f"Aviso: falha transitória ao salvar checkpoint ({exc}); seguindo sem persistir.", file=sys.stderr)
 
 
-def _v2_candidate_dict(candidate: ScanCandidate) -> dict[str, str]:
+def _v2_candidate_dict(candidate: Candidate) -> dict[str, str]:
     return candidate.to_dict()
 
 
@@ -534,13 +410,13 @@ def _v2_detection_input_paths(
 
 def _load_v2_oracle_candidates(
     ground_truth_path: str | Path, input_paths: list[Path]
-) -> list[ScanCandidate]:
+) -> list[Candidate]:
     """Load synthesis-only hypotheses without exposing human harness contents."""
     gt_path = Path(ground_truth_path)
     manifest_path = gt_path.parent / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     allowed = {str(path.resolve()) for path in input_paths}
-    candidates: list[ScanCandidate] = []
+    candidates: list[Candidate] = []
     for item in manifest.get("items", []):
         detection = manifest_path.parent / item["detection_file"]
         if str(detection.resolve()) not in allowed:
@@ -559,7 +435,7 @@ def _load_v2_oracle_candidates(
                 selected_function = matched_unit.qualname
         for category in item.get("categories", []):
             candidates.append(
-                ScanCandidate(
+                Candidate(
                     file=str(detection),
                     function=selected_function,
                     category=str(category),
@@ -580,7 +456,9 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
         "detector_prompt": sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/system_prompt.txt").read_bytes()
         ).hexdigest(),
-        "synth_prompt": sha256(load_synth_prompt().encode("utf-8")).hexdigest(),
+        "spec_prompt": sha256(
+            (REPO_ROOT / "src/research_pipeline/prompts/input_spec_prompt.txt").read_bytes()
+        ).hexdigest(),
     }
 
 
@@ -1138,19 +1016,28 @@ def _mode_v2_verify(
         capture_telemetry()
         _save_checkpoint(checkpoint_path, checkpoint)
 
-    results = run_verify(
-        hypotheses,
-        llm=llm,
-        output_dir=output_path,
-        verification_sources=Path(args.verification_sources) if args.verification_sources else None,
-        completed={int(i): d for i, d in checkpoint.get("verify_results", {}).items()},
-        on_result=save,
-        esbmc_command=args.esbmc_command,
-        bound=args.bound,
-        timeout_seconds=args.timeout,
-        strategy=args.spec_strategy,
-        strict_sources=args.verification_sources_strict,
-    )
+    try:
+        results = run_verify(
+            hypotheses,
+            llm=llm,
+            output_dir=output_path,
+            verification_sources=Path(args.verification_sources) if args.verification_sources else None,
+            completed={int(i): d for i, d in checkpoint.get("verify_results", {}).items()},
+            on_result=save,
+            esbmc_command=args.esbmc_command,
+            bound=args.bound,
+            timeout_seconds=args.timeout,
+            strategy=args.spec_strategy,
+            strict_sources=args.verification_sources_strict,
+        )
+    except KeyboardInterrupt:
+        checkpoint["status"] = "interrupted"
+        checkpoint["interrupted_at"] = datetime.now(timezone.utc).isoformat()
+        checkpoint["interruption_reason"] = "keyboard_interrupt"
+        capture_telemetry()
+        _write_json_atomic(checkpoint_path, checkpoint)
+        print("Execução V2 interrompida; retome com --resume.", file=sys.stderr)
+        return 2
     capture_telemetry()
     checkpoint["status"] = "complete"
     _write_json_atomic(checkpoint_path, checkpoint)
@@ -1220,10 +1107,9 @@ def mode_v2(args: argparse.Namespace) -> int:
             ollama_base_url=args.ollama_base_url,
             timeout_seconds=args.llm_timeout,
             include_smells=False,
-            detection_strategy=args.detection_strategy,
             v2_categories=True,
         )
-        synthesizer = HarnessSynthesizer(
+        synthesizer = LLMClient(
             backend=synth_backend,
             model=synth_model,
             api_key=(openai_key if synth_backend == "openai" else google_key)
@@ -1244,40 +1130,24 @@ def mode_v2(args: argparse.Namespace) -> int:
     output_dir = args.output_dir or _default_output_dir("v2")
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
+    if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
+        args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
     config = {
         "model": model,
         "backend": backend,
-        "detection_strategy": args.detection_strategy,
         "synth_backend": synth_backend,
         "synth_model": synth_model,
         "v2_stage": args.v2_stage,
         "input_files": [str(path.resolve()) for path in input_paths],
         "excluded_patch_context_files": len(all_input_paths) - len(input_paths),
-        "compat": not args.no_compat,
-        "guards": not args.no_guards,
-        "ablation": not args.no_ablation,
-        "driver": not args.no_driver,
-        "real_driver": not args.no_real_driver,
-        "rewrite_mode": args.rewrite_mode,
-        "replay_image": args.replay_image,
-        "replay_runtime": args.replay_runtime,
-        "synth_retries": args.synth_retries,
+        "verification_sources": args.verification_sources,
+        "verification_sources_strict": args.verification_sources_strict,
+        "spec_strategy": args.spec_strategy,
         "bound": args.bound,
         "timeout": args.timeout,
         "llm_timeout": args.llm_timeout,
-        "include_smells": False,
         "esbmc_command": args.esbmc_command or ["esbmc"],
     }
-    if args.v2_engine == "verify":
-        if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
-            args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
-        config.update({
-            "v2_engine": "verify",
-            "verification_sources": args.verification_sources,
-            "spec_strategy": args.spec_strategy,
-            "verification_sources_strict": args.verification_sources_strict,
-            "esbmc_command": args.esbmc_command or ["esbmc"],
-        })
     fingerprint = _v2_fingerprint(config, input_paths)
     checkpoint_path = output_path / "v2_checkpoint.json"
     if args.resume:
@@ -1293,7 +1163,6 @@ def mode_v2(args: argparse.Namespace) -> int:
             "fingerprint": fingerprint,
             "detection_units": {},
             "detection_trace": [],
-            "synthesis_results": {},
             "status": "running",
             "telemetry_events": [],
     }
@@ -1317,7 +1186,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         analyzer_events_seen = len(analyzer_events)
         synthesizer_events_seen = len(synthesizer_events)
 
-    candidates: list[ScanCandidate] = (
+    candidates: list[Candidate] = (
         _load_v2_oracle_candidates(args.ground_truth, input_paths)
         if args.v2_stage == "synthesis"
         else []
@@ -1344,7 +1213,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             unit_key = f"{file_path.resolve()}::{unit.qualname}"
             saved_unit = checkpoint["detection_units"].get(unit_key)
             if saved_unit is not None:
-                candidates.extend(ScanCandidate.from_dict(item) for item in saved_unit["candidates"])
+                candidates.extend(Candidate.from_dict(item) for item in saved_unit["candidates"])
                 rejected_findings.extend(saved_unit.get("rejected_findings", []))
                 if saved_unit.get("trace"):
                     detection_trace.append(saved_unit["trace"])
@@ -1357,7 +1226,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                 analyzer_trace = getattr(analyzer, "detection_trace", [])
                 trace = dict(analyzer_trace[-1]) if analyzer_trace else {
                     "function": unit.qualname,
-                    "strategy": args.detection_strategy,
+                    "strategy": "single",
                     "located_candidates": 0,
                     "classified_candidates": 0,
                     "rejected_candidates": 0,
@@ -1374,12 +1243,12 @@ def mode_v2(args: argparse.Namespace) -> int:
             analyzer_trace = getattr(analyzer, "detection_trace", [])
             trace = dict(analyzer_trace[-1]) if analyzer_trace else {
                 "function": unit.qualname,
-                "strategy": args.detection_strategy,
+                "strategy": "single",
                 "located_candidates": len(findings),
                 "classified_candidates": len(findings),
                 "rejected_candidates": 0,
             }
-            unit_candidates: list[ScanCandidate] = []
+            unit_candidates: list[Candidate] = []
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:
                 if (
@@ -1402,11 +1271,10 @@ def mode_v2(args: argparse.Namespace) -> int:
                         )
                     continue
                 unit_candidates.append(
-                    ScanCandidate(
+                    Candidate(
                         file=str(file_path),
                         function=unit.qualname,
                         category=finding.category,
-                        harness_strategy=harness_strategy_for_category(finding.category),
                         expression=str(finding.metadata.get("expression", "")),
                         note=finding.explanation,
                     )
@@ -1449,7 +1317,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "trace": detection_trace,
                     "trace_summary": _summarize_detection_trace(detection_trace),
                 },
-                "summary": _scan_summary([]),
+                "verification": summarize([]),
                 "telemetry": telemetry_summary,
                 "results": [],
             },
@@ -1457,275 +1325,34 @@ def mode_v2(args: argparse.Namespace) -> int:
         print("Execução V2 parcial na detecção; retome com --resume.", file=sys.stderr)
         return 2
 
-    if args.v2_engine == "verify":
-        return _mode_v2_verify(
-            args,
-            candidates=candidates,
-            llm=synthesizer,
-            output_path=output_path,
-            config=config,
-            checkpoint=checkpoint,
-            checkpoint_path=checkpoint_path,
-            capture_telemetry=capture_telemetry,
-            input_paths=input_paths,
-            rejected_findings=rejected_findings,
-            detection={
-                "evaluated": args.v2_stage == "end-to-end",
-                "oracle_seeded": args.v2_stage == "synthesis",
-                "analyzed_units": analyzed_units,
-                "hypotheses": len(candidates),
-                "failed_units": len(detection_errors),
-                "candidates": [_v2_candidate_dict(c) for c in candidates],
-                "rejected_findings": rejected_findings,
-                "trace_summary": _summarize_detection_trace(detection_trace),
-            },
-        )
-
-    layers = "".join(
-        f" +{name}" for name in ("real-driver", "driver", "compat", "guards", "ablation")
-        if config.get(name.replace("-", "_"), config.get(name, False))
-    ) or " synth-only"
-    candidate_origin = "conhecida(s)" if args.v2_stage == "synthesis" else "detectada(s)"
-    print(
-        f"\nModo V2 — etapa 2: {len(candidates)} hipótese(s) {candidate_origin} → "
-        f"síntese de harness com {synth_backend}:{synth_model or '(padrão da conta)'} | camadas:{layers}"
-    )
-
-    completed_results = {
-        int(index): ScanCaseResult.from_dict(data)
-        for index, data in checkpoint.get("synthesis_results", {}).items()
-        if data.get("classification") != SYNTH_FAILED
-    }
-
-    def save_synthesis_result(index: int, result: ScanCaseResult) -> None:
-        checkpoint["synthesis_results"][str(index)] = result.to_dict()
-        checkpoint["status"] = "running"
-        capture_telemetry()
-        _save_checkpoint(checkpoint_path, checkpoint)
-
-    try:
-        results = run_pipeline_scan(
-            candidates,
-            synthesizer=synthesizer,
-            esbmc_command=args.esbmc_command,
-            bound=args.bound,
-            timeout_seconds=args.timeout,
-            output_dir=output_dir,
-            use_compat=not args.no_compat,
-            use_guards=not args.no_guards,
-            use_ablation=not args.no_ablation,
-            use_driver=not args.no_driver,
-            use_real_driver=not args.no_real_driver,
-            synth_retries=args.synth_retries,
-            rewrite_mode=args.rewrite_mode,
-            replay_executor=_replay_executor(args),
-            generate_pytest_tests=args.generate_pytest_testcase,
-            pytest_output_dir=args.pytest_output_dir,
-            completed_results=completed_results,
-            on_result=save_synthesis_result,
-        )
-    except KeyboardInterrupt:
-        checkpoint["status"] = "interrupted"
-        checkpoint["interrupted_at"] = datetime.now(timezone.utc).isoformat()
-        checkpoint["interruption_reason"] = "keyboard_interrupt"
-        capture_telemetry()
-        _write_json_atomic(checkpoint_path, checkpoint)
-        print("Execução V2 interrompida; retome com --resume.", file=sys.stderr)
-        return 2
-
-    summary = _scan_summary(results)
-    if args.verbose:
-        for r in results:
-            detail = r.error or r.esbmc_summary or ", ".join(r.compat_reasons)
-            drv = f"  [driver: {r.driver_note}]" if r.driver_note else ""
-            print(f"  [{r.classification:24s}] {r.candidate.function:20s} {detail[:56]}{drv}")
-    print("\n  por classificação:")
-    for k, v in sorted(summary["by_classification"].items()):
-        print(f"    {k:26s} {v}")
-    if summary.get("driver_notes"):
-        print("\n  tier driver (por que aplicou ou não):")
-        for k, v in sorted(summary["driver_notes"].items()):
-            print(f"    {k:26s} {v}")
-    if summary.get("harness_tiers"):
-        print("\n  evidência por tier:")
-        for k, v in sorted(summary["harness_tiers"].items()):
-            print(f"    {k:26s} {v}")
-    if summary.get("rewrite_status"):
-        print("\n  estágio de reescrita (original vs só reescrita, contados à parte):")
-        for k, v in sorted(summary["rewrite_status"].items()):
-            print(f"    {k:26s} {v}")
-    print("\n  por categoria (confirmado / total, nativo e não-verificado entre parênteses):")
-    for cat, d in sorted(summary["by_category"].items()):
-        extra = []
-        if d["native"]:
-            extra.append(f"{d['native']} via --function nativo")
-        if d["unverified"]:
-            extra.append(f"{d['unverified']} não-verificado")
-        suffix = f" ({', '.join(extra)})" if extra else ""
-        print(f"    {cat:22s} {d['confirmed']}/{d['total']}{suffix}")
-
-    if args.report:
-        report_path = Path(args.report)
-    else:
-        report_path = output_path / "v2_report.json"
-    incomplete = {
-        "invalid_harness", "unsupported_harness", "no_property",
-        "esbmc_inconclusive", "esbmc_unavailable", "candidate_not_found",
-        "synth_failed",
-    }
-    partial = any(result.classification in incomplete for result in results)
-    capture_telemetry()
-    telemetry_events = checkpoint["telemetry_events"]
-    telemetry_summary = _summarize_v2_telemetry(telemetry_events)
-    _write_json_atomic(output_path / "llm_telemetry.json", telemetry_events)
-    _write_json_atomic(
-        report_path,
-        {
-            "config": config,
-            "coverage": {
-                "status": "partial" if partial else "complete",
-                "stage": "synthesis" if partial else "complete",
-                "planned_hypotheses": len(candidates),
-                "evaluated_hypotheses": len(results),
-            },
-            "detection": {
-                "evaluated": args.v2_stage == "end-to-end",
-                "oracle_seeded": args.v2_stage == "synthesis",
-                "analyzed_units": analyzed_units,
-                "hypotheses": len(candidates),
-                "failed_units": len(detection_errors),
-                "errors": detection_errors,
-                "candidates": [
-                    {
-                        "file": c.file, "function": c.function,
-                        "category": c.category, "expression": c.expression,
-                    }
-                    for c in candidates
-                ],
-                "rejected_findings": rejected_findings,
-                "trace": detection_trace,
-                "trace_summary": _summarize_detection_trace(detection_trace),
-            },
-            "summary": summary,
-            "telemetry": telemetry_summary,
-            "evaluation": (
-                evaluate_v2_results(
-                    candidates=candidates,
-                    results=results,
-                    ground_truth_path=args.ground_truth,
-                    evaluated_sources=input_paths,
-                    rejected_findings=rejected_findings,
-                    evaluate_detection=args.v2_stage == "end-to-end",
-                )
-                if args.ground_truth
-                else None
-            ),
-            "results": [r.to_dict() for r in results],
+    return _mode_v2_verify(
+        args,
+        candidates=candidates,
+        llm=synthesizer,
+        output_path=output_path,
+        config=config,
+        checkpoint=checkpoint,
+        checkpoint_path=checkpoint_path,
+        capture_telemetry=capture_telemetry,
+        input_paths=input_paths,
+        rejected_findings=rejected_findings,
+        detection={
+            "evaluated": args.v2_stage == "end-to-end",
+            "oracle_seeded": args.v2_stage == "synthesis",
+            "analyzed_units": analyzed_units,
+            "hypotheses": len(candidates),
+            "failed_units": len(detection_errors),
+            "candidates": [_v2_candidate_dict(c) for c in candidates],
+            "rejected_findings": rejected_findings,
+            "trace_summary": _summarize_detection_trace(detection_trace),
         },
     )
-    print(f"\nRelatório JSON: {report_path}")
-    _print_cache_summary(telemetry_summary)
-    checkpoint["status"] = "partial_synthesis" if partial else "complete"
-    _write_json_atomic(checkpoint_path, checkpoint)
-    if partial:
-        print("Execução V2 parcial; consulte as classificações no relatório.", file=sys.stderr)
-        return 2
-    return 0
 
 
-def _print_cache_summary(telemetry_summary: dict) -> None:
-    """One line per stage on whether the provider's automatic prompt cache hit.
-
-    None (not 0%) means no event in that stage reported the field at all --
-    e.g. the whole stage ran through Ollama or codex exec, which never report
-    it. Say so plainly rather than implying a measured 0% cache rate.
-    """
-    lines = []
-    for stage, totals in sorted(telemetry_summary.items()):
-        rate = totals.get("cache_hit_rate")
-        if rate is None:
-            lines.append(f"  {stage}: sem dado de cache do provedor")
-        else:
-            lines.append(
-                f"  {stage}: {rate:.0%} dos tokens de prompt vieram do cache "
-                f"({totals['cached_tokens']}/{totals['prompt_tokens']} tokens)"
-            )
-    if lines:
-        print("Cache de prompt (automático do provedor):")
-        print("\n".join(lines))
 
 
-def _replay_executor(args):
-    if args.rewrite_mode != "validated":
-        return None
-    if not args.replay_image:
-        return LocalReplayExecutor()
-    return ContainerReplayExecutor(runtime=args.replay_runtime or None, image=args.replay_image)
 
 
-def _scan_summary(results) -> dict:
-    from collections import Counter
-
-    by_class = Counter(r.classification for r in results)
-    by_cat: dict = {}
-    for r in results:
-        cat = r.candidate.category
-        d = by_cat.setdefault(
-            cat,
-            {
-                "total": 0,
-                "confirmed": 0,
-                "native": 0,
-                "driver": 0,
-                "abstraction_only": 0,
-                "unverified": 0,
-            },
-        )
-        d["total"] += 1
-        if is_real_body_confirmation(r) and r.classification == "confirmed_native":
-            d["confirmed"] += 1
-            d["native"] += 1
-        elif is_real_body_confirmation(r) and r.classification == "confirmed_driver":
-            d["confirmed"] += 1
-            d["driver"] += 1
-        elif is_real_body_confirmation(r):
-            d["confirmed"] += 1
-        elif is_scalar_abstraction_confirmation(r):
-            d["abstraction_only"] += 1
-        elif r.classification == "confirmed_unverified":
-            d["unverified"] += 1
-    driver_notes = Counter(
-        (r.driver_note.split(":", 1)[0] or "n/a") for r in results if r.driver_note
-    )
-    verification_targets = Counter(
-        r.verification_target or "unknown" for r in results
-    )
-    abstraction_levels = Counter(
-        r.abstraction_level or "unknown" for r in results
-    )
-    harness_tiers = Counter(
-        r.harness_tier or "unknown" for r in results
-    )
-    rewrite_status = Counter(r.rewrite_status for r in results if r.rewrite_status)
-    total_tokens = sum(r.synth_total_tokens or 0 for r in results)
-    total_synth_seconds = sum(r.synth_seconds for r in results)
-    total_esbmc_seconds = sum(r.esbmc_seconds for r in results)
-    return {
-        "n": len(results),
-        "by_classification": dict(by_class),
-        "by_category": by_cat,
-        "driver_notes": dict(driver_notes),
-        "verification_targets": dict(verification_targets),
-        "abstraction_levels": dict(abstraction_levels),
-        "harness_tiers": dict(harness_tiers),
-        "rewrite_status": dict(rewrite_status),
-        "total_synth_tokens": total_tokens,
-        "total_synth_seconds": round(total_synth_seconds, 3),
-        "total_esbmc_seconds": round(total_esbmc_seconds, 3),
-        "mean_attempts": round(
-            sum(r.attempts for r in results) / max(1, len(results)), 2
-        ),
-    }
 
 
 

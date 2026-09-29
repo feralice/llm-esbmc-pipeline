@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, replace
 
-from research_pipeline.scan.rewrite_guard import _find_function
+from .astutil import find_function
 
 from .grounding import Grounded
 from .slicing import CallShape
@@ -307,7 +307,7 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
 
     lines = body.splitlines()
     driver_start = lines.index(f"def {DRIVER}() -> None:") + 1
-    function = _find_function(ast.parse(body), grounded.hypothesis.function)
+    function = find_function(ast.parse(body), grounded.hypothesis.function)
     if function is None:
         raise RenderError("target function lost while building the program")
     shift = function.lineno - grounded.function_start

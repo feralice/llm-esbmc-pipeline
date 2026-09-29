@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, field
 
-from research_pipeline.scan.context import context_module
+from .context import context_module
 
 # Modules with ESBMC-Python 8.5 operational models (src/python-frontend/models); itertools, functools
 # and json failed in the 2026-09-29 probes. numpy/torch models are partial, so their calls get stubs.

@@ -2,7 +2,7 @@ import pytest
 import subprocess
 from pathlib import Path
 
-from research_pipeline.scan.capability import diagnose_esbmc
+from research_pipeline.verify.diagnose import diagnose_esbmc
 from research_pipeline.verification import esbmc_runner
 
 
@@ -111,14 +111,3 @@ def test_diagnosis_reads_raw_log_when_output_was_summarized(tmp_path):
 ])
 def test_converter_errors_seen_on_eligible_dataset_are_named(error, kind):
     assert diagnose_esbmc("tool_error", error, "").kind == kind
-
-
-@pytest.mark.parametrize("message,hint", [
-    ("ERROR: Return type undefined", "return annotation"),
-    ('ERROR: Object "binascii" not found.', "not modeled"),
-    ("ERROR: TypeError at x.py 9: list indices must be integers or slices, not str", "element type"),
-    ("ERROR: --function: 'f' is not a @staticmethod, and its receiver", "obj = "),
-])
-def test_fix_hints_for_known_esbmc_errors(message, hint):
-    from research_pipeline.scan.capability import fix_hint
-    assert hint in fix_hint(diagnose_esbmc("tool_error", message, ""))

@@ -19,7 +19,7 @@ import pytest
 from research_pipeline.llm.backends.claude_cli import ClaudeCliAnalyzer
 from research_pipeline.llm.backends.factory import build_analyzer
 from research_pipeline.models import CodeUnit
-from research_pipeline.scan.synth import HarnessSynthesizer
+from research_pipeline.verify.llm_client import LLMClient
 
 
 def _unit() -> CodeUnit:
@@ -170,43 +170,26 @@ def test_analyze_raises_on_timeout(monkeypatch):
         ClaudeCliAnalyzer(timeout_seconds=1).analyze(_unit())
 
 
-# --- HarnessSynthesizer (synth stage) -----------------------------------------
+# --- LLMClient (input-spec stage of the verify engine) --------------------------
 
 
-def test_harness_synthesizer_accepts_claude_cli_backend():
-    synth = HarnessSynthesizer(backend="claude_cli")
-    assert synth.backend == "claude_cli"
+def test_llm_client_accepts_claude_cli_backend():
+    assert LLMClient(backend="claude_cli").backend == "claude_cli"
 
 
-def test_synth_via_claude_cli_extracts_python_fence(monkeypatch):
-    harness_code = "```python\ndef main():\n    pass\n```"
-
+def test_llm_client_via_claude_cli_returns_the_reply(monkeypatch):
     def fake_run(command, **kwargs):
-        return _FakeCompleted(_envelope(result=harness_code))
+        return _FakeCompleted(_envelope(result='{"params": {}}'))
 
-    monkeypatch.setattr("research_pipeline.scan.synth.subprocess.run", fake_run)
-    synth = HarnessSynthesizer(backend="claude_cli")
-    candidate_finding = _finding_for_synth()
-    result = synth.synthesize(_unit(), candidate_finding)
-    assert "def main():" in result.harness
-    assert "```" not in result.harness
+    monkeypatch.setattr("research_pipeline.verify.llm_client.subprocess.run", fake_run)
+    result = LLMClient(backend="claude_cli").complete("system", "user", json_mode=True)
+    assert result.harness.strip() == '{"params": {}}'
 
 
-def test_synth_via_claude_cli_raises_on_is_error(monkeypatch):
+def test_llm_client_via_claude_cli_raises_on_is_error(monkeypatch):
     monkeypatch.setattr(
-        "research_pipeline.scan.synth.subprocess.run",
+        "research_pipeline.verify.llm_client.subprocess.run",
         lambda command, **kwargs: _FakeCompleted(_envelope(is_error=True, result="refused")),
     )
-    synth = HarnessSynthesizer(backend="claude_cli")
     with pytest.raises(RuntimeError, match="turno falhou"):
-        synth.synthesize(_unit(), _finding_for_synth())
-
-
-def _finding_for_synth():
-    from research_pipeline.models import Finding
-    return Finding(
-        id="f1", stage="scan_candidate", finding_type="suspected_bug",
-        category="division_by_zero", title="", explanation="",
-        evidence=[], verifiable=True, confidence="medium",
-        metadata={"expression": "10 // x"},
-    )
+        LLMClient(backend="claude_cli").complete("system", "user")

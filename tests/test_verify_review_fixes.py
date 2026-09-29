@@ -8,7 +8,7 @@ from research_pipeline.models import ESBMCDirectResult
 from research_pipeline.verify.grounding import Grounded, GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.outcome import (
-    CONFIRMED, ESBMC_ERROR, UNVALIDATED, EsbmcReading, classify_esbmc, final_verdict,
+    CONFIRMED, ESBMC_ERROR, UNVALIDATED, classify_esbmc, final_verdict,
 )
 from research_pipeline.verify.render import render_program
 from research_pipeline.verify.replay import ReplayVerdict, concrete_replay
@@ -273,7 +273,7 @@ def test_tuples_parse_render_and_replay():
 def test_insisting_on_an_unrepresentable_type_is_unsupported_not_spec_failed(tmp_path, monkeypatch):
     import json
 
-    from research_pipeline.scan.synth import SynthResult
+    from research_pipeline.verify.llm_client import SynthResult
     from research_pipeline.verify import loop
     from research_pipeline.verify.outcome import SPEC_FAILED, UNSUPPORTED
 
@@ -334,7 +334,7 @@ def test_object_anywhere_is_an_opaque_value():
 
 
 def test_esbmc_python_traceback_error_is_preferred_over_mypy_noise():
-    from research_pipeline.scan.capability import diagnose_esbmc
+    from research_pipeline.verify.diagnose import diagnose_esbmc
     out = ("p.py:1: error: Function is missing a type annotation  [no-untyped-def]\n"
            "Traceback (most recent call last):\n  File \"x.py\", line 3\n"
            "TypeError: __init__() takes 1 positional argument but 2 were given\n")

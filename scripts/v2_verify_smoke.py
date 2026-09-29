@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.scan.synth import SynthResult
+from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.grounding import GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import precheck, verify_hypothesis
