@@ -73,3 +73,23 @@ def test_dataset_audit_accepts_module_level_grounding(tmp_path) -> None:
     assert report["module_level_labels"] == 1
     assert report["labels_grounded_in_target"] == 1
     assert report["issues"] == []
+
+
+def test_match_unit_prefers_the_qualified_name_over_a_shared_short_name(tmp_path) -> None:
+    from research_pipeline.dataset_audit import match_unit
+    from research_pipeline.preprocess import preprocess_file
+
+    source = tmp_path / "crawler.py"
+    source.write_text(
+        "class CrawlerRunner:\n"
+        "    def __init__(self, settings):\n"
+        "        self.settings = settings\n"
+        "\n"
+        "\n"
+        "class CrawlerProcess(CrawlerRunner):\n"
+        "    def __init__(self, settings):\n"
+        "        configure_logging(settings)\n",
+        encoding="utf-8",
+    )
+    unit = match_unit(preprocess_file(source), "CrawlerProcess.__init__", "configure_logging(settings)")
+    assert unit.qualname == "CrawlerProcess.__init__"

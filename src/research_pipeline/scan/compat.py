@@ -181,13 +181,18 @@ def _container_shape_reasons(tree: ast.Module) -> list[str]:
 
 
 def check_harness(
-    source: str, *, category: str | None = None, allow_bounded_loop: bool = False
+    source: str, *, category: str | None = None, allow_bounded_loop: bool = False,
+    real_inputs: frozenset[str] | None = None,
 ) -> CompatResult:
     """Return a CompatResult for a synthesized harness given as text.
 
     ``category`` is the candidate's hypothesis category (e.g. "incorrect_result").
     When given, it gates the outcome-comparison check (see
     ``_unconstrained_outcome_reasons``).
+
+    ``real_inputs`` are the real function's parameters and ``self`` attributes;
+    when given, a marked assert over free inputs the real code does not have
+    is rejected (see ``_free_input_property_reasons``).
 
     ``allow_bounded_loop`` relaxes the no-loop rule for the loop harness style:
     one non-nested ``for`` over a constant ``range()`` is permitted. It also
@@ -289,6 +294,10 @@ def check_harness(
     if property_order_reasons:
         return CompatResult(False, VERDICT_INVALID, property_order_reasons)
 
+    free_input_reasons = _free_input_property_reasons(tree, real_inputs)
+    if free_input_reasons:
+        return CompatResult(False, VERDICT_INVALID, free_input_reasons)
+
     cover_reasons = _cover_grounding_reasons(tree)
     if cover_reasons:
         return CompatResult(False, VERDICT_INVALID, cover_reasons)
@@ -384,12 +393,11 @@ def _property_order_reasons(tree: ast.Module) -> list[str]:
     if not marked:
         return []
     assertion_line = marked[0].lineno
+    # Assumes in a caller (e.g. main) run before the call, whatever their line.
+    scope = _enclosing_scope(tree, marked[0])
     late_assumes = [
-        node for node in ast.walk(tree)
-        if isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Name)
-        and node.func.id == "__ESBMC_assume"
-        and node.lineno > assertion_line
+        node for node in ast.walk(scope)
+        if _is_assume_call(node) and node.lineno > assertion_line
     ]
     if late_assumes:
         return [
@@ -399,22 +407,155 @@ def _property_order_reasons(tree: ast.Module) -> list[str]:
     return []
 
 
+def _is_assume_call(node: ast.AST) -> bool:
+    return (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "__ESBMC_assume"
+    )
+
+
+def _enclosing_scope(tree: ast.Module, target: ast.AST) -> ast.AST:
+    """The innermost function containing ``target``, or the module."""
+    scopes = [
+        node for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and any(child is target for child in ast.walk(node))
+    ]
+    return min(scopes, key=lambda node: node.end_lineno - node.lineno, default=tree)
+
+
+def _is_magnitude_bound(test: ast.expr) -> bool:
+    """``abs(x) <= K``: the search bound the prompt always asks for, not a precondition."""
+    return (
+        isinstance(test, ast.Compare)
+        and isinstance(test.left, ast.Call)
+        and isinstance(test.left.func, ast.Name)
+        and test.left.func.id == "abs"
+        and all(isinstance(side, ast.Constant) for side in test.comparators)
+    )
+
+
+def _free_input_property_reasons(tree: ast.Module, real_inputs: frozenset[str] | None) -> list[str]:
+    """Reject a marked assert that only restates a condition on invented free inputs.
+
+    With every asserted name a raw ``nondet_*()`` value (or a parameter fed only
+    by such values), no real precondition on them, and at least one of them not
+    an input of the real function (a stand-in flag such as ``x_is_none``), ESBMC
+    can always pick a violating value: FAILED then says nothing about the code.
+    A free value that IS a real parameter is a faithful model of that input.
+    """
+    if real_inputs is None:
+        return []
+    marked = next(
+        (node for node in ast.walk(tree)
+         if isinstance(node, ast.Assert) and isinstance(node.msg, ast.Constant)
+         and node.msg.value == EXPECTED_PROPERTY_MARKER),
+        None,
+    )
+    if marked is None:
+        return []
+    asserted = _expr_names(marked.test)
+    if not asserted:
+        return []
+
+    raw: set[str] = set()
+    derived: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value = node.targets[0], node.value
+        elif isinstance(node, ast.AnnAssign) and node.value is not None:
+            target, value = node.target, node.value
+        else:
+            continue
+        if isinstance(target, ast.Name):
+            (raw if _is_nondet_call(value) else derived).add(target.id)
+
+    # Parameter -> caller names it is bound to, so a precondition written in
+    # main() on the argument also constrains the parameter.
+    aliases: dict[str, set[str]] = {}
+    fed_by_other: set[str] = set()
+    functions = {
+        node.name: node for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+    for call in ast.walk(tree):
+        if not (isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                and call.func.id in functions):
+            continue
+        params = [arg.arg for arg in functions[call.func.id].args.args]
+        for param, arg in zip(params, call.args):
+            if isinstance(arg, ast.Name):
+                aliases.setdefault(param, set()).add(arg.id)
+            elif not _is_nondet_call(arg):
+                fed_by_other.add(param)
+    params = {arg.arg for node in functions.values() for arg in node.args.args}
+
+    def is_free(name: str) -> bool:
+        if name in derived or name in fed_by_other:
+            return False
+        if name in raw:
+            return True
+        return name in params and all(is_free(a) for a in aliases.get(name, set()) if a != name)
+
+    if not all(is_free(name) for name in asserted):
+        return []
+    if all(name in real_inputs for name in asserted):
+        return []
+    related = set(asserted)
+    for name in asserted:
+        related |= aliases.get(name, set())
+    constrained = any(
+        _expr_names(call.args[0]) & related
+        for call in ast.walk(tree)
+        if _is_assume_call(call) and call.args
+        and not _is_magnitude_bound(call.args[0])
+        and not (isinstance(call.args[0], ast.Compare)
+                 and ast.dump(call.args[0].left) == ast.dump(call.args[0].comparators[0]))
+    )
+    if constrained:
+        return []
+    return [
+        "expected assertion only restates a condition on unconstrained stand-in inputs ("
+        + ", ".join(sorted(asserted))
+        + ") that the real function does not have; ESBMC can always pick a violating "
+        "value, so FAILED says nothing about the code. Compute the asserted value through "
+        "the modelled code from the real parameters, or constrain the inputs with the real "
+        "caller's preconditions via __ESBMC_assume"
+    ]
+
+
 def _cover_grounding_reasons(tree: ast.Module) -> list[str]:
     """Reject cover goals that cannot depend on a symbolic input."""
     symbolic_names: set[str] = set()
     assignments = [
         node for node in ast.walk(tree)
-        if isinstance(node, ast.Assign) and len(node.targets) == 1
-        and isinstance(node.targets[0], ast.Name)
+        if (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+        )
+        or (
+            isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.value is not None
+        )
     ]
+
+    def assignment_target(node: ast.Assign | ast.AnnAssign) -> str:
+        return node.targets[0].id if isinstance(node, ast.Assign) else node.target.id
+
+    def assignment_value(node: ast.Assign | ast.AnnAssign) -> ast.AST:
+        return node.value
+
     for node in assignments:
-        value = node.value
+        value = assignment_value(node)
         if (
             isinstance(value, ast.Call)
             and isinstance(value.func, ast.Name)
             and value.func.id in _VALID_NONDET
         ):
-            symbolic_names.add(node.targets[0].id)
+            symbolic_names.add(assignment_target(node))
 
     function_params = {
         node.name: [arg.arg for arg in node.args.args]
@@ -437,9 +578,10 @@ def _cover_grounding_reasons(tree: ast.Module) -> list[str]:
     while changed:
         changed = False
         for node in assignments:
-            names = _expr_names(node.value)
-            if names & symbolic_names and node.targets[0].id not in symbolic_names:
-                symbolic_names.add(node.targets[0].id)
+            names = _expr_names(assignment_value(node))
+            target = assignment_target(node)
+            if names & symbolic_names and target not in symbolic_names:
+                symbolic_names.add(target)
                 changed = True
 
     for node in ast.walk(tree):

@@ -20,6 +20,7 @@ import ast
 import builtins
 import json
 import tempfile
+import textwrap
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -31,6 +32,7 @@ from ..preprocess import preprocess_file
 from ..report import _category_from_esbmc_property, _esbmc_result_matches_category
 from ..verification.esbmc_runner import (
     generate_pytest_testcase,
+    only_verifier_artifacts,
     run_esbmc_direct,
     run_esbmc_on_function,
 )
@@ -646,6 +648,8 @@ def _try_native(
     )
     category_evidence = ""
     esbmc_category = ""
+    if result.status == "violation_found" and only_verifier_artifacts(result.details):
+        return None
     if result.status == "violation_found":
         classification = CONFIRMED_NATIVE
         category_evidence = _native_category_evidence(candidate.category, result.details)
@@ -862,6 +866,8 @@ def _try_real_body_driver(
     )
     if esbmc.status not in {"violation_found", "no_violation_found"}:
         return None
+    if esbmc.status == "violation_found" and only_verifier_artifacts(esbmc.details):
+        return None
     classification = CONFIRMED_DRIVER if esbmc.status == "violation_found" else SAFE_DRIVER
     ablation_report = AblationReport(over_restricted=False)
     if classification == SAFE_DRIVER and use_ablation:
@@ -1058,6 +1064,21 @@ def _try_driver(
     return None, f"inconclusive: {esbmc.summary}"
 
 
+def _real_inputs(unit) -> frozenset[str]:
+    """Parameters and ``self`` attributes of the real function: its genuine inputs."""
+    names = {name for name in unit.parameters if name not in {"self", "cls"}}
+    try:
+        tree = ast.parse(textwrap.dedent(unit.source))
+    except SyntaxError:
+        return frozenset(names)
+    names |= {
+        node.attr for node in ast.walk(tree)
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name)
+        and node.value.id in {"self", "cls"}
+    }
+    return frozenset(names)
+
+
 def _one_attempt(
     candidate: ScanCandidate,
     unit,
@@ -1113,6 +1134,7 @@ def _one_attempt(
             synth_result.harness,
             category=candidate.category,
             allow_bounded_loop=style == STYLE_LOOP,
+            real_inputs=_real_inputs(unit),
         )
         result.compat_verdict = compat.verdict
         result.compat_reasons = list(compat.reasons)

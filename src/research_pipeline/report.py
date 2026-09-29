@@ -247,7 +247,7 @@ def _category_from_esbmc_property(text: str) -> str:
         return "type_mismatch"
     if "arithmetic overflow" in normalized:
         return "integer_overflow"
-    if "null pointer" in normalized:
+    if "null pointer" in normalized or "missing return statement" in normalized:
         return "none_misuse"
     if "assertion" in normalized:
         return "assertion_violation"
@@ -255,7 +255,8 @@ def _category_from_esbmc_property(text: str) -> str:
         return "division_by_zero"
     if "out-of-bounds" in normalized or "out of bounds" in normalized or "bounds" in normalized:
         return "out_of_bounds"
-    if "dereference" in normalized:
+    # "invalid pointer" comes from ESBMC's C string model on a symbolic str, not an index.
+    if "dereference" in normalized and "invalid pointer" not in normalized:
         return "out_of_bounds"
     return "unknown_esbmc_violation"
 

@@ -43,6 +43,8 @@ def test_synth_prompt_file_loads():
     assert "nondet_int()" in text
     assert "__ESBMC_assume" in text
     assert "module level" in text
+    assert "__ESBMC_cover(0 == 0)` is invalid" in text
+    assert "cover" in text.lower()
 
 
 def test_prompt_style_selects_distinct_files():

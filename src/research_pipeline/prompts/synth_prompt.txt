@@ -84,15 +84,15 @@ RULES
      triggers the bug.
    - For every `nondet_float()`, add `__ESBMC_assume(x == x)` to exclude NaN.
 
-7. REACHABILITY. Right before the suspect expression, add
-   `__ESBMC_cover(<condition that triggers the hypothesized bug>)` - e.g. for
-   division_by_zero, `__ESBMC_cover(<divisor> == 0)`; for out_of_bounds,
-   `__ESBMC_cover(<index> < 0)` or `__ESBMC_cover(<index> >= <length>)`. This
-   makes ESBMC prove the bug input is still reachable under your assumes; if it
-   is not, the harness is over-constrained. The pipeline runs ESBMC with
-   `--multi-property`, which reports the cover's own reachability check
-   separately from your marked assert - it will never shadow or replace
-   rule 9's marked assert.
+7. REACHABILITY. A scalar harness MAY add
+   `__ESBMC_cover(<condition that triggers the hypothesized bug>)`, but this is
+   optional. If you add it, the condition must depend on a variable that comes
+   from `nondet_*()` (possibly through simple assignments), never on literals
+   alone, and it must be syntactically reachable under the assumptions. For
+   example, `__ESBMC_cover(divisor == 0)` is valid when `divisor` is symbolic;
+   `__ESBMC_cover(0 == 0)` is invalid and must not be emitted. When unsure,
+   omit the cover and keep the single marked assert. The V2 verbatim-driver
+   style forbids `__ESBMC_cover` entirely: its plain assert is the property.
 
 8. Drive execution from module level: define the model function, then a
    main() that calls it with the nondet values, then call main().
@@ -115,9 +115,10 @@ RULES
    - legacy division_by_zero: model ONLY the divisor. Rebuild it from fresh nondet
      operands (rule 5b), then write `assert <divisor> != 0` and a line that uses
      it, e.g. `q: float = 1.0 / <divisor>`. The dividend is irrelevant to
-     division by zero - drop it. ESBMC-Python does not check `/` automatically
-     (`//` and `%` on ints it does); the explicit assert makes every case
-     checkable (esbmc-python-guide gotcha 3).
+     division by zero - drop it. ESBMC-Python 8.5.0 does check `/`, `//` and
+     `%` natively (uncaught ZeroDivisionError, int and float); the marked
+     assert is still required so the pipeline can tell your property apart
+     from any other violation, so it must come BEFORE the division.
    - legacy out_of_bounds: assert 0 <= <index> < <length> before the access.
    - legacy assertion_violation / incorrect_result: these two categories mean "the
      function computes the WRONG VALUE for a valid input", not "an unchecked
@@ -197,6 +198,18 @@ RULES
     - `min([])` / `max([])` raise `IndexError`, not `ValueError`.
     - Any harness whose single assert compares a value against a HARDCODED
       literal (rule 9) rather than a computed expression.
+    - Silent in ESBMC-Python 8.5.0 (the bug goes undetected): calling a method
+      on None, `len(None)`, comparing `None` with `<`/`>=`, `float("abc")`,
+      calling a str. To model a None misuse, read an attribute of a class
+      instance that may be None (`node.next.prev` with `next` None): ESBMC
+      reports that as a NULL dereference.
+    - Crash or unsupported, never a verdict about the program: `None * n`,
+      `x in None`, `getattr(obj, name, default)`, `%` formatting with a
+      non-constant argument, `re.sub`, `re.findall`.
+    - An attribute read inside `in` (`"//" in cfg.NAME`) is not checked for a
+      missing attribute; bind it first (`name: str = cfg.NAME`).
+    - A list of lists typed as plain `list` makes `len(rows[0])` a C strlen
+      that never unwinds; annotate it `list[list[int]]`.
 
 OUTPUT
 

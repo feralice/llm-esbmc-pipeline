@@ -608,11 +608,13 @@ def _extract_esbmc_details(
         block_text = ""
         block_location = ""
         block_function = ""
+        block_file = ""
         for ln in block_lines:
             # A module-level violation has a location line with no " function ".
             if ln.startswith("file ") and " line " in ln:
                 fm = re.search(r"function ([^ ]+)", ln)
                 lm = re.search(r" line (\d+)", ln)
+                block_file = ln[len("file "):ln.index(" line ")]
                 if fm:
                     block_function = fm.group(1)
                 if lm:
@@ -627,7 +629,9 @@ def _extract_esbmc_details(
                 block_text = ln
                 break
         if block_kind and block_kind not in {v["kind"] for v in violated_properties}:
-            violated_properties.append({"kind": block_kind, "text": block_text, "location": block_location})
+            violated_properties.append(
+                {"kind": block_kind, "text": block_text, "location": block_location, "file": block_file}
+            )
 
     if violated_properties:
         property_kind = violated_properties[0]["kind"]
@@ -640,11 +644,38 @@ def _extract_esbmc_details(
         "counterexample": counterexample[:6],
         "violated_properties": [v["kind"] for v in violated_properties],
         "violated_locations": [v["location"] for v in violated_properties],
+        "violated_files": [v["file"] for v in violated_properties],
         "property_kind": property_kind,
         "property_text": property_text,
         "location": location,
         "function": function_name,
     }
+
+
+_ESBMC_LIBRARY_PATHS = ("/esbmc-vfs/", "/c2goto/library/")
+# Operational-model checks that mirror a real CPython exception on the same input.
+_PYTHON_EXCEPTION_MESSAGE = re.compile(r"^([A-Z]\w*(Error|Exception)\b|invalid literal for int\(\))")
+
+
+def _is_verifier_artifact(kind: str, file: str) -> bool:
+    """A violation of the verifier itself, not of the program under test.
+
+    Unwinding assertions are --unwind bound artefacts. Other failures raised
+    inside ESBMC's own C library/operational models (e.g. strstr's "invalid
+    pointer" on a symbolic str) have no CPython counterpart unless the model
+    reports a Python exception.
+    """
+    if kind.startswith("unwinding assertion"):
+        return True
+    return any(part in file for part in _ESBMC_LIBRARY_PATHS) and not _PYTHON_EXCEPTION_MESSAGE.match(kind)
+
+
+def only_verifier_artifacts(details: dict[str, object]) -> bool:
+    """True when every violated property ESBMC reported is a verifier artefact."""
+    kinds = [str(kind) for kind in details.get("violated_properties") or []]
+    files = [str(file) for file in details.get("violated_files") or []]
+    files += [""] * (len(kinds) - len(files))
+    return bool(kinds) and all(_is_verifier_artifact(k, f) for k, f in zip(kinds, files))
 
 
 def _verification_metadata(

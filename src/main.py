@@ -59,6 +59,7 @@ from research_pipeline.pipeline import (
     run_pipeline_llm_only,
     run_pipeline_multi,
 )
+from research_pipeline.dataset_audit import match_unit
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.pipeline import (
     SYNTH_FAILED,
@@ -481,24 +482,10 @@ def _load_v2_oracle_candidates(
         units = preprocess_file(detection)
         selected_function = declared_function
         if units:
-            alternatives = [part.strip() for part in declared_function.split("/")]
-            matched_unit = next(
-                (
-                    unit
-                    for unit in units
-                    if any(
-                        alt and (unit.qualname == alt or unit.name == alt.split(".")[-1])
-                        for alt in alternatives
-                    )
-                ),
-                None,
+            matched_unit = (
+                match_unit(units, declared_function, str(item.get("expression", "")))
+                or units[0]
             )
-            if matched_unit is None:
-                expression = str(item.get("expression", ""))
-                matched_unit = next(
-                    (unit for unit in units if expression and expression in unit.source),
-                    units[0],
-                )
             # Keep the manifest label for module-level cases; it may describe
             # a group of constants rather than a Python function name.
             if matched_unit.kind != "module":

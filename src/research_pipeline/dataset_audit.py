@@ -23,7 +23,7 @@ def _is_module_level_label(function: str) -> bool:
     return function.strip().lower().startswith("module-level")
 
 
-def _match_unit(units, declared_function: str, expression: str):
+def match_unit(units, declared_function: str, expression: str):
     """Resolve a ground-truth function label to the real unit in the source.
 
     Mirrors main.py:_load_v2_oracle_candidates -- v2 dataset labels can name
@@ -31,21 +31,17 @@ def _match_unit(units, declared_function: str, expression: str):
     plain name shown to the detection LLM (match). Falls back to matching
     the suspect expression's text when the declared name isn't a unit here.
     """
-    alternatives = [part.strip() for part in declared_function.split("/")]
-    matched = next(
-        (
-            unit
-            for unit in units
-            if any(
-                alt and (unit.qualname == alt or unit.name == alt.split(".")[-1])
-                for alt in alternatives
-            )
-        ),
-        None,
-    )
-    if matched is None and expression:
-        matched = next((unit for unit in units if expression in unit.source), None)
-    return matched
+    alternatives = [part.strip() for part in declared_function.split("/") if part.strip()]
+    for wanted in (
+        lambda unit, alt: unit.qualname == alt,
+        lambda unit, alt: unit.name == alt.split(".")[-1],
+    ):
+        matched = next((unit for unit in units if any(wanted(unit, alt) for alt in alternatives)), None)
+        if matched is not None:
+            return matched
+    if expression:
+        return next((unit for unit in units if expression in unit.source), None)
+    return None
 
 
 def _load_v2_manifest_cases(ground_truth_path: Path):
@@ -127,7 +123,7 @@ def audit_dataset(ground_truth_path: str | Path) -> dict:
             function = str(entry.get("function", ""))
             category = str(entry.get("category", ""))
             expression = str(entry.get("expression", ""))
-            unit = _match_unit(units, function, expression)
+            unit = match_unit(units, function, expression)
             prefix = {"file": source_path.name, "function": function, "category": category}
             if _is_module_level_label(function):
                 module_level_labels += 1

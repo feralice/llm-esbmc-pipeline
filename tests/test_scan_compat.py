@@ -188,6 +188,20 @@ def test_esbmc_cover_is_allowed_alongside_marked_assert():
     assert result.ok, result.reasons
 
 
+def test_esbmc_cover_accepts_annotated_symbolic_assignment():
+    """The synth prompt commonly annotates nondet bindings with PEP 484 types."""
+    src = (
+        "def f(x: int) -> int:\n"
+        "    value: int = nondet_int()\n"
+        "    __ESBMC_cover(value == 0)\n"
+        "    assert value != 0, 'LLM_ESBMC_EXPECTED_PROPERTY'\n"
+        "    return value\n"
+        "f(nondet_int())\n"
+    )
+    result = check_harness(src)
+    assert result.ok, result.reasons
+
+
 def test_esbmc_cover_is_still_rejected_for_loop_style():
     """allow_bounded_loop=True is the loop harness style. synth_prompt_loop.txt
     rule 9 forbids __ESBMC_cover there (the bounded loop already forces every

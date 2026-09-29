@@ -34,6 +34,28 @@ def _signature(file: str, category: str) -> tuple[str, str]:
     return str(Path(file).resolve()), category
 
 
+def _accepted_answers(item: dict) -> list[str]:
+    """Every label that counts as the right answer for a manifest item."""
+    return [*map(str, item.get("categories", [])), *map(str, item.get("harness_strategies", []))]
+
+
+def _expected_slots(item: dict) -> list[frozenset[str]]:
+    """One expected label per slot.
+
+    An item with ``harness_strategies`` is one slot answered by any listed
+    strategy (the V2 detector's four-value output). Legacy items keep one
+    slot per semantic category.
+    """
+    strategies = item.get("harness_strategies")
+    if strategies:
+        return [frozenset(map(str, strategies))]
+    return [frozenset({str(category)}) for category in item.get("categories", [])]
+
+
+def _slot_key(slot: frozenset[str]) -> str:
+    return "|".join(sorted(slot))
+
+
 def _bug_detection_metrics(
     expected_items: list[dict], candidates: list, base: Path,
     rejected_findings: list[dict] | None = None,
@@ -42,9 +64,10 @@ def _bug_detection_metrics(
     expected = [
         {
             "file": str((base / item["detection_file"]).resolve()),
-            "function": str(item.get("function", "")),
+            # "gamma / lgamma": the same bug appears in each listed function.
+            "functions": {part.strip() for part in str(item.get("function", "")).split("/") if part.strip()},
             "expression": str(item.get("expression", "")),
-            "categories": {str(category) for category in item.get("categories", [])},
+            "categories": set(_accepted_answers(item)),
         }
         for item in expected_items
         if item.get("categories")
@@ -88,7 +111,7 @@ def _bug_detection_metrics(
         """Match the strongest location fields available in the manifest."""
         if candidate["file"] != item["file"]:
             return False
-        if item["function"] and candidate["function"] != item["function"]:
+        if item["functions"] and candidate["function"] not in item["functions"]:
             return False
         if item["expression"] and candidate["expression"] != item["expression"]:
             return False
@@ -98,13 +121,13 @@ def _bug_detection_metrics(
     location_metrics = count_matches(
         lambda item, candidate: (
             candidate["file"] == item["file"]
-            and candidate["function"] == item["function"]
+            and candidate["function"] in item["functions"]
         )
     )
     expression_metrics = count_matches(
         lambda item, candidate: (
             candidate["file"] == item["file"]
-            and candidate["function"] == item["function"]
+            and candidate["function"] in item["functions"]
             and candidate["expression"] == item["expression"]
         )
     )
@@ -113,7 +136,7 @@ def _bug_detection_metrics(
         "tp": sum(
             any(
                 candidate["file"] == item["file"]
-                and candidate["function"] == item["function"]
+                and candidate["function"] in item["functions"]
                 and candidate["category"] in item["categories"]
                 for candidate in generated
             )
@@ -219,17 +242,27 @@ def evaluate_v2_results(
         if evaluated_sources is not None
         else None
     )
+    slots_by_file: dict[str, list[frozenset[str]]] = {}
+    for item in manifest_items:
+        source = str((base / item["detection_file"]).resolve())
+        if str(item.get("id")) in patch_context_ids:
+            continue
+        if allowed_sources is not None and source not in allowed_sources:
+            continue
+        slots_by_file.setdefault(source, []).extend(_expected_slots(item))
     expected = Counter(
-        _signature(str(base / item["detection_file"]), str(category))
-        for item in manifest_items
-        for category in item.get("categories", [])
-        if str(item.get("id")) not in patch_context_ids
-        if allowed_sources is None
-        or str((base / item["detection_file"]).resolve()) in allowed_sources
+        (source, _slot_key(slot)) for source, slots in slots_by_file.items() for slot in slots
     )
-    generated = Counter(_signature(c.file, c.category) for c in candidates)
+
+    def answer_signature(file: str, category: str) -> tuple[str, str]:
+        """Map an answer onto the expected slot it satisfies, if any."""
+        source, category = _signature(file, category)
+        slot = next((s for s in slots_by_file.get(source, []) if category in s), None)
+        return (source, _slot_key(slot)) if slot else (source, category)
+
+    generated = Counter(answer_signature(c.file, c.category) for c in candidates)
     generated.update(
-        _signature(str(item["file"]), str(item["category"]))
+        answer_signature(str(item["file"]), str(item["category"]))
         for item in (rejected_findings or [])
     )
     matched = expected & generated
@@ -254,7 +287,7 @@ def evaluate_v2_results(
 
     result_by_signature: dict[tuple[str, str], list] = {}
     for result in results:
-        sig = _signature(result.candidate.file, result.candidate.category)
+        sig = answer_signature(result.candidate.file, result.candidate.category)
         result_by_signature.setdefault(sig, []).append(result)
 
     true_positive_results = []
@@ -271,7 +304,7 @@ def evaluate_v2_results(
     # those occurrences against the still-unprocessed true positives so the
     # stage accounting is disjoint and sums to detection_tp - end_to_end_tp.
     rejected_signatures = Counter(
-        _signature(str(item["file"]), str(item["category"]))
+        answer_signature(str(item["file"]), str(item["category"]))
         for item in (rejected_findings or [])
     )
     grounding_unprocessed = sum(
