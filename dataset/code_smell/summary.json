@@ -1,0 +1,261 @@
+{
+  "pysmell": {
+    "items": 2570,
+    "location": {
+      "file_verified": 323,
+      "unverified": 1001,
+      "not_fetched": 44,
+      "mismatch": 415,
+      "verified": 787
+    },
+    "positives_by_location": {
+      "file_verified": 29,
+      "unverified": 67,
+      "mismatch": 13,
+      "verified": 31,
+      "not_fetched": 10
+    },
+    "by_smell": {
+      "ComplexContainerComprehension": {
+        "label_0": 278,
+        "label_1": 22
+      },
+      "LargeClass": {
+        "label_0": 289,
+        "label_1": 11
+      },
+      "LongBaseClassList": {
+        "label_0": 300
+      },
+      "LongLambdaFunction": {
+        "label_0": 184,
+        "label_1": 16
+      },
+      "LongMessageChain": {
+        "label_0": 264,
+        "label_1": 36
+      },
+      "LongMethod": {
+        "label_0": 298,
+        "label_1": 2
+      },
+      "LongParameterList": {
+        "label_0": 269,
+        "label_1": 31
+      },
+      "LongScopeChaining": {
+        "label_0": 63,
+        "label_1": 6
+      },
+      "LongTernaryConditionalExpression": {
+        "label_0": 190,
+        "label_1": 11
+      },
+      "MultiplyNestedContainer": {
+        "label_0": 285,
+        "label_1": 15
+      }
+    },
+    "v1_mapped_positives_meeting_threshold": {
+      "long_method=None": 2,
+      "many_parameters=False": 15,
+      "many_parameters=True": 7,
+      "many_parameters=None": 9
+    }
+  },
+  "smelly_code": {
+    "items": 132,
+    "by_smell": {
+      "Control Coupling": {
+        "label_1": 2
+      },
+      "Data Class": {
+        "label_1": 1
+      },
+      "Data Clumps": {
+        "label_1": 5
+      },
+      "Dead Code": {
+        "label_1": 10
+      },
+      "Divergent Change": {
+        "label_1": 15
+      },
+      "Duplicate Code": {
+        "label_1": 4
+      },
+      "Feature Envy": {
+        "label_1": 2
+      },
+      "Inappropriate Intimacy": {
+        "label_1": 8
+      },
+      "Lazy Class": {
+        "label_1": 1
+      },
+      "Long Method": {
+        "label_1": 5
+      },
+      "Long Parameter List": {
+        "label_1": 5
+      },
+      "Message Chain": {
+        "label_1": 5
+      },
+      "Middle Man": {
+        "label_1": 5
+      },
+      "Parallel Inheritance Hierarchies": {
+        "label_1": 10
+      },
+      "Primitive Obsession": {
+        "label_1": 7
+      },
+      "Refused Bequest": {
+        "label_1": 5
+      },
+      "Shotgun Surgery": {
+        "label_1": 25
+      },
+      "Speculative Generality": {
+        "label_1": 5
+      },
+      "Switch Statements": {
+        "label_1": 6
+      },
+      "Temporary Fields": {
+        "label_1": 5
+      },
+      "Unnecessary Comments": {
+        "label_1": 1
+      }
+    },
+    "v1_mapped_meeting_threshold": {
+      "long_method=False": 4,
+      "many_parameters=True": 3,
+      "many_parameters=False": 2,
+      "long_method=True": 1
+    }
+  },
+  "mlflow": {
+    "items": 410,
+    "files": 241,
+    "location": {
+      "file": 196,
+      "unverified": 211,
+      "mismatch": 3
+    },
+    "by_smell": {
+      "(no smell in file)": {
+        "label_0": 196
+      },
+      "Columns and DataType Not Explicitly Set": {
+        "label_1": 39
+      },
+      "Data Leakage": {
+        "label_1": 69
+      },
+      "Dataframe Conversion API Misused": {
+        "label_1": 6
+      },
+      "Deterministic Algorithm Option Not Used": {
+        "label_1": 5
+      },
+      "Hyperparameter Not Explicitly Set": {
+        "label_1": 30
+      },
+      "Missing the Mask of Invalid Value": {
+        "label_1": 1
+      },
+      "No Scaling Before Scaling-sensitive Operation": {
+        "label_1": 9
+      },
+      "Randomness Uncontrolled": {
+        "label_1": 54
+      },
+      "Training / Evaluation Mode Improper Toggling": {
+        "label_1": 1
+      }
+    }
+  },
+  "codesmile": {
+    "items": 376,
+    "files": 101,
+    "location": {
+      "verified": 354,
+      "not_fetched": 22
+    },
+    "positives_by_location": {
+      "verified": 240
+    },
+    "by_smell": {
+      "Chain Indexing": {
+        "label_0": 7,
+        "label_1": 35
+      },
+      "Columns and DataType Not Explicitly Set": {
+        "label_0": 35,
+        "label_1": 66
+      },
+      "Dataframe Conversion API Misused": {
+        "label_1": 62
+      },
+      "Gradients Not Cleared Before Backward Propagation": {
+        "label_0": 1,
+        "label_1": 14
+      },
+      "In-Place APIs Misused": {
+        "label_0": 22
+      },
+      "Matrix Multiplication API Misused": {
+        "label_1": 10
+      },
+      "Memory Not Freed": {
+        "label_0": 6,
+        "label_1": 16
+      },
+      "Merge API Parameter Not Explicitly Set": {
+        "label_0": 16
+      },
+      "NaN Equivalence Comparison Misused": {
+        "label_1": 4
+      },
+      "PyTorch Call Method Misused": {
+        "label_1": 29
+      },
+      "TensorArray Not Used": {
+        "label_0": 41
+      },
+      "Unnecessary Iteration": {
+        "label_0": 8,
+        "label_1": 4
+      }
+    }
+  },
+  "py_files": {
+    "Chain Indexing": 12,
+    "Columns and DataType Not Explicitly Set": 74,
+    "ComplexContainerComprehension": 10,
+    "Data Leakage": 64,
+    "Dataframe Conversion API Misused": 31,
+    "Deterministic Algorithm Option Not Used": 2,
+    "Gradients Not Cleared Before Backward Propagation": 11,
+    "Hyperparameter Not Explicitly Set": 28,
+    "LargeClass": 8,
+    "LongLambdaFunction": 5,
+    "LongMessageChain": 5,
+    "LongParameterList": 23,
+    "LongScopeChaining": 1,
+    "LongTernaryConditionalExpression": 3,
+    "Matrix Multiplication API Misused": 4,
+    "Memory Not Freed": 16,
+    "Missing the Mask of Invalid Value": 1,
+    "MultiplyNestedContainer": 5,
+    "NaN Equivalence Comparison Misused": 4,
+    "No Scaling Before Scaling-sensitive Operation": 8,
+    "PyTorch Call Method Misused": 20,
+    "Randomness Uncontrolled": 40,
+    "Training / Evaluation Mode Improper Toggling": 1,
+    "Unnecessary Iteration": 3
+  }
+}
