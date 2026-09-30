@@ -5,6 +5,7 @@ from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.spec import (
     InputSpec,
     TypeShape,
+    ignored_keys,
     parse_spec,
     parse_type,
     spec_problems,
@@ -90,11 +91,16 @@ def test_unsupported_type_is_reported():
     assert problems == ["parameter 'a': unsupported type 'Callable'"]
 
 
-def test_unknown_names_are_reported():
+def test_unknown_names_are_ignored_not_rejected():
     grounded = _grounded(params=[Param("a", "int")])
-    problems = spec_problems(InputSpec({"zz": "int"}, {"yy": "int"}, ()), grounded)
-    assert "unknown parameter 'zz'" in problems
-    assert "unknown attribute 'yy'" in problems
+    spec = InputSpec({"zz": "int"}, {"yy": "int"}, (), {"lib.nope": "int"})
+    assert spec_problems(spec, grounded) == []
+    assert ignored_keys(spec, grounded) == ["param zz", "attribute yy", "stub lib.nope"]
+
+
+def test_misspelled_name_still_leaves_the_real_one_missing():
+    grounded = _grounded(params=[Param("a", None)])
+    assert spec_problems(InputSpec({"aa": "int"}, {}, ()), grounded) == ["parameter 'a': missing type"]
 
 
 @pytest.mark.parametrize(

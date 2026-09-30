@@ -111,3 +111,58 @@ def test_keyword_only_and_star_args_are_supported():
 def test_method_without_receiver_argument_is_unsupported():
     source = "class K:\n    def make():\n        return 1 // 0\n"
     assert ground(_h("K.make", "1 // 0"), source).unsupported
+
+
+PROPERTY_SOURCE = '''class Request:
+    def _get_url(self):
+        return self._url
+
+    url = property(_get_url)
+
+    @property
+    def body(self):
+        return self._body
+
+    def follow(self, n):
+        return self.url[n] + self.body
+'''
+
+
+def test_properties_become_receiver_attributes():
+    result = ground(_h("Request.follow", "self.url[n]"), PROPERTY_SOURCE)
+    assert isinstance(result, Grounded) and result.unsupported == ""
+    assert {"url", "body"} <= set(result.receiver_attrs)
+    assert "property(" not in result.module and "@property" not in result.module
+    assert "properties_as_attributes:body,url" in result.transforms
+
+
+def test_property_getter_as_target_keeps_its_body():
+    result = ground(_h("Request.body", "self._body"), PROPERTY_SOURCE)
+    assert isinstance(result, Grounded)
+    assert "def body(self):" in result.module
+    assert result.receiver_attrs == ("_body",)
+
+
+SETTER_SOURCE = '''class Box:
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x = int(value)
+
+    size = property(lambda self: self._size, lambda self, v: None)
+
+    def bump(self, v):
+        self.x = v
+        return self._x + 1 + self.size
+'''
+
+
+def test_property_with_a_setter_the_class_assigns_is_not_replaced():
+    result = ground(_h("Box.bump", "self._x + 1"), SETTER_SOURCE)
+    assert isinstance(result, Grounded)
+    assert "x" not in result.receiver_attrs
+    assert "@x.setter" in result.module
+    assert "size" in result.receiver_attrs

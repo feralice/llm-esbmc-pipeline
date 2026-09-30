@@ -53,16 +53,47 @@ def _percent_format_edits(source: str, tree: ast.Module) -> list[tuple[int, int,
                                         for o in edits)]
 
 
+def _delegating_def(alias: str, method: ast.FunctionDef) -> str | None:
+    """``alias = method`` as a one-line def that calls it; None when the signature cannot be
+    forwarded exactly (decorators, *args/**kwargs, no receiver)."""
+    args = method.args
+    if method.decorator_list or args.vararg or args.kwarg or args.posonlyargs or not args.args:
+        return None
+    receiver, *positional = [a.arg for a in args.args]
+    forwarded = [*positional, *(f"{a.arg}={a.arg}" for a in args.kwonlyargs)]
+    returns = f" -> {ast.unparse(method.returns)}" if method.returns else ""
+    return f"def {alias}({ast.unparse(args)}){returns}: return {receiver}.{method.name}({', '.join(forwarded)})"
+
+
+def _method_alias_edits(tree: ast.Module) -> list[tuple[int, int, int, str]]:
+    """ESBMC 8.5 rejects ``__repr__ = __str__`` in a class body ("Variable __str__ not found")."""
+    edits = []
+    for cls in (n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)):
+        methods = {n.name: n for n in cls.body if isinstance(n, ast.FunctionDef)}
+        for node in cls.body:
+            if not (isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+                    and isinstance(node.value, ast.Name) and node.value.id in methods
+                    and node.lineno == node.end_lineno):
+                continue
+            text = _delegating_def(node.targets[0].id, methods[node.value.id])
+            if text:
+                edits.append((node.lineno, node.col_offset, node.end_col_offset, text))
+    return edits
+
+
 def rewrite_compat(source: str) -> tuple[str, list[str]]:
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return source, []
-    edits = _percent_format_edits(source, tree)
-    if not edits:
+    percent, aliases = _percent_format_edits(source, tree), _method_alias_edits(tree)
+    if not percent and not aliases:
         return source, []
     lines = source.splitlines(keepends=True)
-    for lineno, start, end, text in sorted(edits, reverse=True):
+    for lineno, start, end, text in sorted([*percent, *aliases], reverse=True):
         raw = lines[lineno - 1].encode("utf-8")  # ast offsets count UTF-8 bytes
         lines[lineno - 1] = (raw[:start] + text.encode("utf-8") + raw[end:]).decode("utf-8")
-    return "".join(lines), [f"compat_percent_format:{len(edits)}"]
+    transforms = [f"compat_percent_format:{len(percent)}"] if percent else []
+    if aliases:
+        transforms.append(f"compat_method_alias:{len(aliases)}")
+    return "".join(lines), transforms

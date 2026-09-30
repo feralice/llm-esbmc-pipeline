@@ -9,12 +9,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
 
-from .astutil import undefined_globals
-from .llm_client import SynthResult, _bound_untrusted
 from research_pipeline.verification.esbmc_runner import run_esbmc_direct
 
+from .astutil import undefined_globals
 from .grounding import Grounded, GroundingFailure, ground
 from .hypothesis import BugHypothesis
+from .llm_client import SynthResult, _bound_untrusted
 from .outcome import (
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
@@ -28,7 +28,7 @@ from .outcome import (
 )
 from .render import Program, RenderError, render_program
 from .replay import ReplayVerdict, concrete_replay
-from .spec import InputSpec, parse_spec, resolved_types, spec_problems
+from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, spec_problems
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
 STRATEGIES = ("repair", "resample")
@@ -159,6 +159,9 @@ def verify_hypothesis(
             last_problems = problems
             continue
         last_problems = []
+        ignored = ignored_keys(spec, grounded)
+        if ignored:
+            record["ignored"] = ignored
         program = render_program(grounded, spec)
         path = work_dir / f"{h.hypothesis_id}_a{attempt}.py"
         path.write_text(program.source, encoding="utf-8")

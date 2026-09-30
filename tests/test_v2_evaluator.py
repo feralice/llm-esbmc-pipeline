@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import json
 
+import pytest
 
-from research_pipeline.v2_evaluator import evaluate_detection
+from research_pipeline.v2_evaluator import (
+    _bug_detection_metrics,
+    evaluate_detection,
+    expressions_equivalent,
+)
 from research_pipeline.verify.candidate import Candidate
 
 
@@ -127,3 +132,31 @@ def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
     assert metrics["detection"]["fp"] == 1
 
 
+
+
+@pytest.mark.parametrize("expected, found, same", [
+    ("float(a)/float(b)", "float(a) / float(b)", True),
+    ("':' not in self._url", "if ':' not in self._url:", True),
+    ("x[0]", "return x[0]", True),
+    ("'open ' + s[5:]", "s[5:]", True),
+    ("self.iterable = iterable", "self.set_postfix(refresh=False)", False),
+    ("a // b", "a // c", False),
+    ("self.iterable = iterable", "iterable", False),
+    ("self.x + 1", "self.x", False),
+    ("self.a.b[0]", "if self.a.b[0]:", True),
+    ("", "a // b", False),
+])
+def test_expressions_equivalent(expected, found, same):
+    assert expressions_equivalent(expected, found) is same
+
+
+def test_equivalent_expression_metric_sits_beside_the_exact_one(tmp_path):
+    item = {"detection_file": "d.py", "function": "f", "expression": "float(a)/float(b)",
+            "categories": ["division_by_zero"]}
+    base = str((tmp_path / "d.py").resolve())
+    same_function = {"file": base, "function": "f", "expression": "float(a) / float(b)", "category": "x"}
+    other_function = {"file": base, "function": "g", "expression": "float(a)/float(b)", "category": "x"}
+    metrics = _bug_detection_metrics([item], [same_function, other_function], tmp_path)
+    assert metrics["expression"]["tp"] == 0
+    assert metrics["expression_equivalent"]["tp"] == 1
+    assert metrics["expression_equivalent"]["fp"] == 1

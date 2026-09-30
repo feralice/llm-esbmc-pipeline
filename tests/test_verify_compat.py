@@ -41,3 +41,53 @@ def test_grounding_applies_the_rewrite_and_keeps_line_numbers():
     assert 'msg = str(code) + " " + str(name)' in grounded.module
     assert "compat_percent_format:1" in grounded.transforms
     assert ast.parse(grounded.module)
+
+
+ALIAS_SOURCE = (
+    "class R:\n"
+    "    def __str__(self) -> str:\n"
+    "        return 'r'\n"
+    "\n"
+    "    __repr__ = __str__\n"
+    "\n"
+    "    def scale(self, k, *, by=2):\n"
+    "        return k * by\n"
+    "\n"
+    "    times = scale\n"
+    "    LIMIT = 3\n"
+    "    other = LIMIT\n"
+)
+
+
+def test_method_alias_becomes_one_line_delegating_def():
+    rewritten, transforms = rewrite_compat(ALIAS_SOURCE)
+    lines = rewritten.splitlines()
+    assert lines[4] == "    def __repr__(self) -> str: return self.__str__()"
+    assert lines[9] == "    def times(self, k, *, by=2): return self.scale(k, by=by)"
+    assert "    other = LIMIT" in lines
+    assert len(lines) == len(ALIAS_SOURCE.splitlines())
+    assert "compat_method_alias:2" in transforms
+
+
+def test_method_alias_rewrite_is_equivalent_under_cpython():
+    original, rewritten = {}, {}
+    exec(ALIAS_SOURCE, original)
+    exec(rewrite_compat(ALIAS_SOURCE)[0], rewritten)
+    for ns in (original, rewritten):
+        r = ns["R"]()
+        assert (repr(r), r.times(3), r.times(3, by=5)) == ("r", 6, 15)
+
+
+def test_alias_of_static_or_variadic_method_is_left_alone():
+    source = (
+        "class R:\n"
+        "    @staticmethod\n"
+        "    def make():\n"
+        "        return 1\n"
+        "    build = make\n"
+        "    def many(self, *xs):\n"
+        "        return xs\n"
+        "    lots = many\n"
+    )
+    rewritten, transforms = rewrite_compat(source)
+    assert rewritten == source and transforms == []

@@ -59,36 +59,83 @@ def _data_names(tree: ast.Module) -> set[str]:
             for name in (child.id for child in ast.walk(target) if isinstance(child, ast.Name))}
 
 
-def _pruned_code_touches(tree: ast.Module, kept: set[int], names: set[str]) -> bool:
-    """Would dropping code change a kept name's value at import time?
+def _root(node: ast.AST) -> str | None:
+    while isinstance(node, (ast.Attribute, ast.Subscript)):
+        node = node.value
+    return node.id if isinstance(node, ast.Name) else None
 
-    A dropped statement may read kept modules, functions and classes freely.
-    It must not rebind a kept name, nor mention kept module-level data (which
-    it could mutate), and no ``global`` may rebind a kept name.
-    """
-    data = _data_names(tree) & names
-    for node in tree.body:
-        if id(node) in kept or _is_main_guard(node):
-            continue
-        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant):
-            continue
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            touched = {node.name} & names
-        else:
-            stored = {child.id for child in ast.walk(node)
-                      if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Store)}
-            touched = ((stored | _defined_names(node) if isinstance(node, _DEFINITIONS) else stored) & names
-                       ) | (_loaded_names(node) & data)
-        if touched:
+
+# Builtins that never mutate their arguments.
+_PURE_BUILTINS = frozenset({
+    "print", "len", "str", "repr", "format", "isinstance", "issubclass", "hasattr", "getattr", "id", "hash",
+    "type", "bool", "int", "float", "list", "tuple", "set", "frozenset", "dict", "sorted", "min", "max",
+    "sum", "any", "all", "enumerate", "zip", "iter", "range",
+})
+
+
+def _writes(node: ast.AST, names: set[str], data: set[str]) -> bool:
+    """Could running ``node`` rebind a kept name or change kept data? Reading it cannot."""
+    for child in ast.walk(node):
+        if isinstance(child, ast.Global) and set(child.names) & names:
             return True
-    return any(isinstance(node, ast.Global) and set(node.names) & names for node in ast.walk(tree))
+        if isinstance(child, (ast.Attribute, ast.Subscript)) and isinstance(child.ctx, (ast.Store, ast.Del)):
+            if _root(child) in data:
+                return True
+        elif isinstance(child, ast.Call):
+            method_on_data = isinstance(child.func, ast.Attribute) and _root(child.func.value) in data
+            pure = isinstance(child.func, ast.Name) and child.func.id in _PURE_BUILTINS
+            passes_data = not pure and any(_root(arg) in data for arg in [*child.args, *(k.value for k in child.keywords)])
+            if method_on_data or passes_data:
+                return True
+    return False
+
+
+def _mutators(tree: ast.Module, names: set[str], data: set[str]) -> set[str]:
+    """Top-level functions, and classes with a method, that could change a kept name when called."""
+    found = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and _writes(node, names, data):
+            found.add(node.name)
+    return found
+
+
+def _touches(node: ast.stmt, names: set[str], data: set[str], mutators: set[str]) -> bool:
+    """Could this top-level statement change a kept name's value at import time?"""
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return node.name in names  # a redefinition
+    stored = {child.id for child in ast.walk(node)
+              if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Store)}
+    written = stored | _defined_names(node) if isinstance(node, _DEFINITIONS) else stored
+    return bool(written & names or _loaded_names(node) & mutators) or _writes(node, names, data)
+
+
+def _closure(tree: ast.Module, candidates: list[ast.stmt], root: ast.stmt) -> set[int]:
+    """The root, what it reaches by name, and every top-level statement that could change
+    one of those names at import time (with what that statement reaches), to a fixpoint."""
+    kept, pending = {id(root)}, [root]
+    while True:
+        while pending:
+            needed = _loaded_names(pending.pop())
+            for node in candidates:
+                if id(node) not in kept and _defined_names(node) & needed:
+                    kept.add(id(node))
+                    pending.append(node)
+        names = set().union(*(_defined_names(node) for node in tree.body if id(node) in kept))
+        data = _data_names(tree) & names
+        mutators = _mutators(tree, names, data)
+        pending = [node for node in tree.body if id(node) not in kept and not _is_main_guard(node)
+                   and _touches(node, names, data, mutators)]
+        if not pending:
+            return kept
+        kept |= {id(node) for node in pending}
 
 
 def context_module(source: str, function: str) -> str:
     """Return the target's top-level statement plus the definitions it reaches by name.
 
     Module-level side effects (bare calls, ``if __name__`` blocks) are left out,
-    so the result can be executed or verified without running the real module.
+    so the result can be executed or verified without running the real module,
+    unless they could change a kept name: those are kept verbatim too.
     Simple ``if``/``try`` blocks that bind a needed name are kept whole.
     """
     try:
@@ -104,18 +151,7 @@ def context_module(source: str, function: str) -> str:
     if len(roots) != 1:
         return ""
 
-    kept = {id(roots[0])}
-    pending = [roots[0]]
-    while pending:
-        needed = _loaded_names(pending.pop())
-        for node in candidates:
-            if id(node) not in kept and _defined_names(node) & needed:
-                kept.add(id(node))
-                pending.append(node)
-
-    kept_names = set().union(*(_defined_names(node) for node in tree.body if id(node) in kept))
-    if _pruned_code_touches(tree, kept, kept_names):
-        return ""
+    kept = _closure(tree, candidates, roots[0])
 
     lines = source.splitlines(keepends=True)
     chunks = []

@@ -77,22 +77,53 @@ def test_missing_target_returns_empty():
     assert context_module(SOURCE, "absent") == ""
 
 
-def test_pruned_top_level_write_to_kept_name_refuses_context():
+def test_pruned_top_level_write_to_kept_name_is_kept():
     source = "D = 0\nD += 4\n\n\ndef f(x: int):\n    return x // D\n"
-    assert context_module(source, "f") == ""
+    assert "D += 4" in context_module(source, "f")
 
 
-def test_global_rebinding_of_kept_name_refuses_context():
+def test_global_rebinding_function_called_at_top_level_is_kept_with_the_call():
     source = (
         "D = 0\n\n\ndef init():\n    global D\n    D = 5\n\n\ninit()\n\n\n"
         "def f(x: int):\n    return x // D\n"
     )
-    assert context_module(source, "f") == ""
+    module = context_module(source, "f")
+    assert "def init():" in module and "\ninit()" in module
 
 
-def test_top_level_mutation_of_kept_container_refuses_context():
-    source = "TABLE = {}\nTABLE.update(k=1)\n\n\ndef f(key):\n    return TABLE[key]\n"
-    assert context_module(source, "f") == ""
+def test_global_rebinding_function_never_called_is_left_out():
+    source = "D = 1\n\n\ndef reset():\n    global D\n    D = 0\n\n\ndef f(x: int):\n    return x // D\n"
+    module = context_module(source, "f")
+    assert "D = 1" in module and "reset" not in module
+
+
+def test_top_level_mutation_of_kept_container_is_kept():
+    source = "TABLE = {}\nTABLE.update(k=1)\nprint('noise')\n\n\ndef f(key):\n    return TABLE[key]\n"
+    module = context_module(source, "f")
+    assert "TABLE.update(k=1)" in module and "noise" not in module
+
+
+def test_top_level_call_of_function_that_mutates_kept_data_is_kept():
+    source = (
+        "TABLE = {}\n\n\ndef fill():\n    TABLE['k'] = 1\n\n\nfill()\n\n\n"
+        "def f(key):\n    return TABLE[key]\n"
+    )
+    module = context_module(source, "f")
+    assert "def fill():" in module and "\nfill()" in module
+
+
+def test_assignment_that_only_reads_kept_data_is_left_out():
+    source = (
+        "from collections import namedtuple\n\nRow = namedtuple('Row', 'a b')\n"
+        "FORMATS = {'simple': Row(1, 2)}\n\n\ndef f(r):\n    return Row(r, r)\n"
+    )
+    module = context_module(source, "f")
+    assert "Row = namedtuple" in module and "FORMATS" not in module
+
+
+def test_main_guard_touching_kept_data_is_never_kept():
+    source = "DATA = []\n\n\ndef f():\n    return DATA[0]\n\n\nif __name__ == '__main__':\n    DATA.append(1)\n"
+    assert "__main__" not in context_module(source, "f")
 
 
 def test_top_level_item_assignment_is_kept_verbatim():
@@ -125,6 +156,21 @@ def test_try_import_block_is_kept_whole():
     assert "except ImportError:" in context_module(source, "f")
 
 
-def test_top_level_call_passing_kept_data_still_refuses():
+def test_top_level_call_passing_kept_data_is_kept():
     source = "ITEMS = []\nregister(ITEMS)\n\n\ndef f(i):\n    return ITEMS[i]\n"
-    assert context_module(source, "f") == ""
+    assert "register(ITEMS)" in context_module(source, "f")
+
+
+def test_class_method_rebinding_kept_global_is_kept_with_its_call():
+    source = (
+        "X = 0\n\n\nclass C:\n    @classmethod\n    def load(cls):\n        global X\n        X = 10\n\n\n"
+        "C.load()\n\n\ndef f(a):\n    return a / X\n"
+    )
+    module = context_module(source, "f")
+    assert "C.load()" in module and "global X" in module
+
+
+def test_read_only_use_of_kept_data_is_not_kept():
+    source = "CFG = {}\nprint(CFG)\n\n\ndef show():\n    print(CFG)\n\n\nshow()\n\n\ndef f(k):\n    return CFG[k]\n"
+    module = context_module(source, "f")
+    assert "print(CFG)" not in module and "show()" not in module

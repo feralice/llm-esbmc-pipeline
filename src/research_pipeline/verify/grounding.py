@@ -5,12 +5,19 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, field
 
-from .context import context_module
 from .astutil import expression_nodes, find_function
-
 from .compat import rewrite_compat
+from .context import context_module
 from .hypothesis import BugHypothesis
-from .slicing import CallShape, ExternalPlan, _merge, _shape, prune_class, reslice, stub_imports
+from .slicing import (
+    CallShape,
+    ExternalPlan,
+    _merge,
+    _shape,
+    prune_class,
+    reslice,
+    stub_imports,
+)
 
 
 @dataclass(frozen=True)
@@ -68,11 +75,49 @@ def _class_of(tree: ast.Module, name: str) -> ast.ClassDef | None:
     return next((n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == name), None)
 
 
-def _reachable_methods(cls: ast.ClassDef, start: str) -> set[str]:
-    """``start``, methods it calls through self, and methods the class body names (``property(f)``)."""
-    methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
-    named = {node.id for stmt in cls.body if not isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
-             for node in ast.walk(stmt) if isinstance(node, ast.Name) and node.id in methods}
+def _properties(cls: ast.ClassDef) -> set[str]:
+    """Names the class binds with ``x = property(...)`` or ``@property``."""
+    names = set()
+    for node in cls.body:
+        if (isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name) and node.value.func.id == "property"):
+            names |= {t.id for t in node.targets if isinstance(t, ast.Name)}
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and any(
+                isinstance(d, ast.Name) and d.id == "property" for d in node.decorator_list):
+            names.add(node.name)
+    return names
+
+
+def _with_setter(cls: ast.ClassDef) -> set[str]:
+    names = set()
+    for node in cls.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            names |= {d.value.id for d in node.decorator_list if isinstance(d, ast.Attribute)
+                      and d.attr == "setter" and isinstance(d.value, ast.Name)}
+        elif (isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)
+              and isinstance(node.value.func, ast.Name) and node.value.func.id == "property"
+              and (len(node.value.args) > 1 or any(k.arg == "fset" for k in node.value.keywords))):
+            names |= {t.id for t in node.targets if isinstance(t, ast.Name)}
+    return names
+
+
+def _replaced_properties(cls: ast.ClassDef, start: str) -> set[str]:
+    """Properties a method reads become receiver attributes (ESBMC 8.5 has no ``property``).
+    One the class assigns through a setter stays: dropping the setter would skip its conversion."""
+    assigned = {_self_attribute(n) for n in ast.walk(cls)
+                if isinstance(n, ast.Attribute) and isinstance(n.ctx, ast.Store)}
+    return _properties(cls) - {start} - (_with_setter(cls) & assigned)
+
+
+def _reachable_methods(cls: ast.ClassDef, start: str, replaced: frozenset[str] | set[str] = frozenset()) -> set[str]:
+    """``start``, methods it calls through self, and methods the class body names (``property(f)``),
+    ignoring the ``replaced`` properties."""
+    methods = {n.name: n for n in cls.body
+               if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name not in replaced}
+    body = [stmt for stmt in cls.body if not isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and not (isinstance(stmt, ast.Assign) and _defined_by(stmt) & replaced)]
+    named = {node.id for stmt in body for node in ast.walk(stmt)
+             if isinstance(node, ast.Name) and node.id in methods}
     reached = {start} | named
     pending = list(reached)
     while pending:
@@ -82,6 +127,10 @@ def _reachable_methods(cls: ast.ClassDef, start: str) -> set[str]:
                 reached.add(name)
                 pending.append(name)
     return reached
+
+
+def _defined_by(stmt: ast.Assign) -> set[str]:
+    return {t.id for t in stmt.targets if isinstance(t, ast.Name)}
 
 
 def _class_level_values(cls: ast.ClassDef) -> set[str]:
@@ -101,14 +150,15 @@ def _loaded_self_attrs(cls: ast.ClassDef, method: str) -> set[str]:
     methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
     return {
         _self_attribute(node)
-        for name in _reachable_methods(cls, method)
+        for name in _reachable_methods(cls, method, _replaced_properties(cls, method))
         for node in ast.walk(methods[name])
         if isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Load) and _self_attribute(node)
     }
 
 
 def _receiver_attrs(cls: ast.ClassDef, method: str) -> tuple[str, ...]:
-    return tuple(sorted(_loaded_self_attrs(cls, method) - _class_level_values(cls)))
+    values = _class_level_values(cls) - _replaced_properties(cls, method)
+    return tuple(sorted(_loaded_self_attrs(cls, method) - values))
 
 
 def _inherited_reads(tree: ast.Module, cls: ast.ClassDef, method: str) -> set[str]:
@@ -237,8 +287,9 @@ def ground(h: BugHypothesis, source: str) -> Grounded | GroundingFailure:
         transforms = list(transforms)
         if cls is not None:
             # Only a method gets a shell; every other entry keeps the real constructor.
-            module, pruned = prune_class(module, cls.name, _reachable_methods(cls, function.name),
-                                         drop_init=entry == "method")
+            replaced = _replaced_properties(cls, function.name) if entry == "method" else set()
+            module, pruned = prune_class(module, cls.name, _reachable_methods(cls, function.name, replaced),
+                                         drop_init=entry == "method", properties=replaced)
             transforms += pruned
             module = reslice(module, h.function)
         module, plan, stubbed = stub_imports(module)

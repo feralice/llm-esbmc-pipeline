@@ -6,10 +6,18 @@ import ast
 from dataclasses import dataclass, replace
 
 from .astutil import find_function
-
 from .grounding import Grounded
-from .slicing import CallShape
-from .spec import OBJECT, SCALARS, InputSpec, TypeShape, input_types, parse_type, resolved_types, spec_problems
+from .slicing import END_PATH, KNOWN_MEMBERS, CallShape
+from .spec import (
+    OBJECT,
+    SCALARS,
+    InputSpec,
+    TypeShape,
+    input_types,
+    parse_type,
+    resolved_types,
+    spec_problems,
+)
 
 RECEIVER = "_receiver"
 OPAQUE = "_Opaque"
@@ -190,37 +198,8 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
     for name, shape in sorted(plan.calls.items()):
         lines += [*_stub_function(name, shape, types[name], decl), "", ""]
     for namespace, attrs in sorted(plan.namespaces.items()):
-        lines.append(f"class {namespace}:")
-        if namespace in plan.constructors:
-            lines += [f"    def __init__({', '.join(['self', _stub_params(plan.constructors[namespace])]).rstrip(', ')}) -> None:",
-                      "        pass"]
-        for attr, shape in sorted(attrs.items()):
-            key = f"{namespace}.{attr}"
-            if shape is None:
-                lines += decl.declare(attr, types[key], "    ")
-            else:
-                lines += ["    @staticmethod", *_stub_function(attr, shape, types[key], decl, "    ")]
-        lines += ["", ""]
-    return lines
-
-
-def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[str]:
-    plan = grounded.externals
-    lines: list[str] = []
-    for name in sorted(plan.exceptions):
-        lines += [f"class {name}(Exception):", "    pass", "", ""]
-    for name in sorted(plan.classes - set(plan.namespaces)):
-        lines.append(f"class {name}:")
-        if name in plan.constructors:
-            lines += [f"    def __init__({', '.join(['self', _stub_params(plan.constructors[name])]).rstrip(', ')}) -> None:",
-                      "        pass", "", ""]
-        else:
-            lines += ["    pass", "", ""]
-    for name in sorted(plan.constants):
-        lines += [*decl.declare(name, types[name], ""), "", ""]
-    for name, shape in sorted(plan.calls.items()):
-        lines += [*_stub_function(name, shape, types[name], decl), "", ""]
-    for namespace, attrs in sorted(plan.namespaces.items()):
+        if any("_esbmc_end_path()" in line for attr in attrs for line in KNOWN_MEMBERS.get(namespace, {}).get(attr, ())):
+            lines += END_PATH
         lines.append(f"class {namespace}:")
         if namespace in plan.constructors:
             lines += [f"    def __init__({', '.join(['self', _stub_params(plan.constructors[namespace])]).rstrip(', ')}) -> None:",
@@ -228,7 +207,9 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
         nested: dict[str, list[tuple[str, CallShape | None]]] = {}
         for attr, shape in sorted(attrs.items()):
             key = f"{namespace}.{attr}"
-            if "." in attr:
+            if attr in KNOWN_MEMBERS.get(namespace, {}):
+                lines += KNOWN_MEMBERS[namespace][attr]
+            elif "." in attr:
                 inner, leaf = attr.split(".", 1)
                 nested.setdefault(inner, []).append((leaf, shape))
             elif shape is None:

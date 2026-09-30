@@ -1,14 +1,20 @@
 """Regressions for the whole-branch review findings and for library stubs."""
 
 import ast
+import sys
 
 import pytest
 
 from research_pipeline.models import ESBMCDirectResult
 from research_pipeline.verify.grounding import Grounded, GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.loop import precheck
 from research_pipeline.verify.outcome import (
-    CONFIRMED, ESBMC_ERROR, UNVALIDATED, classify_esbmc, final_verdict,
+    CONFIRMED,
+    ESBMC_ERROR,
+    UNVALIDATED,
+    classify_esbmc,
+    final_verdict,
 )
 from research_pipeline.verify.render import render_program
 from research_pipeline.verify.replay import ReplayVerdict, concrete_replay
@@ -273,8 +279,8 @@ def test_tuples_parse_render_and_replay():
 def test_insisting_on_an_unrepresentable_type_is_unsupported_not_spec_failed(tmp_path, monkeypatch):
     import json
 
-    from research_pipeline.verify.llm_client import SynthResult
     from research_pipeline.verify import loop
+    from research_pipeline.verify.llm_client import SynthResult
     from research_pipeline.verify.outcome import SPEC_FAILED, UNSUPPORTED
 
     class Insists:
@@ -423,3 +429,87 @@ def test_replay_ignores_annotations_the_host_does_not_know():
     program = Program(source, 5, ((2, 2),), (), (1, 2))
     verdict = concrete_replay(program, "isqrt")
     assert (verdict.status, verdict.exception_type) == ("reproduced", "ZeroDivisionError")
+
+
+def test_two_level_library_base_class_becomes_one_opaque_class():
+    source = "from tornado import httputil\n\n\nclass C(httputil.HTTPConnection):\n    def go(self, n: int):\n        return 1 // n\n"
+    grounded = _ground(source, "C.go", "1 // n")
+    assert grounded.unsupported == ""
+    assert "class C(httputil_HTTPConnection):" in grounded.module
+    assert "httputil_HTTPConnection" in grounded.externals.classes
+
+
+def test_two_level_library_type_in_isinstance_becomes_a_class_not_a_value():
+    source = "import six\n\n\ndef f(url, n: int):\n    if not isinstance(url, six.string_types):\n        return 0\n    return 1 // n\n"
+    grounded = _ground(source, "f", "1 // n")
+    assert grounded.unsupported == ""
+    assert "isinstance(url, six_string_types)" in grounded.module
+    assert "six_string_types" in grounded.externals.classes
+    assert "six.string_types" not in grounded.stub_keys
+
+
+def test_two_level_value_reads_stay_namespace_stubs():
+    source = "import six\n\n\ndef f(n: int):\n    return six.MAXSIZE // n\n"
+    grounded = _ground(source, "f", "six.MAXSIZE // n")
+    assert grounded.stub_keys == ("six.MAXSIZE",)
+
+
+def test_sys_is_stubbed_because_esbmc_8_5_cannot_load_it():
+    source = "import sys\n\n\ndef f(n: int):\n    return sys.getsizeof(n) // n\n"
+    grounded = _ground(source, "f", "sys.getsizeof(n) // n")
+    assert grounded.stub_keys == ("sys.getsizeof",)
+    assert "stubbed_imports:sys" in grounded.transforms
+
+
+def test_py2_import_fallback_in_try_block_is_stubbed():
+    source = ("try:\n    import Cookie\nexcept ImportError:\n    import http.cookies as Cookie\n\n\n"
+              "def f(n: int):\n    c = Cookie.SimpleCookie()\n    return 1 // n\n")
+    grounded = _ground(source, "f", "1 // n")
+    assert grounded.unsupported == ""
+    assert grounded.stub_keys == ("Cookie.SimpleCookie",)
+    assert "import Cookie" not in grounded.module and "import http" not in grounded.module
+    compile(grounded.module, "m.py", "exec")
+
+
+def test_import_on_a_compound_line_keeps_the_header():
+    source = ("try:\n    import simplejson as json\nexcept ImportError: import ujson as json\n\n\n"
+              "def f(s, n: int):\n    json.loads(s)\n    return 1 // n\n")
+    grounded = _ground(source, "f", "1 // n")
+    assert "except ImportError: pass" in grounded.module
+    compile(grounded.module, "m.py", "exec")
+
+
+def test_import_sharing_a_line_keeps_the_other_statement():
+    source = "import six; LIMIT = 3\n\n\ndef f(n: int):\n    return LIMIT // n\n"
+    grounded = _ground(source, "f", "LIMIT // n")
+    assert "pass; LIMIT = 3" in grounded.module
+
+
+def test_sys_exit_ends_the_path_and_known_sys_values_are_fixed():
+    source = ("import sys\n\n\ndef f(args: list[int]):\n    if sys.version_info[0] < 3:\n        return 0\n"
+              "    if not args:\n        sys.exit(1)\n    return args[0] + sys.maxsize\n")
+    grounded = _ground(source, "f", "args[0]")
+    assert grounded.stub_keys == ()
+    program = render_program(grounded, InputSpec({}, {}, ()))
+    assert "_esbmc_end_path()" in program.source and "    __ESBMC_assume(False)" in program.source
+    assert "version_info: tuple[int, int, int] = ({}, {}, {})".format(*sys.version_info[:3]) in program.source
+    replay = concrete_replay(program, "f")
+    assert replay.status == "not_reproduced" and replay.exception_type == "", replay
+    verdict, _, reason = precheck(BugHypothesis("x.py", "f", "args[0]"), source)
+    assert verdict is not None, reason
+
+
+def test_two_level_value_indexing_is_not_mistaken_for_a_type():
+    source = "import six\n\n\ndef f(n: int):\n    return six.TABLE[0] // n\n"
+    grounded = _ground(source, "f", "six.TABLE[0] // n")
+    assert grounded.stub_keys == ("six.TABLE",)
+
+
+def test_library_type_also_constructed_is_one_class_so_isinstance_holds():
+    source = ("from app import lib\n\n\ndef f(n: int):\n    m = lib.Model(n)\n"
+              "    if not isinstance(m, lib.Model):\n        raise TypeError('model')\n    return 1 // n\n")
+    grounded = _ground(source, "f", "1 // n")
+    assert "m = lib_Model(n)" in grounded.module and "isinstance(m, lib_Model)" in grounded.module
+    assert "lib_Model" in grounded.externals.constructors
+    program = render_program(grounded, InputSpec({}, {}, ()))
+    assert concrete_replay(program, "f").exception_type == "ZeroDivisionError"

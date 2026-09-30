@@ -171,6 +171,16 @@ def _assumption_problem(text: str, params: set[str], attrs: set[str], receiver: 
     return ""
 
 
+def ignored_keys(spec: InputSpec, grounded: Grounded) -> list[str]:
+    """Names the spec gives that the harness has no use for. They change nothing in the program,
+    so they are recorded, not rejected: a rejection would spend an LLM call on a harmless extra."""
+    params, attributes = resolved_types(spec, grounded)
+    stubs = {*grounded.stub_keys, *_object_keys(spec, grounded)}
+    return ([f"param {n}" for n in spec.params if n not in params]
+            + [f"attribute {n}" for n in spec.attributes if n not in attributes]
+            + [f"stub {k}" for k in spec.stubs if k not in stubs])
+
+
 def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
     problems: list[str] = []
     params, attributes = resolved_types(spec, grounded)
@@ -180,8 +190,6 @@ def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
                 problems.append(f"{kind} {name!r}: missing type")
             elif parse_type(text) is None:
                 problems.append(f"{kind} {name!r}: unsupported type {text!r}")
-    problems += [f"unknown parameter {name!r}" for name in spec.params if name not in params]
-    problems += [f"unknown attribute {name!r}" for name in spec.attributes if name not in attributes]
     object_keys = _object_keys(spec, grounded)
     for key in [*grounded.stub_keys, *object_keys]:
         text = spec.stubs.get(key, "")
@@ -190,7 +198,6 @@ def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
             problems.append(f"stub {key!r}: missing return type")
         elif shape is None:
             problems.append(f"stub {key!r}: unsupported type {text!r}")
-    problems += [f"unknown stub {key!r}" for key in spec.stubs if key not in {*grounded.stub_keys, *object_keys}]
     for assumption in spec.assumptions:
         problem = _assumption_problem(assumption, set(params), set(attributes), grounded.has_receiver)
         if problem:

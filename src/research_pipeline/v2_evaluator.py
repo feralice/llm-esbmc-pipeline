@@ -6,6 +6,7 @@ only to map detection sources to the known labels, which prevents oracle leakage
 
 from __future__ import annotations
 
+import ast
 import json
 from collections import Counter
 from pathlib import Path
@@ -46,6 +47,45 @@ def _expected_slots(item: dict) -> list[frozenset[str]]:
 
 def _slot_key(slot: frozenset[str]) -> str:
     return "|".join(sorted(slot))
+
+
+_STATEMENT_PREFIXES = ("if ", "elif ", "while ", "return ", "assert ")
+
+
+def _normalized(text: str) -> ast.AST | None:
+    """One expression or statement, ignoring spacing, a leading keyword and a trailing colon."""
+    text = text.strip().removesuffix(":").strip()
+    for prefix in _STATEMENT_PREFIXES:
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+            break
+    try:
+        return ast.parse(text, mode="eval").body
+    except SyntaxError:
+        try:
+            return ast.parse(text).body[0]
+        except (SyntaxError, IndexError):
+            return None
+
+
+def _is_reference(node: ast.expr) -> bool:
+    while isinstance(node, ast.Attribute):
+        node = node.value
+    return isinstance(node, (ast.Name, ast.Constant))
+
+
+def _subexpressions(node: ast.AST) -> set[str]:
+    # A bare name, attribute chain or literal would match any expression that mentions it.
+    return {ast.dump(n) for n in ast.walk(node) if isinstance(n, ast.expr) and not _is_reference(n)}
+
+
+def expressions_equivalent(expected: str, found: str) -> bool:
+    """Same expression up to spacing and ``if``/``return``-style wrapping, or one is a
+    subexpression of the other (part of the buggy expression, or the statement around it)."""
+    a, b = _normalized(expected), _normalized(found)
+    if a is None or b is None:
+        return False
+    return ast.dump(a) == ast.dump(b) or ast.dump(a) in _subexpressions(b) or ast.dump(b) in _subexpressions(a)
 
 
 def _bug_detection_metrics(
@@ -123,6 +163,13 @@ def _bug_detection_metrics(
             and candidate["expression"] == item["expression"]
         )
     )
+    equivalent_metrics = count_matches(
+        lambda item, candidate: (
+            candidate["file"] == item["file"]
+            and candidate["function"] in item["functions"]
+            and expressions_equivalent(item["expression"], candidate["expression"])
+        )
+    )
     detection_metrics = count_matches(matches_primary_location)
     category_given_location = {
         "tp": sum(
@@ -149,6 +196,7 @@ def _bug_detection_metrics(
         "file": file_metrics,
         "location": location_metrics,
         "expression": expression_metrics,
+        "expression_equivalent": equivalent_metrics,
         "category_given_location": category_given_location,
     }
 

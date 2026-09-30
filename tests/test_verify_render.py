@@ -102,14 +102,26 @@ def test_invalid_spec_raises():
         render_program(_ground("ratio", "total // count"), InputSpec({"total": "dict"}, {}, ()))
 
 
-def test_methods_named_in_the_class_body_are_kept():
+def test_property_and_its_getter_leave_the_class_when_the_shell_supplies_state():
     source = ('class Req:\n    def __init__(self, raw):\n        self.raw = raw\n\n'
               '    def _get_body(self):\n        return self._body\n\n'
               '    body = property(_get_body)\n\n'
+              '    def first(self):\n        return self.raw[0] + self.body\n')
+    grounded = ground(BugHypothesis("r.py", "Req.first", "self.raw[0]"), source)
+    assert grounded.receiver_attrs == ("body", "raw")
+    program = render_program(grounded, InputSpec({}, {"raw": "list[int]", "body": "int"}, ()))
+    assert "property(" not in program.source and "_get_body" not in program.source
+    assert "properties_as_attributes:body" in program.transforms
+
+
+def test_methods_named_in_the_class_body_are_kept():
+    source = ('class Req:\n    def __init__(self, raw):\n        self.raw = raw\n\n'
+              '    def _check(self):\n        return True\n\n'
+              '    HOOKS = [_check]\n\n'
               '    def first(self):\n        return self.raw[0]\n')
     grounded = ground(BugHypothesis("r.py", "Req.first", "self.raw[0]"), source)
-    program = render_program(grounded, InputSpec({}, {"raw": "list[int]", "_body": "int"}, ()))
-    assert "def _get_body(self):" in program.source
+    program = render_program(grounded, InputSpec({}, {"raw": "list[int]"}, ()))
+    assert "def _check(self):" in program.source
     assert not any(t.startswith("unreachable_methods_removed") for t in program.transforms)
 
 

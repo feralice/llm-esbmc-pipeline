@@ -3,16 +3,32 @@
 from __future__ import annotations
 
 import ast
+import sys
 from dataclasses import dataclass, field
 
 from .context import context_module
 
 # Modules with ESBMC-Python 8.5 operational models (src/python-frontend/models); itertools, functools
-# and json failed in the 2026-09-29 probes. numpy/torch models are partial, so their calls get stubs.
+# and json failed in the 2026-09-29 probes, sys ("Cannot open file: sys.json") in the 2026-09-30 one.
+# numpy/torch models are partial, so their calls get stubs.
 MODELED_MODULES = frozenset({
     "cmath", "collections", "dataclasses", "datetime", "decimal", "enum", "heapq", "math", "os",
-    "queue", "random", "re", "string", "sys", "threading", "time", "typing", "unittest", "__future__",
+    "queue", "random", "re", "string", "threading", "time", "typing", "unittest", "__future__",
 })
+
+
+# Library members with a fixed model instead of a nondet stub, as class-body lines. ``exit`` ends
+# the path (ESBMC 8.5 has no SystemExit); the values are the replay interpreter's, so both agree.
+# The path cut lives at module level: inside ``class sys`` the name ``__ESBMC_assume`` is mangled.
+END_PATH = ("def _esbmc_end_path() -> None:", "    __ESBMC_assume(False)", "", "")
+KNOWN_MEMBERS = {
+    "sys": {
+        "exit": ("    @staticmethod", "    def exit(a0=None) -> None:", "        _esbmc_end_path()"),
+        "maxsize": (f"    maxsize: int = {sys.maxsize}",),
+        "version_info": ("    version_info: tuple[int, int, int] = ({}, {}, {})".format(*sys.version_info[:3]),),
+        "platform": (f"    platform: str = {sys.platform!r}",),
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -36,7 +52,8 @@ class ExternalPlan:
     @property
     def stub_keys(self) -> tuple[str, ...]:
         keys = [*self.calls, *self.constants]
-        keys += [f"{ns}.{attr}" for ns, attrs in self.namespaces.items() for attr in attrs]
+        keys += [f"{ns}.{attr}" for ns, attrs in self.namespaces.items() for attr in attrs
+                 if attr not in KNOWN_MEMBERS.get(ns, {})]
         return tuple(sorted(keys))
 
 
@@ -48,19 +65,26 @@ def _dunder(name: str) -> bool:
     return name.startswith("__") and name.endswith("__")
 
 
-def prune_class(module: str, class_name: str, reachable: set[str], drop_init: bool = True) -> tuple[str, list[str]]:
-    """Drop non-dunder methods the target cannot reach, and ``__init__`` when a shell replaces it."""
+def prune_class(module: str, class_name: str, reachable: set[str], drop_init: bool = True,
+                properties: frozenset[str] | set[str] = frozenset()) -> tuple[str, list[str]]:
+    """Drop non-dunder methods the target cannot reach, ``__init__`` when a shell replaces it, and
+    the ``properties`` the shell supplies as plain attributes."""
     tree = ast.parse(module)
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == class_name)
     methods = [n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-    removed = [m for m in methods if m.name != "__init__" and m.name not in reachable and not _dunder(m.name)]
+    removed = [m for m in methods if m.name != "__init__" and m.name not in reachable and not _dunder(m.name)
+               and m.name not in properties]
     init = [m for m in methods if m.name == "__init__"] if drop_init else []
+    props = [n for n in cls.body if (isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name in properties)
+             or (isinstance(n, ast.Assign) and {t.id for t in n.targets if isinstance(t, ast.Name)} & properties)]
     lines = module.splitlines()
-    for node in sorted([*removed, *init], key=_first_line, reverse=True):
+    for node in sorted([*removed, *init, *props], key=_first_line, reverse=True):
         del lines[_first_line(node) - 1:node.end_lineno]
     transforms = (["receiver_init_replaced" if init else "receiver_init_added"] if drop_init else [])
     if removed:
         transforms.append("unreachable_methods_removed:" + ",".join(sorted(m.name for m in removed)))
+    if props:
+        transforms.append("properties_as_attributes:" + ",".join(sorted(properties)))
     return "\n".join(lines) + "\n", transforms
 
 
@@ -68,16 +92,28 @@ def _bound(alias: ast.alias) -> str:
     return (alias.asname or alias.name).split(".")[0]
 
 
+def _top_level_imports(body: list[ast.stmt]) -> list[ast.stmt]:
+    """Imports at top level, including inside top-level if/try blocks (py2/py3 fallbacks)."""
+    found = []
+    for node in body:
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            found.append(node)
+        elif isinstance(node, (ast.If, ast.Try)):
+            blocks = [node.body, node.orelse]
+            if isinstance(node, ast.Try):
+                blocks += [h.body for h in node.handlers] + [node.finalbody]
+            found += [n for block in blocks for n in _top_level_imports(block)]
+    return found
+
+
 def _unmodeled_imports(tree: ast.Module) -> list[tuple[ast.stmt, list[str]]]:
     found = []
-    for node in tree.body:
+    for node in _top_level_imports(tree.body):
         if isinstance(node, ast.Import):
             names = [_bound(a) for a in node.names if a.name.split(".")[0] not in MODELED_MODULES]
-        elif isinstance(node, ast.ImportFrom):
+        else:
             modeled = not node.level and (node.module or "").split(".")[0] in MODELED_MODULES
             names = [] if modeled else [_bound(a) for a in node.names]
-        else:
-            continue
         if names:
             found.append((node, names))
     return found
@@ -110,14 +146,15 @@ def _exception_names(tree: ast.Module) -> set[str]:
     return names
 
 
-def _in_class_position(node: ast.Name, parents: dict[int, ast.AST]) -> bool:
-    """Used where only a type makes sense: base class, annotation, X[...], isinstance's second argument."""
+def _in_class_position(node: ast.expr, parents: dict[int, ast.AST], subscript: bool = True) -> bool:
+    """Used where only a type makes sense: base class, annotation, isinstance's second argument,
+    and, when ``subscript``, X[...] (outside annotations that is also plain indexing)."""
     parent = parents.get(id(node))
     if isinstance(parent, ast.Tuple):
         node, parent = parent, parents.get(id(parent))
     if isinstance(parent, ast.ClassDef):
         return node in parent.bases
-    if isinstance(parent, ast.Subscript):
+    if isinstance(parent, ast.Subscript) and subscript:
         return parent.value is node
     if isinstance(parent, ast.Call):
         return (isinstance(parent.func, ast.Name) and parent.func.id in {"isinstance", "issubclass"}
@@ -184,18 +221,27 @@ def _dotted(node: ast.expr) -> list[str] | None:
 def _flatten_chains(module: str, external: set[str]) -> tuple[str, set[str]]:
     """Rename ``lib.a.b`` references to one-level names ESBMC can resolve (``lib_a.b``).
 
-    Only the external reference is renamed, in place on its own line; types keep the whole chain
-    as one class name (``lib_a_B``). Returns the module and the new external names.
+    Only the external reference is renamed, in place on its own line; types, including two-level
+    ones (``lib.T``), keep the whole chain as one class name (``lib_a_B``). Returns the module and
+    the new external names.
     """
     tree = ast.parse(module)
     parents = {id(child): node for node in ast.walk(tree) for child in ast.iter_child_nodes(node)}
-    edits, new_names = [], set()
+    chains = []
     for node in ast.walk(tree):
         parts = _dotted(node) if isinstance(node, ast.Attribute) else None
         outer = isinstance(parents.get(id(node)), ast.Attribute) and parents[id(node)].value is node
-        if not parts or len(parts) < 3 or parts[0] not in external or outer or node.lineno != node.end_lineno:
+        if parts and parts[0] in external and not outer and node.lineno == node.end_lineno:
+            chains.append((node, parts, _in_class_position(node, parents, subscript=len(parts) > 2)))
+    # A chain used as a type anywhere is that class everywhere, so ``isinstance(lib.T(), lib.T)`` holds.
+    types = {tuple(parts) for _, parts, as_type in chains if as_type}
+    edits, new_names = [], set()
+    for node, parts, as_type in chains:
+        as_type = as_type or tuple(parts) in types
+        # ESBMC resolves ``lib.f`` as a stub namespace, but a type must be one class name (``lib_T``).
+        if len(parts) < (2 if as_type else 3):
             continue
-        if _in_class_position(node, parents):
+        if as_type:
             target, text = node, "_".join(parts)
         else:
             target, text = node.value, "_".join(parts[:-1])
@@ -217,8 +263,12 @@ def stub_imports(module: str) -> tuple[str, ExternalPlan, list[str]]:
     external = {name for _, names in imports for name in names}
     lines = module.splitlines()
     for node, _ in sorted(imports, key=lambda item: item[0].lineno, reverse=True):
-        # Blank, not delete: the chain edits below use this tree's line numbers.
-        lines[node.lineno - 1:node.end_lineno] = [""] * (node.end_lineno - node.lineno + 1)
+        # Replace, not delete: the chain edits below use this tree's line numbers. ``pass`` keeps
+        # an enclosing block (``except ImportError: import x``) non-empty.
+        head = lines[node.lineno - 1].encode("utf-8")[:node.col_offset]  # ast offsets count UTF-8 bytes
+        tail = lines[node.end_lineno - 1].encode("utf-8")[node.end_col_offset:] if node.lineno == node.end_lineno else b""
+        first = "" if not head and not tail.strip() else (head + b"pass" + tail).decode("utf-8")
+        lines[node.lineno - 1:node.end_lineno] = [first] + [""] * (node.end_lineno - node.lineno)
     module = "\n".join(lines) + "\n"
     transforms = ["stubbed_imports:" + ",".join(sorted(external))]
     module, flattened = _flatten_chains(module, external)

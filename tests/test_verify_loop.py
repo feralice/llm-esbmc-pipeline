@@ -3,9 +3,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from research_pipeline.models import ESBMCDirectResult
-from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify import loop
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.outcome import (
     CONFIRMED,
     GROUNDING_FAILED,
@@ -138,3 +138,11 @@ def test_resample_strategy_never_shows_the_previous_error(tmp_path, monkeypatch)
     assert len(llm.prompts) == 2
     assert llm.prompts[0] == llm.prompts[1]
     assert "rejected" not in llm.prompts[1]
+
+
+def test_extra_spec_keys_are_recorded_and_cost_no_repair(tmp_path, monkeypatch):
+    extra = json.dumps({"params": {"total": "int", "count": "int", "ghost": "int"},
+                        "stubs": {"lib.nope": "int"}, "attributes": {}, "assumptions": []})
+    result = _run(tmp_path, monkeypatch, FakeLLM([extra]), _esbmc("violation_found"))
+    assert result.verdict == CONFIRMED and len(result.attempts) == 1
+    assert result.attempts[0]["ignored"] == ["param ghost", "stub lib.nope"]
