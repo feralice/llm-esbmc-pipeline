@@ -214,7 +214,7 @@ function table(s, rows, box, colW, header = true) {
 // 12. RQ1
 {
   const s = base("RQ1: a LLM acha a função com bug quase sempre, mas acerta a categoria em metade");
-  s.addChart(pres.charts.BAR, [{ name: "Revocação", labels: ["arquivo", "função", "categoria no arquivo", "categoria, dada a função", "expressão exata"], values: [98, 97, 49, 47, 20] }],
+  s.addChart(pres.charts.BAR, [{ name: "Revocação", labels: ["arquivo", "função", "categoria no arquivo", "categoria, dada a função", "expressão equivalente", "expressão idêntica"], values: [98, 97, 49, 47, 40, 20] }],
     { x: 0.5, y: 1.3, w: 5.7, h: 3.8, barDir: "bar", chartColors: [C.teal], showValue: true, dataLabelPosition: "outEnd",
       dataLabelFormatCode: '0"%"', dataLabelColor: C.ink, dataLabelFontSize: 12, catAxisLabelColor: C.ink, catAxisLabelFontSize: 11,
       valAxisHidden: true, valAxisMinVal: 0, valAxisMaxVal: 110, valGridLine: { style: "none" }, catGridLine: { style: "none" },
@@ -222,7 +222,7 @@ function table(s, rows, box, colW, header = true) {
   bullets(s, [
     "Função com bug: 101 de 104, precisão 86%.",
     "Categoria certa: 51 de 104 (precisão 30%).",
-    "Trecho exato: 21 de 104.",
+    "Expressão do bug: 42 de 104 contando formas equivalentes (21 com texto idêntico).",
     "Medir só pela categoria subestimava a localização; por isso ela deixou de guiar a verificação.",
   ], { x: 6.5, y: 1.5, w: 3.0, h: 3.6, size: 13 });
 }
@@ -254,19 +254,19 @@ function table(s, rows, box, colW, header = true) {
 
 // 14. Control experiments
 {
-  const s = base("Com o mesmo custo, o erro do ESBMC quase triplica a taxa de verificação");
+  const s = base("Com o mesmo custo, o erro do ESBMC multiplica por 2,6 a taxa de verificação");
   s.addChart(pres.charts.BAR, [
-      { name: "Reparo guiado", labels: ["1 chamada", "2 chamadas", "3 chamadas"], values: [3.3, 8.8, 12.1] },
-      { name: "Amostragem independente", labels: ["1 chamada", "2 chamadas", "3 chamadas"], values: [3.3, 4.4, 4.4] }],
+      { name: "Reparo guiado", labels: ["1 chamada", "2 chamadas", "3 chamadas"], values: [3.7, 7.7, 11.4] },
+      { name: "Amostragem independente", labels: ["1 chamada", "2 chamadas", "3 chamadas"], values: [3.7, 4.1, 4.4] }],
     { x: 0.5, y: 1.3, w: 5.4, h: 3.5, barDir: "col", barGrouping: "clustered", chartColors: [C.teal, "9CA3AF"],
       showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: '0.0"%"', dataLabelFontSize: 11, dataLabelColor: C.ink,
       catAxisLabelColor: C.ink, valAxisHidden: true, valAxisMinVal: 0, valAxisMaxVal: 15, valGridLine: { style: "none" },
       catGridLine: { style: "none" }, showLegend: true, legendPos: "b", legendFontSize: 11,
-      showTitle: true, title: "Hipóteses com veredito do ESBMC (RQ2, 125 hipóteses, mesmo orçamento)", titleFontSize: 11, titleColor: C.ink });
+      showTitle: true, title: "Hipóteses com veredito do ESBMC (RQ2, 125 hipóteses, média de 3 rodadas)", titleFontSize: 11, titleColor: C.ink });
   bullets(s, [
-    [{ text: "Reparo: ", bold: true }, { text: "3 confirmados e 14 especificações inválidas, contra 2 e 35 na amostragem; 346 mil e 354 mil tokens." }],
+    [{ text: "Reparo: ", bold: true }, { text: "em média 2,7 confirmados e 15 especificações inválidas, contra 1,7 e 37 na amostragem; cerca de 350 mil tokens nos dois braços." }],
     [{ text: "Confirmação falsa: ", bold: true }, { text: "nenhuma nas 107 versões corrigidas. Em cli_bool_option corrigido o ESBMC ainda acusa violação, mas a execução não reproduz: fica não validado." }],
-    [{ text: "Ressalva: ", bold: true }, { text: "uma rodada por braço; repetir para medir a variação." }],
+    [{ text: "Variação: ", bold: true }, { text: "3 rodadas por braço; desvio padrão de até 1,3 ponto percentual, bem menor que a diferença (11,4% contra 4,4%)." }],
   ], { x: 6.2, y: 1.35, w: 3.3, h: 3.8, size: 12.5 });
   s.addNotes("Comparação com amostragem de mesmo custo segue Olausson et al. (ICLR 2024).");
 }

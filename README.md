@@ -63,6 +63,43 @@ Regras que definem o método (detalhes em [`docs/v2/desenho_motor_verify.md`](do
 
 ---
 
+## Dificuldades principais (30/09/2026)
+
+O gargalo atual é **fazer o código Python real ser aceito pelo ESBMC**. Rodada de 30/09, com a
+localização do bug dada (para medir só a verificação) e o harness revisado:
+
+```
+125 hipóteses
+ ├─ 65 param antes de chegar ao ESBMC
+ │    ├─ 56 o harness não consegue montar o programa
+ │    ├─  7 a LLM não dá tipos válidos
+ │    └─  2 falha de rede
+ └─ 60 chegam ao ESBMC
+      ├─ 39 o ESBMC recusa o programa
+      ├─  9 o ESBMC não termina (tempo ou inconclusivo)
+      └─ 12 o ESBMC dá uma resposta: 3 confirmados, 9 não confirmados
+```
+
+- **Harness (56):** o recorte esquece nomes que a função usa (25); bibliotecas sem substituto ou com
+  substituto errado (15); tipos de entrada que o harness não sabe gerar (9); `async`, atributos
+  herdados e outros (7).
+- **ESBMC-Python 8.5 (39 recusas):** texto com `%` e variável, atributos resolvidos na execução
+  (`type(x).__name__`, `x.__dict__`), tipos que ele não deduz, `a, b = f()`, `*args`/`**kwargs`,
+  módulos da biblioteca padrão sem modelo (`sys`, `threading.RLock`, `OrderedDict`).
+- **Quando responde, o ESBMC-Python pode errar:** falso positivo em `while defs and defs[-1] >= d:
+  defs.pop()` e falso negativo em `None + 1`. Por isso a confirmação exige a execução real.
+- **Cada limite contornado revela o próximo:** a revisão do harness em 30/09 fez mais casos chegarem
+  ao ESBMC (sem LLM: 77 para 84 de 99), mas o número de vereditos ficou igual (15) e as confirmações
+  ficaram em 3.
+- **O que já está sólido:** a LLM acha a função com bug em 97% dos casos, e a confirmação com
+  execução real não teve nenhuma confirmação falsa nas versões corrigidas (o pipeline antigo, com a
+  LLM escrevendo o harness, "confirmava" 47 bugs dos quais só 2 eram reais).
+
+Detalhes e caminhos possíveis: [`docs/projeto/entendendo_o_pipeline.md`](docs/projeto/entendendo_o_pipeline.md)
+(seções 9 e 10) e [`docs/projeto/duvidas_orientacao_2026-09-30.md`](docs/projeto/duvidas_orientacao_2026-09-30.md).
+
+---
+
 ## Dataset
 
 ### V1: sintético (`dataset/labeled/`, 70 arquivos)
@@ -91,11 +128,15 @@ nos repositórios originais (commits, issues e pull requests). Repositórios com
 | `detection/` | recorte da função, entrada da detecção pela LLM |
 | `detection_full/` | arquivo completo no commit com bug (99 de 116), usado na verificação |
 | `fixed_full/` | arquivo completo no commit corrigido (98), para medir confirmação falsa |
-| `bugs/`, `patches/` | harness de referência e patch real de cada caso |
+| `bugs/` | harness de referência escrito à mão (legado de 09/09; o motor novo não usa) |
+| `patches/` | patch real da correção de cada caso |
 | `ground_truths.json`, `manifest.json` | gabarito e proveniência, lidos só na avaliação |
 
 `dataset/v2_candidates/` guarda 199 bugs do BugsInPy validados pelos mantenedores e ainda não
 integrados ao dataset (ver o README da pasta).
+
+O mapa de todas as pastas de `dataset/` (inclusive `code_smell/`, `v2_real_world_eligible/` e
+`disciplina_pgene601/`) está em [`dataset/README.md`](dataset/README.md).
 
 ---
 
