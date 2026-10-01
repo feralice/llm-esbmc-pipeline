@@ -19,11 +19,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.verify.agent_arm import claude_agent, run_agent_arm  # noqa: E402
+from research_pipeline.verify.agent_arm import AGENT_VERDICTS, NOTES_PATH, make_agent, run_agent_arm  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 
-DEFAULT_VERDICTS = "UNSUPPORTED,MISSING_DEPENDENCY,ESBMC_ERROR,PIPELINE_ERROR,SPEC_FAILED"
+DEFAULT_VERDICTS = ",".join(sorted(AGENT_VERDICTS))
 
 
 def _results(path: Path) -> list[dict]:
@@ -46,6 +46,22 @@ def main() -> int:
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--agent-timeout", type=int, default=900)
+    parser.add_argument("--backend", default="claude",
+                        choices=["claude", "openai", "google", "ollama", "claude_cli"],
+                        help="claude: Claude Code + ESBMC plugin; the others run the same loop through an API "
+                             "(OPENAI_API_KEY / GEMINI_API_KEY; ollama runs a local model)")
+    parser.add_argument("--rounds", type=int, default=8, help="API backends: harness attempts per case")
+    parser.add_argument("--base-url", default=None, help="API backends: endpoint (e.g. http://localhost:11434/v1)")
+    parser.add_argument("--no-plugin", action="store_true", help="run the agent without the ESBMC plugin")
+    parser.add_argument("--not-isolated", action="store_true",
+                        help="load the user's Claude Code settings too (global plugins, hooks); default: isolated")
+    parser.add_argument("--plugin-command", choices=["verify", "audit"], default="",
+                        help="after the harness is ready, run /esbmc-plugin:<command> on it and keep its report")
+    parser.add_argument("--allow-simplify", action="store_true",
+                        help="let the agent simplify constructs ESBMC rejects inside the function; a confirmation "
+                             "then needs ESBMC's inputs to break the ORIGINAL body (CONFIRMED_SIMPLIFIED)")
+    parser.add_argument("--notes", default="", help="ESBMC-Python notes the agent reads first "
+                        "(e.g. src/research_pipeline/verify/esbmc_python_notes.md)")
     args = parser.parse_args()
 
     wanted = set(args.verdicts.split(","))
@@ -65,7 +81,13 @@ def main() -> int:
     results_path = out / "agent_results.json"
     done = json.loads(results_path.read_text(encoding="utf-8")) if results_path.exists() else []
     finished = {r["hypothesis"]["hypothesis_id"] for r in done}
-    agent = claude_agent(model=args.model, esbmc=args.esbmc)
+    agent, skill = make_agent(args.backend, model=args.model, esbmc=args.esbmc, bound=args.bound,
+                              plugin=not args.no_plugin, isolated=not args.not_isolated, rounds=args.rounds,
+                              base_url=args.base_url)
+    notes = Path(args.notes) if args.notes else (None if args.backend == "claude" else NOTES_PATH)
+    variant = {"backend": args.backend, "plugin": not args.no_plugin and args.backend == "claude", "isolated": not args.not_isolated, "notes": args.notes,
+               "model": args.model, "plugin_command": args.plugin_command,
+               "allow_simplify": args.allow_simplify}
     sources = Path(args.verification_sources) if args.verification_sources else None
     for index, (h, previous) in enumerate(hypotheses, 1):
         if h.hypothesis_id in finished:
@@ -73,8 +95,10 @@ def main() -> int:
         print(f"[{index}/{len(hypotheses)}] {Path(h.file).name}::{h.function} (engine: {previous})", flush=True)
         result = run_agent_arm(h, work_dir=out / "cases", run_agent=agent, esbmc_command=[args.esbmc],
                                bound=args.bound, timeout_seconds=args.timeout, agent_timeout=args.agent_timeout,
-                               source_path=verification_source(h, sources))
-        result["engine_verdict"] = previous
+                               source_path=verification_source(h, sources), skill=skill,
+                               notes=notes, plugin_command=args.plugin_command if args.backend == "claude" else "",
+                               allow_simplify=args.allow_simplify)
+        result["engine_verdict"], result["variant"] = previous, variant
         print(f"    -> {result['verdict']} preserved={result['target_preserved']} {result['reason'][:100]}", flush=True)
         done.append(result)
         results_path.write_text(json.dumps(done, indent=2), encoding="utf-8")

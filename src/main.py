@@ -68,6 +68,8 @@ from research_pipeline.preprocess import preprocess_file
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.llm_client import LLMClient
+from research_pipeline.verify.agent_arm import make_agent, run_agent_fallback
+from research_pipeline.verify.levels import consolidate, level_summary
 from research_pipeline.verify.loop import run_verify
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.voting import aggregate_votes, write_vote_report
@@ -254,6 +256,19 @@ def build_parser() -> argparse.ArgumentParser:
             "ou em code smells heurísticos (generated_smells). (padrão: bugs)"
         ),
     )
+    parser.add_argument(
+        "--agent-fallback",
+        action="store_true",
+        help="Motor verify: quando o harness determinístico não chega a um veredito do ESBMC, tenta o "
+             "agente (Claude Code + plugin ESBMC, assinatura do Claude Code); o resultado é refeito pelo pipeline.",
+    )
+    parser.add_argument(
+        "--agent-backend", default="claude", choices=["claude", "openai", "google", "ollama", "claude_cli"],
+        help="Agente do nível 2: 'claude' é o Claude Code com o plugin ESBMC; os outros fazem o mesmo ciclo por API "
+             "(qualquer pessoa reproduz sem assinatura do Claude; 'ollama' usa modelo local).",
+    )
+    parser.add_argument("--agent-model", default=None, help="Modelo do agente (padrão: o do Claude Code, ou gpt-4o-mini).")
+    parser.add_argument("--agent-timeout", type=int, default=900, help="Segundos por sessão do agente (padrão: 900).")
     parser.add_argument(
         "--verification-sources-strict",
         action="store_true",
@@ -1004,6 +1019,21 @@ def _esbmc_version(command: list[str]) -> str:
     return lines[0] if lines else ""
 
 
+def _agent_fallback(args: argparse.Namespace, results: list[dict], output_path: Path, checkpoint: dict,
+                    checkpoint_path: Path) -> list[dict]:
+    """Second level: the agent tries each hypothesis the engine left without an ESBMC verdict."""
+    esbmc = args.esbmc_command or ["/usr/local/bin/esbmc"]
+    agent, skill = make_agent(args.agent_backend, model=args.agent_model, esbmc=esbmc[0], bound=args.bound,
+                              base_url=args.ollama_base_url if args.agent_backend == "ollama" else None)
+    return run_agent_fallback(
+        results, run_agent=agent, skill=skill, work_dir=output_path / "agent_cases",
+        esbmc_command=esbmc, bound=args.bound, timeout_seconds=args.timeout, agent_timeout=args.agent_timeout,
+        sources=Path(args.verification_sources) if args.verification_sources else None,
+        state=checkpoint, save=lambda: _save_checkpoint(checkpoint_path, checkpoint),
+        config={"backend": args.agent_backend, "model": args.agent_model, "bound": args.bound,
+                "timeout": args.timeout, "esbmc": esbmc})
+
+
 def _mode_v2_verify(
     args: argparse.Namespace, *, candidates, llm, output_path: Path, config: dict, checkpoint: dict,
     checkpoint_path: Path, capture_telemetry, input_paths, rejected_findings, detection: dict,
@@ -1038,6 +1068,7 @@ def _mode_v2_verify(
         _write_json_atomic(checkpoint_path, checkpoint)
         print("Execução V2 interrompida; retome com --resume.", file=sys.stderr)
         return 2
+    agent_results = _agent_fallback(args, results, output_path, checkpoint, checkpoint_path) if args.agent_fallback else []
     capture_telemetry()
     checkpoint["status"] = "complete"
     _write_json_atomic(checkpoint_path, checkpoint)
@@ -1045,6 +1076,8 @@ def _mode_v2_verify(
     _write_json_atomic(output_path / "llm_telemetry.json", telemetry_events)
     report_path = Path(args.report) if args.report else output_path / "v2_verify_report.json"
     summary = summarize(results)
+    level_rows = consolidate(results, agent_results)
+    levels = level_summary(level_rows)
     _write_json_atomic(report_path, {
         "config": {**config, "esbmc_version": _esbmc_version(args.esbmc_command or ["esbmc"])},
         "detection": detection,
@@ -1055,8 +1088,13 @@ def _mode_v2_verify(
             if args.ground_truth and args.v2_stage == "end-to-end" else None
         ),
         "results": results,
+        "agent_results": agent_results,
+        "levels": {"summary": levels, "rows": level_rows},
     })
     print("\nVereditos:", {k: v for k, v in summary["by_verdict"].items() if v})
+    print(f"Níveis: {levels['by_level']}; veredito do ESBMC em {levels['esbmc_verdict']}/{levels['hypotheses']}, "
+          f"{levels['confirmed']} confirmado(s); só LLM por motivo: "
+          f"{ {k: v for k, v in levels['llm_only_by_limit'].items() if v} }")
     print(f"Relatório JSON: {report_path}")
     return 0
 
