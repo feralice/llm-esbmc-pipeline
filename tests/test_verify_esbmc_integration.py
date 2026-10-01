@@ -1,8 +1,10 @@
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
+from research_pipeline.verify.compat import rewrite_compat
 from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import verify_hypothesis
@@ -126,3 +128,24 @@ def test_percent_format_is_rewritten_and_the_bug_is_confirmed(tmp_path):
     assert "compat_percent_format:1" in result.transforms
     assert result.verdict in {CONFIRMED, NOT_CONFIRMED, UNVALIDATED}, result.to_dict()
     assert result.verdict != "UNSUPPORTED"
+    assert source in Path(result.attempts[-1]["replay_program_path"]).read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("fmt,kind,value,expected", [
+    ("%d", "float", "-1.9", "-1"),
+    ("%r", "int", "2", "2"),
+])
+@pytest.mark.parametrize("correct", [True, False])
+def test_rewritten_scalar_format_preserves_backend_assertion(tmp_path, fmt, kind, value, expected, correct):
+    asserted = expected if correct else "wrong"
+    source = f'def f(x: {kind}) -> str:\n    return {fmt!r} % x\n\nassert f({value}) == {asserted!r}\n'
+    rewritten, transforms = rewrite_compat(source, parameter_types={"f": {"x": kind}})
+    assert transforms == ["compat_percent_format:1"]
+    path = tmp_path / "format.py"
+    path.write_text(rewritten, encoding="utf-8")
+    completed = subprocess.run([str(ESBMC), str(path), "--unwind", "12"],
+                               capture_output=True, text=True, timeout=45, check=False)
+    output = completed.stdout + completed.stderr
+    assert completed.returncode == (0 if correct else 1), output
+    assert ("VERIFICATION SUCCESSFUL" if correct else "VERIFICATION FAILED") in output
+    assert "unwinding assertion" not in output

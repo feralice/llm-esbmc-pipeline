@@ -6,7 +6,6 @@ import ast
 from dataclasses import dataclass, field
 
 from .astutil import expression_nodes, find_function
-from .compat import rewrite_compat
 from .context import context_module
 from .hypothesis import BugHypothesis
 from .slicing import (
@@ -294,8 +293,6 @@ def ground(h: BugHypothesis, source: str) -> Grounded | GroundingFailure:
             module = reslice(module, h.function)
         module, plan, stubbed = stub_imports(module)
         transforms += stubbed
-        module, compat = rewrite_compat(module)
-        transforms += compat
         problem = plan.problem
     return Grounded(
         hypothesis=h,

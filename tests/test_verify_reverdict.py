@@ -41,3 +41,37 @@ def test_assertion_violation_is_recomputed_as_confirmed(tmp_path):
 def test_results_without_an_esbmc_verdict_are_untouched(tmp_path):
     original = _result(tmp_path, "repairable", "ERROR: something", verdict="UNSUPPORTED")
     assert reverdict.reverdict_result(dict(original))["verdict"] == "UNSUPPORTED"
+
+
+def test_reverdict_uses_preserved_replay_artifact(tmp_path):
+    result = _result(tmp_path, "violation", "assertion ISINSTANCE(value, 0)")
+    original = tmp_path / "p_replay.py"
+    original.write_text(PROGRAM.replace('value = params.get(param)', 'value = True'), encoding="utf-8")
+    result["attempts"][-1]["replay_program_path"] = str(original)
+    checked = reverdict.reverdict_result(result)
+    assert checked["verdict"] != "CONFIRMED"
+    assert checked["replay"]["status"] == "not_reproduced"
+
+
+def test_missing_replay_artifact_does_not_fall_back_to_rewritten_source(tmp_path):
+    result = _result(tmp_path, "violation", "assertion ISINSTANCE(value, 0)", "CONFIRMED")
+    result["attempts"][-1]["replay_program_path"] = str(tmp_path / 'absent_replay.py')
+    checked = reverdict.reverdict_result(result)
+    assert checked["verdict"] != "CONFIRMED"
+    assert checked["replay"]["status"] == "unavailable"
+
+
+def test_legacy_rewritten_artifact_cannot_be_reconfirmed(tmp_path):
+    result = _result(tmp_path, "violation", "assertion ISINSTANCE(value, 0)", "CONFIRMED")
+    result["transforms"] = ["compat_percent_format:1"]
+    checked = reverdict.reverdict_result(result)
+    assert checked["verdict"] != "CONFIRMED"
+    assert checked["replay"]["status"] == "unavailable"
+
+
+def test_missing_target_cannot_keep_a_confirmation(tmp_path):
+    result = _result(tmp_path, "violation", "assertion ISINSTANCE(value, 0)", "CONFIRMED")
+    result["hypothesis"]["suspect_expression"] = "absent()"
+    checked = reverdict.reverdict_result(result)
+    assert checked["verdict"] != "CONFIRMED"
+    assert checked["replay"]["status"] == "unavailable"

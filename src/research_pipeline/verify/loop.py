@@ -165,6 +165,9 @@ def verify_hypothesis(
         program = render_program(grounded, spec)
         path = work_dir / f"{h.hypothesis_id}_a{attempt}.py"
         path.write_text(program.source, encoding="utf-8")
+        replay_path = path.with_name(path.stem + "_replay.py")
+        replay_path.write_text(program.replay_source, encoding="utf-8")
+        record["replay_program_path"] = str(replay_path)
         result.program_path, result.transforms = str(path), program.transforms
         # Incremental BMC with --multi-property prints FAILED and UNKNOWN together (measured 2026-09-29).
         esbmc = run_esbmc_direct(path, esbmc_command=esbmc_command, bound=bound,

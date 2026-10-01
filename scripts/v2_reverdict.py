@@ -19,7 +19,7 @@ from research_pipeline.verify.candidate import Candidate  # noqa: E402
 from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
 from research_pipeline.verify.outcome import EsbmcReading, _python_exceptions, final_verdict  # noqa: E402
 from research_pipeline.verify.render import Program  # noqa: E402
-from research_pipeline.verify.replay import concrete_replay  # noqa: E402
+from research_pipeline.verify.replay import ReplayVerdict, concrete_replay  # noqa: E402
 from research_pipeline.verify.report import evaluate_verify, summarize  # noqa: E402
 
 import ast  # noqa: E402
@@ -47,10 +47,17 @@ def reverdict_result(result: dict) -> dict:
     kinds = result["reason"].split("; ") if reading_kind == "violation" else []
     reading = EsbmcReading(reading_kind, result["reason"],
                            frozenset(name for kind in kinds for name in _python_exceptions(kind)))
-    program = _program(Path(result["program_path"]), result["hypothesis"])
-    if program is None:
-        return result
-    replay = concrete_replay(program, result["hypothesis"]["function"].split(".")[-1])
+    replay_path = attempts[-1].get("replay_program_path")
+    if not replay_path and any(t.startswith("compat_") for t in result.get("transforms", [])):
+        replay = ReplayVerdict("unavailable", reason="rewritten artifact has no preserved replay program")
+    else:
+        try:
+            program = _program(Path(replay_path or result["program_path"]), result["hypothesis"])
+        except (OSError, SyntaxError) as exc:
+            replay = ReplayVerdict("unavailable", reason=f"cannot read replay program: {exc}")
+        else:
+            replay = (concrete_replay(program, result["hypothesis"]["function"].split(".")[-1])
+                      if program is not None else ReplayVerdict("unavailable", reason="target missing in replay program"))
     verdict = final_verdict(reading, replay)
     result["reverdict"] = {"previous": result["verdict"], "previous_replay": result.get("replay")}
     result.update(verdict=verdict, replay=replay.to_dict())

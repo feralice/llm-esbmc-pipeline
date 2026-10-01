@@ -5,7 +5,8 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, replace
 
-from .astutil import find_function
+from .astutil import expression_nodes, find_function
+from .compat import rewrite_compat
 from .grounding import Grounded
 from .slicing import END_PATH, KNOWN_MEMBERS, CallShape
 from .spec import (
@@ -35,6 +36,9 @@ class Program:
     target_spans: tuple[tuple[int, int], ...]
     transforms: tuple[str, ...]
     target_range: tuple[int, int] = (0, 0)
+    replay_source: str | None = None
+    replay_target_spans: tuple[tuple[int, int], ...] | None = None
+    replay_target_range: tuple[int, int] | None = None
 
 
 def object_class(input_key: str) -> str:
@@ -293,4 +297,12 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
         raise RenderError("target function lost while building the program")
     shift = function.lineno - grounded.function_start
     spans = tuple((start + shift, end + shift) for start, end in grounded.spans)
-    return Program(body, driver_start, spans, tuple(transforms), (function.lineno, function.end_lineno))
+    target_range = (function.lineno, function.end_lineno)
+    rewritten, compat = rewrite_compat(body, parameter_types={grounded.hypothesis.function: params})
+    rewritten_function = find_function(ast.parse(rewritten), grounded.hypothesis.function)
+    nodes = expression_nodes(rewritten_function, grounded.hypothesis.suspect_expression)
+    if nodes and grounded.hypothesis.line:
+        nodes = [min(nodes, key=lambda node: abs(node.lineno - spans[0][0]))]
+    rewritten_spans = tuple(sorted({(node.lineno, node.end_lineno) for node in nodes})) if nodes else spans
+    return Program(rewritten, driver_start, rewritten_spans, (*transforms, *compat), target_range,
+                   replay_source=body, replay_target_spans=spans, replay_target_range=target_range)

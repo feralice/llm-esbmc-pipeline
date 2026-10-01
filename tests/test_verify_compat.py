@@ -7,15 +7,18 @@ from research_pipeline.verify.hypothesis import BugHypothesis
 
 def test_percent_s_with_tuple_literal_becomes_str_concatenation():
     source = 'def label(code, name):\n    return "id=%s:%s!" % (code, name)\n'
-    rewritten, transforms = rewrite_compat(source)
-    assert '    return "id=" + str(code) + ":" + str(name) + "!"\n' in rewritten
+    rewritten, transforms = rewrite_compat(source, parameter_types={"label": {"code": "int", "name": "str"}})
+    assert "    return ('id=' + str(code) + ':' + str(name) + '!')\n" in rewritten
     assert transforms == ["compat_percent_format:1"]
 
 
 def test_equivalence_under_cpython_for_sample_values():
     source = 'def label(a, b):\n    return "%s-%s" % (a, b)\n'
-    rewritten, _ = rewrite_compat(source)
-    for a, b in [(1, "x"), (None, 2.5), ("", []), ((1, 2), {"k": 1})]:
+    for a, b in [(1, "x"), (None, 2.5), ("", False), (b"a", 2)]:
+        rewritten, transforms = rewrite_compat(source, parameter_types={"label": {
+            "a": type(a).__name__ if a is not None else "none", "b": type(b).__name__,
+        }})
+        assert transforms == ["compat_percent_format:1"]
         original_ns, new_ns = {}, {}
         exec(source, original_ns)
         exec(rewritten, new_ns)
@@ -30,16 +33,16 @@ def test_other_conversions_and_non_tuple_operands_are_left_alone():
 
 def test_literal_percent_is_kept():
     source = 'def f(a):\n    return "%s is 100%%" % (a,)\n'
-    rewritten, _ = rewrite_compat(source)
-    assert 'return str(a) + " is 100%"' in rewritten
+    rewritten, _ = rewrite_compat(source, parameter_types={"f": {"a": "str"}})
+    assert "return (str(a) + ' is 100%')" in rewritten
 
 
-def test_grounding_applies_the_rewrite_and_keeps_line_numbers():
+def test_grounding_preserves_the_code_before_compatibility_rewrites():
     source = 'def label(code, name):\n    msg = "%s %s" % (code, name)\n    return 1 // len(msg)\n'
     grounded = ground(BugHypothesis("x.py", "label", "1 // len(msg)"), source)
     assert isinstance(grounded, Grounded)
-    assert 'msg = str(code) + " " + str(name)' in grounded.module
-    assert "compat_percent_format:1" in grounded.transforms
+    assert source in grounded.module
+    assert "compat_percent_format:1" not in grounded.transforms
     assert ast.parse(grounded.module)
 
 
