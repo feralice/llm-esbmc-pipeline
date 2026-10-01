@@ -9,12 +9,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
 
-from research_pipeline.verification.esbmc_runner import run_esbmc_direct
 
 from .astutil import undefined_globals
 from .grounding import Grounded, GroundingFailure, ground
 from .hypothesis import BugHypothesis
 from .llm_client import SynthResult, _bound_untrusted
+from .esbmc_run import check, esbmc_output
+from .oracle import convert, refusals
 from .outcome import (
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
@@ -23,11 +24,10 @@ from .outcome import (
     SPEC_FAILED,
     UNSUPPORTED,
     EsbmcReading,
-    classify_esbmc,
     final_verdict,
 )
-from .render import Program, RenderError, render_program
-from .replay import ReplayVerdict, concrete_replay
+from .render import DRIVER, Program, RenderError, render_program
+from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, spec_problems
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
@@ -104,15 +104,28 @@ def _with_line_context(message: str, program: Program) -> str:
     return f"{message}\n(program line {number}, {region}: {lines[number - 1].strip()})"
 
 
-def precheck(h: BugHypothesis, source: str) -> tuple[Grounded | None, str, str]:
-    """Everything decidable before spending an LLM call; returns (grounded, "", "") when ready."""
-    grounded = ground(h, source)
-    if isinstance(grounded, GroundingFailure):
-        return None, UNSUPPORTED if grounded.unsupported else GROUNDING_FAILED, grounded.reason
-    try:
-        probe = render_program(grounded, _placeholder_spec(grounded))
-    except RenderError as exc:
-        return None, UNSUPPORTED, str(exc)
+_ORACLE_ROUNDS = 5
+
+
+def precheck(h: BugHypothesis, source: str,
+             esbmc_command: list[str] | None = None) -> tuple[Grounded | None, str, str]:
+    """Everything decidable before spending an LLM call; returns (grounded, "", "") when ready.
+    With ``esbmc_command``, library members ESBMC cannot convert are stubbed before the LLM sees the slice."""
+    refused: frozenset[str] = frozenset()
+    for _ in range(_ORACLE_ROUNDS):
+        grounded = ground(h, source, refused)
+        if isinstance(grounded, GroundingFailure):
+            return None, UNSUPPORTED if grounded.unsupported else GROUNDING_FAILED, grounded.reason
+        try:
+            probe = render_program(grounded, _placeholder_spec(grounded))
+        except RenderError as exc:
+            return None, UNSUPPORTED, str(exc)
+        if not esbmc_command:
+            break
+        new = refusals(convert(probe.source, esbmc_command), probe.source) - refused
+        if not new:
+            break
+        refused |= new
     undefined = undefined_globals(probe.source, "program.py") - _INTRINSICS
     if undefined:
         return None, MISSING_DEPENDENCY, "undefined name(s): " + ", ".join(sorted(undefined))
@@ -135,7 +148,7 @@ def verify_hypothesis(
         result.verdict, result.reason, result.seconds = verdict, reason, time.monotonic() - started
         return result
 
-    grounded, verdict, reason = precheck(h, source)
+    grounded, verdict, reason = precheck(h, source, esbmc_command)
     if grounded is None:
         return finish(verdict, reason)
 
@@ -169,16 +182,15 @@ def verify_hypothesis(
         replay_path.write_text(program.replay_source, encoding="utf-8")
         record["replay_program_path"] = str(replay_path)
         result.program_path, result.transforms = str(path), program.transforms
+        # An unwinding assertion alone says the bound was short, not that the code is safe: raise it.
         # Incremental BMC with --multi-property prints FAILED and UNKNOWN together (measured 2026-09-29).
-        esbmc = run_esbmc_direct(path, esbmc_command=esbmc_command, bound=bound,
-                                 timeout_seconds=timeout_seconds, output_dir=work_dir,
-                                 bound_flags=["--unwind", str(bound)])
-        reading = classify_esbmc(esbmc)
-        record.update({"esbmc_status": esbmc.status, "reading": reading.kind, "message": reading.message})
+        esbmc, reading, how = check(path, esbmc_command=esbmc_command, bound=bound,
+                                    timeout_seconds=timeout_seconds, work_dir=work_dir / path.stem)
+        record.update({"esbmc_status": esbmc.status, "reading": reading.kind, "message": reading.message, **how})
         if reading.kind == "repairable" and attempt < max_repairs:
             feedback = "ESBMC rejected the program: " + _with_line_context(reading.message, program)
             continue
-        replay = _replay_if_checked(reading, program, grounded, replay_runs)
+        replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc))
         result.replay = replay.to_dict()
         return finish(final_verdict(reading, replay), reading.message)
     if last_problems and all("unsupported type" in p for p in last_problems):
@@ -187,10 +199,12 @@ def verify_hypothesis(
     return finish(SPEC_FAILED, feedback)
 
 
-def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Grounded, runs: int) -> ReplayVerdict:
+def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Grounded, runs: int,
+                       log: str = "") -> ReplayVerdict:
     if reading.kind not in {"violation", "artifact", "safe"}:
         return ReplayVerdict("unavailable", reason="ESBMC produced no verdict to validate")
-    return concrete_replay(program, grounded.method_name, max_runs=runs)
+    return concrete_replay(program, grounded.method_name, max_runs=runs,
+                           seeds=counterexample_seeds(log, DRIVER))
 
 
 def verification_source(h: BugHypothesis, verification_sources: Path | None) -> Path:

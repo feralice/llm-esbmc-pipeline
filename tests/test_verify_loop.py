@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from research_pipeline.verify import esbmc_run
 from research_pipeline.models import ESBMCDirectResult
 from research_pipeline.verify import loop
 from research_pipeline.verify.hypothesis import BugHypothesis
@@ -50,7 +51,7 @@ def _esbmc(*statuses, stdout=""):
 
 def _run(tmp_path, monkeypatch, llm, esbmc, replay=REPRODUCED, source=SOURCE,
          expression="total // count"):
-    monkeypatch.setattr(loop, "run_esbmc_direct", esbmc)
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", esbmc)
     monkeypatch.setattr(loop, "concrete_replay", lambda program, function, **_: replay)
     hypothesis = BugHypothesis("r.py", "ratio", expression, category="division_by_zero")
     return loop.verify_hypothesis(hypothesis, llm=llm, source=source, esbmc_command=["esbmc"], bound=5,
@@ -129,7 +130,7 @@ def test_hypothesis_is_identical_in_every_attempt(tmp_path, monkeypatch):
 
 def test_resample_strategy_never_shows_the_previous_error(tmp_path, monkeypatch):
     llm = FakeLLM([json.dumps({"params": {"total": "dict"}}), GOOD])
-    monkeypatch.setattr(loop, "run_esbmc_direct", _esbmc("violation_found"))
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("violation_found"))
     monkeypatch.setattr(loop, "concrete_replay", lambda program, function, **_: REPRODUCED)
     hypothesis = BugHypothesis("r.py", "ratio", "total // count", category="division_by_zero")
     result = loop.verify_hypothesis(hypothesis, llm=llm, source=SOURCE, esbmc_command=["esbmc"], bound=5,

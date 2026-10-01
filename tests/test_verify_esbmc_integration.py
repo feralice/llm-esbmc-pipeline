@@ -149,3 +149,18 @@ def test_rewritten_scalar_format_preserves_backend_assertion(tmp_path, fmt, kind
     assert completed.returncode == (0 if correct else 1), output
     assert ("VERIFICATION SUCCESSFUL" if correct else "VERIFICATION FAILED") in output
     assert "unwinding assertion" not in output
+
+
+def test_bug_past_the_first_bound_is_found_by_raising_it(tmp_path):
+    source = "def deep(n: int):\n    i = 0\n    while i < n:\n        i += 1\n    return 10 // (i - 8)\n"
+    result = _verify(tmp_path, "deep", "10 // (i - 8)", {}, source=source)
+    assert result.verdict == CONFIRMED, result.to_dict()
+    assert result.attempts[-1]["unwind"] == 10
+
+
+def test_member_esbmc_refuses_is_stubbed_and_the_rest_of_re_kept(tmp_path):
+    source = ('import re\n\n\ndef clean(s: str):\n    t = re.sub("x", "", s)\n'
+              '    if re.match("ab", s):\n        return 0\n    return 10 // len(t)\n')
+    result = _verify(tmp_path, "clean", "10 // len(t)", {"stubs": {"_esbmc_re_sub": "str"}}, source=source)
+    assert any(t.startswith("esbmc_refused_members_stubbed:_esbmc_re_sub") for t in result.transforms), result.to_dict()
+    assert result.verdict == CONFIRMED, result.to_dict()

@@ -112,3 +112,38 @@ main()
 '''
     verdict = concrete_replay(_program(source, 4), "spin", timeout_seconds=30)
     assert verdict.status == "not_reproduced"
+
+
+COUNTEREXAMPLE = """[Counterexample]
+
+State 1 file p.py line 9 column 4 function _esbmc_main thread 0
+----------------------------------------------------
+  n = 8 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00001000)
+
+State 2 file p.py line 3 column 4 function deep thread 0
+----------------------------------------------------
+  i = 3 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000011)
+
+State 3 file p.py line 35 column 0 thread 0
+----------------------------------------------------
+  t = 0.000000 (00111011 01100011 11010110 00100000 10010101 00000000 00000000 00000000)
+"""
+
+
+def test_counterexample_seeds_read_driver_values_and_exact_floats():
+    from research_pipeline.verify.replay import counterexample_seeds
+    assert counterexample_seeds(COUNTEREXAMPLE, "_esbmc_main") == {"int": [8], "float": []}
+    seeds = counterexample_seeds(COUNTEREXAMPLE, None)
+    assert seeds["int"] == [8, 3]
+    assert seeds["float"] == [1.312665133989138e-22]
+
+
+def test_replay_reproduces_a_bug_only_the_counterexample_reaches():
+    from research_pipeline.verify.render import Program
+    from research_pipeline.verify.replay import concrete_replay
+    source = ("def deep(n: int):\n    return 10 // (n - 8)\n\n\n"
+              "def _esbmc_main() -> None:\n    n: int = nondet_int()\n    deep(n)\n\n\n_esbmc_main()\n")
+    program = Program(source, 5, ((2, 2),), (), (1, 2))
+    assert concrete_replay(program, "deep").status == "not_reproduced"
+    seeded = concrete_replay(program, "deep", seeds={"int": [8], "float": []})
+    assert (seeded.status, seeded.exception_type) == ("reproduced", "ZeroDivisionError")

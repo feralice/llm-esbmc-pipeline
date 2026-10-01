@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import main
+from research_pipeline.verify import esbmc_run
 from research_pipeline.models import ESBMCDirectResult, Finding
 from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify import loop
@@ -46,7 +47,7 @@ def test_verify_engine_verifies_detected_hypotheses_on_the_full_source(tmp_path:
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
     monkeypatch.setattr(main, "LLMClient", _SpecLLM)
-    monkeypatch.setattr(loop, "run_esbmc_direct", _esbmc)
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc)
     seen = {}
 
     def replay(program, function, **_):
