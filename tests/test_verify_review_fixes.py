@@ -155,7 +155,7 @@ def test_unmodeled_imports_become_declared_stubs():
     tree = ast.parse(program.source)
     names = {n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
     assert {"to_bytes", "np", "CompatError", "target"} <= names
-    assert "def to_bytes(a0, encoding=None) -> int:" in program.source
+    assert "def to_bytes(a0=None, encoding=None) -> int:" in program.source
     assert "class CompatError(Exception):" in program.source
     assert concrete_replay(program, "target").status == "reproduced"
 
@@ -377,7 +377,7 @@ def test_class_called_as_constructor_gets_an_init():
     grounded = _ground(source, "f", "n // 0")
     assert grounded.unsupported == "" and grounded.stub_keys == ()
     program = render_program(grounded, InputSpec({"x": "str"}, {}, ()))
-    assert "class MultiIndex:\n    def __init__(self, a0, names=None) -> None:\n        pass" in program.source
+    assert "class MultiIndex:\n    def __init__(self, a0=None, names=None) -> None:\n        pass" in program.source
     assert concrete_replay(program, "f").status == "reproduced"
 
 
@@ -386,7 +386,7 @@ def test_name_used_as_type_and_namespace_is_a_class_with_static_methods():
     grounded = _ground(source, "f", "n // m")
     assert grounded.unsupported == ""
     program = render_program(grounded, InputSpec({"x": "str"}, {}, (), {"MultiIndex.from_tuples": "int"}))
-    assert "class MultiIndex:\n    @staticmethod\n    def from_tuples(a0) -> int:" in program.source
+    assert "class MultiIndex:\n    @staticmethod\n    def from_tuples(a0=None) -> int:" in program.source
     assert concrete_replay(program, "f").status == "reproduced"
 
 

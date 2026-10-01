@@ -10,7 +10,8 @@ from .context import context_module
 
 # Modules with ESBMC-Python 8.5 operational models (src/python-frontend/models); itertools, functools
 # and json failed in the 2026-09-29 probes, sys ("Cannot open file: sys.json") in the 2026-09-30 one.
-# numpy/torch models are partial, so their calls get stubs.
+# Models are partial (re.sub): the members ESBMC refuses are stubbed one by one, see oracle.py.
+# numpy/torch stay stubbed: the CPython replay runs isolated (-I -S) and could not import them.
 MODELED_MODULES = frozenset({
     "cmath", "collections", "dataclasses", "datetime", "decimal", "enum", "heapq", "math", "os",
     "queue", "random", "re", "string", "threading", "time", "typing", "unittest", "__future__",
@@ -31,6 +32,27 @@ KNOWN_MEMBERS = {
 }
 
 
+# Fixed models for members ESBMC refuses, as class bodies named ``{name}``. The driver runs one
+# thread, where a reentrant lock always succeeds and thread-local storage is a plain object.
+MEMBER_MODELS = {
+    "threading.RLock": (
+        "class {name}:",
+        "    def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:",
+        "        return True",
+        "",
+        "    def release(self) -> None:",
+        "        pass",
+        "",
+        "    def __enter__(self) -> bool:",
+        "        return True",
+        "",
+        "    def __exit__(self, a: object = None, b: object = None, c: object = None) -> None:",
+        "        pass",
+    ),
+    "threading.local": ("class {name}:", "    pass"),
+}
+
+
 @dataclass(frozen=True)
 class CallShape:
     positional: int
@@ -47,6 +69,10 @@ class ExternalPlan:
     # Classes the code also instantiates: they get an __init__ with the call's shape.
     constructors: dict[str, CallShape] = field(default_factory=dict)
     exceptions: set[str] = field(default_factory=set)
+    # Name in the program -> ``module.member`` with a fixed model in MEMBER_MODELS.
+    models: dict[str, str] = field(default_factory=dict)
+    # Stub key -> number of names its result is unpacked into (``a, b = lib.f()``).
+    unpacked: dict[str, int] = field(default_factory=dict)
     problem: str = ""
 
     @property
@@ -74,13 +100,18 @@ def prune_class(module: str, class_name: str, reachable: set[str], drop_init: bo
     methods = [n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
     removed = [m for m in methods if m.name != "__init__" and m.name not in reachable and not _dunder(m.name)
                and m.name not in properties]
-    init = [m for m in methods if m.name == "__init__"] if drop_init else []
+    # The shell builds the receiver's state, so the real construction (__new__ too) is not run.
+    init = [m for m in methods if m.name == "__init__" or (m.name == "__new__" and m.name not in reachable)
+            ] if drop_init else []
     props = [n for n in cls.body if (isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name in properties)
              or (isinstance(n, ast.Assign) and {t.id for t in n.targets if isinstance(t, ast.Name)} & properties)]
     lines = module.splitlines()
     for node in sorted([*removed, *init, *props], key=_first_line, reverse=True):
         del lines[_first_line(node) - 1:node.end_lineno]
-    transforms = (["receiver_init_replaced" if init else "receiver_init_added"] if drop_init else [])
+    transforms = (["receiver_init_replaced" if any(m.name == "__init__" for m in init) else "receiver_init_added"]
+                  if drop_init else [])
+    if any(m.name == "__new__" for m in init):
+        transforms.append("receiver_new_removed")
     if removed:
         transforms.append("unreachable_methods_removed:" + ",".join(sorted(m.name for m in removed)))
     if props:
@@ -106,13 +137,31 @@ def _top_level_imports(body: list[ast.stmt]) -> list[ast.stmt]:
     return found
 
 
-def _unmodeled_imports(tree: ast.Module) -> list[tuple[ast.stmt, list[str]]]:
+def _modeled(module: str, refused: frozenset[str]) -> bool:
+    return module in MODELED_MODULES and module not in refused
+
+
+def import_bindings(tree: ast.Module) -> tuple[dict[str, str], dict[str, str]]:
+    """Top-level imports: alias -> module (``import a.b as c`` gives c -> a.b, ``import a.b`` gives
+    a -> a), and name -> ``module.member`` for ``from module import member``."""
+    modules, members = {}, {}
+    for node in _top_level_imports(tree.body):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                modules[_bound(alias)] = alias.name if alias.asname else alias.name.split(".")[0]
+        elif node.module and not node.level:
+            for alias in node.names:
+                members[alias.asname or alias.name] = f"{node.module}.{alias.name}"
+    return modules, members
+
+
+def _unmodeled_imports(tree: ast.Module, refused: frozenset[str]) -> list[tuple[ast.stmt, list[str]]]:
     found = []
     for node in _top_level_imports(tree.body):
         if isinstance(node, ast.Import):
-            names = [_bound(a) for a in node.names if a.name.split(".")[0] not in MODELED_MODULES]
+            names = [_bound(a) for a in node.names if not _modeled(a.name.split(".")[0], refused)]
         else:
-            modeled = not node.level and (node.module or "").split(".")[0] in MODELED_MODULES
+            modeled = not node.level and _modeled((node.module or "").split(".")[0], refused)
             names = [] if modeled else [_bound(a) for a in node.names]
         if names:
             found.append((node, names))
@@ -203,6 +252,15 @@ def _plan(tree: ast.Module, external: set[str], imports: set[int]) -> ExternalPl
             plan.constants.add(name)
         if plan.problem:
             return plan
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Tuple)
+                and isinstance(node.value, ast.Call)):
+            func = node.value.func
+            key = (func.id if isinstance(func, ast.Name) and func.id in external
+                   else f"{func.value.id}.{func.attr}" if isinstance(func, ast.Attribute)
+                   and isinstance(func.value, ast.Name) and func.value.id in external else None)
+            if key is not None:
+                plan.unpacked[key] = len(node.targets[0].elts)
     # A class used as a namespace, value or constructor too renders as one class.
     for name in plan.classes & set(plan.calls):
         plan.constructors[name] = plan.calls.pop(name)
@@ -254,11 +312,53 @@ def _flatten_chains(module: str, external: set[str]) -> tuple[str, set[str]]:
     return "\n".join(lines) + "\n", new_names
 
 
-def stub_imports(module: str) -> tuple[str, ExternalPlan, list[str]]:
-    """Remove unmodeled imports the slice still needs and plan a stub for each use."""
+def _rename_refused_members(module: str, refused: frozenset[str]) -> tuple[str, dict[str, str]]:
+    """``re.sub(x)`` becomes ``_esbmc_re_sub(x)`` when ESBMC refused ``re.sub``; the import stays, so the
+    module's other members keep their model. Returns the module and new name -> ``module.member``."""
     tree = ast.parse(module)
-    imports = _unmodeled_imports(tree)
-    if not imports:
+    modules, members = import_bindings(tree)
+    taken = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)} | {
+        n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))}
+    # A from-imported name rebound anywhere else is not only the library member.
+    rebound = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name) and isinstance(n.ctx, (ast.Store, ast.Del))}
+    rebound |= {n.arg for n in ast.walk(tree) if isinstance(n, ast.arg)}
+    names: dict[str, str] = {}
+
+    def fresh(origin: str) -> str:
+        for name, known in names.items():
+            if known == origin:
+                return name
+        base = "_esbmc_" + origin.replace(".", "_")
+        name, suffix = base, 1
+        while name in taken:
+            name, suffix = f"{base}_{suffix}", suffix + 1
+        taken.add(name)
+        names[name] = origin
+        return name
+
+    edits = []
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id in modules
+                and f"{modules[node.value.id]}.{node.attr}" in refused and node.lineno == node.end_lineno):
+            edits.append((node.lineno, node.col_offset, node.end_col_offset,
+                          fresh(f"{modules[node.value.id]}.{node.attr}")))
+        elif (isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id in members
+              and members[node.id] in refused and node.id not in rebound):
+            edits.append((node.lineno, node.col_offset, node.end_col_offset, fresh(members[node.id])))
+    lines = module.splitlines()
+    for lineno, start, end, text in sorted(edits, reverse=True):
+        raw = lines[lineno - 1].encode("utf-8")  # ast offsets count UTF-8 bytes
+        lines[lineno - 1] = (raw[:start] + text.encode("utf-8") + raw[end:]).decode("utf-8")
+    return "\n".join(lines) + "\n", names
+
+
+def stub_imports(module: str, refused: frozenset[str] = frozenset()) -> tuple[str, ExternalPlan, list[str]]:
+    """Remove unmodeled imports the slice still needs and plan a stub for each use. ``refused`` names
+    modules and ``module.member`` entries ESBMC did not convert, which are stubbed too."""
+    module, members = _rename_refused_members(module, refused) if refused else (module, {})
+    tree = ast.parse(module)
+    imports = _unmodeled_imports(tree, refused)
+    if not imports and not members:
         return module, ExternalPlan(), []
     external = {name for _, names in imports for name in names}
     lines = module.splitlines()
@@ -270,11 +370,21 @@ def stub_imports(module: str) -> tuple[str, ExternalPlan, list[str]]:
         first = "" if not head and not tail.strip() else (head + b"pass" + tail).decode("utf-8")
         lines[node.lineno - 1:node.end_lineno] = [first] + [""] * (node.end_lineno - node.lineno)
     module = "\n".join(lines) + "\n"
-    transforms = ["stubbed_imports:" + ",".join(sorted(external))]
+    transforms = ["stubbed_imports:" + ",".join(sorted(external))] if external else []
+    if members:
+        transforms.append("esbmc_refused_members_stubbed:" + ",".join(sorted(members)))
     module, flattened = _flatten_chains(module, external)
     if flattened:
         transforms.append("external_chains_flattened:" + ",".join(sorted(flattened)))
-    plan = _plan(ast.parse(module), external | flattened, set())
+    plan = _plan(ast.parse(module), external | flattened | set(members), set())
+    for name, origin in members.items():
+        if origin in MEMBER_MODELS and (name in plan.calls or name in plan.classes):
+            plan.calls.pop(name, None)
+            plan.constructors.pop(name, None)
+            plan.classes.discard(name)
+            plan.models[name] = origin
+    if plan.models:
+        transforms.append("member_models:" + ",".join(sorted(plan.models.values())))
     return module, plan, transforms
 
 

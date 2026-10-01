@@ -137,3 +137,85 @@ def test_grounding_transforms_are_carried_into_the_program():
     assert "decorators_removed:for_app('php')" in program.transforms
     lines = program.source.splitlines()
     assert [lines[a - 1].strip() for a, _ in program.target_spans] == ["return command.split()[1]"]
+
+
+def test_set_and_frozenset_inputs_are_built_by_adding_members():
+    program = render_program(_ground("ratio", "total // count"),
+                             InputSpec({"total": "set[int]", "count": "frozenset[str]"}, {}, ()))
+    ast.parse(program.source)
+    assert "    total: set[int] = set()\n    if nondet_bool():\n        _v1: int = nondet_int()\n        total.add(_v1)\n" in program.source
+    assert "    count: frozenset[str] = frozenset(_v3)\n" in program.source
+
+
+def test_unmodeled_builtin_exceptions_get_classes_with_their_cpython_bases():
+    source = """def check(x: int):
+    try:
+        return 10 // x
+    except (UnicodeDecodeError, IOError, WindowsError, LookupError):
+        raise DeprecationWarning("x")
+"""
+    grounded = ground(BugHypothesis("x.py", "check", "10 // x"), source)
+    program = render_program(grounded, InputSpec({}, {}, ()))
+    ast.parse(program.source)
+    for line in ("class UnicodeError(ValueError):", "class UnicodeDecodeError(UnicodeError):", "IOError = OSError",
+                 "class WindowsError(Exception):", "class Warning(Exception):", "class DeprecationWarning(Warning):"):
+        assert line in program.source.splitlines()
+    # A stub for an ancestor of IndexError/KeyError would stop catching them.
+    assert "class LookupError" not in program.source
+    assert any(t.startswith("builtin_exceptions_stubbed:") for t in program.transforms)
+
+
+def test_replay_keeps_cpython_exceptions_instead_of_the_stubs():
+    source = """def check(raw: bytes) -> int:
+    try:
+        raw.decode("ascii")
+    except UnicodeDecodeError:
+        return 1
+    except ValueError:
+        return 0
+    return 2
+"""
+    program = render_program(ground(BugHypothesis("x.py", "check", 'raw.decode("ascii")'), source), InputSpec({}, {}, ()))
+    assert "class UnicodeDecodeError(UnicodeError):" in program.source.splitlines()
+    assert "UnicodeError(" not in program.replay_source
+    assert len(program.replay_source.splitlines()) == len(program.source.splitlines())
+    namespace = {}
+    exec(program.replay_source.split("def _esbmc_main")[0], namespace)
+    assert namespace["check"](b"\xff") == 1
+
+
+def test_stub_accepts_every_call_shape_the_code_uses():
+    source = "from shapes import Path\n\n\ndef f(n: int):\n    p = Path(1, 2)\n    q = Path(3)\n    return n // 1\n"
+    program = render_program(ground(BugHypothesis("x.py", "f", "n // 1"), source),
+                             InputSpec({}, {}, (), {"Path": "int"}))
+    assert "def Path(a0=None, a1=None) -> int:" in program.source
+    namespace = {"nondet_int": lambda: 0}
+    exec(program.replay_source.split("def _esbmc_main")[0], namespace)
+    assert namespace["f"](4) == 4
+
+
+def test_custom_new_leaves_with_the_constructor_the_shell_replaces():
+    source = """class Client:
+    def __new__(cls, **kwargs):
+        return super(Client, cls).__new__(cls)
+
+    def __init__(self, n):
+        self.n = n
+
+    def ratio(self):
+        return 10 // self.n
+"""
+    program = render_program(ground(BugHypothesis("x.py", "Client.ratio", "10 // self.n"), source),
+                             InputSpec({}, {"n": "int"}, ()))
+    assert "__new__" not in program.source
+    assert "receiver_new_removed" in program.transforms
+
+
+def test_new_stays_when_it_is_the_target():
+    source = """class Pool:
+    def __new__(cls, size):
+        return 10 // size
+"""
+    grounded = ground(BugHypothesis("x.py", "Pool.__new__", "10 // size"), source)
+    program = render_program(grounded, InputSpec({"size": "int"}, {}, ()))
+    assert "def __new__(cls, size):" in program.source

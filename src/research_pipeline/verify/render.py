@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import ast
+import builtins
 from dataclasses import dataclass, replace
 
-from .astutil import expression_nodes, find_function
+from .astutil import expression_nodes, find_function, undefined_globals
 from .compat import rewrite_compat
 from .grounding import Grounded
-from .slicing import END_PATH, KNOWN_MEMBERS, CallShape
+from .slicing import END_PATH, KNOWN_MEMBERS, MEMBER_MODELS, CallShape
 from .spec import (
     OBJECT,
     SCALARS,
@@ -46,8 +47,8 @@ def object_class(input_key: str) -> str:
 
 
 def _annotation(shape: TypeShape, obj_class: str | None = None) -> str:
-    if shape.kind == "list":
-        base = f"list[{_annotation(shape.elem)}]"
+    if shape.kind in ("list", "set", "frozenset"):
+        base = f"{shape.kind}[{_annotation(shape.elem)}]"
     elif shape.kind == "dict":
         base = f"dict[{shape.key}, {_annotation(shape.elem)}]"
     elif shape.kind == "tuple":
@@ -106,7 +107,12 @@ class _Declarer:
             return [f"{indent}{target}: {annotation} = {_value(shape, obj_class)}"]
         if shape.kind == "bytes":
             return [f'{indent}{target}: bytes = b"ab"', f"{indent}if nondet_bool():", f'{inner}{target} = b""']
-        lines = [f"{indent}{target}: {annotation} = {{}}" if shape.kind == "dict" else f"{indent}{target}: {annotation} = []"]
+        if shape.kind == "frozenset":
+            members = self.fresh()
+            return [*self._shape(members, replace(shape, kind="set"), indent, None),
+                    f"{indent}{target}: {annotation} = frozenset({members})"]
+        empty = {"dict": "{}", "set": "set()"}.get(shape.kind, "[]")
+        lines = [f"{indent}{target}: {annotation} = {empty}"]
         for _ in range(2):
             value = self.fresh()
             lines.append(f"{indent}if nondet_bool():")
@@ -115,7 +121,8 @@ class _Declarer:
                 lines += [f"{inner}{key}: {shape.key} = nondet_{shape.key}()",
                           *self._shape(value, shape.elem, inner, None), f"{inner}{target}[{key}] = {value}"]
             else:
-                lines += [*self._shape(value, shape.elem, inner, None), f"{inner}{target}.append({value})"]
+                add = "add" if shape.kind == "set" else "append"
+                lines += [*self._shape(value, shape.elem, inner, None), f"{inner}{target}.{add}({value})"]
         return lines
 
 
@@ -147,7 +154,8 @@ def _insert_shell(module: str, class_name: str, attributes: dict[str, str], decl
 
 
 def _stub_params(shape: CallShape) -> str:
-    return ", ".join([*(f"a{i}" for i in range(shape.positional)), *(f"{k}=None" for k in shape.keywords)])
+    # Calls of one stub may pass fewer positionals than the longest: every parameter is optional.
+    return ", ".join([*(f"a{i}=None" for i in range(shape.positional)), *(f"{k}=None" for k in shape.keywords)])
 
 
 def _stub_function(name: str, shape: CallShape, type_text: str, decl: _Declarer, indent: str = "",
@@ -190,6 +198,8 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
     lines: list[str] = []
     for name in sorted(plan.exceptions):
         lines += [f"class {name}(Exception):", "    pass", "", ""]
+    for name, origin in sorted(plan.models.items()):
+        lines += [line.format(name=name) for line in MEMBER_MODELS[origin]] + ["", ""]
     for name in sorted(plan.classes - set(plan.namespaces)):
         lines.append(f"class {name}:")
         if name in plan.constructors:
@@ -229,6 +239,61 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
                 else:
                     lines += ["        @staticmethod", *_stub_function(leaf, shape, types[key], decl, "        ")]
         lines += ["", ""]
+    return lines
+
+
+# src/python-frontend/models/exceptions.py, unchanged between ESBMC 8.5 and master (2026-10-01).
+ESBMC_EXCEPTIONS = frozenset({
+    "BaseException", "Exception", "KeyboardInterrupt", "ValueError", "TypeError", "AttributeError",
+    "IndexError", "KeyError", "ZeroDivisionError", "AssertionError", "NameError", "OSError",
+    "FileNotFoundError", "FileExistsError", "PermissionError", "StopIteration", "RuntimeError",
+    "NotImplementedError", "EOFError", "ImportError", "ModuleNotFoundError",
+})
+_EXCEPTION_SUFFIXES = ("Error", "Exception", "Warning")
+
+
+def _modeled_ancestor(cls: type) -> bool:
+    """Would a stub for ``cls`` miss handlers? It would when a modeled exception derives from it."""
+    return any(issubclass(getattr(builtins, name), cls) for name in ESBMC_EXCEPTIONS)
+
+
+def _exception_stubs(body: str) -> list[str]:
+    """Classes for exceptions the program names but ESBMC does not model: builtin ones keep
+    CPython's hierarchy, unknown ``*Error`` names (``WindowsError`` off Windows) derive from Exception."""
+    tree = ast.parse(body)
+    bound = {n.name for n in tree.body if isinstance(n, (ast.ClassDef, ast.FunctionDef))}
+    bound |= {t.id for n in tree.body if isinstance(n, (ast.Assign, ast.AnnAssign))
+              for t in (n.targets if isinstance(n, ast.Assign) else [n.target]) if isinstance(t, ast.Name)}
+    used = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)} - bound - ESBMC_EXCEPTIONS
+    undefined = undefined_globals(body, "program.py")
+    lines: list[str] = []
+    emitted: set[str] = set()
+
+    def emit(name: str, cls: type) -> bool:
+        if name in emitted or name in ESBMC_EXCEPTIONS:
+            return True
+        if cls.__name__ != name:
+            if cls.__name__ not in ESBMC_EXCEPTIONS:
+                return False
+            lines.extend([f"{name} = {cls.__name__}", "", ""])
+        else:
+            if _modeled_ancestor(cls):
+                return False
+            if len(cls.__bases__) != 1:
+                return False
+            base = cls.__bases__[0]
+            if not emit(base.__name__, base):
+                return False
+            lines.extend([f"class {name}({base.__name__}):", "    pass", "", ""])
+        emitted.add(name)
+        return True
+
+    for name in sorted(used):
+        cls = getattr(builtins, name, None)
+        if isinstance(cls, type) and issubclass(cls, BaseException):
+            emit(name, cls)
+        elif cls is None and name.endswith(_EXCEPTION_SUFFIXES) and name in undefined:
+            lines.extend([f"class {name}(Exception):", "    pass", "", ""])
     return lines
 
 
@@ -286,8 +351,16 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
         stubs = [f"class {OPAQUE}:", "    pass", "", "", *stubs]
         transforms.append("opaque_values")
     body = "\n".join(stubs) + module.rstrip("\n") + "\n\n\n" + "\n".join(driver) + f"\n\n\n{DRIVER}()\n"
+    # CPython has these exceptions: the replay gets blank lines instead, so line numbers still match.
+    exceptions = "\n".join(_exception_stubs(body))
+    replay = "\n" * exceptions.count("\n") + body
+    if exceptions:
+        body = exceptions + body
+        names = (line.removeprefix("class ").split("(")[0].split(" =")[0]
+                 for line in exceptions.splitlines() if line and not line.startswith(" "))
+        transforms.append("builtin_exceptions_stubbed:" + ",".join(names))
     if "Optional[" in body and not _binds_optional(body):
-        body = "from typing import Optional\n" + body
+        body, replay = "from typing import Optional\n" + body, "from typing import Optional\n" + replay
         transforms.append("typing_import_added")
 
     lines = body.splitlines()
@@ -305,4 +378,4 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
         nodes = [min(nodes, key=lambda node: abs(node.lineno - spans[0][0]))]
     rewritten_spans = tuple(sorted({(node.lineno, node.end_lineno) for node in nodes})) if nodes else spans
     return Program(rewritten, driver_start, rewritten_spans, (*transforms, *compat), target_range,
-                   replay_source=body, replay_target_spans=spans, replay_target_range=target_range)
+                   replay_source=replay, replay_target_spans=spans, replay_target_range=target_range)

@@ -11,13 +11,16 @@ Reply with exactly one JSON object and nothing else:
   available to the checker). Give the type the real library returns; use Optional[...] only when
   it can really return None.
 - Allowed types: int, float, bool, str, bytes, None, list[T], dict[str, T], dict[int, T]
-  (nested up to three levels), tuple[...] of int/float/bool/str, Optional[T] for any of those, and object. Choose the widest type
+  (nested up to three levels), tuple[...] of int/float/bool/str,
+  set[T] and frozenset[T] of int/float/bool/str, Optional[T] for any of those, and object. Choose the widest type
   the real callers can pass; use Optional[...] when the value can be None.
 - object: use it for a parameter or attribute when the code reads fields or calls methods on it
   (listed under "members"). Then give, under stubs, the type of every listed member with the key
   "<input>.<member>" (for a method, its return type), for example "self.cron.RANGES": "list[int]".
-- assumptions: boolean Python expressions over the parameters and self.<attribute>; the only
-  call allowed is len(). Add one only when the code or its callers guarantee it. Never add an
+- assumptions: boolean Python expressions over the parameters, self.<attribute> and the members
+  of inputs typed object (for example "start.method"); the only call allowed is len(), and
+  membership only in a tuple of constants ("x in ('GET', 'HEAD')"). Add one only when the code or
+  its callers guarantee it. Never add an
   assumption that rules out the trigger of the hypothesis: the checker must still be able to
   reach it. An empty list is a valid answer.
 - When a previous attempt is shown with an error, change only what the error points to.

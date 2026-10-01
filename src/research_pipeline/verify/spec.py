@@ -12,6 +12,7 @@ from .grounding import Grounded
 SCALARS = ("int", "float", "bool", "str")
 _LIST_NAMES = ("list", "List")
 _DICT_NAMES = ("dict", "Dict")
+_SET_NAMES = {"set": "set", "Set": "set", "frozenset": "frozenset", "FrozenSet": "frozenset"}
 _DICT_KEYS = ("str", "int")
 _MAX_DEPTH = 3
 # An object whose fields the grounding step found; each field is typed separately.
@@ -20,8 +21,8 @@ OBJECT = "object"
 
 @dataclass(frozen=True)
 class TypeShape:
-    kind: str  # a scalar name, "bytes", "list", "dict", "tuple", "object" or "none"
-    elem: TypeShape | None = None  # list element or dict value
+    kind: str  # a scalar name, "bytes", "list", "set", "frozenset", "dict", "tuple", "object" or "none"
+    elem: TypeShape | None = None  # list/set element or dict value
     key: str | None = None  # dict key
     optional: bool = False
     items: tuple[TypeShape, ...] = ()  # tuple members, scalars only
@@ -57,7 +58,9 @@ def _shape(node: ast.expr, depth: int = 0) -> TypeShape | None:
     inner = _optional_inner(node)
     if inner is not None:
         shape = _shape(inner, depth)
-        if shape is None or shape.kind == "none" or shape.optional:
+        if shape is not None and shape.kind == "none":
+            return shape
+        if shape is None or shape.optional:
             return None
         return TypeShape(shape.kind, shape.elem, shape.key, optional=True, items=shape.items)
     if isinstance(node, ast.BinOp):
@@ -80,6 +83,12 @@ def _shape(node: ast.expr, depth: int = 0) -> TypeShape | None:
     if node.value.id in _LIST_NAMES:
         elem = _shape(node.slice, depth + 1)
         return TypeShape("list", elem) if elem is not None and elem.kind != "none" else None
+    if node.value.id in _SET_NAMES:
+        # ESBMC 8.5 hashes scalar elements only (probed 2026-10-01).
+        elem = _shape(node.slice, depth + 1)
+        if elem is not None and elem.kind in SCALARS and not elem.optional:
+            return TypeShape(_SET_NAMES[node.value.id], elem)
+        return None
     if (node.value.id in _DICT_NAMES and isinstance(node.slice, ast.Tuple) and len(node.slice.elts) == 2
             and isinstance(node.slice.elts[0], ast.Name) and node.slice.elts[0].id in _DICT_KEYS):
         value = _shape(node.slice.elts[1], depth + 1)
@@ -146,11 +155,13 @@ def _object_keys(spec: InputSpec, grounded: Grounded) -> list[str]:
 _ALLOWED_NODES = (
     ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not, ast.USub, ast.Compare,
     ast.Eq, ast.NotEq, ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.Is, ast.IsNot, ast.BinOp, ast.Add,
-    ast.Sub, ast.Mult, ast.Constant, ast.Name, ast.Load, ast.Attribute, ast.Call,
+    ast.Sub, ast.Mult, ast.Constant, ast.Name, ast.Load, ast.Attribute, ast.Call, ast.In, ast.NotIn, ast.Tuple,
 )
 
 
-def _assumption_problem(text: str, params: set[str], attrs: set[str], receiver: bool) -> str:
+def _assumption_problem(text: str, params: set[str], attrs: set[str], receiver: bool,
+                        fields: frozenset[str] = frozenset()) -> str:
+    """``fields``: ``input.member`` fields of inputs typed ``object``, which the harness builds."""
     try:
         tree = ast.parse(text.strip(), mode="eval")
     except SyntaxError:
@@ -161,8 +172,11 @@ def _assumption_problem(text: str, params: set[str], attrs: set[str], receiver: 
         if isinstance(node, ast.Call) and not (
                 isinstance(node.func, ast.Name) and node.func.id == "len" and len(node.args) == 1):
             return f"assumption {text!r} may only call len()"
+        if isinstance(node, ast.Tuple) and not all(isinstance(e, ast.Constant) for e in node.elts):
+            return f"assumption {text!r} may only use a tuple of constants"
         if isinstance(node, ast.Attribute) and not (
-                isinstance(node.value, ast.Name) and node.value.id == "self" and node.attr in attrs):
+                (isinstance(node.value, ast.Name) and node.value.id == "self" and node.attr in attrs)
+                or ast.unparse(node) in fields):
             return f"assumption {text!r} reads an attribute that is not an input"
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)} - {"len"} - ({"self"} if receiver else set())
     unknown = names - params
@@ -198,8 +212,21 @@ def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
             problems.append(f"stub {key!r}: missing return type")
         elif shape is None:
             problems.append(f"stub {key!r}: unsupported type {text!r}")
+        elif key in grounded.externals.unpacked and (
+                shape.kind != "tuple" or shape.optional or len(shape.items) != grounded.externals.unpacked[key]):
+            count = grounded.externals.unpacked[key]
+            problems.append(f"stub {key!r}: the code unpacks its result into {count} names, "
+                            f"so it needs tuple[...] with {count} items, not {text!r}")
+    typed = {**input_types(spec, grounded), **spec.stubs}
+    for key, count in grounded.unpacked_inputs.items():
+        shape = parse_type(typed[key]) if typed.get(key) else None
+        if shape is not None and (shape.kind != "tuple" or shape.optional or len(shape.items) != count):
+            problems.append(f"input {key!r}: the code unpacks it into {count} names, "
+                            f"so it needs tuple[...] with {count} items, not {typed[key]!r}")
+    fields = frozenset(key for key in object_keys
+                       if grounded.object_members[key.rsplit(".", 1)[0]][key.rsplit(".", 1)[1]] is None)
     for assumption in spec.assumptions:
-        problem = _assumption_problem(assumption, set(params), set(attributes), grounded.has_receiver)
+        problem = _assumption_problem(assumption, set(params), set(attributes), grounded.has_receiver, fields)
         if problem:
             problems.append(problem)
     return problems

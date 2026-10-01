@@ -44,6 +44,8 @@ class Grounded:
     externals: ExternalPlan = field(default_factory=ExternalPlan)
     # Members read (None) or called (their call shape) on each input, keyed "param" or "self.attr".
     object_members: dict[str, dict[str, CallShape | None]] = field(default_factory=dict)
+    # Input ("param", "self.attr" or "input.member") -> number of names the target unpacks it into.
+    unpacked_inputs: dict[str, int] = field(default_factory=dict)
     # Non-empty when the entry point has a shape the driver cannot call.
     unsupported: str = ""
 
@@ -244,7 +246,35 @@ def _strip_decorators(source: str, function: ast.FunctionDef) -> tuple[str, tupl
     return "".join(lines), ("decorators_removed:" + ",".join(ast.unparse(d) for d in wrapping),)
 
 
-def ground(h: BugHypothesis, source: str) -> Grounded | GroundingFailure:
+def _unpacked_inputs(function: ast.FunctionDef, params: set[str], attrs: set[str]) -> dict[str, int]:
+    """``a, b = x`` where ``x`` is an input or a field of one: its type must be a tuple of that size.
+    Inputs the function rebinds, and inputs unpacked with two different sizes, get no constraint."""
+    nodes, pending = [], list(function.body)
+    while pending:
+        node = pending.pop()
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            nodes.append(node)
+            pending.extend(ast.iter_child_nodes(node))
+    rebound = {n.id for n in nodes if isinstance(n, ast.Name) and isinstance(n.ctx, (ast.Store, ast.Del))}
+    rebound |= {f"self.{n.attr}" for n in nodes if isinstance(n, ast.Attribute) and isinstance(n.ctx, ast.Store)
+                and isinstance(n.value, ast.Name) and n.value.id == "self"}
+    inputs = (params | {f"self.{a}" for a in attrs}) - rebound
+    found: dict[str, int] = {}
+    conflicting: set[str] = set()
+    for node in sorted((n for n in nodes if isinstance(n, ast.Assign)), key=lambda n: (n.lineno, n.col_offset)):
+        if (len(node.targets) == 1 and isinstance(node.targets[0], ast.Tuple)
+                and not any(isinstance(e, ast.Starred) for e in node.targets[0].elts)
+                and isinstance(node.value, (ast.Name, ast.Attribute))):
+            text = ast.unparse(node.value)
+            if text in inputs or text.rsplit(".", 1)[0] in inputs:
+                count = len(node.targets[0].elts)
+                if found.get(text, count) != count:
+                    conflicting.add(text)
+                found[text] = count
+    return {key: count for key, count in found.items() if key not in conflicting}
+
+
+def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset()) -> Grounded | GroundingFailure:
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
@@ -291,7 +321,7 @@ def ground(h: BugHypothesis, source: str) -> Grounded | GroundingFailure:
                                          drop_init=entry == "method", properties=replaced)
             transforms += pruned
             module = reslice(module, h.function)
-        module, plan, stubbed = stub_imports(module)
+        module, plan, stubbed = stub_imports(module, refused)
         transforms += stubbed
         problem = plan.problem
     return Grounded(
@@ -310,5 +340,6 @@ def ground(h: BugHypothesis, source: str) -> Grounded | GroundingFailure:
         externals=plan,
         object_members=_object_members(cls if receiver_attrs else None, function, [p.name for p in params],
                                        receiver_attrs),
+        unpacked_inputs=_unpacked_inputs(function, {p.name for p in params}, set(receiver_attrs)),
         unsupported=problem,
     )

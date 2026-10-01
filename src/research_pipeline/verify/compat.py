@@ -70,7 +70,74 @@ def _operand_kind(node: ast.AST, domain: dict[str, str]) -> str:
     return ""
 
 
-def _percent_pieces(fmt: str, operands: list[ast.expr], domain: dict[str, str]) -> list[str] | None:
+# Methods that, called on an exact str, return an exact str.
+_STR_METHODS = {"join", "format", "strip", "lstrip", "rstrip", "lower", "upper", "title", "replace",
+                "capitalize", "casefold", "zfill", "center", "ljust", "rjust"}
+_MATCHERS = {"match", "search", "fullmatch"}
+
+
+def _exact_str(node: ast.expr, assigned: dict[str, list[ast.expr]], re_names: set[str],
+               seen: frozenset[str] = frozenset()) -> bool:
+    """Is ``node`` an exact ``str`` (or None) at run time? Then ``"%s" % node`` is ``str(node)``: no tuple
+    unpacking and no ``__rmod__`` of a str subclass. ``assigned`` maps a local to every value bound to it."""
+    if isinstance(node, ast.Constant):
+        return isinstance(node.value, str) or node.value is None
+    if isinstance(node, ast.JoinedStr):
+        return True
+    if isinstance(node, ast.Name):
+        return node.id in assigned and node.id not in seen and all(
+            _exact_str(value, assigned, re_names, seen | {node.id}) for value in assigned[node.id])
+    if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)):
+        return False
+    func = node.func
+    if func.attr in _STR_METHODS:
+        return isinstance(func.value, ast.Constant) and isinstance(func.value.value, str)
+    # re.match(...).group(g) is str or None; group(g1, g2) and group(*gs) are tuples.
+    if func.attr == "group" and len(node.args) <= 1 and not node.keywords and not any(
+            isinstance(arg, ast.Starred) for arg in node.args):
+        return _is_match(func.value, assigned, re_names)
+    return False
+
+
+def _is_match(node: ast.expr, assigned: dict[str, list[ast.expr]], re_names: set[str]) -> bool:
+    """A real ``re`` match object, or None."""
+    if isinstance(node, ast.Name):
+        return node.id in assigned and all(_is_match(v, assigned, re_names) for v in assigned[node.id])
+    return (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr in _MATCHERS
+            and isinstance(node.func.value, ast.Name) and node.func.value.id in re_names)
+
+
+def _local_values(function: ast.AST) -> dict[str, list[ast.expr]]:
+    """Locals bound only by plain ``name = value`` statements, with every value bound to them."""
+    values: dict[str, list[ast.expr]] = {}
+    plain: set[int] = set()
+    for node in ast.walk(function):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    plain.add(id(target))
+                    values.setdefault(target.id, []).append(node.value)
+    excluded = {node.id for node in ast.walk(function) if isinstance(node, ast.Name)
+                and isinstance(node.ctx, (ast.Store, ast.Del)) and id(node) not in plain}
+    for node in ast.walk(function):
+        if isinstance(node, ast.arg):
+            excluded.add(node.arg)
+        elif isinstance(node, (ast.Global, ast.Nonlocal)):
+            excluded.update(node.names)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            excluded.update((alias.asname or alias.name).split(".")[0] for alias in node.names)
+        elif isinstance(node, (ast.ExceptHandler, ast.MatchAs, ast.MatchStar)) and node.name:
+            excluded.add(node.name)
+        elif isinstance(node, ast.MatchMapping) and node.rest:
+            excluded.add(node.rest)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node is not function:
+            excluded.add(node.name)
+    return {name: value for name, value in values.items() if name not in excluded}
+
+
+def _percent_pieces(fmt: str, operands: list[ast.expr], domain: dict[str, str],
+                    str_safe: bool = False) -> list[str] | None:
+    """``str_safe``: every operand is formatted by ``%s`` exactly as ``str(operand)`` whatever its type."""
     pieces, literal, used, index = [], "", 0, 0
     while index < len(fmt):
         char = fmt[index]
@@ -89,7 +156,7 @@ def _percent_pieces(fmt: str, operands: list[ast.expr], domain: dict[str, str]) 
             return None
         operand = operands[used]
         kind = _operand_kind(operand, domain)
-        if kind not in _SCALAR and not (fmt == "%s" and len(operands) == 1):
+        if kind not in _SCALAR and not (conversion == "s" and str_safe) and not (fmt == "%s" and len(operands) == 1):
             return None
         argument = ast.unparse(operand)
         if conversion == "d":
@@ -118,23 +185,43 @@ def _percent_format_edits(tree: ast.Module, parameter_types: dict[str, dict[str,
     if bindings & {"str", "int"}:
         return []
     domains = _parameter_domains(tree, parameter_types)
+    re_modules = {alias.asname or alias.name for node in tree.body if isinstance(node, ast.Import)
+                  for alias in node.names if alias.name == "re"}
+    scopes: dict[int, tuple[dict[str, list[ast.expr]], set[str]]] = {}
+    for function in ast.walk(tree):
+        if isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            scope = (_local_values(function), re_modules - _bound_names(function))
+            pending = list(function.body)
+            while pending:
+                child = pending.pop()
+                if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                    scopes[id(child)] = scope
+                    pending.extend(ast.iter_child_nodes(child))
     edits = []
     for node in ast.walk(tree):
         if not (isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mod)
                 and isinstance(node.left, ast.Constant) and isinstance(node.left.value, str)):
             continue
         domain = domains.get(node, {})
+        # A tuple literal's elements, and a single exact str, are each formatted as str().
+        # Tuple elements must be names or constants: evaluating them first, as % does, has no effect.
         if isinstance(node.right, ast.Tuple):
             operands = node.right.elts
+            str_safe = all(isinstance(e, (ast.Name, ast.Constant)) for e in operands)
         elif _operand_kind(node.right, domain) in _SCALAR:
-            operands = [node.right]
+            operands, str_safe = [node.right], False
+        elif _exact_str(node.right, *scopes.get(id(node), ({}, set()))):
+            operands, str_safe = [node.right], True
         else:
             continue
         if any(isinstance(operand, ast.Starred) for operand in operands):
             continue
-        pieces = _percent_pieces(node.left.value, operands, domain)
+        pieces = _percent_pieces(node.left.value, operands, domain, str_safe)
         if pieces:
-            replacement = "(" + " + ".join(pieces) + "\n" * (node.end_lineno - node.lineno) + ")"
+            # str() may return a str subclass with its own __add__; join copies characters, as % does.
+            untyped = any(_operand_kind(operand, domain) not in _SCALAR for operand in operands)
+            joined = '"".join([' + ", ".join(pieces) + "])" if untyped else " + ".join(pieces)
+            replacement = "(" + joined + "\n" * (node.end_lineno - node.lineno) + ")"
             edits.append((node.lineno, node.col_offset, node.end_lineno, node.end_col_offset, replacement))
     return [edit for edit in edits if not any(other is not edit and other[:2] <= edit[:2]
                                               and edit[2:4] <= other[2:4] for other in edits)]

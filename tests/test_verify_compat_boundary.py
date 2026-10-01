@@ -145,7 +145,20 @@ def test_legacy_program_with_rewrites_requires_original_for_replay():
 
 def test_format_does_not_dispatch_to_custom_addition():
     source = 'def f(x, y):\n    return "%s %s" % (x, y)\n'
-    assert rewrite_compat(source) == (source, [])
+    rewritten, _ = rewrite_compat(source)
+
+    class Hostile(str):
+        def __add__(self, other):
+            return "added"
+        __radd__ = __add__
+
+    class Value:
+        def __str__(self):
+            return Hostile("v")
+    original_ns, rewritten_ns = {}, {}
+    exec(source, original_ns)
+    exec(rewritten, rewritten_ns)
+    assert rewritten_ns['f'](Value(), Value()) == original_ns['f'](Value(), Value()) == "v v"
 
 
 def test_escaped_surrogate_in_format_remains_encodable_source():
@@ -170,3 +183,48 @@ def test_implicit_constructor_calls_do_not_inherit_driver_types():
     source = ('class C:\n    def __init__(self, x):\n        self.label = "%s" % x\n'
               'C((1, 2))\nC("text")\n')
     assert rewrite_compat(source, parameter_types={'C.__init__': {'x': 'str'}}) == (source, [])
+
+
+@pytest.mark.parametrize('body', [
+    'return "id=%s" % re.match("a(b)?", m).group(1)',
+    'return "^(%s)$" % "|".join(xs)',
+    'w = re.search("a", m).group()\n    return "v=%s" % w',
+    'v = "a, ".strip()\n    v = f"{n}"\n    return "[%s]" % v',
+    'return "<%s %s>" % (xs, m)',
+])
+def test_exact_strings_and_tuple_names_format_exactly_as_str(body):
+    source = f'import re\n\n\ndef f(m, xs, n):\n    {body}\n'
+    rewritten, transforms = rewrite_compat(source)
+    assert transforms == ['compat_percent_format:1']
+
+    class Rmod(str):
+        def __rmod__(self, other):
+            return ('rmod',)
+    for m, xs, n in [('ab', ['a', 'b'], 3), ('zz', [], (1, 2)), (Rmod('ab'), Rmod('x'), Rmod('y'))]:
+        original_ns, rewritten_ns = {}, {}
+        exec(source, original_ns)
+        exec(rewritten, rewritten_ns)
+        def outcome(fn):
+            try:
+                return fn(m, xs, n)
+            except Exception as exc:
+                return type(exc)
+        assert outcome(original_ns['f']) == outcome(rewritten_ns['f'])
+
+
+@pytest.mark.parametrize('body', [
+    'return "%s" % m.group(1)',
+    'return "%s" % re.match("a", m).group(1, 2)',
+    'return "%s" % re.match("a", m).group(*xs)',
+    'v = str(n)\n    return "%s" % v',
+    'return "%s" % abs(n)',
+    'return "%s" % n.format()',
+    'v = "a"\n    from os import sep as v\n    return "%s" % v',
+    'v = "a"\n    v, w = n\n    return "%s" % v',
+    'for v in xs:\n        return "%s" % v',
+    'return "%s" % m.lookup(1)',
+    'v = re.search("(?P<id>a)", m)\n    w = v.group("id") if v else None\n    return "v=%s" % w',
+])
+def test_values_not_proven_exact_str_are_left_alone(body):
+    source = f'import re\n\n\ndef f(m, xs, n):\n    {body}\n'
+    assert rewrite_compat(source) == (source, [])

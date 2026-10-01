@@ -46,6 +46,10 @@ T = TypeShape
         ("Optional[list[float]]", T("list", T("float"), optional=True)),
         ("list[Optional[str]]", T("list", T("str", optional=True))),
         ("None", T("none")),
+        ("Optional[None]", T("none")),
+        ("set[int]", T("set", T("int"))),
+        ("FrozenSet[str]", T("frozenset", T("str"))),
+        ("list[set[str]]", T("list", T("set", T("str")))),
     ],
 )
 def test_parse_type_accepts_the_supported_subset(text, shape):
@@ -53,7 +57,7 @@ def test_parse_type_accepts_the_supported_subset(text, shape):
 
 
 @pytest.mark.parametrize("text", ["dict[float, int]", "Foo", "Callable[[int], int]", "Optional[Foo]", "tuple[list[int]]",
-                                  "int |", "int | str", "list[list[list[list[int]]]]", "type", "Optional[Optional[int]]"])
+                                  "int |", "int | str", "set[list[int]]", "set[Optional[int]]", "list[list[list[list[int]]]]", "type", "Optional[Optional[int]]"])
 def test_parse_type_rejects_everything_else(text):
     assert parse_type(text) is None
 
@@ -119,3 +123,31 @@ def test_assumptions_may_only_use_inputs_and_len(assumption, ok):
     grounded = _grounded(params=[Param("a", "int")], attrs=["xs"], annotations={"xs": "list[int]"})
     problems = spec_problems(InputSpec({}, {}, (assumption,)), grounded)
     assert (problems == []) is ok
+
+
+def test_assumption_may_use_membership_in_constants_and_fields_of_object_inputs():
+    from research_pipeline.verify.grounding import ground
+    from research_pipeline.verify.render import render_program
+    source = """class Cron:
+    def __init__(self, cron, line):
+        self.cron = cron
+        self.line = line
+
+    def at(self, idx: int, start):
+        if start.method == "HEAD":
+            return self.cron.RANGES[idx]
+        return 0
+"""
+    grounded = ground(BugHypothesis("x.py", "Cron.at", "self.cron.RANGES[idx]"), source)
+    good = InputSpec({"start": "object"}, {"cron": "object"},
+                     ("len(self.cron.RANGES) > idx", "start.method in ('HEAD', 'GET')", "idx not in (1, 2)"),
+                     {"self.cron.RANGES": "list[int]", "start.method": "str"})
+    assert spec_problems(good, grounded) == []
+    program = render_program(grounded, good)
+    assert "    __ESBMC_assume(len(_receiver.cron.RANGES) > idx)" in program.source
+    assert "    __ESBMC_assume(start.method in ('HEAD', 'GET'))" in program.source
+    bad = InputSpec({"start": "object"}, {"cron": "object"},
+                    ("start.other == 1", "idx in (n, 2)", "start.method in [1]"),
+                    {"self.cron.RANGES": "list[int]", "start.method": "str"})
+    assert [p.split(" reads")[0].split(" may")[0].split(" uses")[0] for p in spec_problems(bad, grounded)] == [
+        "assumption 'start.other == 1'", "assumption 'idx in (n, 2)'", "assumption 'start.method in [1]'"]
