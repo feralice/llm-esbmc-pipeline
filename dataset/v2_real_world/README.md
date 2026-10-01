@@ -521,7 +521,7 @@ The full corpus above is preserved; eligibility is decided per item, never by de
   it) for every buggy/fixed pair, written by `scripts/audit_v2_buggy_fixed.py`.
 - `eligibility.json`: one decision per item (`eligible`, `needs_review`, `unsupported_by_esbmc`,
   `rejected`) with the reason, the categories kept and the expected symptom.
-- `../v2_real_world_eligible/`: optional convenience subset containing cases whose
+- `../historico/v2_real_world_eligible/`: optional convenience subset containing cases whose
   reference harnesses currently pass all ESBMC gates. This is **not** the ground-truth
   corpus and does not mean that the remaining real bugs are invalid. The full corpus
   remains the 120 items in this directory; `tests/test_v2_eligibility.py` only keeps

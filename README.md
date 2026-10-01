@@ -141,7 +141,7 @@ nos repositórios originais (commits, issues e pull requests). Repositórios com
 `dataset/v2_candidates/` guarda 199 bugs do BugsInPy validados pelos mantenedores e ainda não
 integrados ao dataset (ver o README da pasta).
 
-O mapa de todas as pastas de `dataset/` (inclusive `code_smell/`, `v2_real_world_eligible/` e
+O mapa de todas as pastas de `dataset/` (inclusive `code_smell/`, `historico/` e
 `disciplina_pgene601/`) está em [`dataset/README.md`](dataset/README.md).
 
 ---

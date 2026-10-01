@@ -21,7 +21,7 @@ from research_pipeline.v2_eligibility import (
 
 def main() -> int:
     try:
-        summary = build_eligible(ROOT / "dataset" / "v2_real_world", ROOT / "dataset" / "v2_real_world_eligible")
+        summary = build_eligible(ROOT / "dataset" / "v2_real_world", ROOT / "dataset" / "historico" / "v2_real_world_eligible")
     except EligibilityError as error:
         print(error, file=sys.stderr)
         return 1

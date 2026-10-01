@@ -1,32 +1,61 @@
 # Datasets
 
-Mapa de todas as pastas de `dataset/`, do que o pipeline atual usa ao que é só histórico ou está
-separado. Os nomes das pastas não mudam porque o código, os testes e os artefatos de rodadas
-anteriores apontam para eles.
+## Três palavras que confundem
 
-## Visão geral
+- **Bug validado:** o bug existe de verdade, porque o próprio projeto o corrigiu num commit oficial.
+  No BugsInPy há ainda um teste que falha antes da correção. Não depende do ESBMC.
+- **Harness:** o programa que o ESBMC executa para testar uma função. Hoje o pipeline gera o harness
+  sozinho a cada rodada, e ele não fica salvo no dataset. Os harnesses de `v2_real_world/bugs/`
+  foram escritos à mão em 09/09, antes do pipeline atual.
+- **V1 e V2:** a V1 usou 70 funções **sintéticas**, escritas para o experimento; a V2 usa **bugs
+  reais** de projetos Python. O pipeline atual é a V2.
 
-| Pasta | O que é | Quem usa | Situação |
-|---|---|---|---|
-| `v2_real_world/` | **dataset principal**: 116 bugs reais de 42 projetos Python | pipeline V2 (motor verify) | ativo |
-| `v2_real_world_eligible/` | subconjunto de 18 bugs cujo harness escrito à mão o ESBMC verifica | baseline manual, opcional | gerado por `scripts/build_v2_eligible.py`; não editar à mão |
-| `v2_candidates/` | 199 bugs do BugsInPy validados pelos mantenedores, ainda fora do dataset | teste das regras do harness em código novo | aguardando decisão de inclusão |
-| `labeled/` | dataset V1: 70 funções sintéticas, 1 bug ou nenhum por arquivo | benchmark V1 (baseline) | congelado |
-| `code_smell/` | 379 trechos com code smells rotulados por humanos (3 fontes externas) | nenhum fluxo ainda; smell não vai para o ESBMC | separado, aguardando decisão |
-| `disciplina_pgene601/` | corpus da disciplina PGENE601 (Python ciber-físico) | projeto da disciplina | em triagem (só a decisão de mineração) |
+## Mapa
 
-## `v2_real_world/`: qual pasta cada etapa lê
+| Pasta | O que é | Versão | Bug validado? | O pipeline usa hoje? |
+|---|---|---|---|---|
+| `v2_real_world/` | **dataset principal**: 116 bugs reais de 42 projetos | V2 | sim | **sim** |
+| `v2_candidates/` | 199 bugs do BugsInPy para aumentar o principal | V2, próximo passo | sim | ainda não |
+| `labeled/` | 70 funções sintéticas da V1 (bugs, funções limpas e code smells) | V1 | não se aplica (sintético) | só no benchmark V1 |
+| `code_smell/` | 379 trechos com code smells rotulados por humanos (3 fontes externas) | nenhuma | rótulo humano | não |
+| `disciplina_pgene601/` | corpus da disciplina PGENE601 (Python ciber-físico), em triagem | nenhuma | ainda não | não |
+| `historico/` | o que não se usa mais, guardado para reprodução | V2 antiga | sim | não |
 
-| Pasta ou arquivo | Conteúdo | Etapa |
+## `v2_real_world/`: o dataset principal
+
+| Pasta ou arquivo | Conteúdo | Quem lê |
 |---|---|---|
-| `detection/` | só a função com bug (116 arquivos) | a LLM lê para apontar o bug (104 entram na métrica) |
-| `detection_full/` | arquivo completo do projeto no commit com bug (99) | o recorte tira a função daqui para o ESBMC (`--verification-sources`) |
-| `fixed_full/` | arquivo completo no commit da correção (98) | controle: onde não há bug, toda confirmação seria falsa |
-| `ground_truths.json`, `manifest.json` | gabarito (função, expressão, categoria) e proveniência (projeto, commits) | só na avaliação |
-| `manifest_full.json` | manifesto usado para baixar `detection_full/` e `fixed_full/` | scripts `fetch_v2_*` |
-| `eligibility.json`, `esbmc_audit*.json` | portões de verificabilidade dos harnesses de referência | `build_v2_eligible.py` |
-| `bugs/` | harness de referência escrito à mão (dataset de 09/09) | **legado**: o motor novo não usa |
-| `patches/` | patch real da correção de cada bug | consulta e auditoria |
+| `detection/` | só a função com bug, um arquivo por bug (116) | a LLM, para apontar o bug |
+| `detection_full/` | o arquivo completo do projeto no commit com bug (99) | o pipeline, para montar o harness |
+| `fixed_full/` | o arquivo completo no commit da correção (98) | o controle: ali qualquer confirmação seria falsa |
+| `ground_truths.json` | gabarito: função, expressão e categoria de cada bug | só a avaliação |
+| `manifest.json`, `manifest_full.json` | de onde veio cada bug (projeto, commits) e como baixar os arquivos completos | a avaliação e os scripts `fetch_v2_*` |
+| `patches/` | o patch oficial da correção de cada bug | consulta e auditoria |
+| `bugs/` | harnesses escritos à mão em 09/09, com bug e corrigidos | o avaliador usa os nomes desses arquivos; o pipeline atual **não** usa os harnesses |
+| `eligibility.json`, `esbmc_audit*.json` | quais harnesses manuais o ESBMC conseguia rodar | `scripts/build_v2_eligible.py` |
+
+De onde vêm os 116 bugs: 85 do BugsInPy (correção oficial e teste que falha antes dela) e 31 de
+commits de correção no histórico dos próprios projetos. 17 não têm `detection_full/`, porque o trecho
+de `detection/` foi recortado à mão e não coincide com o arquivo original; nesses casos o pipeline
+usa o trecho, que não traz os imports.
 
 Os 12 bugs fora da métrica de detecção estão em `manifest.json`, campo
 `evaluation_policy.patch_context_items`: só se percebem vendo a correção (ex.: uma constante errada).
+
+## `v2_candidates/`: para aumentar o dataset
+
+Bugs do BugsInPy que passaram nos critérios de `v2_candidates/README.md`: correção comprovada por
+teste, um só arquivo e uma só função alterados. Nada aqui entra nas métricas até ser promovido para
+`v2_real_world/`.
+
+## `historico/`
+
+| Pasta | O que é | Como recriar |
+|---|---|---|
+| `v2_real_world_eligible/` | os 18 bugs cujo harness manual o ESBMC rodava (09/09) | `python3 scripts/build_v2_eligible.py` |
+
+## Regra para o que vem depois
+
+- Bug novo entra primeiro em `v2_candidates/` e só passa para `v2_real_world/` com `detection/`,
+  `detection_full/`, `fixed_full/`, patch e entrada no gabarito.
+- Nenhum harness escrito à mão: o pipeline gera o harness (níveis 1 e 2) a cada rodada.

@@ -5,7 +5,7 @@ Inputs, all under dataset/v2_real_world/:
   eligibility.json                   human decision per item
   esbmc_audit.json                   ESBMC verdicts from scripts/audit_v2_buggy_fixed.py
   patches/<id>.diff                  real fix hunks (provenance evidence)
-Output: dataset/v2_real_world_eligible/ with copies of items whose manual
+Output: dataset/historico/v2_real_world_eligible/ with copies of items whose manual
 reference harnesses pass every baseline gate. The full V2 corpus is the
 dataset/v2_real_world directory and is not gated by this module.
 """

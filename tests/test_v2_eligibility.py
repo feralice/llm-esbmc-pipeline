@@ -14,7 +14,7 @@ from research_pipeline.v2_eligibility import (
 
 ROOT = Path(__file__).resolve().parent.parent
 DATASET = ROOT / "dataset" / "v2_real_world"
-ELIGIBLE = ROOT / "dataset" / "v2_real_world_eligible"
+ELIGIBLE = ROOT / "dataset" / "historico" / "v2_real_world_eligible"
 
 DIFF = """# source: https://github.com/example/proj/commit/abc
 diff --git a/proj/mod.py b/proj/mod.py
