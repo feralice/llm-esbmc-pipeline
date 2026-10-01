@@ -24,7 +24,24 @@ flowchart TD
     G --> H[Reexecução do mesmo programa no CPython]
     H --> I[Veredito por hipótese]
     G -- erro de conversão --> E
+    G -- sem veredito --> J[Agente Claude Code + plugin ESBMC monta o harness]
+    J --> K[ESBMC + reexecução refeitos pelo pipeline]
+    K --> I
+    K -- sem veredito --> L[Fica só o resultado da LLM, com o motivo]
 ```
+
+A verificação tem três níveis, e cada hipótese registra o nível que a decidiu (`levels` no
+relatório):
+
+1. **Harness determinístico** (`esbmc_engine`): o pipeline monta o programa e a LLM só dá os tipos.
+2. **Agente** (`esbmc_agent`, opcional com `--agent-fallback`): quando o nível 1 não chega a um
+   veredito do ESBMC, um agente escreve o harness: o Claude Code com o plugin ESBMC, ou qualquer LLM
+   por API num ciclo em que o pipeline roda o ESBMC e devolve o erro (`--agent-backend`). O pipeline
+   refaz o ESBMC e a reexecução. Se o agente simplificou a função (`--allow-simplify` no script), só
+   conta como `CONFIRMED_SIMPLIFIED` quando os valores achados pelo ESBMC quebram a função original.
+3. **Só a LLM** (`llm_only`): nenhum dos dois chegou a um veredito; o motivo é classificado em
+   contexto da função, recurso de Python que o ESBMC não tem, falha interna do ESBMC, tempo,
+   tipos inválidos ou função não encontrada.
 
 Regras que definem o método (detalhes em [`docs/v2/desenho_motor_verify.md`](docs/v2/desenho_motor_verify.md)):
 
@@ -63,37 +80,26 @@ Regras que definem o método (detalhes em [`docs/v2/desenho_motor_verify.md`](do
 
 ---
 
-## Dificuldades principais (30/09/2026)
+## Situação em 01/10/2026
 
-O gargalo atual é **fazer o código Python real ser aceito pelo ESBMC**. Rodada de 30/09, com a
-localização do bug dada (para medir só a verificação) e o harness revisado:
+Mesmas 116 hipóteses distintas de 30/09 (o relatório lista 125, com 9 repetidas), localização do bug
+dada, mesmas especificações da LLM, ESBMC 8.5 release:
 
-```
-125 hipóteses
- ├─ 65 param antes de chegar ao ESBMC
- │    ├─ 56 o harness não consegue montar o programa
- │    ├─  7 a LLM não dá tipos válidos
- │    └─  2 falha de rede
- └─ 60 chegam ao ESBMC
-      ├─ 39 o ESBMC recusa o programa
-      ├─  9 o ESBMC não termina (tempo ou inconclusivo)
-      └─ 12 o ESBMC dá uma resposta: 3 confirmados, 9 não confirmados
-```
+| | 30/09 | 01/10 |
+|---|---|---|
+| veredito do ESBMC pelo harness determinístico | 11 | 16 |
+| veredito do ESBMC pelo agente (casos em que o nível 1 parou) | | 22 |
+| confirmados | 2 | 9 (3 + 6) |
+| confirmações falsas nas versões corrigidas (nível 1) | 0 | 0 |
 
-- **Harness (56):** o recorte esquece nomes que a função usa (25); bibliotecas sem substituto ou com
-  substituto errado (15); tipos de entrada que o harness não sabe gerar (9); `async`, atributos
-  herdados e outros (7).
-- **ESBMC-Python 8.5 (39 recusas):** texto com `%` e variável, atributos resolvidos na execução
-  (`type(x).__name__`, `x.__dict__`), tipos que ele não deduz, `a, b = f()`, `*args`/`**kwargs`,
-  módulos da biblioteca padrão sem modelo (`sys`, `threading.RLock`, `OrderedDict`).
-- **Quando responde, o ESBMC-Python pode errar:** falso positivo em `while defs and defs[-1] >= d:
-  defs.pop()` e falso negativo em `None + 1`. Por isso a confirmação exige a execução real.
-- **Cada limite contornado revela o próximo:** a revisão do harness em 30/09 fez mais casos chegarem
-  ao ESBMC (sem LLM: 77 para 84 de 99), mas o número de vereditos ficou igual (15) e as confirmações
-  ficaram em 3.
-- **O que já está sólido:** a LLM acha a função com bug em 97% dos casos, e a confirmação com
-  execução real não teve nenhuma confirmação falsa nas versões corrigidas (o pipeline antigo, com a
-  LLM escrevendo o harness, "confirmava" 47 bugs dos quais só 2 eram reais).
+Os 78 que ficam só com a LLM: 31 por contexto da função (nomes de outros arquivos, stubs, tipos de
+entrada), 24 por recurso de Python que o ESBMC-Python não tem no próprio corpo da função, 8 por
+falha interna do ESBMC, 7 por tempo, 4 porque o agente alterou a função, 4 por tipos inválidos ou
+função não encontrada. Os do corpo da função só caem corrigindo o ESBMC; reescrever a função
+deixaria de verificar o código real.
+
+Ainda falta rodar o agente nas versões corrigidas (controle de confirmação falsa do nível 2).
+Mudanças e medições: [`docs/projeto/harness_oraculo_esbmc_2026-10-01.md`](docs/projeto/harness_oraculo_esbmc_2026-10-01.md).
 
 Detalhes e caminhos possíveis: [`docs/projeto/entendendo_o_pipeline.md`](docs/projeto/entendendo_o_pipeline.md)
 (seções 9 e 10) e [`docs/projeto/duvidas_orientacao_2026-09-30.md`](docs/projeto/duvidas_orientacao_2026-09-30.md).
@@ -259,11 +265,17 @@ repita o comando com `--resume`. Opções da V2:
 | `--verification-sources DIR` | verifica no arquivo de mesmo nome em `DIR` (detecção segue no recorte) |
 | `--verification-sources-strict` | pula o caso sem arquivo em `DIR` em vez de usar o recorte |
 | `--spec-strategy resample` | amostras independentes com o mesmo orçamento, linha de base do reparo |
+| `--agent-fallback` | nível 2: o agente (Claude Code + plugin ESBMC) tenta o que o harness determinístico não levou a um veredito; usa a assinatura do Claude Code |
+| `--agent-backend` | `claude` (Claude Code + plugin, padrão) ou `openai`/`google`/`ollama`/`claude_cli`: o mesmo ciclo do agente por API, para quem não tem Claude Code (`ollama` roda modelo local) |
+| `--agent-model`, `--agent-timeout` | modelo e tempo por sessão do agente (padrão: o do backend, 900 s) |
 
 Scripts da V2:
 
 | Script | Uso |
 |---|---|
+| `scripts/v2_replay_specs.py` | refaz uma rodada com as especificações que a LLM já deu, sem custo de API (mede mudanças no harness) |
+| `scripts/v2_agent_reverify.py` | reavalia os harnesses que o agente já escreveu, sem chamar o agente |
+| `scripts/v2_levels.py` | junta relatório e resultados do agente: nível que decidiu cada hipótese e motivo dos que ficam só com a LLM |
 | `scripts/v2_verify_smoke.py` | funil sem LLM sobre o gabarito (e com ESBMC real usando `--esbmc`) |
 | `scripts/v2_reverdict.py` | recalcula vereditos de um relatório sem chamar LLM nem ESBMC |
 | `scripts/v2_agent_arm.py` | braço experimental: Claude Code + plugin ESBMC nos casos que o motor não roda |
