@@ -1,0 +1,7 @@
+class SparkSubmitTask:
+    def _dict_arg(self, name, value):
+        command = []
+        if value and isinstance(value, dict):
+            for prop, value in value.items():
+                command += [name, '"{0}={1}"'.format(prop, value)]
+        return command

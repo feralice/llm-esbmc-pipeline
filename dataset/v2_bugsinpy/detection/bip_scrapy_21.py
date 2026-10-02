@@ -1,0 +1,3 @@
+class RobotsTxtMiddleware:
+    def _robots_error(self, failure, netloc):
+        self._parsers.pop(netloc).callback(None)

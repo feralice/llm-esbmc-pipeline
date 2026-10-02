@@ -1,0 +1,2 @@
+def match(command, settings):
+    return 'EDITOR' in os.environ and _search(command.stderr)

@@ -1,0 +1,11 @@
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -724,7 +724,7 @@
+ 
+     def set_label(self, label, **kw):
+         """Label the long axis of the colorbar."""
+-        self._label = str(label)
++        self._label = label
+         self._labelkw = kw
+         self._set_label()
+ 

@@ -1,0 +1,11 @@
+--- a/lib/matplotlib/axis.py
++++ b/lib/matplotlib/axis.py
+@@ -1906,7 +1906,7 @@
+                 setter(self, min(vmin, vmax, oldmin), max(vmin, vmax, oldmax),
+                        ignore=True)
+             else:
+-                setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),
++                setter(self, max(vmin, vmax, oldmin), min(vmin, vmax, oldmax),
+                        ignore=True)
+         self.stale = True
+ 

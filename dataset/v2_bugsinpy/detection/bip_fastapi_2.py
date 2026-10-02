@@ -1,0 +1,6 @@
+class APIRouter:
+    def add_api_websocket_route(
+        self, path: str, endpoint: Callable, name: str = None
+    ) -> None:
+        route = APIWebSocketRoute(path, endpoint=endpoint, name=name)
+        self.routes.append(route)

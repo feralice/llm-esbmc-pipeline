@@ -1,0 +1,3 @@
+class _WorkerSchedulerFactory:
+    def create_local_scheduler(self):
+        return scheduler.CentralPlannerScheduler(prune_on_get_work=True)

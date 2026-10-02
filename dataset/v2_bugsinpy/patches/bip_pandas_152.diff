@@ -1,0 +1,12 @@
+--- a/pandas/core/series.py
++++ b/pandas/core/series.py
+@@ -2730,7 +2730,8 @@
+         from pandas.core.reshape.concat import concat
+ 
+         if isinstance(to_append, (list, tuple)):
+-            to_concat = [self] + to_append
++            to_concat = [self]
++            to_concat.extend(to_append)
+         else:
+             to_concat = [self, to_append]
+         return concat(

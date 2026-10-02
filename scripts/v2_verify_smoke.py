@@ -42,13 +42,13 @@ class NaiveSpec:
         return SynthResult(harness=self.reply, raw_response="", model=self.model, telemetry={})
 
 
-def _cases():
-    items = json.loads((DATASET / "ground_truths.json").read_text(encoding="utf-8"))["items"]
+def _cases(dataset: Path = DATASET):
+    items = json.loads((dataset / "ground_truths.json").read_text(encoding="utf-8"))["items"]
     for item in items:
-        full = DATASET / "detection_full" / item["file"]
-        source_path = full if full.exists() else DATASET / "detection" / item["file"]
+        full = dataset / "detection_full" / item["file"]
+        source_path = full if full.exists() else dataset / "detection" / item["file"]
         function = str(item["function"]).split("/")[0].strip()
-        yield item["id"], source_path, BugHypothesis(str(DATASET / "detection" / item["file"]), function,
+        yield item["id"], source_path, BugHypothesis(str(dataset / "detection" / item["file"]), function,
                                                      str(item.get("expression", "")),
                                                      category=",".join(item.get("categories", [])))
 
@@ -56,6 +56,7 @@ def _cases():
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--esbmc", default="", help="ESBMC binary; enables stage 1")
+    parser.add_argument("--dataset", default=str(DATASET), help="dataset folder (default: v2_real_world)")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--out", default="outputs/v2_verify_smoke")
@@ -63,7 +64,7 @@ def main() -> int:
     out = ROOT / args.out
     out.mkdir(parents=True, exist_ok=True)
     rows = []
-    for case_id, source_path, h in _cases():
+    for case_id, source_path, h in _cases(Path(args.dataset)):
         source = source_path.read_text(encoding="utf-8", errors="replace")
         grounded = ground(h, source)
         row = {"id": case_id, "source": source_path.parent.name, "function": h.function}

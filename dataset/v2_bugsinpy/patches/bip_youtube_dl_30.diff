@@ -1,0 +1,12 @@
+--- a/youtube_dl/YoutubeDL.py
++++ b/youtube_dl/YoutubeDL.py
+@@ -1005,6 +1005,9 @@
+                 format_spec = selector.selector
+ 
+                 def selector_function(formats):
++                    formats = list(formats)
++                    if not formats:
++                        return
+                     if format_spec == 'all':
+                         for f in formats:
+                             yield f

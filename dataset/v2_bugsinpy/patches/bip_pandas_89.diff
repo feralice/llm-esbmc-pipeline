@@ -1,0 +1,11 @@
+--- a/pandas/core/reshape/reshape.py
++++ b/pandas/core/reshape/reshape.py
+@@ -358,7 +358,7 @@
+             result = data
+             for i in range(len(clocs)):
+                 val = clocs[i]
+-                result = result.unstack(val)
++                result = result.unstack(val, fill_value=fill_value)
+                 clocs = [v if i > v else v - 1 for v in clocs]
+ 
+             return result

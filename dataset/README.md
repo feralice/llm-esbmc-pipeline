@@ -15,7 +15,8 @@
 | Pasta | O que é | Versão | Bug validado? | O pipeline usa hoje? |
 |---|---|---|---|---|
 | `v2_real_world/` | **dataset principal**: 116 bugs reais de 42 projetos | V2 | sim | **sim** |
-| `v2_candidates/` | 199 bugs do BugsInPy para aumentar o principal | V2, próximo passo | sim | ainda não |
+| `v2_bugsinpy/` | **segunda coorte**: 176 bugs reais do BugsInPy, no mesmo formato do principal | V2 | sim | **sim** |
+| `v2_candidates/` | a origem do `v2_bugsinpy/`: os 199 bugs coletados, com os arquivos baixados e os rótulos | V2 | sim | não (o pipeline lê o `v2_bugsinpy/`) |
 | `labeled/` | 70 funções sintéticas da V1 (bugs, funções limpas e code smells) | V1 | não se aplica (sintético) | só no benchmark V1 |
 | `code_smell/` | 379 trechos com code smells rotulados por humanos (3 fontes externas) | nenhuma | rótulo humano | não |
 | `disciplina_pgene601/` | corpus da disciplina PGENE601 (Python ciber-físico), em triagem | nenhuma | ainda não | não |
@@ -42,11 +43,22 @@ usa o trecho, que não traz os imports.
 Os 12 bugs fora da métrica de detecção estão em `manifest.json`, campo
 `evaluation_policy.patch_context_items`: só se percebem vendo a correção (ex.: uma constante errada).
 
-## `v2_candidates/`: para aumentar o dataset
+## `v2_bugsinpy/`: a segunda coorte
 
-Bugs do BugsInPy que passaram nos critérios de `v2_candidates/README.md`: correção comprovada por
-teste, um só arquivo e uma só função alterados. Nada aqui entra nas métricas até ser promovido para
-`v2_real_world/`.
+Gerada por `python3 scripts/build_v2_bugsinpy.py` a partir de `v2_candidates/`: os bugs do BugsInPy com
+correção comprovada por teste, um só arquivo e uma só função alterados (critérios em
+`v2_candidates/README.md`). Mesmas pastas do principal (`detection/`, `detection_full/`, `fixed_full/`,
+`patches/`, `manifest.json`, `ground_truths.json`), com duas diferenças:
+
+- o recorte de `detection/` sai automaticamente do arquivo real, então sempre coincide com
+  `detection_full/` (no principal, 17 recortes feitos à mão não coincidem);
+- a expressão suspeita é a linha que a correção oficial mudou, e a categoria vem de uma heurística
+  sobre o código acrescentado (138 de 176 sem categoria, todas pendentes de revisão). No V2 a categoria
+  é só metadado: a detecção é medida por localização.
+
+Dos 199 coletados, 23 ficaram de fora porque a expressão tirada do patch não foi encontrada dentro
+da função com bug (`grounded: false` em `v2_candidates/labels.json`). Para rodar o pipeline nesta coorte, troque `v2_real_world` por `v2_bugsinpy`
+em `--input`, `--ground-truth` e `--verification-sources`.
 
 ## `historico/`
 
@@ -56,6 +68,6 @@ teste, um só arquivo e uma só função alterados. Nada aqui entra nas métrica
 
 ## Regra para o que vem depois
 
-- Bug novo entra primeiro em `v2_candidates/` e só passa para `v2_real_world/` com `detection/`,
-  `detection_full/`, `fixed_full/`, patch e entrada no gabarito.
+- Bug novo entra primeiro em `v2_candidates/` (coleta e rótulos) e chega ao pipeline pelo
+  `scripts/build_v2_bugsinpy.py`, que gera a coorte no formato completo.
 - Nenhum harness escrito à mão: o pipeline gera o harness (níveis 1 e 2) a cada rodada.

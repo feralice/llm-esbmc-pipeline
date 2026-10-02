@@ -1,0 +1,11 @@
+--- a/pandas/core/reshape/merge.py
++++ b/pandas/core/reshape/merge.py
+@@ -1027,7 +1027,7 @@
+                     )
+                 ]
+             else:
+-                left_keys = [self.left.index.values]
++                left_keys = [self.left.index._values]
+ 
+         if left_drop:
+             self.left = self.left._drop_labels_or_levels(left_drop)

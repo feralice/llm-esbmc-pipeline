@@ -1,0 +1,14 @@
+--- a/pandas/core/indexes/base.py
++++ b/pandas/core/indexes/base.py
+@@ -3528,7 +3528,10 @@
+ 
+             multi_join_idx = multi_join_idx.remove_unused_levels()
+ 
+-            return multi_join_idx, lidx, ridx
++            if return_indexers:
++                return multi_join_idx, lidx, ridx
++            else:
++                return multi_join_idx
+ 
+         jl = list(overlap)[0]
+ 

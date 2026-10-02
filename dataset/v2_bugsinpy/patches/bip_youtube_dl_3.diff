@@ -1,0 +1,11 @@
+--- a/youtube_dl/utils.py
++++ b/youtube_dl/utils.py
+@@ -596,7 +596,7 @@
+     assert type(s) == compat_str
+ 
+     return re.sub(
+-        r'&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)
++        r'&([^&;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)
+ 
+ 
+ def get_subprocess_encoding():

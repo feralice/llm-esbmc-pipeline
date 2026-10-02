@@ -1,0 +1,3 @@
+@git_support
+def get_new_command(command):
+    return replace_argument(command.script, 'push', 'push --force')

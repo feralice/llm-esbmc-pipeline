@@ -1,0 +1,11 @@
+--- a/lib/ansible/module_utils/common/validation.py
++++ b/lib/ansible/module_utils/common/validation.py
+@@ -189,7 +189,7 @@
+             missing.append(k)
+ 
+     if missing:
+-        msg = "missing required arguments: %s" % ", ".join(missing)
++        msg = "missing required arguments: %s" % ", ".join(sorted(missing))
+         raise TypeError(to_native(msg))
+ 
+     return missing
