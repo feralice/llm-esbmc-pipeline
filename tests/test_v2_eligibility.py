@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from research_pipeline.dataset_layout import buggy_function_dir, manual_harness_dir
 from research_pipeline.evaluator import load_ground_truth_cases
 from research_pipeline.llm.categories import FORMAL_CATEGORIES
 from research_pipeline.v2_eligibility import (
@@ -13,8 +14,8 @@ from research_pipeline.v2_eligibility import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-DATASET = ROOT / "dataset" / "v2_real_world"
-ELIGIBLE = ROOT / "dataset" / "historico" / "v2_real_world_eligible"
+DATASET = ROOT / "dataset" / "bugs_reais"
+ELIGIBLE = ROOT / "dataset" / "harness_bugs_reais" / "elegiveis_0909"
 
 DIFF = """# source: https://github.com/example/proj/commit/abc
 diff --git a/proj/mod.py b/proj/mod.py
@@ -176,15 +177,16 @@ def test_committed_eligible_subset_matches_a_fresh_build(tmp_path) -> None:
     for name in ("ground_truths.json", "manifest.json"):
         assert json.loads((ELIGIBLE / name).read_text(encoding="utf-8")) == json.loads(
             (fresh / name).read_text(encoding="utf-8")), name
-    for folder in ("bugs", "detection"):
+    for folder, source in (("harness_manual_0909", manual_harness_dir(DATASET)),
+                           ("funcao_com_bug", buggy_function_dir(DATASET))):
         comparison = filecmp.dircmp(ELIGIBLE / folder, fresh / folder)
         assert not (comparison.left_only or comparison.right_only or comparison.diff_files), folder
         for name in comparison.common_files:
-            assert (ELIGIBLE / folder / name).read_bytes() == (DATASET / folder / name).read_bytes()
+            assert (ELIGIBLE / folder / name).read_bytes() == (source / name).read_bytes()
 
 
 def test_every_fixed_harness_pairs_with_a_dataset_item() -> None:
     ids = {item["id"] for item in json.loads((DATASET / "ground_truths.json").read_text())["items"]}
-    fixed = {path.name.removesuffix("_fixed.py") for path in (DATASET / "bugs").glob("*_fixed.py")}
+    fixed = {path.name.removesuffix("_fixed.py") for path in manual_harness_dir(DATASET).glob("*_fixed.py")}
     assert fixed <= ids
 

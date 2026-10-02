@@ -35,7 +35,7 @@ def test_smell_policy_counts_parameters_and_boolean_operators(tmp_path: Path) ->
 
 
 def test_all_v1_smell_controls_meet_their_versioned_policy() -> None:
-    root = Path("dataset/labeled/ok/smells")
+    root = Path("dataset/v1_sintetico/ok/smells")
     for category_dir in sorted(root.iterdir()):
         for source in sorted(category_dir.glob("*.py")):
             unit = preprocess_file(source)[0]

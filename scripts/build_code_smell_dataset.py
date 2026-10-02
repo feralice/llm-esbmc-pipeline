@@ -1,6 +1,6 @@
 """Build dataset/code_smell/ from externally validated Python code smell sources.
 
-Sources, kept apart from the V1 controls (dataset/labeled) and from V2:
+Sources, kept apart from the V1 controls (dataset/v1_sintetico) and from V2:
 
 * PySmell (Chen et al.): the "manual inspection" CSVs carry a human label per
   (project, tag, file, line). The source is not shipped with PySmell, so each

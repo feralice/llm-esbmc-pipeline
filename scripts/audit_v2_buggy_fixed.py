@@ -3,12 +3,12 @@
 Usage:
   python scripts/audit_v2_buggy_fixed.py [--ids av_real_01 ...] [--jobs 8]
 
-Buggy harness: dataset/v2_real_world/bugs/<id>.py
-Fixed harness: dataset/v2_real_world/bugs/<id>_fixed.py (same property, patched code)
+Buggy harness: dataset/harness_bugs_reais/harness_manual_0909/<id>.py
+Fixed harness: dataset/harness_bugs_reais/harness_manual_0909/<id>_fixed.py (same property, patched code)
 A fixed harness may start with `# esbmc: <flags>` (e.g. `--unwind 12` for a
 loop the patch keeps); the same flags are then used for BOTH runs so the
 pair stays comparable.
-Writes dataset/v2_real_world/esbmc_audit.json.
+Writes dataset/bugs_reais/esbmc_audit.json.
 """
 from __future__ import annotations
 
@@ -16,11 +16,16 @@ import argparse
 import json
 import re
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATASET = ROOT / "dataset" / "v2_real_world"
+sys.path.insert(0, str(ROOT / "src"))
+
+from research_pipeline.dataset_layout import manual_harness_dir  # noqa: E402
+
+DATASET = ROOT / "dataset" / "bugs_reais"
 OUTPUT = DATASET / "esbmc_audit.json"
 BASE_FLAGS = ["--z3", "--unwind", "6"]
 DEFAULT_TIMEOUT = "20s"
@@ -107,8 +112,8 @@ def run_one(path: Path, flags: list[str], esbmc: str = "esbmc") -> dict:
 
 
 def audit_item(item: dict, esbmc: str = "esbmc") -> dict:
-    buggy = DATASET / "bugs" / item["harness_file"]
-    fixed = DATASET / "bugs" / item["harness_file"].replace(".py", "_fixed.py")
+    buggy = manual_harness_dir(DATASET) / item["harness_file"]
+    fixed = manual_harness_dir(DATASET) / item["harness_file"].replace(".py", "_fixed.py")
     flags = _flags_for(item, fixed)
     return {
         "id": item["id"],

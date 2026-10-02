@@ -2,7 +2,7 @@
 
 Cada arquivo é um reprodutor mínimo de um caso em que o ESBMC-Python erra, trava ou recusa
 código Python válido, inclusive com a PR #8014. Todos foram levantados ao verificar os bugs reais
-de `dataset/v2_real_world` (entre 22/09 e 29/09/2026) e medidos de novo em 30/09/2026. Rodar com
+de `dataset/bugs_reais` (entre 22/09 e 29/09/2026) e medidos de novo em 30/09/2026. Rodar com
 `./rodar.sh` (ESBMC do PATH) ou `./rodar.sh /caminho/do/esbmc`.
 
 Versões comparadas:
@@ -77,7 +77,7 @@ no histórico do git):
 
 ## Casos do dataset afetados
 
-| Reprodutor | Casos de `dataset/v2_real_world` |
+| Reprodutor | Casos de `dataset/bugs_reais` |
 |---|---|
 | 01 (método em None) | `nm_real_01`, `nm_real_24` |
 | 02 (`None * n`) | `nm_real_02` |

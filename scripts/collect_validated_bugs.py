@@ -5,12 +5,12 @@ A bug is accepted only when its fix is in the project's official history and a t
 - GitHub pull requests: the PR must be merged and must add or change a test file.
 
 Each candidate keeps full provenance and must change exactly one function in one non-test file.
-Candidates land in dataset/v2_candidates/ (never in dataset/v2_real_world/); moving them into the
+Candidates land in dataset/coleta_bugsinpy/ (never in dataset/bugs_reais/); moving them into the
 dataset goes through the existing audit gates.
 
 Usage:
   python scripts/collect_validated_bugs.py bugsinpy [--limit N]
-  python scripts/collect_validated_bugs.py prs dataset/v2_candidates/pr_sources.json
+  python scripts/collect_validated_bugs.py prs dataset/coleta_bugsinpy/pr_sources.json
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ from pathlib import Path
 from urllib import error, request
 
 ROOT = Path(__file__).resolve().parents[1]
-STAGING = ROOT / "dataset" / "v2_candidates"
+STAGING = ROOT / "dataset" / "coleta_bugsinpy"
 BUGSINPY_ZIP = "https://codeload.github.com/soarsmu/BugsInPy/zip/refs/heads/master"
 _TEST_PATH = re.compile(r"(^|/)(tests?|testing)(/|_)|(^|/)test_[^/]*\.py$|_test\.py$|conftest\.py$")
 
@@ -133,7 +133,7 @@ def _info(text: str) -> dict[str, str]:
 
 
 def _existing_bugsinpy() -> set[tuple[str, str]]:
-    items = json.loads((ROOT / "dataset/v2_real_world/ground_truths.json").read_text(encoding="utf-8"))["items"]
+    items = json.loads((ROOT / "dataset/bugs_reais/ground_truths.json").read_text(encoding="utf-8"))["items"]
     return {(i["provenance"]["project"], str(i["provenance"].get("bugsinpy_id"))) for i in items
             if i.get("provenance", {}).get("bugsinpy_id")}
 

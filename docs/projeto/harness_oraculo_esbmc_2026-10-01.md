@@ -38,7 +38,7 @@ A confirmação nova é `oob_real_02` (timeout antes; agora o limite maior e a t
 contraexemplo, e o CPython reproduz o `IndexError`). Também passaram a ter veredito `av_real_17` (duas
 hipóteses, `re.sub` stubado), `tm_real_04`, `ip_real_04`, `ir_real_03` e `ip_real_10`.
 
-Controle nas versões corrigidas (`fixed_full`, modo estrito, 107 hipóteses com arquivo): 0 confirmações.
+Controle nas versões corrigidas (`arquivo_corrigido`, modo estrito, 107 hipóteses com arquivo): 0 confirmações.
 
 As especificações gravadas não respondem às mensagens novas do harness (tipos `set`, desempacotamento,
 suposições com `in`); esse ganho só aparece numa rodada com a LLM. Comandos:
@@ -47,7 +47,7 @@ suposições com `in`); esse ganho só aparece numa rodada com a LLM. Comandos:
 python3 scripts/v2_replay_specs.py artifacts/v2/exp-oracle-repair-cobertura/v2_verify_report.json \
     --esbmc /usr/local/bin/esbmc --timeout 180 --out <saida> [--shard i/n] [--only id1,id2]
 python3 scripts/v2_replay_specs.py artifacts/v2/exp-oracle-fixed-cobertura/v2_verify_report.json \
-    --esbmc /usr/local/bin/esbmc --sources dataset/v2_real_world/fixed_full --strict-sources --out <saida>
+    --esbmc /usr/local/bin/esbmc --sources dataset/bugs_reais/arquivo_corrigido --strict-sources --out <saida>
 ```
 
 ## Braço do agente (Claude Code + plugin ESBMC)
@@ -105,8 +105,8 @@ O prompt do agente agora proíbe módulos locais (`np.py` impedia a reexecução
 
 ## O que ainda trava
 
-- 17 bugs sem o arquivo completo em `detection_full/`. O download funciona, mas foi rejeitado com
-  `function_differs`: a função em `detection/` é um recorte curado (linhas removidas, assinatura
+- 17 bugs sem o arquivo completo em `arquivo_com_bug/`. O download funciona, mas foi rejeitado com
+  `function_differs`: a função em `funcao_com_bug/` é um recorte curado (linhas removidas, assinatura
   simplificada; em `vm_real_04` é outro trecho da função). Encaixar a função curada no arquivo
   completo daria os imports e auxiliares que faltam; é decisão de método, ainda não tomada.
 - Limites do ESBMC: `*args/**kwargs`, `async`, `type(x).__name__`, `x.__dict__`, fatiamento 2-D de

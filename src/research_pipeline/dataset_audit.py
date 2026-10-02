@@ -8,6 +8,7 @@ from collections import Counter
 from pathlib import Path
 
 from .ast_utils import expression_exists_as_statement
+from .dataset_layout import MANUAL_HARNESS, buggy_function_dir, dataset_of_harness
 from .evaluator import load_ground_truth_cases
 from .preprocess import preprocess_file
 
@@ -86,9 +87,9 @@ def _prefer_detection_source(source_path: Path) -> Path:
     other callers need but is never shown to the detection LLM. When a
     sibling detection/ file exists, audit against that instead.
     """
-    if source_path.parent.name != "bugs":
+    if source_path.parent.name not in MANUAL_HARNESS:
         return source_path
-    candidate = source_path.parent.parent / "detection" / source_path.name
+    candidate = buggy_function_dir(dataset_of_harness(source_path)) / source_path.name
     return candidate if candidate.exists() else source_path
 
 

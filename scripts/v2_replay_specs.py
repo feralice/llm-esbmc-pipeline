@@ -61,7 +61,7 @@ def main() -> int:
     parser.add_argument("report", help="v2_verify_report.json of a finished run")
     parser.add_argument("--esbmc", default="esbmc")
     parser.add_argument("--timeout", type=int, default=60)
-    parser.add_argument("--sources", default="dataset/v2_real_world/detection_full")
+    parser.add_argument("--sources", default="dataset/bugs_reais/arquivo_com_bug")
     parser.add_argument("--out", required=True)
     parser.add_argument("--strict-sources", action="store_true",
                         help="skip a hypothesis with no file in --sources instead of using its detection file")

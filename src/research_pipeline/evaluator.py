@@ -8,6 +8,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import cast
 
+from .dataset_layout import manual_harness_dir
 from .llm.backends.factory import Backend, build_analyzer
 from .models import (
     CONFIDENCE_SOURCE_FORMAL_VERIFICATION,
@@ -148,7 +149,7 @@ def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[di
     payload = json.loads(ground_truth_path.read_text(encoding="utf-8"))
     if isinstance(payload, dict) and "items" in payload:
         if _is_flat_multilabel_dataset(payload, ground_truth_path):
-            return _load_flat_multilabel_cases(payload, ground_truth_path.parent / "bugs")
+            return _load_flat_multilabel_cases(payload, manual_harness_dir(ground_truth_path.parent))
         source_root = _infer_source_root_for_ground_truth_dir(ground_truth_path.parent)
         category = str(payload.get("category") or ground_truth_path.stem)
         return [
@@ -192,7 +193,7 @@ def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
 
 
 def _infer_source_root_for_ground_truth_dir(ground_truth_dir: Path) -> Path:
-    # dataset/labeled/ground_truths/bugs -> dataset/labeled/ok/bugs
+    # dataset/v1_sintetico/ground_truths/bugs -> dataset/v1_sintetico/ok/bugs
     if ground_truth_dir.parent.name == "ground_truths":
         return ground_truth_dir.parent.parent / "ok" / ground_truth_dir.name
     return ground_truth_dir.parent / "ok" / ground_truth_dir.name
@@ -233,7 +234,7 @@ def _is_flat_multilabel_dataset(payload: dict, ground_truth_path: Path) -> bool:
     """Return whether this is the V2 flat ``bugs/`` + category-list layout."""
     items = payload.get("items", [])
     return (
-        (ground_truth_path.parent / "bugs").is_dir()
+        manual_harness_dir(ground_truth_path.parent).is_dir()
         and isinstance(items, list)
         and any(isinstance(item, dict) and isinstance(item.get("categories"), list) for item in items)
     )

@@ -13,12 +13,12 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 ROOT = Path(__file__).parent.parent
-BUGS_DIR = ROOT / "dataset/labeled/ok/bugs"
-CLEAN_DIR = ROOT / "dataset/labeled/ok/clean"
-SMELLS_DIR = ROOT / "dataset/labeled/ok/smells"
-GT_BUGS_DIR = ROOT / "dataset/labeled/ground_truths/bugs"
-GT_CLEAN = ROOT / "dataset/labeled/ground_truths/clean/clean.json"
-GT_SMELLS_DIR = ROOT / "dataset/labeled/ground_truths/smells"
+BUGS_DIR = ROOT / "dataset/v1_sintetico/ok/bugs"
+CLEAN_DIR = ROOT / "dataset/v1_sintetico/ok/clean"
+SMELLS_DIR = ROOT / "dataset/v1_sintetico/ok/smells"
+GT_BUGS_DIR = ROOT / "dataset/v1_sintetico/ground_truths/bugs"
+GT_CLEAN = ROOT / "dataset/v1_sintetico/ground_truths/clean/clean.json"
+GT_SMELLS_DIR = ROOT / "dataset/v1_sintetico/ground_truths/smells"
 
 STDLIB_MODULES = {
     "math", "os", "sys", "re", "json", "collections", "itertools",

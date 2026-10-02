@@ -2,7 +2,7 @@
 
 Used to measure false confirmations: running the pipeline on code where the bug was fixed must
 never yield CONFIRMED. A fixed file is kept only when the target function exists and differs
-(by AST, docstrings ignored) from the buggy complete source. Writes dataset/v2_real_world/fixed_full/.
+(by AST, docstrings ignored) from the buggy complete source. Writes dataset/bugs_reais/arquivo_corrigido/.
 """
 
 from __future__ import annotations
@@ -19,14 +19,14 @@ from fetch_v2_full_sources import _download, _function, _raw_url, _same_function
 
 
 def main() -> int:
-    root = ROOT / "dataset" / "v2_real_world"
+    root = ROOT / "dataset" / "bugs_reais"
     manifest = json.loads((root / "manifest_full.json").read_text(encoding="utf-8"))
-    out = root / "fixed_full"
+    out = root / "arquivo_corrigido"
     out.mkdir(exist_ok=True)
     report = {}
     for item in manifest["items"]:
         case_id, prov = str(item["id"]), item.get("provenance", {})
-        if not item["detection_file"].startswith("detection_full"):
+        if not item["detection_file"].startswith("arquivo_com_bug"):
             report[case_id] = "no_complete_buggy_source"
             continue
         fixed_commit = prov.get("fixed_commit") or prov.get("commit_hash")

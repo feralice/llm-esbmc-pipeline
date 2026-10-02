@@ -1,19 +1,20 @@
 """Build the optional ESBMC reference-baseline subset for the V2 corpus.
 
-Inputs, all under dataset/v2_real_world/:
+Inputs, all under dataset/bugs_reais/:
   ground_truths.json, manifest.json  full corpus (never modified here)
   eligibility.json                   human decision per item
   esbmc_audit.json                   ESBMC verdicts from scripts/audit_v2_buggy_fixed.py
   patches/<id>.diff                  real fix hunks (provenance evidence)
-Output: dataset/historico/v2_real_world_eligible/ with copies of items whose manual
+Output: dataset/harness_bugs_reais/elegiveis_0909/ with copies of items whose manual
 reference harnesses pass every baseline gate. The full V2 corpus is the
-dataset/v2_real_world directory and is not gated by this module.
+dataset/bugs_reais directory and is not gated by this module.
 """
 from __future__ import annotations
 
 import json
 import re
 import shutil
+from .dataset_layout import buggy_function_dir, manual_harness_dir
 from pathlib import Path
 
 from .llm.categories import FORMAL_CATEGORIES
@@ -145,11 +146,11 @@ def gate_failures(item: dict, decision: dict, audit: dict | None, dataset: Path,
     if not diff.is_file():
         failures.append("missing patches/<id>.diff")
     else:
-        detection = dataset / "detection" / f"{item['id']}.py"
+        detection = buggy_function_dir(dataset) / f"{item['id']}.py"
         if not detection_shows_buggy_code(detection.read_text(encoding="utf-8"), diff.read_text(encoding="utf-8")):
             failures.append("detection does not show the pre-fix code")
 
-    harness = dataset / "bugs" / item["harness_file"]
+    harness = manual_harness_dir(dataset) / item["harness_file"]
     fixed = harness.with_name(harness.stem + "_fixed.py")
     if not fixed.is_file():
         failures.append("missing fixed harness")
@@ -209,18 +210,20 @@ def build_eligible(dataset: Path, output: Path) -> dict:
     ]
     policy = {**ground_truth.get("evaluation_policy", {})}
     policy["patch_context_items"] = [k for k in policy.get("patch_context_items", []) if k in selected]
-    description = (f"ESBMC-verifiable subset of v2_real_world ({len(gt_items)} of {len(items)} items). "
+    description = (f"ESBMC-verifiable subset of bugs_reais ({len(gt_items)} of {len(items)} items). "
                    "Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.")
 
     if output.exists():
         shutil.rmtree(output)
-    (output / "bugs").mkdir(parents=True)
-    (output / "detection").mkdir()
+    harness_out = output / manual_harness_dir(dataset).name
+    function_out = output / buggy_function_dir(dataset).name
+    harness_out.mkdir(parents=True)
+    function_out.mkdir()
     for key in sorted(selected):
         harness = items[key]["harness_file"]
         for name in (harness, harness.replace(".py", "_fixed.py")):
-            shutil.copyfile(dataset / "bugs" / name, output / "bugs" / name)
-        shutil.copyfile(dataset / "detection" / f"{key}.py", output / "detection" / f"{key}.py")
+            shutil.copyfile(manual_harness_dir(dataset) / name, harness_out / name)
+        shutil.copyfile(buggy_function_dir(dataset) / f"{key}.py", function_out / f"{key}.py")
     _write(output / "ground_truths.json", {"evaluation_policy": policy, "description": description, "items": gt_items})
     _write(output / "manifest.json", {"evaluation_policy": policy, "description": description, "items": manifest_items})
     return {"eligible": sorted(selected), "total": len(items)}

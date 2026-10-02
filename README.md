@@ -108,7 +108,7 @@ Detalhes e caminhos possíveis: [`docs/projeto/entendendo_o_pipeline.md`](docs/p
 
 ## Dataset
 
-### V1: sintético (`dataset/labeled/`, 70 arquivos)
+### V1: sintético (`dataset/v1_sintetico/`, 70 arquivos)
 
 | Categoria | Arquivos | Verificável |
 |---|---|---|
@@ -122,7 +122,7 @@ Detalhes e caminhos possíveis: [`docs/projeto/entendendo_o_pipeline.md`](docs/p
 
 Cada arquivo contém exatamente 1 função e 0 ou 1 bug. Sem `len()` (limitação do frontend Python do ESBMC).
 
-### V2: mundo real (`dataset/v2_real_world/`, 116 bugs, 42 repositórios)
+### V2: mundo real (`dataset/bugs_reais/`, 116 bugs, 42 repositórios)
 
 Cada item é um bug real de um projeto Python público, com o commit com bug e o commit de correção
 registrados em `manifest.json` (campo `provenance`): 84 vêm do BugsInPy e 32 de correções aceitas
@@ -131,17 +131,17 @@ nos repositórios originais (commits, issues e pull requests). Repositórios com
 
 | Pasta ou arquivo | Conteúdo |
 |---|---|
-| `detection/` | recorte da função, entrada da detecção pela LLM |
-| `detection_full/` | arquivo completo no commit com bug (99 de 116), usado na verificação |
-| `fixed_full/` | arquivo completo no commit corrigido (98), para medir confirmação falsa |
-| `bugs/` | harness de referência escrito à mão (legado de 09/09; o motor novo não usa) |
+| `funcao_com_bug/` | recorte da função, entrada da detecção pela LLM |
+| `arquivo_com_bug/` | arquivo completo no commit com bug (99 de 116), usado na verificação |
+| `arquivo_corrigido/` | arquivo completo no commit corrigido (98), para medir confirmação falsa |
+| `harness_manual_0909/` | harness de referência escrito à mão (legado de 09/09; o motor novo não usa) |
 | `patches/` | patch real da correção de cada caso |
 | `ground_truths.json`, `manifest.json` | gabarito e proveniência, lidos só na avaliação |
 
-`dataset/v2_candidates/` guarda 199 bugs do BugsInPy validados pelos mantenedores e ainda não
+`dataset/coleta_bugsinpy/` guarda 199 bugs do BugsInPy validados pelos mantenedores e ainda não
 integrados ao dataset (ver o README da pasta).
 
-O mapa de todas as pastas de `dataset/` (inclusive `code_smell/`, `historico/` e
+O mapa de todas as pastas de `dataset/` (inclusive `code_smell/`, `harness_bugs_reais/` e
 `disciplina_pgene601/`) está em [`dataset/README.md`](dataset/README.md).
 
 ---
@@ -248,9 +248,9 @@ pra modelo local em ambas as etapas.
 ```bash
 PYTHONPATH=src .venv/bin/python src/main.py \
     --mode hybrid --v2-stage end-to-end \
-    --input dataset/v2_real_world/detection \
-    --ground-truth dataset/v2_real_world/ground_truths.json \
-    --verification-sources dataset/v2_real_world/detection_full \
+    --input dataset/bugs_reais/funcao_com_bug \
+    --ground-truth dataset/bugs_reais/ground_truths.json \
+    --verification-sources dataset/bugs_reais/arquivo_com_bug \
     --model gpt-4o-mini --synth-backend openai --synth-model gpt-4o-mini \
     --bound 5 --timeout 180 \
     --output-dir artifacts/v2/e2e
@@ -280,7 +280,7 @@ Scripts da V2:
 | `scripts/v2_reverdict.py` | recalcula vereditos de um relatório sem chamar LLM nem ESBMC |
 | `scripts/v2_agent_arm.py` | braço experimental: Claude Code + plugin ESBMC nos casos que o motor não roda |
 | `scripts/fetch_v2_full_sources.py`, `scripts/fetch_v2_fixed_sources.py` | baixam os arquivos completos com bug e corrigidos |
-| `scripts/collect_validated_bugs.py`, `scripts/label_candidates.py` | coletam e rotulam bugs validados em `dataset/v2_candidates/` |
+| `scripts/collect_validated_bugs.py`, `scripts/label_candidates.py` | coletam e rotulam bugs validados em `dataset/coleta_bugsinpy/` |
 
 ### Benchmark V1 (baseline)
 
@@ -289,14 +289,14 @@ source .env
 
 # Modelos via API
 python src/main.py --mode benchmark \
-    --input dataset/labeled/ground_truths \
+    --input dataset/v1_sintetico/ground_truths \
     --model gpt-4o \
     --bound 5 --timeout 30 \
     --report reports/json/v1_benchmark/benchmark_gpt-4o.json
 
 # Modelos locais Ollama (--llm-timeout maior pois inferência é lenta)
 python src/main.py --mode benchmark \
-    --input dataset/labeled/ground_truths \
+    --input dataset/v1_sintetico/ground_truths \
     --model deepseek-r1:7b \
     --bound 5 --timeout 30 --llm-timeout 600 \
     --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
@@ -315,17 +315,17 @@ Ver todos os comandos em [`TUTORIAL.md`](TUTORIAL.md).
 ```bash
 # Fluxo híbrido legado (exploração/debug)
 python src/main.py --mode hybrid-direct \
-    --input dataset/labeled/ok/bugs \
+    --input dataset/v1_sintetico/ok/bugs \
     --model gpt-4o --bound 5 --timeout 30
 
 # Flow A: ESBMC puro sem LLM
 python src/main.py --mode esbmc-only \
-    --input dataset/labeled/ok/bugs \
+    --input dataset/v1_sintetico/ok/bugs \
     --bound 5 --timeout 30
 
 # Flow C: só LLM, sem ESBMC
 python src/main.py --mode llm-only \
-    --input dataset/labeled/ok/bugs \
+    --input dataset/v1_sintetico/ok/bugs \
     --model gpt-4o
 ```
 
@@ -425,10 +425,12 @@ llm-esbmc-pipeline/
 │           ├── loop.py             # Laço especificação → ESBMC → reparo
 │           ├── report.py           # Resumo e avaliação
 │           └── agent_arm.py        # Braço experimental com agente
-├── dataset/
-│   ├── labeled/                    # V1: 70 arquivos sintéticos
-│   ├── v2_real_world/              # V2: 116 bugs reais (ver seção Dataset)
-│   └── v2_candidates/              # 199 bugs validados aguardando integração
+├── dataset/                        # mapa completo em dataset/README.md
+│   ├── bugs_reais/                 # V2: 290 bugs reais (o código com bug de cada um)
+│   ├── harness_bugs_reais/         # harnesses feitos à mão em 09/09 (legado)
+│   ├── coleta_bugsinpy/            # coleta do BugsInPy (origem da coorte de rótulo automático)
+│   ├── v1_sintetico/               # V1: 70 arquivos sintéticos
+│   ├── code_smell/  disciplina_pgene601/
 ├── scripts/                        # Rodadas, coleta de dados e utilitários
 ├── tests/
 ├── docs/

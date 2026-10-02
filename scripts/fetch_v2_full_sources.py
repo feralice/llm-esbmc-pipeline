@@ -3,8 +3,8 @@
 For every manifest item, download <repo>/<commit>/<source_file> from
 raw.githubusercontent.com (buggy_commit, then parent_commit, then commit_hash)
 and accept it only when the target function is AST-identical to the one in
-detection/, which pins the buggy version. Writes detection_full/<id>.py and
-detection_full/fetch_report.json.
+detection/, which pins the buggy version. Writes arquivo_com_bug/<id>.py and
+arquivo_com_bug/fetch_report.json.
 """
 
 from __future__ import annotations
@@ -76,13 +76,13 @@ def _parent(repo_url: str, commit: str) -> str | None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset", default="dataset/v2_real_world")
+    parser.add_argument("--dataset", default="dataset/bugs_reais")
     parser.add_argument("--only-unmatched", action="store_true",
                         help="keep existing matches; retry the rest, adding each commit's parent")
     args = parser.parse_args()
     root = Path(args.dataset)
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-    out = root / "detection_full"
+    out = root / "arquivo_com_bug"
     out.mkdir(exist_ok=True)
     previous_path = out / "fetch_report.json"
     previous = json.loads(previous_path.read_text(encoding="utf-8")) if previous_path.exists() else {}
@@ -115,7 +115,7 @@ def main() -> int:
     # Same cases and labels; only detection_file points at the complete buggy file when verified.
     full = dict(manifest)
     full["items"] = [
-        {**item, "detection_file": f"detection_full/{item['id']}.py"}
+        {**item, "detection_file": f"arquivo_com_bug/{item['id']}.py"}
         if report[str(item["id"])].startswith("matched") else item
         for item in manifest["items"]
     ]

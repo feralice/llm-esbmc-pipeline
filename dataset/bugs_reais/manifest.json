@@ -21,7 +21,7 @@
   "items": [
     {
       "id": "dz_real_01",
-      "detection_file": "detection/dz_real_01.py",
+      "detection_file": "funcao_com_bug/dz_real_01.py",
       "harness_file": "bugs/dz_real_01.py",
       "function": "makeMappingArray",
       "categories": [
@@ -52,7 +52,7 @@
     },
     {
       "id": "dz_real_02",
-      "detection_file": "detection/dz_real_02.py",
+      "detection_file": "funcao_com_bug/dz_real_02.py",
       "harness_file": "bugs/dz_real_02.py",
       "function": "ExactLanguageSearch.choose_best_split",
       "categories": [
@@ -82,7 +82,7 @@
     },
     {
       "id": "dz_real_03",
-      "detection_file": "detection/dz_real_03.py",
+      "detection_file": "funcao_com_bug/dz_real_03.py",
       "harness_file": "bugs/dz_real_03.py",
       "function": "HashExpander.do",
       "categories": [
@@ -115,7 +115,7 @@
     },
     {
       "id": "oob_real_01",
-      "detection_file": "detection/oob_real_01.py",
+      "detection_file": "funcao_com_bug/oob_real_01.py",
       "harness_file": "bugs/oob_real_01.py",
       "function": "get_new_command",
       "categories": [
@@ -146,7 +146,7 @@
     },
     {
       "id": "oob_real_02",
-      "detection_file": "detection/oob_real_02.py",
+      "detection_file": "funcao_com_bug/oob_real_02.py",
       "harness_file": "bugs/oob_real_02.py",
       "function": "match",
       "categories": [
@@ -178,7 +178,7 @@
     },
     {
       "id": "oob_real_03",
-      "detection_file": "detection/oob_real_03.py",
+      "detection_file": "funcao_com_bug/oob_real_03.py",
       "harness_file": "bugs/oob_real_03.py",
       "function": "get_new_command",
       "categories": [
@@ -209,7 +209,7 @@
     },
     {
       "id": "oob_real_04",
-      "detection_file": "detection/oob_real_04.py",
+      "detection_file": "funcao_com_bug/oob_real_04.py",
       "harness_file": "bugs/oob_real_04.py",
       "function": "SortedCorrectedCommandsSequence._realise",
       "categories": [
@@ -240,7 +240,7 @@
     },
     {
       "id": "oob_real_05",
-      "detection_file": "detection/oob_real_05.py",
+      "detection_file": "funcao_com_bug/oob_real_05.py",
       "harness_file": "bugs/oob_real_05.py",
       "function": "lib2to3_parse",
       "categories": [
@@ -271,7 +271,7 @@
     },
     {
       "id": "av_real_01",
-      "detection_file": "detection/av_real_01.py",
+      "detection_file": "funcao_com_bug/av_real_01.py",
       "harness_file": "bugs/av_real_01.py",
       "function": "cli_bool_option",
       "categories": [
@@ -302,7 +302,7 @@
     },
     {
       "id": "av_real_02",
-      "detection_file": "detection/av_real_02.py",
+      "detection_file": "funcao_com_bug/av_real_02.py",
       "harness_file": "bugs/av_real_02.py",
       "function": "WebSocketHandler.set_nodelay",
       "categories": [
@@ -333,7 +333,7 @@
     },
     {
       "id": "av_real_03",
-      "detection_file": "detection/av_real_03.py",
+      "detection_file": "funcao_com_bug/av_real_03.py",
       "harness_file": "bugs/av_real_03.py",
       "function": "Series.to_timestamp",
       "categories": [
@@ -366,7 +366,7 @@
     },
     {
       "id": "av_real_06",
-      "detection_file": "detection/av_real_06.py",
+      "detection_file": "funcao_com_bug/av_real_06.py",
       "harness_file": "bugs/av_real_06.py",
       "function": "get_new_command",
       "categories": [
@@ -400,7 +400,7 @@
     },
     {
       "id": "av_real_07",
-      "detection_file": "detection/av_real_07.py",
+      "detection_file": "funcao_com_bug/av_real_07.py",
       "harness_file": "bugs/av_real_07.py",
       "function": "match",
       "categories": [
@@ -432,7 +432,7 @@
     },
     {
       "id": "av_real_08",
-      "detection_file": "detection/av_real_08.py",
+      "detection_file": "funcao_com_bug/av_real_08.py",
       "harness_file": "bugs/av_real_08.py",
       "function": "Settings.update",
       "categories": [
@@ -464,7 +464,7 @@
     },
     {
       "id": "nm_real_15",
-      "detection_file": "detection/nm_real_15.py",
+      "detection_file": "funcao_com_bug/nm_real_15.py",
       "harness_file": "bugs/nm_real_15.py",
       "function": "APIRouter.include_router",
       "categories": [
@@ -496,7 +496,7 @@
     },
     {
       "id": "tm_real_01",
-      "detection_file": "detection/tm_real_01.py",
+      "detection_file": "funcao_com_bug/tm_real_01.py",
       "harness_file": "bugs/tm_real_01.py",
       "function": "read_conllx",
       "categories": [
@@ -527,7 +527,7 @@
     },
     {
       "id": "tm_real_02",
-      "detection_file": "detection/tm_real_02.py",
+      "detection_file": "funcao_com_bug/tm_real_02.py",
       "harness_file": "bugs/tm_real_02.py",
       "function": "HiveCommandClient.table_exists",
       "categories": [
@@ -559,7 +559,7 @@
     },
     {
       "id": "tm_real_03",
-      "detection_file": "detection/tm_real_03.py",
+      "detection_file": "funcao_com_bug/tm_real_03.py",
       "harness_file": "bugs/tm_real_03.py",
       "function": "_match_one",
       "categories": [
@@ -591,7 +591,7 @@
     },
     {
       "id": "tm_real_04",
-      "detection_file": "detection/tm_real_04.py",
+      "detection_file": "funcao_com_bug/tm_real_04.py",
       "harness_file": "bugs/tm_real_04.py",
       "function": "str_to_int",
       "categories": [
@@ -622,7 +622,7 @@
     },
     {
       "id": "tm_real_05",
-      "detection_file": "detection/tm_real_05.py",
+      "detection_file": "funcao_com_bug/tm_real_05.py",
       "harness_file": "bugs/tm_real_05.py",
       "function": "MailSender.send",
       "categories": [
@@ -654,7 +654,7 @@
     },
     {
       "id": "tm_real_06",
-      "detection_file": "detection/tm_real_06.py",
+      "detection_file": "funcao_com_bug/tm_real_06.py",
       "harness_file": "bugs/tm_real_06.py",
       "function": "ContractsManager._clean_req.eb_wrapper",
       "categories": [
@@ -686,7 +686,7 @@
     },
     {
       "id": "tm_real_07",
-      "detection_file": "detection/tm_real_07.py",
+      "detection_file": "funcao_com_bug/tm_real_07.py",
       "harness_file": "bugs/tm_real_07.py",
       "function": "MarkerStyle._recache",
       "categories": [
@@ -718,7 +718,7 @@
     },
     {
       "id": "tm_real_08",
-      "detection_file": "detection/tm_real_08.py",
+      "detection_file": "funcao_com_bug/tm_real_08.py",
       "harness_file": "bugs/tm_real_08.py",
       "function": "simple_separated_format",
       "categories": [
@@ -749,7 +749,7 @@
     },
     {
       "id": "tm_real_09",
-      "detection_file": "detection/tm_real_09.py",
+      "detection_file": "funcao_com_bug/tm_real_09.py",
       "harness_file": "bugs/tm_real_09.py",
       "function": "_format",
       "categories": [
@@ -779,7 +779,7 @@
     },
     {
       "id": "tm_real_10",
-      "detection_file": "detection/tm_real_10.py",
+      "detection_file": "funcao_com_bug/tm_real_10.py",
       "harness_file": "bugs/tm_real_10.py",
       "function": "MetricsHandler.get",
       "categories": [
@@ -810,7 +810,7 @@
     },
     {
       "id": "vm_real_01",
-      "detection_file": "detection/vm_real_01.py",
+      "detection_file": "funcao_com_bug/vm_real_01.py",
       "harness_file": "bugs/vm_real_01.py",
       "function": "tqdm.format_meter",
       "categories": [
@@ -843,7 +843,7 @@
     },
     {
       "id": "vm_real_02",
-      "detection_file": "detection/vm_real_02.py",
+      "detection_file": "funcao_com_bug/vm_real_02.py",
       "harness_file": "bugs/vm_real_02.py",
       "function": "Schema.validate",
       "categories": [
@@ -873,7 +873,7 @@
     },
     {
       "id": "io_real_01",
-      "detection_file": "detection/io_real_01.py",
+      "detection_file": "funcao_com_bug/io_real_01.py",
       "harness_file": "bugs/io_real_01.py",
       "function": "nonsingular",
       "categories": [
@@ -904,7 +904,7 @@
     },
     {
       "id": "nm_real_01",
-      "detection_file": "detection/nm_real_01.py",
+      "detection_file": "funcao_com_bug/nm_real_01.py",
       "harness_file": "bugs/nm_real_01.py",
       "function": "Session.update_headers",
       "categories": [
@@ -935,7 +935,7 @@
     },
     {
       "id": "nm_real_02",
-      "detection_file": "detection/nm_real_02.py",
+      "detection_file": "funcao_com_bug/nm_real_02.py",
       "harness_file": "bugs/nm_real_02.py",
       "function": "tqdm.format_meter",
       "categories": [
@@ -966,7 +966,7 @@
     },
     {
       "id": "nm_real_03",
-      "detection_file": "detection/nm_real_03.py",
+      "detection_file": "funcao_com_bug/nm_real_03.py",
       "harness_file": "bugs/nm_real_03.py",
       "function": "FacebookIE._real_extract",
       "categories": [
@@ -997,7 +997,7 @@
     },
     {
       "id": "nm_real_04",
-      "detection_file": "detection/nm_real_04.py",
+      "detection_file": "funcao_com_bug/nm_real_04.py",
       "harness_file": "bugs/nm_real_04.py",
       "function": "OffsiteMiddleware.get_host_regex",
       "categories": [
@@ -1028,7 +1028,7 @@
     },
     {
       "id": "nm_real_05",
-      "detection_file": "detection/nm_real_05.py",
+      "detection_file": "funcao_com_bug/nm_real_05.py",
       "harness_file": "bugs/nm_real_05.py",
       "function": "Response.follow",
       "categories": [
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "nm_real_06",
-      "detection_file": "detection/nm_real_06.py",
+      "detection_file": "funcao_com_bug/nm_real_06.py",
       "harness_file": "bugs/nm_real_06.py",
       "function": "create_instance",
       "categories": [
@@ -1092,7 +1092,7 @@
     },
     {
       "id": "nm_real_07",
-      "detection_file": "detection/nm_real_07.py",
+      "detection_file": "funcao_com_bug/nm_real_07.py",
       "harness_file": "bugs/nm_real_07.py",
       "function": "url_concat",
       "categories": [
@@ -1123,7 +1123,7 @@
     },
     {
       "id": "nm_real_08",
-      "detection_file": "detection/nm_real_08.py",
+      "detection_file": "funcao_com_bug/nm_real_08.py",
       "harness_file": "bugs/nm_real_08.py",
       "function": "Request.url_for",
       "categories": [
@@ -1154,7 +1154,7 @@
     },
     {
       "id": "nm_real_09",
-      "detection_file": "detection/nm_real_09.py",
+      "detection_file": "funcao_com_bug/nm_real_09.py",
       "harness_file": "bugs/nm_real_09.py",
       "function": "tqdm.__len__",
       "categories": [
@@ -1185,7 +1185,7 @@
     },
     {
       "id": "nm_real_10",
-      "detection_file": "detection/nm_real_10.py",
+      "detection_file": "funcao_com_bug/nm_real_10.py",
       "harness_file": "bugs/nm_real_10.py",
       "function": "S3CopyToTable.copy",
       "categories": [
@@ -1216,7 +1216,7 @@
     },
     {
       "id": "nm_real_11",
-      "detection_file": "detection/nm_real_11.py",
+      "detection_file": "funcao_com_bug/nm_real_11.py",
       "harness_file": "bugs/nm_real_11.py",
       "function": "LocalCache.__setitem__",
       "categories": [
@@ -1247,7 +1247,7 @@
     },
     {
       "id": "nm_real_12",
-      "detection_file": "detection/nm_real_12.py",
+      "detection_file": "funcao_com_bug/nm_real_12.py",
       "harness_file": "bugs/nm_real_12.py",
       "function": "PamdService.remove",
       "categories": [
@@ -1278,7 +1278,7 @@
     },
     {
       "id": "nm_real_13",
-      "detection_file": "detection/nm_real_13.py",
+      "detection_file": "funcao_com_bug/nm_real_13.py",
       "harness_file": "bugs/nm_real_13.py",
       "function": "AsyncHTTPClient.close",
       "categories": [
@@ -1310,7 +1310,7 @@
     },
     {
       "id": "nm_real_14",
-      "detection_file": "detection/nm_real_14.py",
+      "detection_file": "funcao_com_bug/nm_real_14.py",
       "harness_file": "bugs/nm_real_14.py",
       "function": "request_httprepr",
       "categories": [
@@ -1341,7 +1341,7 @@
     },
     {
       "id": "nm_real_16",
-      "detection_file": "detection/nm_real_16.py",
+      "detection_file": "funcao_com_bug/nm_real_16.py",
       "harness_file": "bugs/nm_real_16.py",
       "function": "Axes.scatter",
       "categories": [
@@ -1373,7 +1373,7 @@
     },
     {
       "id": "nm_real_17",
-      "detection_file": "detection/nm_real_17.py",
+      "detection_file": "funcao_com_bug/nm_real_17.py",
       "harness_file": "bugs/nm_real_17.py",
       "function": "_type",
       "categories": [
@@ -1405,7 +1405,7 @@
     },
     {
       "id": "nm_real_18",
-      "detection_file": "detection/nm_real_18.py",
+      "detection_file": "funcao_com_bug/nm_real_18.py",
       "harness_file": "bugs/nm_real_18.py",
       "function": "after_log",
       "categories": [
@@ -1437,7 +1437,7 @@
     },
     {
       "id": "nm_real_19",
-      "detection_file": "detection/nm_real_19.py",
+      "detection_file": "funcao_com_bug/nm_real_19.py",
       "harness_file": "bugs/nm_real_19.py",
       "function": "IsFile",
       "categories": [
@@ -1469,7 +1469,7 @@
     },
     {
       "id": "nm_real_20",
-      "detection_file": "detection/nm_real_20.py",
+      "detection_file": "funcao_com_bug/nm_real_20.py",
       "harness_file": "bugs/nm_real_20.py",
       "function": "engine.numwords",
       "categories": [
@@ -1501,7 +1501,7 @@
     },
     {
       "id": "nm_real_21",
-      "detection_file": "detection/nm_real_21.py",
+      "detection_file": "funcao_com_bug/nm_real_21.py",
       "harness_file": "bugs/nm_real_21.py",
       "function": "_Projection.get_index",
       "categories": [
@@ -1533,7 +1533,7 @@
     },
     {
       "id": "nm_real_22",
-      "detection_file": "detection/nm_real_22.py",
+      "detection_file": "funcao_com_bug/nm_real_22.py",
       "harness_file": "bugs/nm_real_22.py",
       "function": "run",
       "categories": [
@@ -1565,7 +1565,7 @@
     },
     {
       "id": "av_real_04",
-      "detection_file": "detection/av_real_04.py",
+      "detection_file": "funcao_com_bug/av_real_04.py",
       "harness_file": "bugs/av_real_04.py",
       "function": "_partition_tasks / _summary_format",
       "categories": [
@@ -1597,7 +1597,7 @@
     },
     {
       "id": "av_real_05",
-      "detection_file": "detection/av_real_05.py",
+      "detection_file": "funcao_com_bug/av_real_05.py",
       "harness_file": "bugs/av_real_05.py",
       "function": "tqdm.__init__",
       "categories": [
@@ -1629,7 +1629,7 @@
     },
     {
       "id": "av_real_09",
-      "detection_file": "detection/av_real_09.py",
+      "detection_file": "funcao_com_bug/av_real_09.py",
       "harness_file": "bugs/av_real_09.py",
       "function": "_make_getset_interval",
       "categories": [
@@ -1661,7 +1661,7 @@
     },
     {
       "id": "av_real_10",
-      "detection_file": "detection/av_real_10.py",
+      "detection_file": "funcao_com_bug/av_real_10.py",
       "harness_file": "bugs/av_real_10.py",
       "function": "Driver._partially_consume_prefix",
       "categories": [
@@ -1693,7 +1693,7 @@
     },
     {
       "id": "av_real_11",
-      "detection_file": "detection/av_real_11.py",
+      "detection_file": "funcao_com_bug/av_real_11.py",
       "harness_file": "bugs/av_real_11.py",
       "function": "HTTP1Connection._read_body",
       "categories": [
@@ -1726,7 +1726,7 @@
     },
     {
       "id": "av_real_12",
-      "detection_file": "detection/av_real_12.py",
+      "detection_file": "funcao_com_bug/av_real_12.py",
       "harness_file": "bugs/av_real_12.py",
       "function": "match",
       "categories": [
@@ -1759,7 +1759,7 @@
     },
     {
       "id": "av_real_13",
-      "detection_file": "detection/av_real_13.py",
+      "detection_file": "funcao_com_bug/av_real_13.py",
       "harness_file": "bugs/av_real_13.py",
       "function": "match",
       "categories": [
@@ -1792,7 +1792,7 @@
     },
     {
       "id": "av_real_14",
-      "detection_file": "detection/av_real_14.py",
+      "detection_file": "funcao_com_bug/av_real_14.py",
       "harness_file": "bugs/av_real_14.py",
       "function": "get_new_command",
       "categories": [
@@ -1826,7 +1826,7 @@
     },
     {
       "id": "av_real_15",
-      "detection_file": "detection/av_real_15.py",
+      "detection_file": "funcao_com_bug/av_real_15.py",
       "harness_file": "bugs/av_real_15.py",
       "function": "gunzip",
       "categories": [
@@ -1859,7 +1859,7 @@
     },
     {
       "id": "av_real_17",
-      "detection_file": "detection/av_real_17.py",
+      "detection_file": "funcao_com_bug/av_real_17.py",
       "harness_file": "bugs/av_real_17.py",
       "function": "unified_strdate",
       "categories": [
@@ -1893,7 +1893,7 @@
     },
     {
       "id": "av_real_21",
-      "detection_file": "detection/av_real_21.py",
+      "detection_file": "funcao_com_bug/av_real_21.py",
       "harness_file": "bugs/av_real_21.py",
       "function": "YoutubeDL.process_ie_result",
       "categories": [
@@ -1925,7 +1925,7 @@
     },
     {
       "id": "oob_real_09",
-      "detection_file": "detection/oob_real_09.py",
+      "detection_file": "funcao_com_bug/oob_real_09.py",
       "harness_file": "bugs/oob_real_09.py",
       "function": "parser._parse",
       "categories": [
@@ -1954,7 +1954,7 @@
     },
     {
       "id": "oob_real_10",
-      "detection_file": "detection/oob_real_10.py",
+      "detection_file": "funcao_com_bug/oob_real_10.py",
       "harness_file": "bugs/oob_real_10.py",
       "function": "_wrap_text_to_colwidths",
       "categories": [
@@ -1983,7 +1983,7 @@
     },
     {
       "id": "oob_real_11",
-      "detection_file": "detection/oob_real_11.py",
+      "detection_file": "funcao_com_bug/oob_real_11.py",
       "harness_file": "bugs/oob_real_11.py",
       "function": "wcswidth",
       "categories": [
@@ -2012,7 +2012,7 @@
     },
     {
       "id": "oob_real_12",
-      "detection_file": "detection/oob_real_12.py",
+      "detection_file": "funcao_com_bug/oob_real_12.py",
       "harness_file": "bugs/oob_real_12.py",
       "function": "fast_float",
       "categories": [
@@ -2041,7 +2041,7 @@
     },
     {
       "id": "oob_real_13",
-      "detection_file": "detection/oob_real_13.py",
+      "detection_file": "funcao_com_bug/oob_real_13.py",
       "harness_file": "bugs/oob_real_13.py",
       "function": "tokenize",
       "categories": [
@@ -2070,7 +2070,7 @@
     },
     {
       "id": "oob_real_14",
-      "detection_file": "detection/oob_real_14.py",
+      "detection_file": "funcao_com_bug/oob_real_14.py",
       "harness_file": "bugs/oob_real_14.py",
       "function": "LinuxDistribution._parse_uname_content",
       "categories": [
@@ -2099,7 +2099,7 @@
     },
     {
       "id": "oob_real_15",
-      "detection_file": "detection/oob_real_15.py",
+      "detection_file": "funcao_com_bug/oob_real_15.py",
       "harness_file": "bugs/oob_real_15.py",
       "function": "dfxp2srt",
       "categories": [
@@ -2130,7 +2130,7 @@
     },
     {
       "id": "oob_real_16",
-      "detection_file": "detection/oob_real_16.py",
+      "detection_file": "funcao_com_bug/oob_real_16.py",
       "harness_file": "bugs/oob_real_16.py",
       "function": "IndexedSet.__getitem__",
       "categories": [
@@ -2161,7 +2161,7 @@
     },
     {
       "id": "ip_real_24",
-      "detection_file": "detection/ip_real_24.py",
+      "detection_file": "funcao_com_bug/ip_real_24.py",
       "harness_file": "bugs/ip_real_24.py",
       "function": "CentralPlannerScheduler.get_work",
       "categories": [
@@ -2193,7 +2193,7 @@
     },
     {
       "id": "ip_real_18",
-      "detection_file": "detection/ip_real_18.py",
+      "detection_file": "funcao_com_bug/ip_real_18.py",
       "harness_file": "bugs/ip_real_18.py",
       "function": "croniter._get_low_from_current_date_number",
       "categories": [
@@ -2226,7 +2226,7 @@
     },
     {
       "id": "ip_real_01",
-      "detection_file": "detection/ip_real_01.py",
+      "detection_file": "funcao_com_bug/ip_real_01.py",
       "harness_file": "bugs/ip_real_01.py",
       "function": "Request._set_url",
       "categories": [
@@ -2258,7 +2258,7 @@
     },
     {
       "id": "ip_real_03",
-      "detection_file": "detection/ip_real_03.py",
+      "detection_file": "funcao_com_bug/ip_real_03.py",
       "harness_file": "bugs/ip_real_03.py",
       "function": "Selector.__init__",
       "categories": [
@@ -2290,7 +2290,7 @@
     },
     {
       "id": "ip_real_04",
-      "detection_file": "detection/ip_real_04.py",
+      "detection_file": "funcao_com_bug/ip_real_04.py",
       "harness_file": "bugs/ip_real_04.py",
       "function": "HTTP1Connection.write_headers",
       "categories": [
@@ -2322,7 +2322,7 @@
     },
     {
       "id": "ip_real_05",
-      "detection_file": "detection/ip_real_05.py",
+      "detection_file": "funcao_com_bug/ip_real_05.py",
       "harness_file": "bugs/ip_real_05.py",
       "function": "_Alpha.__gt__ / _Numeric.__gt__",
       "categories": [
@@ -2354,7 +2354,7 @@
     },
     {
       "id": "ip_real_06",
-      "detection_file": "detection/ip_real_06.py",
+      "detection_file": "funcao_com_bug/ip_real_06.py",
       "harness_file": "bugs/ip_real_06.py",
       "function": "_unstack_multiple",
       "categories": [
@@ -2386,7 +2386,7 @@
     },
     {
       "id": "ip_real_07",
-      "detection_file": "detection/ip_real_07.py",
+      "detection_file": "funcao_com_bug/ip_real_07.py",
       "harness_file": "bugs/ip_real_07.py",
       "function": "_htmlentity_transform",
       "categories": [
@@ -2417,7 +2417,7 @@
     },
     {
       "id": "ip_real_08",
-      "detection_file": "detection/ip_real_08.py",
+      "detection_file": "funcao_com_bug/ip_real_08.py",
       "harness_file": "bugs/ip_real_08.py",
       "function": "Sanic.url_for",
       "categories": [
@@ -2449,7 +2449,7 @@
     },
     {
       "id": "ip_real_09",
-      "detection_file": "detection/ip_real_09.py",
+      "detection_file": "funcao_com_bug/ip_real_09.py",
       "harness_file": "bugs/ip_real_09.py",
       "function": "generate_commands",
       "categories": [
@@ -2481,7 +2481,7 @@
     },
     {
       "id": "ip_real_10",
-      "detection_file": "detection/ip_real_10.py",
+      "detection_file": "funcao_com_bug/ip_real_10.py",
       "harness_file": "bugs/ip_real_10.py",
       "function": "_get_spider_loader",
       "categories": [
@@ -2513,7 +2513,7 @@
     },
     {
       "id": "ip_real_11",
-      "detection_file": "detection/ip_real_11.py",
+      "detection_file": "funcao_com_bug/ip_real_11.py",
       "harness_file": "bugs/ip_real_11.py",
       "function": "HTTPBearer.__call__",
       "categories": [
@@ -2544,7 +2544,7 @@
     },
     {
       "id": "ip_real_12",
-      "detection_file": "detection/ip_real_12.py",
+      "detection_file": "funcao_com_bug/ip_real_12.py",
       "harness_file": "bugs/ip_real_12.py",
       "function": "map_obj_to_commands",
       "categories": [
@@ -2576,7 +2576,7 @@
     },
     {
       "id": "ip_real_13",
-      "detection_file": "detection/ip_real_13.py",
+      "detection_file": "funcao_com_bug/ip_real_13.py",
       "harness_file": "bugs/ip_real_13.py",
       "function": "StaticFileHandler.get",
       "categories": [
@@ -2608,7 +2608,7 @@
     },
     {
       "id": "ip_real_14",
-      "detection_file": "detection/ip_real_14.py",
+      "detection_file": "funcao_com_bug/ip_real_14.py",
       "harness_file": "bugs/ip_real_14.py",
       "function": "TimeseriesGenerator.__len__",
       "categories": [
@@ -2640,7 +2640,7 @@
     },
     {
       "id": "ip_real_15",
-      "detection_file": "detection/ip_real_15.py",
+      "detection_file": "funcao_com_bug/ip_real_15.py",
       "harness_file": "bugs/ip_real_15.py",
       "function": "EmptyLineTracker.maybe_empty_lines",
       "categories": [
@@ -2672,7 +2672,7 @@
     },
     {
       "id": "ip_real_16",
-      "detection_file": "detection/ip_real_16.py",
+      "detection_file": "funcao_com_bug/ip_real_16.py",
       "harness_file": "bugs/ip_real_16.py",
       "function": "pivot",
       "categories": [
@@ -2706,7 +2706,7 @@
     },
     {
       "id": "ip_real_17",
-      "detection_file": "detection/ip_real_17.py",
+      "detection_file": "funcao_com_bug/ip_real_17.py",
       "harness_file": "bugs/ip_real_17.py",
       "function": "response_status_message",
       "categories": [
@@ -2738,7 +2738,7 @@
     },
     {
       "id": "ip_real_19",
-      "detection_file": "detection/ip_real_19.py",
+      "detection_file": "funcao_com_bug/ip_real_19.py",
       "harness_file": "bugs/ip_real_19.py",
       "function": "VersionInfo.__getitem__",
       "categories": [
@@ -2768,7 +2768,7 @@
     },
     {
       "id": "ip_real_20",
-      "detection_file": "detection/ip_real_20.py",
+      "detection_file": "funcao_com_bug/ip_real_20.py",
       "harness_file": "bugs/ip_real_20.py",
       "function": "generate_sub_moved_events",
       "categories": [
@@ -2799,7 +2799,7 @@
     },
     {
       "id": "ip_real_21",
-      "detection_file": "detection/ip_real_21.py",
+      "detection_file": "funcao_com_bug/ip_real_21.py",
       "harness_file": "bugs/ip_real_21.py",
       "function": "SortedDict.__eq__",
       "categories": [
@@ -2830,7 +2830,7 @@
     },
     {
       "id": "ip_real_22",
-      "detection_file": "detection/ip_real_22.py",
+      "detection_file": "funcao_com_bug/ip_real_22.py",
       "harness_file": "bugs/ip_real_22.py",
       "function": "match",
       "categories": [
@@ -2862,7 +2862,7 @@
     },
     {
       "id": "ip_real_23",
-      "detection_file": "detection/ip_real_23.py",
+      "detection_file": "funcao_com_bug/ip_real_23.py",
       "harness_file": "bugs/ip_real_23.py",
       "function": "Task.to_str_params",
       "categories": [
@@ -2894,7 +2894,7 @@
     },
     {
       "id": "ip_real_25",
-      "detection_file": "detection/ip_real_25.py",
+      "detection_file": "funcao_com_bug/ip_real_25.py",
       "harness_file": "bugs/ip_real_25.py",
       "function": "SimpleTaskState.get_necessary_tasks",
       "categories": [
@@ -2926,7 +2926,7 @@
     },
     {
       "id": "ip_real_26",
-      "detection_file": "detection/ip_real_26.py",
+      "detection_file": "funcao_com_bug/ip_real_26.py",
       "harness_file": "bugs/ip_real_26.py",
       "function": "Scheduler.add_task",
       "categories": [
@@ -2958,7 +2958,7 @@
     },
     {
       "id": "ip_real_28",
-      "detection_file": "detection/ip_real_28.py",
+      "detection_file": "funcao_com_bug/ip_real_28.py",
       "harness_file": "bugs/ip_real_28.py",
       "function": "IOLoop.initialize",
       "categories": [
@@ -2989,7 +2989,7 @@
     },
     {
       "id": "ip_real_32",
-      "detection_file": "detection/ip_real_32.py",
+      "detection_file": "funcao_com_bug/ip_real_32.py",
       "harness_file": "bugs/ip_real_32.py",
       "function": "date_convert",
       "categories": [
@@ -3020,7 +3020,7 @@
     },
     {
       "id": "ip_real_33",
-      "detection_file": "detection/ip_real_33.py",
+      "detection_file": "funcao_com_bug/ip_real_33.py",
       "harness_file": "bugs/ip_real_33.py",
       "function": "send2trash",
       "categories": [
@@ -3049,7 +3049,7 @@
     },
     {
       "id": "ir_real_01",
-      "detection_file": "detection/ir_real_01.py",
+      "detection_file": "funcao_com_bug/ir_real_01.py",
       "harness_file": "bugs/ir_real_01.py",
       "function": "gamma / lgamma",
       "categories": [
@@ -3080,7 +3080,7 @@
     },
     {
       "id": "ir_real_02",
-      "detection_file": "detection/ir_real_02.py",
+      "detection_file": "funcao_com_bug/ir_real_02.py",
       "harness_file": "bugs/ir_real_02.py",
       "function": "module-level",
       "categories": [
@@ -3111,7 +3111,7 @@
     },
     {
       "id": "ir_real_03",
-      "detection_file": "detection/ir_real_03.py",
+      "detection_file": "funcao_com_bug/ir_real_03.py",
       "harness_file": "bugs/ir_real_03.py",
       "function": "try_match_char_class_range",
       "categories": [
@@ -3142,7 +3142,7 @@
     },
     {
       "id": "ir_real_05",
-      "detection_file": "detection/ir_real_05.py",
+      "detection_file": "funcao_com_bug/ir_real_05.py",
       "harness_file": "bugs/ir_real_05.py",
       "function": "string_to_int",
       "categories": [
@@ -3173,7 +3173,7 @@
     },
     {
       "id": "nm_real_23",
-      "detection_file": "detection/nm_real_23.py",
+      "detection_file": "funcao_com_bug/nm_real_23.py",
       "harness_file": "bugs/nm_real_23.py",
       "function": "Markdown._html_class_str_from_tag",
       "categories": [
@@ -3203,7 +3203,7 @@
     },
     {
       "id": "dz_real_04",
-      "detection_file": "detection/dz_real_04.py",
+      "detection_file": "funcao_com_bug/dz_real_04.py",
       "harness_file": "bugs/dz_real_04.py",
       "function": "interpolate_bilinear_2x_fwd",
       "categories": [
@@ -3236,7 +3236,7 @@
     },
     {
       "id": "nm_real_24",
-      "detection_file": "detection/nm_real_24.py",
+      "detection_file": "funcao_com_bug/nm_real_24.py",
       "harness_file": "bugs/nm_real_24.py",
       "function": "reformat_many",
       "categories": [
@@ -3267,7 +3267,7 @@
     },
     {
       "id": "vm_real_03",
-      "detection_file": "detection/vm_real_03.py",
+      "detection_file": "funcao_com_bug/vm_real_03.py",
       "harness_file": "bugs/vm_real_03.py",
       "function": "Language.pipe",
       "categories": [
@@ -3298,7 +3298,7 @@
     },
     {
       "id": "nm_real_25",
-      "detection_file": "detection/nm_real_25.py",
+      "detection_file": "funcao_com_bug/nm_real_25.py",
       "harness_file": "bugs/nm_real_25.py",
       "function": "HTTP1Connection._can_keep_alive",
       "categories": [
@@ -3329,7 +3329,7 @@
     },
     {
       "id": "tm_real_11",
-      "detection_file": "detection/tm_real_11.py",
+      "detection_file": "funcao_com_bug/tm_real_11.py",
       "harness_file": "bugs/tm_real_11.py",
       "function": "SitemapSpider._parse_sitemap",
       "categories": [
@@ -3360,7 +3360,7 @@
     },
     {
       "id": "vm_real_04",
-      "detection_file": "detection/vm_real_04.py",
+      "detection_file": "funcao_com_bug/vm_real_04.py",
       "harness_file": "bugs/vm_real_04.py",
       "function": "YoutubeDL._build_format_filter",
       "categories": [
@@ -3392,7 +3392,7 @@
     },
     {
       "id": "vm_real_05",
-      "detection_file": "detection/vm_real_05.py",
+      "detection_file": "funcao_com_bug/vm_real_05.py",
       "harness_file": "bugs/vm_real_05.py",
       "function": "LocalFileSystem.move",
       "categories": [
@@ -3423,7 +3423,7 @@
     },
     {
       "id": "vm_real_06",
-      "detection_file": "detection/vm_real_06.py",
+      "detection_file": "funcao_com_bug/vm_real_06.py",
       "harness_file": "bugs/vm_real_06.py",
       "function": "CrawlerProcess.__init__",
       "categories": [
@@ -3454,7 +3454,7 @@
     },
     {
       "id": "tm_real_12",
-      "detection_file": "detection/tm_real_12.py",
+      "detection_file": "funcao_com_bug/tm_real_12.py",
       "harness_file": "bugs/tm_real_12.py",
       "function": "S3CopyToTable.run",
       "categories": [
@@ -3485,7 +3485,7 @@
     },
     {
       "id": "io_real_02",
-      "detection_file": "detection/io_real_02.py",
+      "detection_file": "funcao_com_bug/io_real_02.py",
       "harness_file": "bugs/io_real_02.py",
       "function": "integer_squareroot",
       "categories": [
@@ -3517,7 +3517,7 @@
     },
     {
       "id": "vm_real_07",
-      "detection_file": "detection/vm_real_07.py",
+      "detection_file": "funcao_com_bug/vm_real_07.py",
       "harness_file": "bugs/vm_real_07.py",
       "function": "fit_generator",
       "categories": [
@@ -3549,7 +3549,7 @@
     },
     {
       "id": "tm_real_13",
-      "detection_file": "detection/tm_real_13.py",
+      "detection_file": "funcao_com_bug/tm_real_13.py",
       "harness_file": "bugs/tm_real_13.py",
       "function": "XmlItemExporter._export_xml_field",
       "categories": [
@@ -3580,7 +3580,7 @@
     },
     {
       "id": "vm_real_08",
-      "detection_file": "detection/vm_real_08.py",
+      "detection_file": "funcao_com_bug/vm_real_08.py",
       "harness_file": "bugs/vm_real_08.py",
       "function": "get_write_function",
       "categories": [
@@ -3611,7 +3611,7 @@
     },
     {
       "id": "ip_real_34",
-      "detection_file": "detection/ip_real_34.py",
+      "detection_file": "funcao_com_bug/ip_real_34.py",
       "harness_file": "bugs/ip_real_34.py",
       "function": "find_hook",
       "categories": [
@@ -3643,7 +3643,7 @@
     },
     {
       "id": "oob_real_06",
-      "detection_file": "detection/oob_real_06.py",
+      "detection_file": "funcao_com_bug/oob_real_06.py",
       "harness_file": "bugs/oob_real_06.py",
       "function": "merge_configs",
       "categories": [
@@ -3674,7 +3674,7 @@
     },
     {
       "id": "bip_ansible_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "verify_collections",
       "expression": "local_collection = CollectionRequirement.from_path(b_search_path, False)",
       "categories": [
@@ -3695,11 +3695,11 @@
         "source_file": "lib/ansible/galaxy/collection.py",
         "source_function": "verify_collections"
       },
-      "detection_file": "detection/bip_ansible_1.py"
+      "detection_file": "funcao_com_bug/bip_ansible_1.py"
     },
     {
       "id": "bip_ansible_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DistributionFiles.parse_distribution_file_Debian",
       "expression": "path == '/etc/lsb-release' and 'Kali' in data",
       "categories": [
@@ -3720,11 +3720,11 @@
         "source_file": "lib/ansible/module_utils/facts/system/distribution.py",
         "source_function": "DistributionFiles.parse_distribution_file_Debian"
       },
-      "detection_file": "detection/bip_ansible_3.py"
+      "detection_file": "funcao_com_bug/bip_ansible_3.py"
     },
     {
       "id": "bip_ansible_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "check_required_arguments",
       "expression": "msg = \"missing required arguments: %s\" % \", \".join(missing)",
       "categories": [
@@ -3745,11 +3745,11 @@
         "source_file": "lib/ansible/module_utils/common/validation.py",
         "source_function": "check_required_arguments"
       },
-      "detection_file": "detection/bip_ansible_5.py"
+      "detection_file": "funcao_com_bug/bip_ansible_5.py"
     },
     {
       "id": "bip_ansible_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "LinuxHardware.get_cpu_facts",
       "expression": "collected_facts.get('ansible_architecture', '').startswith(('armv', 'aarch'))",
       "categories": [
@@ -3770,11 +3770,11 @@
         "source_file": "lib/ansible/module_utils/facts/hardware/linux.py",
         "source_function": "LinuxHardware.get_cpu_facts"
       },
-      "detection_file": "detection/bip_ansible_16.py"
+      "detection_file": "funcao_com_bug/bip_ansible_16.py"
     },
     {
       "id": "bip_black_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "generate_ignored_nodes",
       "expression": "is_fmt_on = False",
       "categories": [
@@ -3795,11 +3795,11 @@
         "source_file": "black.py",
         "source_function": "generate_ignored_nodes"
       },
-      "detection_file": "detection/bip_black_2.py"
+      "detection_file": "funcao_com_bug/bip_black_2.py"
     },
     {
       "id": "bip_black_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "normalize_invisible_parens",
       "expression": "node.insert_child(index, Node(syms.atom, [lpar, child, rpar]))",
       "categories": [
@@ -3820,11 +3820,11 @@
         "source_file": "black.py",
         "source_function": "normalize_invisible_parens"
       },
-      "detection_file": "detection/bip_black_7.py"
+      "detection_file": "funcao_com_bug/bip_black_7.py"
     },
     {
       "id": "bip_black_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "bracket_split_build_line",
       "expression": "leaves",
       "categories": [
@@ -3845,11 +3845,11 @@
         "source_file": "black.py",
         "source_function": "bracket_split_build_line"
       },
-      "detection_file": "detection/bip_black_8.py"
+      "detection_file": "funcao_com_bug/bip_black_8.py"
     },
     {
       "id": "bip_black_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_grammars",
       "expression": "all(not version.is_python2() for version in target_versions)",
       "categories": [
@@ -3870,11 +3870,11 @@
         "source_file": "black.py",
         "source_function": "get_grammars"
       },
-      "detection_file": "detection/bip_black_9.py"
+      "detection_file": "funcao_com_bug/bip_black_9.py"
     },
     {
       "id": "bip_black_13",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "generate_tokens",
       "expression": "token == 'def'",
       "categories": [
@@ -3895,11 +3895,11 @@
         "source_file": "blib2to3/pgen2/tokenize.py",
         "source_function": "generate_tokens"
       },
-      "detection_file": "detection/bip_black_13.py"
+      "detection_file": "funcao_com_bug/bip_black_13.py"
     },
     {
       "id": "bip_black_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "gen_python_files_in_dir",
       "expression": "normalized_path = \"/\" + child.resolve().relative_to(root).as_posix()",
       "categories": [
@@ -3920,11 +3920,11 @@
         "source_file": "black.py",
         "source_function": "gen_python_files_in_dir"
       },
-      "detection_file": "detection/bip_black_16.py"
+      "detection_file": "funcao_com_bug/bip_black_16.py"
     },
     {
       "id": "bip_black_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "EmptyLineTracker._maybe_empty_lines",
       "expression": "return 0, 0",
       "categories": [
@@ -3945,11 +3945,11 @@
         "source_file": "black.py",
         "source_function": "EmptyLineTracker._maybe_empty_lines"
       },
-      "detection_file": "detection/bip_black_19.py"
+      "detection_file": "funcao_com_bug/bip_black_19.py"
     },
     {
       "id": "bip_black_20",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "format_file_in_place",
       "expression": "src_name = f\"{src.name}  (original)\"",
       "categories": [
@@ -3970,11 +3970,11 @@
         "source_file": "black.py",
         "source_function": "format_file_in_place"
       },
-      "detection_file": "detection/bip_black_20.py"
+      "detection_file": "funcao_com_bug/bip_black_20.py"
     },
     {
       "id": "bip_black_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "dump_to_file",
       "expression": "tempfile.NamedTemporaryFile(\n        mode=\"w\", prefix=\"blk_\", suffix=\".log\", delete=False\n    )",
       "categories": [
@@ -3995,11 +3995,11 @@
         "source_file": "black.py",
         "source_function": "dump_to_file"
       },
-      "detection_file": "detection/bip_black_21.py"
+      "detection_file": "funcao_com_bug/bip_black_21.py"
     },
     {
       "id": "bip_cookiecutter_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "generate_context",
       "expression": "open(context_file)",
       "categories": [
@@ -4020,11 +4020,11 @@
         "source_file": "cookiecutter/generate.py",
         "source_function": "generate_context"
       },
-      "detection_file": "detection/bip_cookiecutter_1.py"
+      "detection_file": "funcao_com_bug/bip_cookiecutter_1.py"
     },
     {
       "id": "bip_cookiecutter_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "read_user_choice",
       "expression": "user_choice = click.prompt(\n        prompt, type=click.Choice(choices), default=default\n    )",
       "categories": [
@@ -4045,11 +4045,11 @@
         "source_file": "cookiecutter/prompt.py",
         "source_function": "read_user_choice"
       },
-      "detection_file": "detection/bip_cookiecutter_3.py"
+      "detection_file": "funcao_com_bug/bip_cookiecutter_3.py"
     },
     {
       "id": "bip_fastapi_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "APIRouter.add_api_websocket_route",
       "expression": "route = APIWebSocketRoute(path, endpoint=endpoint, name=name)",
       "categories": [
@@ -4070,11 +4070,11 @@
         "source_file": "fastapi/routing.py",
         "source_function": "APIRouter.add_api_websocket_route"
       },
-      "detection_file": "detection/bip_fastapi_2.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_2.py"
     },
     {
       "id": "bip_fastapi_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_openapi_path",
       "expression": "operation[\"parameters\"] = parameters",
       "categories": [
@@ -4095,11 +4095,11 @@
         "source_file": "fastapi/openapi/utils.py",
         "source_function": "get_openapi_path"
       },
-      "detection_file": "detection/bip_fastapi_4.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_4.py"
     },
     {
       "id": "bip_fastapi_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "create_cloned_field",
       "expression": "use_type.__fields__[f.name] = f",
       "categories": [
@@ -4120,11 +4120,11 @@
         "source_file": "fastapi/utils.py",
         "source_function": "create_cloned_field"
       },
-      "detection_file": "detection/bip_fastapi_5.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_5.py"
     },
     {
       "id": "bip_fastapi_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_body_field",
       "expression": "field = Field(\n        name=\"body\",\n        type_=BodyModel,\n        default=None,\n        required=required,\n        model_config=BaseConfig,\n        class_validators={},\n        alias=\"body\",\n        schema=BodySchema(None),\n    )",
       "categories": [
@@ -4145,11 +4145,11 @@
         "source_file": "fastapi/dependencies/utils.py",
         "source_function": "get_body_field"
       },
-      "detection_file": "detection/bip_fastapi_9.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_9.py"
     },
     {
       "id": "bip_fastapi_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "serialize_response",
       "expression": "return jsonable_encoder(\n            value,\n            include=include,\n            exclude=exclude,\n            by_alias=by_alias,\n            skip_defaults=skip_defaults,\n        )",
       "categories": [
@@ -4170,11 +4170,11 @@
         "source_file": "fastapi/routing.py",
         "source_function": "serialize_response"
       },
-      "detection_file": "detection/bip_fastapi_10.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_10.py"
     },
     {
       "id": "bip_fastapi_11",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "is_scalar_field",
       "expression": "return (\n        field.shape == Shape.SINGLETON\n        and not lenient_issubclass(field.type_, BaseModel)\n        and not lenient_issubclass(field.type_, sequence_types + (dict,))\n        and not isinstance(field.schema, params.Body)\n    )",
       "categories": [
@@ -4195,11 +4195,11 @@
         "source_file": "fastapi/dependencies/utils.py",
         "source_function": "is_scalar_field"
       },
-      "detection_file": "detection/bip_fastapi_11.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_11.py"
     },
     {
       "id": "bip_fastapi_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "jsonable_encoder",
       "expression": "not obj.Config.json_encoders",
       "categories": [
@@ -4220,11 +4220,11 @@
         "source_file": "fastapi/encoders.py",
         "source_function": "jsonable_encoder"
       },
-      "detection_file": "detection/bip_fastapi_16.py"
+      "detection_file": "funcao_com_bug/bip_fastapi_16.py"
     },
     {
       "id": "bip_httpie_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "HTTPRequest.headers",
       "expression": "'Host' not in headers",
       "categories": [
@@ -4245,11 +4245,11 @@
         "source_file": "httpie/models.py",
         "source_function": "HTTPRequest.headers"
       },
-      "detection_file": "detection/bip_httpie_4.py"
+      "detection_file": "funcao_com_bug/bip_httpie_4.py"
     },
     {
       "id": "bip_keras_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_clone_functional_model",
       "expression": "output_masks = to_list(\n                        layer.compute_mask(computed_tensor,\n                                           computed_mask))",
       "categories": [
@@ -4270,11 +4270,11 @@
         "source_file": "keras/models.py",
         "source_function": "_clone_functional_model"
       },
-      "detection_file": "detection/bip_keras_3.py"
+      "detection_file": "funcao_com_bug/bip_keras_3.py"
     },
     {
       "id": "bip_keras_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TFOptimizer.get_updates",
       "expression": "grads = self.optimizer.compute_gradients(loss, params)",
       "categories": [
@@ -4295,11 +4295,11 @@
         "source_file": "keras/optimizers.py",
         "source_function": "TFOptimizer.get_updates"
       },
-      "detection_file": "detection/bip_keras_4.py"
+      "detection_file": "funcao_com_bug/bip_keras_4.py"
     },
     {
       "id": "bip_keras_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_file",
       "expression": "cache_dir = os.path.join(os.path.expanduser('~'), '.keras')",
       "categories": [
@@ -4320,11 +4320,11 @@
         "source_file": "keras/utils/data_utils.py",
         "source_function": "get_file"
       },
-      "detection_file": "detection/bip_keras_5.py"
+      "detection_file": "funcao_com_bug/bip_keras_5.py"
     },
     {
       "id": "bip_keras_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "weighted_masked_objective",
       "expression": "score_array /= K.mean(mask)",
       "categories": [
@@ -4345,11 +4345,11 @@
         "source_file": "keras/engine/training_utils.py",
         "source_function": "weighted_masked_objective"
       },
-      "detection_file": "detection/bip_keras_6.py"
+      "detection_file": "funcao_com_bug/bip_keras_6.py"
     },
     {
       "id": "bip_keras_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "KerasRegressor.predict",
       "expression": "return np.squeeze(self.model.predict(x, **kwargs))",
       "categories": [
@@ -4370,11 +4370,11 @@
         "source_file": "keras/wrappers/scikit_learn.py",
         "source_function": "KerasRegressor.predict"
       },
-      "detection_file": "detection/bip_keras_7.py"
+      "detection_file": "funcao_com_bug/bip_keras_7.py"
     },
     {
       "id": "bip_keras_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Network.from_config",
       "expression": "add_unprocessed_node(layer, node_data)",
       "categories": [
@@ -4395,11 +4395,11 @@
         "source_file": "keras/engine/network.py",
         "source_function": "Network.from_config"
       },
-      "detection_file": "detection/bip_keras_8.py"
+      "detection_file": "funcao_com_bug/bip_keras_8.py"
     },
     {
       "id": "bip_keras_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "process_list_block",
       "expression": "block = docstring[starting_point:(None if ending_point == -1 else\n                                      ending_point - 1)]",
       "categories": [
@@ -4420,11 +4420,11 @@
         "source_file": "docs/autogen.py",
         "source_function": "process_list_block"
       },
-      "detection_file": "detection/bip_keras_9.py"
+      "detection_file": "funcao_com_bug/bip_keras_9.py"
     },
     {
       "id": "bip_keras_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "standardize_weights",
       "expression": "sample_weight is not None and class_weight is not None",
       "categories": [
@@ -4445,11 +4445,11 @@
         "source_file": "keras/engine/training_utils.py",
         "source_function": "standardize_weights"
       },
-      "detection_file": "detection/bip_keras_10.py"
+      "detection_file": "funcao_com_bug/bip_keras_10.py"
     },
     {
       "id": "bip_keras_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "sparse_top_k_categorical_accuracy",
       "expression": "return K.mean(K.in_top_k(y_pred, K.cast(K.max(y_true, axis=-1), 'int32'), k),\n                  axis=-1)",
       "categories": [
@@ -4470,11 +4470,11 @@
         "source_file": "keras/metrics.py",
         "source_function": "sparse_top_k_categorical_accuracy"
       },
-      "detection_file": "detection/bip_keras_14.py"
+      "detection_file": "funcao_com_bug/bip_keras_14.py"
     },
     {
       "id": "bip_keras_17",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "sparse_categorical_accuracy",
       "expression": "return K.cast(K.equal(K.max(y_true, axis=-1),\n                          K.cast(K.argmax(y_pred, axis=-1), K.floatx())),\n                  K.floatx())",
       "categories": [
@@ -4495,11 +4495,11 @@
         "source_file": "keras/metrics.py",
         "source_function": "sparse_categorical_accuracy"
       },
-      "detection_file": "detection/bip_keras_17.py"
+      "detection_file": "funcao_com_bug/bip_keras_17.py"
     },
     {
       "id": "bip_keras_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Sequential.add",
       "expression": "batch_shape = first_layer.batch_input_shape",
       "categories": [
@@ -4520,11 +4520,11 @@
         "source_file": "keras/engine/sequential.py",
         "source_function": "Sequential.add"
       },
-      "detection_file": "detection/bip_keras_23.py"
+      "detection_file": "funcao_com_bug/bip_keras_23.py"
     },
     {
       "id": "bip_keras_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TensorBoard.set_model",
       "expression": "tf.summary.histogram('{}_out'.format(layer.name),\n                                         layer.output)",
       "categories": [
@@ -4545,11 +4545,11 @@
         "source_file": "keras/callbacks.py",
         "source_function": "TensorBoard.set_model"
       },
-      "detection_file": "detection/bip_keras_24.py"
+      "detection_file": "funcao_com_bug/bip_keras_24.py"
     },
     {
       "id": "bip_keras_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_preprocess_numpy_input",
       "expression": "mode == 'tf'",
       "categories": [
@@ -4570,11 +4570,11 @@
         "source_file": "keras/applications/imagenet_utils.py",
         "source_function": "_preprocess_numpy_input"
       },
-      "detection_file": "detection/bip_keras_25.py"
+      "detection_file": "funcao_com_bug/bip_keras_25.py"
     },
     {
       "id": "bip_keras_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "rnn",
       "expression": "new_states = [tf.where(tiled_mask_t, new_states[i], states[i]) for i in range(len(states))]",
       "categories": [
@@ -4595,11 +4595,11 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "rnn"
       },
-      "detection_file": "detection/bip_keras_26.py"
+      "detection_file": "funcao_com_bug/bip_keras_26.py"
     },
     {
       "id": "bip_keras_31",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ctc_batch_cost",
       "expression": "label_length = tf.to_int32(tf.squeeze(label_length))",
       "categories": [
@@ -4620,11 +4620,11 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "ctc_batch_cost"
       },
-      "detection_file": "detection/bip_keras_31.py"
+      "detection_file": "funcao_com_bug/bip_keras_31.py"
     },
     {
       "id": "bip_keras_33",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "text_to_word_sequence",
       "expression": "sys.version_info < (3,) and isinstance(text, unicode)",
       "categories": [
@@ -4645,11 +4645,11 @@
         "source_file": "keras/preprocessing/text.py",
         "source_function": "text_to_word_sequence"
       },
-      "detection_file": "detection/bip_keras_33.py"
+      "detection_file": "funcao_com_bug/bip_keras_33.py"
     },
     {
       "id": "bip_keras_36",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "separable_conv1d",
       "expression": "strides = (1, 1) + strides + (1,)",
       "categories": [
@@ -4670,11 +4670,11 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "separable_conv1d"
       },
-      "detection_file": "detection/bip_keras_36.py"
+      "detection_file": "funcao_com_bug/bip_keras_36.py"
     },
     {
       "id": "bip_keras_38",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "StackedRNNCells.build",
       "expression": "input_shape = (input_shape[0], input_shape[1], output_dim)",
       "categories": [
@@ -4695,11 +4695,11 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "StackedRNNCells.build"
       },
-      "detection_file": "detection/bip_keras_38.py"
+      "detection_file": "funcao_com_bug/bip_keras_38.py"
     },
     {
       "id": "bip_keras_40",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RNN.compute_output_shape",
       "expression": "output_dim = self.cell.state_size[0]",
       "categories": [
@@ -4720,11 +4720,11 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "RNN.compute_output_shape"
       },
-      "detection_file": "detection/bip_keras_40.py"
+      "detection_file": "funcao_com_bug/bip_keras_40.py"
     },
     {
       "id": "bip_keras_43",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "to_categorical",
       "expression": "y = y.ravel()",
       "categories": [
@@ -4745,11 +4745,11 @@
         "source_file": "keras/utils/np_utils.py",
         "source_function": "to_categorical"
       },
-      "detection_file": "detection/bip_keras_43.py"
+      "detection_file": "funcao_com_bug/bip_keras_43.py"
     },
     {
       "id": "bip_keras_45",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "LSTMCell.call",
       "expression": "x_i = K.dot(inputs_i, self.kernel_i) + self.bias_i",
       "categories": [
@@ -4770,11 +4770,11 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "LSTMCell.call"
       },
-      "detection_file": "detection/bip_keras_45.py"
+      "detection_file": "funcao_com_bug/bip_keras_45.py"
     },
     {
       "id": "bip_luigi_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "S3CopyToTable.does_table_exist",
       "expression": "query = (\"select 1 as table_exists \"\n                     \"from information_schema.tables \"\n                     \"where table_schema = %s and table_name = %s limit 1\")",
       "categories": [
@@ -4795,11 +4795,11 @@
         "source_file": "luigi/contrib/redshift.py",
         "source_function": "S3CopyToTable.does_table_exist"
       },
-      "detection_file": "detection/bip_luigi_8.py"
+      "detection_file": "funcao_com_bug/bip_luigi_8.py"
     },
     {
       "id": "bip_luigi_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Worker.get_pending_tasks",
       "expression": "return state.get_pending_tasks()",
       "categories": [
@@ -4820,11 +4820,11 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "Worker.get_pending_tasks"
       },
-      "detection_file": "detection/bip_luigi_10.py"
+      "detection_file": "funcao_com_bug/bip_luigi_10.py"
     },
     {
       "id": "bip_luigi_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "CentralPlannerScheduler.prune",
       "expression": "task.id not in necessary_tasks and self._state.prune(task, self._config)",
       "categories": [
@@ -4845,11 +4845,11 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "CentralPlannerScheduler.prune"
       },
-      "detection_file": "detection/bip_luigi_16.py"
+      "detection_file": "funcao_com_bug/bip_luigi_16.py"
     },
     {
       "id": "bip_luigi_17",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_WorkerSchedulerFactory.create_local_scheduler",
       "expression": "return scheduler.CentralPlannerScheduler(prune_on_get_work=True)",
       "categories": [
@@ -4870,11 +4870,11 @@
         "source_file": "luigi/interface.py",
         "source_function": "_WorkerSchedulerFactory.create_local_scheduler"
       },
-      "detection_file": "detection/bip_luigi_17.py"
+      "detection_file": "funcao_com_bug/bip_luigi_17.py"
     },
     {
       "id": "bip_luigi_18",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SimpleTaskState.set_status",
       "expression": "task.scheduler_disable_time is not None",
       "categories": [
@@ -4895,11 +4895,11 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.set_status"
       },
-      "detection_file": "detection/bip_luigi_18.py"
+      "detection_file": "funcao_com_bug/bip_luigi_18.py"
     },
     {
       "id": "bip_luigi_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SimpleTaskState.set_status",
       "expression": "new_status == FAILED and task.can_disable()",
       "categories": [
@@ -4920,11 +4920,11 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.set_status"
       },
-      "detection_file": "detection/bip_luigi_19.py"
+      "detection_file": "funcao_com_bug/bip_luigi_19.py"
     },
     {
       "id": "bip_luigi_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "run",
       "expression": "use_dynamic_argparse",
       "categories": [
@@ -4945,11 +4945,11 @@
         "source_file": "luigi/interface.py",
         "source_function": "run"
       },
-      "detection_file": "detection/bip_luigi_21.py"
+      "detection_file": "funcao_com_bug/bip_luigi_21.py"
     },
     {
       "id": "bip_luigi_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SparkSubmitTask._dict_arg",
       "expression": "command += [name, '\"{0}={1}\"'.format(prop, value)]",
       "categories": [
@@ -4970,11 +4970,11 @@
         "source_file": "luigi/contrib/spark.py",
         "source_function": "SparkSubmitTask._dict_arg"
       },
-      "detection_file": "detection/bip_luigi_24.py"
+      "detection_file": "funcao_com_bug/bip_luigi_24.py"
     },
     {
       "id": "bip_luigi_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "HadoopJarJobRunner.run_job",
       "expression": "not job.jar() or not os.path.exists(job.jar())",
       "categories": [
@@ -4995,11 +4995,11 @@
         "source_file": "luigi/contrib/hadoop_jar.py",
         "source_function": "HadoopJarJobRunner.run_job"
       },
-      "detection_file": "detection/bip_luigi_26.py"
+      "detection_file": "funcao_com_bug/bip_luigi_26.py"
     },
     {
       "id": "bip_luigi_29",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Register.__get_reg",
       "expression": "cls.run == NotImplemented",
       "categories": [
@@ -5020,11 +5020,11 @@
         "source_file": "luigi/task_register.py",
         "source_function": "Register.__get_reg"
       },
-      "detection_file": "detection/bip_luigi_29.py"
+      "detection_file": "funcao_com_bug/bip_luigi_29.py"
     },
     {
       "id": "bip_luigi_33",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Task.get_param_values",
       "expression": "positional_params = [(n, p) for n, p in params if p.significant]",
       "categories": [
@@ -5045,11 +5045,11 @@
         "source_file": "luigi/task.py",
         "source_function": "Task.get_param_values"
       },
-      "detection_file": "detection/bip_luigi_33.py"
+      "detection_file": "funcao_com_bug/bip_luigi_33.py"
     },
     {
       "id": "bip_matplotlib_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Axes.scatter",
       "expression": "edgecolors = 'face'",
       "categories": [
@@ -5070,11 +5070,11 @@
         "source_file": "lib/matplotlib/axes/_axes.py",
         "source_function": "Axes.scatter"
       },
-      "detection_file": "detection/bip_matplotlib_2.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_2.py"
     },
     {
       "id": "bip_matplotlib_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Axes._parse_scatter_color_args",
       "expression": "c.size == xsize",
       "categories": [
@@ -5095,11 +5095,11 @@
         "source_file": "lib/matplotlib/axes/_axes.py",
         "source_function": "Axes._parse_scatter_color_args"
       },
-      "detection_file": "detection/bip_matplotlib_6.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_6.py"
     },
     {
       "id": "bip_matplotlib_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "LightSource.shade_rgb",
       "expression": "hasattr(intensity, 'mask')",
       "categories": [
@@ -5120,11 +5120,11 @@
         "source_file": "lib/matplotlib/colors.py",
         "source_function": "LightSource.shade_rgb"
       },
-      "detection_file": "detection/bip_matplotlib_7.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_7.py"
     },
     {
       "id": "bip_matplotlib_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PolarAxes.draw",
       "expression": "thetamin, thetamax = np.rad2deg(self._realViewLim.intervalx)",
       "categories": [
@@ -5145,11 +5145,11 @@
         "source_file": "lib/matplotlib/projections/polar.py",
         "source_function": "PolarAxes.draw"
       },
-      "detection_file": "detection/bip_matplotlib_9.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_9.py"
     },
     {
       "id": "bip_matplotlib_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Axis.set_tick_params",
       "expression": "reset",
       "categories": [
@@ -5170,11 +5170,11 @@
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "Axis.set_tick_params"
       },
-      "detection_file": "detection/bip_matplotlib_10.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_10.py"
     },
     {
       "id": "bip_matplotlib_11",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Text.get_window_extent",
       "expression": "dpi is not None",
       "categories": [
@@ -5195,11 +5195,11 @@
         "source_file": "lib/matplotlib/text.py",
         "source_function": "Text.get_window_extent"
       },
-      "detection_file": "detection/bip_matplotlib_11.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_11.py"
     },
     {
       "id": "bip_matplotlib_13",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Path.make_compound_path",
       "expression": "vertices = np.concatenate([x.vertices for x in args])",
       "categories": [
@@ -5220,11 +5220,11 @@
         "source_file": "lib/matplotlib/path.py",
         "source_function": "Path.make_compound_path"
       },
-      "detection_file": "detection/bip_matplotlib_13.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_13.py"
     },
     {
       "id": "bip_matplotlib_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Text.update",
       "expression": "sentinel = object()",
       "categories": [
@@ -5245,11 +5245,11 @@
         "source_file": "lib/matplotlib/text.py",
         "source_function": "Text.update"
       },
-      "detection_file": "detection/bip_matplotlib_14.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_14.py"
     },
     {
       "id": "bip_matplotlib_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "nonsingular",
       "expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
       "categories": [
@@ -5270,11 +5270,11 @@
         "source_file": "lib/matplotlib/transforms.py",
         "source_function": "nonsingular"
       },
-      "detection_file": "detection/bip_matplotlib_16.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_16.py"
     },
     {
       "id": "bip_matplotlib_17",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "nonsingular",
       "expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
       "categories": [
@@ -5295,11 +5295,11 @@
         "source_file": "lib/matplotlib/transforms.py",
         "source_function": "nonsingular"
       },
-      "detection_file": "detection/bip_matplotlib_17.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_17.py"
     },
     {
       "id": "bip_matplotlib_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AxesBase.apply_aspect",
       "expression": "x0, x1 = map(x_trf.inverted().transform, dL.intervalx)",
       "categories": [
@@ -5320,11 +5320,11 @@
         "source_file": "lib/matplotlib/axes/_base.py",
         "source_function": "_AxesBase.apply_aspect"
       },
-      "detection_file": "detection/bip_matplotlib_23.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_23.py"
     },
     {
       "id": "bip_matplotlib_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "EventCollection.__init__",
       "expression": "positions is None or len(positions) == 0",
       "categories": [
@@ -5345,11 +5345,11 @@
         "source_file": "lib/matplotlib/collections.py",
         "source_function": "EventCollection.__init__"
       },
-      "detection_file": "detection/bip_matplotlib_25.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_25.py"
     },
     {
       "id": "bip_matplotlib_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_make_getset_interval",
       "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
       "categories": [
@@ -5370,11 +5370,11 @@
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "_make_getset_interval"
       },
-      "detection_file": "detection/bip_matplotlib_26.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_26.py"
     },
     {
       "id": "bip_matplotlib_27",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ColorbarBase.set_label",
       "expression": "self._label = str(label)",
       "categories": [
@@ -5395,11 +5395,11 @@
         "source_file": "lib/matplotlib/colorbar.py",
         "source_function": "ColorbarBase.set_label"
       },
-      "detection_file": "detection/bip_matplotlib_27.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_27.py"
     },
     {
       "id": "bip_matplotlib_28",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AxesBase.set_xlim",
       "expression": "self.get_xscale() == 'log'",
       "categories": [
@@ -5420,11 +5420,11 @@
         "source_file": "lib/matplotlib/axes/_base.py",
         "source_function": "_AxesBase.set_xlim"
       },
-      "detection_file": "detection/bip_matplotlib_28.py"
+      "detection_file": "funcao_com_bug/bip_matplotlib_28.py"
     },
     {
       "id": "bip_pandas_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "is_string_dtype",
       "expression": "is_excluded_checks = (is_period_dtype, is_interval_dtype)",
       "categories": [
@@ -5445,11 +5445,11 @@
         "source_file": "pandas/core/dtypes/common.py",
         "source_function": "is_string_dtype"
       },
-      "detection_file": "detection/bip_pandas_1.py"
+      "detection_file": "funcao_com_bug/bip_pandas_1.py"
     },
     {
       "id": "bip_pandas_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index._join_multi",
       "expression": "return multi_join_idx, lidx, ridx",
       "categories": [
@@ -5470,11 +5470,11 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index._join_multi"
       },
-      "detection_file": "detection/bip_pandas_4.py"
+      "detection_file": "funcao_com_bug/bip_pandas_4.py"
     },
     {
       "id": "bip_pandas_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index._get_nearest_indexer",
       "expression": "target = np.asarray(target)",
       "categories": [
@@ -5495,11 +5495,11 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index._get_nearest_indexer"
       },
-      "detection_file": "detection/bip_pandas_7.py"
+      "detection_file": "funcao_com_bug/bip_pandas_7.py"
     },
     {
       "id": "bip_pandas_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Block.replace",
       "expression": "not mask.any()",
       "categories": [
@@ -5520,11 +5520,11 @@
         "source_file": "pandas/core/internals/blocks.py",
         "source_function": "Block.replace"
       },
-      "detection_file": "detection/bip_pandas_8.py"
+      "detection_file": "funcao_com_bug/bip_pandas_8.py"
     },
     {
       "id": "bip_pandas_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ExtensionBlock.putmask",
       "expression": "isinstance(new, np.ndarray) and len(new) == len(mask)",
       "categories": [
@@ -5545,11 +5545,11 @@
         "source_file": "pandas/core/internals/blocks.py",
         "source_function": "ExtensionBlock.putmask"
       },
-      "detection_file": "detection/bip_pandas_10.py"
+      "detection_file": "funcao_com_bug/bip_pandas_10.py"
     },
     {
       "id": "bip_pandas_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "should_series_dispatch",
       "expression": "is_datetime64_dtype(ldtype) and is_object_dtype(rdtype)",
       "categories": [
@@ -5570,11 +5570,11 @@
         "source_file": "pandas/core/ops/dispatch.py",
         "source_function": "should_series_dispatch"
       },
-      "detection_file": "detection/bip_pandas_14.py"
+      "detection_file": "funcao_com_bug/bip_pandas_14.py"
     },
     {
       "id": "bip_pandas_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_LocIndexer._getitem_axis",
       "expression": "is_list_like_indexer(key)",
       "categories": [
@@ -5595,11 +5595,11 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_LocIndexer._getitem_axis"
       },
-      "detection_file": "detection/bip_pandas_19.py"
+      "detection_file": "funcao_com_bug/bip_pandas_19.py"
     },
     {
       "id": "bip_pandas_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series._get_with",
       "expression": "isinstance(key, list)",
       "categories": [
@@ -5620,11 +5620,11 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series._get_with"
       },
-      "detection_file": "detection/bip_pandas_21.py"
+      "detection_file": "funcao_com_bug/bip_pandas_21.py"
     },
     {
       "id": "bip_pandas_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DatetimeTimedeltaMixin.intersection",
       "expression": "return type(self)(data=[])",
       "categories": [
@@ -5645,11 +5645,11 @@
         "source_file": "pandas/core/indexes/datetimelike.py",
         "source_function": "DatetimeTimedeltaMixin.intersection"
       },
-      "detection_file": "detection/bip_pandas_23.py"
+      "detection_file": "funcao_com_bug/bip_pandas_23.py"
     },
     {
       "id": "bip_pandas_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DatetimeArray.tz_localize",
       "expression": "return self._simple_new(new_dates, dtype=dtype, freq=self.freq)",
       "categories": [
@@ -5670,11 +5670,11 @@
         "source_file": "pandas/core/arrays/datetimes.py",
         "source_function": "DatetimeArray.tz_localize"
       },
-      "detection_file": "detection/bip_pandas_24.py"
+      "detection_file": "funcao_com_bug/bip_pandas_24.py"
     },
     {
       "id": "bip_pandas_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DatetimeArray.isocalendar",
       "expression": "sarray = fields.build_isocalendar_sarray(self.asi8)",
       "categories": [
@@ -5695,11 +5695,11 @@
         "source_file": "pandas/core/arrays/datetimes.py",
         "source_function": "DatetimeArray.isocalendar"
       },
-      "detection_file": "detection/bip_pandas_25.py"
+      "detection_file": "funcao_com_bug/bip_pandas_25.py"
     },
     {
       "id": "bip_pandas_28",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "StringMethods._get_series_list",
       "expression": "return [Series(others._values, index=others)]",
       "categories": [
@@ -5720,11 +5720,11 @@
         "source_file": "pandas/core/strings.py",
         "source_function": "StringMethods._get_series_list"
       },
-      "detection_file": "detection/bip_pandas_28.py"
+      "detection_file": "funcao_com_bug/bip_pandas_28.py"
     },
     {
       "id": "bip_pandas_29",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "IntervalArray.__setitem__",
       "expression": "needs_float_conversion",
       "categories": [
@@ -5745,11 +5745,11 @@
         "source_file": "pandas/core/arrays/interval.py",
         "source_function": "IntervalArray.__setitem__"
       },
-      "detection_file": "detection/bip_pandas_29.py"
+      "detection_file": "funcao_com_bug/bip_pandas_29.py"
     },
     {
       "id": "bip_pandas_33",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "IntegerArray._values_for_argsort",
       "expression": "data[self._mask] = data.min() - 1",
       "categories": [
@@ -5770,11 +5770,11 @@
         "source_file": "pandas/core/arrays/integer.py",
         "source_function": "IntegerArray._values_for_argsort"
       },
-      "detection_file": "detection/bip_pandas_33.py"
+      "detection_file": "funcao_com_bug/bip_pandas_33.py"
     },
     {
       "id": "bip_pandas_34",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TimeGrouper._get_time_bins",
       "expression": "binner = labels = date_range(\n            freq=self.freq,\n            start=first,\n            end=last,\n            tz=ax.tz,\n            name=ax.name,\n            ambiguous=\"infer\",\n            nonexistent=\"shift_forward\",\n        )",
       "categories": [
@@ -5795,11 +5795,11 @@
         "source_file": "pandas/core/resample.py",
         "source_function": "TimeGrouper._get_time_bins"
       },
-      "detection_file": "detection/bip_pandas_34.py"
+      "detection_file": "funcao_com_bug/bip_pandas_34.py"
     },
     {
       "id": "bip_pandas_35",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PeriodIndex._engine",
       "expression": "period = weakref.ref(self)",
       "categories": [
@@ -5820,11 +5820,11 @@
         "source_file": "pandas/core/indexes/period.py",
         "source_function": "PeriodIndex._engine"
       },
-      "detection_file": "detection/bip_pandas_35.py"
+      "detection_file": "funcao_com_bug/bip_pandas_35.py"
     },
     {
       "id": "bip_pandas_42",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "assert_series_equal",
       "expression": "is_interval_dtype(left.dtype) or is_interval_dtype(right.dtype)",
       "categories": [
@@ -5845,11 +5845,11 @@
         "source_file": "pandas/_testing.py",
         "source_function": "assert_series_equal"
       },
-      "detection_file": "detection/bip_pandas_42.py"
+      "detection_file": "funcao_com_bug/bip_pandas_42.py"
     },
     {
       "id": "bip_pandas_50",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_cat_compare_op",
       "expression": "ret[mask] = False",
       "categories": [
@@ -5870,11 +5870,11 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "_cat_compare_op"
       },
-      "detection_file": "detection/bip_pandas_50.py"
+      "detection_file": "funcao_com_bug/bip_pandas_50.py"
     },
     {
       "id": "bip_pandas_52",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SeriesGroupBy.nunique",
       "expression": "val[isna(val)] = np.datetime64(\"NaT\")",
       "categories": [
@@ -5895,11 +5895,11 @@
         "source_file": "pandas/core/groupby/generic.py",
         "source_function": "SeriesGroupBy.nunique"
       },
-      "detection_file": "detection/bip_pandas_52.py"
+      "detection_file": "funcao_com_bug/bip_pandas_52.py"
     },
     {
       "id": "bip_pandas_58",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Categorical.from_codes",
       "expression": "codes = np.asarray(codes)",
       "categories": [
@@ -5920,11 +5920,11 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "Categorical.from_codes"
       },
-      "detection_file": "detection/bip_pandas_58.py"
+      "detection_file": "funcao_com_bug/bip_pandas_58.py"
     },
     {
       "id": "bip_pandas_59",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_Rolling_and_Expanding.corr",
       "expression": "window = self._get_window(other)",
       "categories": [
@@ -5945,11 +5945,11 @@
         "source_file": "pandas/core/window/rolling.py",
         "source_function": "_Rolling_and_Expanding.corr"
       },
-      "detection_file": "detection/bip_pandas_59.py"
+      "detection_file": "funcao_com_bug/bip_pandas_59.py"
     },
     {
       "id": "bip_pandas_61",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series._get_with",
       "expression": "return self._get_values(key)",
       "categories": [
@@ -5970,11 +5970,11 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series._get_with"
       },
-      "detection_file": "detection/bip_pandas_61.py"
+      "detection_file": "funcao_com_bug/bip_pandas_61.py"
     },
     {
       "id": "bip_pandas_63",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AtIndexer._convert_key",
       "expression": "zip(self.obj.axes, key)",
       "categories": [
@@ -5995,11 +5995,11 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_AtIndexer._convert_key"
       },
-      "detection_file": "detection/bip_pandas_63.py"
+      "detection_file": "funcao_com_bug/bip_pandas_63.py"
     },
     {
       "id": "bip_pandas_64",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ExcelFormatter.__init__",
       "expression": "self.df = df",
       "categories": [
@@ -6020,11 +6020,11 @@
         "source_file": "pandas/io/formats/excel.py",
         "source_function": "ExcelFormatter.__init__"
       },
-      "detection_file": "detection/bip_pandas_64.py"
+      "detection_file": "funcao_com_bug/bip_pandas_64.py"
     },
     {
       "id": "bip_pandas_69",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AtIndexer._convert_key",
       "expression": "is_integer(i) and not ax.holds_integer()",
       "categories": [
@@ -6045,11 +6045,11 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_AtIndexer._convert_key"
       },
-      "detection_file": "detection/bip_pandas_69.py"
+      "detection_file": "funcao_com_bug/bip_pandas_69.py"
     },
     {
       "id": "bip_pandas_78",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DataFrame._reduce",
       "expression": "result = Series(result, index=labels)",
       "categories": [
@@ -6070,11 +6070,11 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame._reduce"
       },
-      "detection_file": "detection/bip_pandas_78.py"
+      "detection_file": "funcao_com_bug/bip_pandas_78.py"
     },
     {
       "id": "bip_pandas_84",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_unstack_multiple",
       "expression": "clocs = [index._get_level_number(i) for i in clocs]",
       "categories": [
@@ -6095,11 +6095,11 @@
         "source_file": "pandas/core/reshape/reshape.py",
         "source_function": "_unstack_multiple"
       },
-      "detection_file": "detection/bip_pandas_84.py"
+      "detection_file": "funcao_com_bug/bip_pandas_84.py"
     },
     {
       "id": "bip_pandas_87",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "crosstab",
       "expression": "table = df.pivot_table(\n        \"__dummy__\",\n        index=rownames,\n        columns=colnames,\n        margins=margins,\n        margins_name=margins_name,\n        dropna=dropna,\n        **kwargs,\n    )",
       "categories": [
@@ -6120,11 +6120,11 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "crosstab"
       },
-      "detection_file": "detection/bip_pandas_87.py"
+      "detection_file": "funcao_com_bug/bip_pandas_87.py"
     },
     {
       "id": "bip_pandas_88",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "pivot_table",
       "expression": "table.index.nlevels > 1",
       "categories": [
@@ -6145,11 +6145,11 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "pivot_table"
       },
-      "detection_file": "detection/bip_pandas_88.py"
+      "detection_file": "funcao_com_bug/bip_pandas_88.py"
     },
     {
       "id": "bip_pandas_89",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_unstack_multiple",
       "expression": "result = result.unstack(val)",
       "categories": [
@@ -6170,11 +6170,11 @@
         "source_file": "pandas/core/reshape/reshape.py",
         "source_function": "_unstack_multiple"
       },
-      "detection_file": "detection/bip_pandas_89.py"
+      "detection_file": "funcao_com_bug/bip_pandas_89.py"
     },
     {
       "id": "bip_pandas_91",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TimedeltaIndex.searchsorted",
       "expression": "value = np.array(value, dtype=_TD_DTYPE, copy=False)",
       "categories": [
@@ -6195,11 +6195,11 @@
         "source_file": "pandas/core/indexes/timedeltas.py",
         "source_function": "TimedeltaIndex.searchsorted"
       },
-      "detection_file": "detection/bip_pandas_91.py"
+      "detection_file": "funcao_com_bug/bip_pandas_91.py"
     },
     {
       "id": "bip_pandas_95",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_period_array_cmp",
       "expression": "ordinal_op = getattr(self.asi8, opname)",
       "categories": [
@@ -6220,11 +6220,11 @@
         "source_file": "pandas/core/arrays/period.py",
         "source_function": "_period_array_cmp"
       },
-      "detection_file": "detection/bip_pandas_95.py"
+      "detection_file": "funcao_com_bug/bip_pandas_95.py"
     },
     {
       "id": "bip_pandas_98",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index.__new__",
       "expression": "(\n            is_interval_dtype(data) or is_interval_dtype(dtype)\n        ) and not is_object_dtype(dtype)",
       "categories": [
@@ -6245,11 +6245,11 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index.__new__"
       },
-      "detection_file": "detection/bip_pandas_98.py"
+      "detection_file": "funcao_com_bug/bip_pandas_98.py"
     },
     {
       "id": "bip_pandas_102",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "init_ndarray",
       "expression": "columns = [0]",
       "categories": [
@@ -6270,11 +6270,11 @@
         "source_file": "pandas/core/internals/construction.py",
         "source_function": "init_ndarray"
       },
-      "detection_file": "detection/bip_pandas_102.py"
+      "detection_file": "funcao_com_bug/bip_pandas_102.py"
     },
     {
       "id": "bip_pandas_104",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "GroupBy.quantile",
       "expression": "order = np.roll(list(range(result.index.nlevels)), -1)",
       "categories": [
@@ -6295,11 +6295,11 @@
         "source_file": "pandas/core/groupby/groupby.py",
         "source_function": "GroupBy.quantile"
       },
-      "detection_file": "detection/bip_pandas_104.py"
+      "detection_file": "funcao_com_bug/bip_pandas_104.py"
     },
     {
       "id": "bip_pandas_106",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index.get_indexer_non_unique",
       "expression": "self.is_all_dates",
       "categories": [
@@ -6320,11 +6320,11 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index.get_indexer_non_unique"
       },
-      "detection_file": "detection/bip_pandas_106.py"
+      "detection_file": "funcao_com_bug/bip_pandas_106.py"
     },
     {
       "id": "bip_pandas_107",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DataFrame.append",
       "expression": "other.name is None",
       "categories": [
@@ -6345,11 +6345,11 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame.append"
       },
-      "detection_file": "detection/bip_pandas_107.py"
+      "detection_file": "funcao_com_bug/bip_pandas_107.py"
     },
     {
       "id": "bip_pandas_115",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "interpolate_1d",
       "expression": "result[invalid] = np.interp(inds[invalid], inds[valid], yvalues[valid])",
       "categories": [
@@ -6370,11 +6370,11 @@
         "source_file": "pandas/core/missing.py",
         "source_function": "interpolate_1d"
       },
-      "detection_file": "detection/bip_pandas_115.py"
+      "detection_file": "funcao_com_bug/bip_pandas_115.py"
     },
     {
       "id": "bip_pandas_116",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_MergeOperation._get_merge_keys",
       "expression": "left_keys = [self.left.index.values]",
       "categories": [
@@ -6395,11 +6395,11 @@
         "source_file": "pandas/core/reshape/merge.py",
         "source_function": "_MergeOperation._get_merge_keys"
       },
-      "detection_file": "detection/bip_pandas_116.py"
+      "detection_file": "funcao_com_bug/bip_pandas_116.py"
     },
     {
       "id": "bip_pandas_117",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_isna_old",
       "expression": "isinstance(obj, (ABCSeries, np.ndarray, ABCIndexClass))",
       "categories": [
@@ -6420,11 +6420,11 @@
         "source_file": "pandas/core/dtypes/missing.py",
         "source_function": "_isna_old"
       },
-      "detection_file": "detection/bip_pandas_117.py"
+      "detection_file": "funcao_com_bug/bip_pandas_117.py"
     },
     {
       "id": "bip_pandas_119",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_add_margins",
       "expression": "margin_dummy[cols] = margin_dummy[cols].astype(dtype)",
       "categories": [
@@ -6445,11 +6445,11 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "_add_margins"
       },
-      "detection_file": "detection/bip_pandas_119.py"
+      "detection_file": "funcao_com_bug/bip_pandas_119.py"
     },
     {
       "id": "bip_pandas_127",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "NDFrame.pct_change",
       "expression": "rs = rs.reindex_like(data)",
       "categories": [
@@ -6470,11 +6470,11 @@
         "source_file": "pandas/core/generic.py",
         "source_function": "NDFrame.pct_change"
       },
-      "detection_file": "detection/bip_pandas_127.py"
+      "detection_file": "funcao_com_bug/bip_pandas_127.py"
     },
     {
       "id": "bip_pandas_133",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "NDFrame.interpolate",
       "expression": "axis == 1",
       "categories": [
@@ -6495,11 +6495,11 @@
         "source_file": "pandas/core/generic.py",
         "source_function": "NDFrame.interpolate"
       },
-      "detection_file": "detection/bip_pandas_133.py"
+      "detection_file": "funcao_com_bug/bip_pandas_133.py"
     },
     {
       "id": "bip_pandas_139",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Grouping.__init__",
       "expression": "self._group_index = CategoricalIndex(\n                    Categorical.from_codes(\n                        codes=codes, categories=categories, ordered=self.grouper.ordered\n                    )\n                )",
       "categories": [
@@ -6520,11 +6520,11 @@
         "source_file": "pandas/core/groupby/grouper.py",
         "source_function": "Grouping.__init__"
       },
-      "detection_file": "detection/bip_pandas_139.py"
+      "detection_file": "funcao_com_bug/bip_pandas_139.py"
     },
     {
       "id": "bip_pandas_141",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RangeIndex.get_indexer",
       "expression": "self.step > 0",
       "categories": [
@@ -6545,11 +6545,11 @@
         "source_file": "pandas/core/indexes/range.py",
         "source_function": "RangeIndex.get_indexer"
       },
-      "detection_file": "detection/bip_pandas_141.py"
+      "detection_file": "funcao_com_bug/bip_pandas_141.py"
     },
     {
       "id": "bip_pandas_142",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "diff",
       "expression": "needs_i8_conversion(arr)",
       "categories": [
@@ -6570,11 +6570,11 @@
         "source_file": "pandas/core/algorithms.py",
         "source_function": "diff"
       },
-      "detection_file": "detection/bip_pandas_142.py"
+      "detection_file": "funcao_com_bug/bip_pandas_142.py"
     },
     {
       "id": "bip_pandas_143",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RangeIndex.get_indexer",
       "expression": "not (method is None and tolerance is None and is_list_like(target))",
       "categories": [
@@ -6595,11 +6595,11 @@
         "source_file": "pandas/core/indexes/range.py",
         "source_function": "RangeIndex.get_indexer"
       },
-      "detection_file": "detection/bip_pandas_143.py"
+      "detection_file": "funcao_com_bug/bip_pandas_143.py"
     },
     {
       "id": "bip_pandas_144",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "BarPlot._decorate_ticks",
       "expression": "ax.set_xticks(self.tick_pos)",
       "categories": [
@@ -6620,11 +6620,11 @@
         "source_file": "pandas/plotting/_matplotlib/core.py",
         "source_function": "BarPlot._decorate_ticks"
       },
-      "detection_file": "detection/bip_pandas_144.py"
+      "detection_file": "funcao_com_bug/bip_pandas_144.py"
     },
     {
       "id": "bip_pandas_145",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "dispatch_to_series",
       "expression": "isinstance(right, ABCSeries) and axis == \"columns\"",
       "categories": [
@@ -6645,11 +6645,11 @@
         "source_file": "pandas/core/ops/__init__.py",
         "source_function": "dispatch_to_series"
       },
-      "detection_file": "detection/bip_pandas_145.py"
+      "detection_file": "funcao_com_bug/bip_pandas_145.py"
     },
     {
       "id": "bip_pandas_148",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "FrameApply.apply_empty_result",
       "expression": "EMPTY_SERIES = Series([])",
       "categories": [
@@ -6670,11 +6670,11 @@
         "source_file": "pandas/core/apply.py",
         "source_function": "FrameApply.apply_empty_result"
       },
-      "detection_file": "detection/bip_pandas_148.py"
+      "detection_file": "funcao_com_bug/bip_pandas_148.py"
     },
     {
       "id": "bip_pandas_152",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series.append",
       "expression": "to_concat = [self] + to_append",
       "categories": [
@@ -6695,11 +6695,11 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series.append"
       },
-      "detection_file": "detection/bip_pandas_152.py"
+      "detection_file": "funcao_com_bug/bip_pandas_152.py"
     },
     {
       "id": "bip_pandas_154",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "GroupBy._get_cythonized_result",
       "expression": "result_sz = len(obj.values)",
       "categories": [
@@ -6720,11 +6720,11 @@
         "source_file": "pandas/core/groupby/groupby.py",
         "source_function": "GroupBy._get_cythonized_result"
       },
-      "detection_file": "detection/bip_pandas_154.py"
+      "detection_file": "funcao_com_bug/bip_pandas_154.py"
     },
     {
       "id": "bip_pandas_155",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Rolling._on",
       "expression": "return self.obj.index",
       "categories": [
@@ -6745,11 +6745,11 @@
         "source_file": "pandas/core/window/rolling.py",
         "source_function": "Rolling._on"
       },
-      "detection_file": "detection/bip_pandas_155.py"
+      "detection_file": "funcao_com_bug/bip_pandas_155.py"
     },
     {
       "id": "bip_pandas_158",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series.rename",
       "expression": "non_mapping = is_scalar(index) or (\n            is_list_like(index) and not is_dict_like(index)\n        )",
       "categories": [
@@ -6770,11 +6770,11 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series.rename"
       },
-      "detection_file": "detection/bip_pandas_158.py"
+      "detection_file": "funcao_com_bug/bip_pandas_158.py"
     },
     {
       "id": "bip_pandas_160",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_can_use_numexpr",
       "expression": "hasattr(o, \"dtypes\")",
       "categories": [
@@ -6795,11 +6795,11 @@
         "source_file": "pandas/core/computation/expressions.py",
         "source_function": "_can_use_numexpr"
       },
-      "detection_file": "detection/bip_pandas_160.py"
+      "detection_file": "funcao_com_bug/bip_pandas_160.py"
     },
     {
       "id": "bip_pandas_161",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Categorical.fillna",
       "expression": "indexer = np.where(values_codes != -1)",
       "categories": [
@@ -6820,11 +6820,11 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "Categorical.fillna"
       },
-      "detection_file": "detection/bip_pandas_161.py"
+      "detection_file": "funcao_com_bug/bip_pandas_161.py"
     },
     {
       "id": "bip_pandas_162",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_normalize",
       "expression": "column_margin = table.loc[:, margins_name].drop(margins_name)",
       "categories": [
@@ -6845,11 +6845,11 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "_normalize"
       },
-      "detection_file": "detection/bip_pandas_162.py"
+      "detection_file": "funcao_com_bug/bip_pandas_162.py"
     },
     {
       "id": "bip_pandas_163",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_Window._prep_values",
       "expression": "values[np.isinf(values)] = np.NaN",
       "categories": [
@@ -6870,11 +6870,11 @@
         "source_file": "pandas/core/window.py",
         "source_function": "_Window._prep_values"
       },
-      "detection_file": "detection/bip_pandas_163.py"
+      "detection_file": "funcao_com_bug/bip_pandas_163.py"
     },
     {
       "id": "bip_pandas_166",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DataFrame._join_compat",
       "expression": "res = concat(frames, axis=1, join=\"outer\", verify_integrity=True)",
       "categories": [
@@ -6895,11 +6895,11 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame._join_compat"
       },
-      "detection_file": "detection/bip_pandas_166.py"
+      "detection_file": "funcao_com_bug/bip_pandas_166.py"
     },
     {
       "id": "bip_pandas_168",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_get_grouper",
       "expression": "obj._check_label_or_level_ambiguity(gpr)",
       "categories": [
@@ -6920,11 +6920,11 @@
         "source_file": "pandas/core/groupby/grouper.py",
         "source_function": "_get_grouper"
       },
-      "detection_file": "detection/bip_pandas_168.py"
+      "detection_file": "funcao_com_bug/bip_pandas_168.py"
     },
     {
       "id": "bip_sanic_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Sanic.register_named_middleware",
       "expression": "self.named_response_middleware[_rn].append(middleware)",
       "categories": [
@@ -6945,11 +6945,11 @@
         "source_file": "sanic/app.py",
         "source_function": "Sanic.register_named_middleware"
       },
-      "detection_file": "detection/bip_sanic_1.py"
+      "detection_file": "funcao_com_bug/bip_sanic_1.py"
     },
     {
       "id": "bip_scrapy_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ImagesPipeline.convert_image",
       "expression": "image.mode != 'RGB'",
       "categories": [
@@ -6970,11 +6970,11 @@
         "source_file": "scrapy/pipelines/images.py",
         "source_function": "ImagesPipeline.convert_image"
       },
-      "detection_file": "detection/bip_scrapy_6.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_6.py"
     },
     {
       "id": "bip_scrapy_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ItemMeta.__new__",
       "expression": "new_bases = tuple(base._class for base in bases if hasattr(base, '_class'))",
       "categories": [
@@ -6995,11 +6995,11 @@
         "source_file": "scrapy/item.py",
         "source_function": "ItemMeta.__new__"
       },
-      "detection_file": "detection/bip_scrapy_8.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_8.py"
     },
     {
       "id": "bip_scrapy_15",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_safe_ParseResult",
       "expression": "return (\n        to_native_str(parts.scheme),\n        to_native_str(parts.netloc.encode('idna')),\n\n        # default encoding for path component SHOULD be UTF-8\n        quote(to_bytes(parts.path, path_encoding), _safe_chars),\n        quote(to_bytes(parts.params, path_encoding), _safe_chars),\n\n        # encoding of query and fragment follows page encoding\n        # or form-charset (if known and passed)\n        quote(to_bytes(parts.query, encoding), _safe_chars),\n        quote(to_bytes(parts.fragment, encoding), _safe_chars)\n    )",
       "categories": [
@@ -7020,11 +7020,11 @@
         "source_file": "scrapy/utils/url.py",
         "source_function": "_safe_ParseResult"
       },
-      "detection_file": "detection/bip_scrapy_15.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_15.py"
     },
     {
       "id": "bip_scrapy_18",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ResponseTypes.from_content_disposition",
       "expression": "filename = to_native_str(content_disposition).split(';')[1].split('=')[1]",
       "categories": [
@@ -7045,11 +7045,11 @@
         "source_file": "scrapy/responsetypes.py",
         "source_function": "ResponseTypes.from_content_disposition"
       },
-      "detection_file": "detection/bip_scrapy_18.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_18.py"
     },
     {
       "id": "bip_scrapy_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RobotsTxtMiddleware._robots_error",
       "expression": "self._parsers.pop(netloc).callback(None)",
       "categories": [
@@ -7070,11 +7070,11 @@
         "source_file": "scrapy/downloadermiddlewares/robotstxt.py",
         "source_function": "RobotsTxtMiddleware._robots_error"
       },
-      "detection_file": "detection/bip_scrapy_21.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_21.py"
     },
     {
       "id": "bip_scrapy_28",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RFPDupeFilter.__init__",
       "expression": "self.fingerprints.update(x.rstrip() for x in self.file)",
       "categories": [
@@ -7095,11 +7095,11 @@
         "source_file": "scrapy/dupefilters.py",
         "source_function": "RFPDupeFilter.__init__"
       },
-      "detection_file": "detection/bip_scrapy_28.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_28.py"
     },
     {
       "id": "bip_scrapy_38",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_get_clickable",
       "expression": "clickables = [\n        el for el in form.xpath(\n            'descendant::*[(self::input or self::button)'\n            ' and re:test(@type, \"^submit$\", \"i\")]'\n            '|descendant::button[not(@type)]',\n            namespaces={\"re\": \"http://exslt.org/regular-expressions\"})\n        ]",
       "categories": [
@@ -7120,11 +7120,11 @@
         "source_file": "scrapy/http/request/form.py",
         "source_function": "_get_clickable"
       },
-      "detection_file": "detection/bip_scrapy_38.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_38.py"
     },
     {
       "id": "bip_scrapy_39",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Spider.start_requests",
       "expression": "self.make_requests_from_url is not Spider.make_requests_from_url",
       "categories": [
@@ -7145,11 +7145,11 @@
         "source_file": "scrapy/spiders/__init__.py",
         "source_function": "Spider.start_requests"
       },
-      "detection_file": "detection/bip_scrapy_39.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_39.py"
     },
     {
       "id": "bip_scrapy_40",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PythonItemExporter._serialize_value",
       "expression": "self.binary",
       "categories": [
@@ -7170,11 +7170,11 @@
         "source_file": "scrapy/exporters.py",
         "source_function": "PythonItemExporter._serialize_value"
       },
-      "detection_file": "detection/bip_scrapy_40.py"
+      "detection_file": "funcao_com_bug/bip_scrapy_40.py"
     },
     {
       "id": "bip_spacy_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "add_codes",
       "expression": "msg = getattr(err_cls, code)",
       "categories": [
@@ -7195,11 +7195,11 @@
         "source_file": "spacy/errors.py",
         "source_function": "add_codes"
       },
-      "detection_file": "detection/bip_spacy_1.py"
+      "detection_file": "funcao_com_bug/bip_spacy_1.py"
     },
     {
       "id": "bip_spacy_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "load_model_from_path",
       "expression": "factory = factories.get(name, name)",
       "categories": [
@@ -7220,11 +7220,11 @@
         "source_file": "spacy/util.py",
         "source_function": "load_model_from_path"
       },
-      "detection_file": "detection/bip_spacy_2.py"
+      "detection_file": "funcao_com_bug/bip_spacy_2.py"
     },
     {
       "id": "bip_spacy_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Language.remove_pipe",
       "expression": "return self.pipeline.pop(self.pipe_names.index(name))",
       "categories": [
@@ -7245,11 +7245,11 @@
         "source_file": "spacy/language.py",
         "source_function": "Language.remove_pipe"
       },
-      "detection_file": "detection/bip_spacy_6.py"
+      "detection_file": "funcao_com_bug/bip_spacy_6.py"
     },
     {
       "id": "bip_thefuck_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_all_executables",
       "expression": "bins = [exe.name.decode('utf8') if six.PY2 else exe.name\n            for path in os.environ.get('PATH', '').split(':')\n            for exe in _safe(lambda: list(Path(path).iterdir()), [])\n            if not _safe(exe.is_dir, True)\n            and exe.name not in tf_entry_points]",
       "categories": [
@@ -7270,11 +7270,11 @@
         "source_file": "thefuck/utils.py",
         "source_function": "get_all_executables"
       },
-      "detection_file": "detection/bip_thefuck_2.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_2.py"
     },
     {
       "id": "bip_thefuck_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Fish.info",
       "expression": "proc = Popen(['fish', '-c', 'echo $FISH_VERSION'],\n                     stdout=PIPE, stderr=DEVNULL)",
       "categories": [
@@ -7295,11 +7295,11 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "Fish.info"
       },
-      "detection_file": "detection/bip_thefuck_3.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_3.py"
     },
     {
       "id": "bip_thefuck_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_get_aliases",
       "expression": "alias_out = proc.stdout.read().decode('utf-8').strip().split('\\n')",
       "categories": [
@@ -7320,11 +7320,11 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "_get_aliases"
       },
-      "detection_file": "detection/bip_thefuck_4.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_4.py"
     },
     {
       "id": "bip_thefuck_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "last_arg = command.script_parts[-1]",
       "categories": [
@@ -7345,11 +7345,11 @@
         "source_file": "thefuck/rules/man.py",
         "source_function": "get_new_command"
       },
-      "detection_file": "detection/bip_thefuck_10.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_10.py"
     },
     {
       "id": "bip_thefuck_11",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "return replace_argument(command.script, 'push', push_upstream)",
       "categories": [
@@ -7370,11 +7370,11 @@
         "source_file": "thefuck/rules/git_push.py",
         "source_function": "get_new_command"
       },
-      "detection_file": "detection/bip_thefuck_11.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_11.py"
     },
     {
       "id": "bip_thefuck_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Fish._get_overridden_aliases",
       "expression": "overridden_aliases = os.environ.get('TF_OVERRIDDEN_ALIASES', '').strip()",
       "categories": [
@@ -7395,11 +7395,11 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "Fish._get_overridden_aliases"
       },
-      "detection_file": "detection/bip_thefuck_14.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_14.py"
     },
     {
       "id": "bip_thefuck_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "return replace_argument(command.script, 'push', 'push --force')",
       "categories": [
@@ -7420,11 +7420,11 @@
         "source_file": "thefuck/rules/git_push_force.py",
         "source_function": "get_new_command"
       },
-      "detection_file": "detection/bip_thefuck_19.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_19.py"
     },
     {
       "id": "bip_thefuck_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "return re.sub('^mkdir (.*)', 'mkdir -p \\\\1', command.script)",
       "categories": [
@@ -7445,11 +7445,11 @@
         "source_file": "thefuck/rules/mkdir_p.py",
         "source_function": "get_new_command"
       },
-      "detection_file": "detection/bip_thefuck_25.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_25.py"
     },
     {
       "id": "bip_thefuck_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "machine = \"\"",
       "categories": [
@@ -7470,11 +7470,11 @@
         "source_file": "thefuck/rules/vagrant_up.py",
         "source_function": "get_new_command"
       },
-      "detection_file": "detection/bip_thefuck_26.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_26.py"
     },
     {
       "id": "bip_thefuck_30",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "match",
       "expression": "return 'EDITOR' in os.environ and _search(command.stderr)",
       "categories": [
@@ -7495,11 +7495,11 @@
         "source_file": "thefuck/rules/fix_file.py",
         "source_function": "match"
       },
-      "detection_file": "detection/bip_thefuck_30.py"
+      "detection_file": "funcao_com_bug/bip_thefuck_30.py"
     },
     {
       "id": "bip_tornado_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PeriodicCallback._update_next",
       "expression": "callback_time_sec = self.callback_time / 1000.0",
       "categories": [
@@ -7520,11 +7520,11 @@
         "source_file": "tornado/ioloop.py",
         "source_function": "PeriodicCallback._update_next"
       },
-      "detection_file": "detection/bip_tornado_5.py"
+      "detection_file": "funcao_com_bug/bip_tornado_5.py"
     },
     {
       "id": "bip_tornado_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "WebSocketProtocol13.accept_connection",
       "expression": "self._accept_connection()",
       "categories": [
@@ -7545,11 +7545,11 @@
         "source_file": "tornado/websocket.py",
         "source_function": "WebSocketProtocol13.accept_connection"
       },
-      "detection_file": "detection/bip_tornado_8.py"
+      "detection_file": "funcao_com_bug/bip_tornado_8.py"
     },
     {
       "id": "bip_tqdm_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "tenumerate",
       "expression": "return enumerate(tqdm_class(iterable, start, **tqdm_kwargs))",
       "categories": [
@@ -7570,11 +7570,11 @@
         "source_file": "tqdm/contrib/__init__.py",
         "source_function": "tenumerate"
       },
-      "detection_file": "detection/bip_tqdm_1.py"
+      "detection_file": "funcao_com_bug/bip_tqdm_1.py"
     },
     {
       "id": "bip_youtube_dl_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "unescapeHTML",
       "expression": "return re.sub(\n        r'&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)",
       "categories": [
@@ -7595,11 +7595,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unescapeHTML"
       },
-      "detection_file": "detection/bip_youtube_dl_3.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_3.py"
     },
     {
       "id": "bip_youtube_dl_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "JSInterpreter.interpret_expression",
       "expression": "m = re.match(\n            r'^(?P<func>%s)\\((?P<args>[a-zA-Z0-9_$,]+)\\)$' % _NAME_RE, expr)",
       "categories": [
@@ -7620,11 +7620,11 @@
         "source_file": "youtube_dl/jsinterp.py",
         "source_function": "JSInterpreter.interpret_expression"
       },
-      "detection_file": "detection/bip_youtube_dl_4.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_4.py"
     },
     {
       "id": "bip_youtube_dl_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "unified_timestamp",
       "expression": "pm_delta = datetime.timedelta(hours=12 if re.search(r'(?i)PM', date_str) else 0)",
       "categories": [
@@ -7645,11 +7645,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_timestamp"
       },
-      "detection_file": "detection/bip_youtube_dl_5.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_5.py"
     },
     {
       "id": "bip_youtube_dl_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "return v",
       "categories": [
@@ -7670,11 +7670,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
-      "detection_file": "detection/bip_youtube_dl_7.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_7.py"
     },
     {
       "id": "bip_youtube_dl_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "YoutubeDL.build_format_selector",
       "expression": "current_selector = None",
       "categories": [
@@ -7695,11 +7695,11 @@
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.build_format_selector"
       },
-      "detection_file": "detection/bip_youtube_dl_8.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_8.py"
     },
     {
       "id": "bip_youtube_dl_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "res = re.sub(r'''(?x)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\\")?)*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\')?)*'|\n        [a-zA-Z_][.a-zA-Z_0-9]*\n        ''', fix_kv, code)",
       "categories": [
@@ -7720,11 +7720,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
-      "detection_file": "detection/bip_youtube_dl_10.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_10.py"
     },
     {
       "id": "bip_youtube_dl_13",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "urljoin",
       "expression": "re.match(r'^(?:https?:)?//', path)",
       "categories": [
@@ -7745,11 +7745,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
-      "detection_file": "detection/bip_youtube_dl_13.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_13.py"
     },
     {
       "id": "bip_youtube_dl_15",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        {comment}|,(?={skip}[\\]}}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        \\b(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:{skip}:)?|\n        [0-9]+(?={skip}:)\n        '''.format(comment=COMMENT_RE, skip=SKIP_RE), fix_kv, code)",
       "categories": [
@@ -7770,11 +7770,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
-      "detection_file": "detection/bip_youtube_dl_15.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_15.py"
     },
     {
       "id": "bip_youtube_dl_20",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_elements_by_attribute",
       "expression": "re.finditer(r'''(?xs)\n        <([a-zA-Z0-9:._-]+)\n         (?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?\n         \\s+%s=['\"]?%s['\"]?\n         (?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?\n        \\s*>\n        (?P<content>.*?)\n        </\\1>\n    ''' % (re.escape(attribute), value), html)",
       "categories": [
@@ -7795,11 +7795,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "get_elements_by_attribute"
       },
-      "detection_file": "detection/bip_youtube_dl_20.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_20.py"
     },
     {
       "id": "bip_youtube_dl_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "urljoin",
       "expression": "not isinstance(base, compat_str) or not re.match(r'^(?:https?:)?//', base)",
       "categories": [
@@ -7820,11 +7820,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
-      "detection_file": "detection/bip_youtube_dl_21.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_21.py"
     },
     {
       "id": "bip_youtube_dl_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "v.startswith('/*') or v == ','",
       "categories": [
@@ -7845,11 +7845,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
-      "detection_file": "detection/bip_youtube_dl_23.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_23.py"
     },
     {
       "id": "bip_youtube_dl_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_match_one",
       "expression": "m.group('strval') is not None",
       "categories": [
@@ -7870,11 +7870,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "_match_one"
       },
-      "detection_file": "detection/bip_youtube_dl_24.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_24.py"
     },
     {
       "id": "bip_youtube_dl_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "INTEGER_TABLE = (\n            (r'^0[xX][0-9a-fA-F]+', 16),\n            (r'^0+[0-7]+', 8),\n        )",
       "categories": [
@@ -7895,11 +7895,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
-      "detection_file": "detection/bip_youtube_dl_25.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_25.py"
     },
     {
       "id": "bip_youtube_dl_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        /\\*.*?\\*/|,(?=\\s*[\\]}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        (?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\\s*:)?|\n        [0-9]+(?=\\s*:)\n        ''', fix_kv, code)",
       "categories": [
@@ -7920,11 +7920,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
-      "detection_file": "detection/bip_youtube_dl_26.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_26.py"
     },
     {
       "id": "bip_youtube_dl_27",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "parse_dfxp_time_expr",
       "expression": "mobj = re.match(r'^(\\d+):(\\d\\d):(\\d\\d(?:\\.\\d+)?)$', time_expr)",
       "categories": [
@@ -7945,11 +7945,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "parse_dfxp_time_expr"
       },
-      "detection_file": "detection/bip_youtube_dl_27.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_27.py"
     },
     {
       "id": "bip_youtube_dl_30",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "YoutubeDL.build_format_selector",
       "expression": "format_spec == 'all'",
       "categories": [
@@ -7970,11 +7970,11 @@
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.build_format_selector"
       },
-      "detection_file": "detection/bip_youtube_dl_30.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_30.py"
     },
     {
       "id": "bip_youtube_dl_41",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "unified_strdate",
       "expression": "date_str = date_str.replace(',',' ')",
       "categories": [
@@ -7995,11 +7995,11 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_strdate"
       },
-      "detection_file": "detection/bip_youtube_dl_41.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_41.py"
     },
     {
       "id": "bip_youtube_dl_43",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "url_basename",
       "expression": "m = re.match(r'(?:https?:|)//[^/]+/(?:[^/?#]+/)?([^/?#]+)/?(?:[?#]|$)', url)",
       "categories": [
@@ -8020,7 +8020,7 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "url_basename"
       },
-      "detection_file": "detection/bip_youtube_dl_43.py"
+      "detection_file": "funcao_com_bug/bip_youtube_dl_43.py"
     }
   ]
 }

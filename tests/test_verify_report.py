@@ -3,8 +3,8 @@ from pathlib import Path
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.report import evaluate_verify, summarize
 
-GT = Path("dataset/v2_real_world/ground_truths.json")
-DETECTION = Path("dataset/v2_real_world/detection/av_real_01.py")
+GT = Path("dataset/bugs_reais/ground_truths.json")
+DETECTION = Path("dataset/bugs_reais/funcao_com_bug/av_real_01.py")
 
 
 def _result(verdict, llm_calls, expression="assert isinstance(param, bool)", function="cli_bool_option"):

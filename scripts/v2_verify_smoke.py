@@ -17,13 +17,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from research_pipeline.dataset_layout import buggy_function_dir
 from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.grounding import GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import precheck, verify_hypothesis
 from research_pipeline.verify.spec import InputSpec, resolved_types
 
-DATASET = ROOT / "dataset" / "v2_real_world"
+DATASET = ROOT / "dataset" / "bugs_reais"
 
 
 class NaiveSpec:
@@ -45,10 +46,10 @@ class NaiveSpec:
 def _cases(dataset: Path = DATASET):
     items = json.loads((dataset / "ground_truths.json").read_text(encoding="utf-8"))["items"]
     for item in items:
-        full = dataset / "detection_full" / item["file"]
-        source_path = full if full.exists() else dataset / "detection" / item["file"]
+        full = dataset / "arquivo_com_bug" / item["file"]
+        source_path = full if full.exists() else buggy_function_dir(dataset) / item["file"]
         function = str(item["function"]).split("/")[0].strip()
-        yield item["id"], source_path, BugHypothesis(str(dataset / "detection" / item["file"]), function,
+        yield item["id"], source_path, BugHypothesis(str(buggy_function_dir(dataset) / item["file"]), function,
                                                      str(item.get("expression", "")),
                                                      category=",".join(item.get("categories", [])))
 
@@ -56,7 +57,7 @@ def _cases(dataset: Path = DATASET):
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--esbmc", default="", help="ESBMC binary; enables stage 1")
-    parser.add_argument("--dataset", default=str(DATASET), help="dataset folder (default: v2_real_world)")
+    parser.add_argument("--dataset", default=str(DATASET), help="dataset folder (default: bugs_reais)")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--out", default="outputs/v2_verify_smoke")

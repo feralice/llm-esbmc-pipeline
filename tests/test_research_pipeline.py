@@ -369,7 +369,7 @@ def test_out_of_scope_finding_counts_separately(tmp_path: Path) -> None:
     assert counts.bug_func_tn == 1
 
 
-def test_hallucinated_bug_on_buggy_file_counts_as_llm_false_positive(
+def test_hallucinated_bug_on_arquivo_com_bug_counts_as_llm_false_positive(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -532,7 +532,7 @@ def test_preprocess_records_comprehensions_as_loops(tmp_path: Path) -> None:
 
 
 def test_ground_truth_loader_recurses_all_v1_subfolders() -> None:
-    cases = load_ground_truth_cases(REPO_ROOT / "dataset" / "labeled" / "ground_truths")
+    cases = load_ground_truth_cases(REPO_ROOT / "dataset" / "v1_sintetico" / "ground_truths")
 
     assert len(cases) == 70
     assert any(path.name == "clean_01.py" for path, _ in cases)

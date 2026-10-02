@@ -67,7 +67,7 @@ def reverdict_result(result: dict) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("report")
-    parser.add_argument("--ground-truth", default="dataset/v2_real_world/ground_truths.json")
+    parser.add_argument("--ground-truth", default="dataset/bugs_reais/ground_truths.json")
     args = parser.parse_args()
     path = Path(args.report)
     report = json.loads(path.read_text(encoding="utf-8"))

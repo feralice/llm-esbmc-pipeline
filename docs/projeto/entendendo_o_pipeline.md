@@ -268,12 +268,12 @@ São 125 rótulos para 116 bugs, porque alguns bugs têm duas categorias.
 
 | | Quantidade | Onde |
 |---|---|---|
-| Bugs reais no gabarito | 116, de 42 projetos | `dataset/v2_real_world/ground_truths.json` |
+| Bugs reais no gabarito | 116, de 42 projetos | `dataset/bugs_reais/ground_truths.json` |
 | Avaliáveis na detecção | 104 (12 precisam do patch para serem entendidos) | idem, `patch_context_items` |
-| Arquivos da detecção | 116 | `dataset/v2_real_world/detection/` |
-| Arquivo-fonte completo (usado na verificação quando existe; senão, usa-se o trecho do dataset, que também contém o bug) | 99 | `dataset/v2_real_world/detection_full/` |
-| Versão corrigida (controle) | 98 | `dataset/v2_real_world/fixed_full/` |
-| Candidatos novos (fora do gabarito) | 199, validados por mantenedores (BugsInPy) | `dataset/v2_candidates/` |
+| Arquivos da detecção | 116 | `dataset/bugs_reais/funcao_com_bug/` |
+| Arquivo-fonte completo (usado na verificação quando existe; senão, usa-se o trecho do dataset, que também contém o bug) | 99 | `dataset/bugs_reais/arquivo_com_bug/` |
+| Versão corrigida (controle) | 98 | `dataset/bugs_reais/arquivo_corrigido/` |
+| Candidatos novos (fora do gabarito) | 199, validados por mantenedores (BugsInPy) | `dataset/coleta_bugsinpy/` |
 
 Projetos com mais bugs: scrapy (15), thefuck (11), luigi (10), youtube-dl (9), tornado (8).
 

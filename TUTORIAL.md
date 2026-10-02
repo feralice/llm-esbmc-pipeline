@@ -24,9 +24,9 @@ motor de verificação confirma no arquivo completo.
 ```bash
 PYTHONPATH=src .venv/bin/python src/main.py \
   --mode hybrid --v2-stage end-to-end \
-  --input dataset/v2_real_world/detection \
-  --ground-truth dataset/v2_real_world/ground_truths.json \
-  --verification-sources dataset/v2_real_world/detection_full \
+  --input dataset/bugs_reais/funcao_com_bug \
+  --ground-truth dataset/bugs_reais/ground_truths.json \
+  --verification-sources dataset/bugs_reais/arquivo_com_bug \
   --model gpt-4o-mini --synth-backend openai --synth-model gpt-4o-mini \
   --bound 5 --timeout 180 \
   --output-dir artifacts/v2/e2e
@@ -46,7 +46,7 @@ Troque `--v2-stage end-to-end` por `--v2-stage synthesis`. Mede a verificação 
 ### Experimentos
 
 - `--spec-strategy resample`: amostras independentes com o mesmo orçamento (linha de base do reparo).
-- `--verification-sources dataset/v2_real_world/fixed_full --verification-sources-strict`: roda
+- `--verification-sources dataset/bugs_reais/arquivo_corrigido --verification-sources-strict`: roda
   nas versões corrigidas; todo `CONFIRMED` ali é confirmação falsa.
 - `python scripts/v2_agent_arm.py --report <relatório> --out <pasta>`: braço com agente nos casos
   que o motor não roda.
@@ -72,7 +72,7 @@ Troque `--v2-stage end-to-end` por `--v2-stage synthesis`. Mede a verificação 
 ```bash
 python src/main.py \
   --mode benchmark \
-  --input dataset/labeled/ground_truths \
+  --input dataset/v1_sintetico/ground_truths \
   --model gpt-4o \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
@@ -92,7 +92,7 @@ O pipeline usa um único prompt, sem expor à LLM as operações pré-extraídas
 # GPT-4o
 python src/main.py \
   --mode benchmark \
-  --input dataset/labeled/ground_truths \
+  --input dataset/v1_sintetico/ground_truths \
   --model gpt-4o \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_gpt-4o.json
@@ -100,7 +100,7 @@ python src/main.py \
 # Claude Sonnet 4.6
 python src/main.py \
   --mode benchmark \
-  --input dataset/labeled/ground_truths \
+  --input dataset/v1_sintetico/ground_truths \
   --model claude-sonnet-4-6 \
   --bound 5 --timeout 30 \
   --report reports/json/v1_benchmark/benchmark_claude-sonnet-4-6.json
@@ -108,7 +108,7 @@ python src/main.py \
 # DeepSeek-R1 7b (Ollama local: llm-timeout maior)
 python src/main.py \
   --mode benchmark \
-  --input dataset/labeled/ground_truths \
+  --input dataset/v1_sintetico/ground_truths \
   --model deepseek-r1:7b \
   --bound 5 --timeout 30 --llm-timeout 600 \
   --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
@@ -116,7 +116,7 @@ python src/main.py \
 # Qwen2.5-Coder 7b (Ollama local)
 python src/main.py \
   --mode benchmark \
-  --input dataset/labeled/ground_truths \
+  --input dataset/v1_sintetico/ground_truths \
   --model qwen2.5-coder:7b \
   --bound 5 --timeout 30 --llm-timeout 600 \
   --report reports/json/v1_benchmark/benchmark_qwen2.5-coder-7b.json
@@ -169,7 +169,7 @@ Arrastar todos os arquivos `reports/json/v1_benchmark/benchmark_*.json` → aba 
 ```bash
 python src/main.py \
   --mode esbmc-only \
-  --input dataset/labeled/ok/bugs \
+  --input dataset/v1_sintetico/ok/bugs \
   --output-dir artifacts/results/flow_a \
   --bound 5 --timeout 30
 ```
@@ -179,7 +179,7 @@ python src/main.py \
 ```bash
 python src/main.py \
   --mode hybrid-direct \
-  --input dataset/labeled/ok/bugs/assertion_violation/av_01.py \
+  --input dataset/v1_sintetico/ok/bugs/assertion_violation/av_01.py \
   --model gpt-4o \
   --bound 5 --timeout 30
 ```
@@ -193,7 +193,7 @@ python src/main.py \
 ```bash
 python src/main.py \
   --mode llm-only \
-  --input dataset/labeled/ok/bugs/assertion_violation/av_01.py \
+  --input dataset/v1_sintetico/ok/bugs/assertion_violation/av_01.py \
   --model gpt-4o
 ```
 
@@ -203,7 +203,7 @@ python src/main.py \
 
 ```bash
 python scripts/verify_dataset.py
-python scripts/verify_benchmark_dataset.py dataset/labeled/ground_truths
+python scripts/verify_benchmark_dataset.py dataset/v1_sintetico/ground_truths
 ```
 
 ---

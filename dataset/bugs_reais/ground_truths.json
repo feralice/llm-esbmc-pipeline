@@ -4119,7 +4119,7 @@
     },
     {
       "id": "bip_ansible_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "verify_collections",
       "expression": "local_collection = CollectionRequirement.from_path(b_search_path, False)",
       "categories": [
@@ -4144,7 +4144,7 @@
     },
     {
       "id": "bip_ansible_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DistributionFiles.parse_distribution_file_Debian",
       "expression": "path == '/etc/lsb-release' and 'Kali' in data",
       "categories": [
@@ -4169,7 +4169,7 @@
     },
     {
       "id": "bip_ansible_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "check_required_arguments",
       "expression": "msg = \"missing required arguments: %s\" % \", \".join(missing)",
       "categories": [
@@ -4194,7 +4194,7 @@
     },
     {
       "id": "bip_ansible_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "LinuxHardware.get_cpu_facts",
       "expression": "collected_facts.get('ansible_architecture', '').startswith(('armv', 'aarch'))",
       "categories": [
@@ -4219,7 +4219,7 @@
     },
     {
       "id": "bip_black_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "generate_ignored_nodes",
       "expression": "is_fmt_on = False",
       "categories": [
@@ -4244,7 +4244,7 @@
     },
     {
       "id": "bip_black_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "normalize_invisible_parens",
       "expression": "node.insert_child(index, Node(syms.atom, [lpar, child, rpar]))",
       "categories": [
@@ -4269,7 +4269,7 @@
     },
     {
       "id": "bip_black_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "bracket_split_build_line",
       "expression": "leaves",
       "categories": [
@@ -4294,7 +4294,7 @@
     },
     {
       "id": "bip_black_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_grammars",
       "expression": "all(not version.is_python2() for version in target_versions)",
       "categories": [
@@ -4319,7 +4319,7 @@
     },
     {
       "id": "bip_black_13",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "generate_tokens",
       "expression": "token == 'def'",
       "categories": [
@@ -4344,7 +4344,7 @@
     },
     {
       "id": "bip_black_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "gen_python_files_in_dir",
       "expression": "normalized_path = \"/\" + child.resolve().relative_to(root).as_posix()",
       "categories": [
@@ -4369,7 +4369,7 @@
     },
     {
       "id": "bip_black_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "EmptyLineTracker._maybe_empty_lines",
       "expression": "return 0, 0",
       "categories": [
@@ -4394,7 +4394,7 @@
     },
     {
       "id": "bip_black_20",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "format_file_in_place",
       "expression": "src_name = f\"{src.name}  (original)\"",
       "categories": [
@@ -4419,7 +4419,7 @@
     },
     {
       "id": "bip_black_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "dump_to_file",
       "expression": "tempfile.NamedTemporaryFile(\n        mode=\"w\", prefix=\"blk_\", suffix=\".log\", delete=False\n    )",
       "categories": [
@@ -4444,7 +4444,7 @@
     },
     {
       "id": "bip_cookiecutter_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "generate_context",
       "expression": "open(context_file)",
       "categories": [
@@ -4469,7 +4469,7 @@
     },
     {
       "id": "bip_cookiecutter_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "read_user_choice",
       "expression": "user_choice = click.prompt(\n        prompt, type=click.Choice(choices), default=default\n    )",
       "categories": [
@@ -4494,7 +4494,7 @@
     },
     {
       "id": "bip_fastapi_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "APIRouter.add_api_websocket_route",
       "expression": "route = APIWebSocketRoute(path, endpoint=endpoint, name=name)",
       "categories": [
@@ -4519,7 +4519,7 @@
     },
     {
       "id": "bip_fastapi_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_openapi_path",
       "expression": "operation[\"parameters\"] = parameters",
       "categories": [
@@ -4544,7 +4544,7 @@
     },
     {
       "id": "bip_fastapi_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "create_cloned_field",
       "expression": "use_type.__fields__[f.name] = f",
       "categories": [
@@ -4569,7 +4569,7 @@
     },
     {
       "id": "bip_fastapi_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_body_field",
       "expression": "field = Field(\n        name=\"body\",\n        type_=BodyModel,\n        default=None,\n        required=required,\n        model_config=BaseConfig,\n        class_validators={},\n        alias=\"body\",\n        schema=BodySchema(None),\n    )",
       "categories": [
@@ -4594,7 +4594,7 @@
     },
     {
       "id": "bip_fastapi_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "serialize_response",
       "expression": "return jsonable_encoder(\n            value,\n            include=include,\n            exclude=exclude,\n            by_alias=by_alias,\n            skip_defaults=skip_defaults,\n        )",
       "categories": [
@@ -4619,7 +4619,7 @@
     },
     {
       "id": "bip_fastapi_11",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "is_scalar_field",
       "expression": "return (\n        field.shape == Shape.SINGLETON\n        and not lenient_issubclass(field.type_, BaseModel)\n        and not lenient_issubclass(field.type_, sequence_types + (dict,))\n        and not isinstance(field.schema, params.Body)\n    )",
       "categories": [
@@ -4644,7 +4644,7 @@
     },
     {
       "id": "bip_fastapi_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "jsonable_encoder",
       "expression": "not obj.Config.json_encoders",
       "categories": [
@@ -4669,7 +4669,7 @@
     },
     {
       "id": "bip_httpie_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "HTTPRequest.headers",
       "expression": "'Host' not in headers",
       "categories": [
@@ -4694,7 +4694,7 @@
     },
     {
       "id": "bip_keras_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_clone_functional_model",
       "expression": "output_masks = to_list(\n                        layer.compute_mask(computed_tensor,\n                                           computed_mask))",
       "categories": [
@@ -4719,7 +4719,7 @@
     },
     {
       "id": "bip_keras_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TFOptimizer.get_updates",
       "expression": "grads = self.optimizer.compute_gradients(loss, params)",
       "categories": [
@@ -4744,7 +4744,7 @@
     },
     {
       "id": "bip_keras_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_file",
       "expression": "cache_dir = os.path.join(os.path.expanduser('~'), '.keras')",
       "categories": [
@@ -4769,7 +4769,7 @@
     },
     {
       "id": "bip_keras_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "weighted_masked_objective",
       "expression": "score_array /= K.mean(mask)",
       "categories": [
@@ -4794,7 +4794,7 @@
     },
     {
       "id": "bip_keras_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "KerasRegressor.predict",
       "expression": "return np.squeeze(self.model.predict(x, **kwargs))",
       "categories": [
@@ -4819,7 +4819,7 @@
     },
     {
       "id": "bip_keras_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Network.from_config",
       "expression": "add_unprocessed_node(layer, node_data)",
       "categories": [
@@ -4844,7 +4844,7 @@
     },
     {
       "id": "bip_keras_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "process_list_block",
       "expression": "block = docstring[starting_point:(None if ending_point == -1 else\n                                      ending_point - 1)]",
       "categories": [
@@ -4869,7 +4869,7 @@
     },
     {
       "id": "bip_keras_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "standardize_weights",
       "expression": "sample_weight is not None and class_weight is not None",
       "categories": [
@@ -4894,7 +4894,7 @@
     },
     {
       "id": "bip_keras_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "sparse_top_k_categorical_accuracy",
       "expression": "return K.mean(K.in_top_k(y_pred, K.cast(K.max(y_true, axis=-1), 'int32'), k),\n                  axis=-1)",
       "categories": [
@@ -4919,7 +4919,7 @@
     },
     {
       "id": "bip_keras_17",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "sparse_categorical_accuracy",
       "expression": "return K.cast(K.equal(K.max(y_true, axis=-1),\n                          K.cast(K.argmax(y_pred, axis=-1), K.floatx())),\n                  K.floatx())",
       "categories": [
@@ -4944,7 +4944,7 @@
     },
     {
       "id": "bip_keras_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Sequential.add",
       "expression": "batch_shape = first_layer.batch_input_shape",
       "categories": [
@@ -4969,7 +4969,7 @@
     },
     {
       "id": "bip_keras_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TensorBoard.set_model",
       "expression": "tf.summary.histogram('{}_out'.format(layer.name),\n                                         layer.output)",
       "categories": [
@@ -4994,7 +4994,7 @@
     },
     {
       "id": "bip_keras_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_preprocess_numpy_input",
       "expression": "mode == 'tf'",
       "categories": [
@@ -5019,7 +5019,7 @@
     },
     {
       "id": "bip_keras_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "rnn",
       "expression": "new_states = [tf.where(tiled_mask_t, new_states[i], states[i]) for i in range(len(states))]",
       "categories": [
@@ -5044,7 +5044,7 @@
     },
     {
       "id": "bip_keras_31",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ctc_batch_cost",
       "expression": "label_length = tf.to_int32(tf.squeeze(label_length))",
       "categories": [
@@ -5069,7 +5069,7 @@
     },
     {
       "id": "bip_keras_33",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "text_to_word_sequence",
       "expression": "sys.version_info < (3,) and isinstance(text, unicode)",
       "categories": [
@@ -5094,7 +5094,7 @@
     },
     {
       "id": "bip_keras_36",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "separable_conv1d",
       "expression": "strides = (1, 1) + strides + (1,)",
       "categories": [
@@ -5119,7 +5119,7 @@
     },
     {
       "id": "bip_keras_38",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "StackedRNNCells.build",
       "expression": "input_shape = (input_shape[0], input_shape[1], output_dim)",
       "categories": [
@@ -5144,7 +5144,7 @@
     },
     {
       "id": "bip_keras_40",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RNN.compute_output_shape",
       "expression": "output_dim = self.cell.state_size[0]",
       "categories": [
@@ -5169,7 +5169,7 @@
     },
     {
       "id": "bip_keras_43",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "to_categorical",
       "expression": "y = y.ravel()",
       "categories": [
@@ -5194,7 +5194,7 @@
     },
     {
       "id": "bip_keras_45",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "LSTMCell.call",
       "expression": "x_i = K.dot(inputs_i, self.kernel_i) + self.bias_i",
       "categories": [
@@ -5219,7 +5219,7 @@
     },
     {
       "id": "bip_luigi_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "S3CopyToTable.does_table_exist",
       "expression": "query = (\"select 1 as table_exists \"\n                     \"from information_schema.tables \"\n                     \"where table_schema = %s and table_name = %s limit 1\")",
       "categories": [
@@ -5244,7 +5244,7 @@
     },
     {
       "id": "bip_luigi_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Worker.get_pending_tasks",
       "expression": "return state.get_pending_tasks()",
       "categories": [
@@ -5269,7 +5269,7 @@
     },
     {
       "id": "bip_luigi_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "CentralPlannerScheduler.prune",
       "expression": "task.id not in necessary_tasks and self._state.prune(task, self._config)",
       "categories": [
@@ -5294,7 +5294,7 @@
     },
     {
       "id": "bip_luigi_17",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_WorkerSchedulerFactory.create_local_scheduler",
       "expression": "return scheduler.CentralPlannerScheduler(prune_on_get_work=True)",
       "categories": [
@@ -5319,7 +5319,7 @@
     },
     {
       "id": "bip_luigi_18",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SimpleTaskState.set_status",
       "expression": "task.scheduler_disable_time is not None",
       "categories": [
@@ -5344,7 +5344,7 @@
     },
     {
       "id": "bip_luigi_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SimpleTaskState.set_status",
       "expression": "new_status == FAILED and task.can_disable()",
       "categories": [
@@ -5369,7 +5369,7 @@
     },
     {
       "id": "bip_luigi_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "run",
       "expression": "use_dynamic_argparse",
       "categories": [
@@ -5394,7 +5394,7 @@
     },
     {
       "id": "bip_luigi_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SparkSubmitTask._dict_arg",
       "expression": "command += [name, '\"{0}={1}\"'.format(prop, value)]",
       "categories": [
@@ -5419,7 +5419,7 @@
     },
     {
       "id": "bip_luigi_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "HadoopJarJobRunner.run_job",
       "expression": "not job.jar() or not os.path.exists(job.jar())",
       "categories": [
@@ -5444,7 +5444,7 @@
     },
     {
       "id": "bip_luigi_29",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Register.__get_reg",
       "expression": "cls.run == NotImplemented",
       "categories": [
@@ -5469,7 +5469,7 @@
     },
     {
       "id": "bip_luigi_33",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Task.get_param_values",
       "expression": "positional_params = [(n, p) for n, p in params if p.significant]",
       "categories": [
@@ -5494,7 +5494,7 @@
     },
     {
       "id": "bip_matplotlib_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Axes.scatter",
       "expression": "edgecolors = 'face'",
       "categories": [
@@ -5519,7 +5519,7 @@
     },
     {
       "id": "bip_matplotlib_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Axes._parse_scatter_color_args",
       "expression": "c.size == xsize",
       "categories": [
@@ -5544,7 +5544,7 @@
     },
     {
       "id": "bip_matplotlib_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "LightSource.shade_rgb",
       "expression": "hasattr(intensity, 'mask')",
       "categories": [
@@ -5569,7 +5569,7 @@
     },
     {
       "id": "bip_matplotlib_9",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PolarAxes.draw",
       "expression": "thetamin, thetamax = np.rad2deg(self._realViewLim.intervalx)",
       "categories": [
@@ -5594,7 +5594,7 @@
     },
     {
       "id": "bip_matplotlib_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Axis.set_tick_params",
       "expression": "reset",
       "categories": [
@@ -5619,7 +5619,7 @@
     },
     {
       "id": "bip_matplotlib_11",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Text.get_window_extent",
       "expression": "dpi is not None",
       "categories": [
@@ -5644,7 +5644,7 @@
     },
     {
       "id": "bip_matplotlib_13",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Path.make_compound_path",
       "expression": "vertices = np.concatenate([x.vertices for x in args])",
       "categories": [
@@ -5669,7 +5669,7 @@
     },
     {
       "id": "bip_matplotlib_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Text.update",
       "expression": "sentinel = object()",
       "categories": [
@@ -5694,7 +5694,7 @@
     },
     {
       "id": "bip_matplotlib_16",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "nonsingular",
       "expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
       "categories": [
@@ -5719,7 +5719,7 @@
     },
     {
       "id": "bip_matplotlib_17",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "nonsingular",
       "expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
       "categories": [
@@ -5744,7 +5744,7 @@
     },
     {
       "id": "bip_matplotlib_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AxesBase.apply_aspect",
       "expression": "x0, x1 = map(x_trf.inverted().transform, dL.intervalx)",
       "categories": [
@@ -5769,7 +5769,7 @@
     },
     {
       "id": "bip_matplotlib_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "EventCollection.__init__",
       "expression": "positions is None or len(positions) == 0",
       "categories": [
@@ -5794,7 +5794,7 @@
     },
     {
       "id": "bip_matplotlib_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_make_getset_interval",
       "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
       "categories": [
@@ -5819,7 +5819,7 @@
     },
     {
       "id": "bip_matplotlib_27",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ColorbarBase.set_label",
       "expression": "self._label = str(label)",
       "categories": [
@@ -5844,7 +5844,7 @@
     },
     {
       "id": "bip_matplotlib_28",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AxesBase.set_xlim",
       "expression": "self.get_xscale() == 'log'",
       "categories": [
@@ -5869,7 +5869,7 @@
     },
     {
       "id": "bip_pandas_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "is_string_dtype",
       "expression": "is_excluded_checks = (is_period_dtype, is_interval_dtype)",
       "categories": [
@@ -5894,7 +5894,7 @@
     },
     {
       "id": "bip_pandas_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index._join_multi",
       "expression": "return multi_join_idx, lidx, ridx",
       "categories": [
@@ -5919,7 +5919,7 @@
     },
     {
       "id": "bip_pandas_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index._get_nearest_indexer",
       "expression": "target = np.asarray(target)",
       "categories": [
@@ -5944,7 +5944,7 @@
     },
     {
       "id": "bip_pandas_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Block.replace",
       "expression": "not mask.any()",
       "categories": [
@@ -5969,7 +5969,7 @@
     },
     {
       "id": "bip_pandas_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ExtensionBlock.putmask",
       "expression": "isinstance(new, np.ndarray) and len(new) == len(mask)",
       "categories": [
@@ -5994,7 +5994,7 @@
     },
     {
       "id": "bip_pandas_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "should_series_dispatch",
       "expression": "is_datetime64_dtype(ldtype) and is_object_dtype(rdtype)",
       "categories": [
@@ -6019,7 +6019,7 @@
     },
     {
       "id": "bip_pandas_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_LocIndexer._getitem_axis",
       "expression": "is_list_like_indexer(key)",
       "categories": [
@@ -6044,7 +6044,7 @@
     },
     {
       "id": "bip_pandas_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series._get_with",
       "expression": "isinstance(key, list)",
       "categories": [
@@ -6069,7 +6069,7 @@
     },
     {
       "id": "bip_pandas_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DatetimeTimedeltaMixin.intersection",
       "expression": "return type(self)(data=[])",
       "categories": [
@@ -6094,7 +6094,7 @@
     },
     {
       "id": "bip_pandas_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DatetimeArray.tz_localize",
       "expression": "return self._simple_new(new_dates, dtype=dtype, freq=self.freq)",
       "categories": [
@@ -6119,7 +6119,7 @@
     },
     {
       "id": "bip_pandas_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DatetimeArray.isocalendar",
       "expression": "sarray = fields.build_isocalendar_sarray(self.asi8)",
       "categories": [
@@ -6144,7 +6144,7 @@
     },
     {
       "id": "bip_pandas_28",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "StringMethods._get_series_list",
       "expression": "return [Series(others._values, index=others)]",
       "categories": [
@@ -6169,7 +6169,7 @@
     },
     {
       "id": "bip_pandas_29",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "IntervalArray.__setitem__",
       "expression": "needs_float_conversion",
       "categories": [
@@ -6194,7 +6194,7 @@
     },
     {
       "id": "bip_pandas_33",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "IntegerArray._values_for_argsort",
       "expression": "data[self._mask] = data.min() - 1",
       "categories": [
@@ -6219,7 +6219,7 @@
     },
     {
       "id": "bip_pandas_34",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TimeGrouper._get_time_bins",
       "expression": "binner = labels = date_range(\n            freq=self.freq,\n            start=first,\n            end=last,\n            tz=ax.tz,\n            name=ax.name,\n            ambiguous=\"infer\",\n            nonexistent=\"shift_forward\",\n        )",
       "categories": [
@@ -6244,7 +6244,7 @@
     },
     {
       "id": "bip_pandas_35",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PeriodIndex._engine",
       "expression": "period = weakref.ref(self)",
       "categories": [
@@ -6269,7 +6269,7 @@
     },
     {
       "id": "bip_pandas_42",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "assert_series_equal",
       "expression": "is_interval_dtype(left.dtype) or is_interval_dtype(right.dtype)",
       "categories": [
@@ -6294,7 +6294,7 @@
     },
     {
       "id": "bip_pandas_50",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_cat_compare_op",
       "expression": "ret[mask] = False",
       "categories": [
@@ -6319,7 +6319,7 @@
     },
     {
       "id": "bip_pandas_52",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "SeriesGroupBy.nunique",
       "expression": "val[isna(val)] = np.datetime64(\"NaT\")",
       "categories": [
@@ -6344,7 +6344,7 @@
     },
     {
       "id": "bip_pandas_58",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Categorical.from_codes",
       "expression": "codes = np.asarray(codes)",
       "categories": [
@@ -6369,7 +6369,7 @@
     },
     {
       "id": "bip_pandas_59",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_Rolling_and_Expanding.corr",
       "expression": "window = self._get_window(other)",
       "categories": [
@@ -6394,7 +6394,7 @@
     },
     {
       "id": "bip_pandas_61",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series._get_with",
       "expression": "return self._get_values(key)",
       "categories": [
@@ -6419,7 +6419,7 @@
     },
     {
       "id": "bip_pandas_63",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AtIndexer._convert_key",
       "expression": "zip(self.obj.axes, key)",
       "categories": [
@@ -6444,7 +6444,7 @@
     },
     {
       "id": "bip_pandas_64",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ExcelFormatter.__init__",
       "expression": "self.df = df",
       "categories": [
@@ -6469,7 +6469,7 @@
     },
     {
       "id": "bip_pandas_69",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_AtIndexer._convert_key",
       "expression": "is_integer(i) and not ax.holds_integer()",
       "categories": [
@@ -6494,7 +6494,7 @@
     },
     {
       "id": "bip_pandas_78",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DataFrame._reduce",
       "expression": "result = Series(result, index=labels)",
       "categories": [
@@ -6519,7 +6519,7 @@
     },
     {
       "id": "bip_pandas_84",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_unstack_multiple",
       "expression": "clocs = [index._get_level_number(i) for i in clocs]",
       "categories": [
@@ -6544,7 +6544,7 @@
     },
     {
       "id": "bip_pandas_87",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "crosstab",
       "expression": "table = df.pivot_table(\n        \"__dummy__\",\n        index=rownames,\n        columns=colnames,\n        margins=margins,\n        margins_name=margins_name,\n        dropna=dropna,\n        **kwargs,\n    )",
       "categories": [
@@ -6569,7 +6569,7 @@
     },
     {
       "id": "bip_pandas_88",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "pivot_table",
       "expression": "table.index.nlevels > 1",
       "categories": [
@@ -6594,7 +6594,7 @@
     },
     {
       "id": "bip_pandas_89",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_unstack_multiple",
       "expression": "result = result.unstack(val)",
       "categories": [
@@ -6619,7 +6619,7 @@
     },
     {
       "id": "bip_pandas_91",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "TimedeltaIndex.searchsorted",
       "expression": "value = np.array(value, dtype=_TD_DTYPE, copy=False)",
       "categories": [
@@ -6644,7 +6644,7 @@
     },
     {
       "id": "bip_pandas_95",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_period_array_cmp",
       "expression": "ordinal_op = getattr(self.asi8, opname)",
       "categories": [
@@ -6669,7 +6669,7 @@
     },
     {
       "id": "bip_pandas_98",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index.__new__",
       "expression": "(\n            is_interval_dtype(data) or is_interval_dtype(dtype)\n        ) and not is_object_dtype(dtype)",
       "categories": [
@@ -6694,7 +6694,7 @@
     },
     {
       "id": "bip_pandas_102",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "init_ndarray",
       "expression": "columns = [0]",
       "categories": [
@@ -6719,7 +6719,7 @@
     },
     {
       "id": "bip_pandas_104",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "GroupBy.quantile",
       "expression": "order = np.roll(list(range(result.index.nlevels)), -1)",
       "categories": [
@@ -6744,7 +6744,7 @@
     },
     {
       "id": "bip_pandas_106",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Index.get_indexer_non_unique",
       "expression": "self.is_all_dates",
       "categories": [
@@ -6769,7 +6769,7 @@
     },
     {
       "id": "bip_pandas_107",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DataFrame.append",
       "expression": "other.name is None",
       "categories": [
@@ -6794,7 +6794,7 @@
     },
     {
       "id": "bip_pandas_115",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "interpolate_1d",
       "expression": "result[invalid] = np.interp(inds[invalid], inds[valid], yvalues[valid])",
       "categories": [
@@ -6819,7 +6819,7 @@
     },
     {
       "id": "bip_pandas_116",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_MergeOperation._get_merge_keys",
       "expression": "left_keys = [self.left.index.values]",
       "categories": [
@@ -6844,7 +6844,7 @@
     },
     {
       "id": "bip_pandas_117",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_isna_old",
       "expression": "isinstance(obj, (ABCSeries, np.ndarray, ABCIndexClass))",
       "categories": [
@@ -6869,7 +6869,7 @@
     },
     {
       "id": "bip_pandas_119",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_add_margins",
       "expression": "margin_dummy[cols] = margin_dummy[cols].astype(dtype)",
       "categories": [
@@ -6894,7 +6894,7 @@
     },
     {
       "id": "bip_pandas_127",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "NDFrame.pct_change",
       "expression": "rs = rs.reindex_like(data)",
       "categories": [
@@ -6919,7 +6919,7 @@
     },
     {
       "id": "bip_pandas_133",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "NDFrame.interpolate",
       "expression": "axis == 1",
       "categories": [
@@ -6944,7 +6944,7 @@
     },
     {
       "id": "bip_pandas_139",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Grouping.__init__",
       "expression": "self._group_index = CategoricalIndex(\n                    Categorical.from_codes(\n                        codes=codes, categories=categories, ordered=self.grouper.ordered\n                    )\n                )",
       "categories": [
@@ -6969,7 +6969,7 @@
     },
     {
       "id": "bip_pandas_141",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RangeIndex.get_indexer",
       "expression": "self.step > 0",
       "categories": [
@@ -6994,7 +6994,7 @@
     },
     {
       "id": "bip_pandas_142",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "diff",
       "expression": "needs_i8_conversion(arr)",
       "categories": [
@@ -7019,7 +7019,7 @@
     },
     {
       "id": "bip_pandas_143",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RangeIndex.get_indexer",
       "expression": "not (method is None and tolerance is None and is_list_like(target))",
       "categories": [
@@ -7044,7 +7044,7 @@
     },
     {
       "id": "bip_pandas_144",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "BarPlot._decorate_ticks",
       "expression": "ax.set_xticks(self.tick_pos)",
       "categories": [
@@ -7069,7 +7069,7 @@
     },
     {
       "id": "bip_pandas_145",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "dispatch_to_series",
       "expression": "isinstance(right, ABCSeries) and axis == \"columns\"",
       "categories": [
@@ -7094,7 +7094,7 @@
     },
     {
       "id": "bip_pandas_148",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "FrameApply.apply_empty_result",
       "expression": "EMPTY_SERIES = Series([])",
       "categories": [
@@ -7119,7 +7119,7 @@
     },
     {
       "id": "bip_pandas_152",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series.append",
       "expression": "to_concat = [self] + to_append",
       "categories": [
@@ -7144,7 +7144,7 @@
     },
     {
       "id": "bip_pandas_154",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "GroupBy._get_cythonized_result",
       "expression": "result_sz = len(obj.values)",
       "categories": [
@@ -7169,7 +7169,7 @@
     },
     {
       "id": "bip_pandas_155",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Rolling._on",
       "expression": "return self.obj.index",
       "categories": [
@@ -7194,7 +7194,7 @@
     },
     {
       "id": "bip_pandas_158",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Series.rename",
       "expression": "non_mapping = is_scalar(index) or (\n            is_list_like(index) and not is_dict_like(index)\n        )",
       "categories": [
@@ -7219,7 +7219,7 @@
     },
     {
       "id": "bip_pandas_160",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_can_use_numexpr",
       "expression": "hasattr(o, \"dtypes\")",
       "categories": [
@@ -7244,7 +7244,7 @@
     },
     {
       "id": "bip_pandas_161",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Categorical.fillna",
       "expression": "indexer = np.where(values_codes != -1)",
       "categories": [
@@ -7269,7 +7269,7 @@
     },
     {
       "id": "bip_pandas_162",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_normalize",
       "expression": "column_margin = table.loc[:, margins_name].drop(margins_name)",
       "categories": [
@@ -7294,7 +7294,7 @@
     },
     {
       "id": "bip_pandas_163",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_Window._prep_values",
       "expression": "values[np.isinf(values)] = np.NaN",
       "categories": [
@@ -7319,7 +7319,7 @@
     },
     {
       "id": "bip_pandas_166",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "DataFrame._join_compat",
       "expression": "res = concat(frames, axis=1, join=\"outer\", verify_integrity=True)",
       "categories": [
@@ -7344,7 +7344,7 @@
     },
     {
       "id": "bip_pandas_168",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_get_grouper",
       "expression": "obj._check_label_or_level_ambiguity(gpr)",
       "categories": [
@@ -7369,7 +7369,7 @@
     },
     {
       "id": "bip_sanic_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Sanic.register_named_middleware",
       "expression": "self.named_response_middleware[_rn].append(middleware)",
       "categories": [
@@ -7394,7 +7394,7 @@
     },
     {
       "id": "bip_scrapy_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ImagesPipeline.convert_image",
       "expression": "image.mode != 'RGB'",
       "categories": [
@@ -7419,7 +7419,7 @@
     },
     {
       "id": "bip_scrapy_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ItemMeta.__new__",
       "expression": "new_bases = tuple(base._class for base in bases if hasattr(base, '_class'))",
       "categories": [
@@ -7444,7 +7444,7 @@
     },
     {
       "id": "bip_scrapy_15",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_safe_ParseResult",
       "expression": "return (\n        to_native_str(parts.scheme),\n        to_native_str(parts.netloc.encode('idna')),\n\n        # default encoding for path component SHOULD be UTF-8\n        quote(to_bytes(parts.path, path_encoding), _safe_chars),\n        quote(to_bytes(parts.params, path_encoding), _safe_chars),\n\n        # encoding of query and fragment follows page encoding\n        # or form-charset (if known and passed)\n        quote(to_bytes(parts.query, encoding), _safe_chars),\n        quote(to_bytes(parts.fragment, encoding), _safe_chars)\n    )",
       "categories": [
@@ -7469,7 +7469,7 @@
     },
     {
       "id": "bip_scrapy_18",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "ResponseTypes.from_content_disposition",
       "expression": "filename = to_native_str(content_disposition).split(';')[1].split('=')[1]",
       "categories": [
@@ -7494,7 +7494,7 @@
     },
     {
       "id": "bip_scrapy_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RobotsTxtMiddleware._robots_error",
       "expression": "self._parsers.pop(netloc).callback(None)",
       "categories": [
@@ -7519,7 +7519,7 @@
     },
     {
       "id": "bip_scrapy_28",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "RFPDupeFilter.__init__",
       "expression": "self.fingerprints.update(x.rstrip() for x in self.file)",
       "categories": [
@@ -7544,7 +7544,7 @@
     },
     {
       "id": "bip_scrapy_38",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_get_clickable",
       "expression": "clickables = [\n        el for el in form.xpath(\n            'descendant::*[(self::input or self::button)'\n            ' and re:test(@type, \"^submit$\", \"i\")]'\n            '|descendant::button[not(@type)]',\n            namespaces={\"re\": \"http://exslt.org/regular-expressions\"})\n        ]",
       "categories": [
@@ -7569,7 +7569,7 @@
     },
     {
       "id": "bip_scrapy_39",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Spider.start_requests",
       "expression": "self.make_requests_from_url is not Spider.make_requests_from_url",
       "categories": [
@@ -7594,7 +7594,7 @@
     },
     {
       "id": "bip_scrapy_40",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PythonItemExporter._serialize_value",
       "expression": "self.binary",
       "categories": [
@@ -7619,7 +7619,7 @@
     },
     {
       "id": "bip_spacy_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "add_codes",
       "expression": "msg = getattr(err_cls, code)",
       "categories": [
@@ -7644,7 +7644,7 @@
     },
     {
       "id": "bip_spacy_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "load_model_from_path",
       "expression": "factory = factories.get(name, name)",
       "categories": [
@@ -7669,7 +7669,7 @@
     },
     {
       "id": "bip_spacy_6",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Language.remove_pipe",
       "expression": "return self.pipeline.pop(self.pipe_names.index(name))",
       "categories": [
@@ -7694,7 +7694,7 @@
     },
     {
       "id": "bip_thefuck_2",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_all_executables",
       "expression": "bins = [exe.name.decode('utf8') if six.PY2 else exe.name\n            for path in os.environ.get('PATH', '').split(':')\n            for exe in _safe(lambda: list(Path(path).iterdir()), [])\n            if not _safe(exe.is_dir, True)\n            and exe.name not in tf_entry_points]",
       "categories": [
@@ -7719,7 +7719,7 @@
     },
     {
       "id": "bip_thefuck_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Fish.info",
       "expression": "proc = Popen(['fish', '-c', 'echo $FISH_VERSION'],\n                     stdout=PIPE, stderr=DEVNULL)",
       "categories": [
@@ -7744,7 +7744,7 @@
     },
     {
       "id": "bip_thefuck_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_get_aliases",
       "expression": "alias_out = proc.stdout.read().decode('utf-8').strip().split('\\n')",
       "categories": [
@@ -7769,7 +7769,7 @@
     },
     {
       "id": "bip_thefuck_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "last_arg = command.script_parts[-1]",
       "categories": [
@@ -7794,7 +7794,7 @@
     },
     {
       "id": "bip_thefuck_11",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "return replace_argument(command.script, 'push', push_upstream)",
       "categories": [
@@ -7819,7 +7819,7 @@
     },
     {
       "id": "bip_thefuck_14",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "Fish._get_overridden_aliases",
       "expression": "overridden_aliases = os.environ.get('TF_OVERRIDDEN_ALIASES', '').strip()",
       "categories": [
@@ -7844,7 +7844,7 @@
     },
     {
       "id": "bip_thefuck_19",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "return replace_argument(command.script, 'push', 'push --force')",
       "categories": [
@@ -7869,7 +7869,7 @@
     },
     {
       "id": "bip_thefuck_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "return re.sub('^mkdir (.*)', 'mkdir -p \\\\1', command.script)",
       "categories": [
@@ -7894,7 +7894,7 @@
     },
     {
       "id": "bip_thefuck_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_new_command",
       "expression": "machine = \"\"",
       "categories": [
@@ -7919,7 +7919,7 @@
     },
     {
       "id": "bip_thefuck_30",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "match",
       "expression": "return 'EDITOR' in os.environ and _search(command.stderr)",
       "categories": [
@@ -7944,7 +7944,7 @@
     },
     {
       "id": "bip_tornado_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "PeriodicCallback._update_next",
       "expression": "callback_time_sec = self.callback_time / 1000.0",
       "categories": [
@@ -7969,7 +7969,7 @@
     },
     {
       "id": "bip_tornado_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "WebSocketProtocol13.accept_connection",
       "expression": "self._accept_connection()",
       "categories": [
@@ -7994,7 +7994,7 @@
     },
     {
       "id": "bip_tqdm_1",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "tenumerate",
       "expression": "return enumerate(tqdm_class(iterable, start, **tqdm_kwargs))",
       "categories": [
@@ -8019,7 +8019,7 @@
     },
     {
       "id": "bip_youtube_dl_3",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "unescapeHTML",
       "expression": "return re.sub(\n        r'&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)",
       "categories": [
@@ -8044,7 +8044,7 @@
     },
     {
       "id": "bip_youtube_dl_4",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "JSInterpreter.interpret_expression",
       "expression": "m = re.match(\n            r'^(?P<func>%s)\\((?P<args>[a-zA-Z0-9_$,]+)\\)$' % _NAME_RE, expr)",
       "categories": [
@@ -8069,7 +8069,7 @@
     },
     {
       "id": "bip_youtube_dl_5",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "unified_timestamp",
       "expression": "pm_delta = datetime.timedelta(hours=12 if re.search(r'(?i)PM', date_str) else 0)",
       "categories": [
@@ -8094,7 +8094,7 @@
     },
     {
       "id": "bip_youtube_dl_7",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "return v",
       "categories": [
@@ -8119,7 +8119,7 @@
     },
     {
       "id": "bip_youtube_dl_8",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "YoutubeDL.build_format_selector",
       "expression": "current_selector = None",
       "categories": [
@@ -8144,7 +8144,7 @@
     },
     {
       "id": "bip_youtube_dl_10",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "res = re.sub(r'''(?x)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\\")?)*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\')?)*'|\n        [a-zA-Z_][.a-zA-Z_0-9]*\n        ''', fix_kv, code)",
       "categories": [
@@ -8169,7 +8169,7 @@
     },
     {
       "id": "bip_youtube_dl_13",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "urljoin",
       "expression": "re.match(r'^(?:https?:)?//', path)",
       "categories": [
@@ -8194,7 +8194,7 @@
     },
     {
       "id": "bip_youtube_dl_15",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        {comment}|,(?={skip}[\\]}}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        \\b(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:{skip}:)?|\n        [0-9]+(?={skip}:)\n        '''.format(comment=COMMENT_RE, skip=SKIP_RE), fix_kv, code)",
       "categories": [
@@ -8219,7 +8219,7 @@
     },
     {
       "id": "bip_youtube_dl_20",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "get_elements_by_attribute",
       "expression": "re.finditer(r'''(?xs)\n        <([a-zA-Z0-9:._-]+)\n         (?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?\n         \\s+%s=['\"]?%s['\"]?\n         (?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?\n        \\s*>\n        (?P<content>.*?)\n        </\\1>\n    ''' % (re.escape(attribute), value), html)",
       "categories": [
@@ -8244,7 +8244,7 @@
     },
     {
       "id": "bip_youtube_dl_21",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "urljoin",
       "expression": "not isinstance(base, compat_str) or not re.match(r'^(?:https?:)?//', base)",
       "categories": [
@@ -8269,7 +8269,7 @@
     },
     {
       "id": "bip_youtube_dl_23",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "v.startswith('/*') or v == ','",
       "categories": [
@@ -8294,7 +8294,7 @@
     },
     {
       "id": "bip_youtube_dl_24",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "_match_one",
       "expression": "m.group('strval') is not None",
       "categories": [
@@ -8319,7 +8319,7 @@
     },
     {
       "id": "bip_youtube_dl_25",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "INTEGER_TABLE = (\n            (r'^0[xX][0-9a-fA-F]+', 16),\n            (r'^0+[0-7]+', 8),\n        )",
       "categories": [
@@ -8344,7 +8344,7 @@
     },
     {
       "id": "bip_youtube_dl_26",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "js_to_json",
       "expression": "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        /\\*.*?\\*/|,(?=\\s*[\\]}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        (?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\\s*:)?|\n        [0-9]+(?=\\s*:)\n        ''', fix_kv, code)",
       "categories": [
@@ -8369,7 +8369,7 @@
     },
     {
       "id": "bip_youtube_dl_27",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "parse_dfxp_time_expr",
       "expression": "mobj = re.match(r'^(\\d+):(\\d\\d):(\\d\\d(?:\\.\\d+)?)$', time_expr)",
       "categories": [
@@ -8394,7 +8394,7 @@
     },
     {
       "id": "bip_youtube_dl_30",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "YoutubeDL.build_format_selector",
       "expression": "format_spec == 'all'",
       "categories": [
@@ -8419,7 +8419,7 @@
     },
     {
       "id": "bip_youtube_dl_41",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "unified_strdate",
       "expression": "date_str = date_str.replace(',',' ')",
       "categories": [
@@ -8444,7 +8444,7 @@
     },
     {
       "id": "bip_youtube_dl_43",
-      "cohort": "bugsinpy_auto",
+      "cohort": "rotulo_automatico",
       "function": "url_basename",
       "expression": "m = re.match(r'(?:https?:|)//[^/]+/(?:[^/?#]+/)?([^/?#]+)/?(?:[?#]|$)', url)",
       "categories": [

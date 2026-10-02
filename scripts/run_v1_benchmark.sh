@@ -19,7 +19,7 @@ MODELS=(
     "deepseek"
 )
 
-GT="dataset/labeled/ground_truths"
+GT="dataset/v1_sintetico/ground_truths"
 OUT_DIR="reports/json/v1_benchmark"
 BOUND=5
 TIMEOUT=30

@@ -21,8 +21,8 @@
   "items": [
     {
       "id": "dz_real_01",
-      "detection_file": "detection_full/dz_real_01.py",
-      "harness_file": "bugs/dz_real_01.py",
+      "detection_file": "arquivo_com_bug/dz_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/dz_real_01.py",
       "function": "makeMappingArray",
       "categories": [
         "division_by_zero"
@@ -52,8 +52,8 @@
     },
     {
       "id": "dz_real_02",
-      "detection_file": "detection_full/dz_real_02.py",
-      "harness_file": "bugs/dz_real_02.py",
+      "detection_file": "arquivo_com_bug/dz_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/dz_real_02.py",
       "function": "ExactLanguageSearch.choose_best_split",
       "categories": [
         "division_by_zero",
@@ -82,8 +82,8 @@
     },
     {
       "id": "dz_real_03",
-      "detection_file": "detection_full/dz_real_03.py",
-      "harness_file": "bugs/dz_real_03.py",
+      "detection_file": "arquivo_com_bug/dz_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/dz_real_03.py",
       "function": "HashExpander.do",
       "categories": [
         "division_by_zero",
@@ -115,8 +115,8 @@
     },
     {
       "id": "oob_real_01",
-      "detection_file": "detection_full/oob_real_01.py",
-      "harness_file": "bugs/oob_real_01.py",
+      "detection_file": "arquivo_com_bug/oob_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_01.py",
       "function": "get_new_command",
       "categories": [
         "out_of_bounds"
@@ -146,8 +146,8 @@
     },
     {
       "id": "oob_real_02",
-      "detection_file": "detection_full/oob_real_02.py",
-      "harness_file": "bugs/oob_real_02.py",
+      "detection_file": "arquivo_com_bug/oob_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_02.py",
       "function": "match",
       "categories": [
         "out_of_bounds"
@@ -178,8 +178,8 @@
     },
     {
       "id": "oob_real_03",
-      "detection_file": "detection_full/oob_real_03.py",
-      "harness_file": "bugs/oob_real_03.py",
+      "detection_file": "arquivo_com_bug/oob_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_03.py",
       "function": "get_new_command",
       "categories": [
         "out_of_bounds"
@@ -209,8 +209,8 @@
     },
     {
       "id": "oob_real_04",
-      "detection_file": "detection_full/oob_real_04.py",
-      "harness_file": "bugs/oob_real_04.py",
+      "detection_file": "arquivo_com_bug/oob_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_04.py",
       "function": "SortedCorrectedCommandsSequence._realise",
       "categories": [
         "out_of_bounds"
@@ -240,8 +240,8 @@
     },
     {
       "id": "oob_real_05",
-      "detection_file": "detection_full/oob_real_05.py",
-      "harness_file": "bugs/oob_real_05.py",
+      "detection_file": "arquivo_com_bug/oob_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_05.py",
       "function": "lib2to3_parse",
       "categories": [
         "out_of_bounds"
@@ -271,8 +271,8 @@
     },
     {
       "id": "av_real_01",
-      "detection_file": "detection_full/av_real_01.py",
-      "harness_file": "bugs/av_real_01.py",
+      "detection_file": "arquivo_com_bug/av_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_01.py",
       "function": "cli_bool_option",
       "categories": [
         "assertion_violation"
@@ -302,8 +302,8 @@
     },
     {
       "id": "av_real_02",
-      "detection_file": "detection_full/av_real_02.py",
-      "harness_file": "bugs/av_real_02.py",
+      "detection_file": "arquivo_com_bug/av_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_02.py",
       "function": "WebSocketHandler.set_nodelay",
       "categories": [
         "assertion_violation"
@@ -333,8 +333,8 @@
     },
     {
       "id": "av_real_03",
-      "detection_file": "detection_full/av_real_03.py",
-      "harness_file": "bugs/av_real_03.py",
+      "detection_file": "arquivo_com_bug/av_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_03.py",
       "function": "Series.to_timestamp",
       "categories": [
         "assertion_violation"
@@ -366,8 +366,8 @@
     },
     {
       "id": "av_real_06",
-      "detection_file": "detection_full/av_real_06.py",
-      "harness_file": "bugs/av_real_06.py",
+      "detection_file": "arquivo_com_bug/av_real_06.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_06.py",
       "function": "get_new_command",
       "categories": [
         "assertion_violation"
@@ -400,8 +400,8 @@
     },
     {
       "id": "av_real_07",
-      "detection_file": "detection_full/av_real_07.py",
-      "harness_file": "bugs/av_real_07.py",
+      "detection_file": "arquivo_com_bug/av_real_07.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_07.py",
       "function": "match",
       "categories": [
         "assertion_violation"
@@ -432,8 +432,8 @@
     },
     {
       "id": "av_real_08",
-      "detection_file": "detection_full/av_real_08.py",
-      "harness_file": "bugs/av_real_08.py",
+      "detection_file": "arquivo_com_bug/av_real_08.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_08.py",
       "function": "Settings.update",
       "categories": [
         "assertion_violation"
@@ -464,8 +464,8 @@
     },
     {
       "id": "nm_real_15",
-      "detection_file": "detection_full/nm_real_15.py",
-      "harness_file": "bugs/nm_real_15.py",
+      "detection_file": "arquivo_com_bug/nm_real_15.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_15.py",
       "function": "APIRouter.include_router",
       "categories": [
         "incorrect_result"
@@ -496,8 +496,8 @@
     },
     {
       "id": "tm_real_01",
-      "detection_file": "detection_full/tm_real_01.py",
-      "harness_file": "bugs/tm_real_01.py",
+      "detection_file": "arquivo_com_bug/tm_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_01.py",
       "function": "read_conllx",
       "categories": [
         "type_mismatch"
@@ -527,8 +527,8 @@
     },
     {
       "id": "tm_real_02",
-      "detection_file": "detection_full/tm_real_02.py",
-      "harness_file": "bugs/tm_real_02.py",
+      "detection_file": "arquivo_com_bug/tm_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_02.py",
       "function": "HiveCommandClient.table_exists",
       "categories": [
         "type_mismatch"
@@ -559,8 +559,8 @@
     },
     {
       "id": "tm_real_03",
-      "detection_file": "detection_full/tm_real_03.py",
-      "harness_file": "bugs/tm_real_03.py",
+      "detection_file": "arquivo_com_bug/tm_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_03.py",
       "function": "_match_one",
       "categories": [
         "type_mismatch"
@@ -591,8 +591,8 @@
     },
     {
       "id": "tm_real_04",
-      "detection_file": "detection_full/tm_real_04.py",
-      "harness_file": "bugs/tm_real_04.py",
+      "detection_file": "arquivo_com_bug/tm_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_04.py",
       "function": "str_to_int",
       "categories": [
         "type_mismatch"
@@ -622,8 +622,8 @@
     },
     {
       "id": "tm_real_05",
-      "detection_file": "detection_full/tm_real_05.py",
-      "harness_file": "bugs/tm_real_05.py",
+      "detection_file": "arquivo_com_bug/tm_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_05.py",
       "function": "MailSender.send",
       "categories": [
         "type_mismatch"
@@ -654,8 +654,8 @@
     },
     {
       "id": "tm_real_06",
-      "detection_file": "detection/tm_real_06.py",
-      "harness_file": "bugs/tm_real_06.py",
+      "detection_file": "funcao_com_bug/tm_real_06.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_06.py",
       "function": "ContractsManager._clean_req.eb_wrapper",
       "categories": [
         "type_mismatch"
@@ -686,8 +686,8 @@
     },
     {
       "id": "tm_real_07",
-      "detection_file": "detection_full/tm_real_07.py",
-      "harness_file": "bugs/tm_real_07.py",
+      "detection_file": "arquivo_com_bug/tm_real_07.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_07.py",
       "function": "MarkerStyle._recache",
       "categories": [
         "type_mismatch"
@@ -718,8 +718,8 @@
     },
     {
       "id": "tm_real_08",
-      "detection_file": "detection_full/tm_real_08.py",
-      "harness_file": "bugs/tm_real_08.py",
+      "detection_file": "arquivo_com_bug/tm_real_08.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_08.py",
       "function": "simple_separated_format",
       "categories": [
         "type_mismatch",
@@ -749,8 +749,8 @@
     },
     {
       "id": "tm_real_09",
-      "detection_file": "detection_full/tm_real_09.py",
-      "harness_file": "bugs/tm_real_09.py",
+      "detection_file": "arquivo_com_bug/tm_real_09.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_09.py",
       "function": "_format",
       "categories": [
         "type_mismatch"
@@ -779,8 +779,8 @@
     },
     {
       "id": "tm_real_10",
-      "detection_file": "detection_full/tm_real_10.py",
-      "harness_file": "bugs/tm_real_10.py",
+      "detection_file": "arquivo_com_bug/tm_real_10.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_10.py",
       "function": "MetricsHandler.get",
       "categories": [
         "variable_misuse"
@@ -810,8 +810,8 @@
     },
     {
       "id": "vm_real_01",
-      "detection_file": "detection_full/vm_real_01.py",
-      "harness_file": "bugs/vm_real_01.py",
+      "detection_file": "arquivo_com_bug/vm_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_01.py",
       "function": "tqdm.format_meter",
       "categories": [
         "variable_misuse"
@@ -843,8 +843,8 @@
     },
     {
       "id": "vm_real_02",
-      "detection_file": "detection_full/vm_real_02.py",
-      "harness_file": "bugs/vm_real_02.py",
+      "detection_file": "arquivo_com_bug/vm_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_02.py",
       "function": "Schema.validate",
       "categories": [
         "variable_misuse"
@@ -873,8 +873,8 @@
     },
     {
       "id": "io_real_01",
-      "detection_file": "detection_full/io_real_01.py",
-      "harness_file": "bugs/io_real_01.py",
+      "detection_file": "arquivo_com_bug/io_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/io_real_01.py",
       "function": "nonsingular",
       "categories": [
         "integer_overflow"
@@ -904,8 +904,8 @@
     },
     {
       "id": "nm_real_01",
-      "detection_file": "detection_full/nm_real_01.py",
-      "harness_file": "bugs/nm_real_01.py",
+      "detection_file": "arquivo_com_bug/nm_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_01.py",
       "function": "Session.update_headers",
       "categories": [
         "none_misuse"
@@ -935,8 +935,8 @@
     },
     {
       "id": "nm_real_02",
-      "detection_file": "detection_full/nm_real_02.py",
-      "harness_file": "bugs/nm_real_02.py",
+      "detection_file": "arquivo_com_bug/nm_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_02.py",
       "function": "tqdm.format_meter",
       "categories": [
         "none_misuse"
@@ -966,8 +966,8 @@
     },
     {
       "id": "nm_real_03",
-      "detection_file": "detection_full/nm_real_03.py",
-      "harness_file": "bugs/nm_real_03.py",
+      "detection_file": "arquivo_com_bug/nm_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_03.py",
       "function": "FacebookIE._real_extract",
       "categories": [
         "none_misuse"
@@ -997,8 +997,8 @@
     },
     {
       "id": "nm_real_04",
-      "detection_file": "detection_full/nm_real_04.py",
-      "harness_file": "bugs/nm_real_04.py",
+      "detection_file": "arquivo_com_bug/nm_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_04.py",
       "function": "OffsiteMiddleware.get_host_regex",
       "categories": [
         "none_misuse"
@@ -1028,8 +1028,8 @@
     },
     {
       "id": "nm_real_05",
-      "detection_file": "detection_full/nm_real_05.py",
-      "harness_file": "bugs/nm_real_05.py",
+      "detection_file": "arquivo_com_bug/nm_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_05.py",
       "function": "Response.follow",
       "categories": [
         "none_misuse"
@@ -1059,8 +1059,8 @@
     },
     {
       "id": "nm_real_06",
-      "detection_file": "detection_full/nm_real_06.py",
-      "harness_file": "bugs/nm_real_06.py",
+      "detection_file": "arquivo_com_bug/nm_real_06.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_06.py",
       "function": "create_instance",
       "categories": [
         "none_misuse"
@@ -1092,8 +1092,8 @@
     },
     {
       "id": "nm_real_07",
-      "detection_file": "detection_full/nm_real_07.py",
-      "harness_file": "bugs/nm_real_07.py",
+      "detection_file": "arquivo_com_bug/nm_real_07.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_07.py",
       "function": "url_concat",
       "categories": [
         "none_misuse"
@@ -1123,8 +1123,8 @@
     },
     {
       "id": "nm_real_08",
-      "detection_file": "detection_full/nm_real_08.py",
-      "harness_file": "bugs/nm_real_08.py",
+      "detection_file": "arquivo_com_bug/nm_real_08.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_08.py",
       "function": "Request.url_for",
       "categories": [
         "none_misuse"
@@ -1154,8 +1154,8 @@
     },
     {
       "id": "nm_real_09",
-      "detection_file": "detection_full/nm_real_09.py",
-      "harness_file": "bugs/nm_real_09.py",
+      "detection_file": "arquivo_com_bug/nm_real_09.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_09.py",
       "function": "tqdm.__len__",
       "categories": [
         "none_misuse"
@@ -1185,8 +1185,8 @@
     },
     {
       "id": "nm_real_10",
-      "detection_file": "detection_full/nm_real_10.py",
-      "harness_file": "bugs/nm_real_10.py",
+      "detection_file": "arquivo_com_bug/nm_real_10.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_10.py",
       "function": "S3CopyToTable.copy",
       "categories": [
         "none_misuse"
@@ -1216,8 +1216,8 @@
     },
     {
       "id": "nm_real_11",
-      "detection_file": "detection_full/nm_real_11.py",
-      "harness_file": "bugs/nm_real_11.py",
+      "detection_file": "arquivo_com_bug/nm_real_11.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_11.py",
       "function": "LocalCache.__setitem__",
       "categories": [
         "none_misuse"
@@ -1247,8 +1247,8 @@
     },
     {
       "id": "nm_real_12",
-      "detection_file": "detection_full/nm_real_12.py",
-      "harness_file": "bugs/nm_real_12.py",
+      "detection_file": "arquivo_com_bug/nm_real_12.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_12.py",
       "function": "PamdService.remove",
       "categories": [
         "none_misuse"
@@ -1278,8 +1278,8 @@
     },
     {
       "id": "nm_real_13",
-      "detection_file": "detection_full/nm_real_13.py",
-      "harness_file": "bugs/nm_real_13.py",
+      "detection_file": "arquivo_com_bug/nm_real_13.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_13.py",
       "function": "AsyncHTTPClient.close",
       "categories": [
         "none_misuse",
@@ -1310,8 +1310,8 @@
     },
     {
       "id": "nm_real_14",
-      "detection_file": "detection_full/nm_real_14.py",
-      "harness_file": "bugs/nm_real_14.py",
+      "detection_file": "arquivo_com_bug/nm_real_14.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_14.py",
       "function": "request_httprepr",
       "categories": [
         "none_misuse"
@@ -1341,8 +1341,8 @@
     },
     {
       "id": "nm_real_16",
-      "detection_file": "detection_full/nm_real_16.py",
-      "harness_file": "bugs/nm_real_16.py",
+      "detection_file": "arquivo_com_bug/nm_real_16.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_16.py",
       "function": "Axes.scatter",
       "categories": [
         "incorrect_result"
@@ -1373,8 +1373,8 @@
     },
     {
       "id": "nm_real_17",
-      "detection_file": "detection_full/nm_real_17.py",
-      "harness_file": "bugs/nm_real_17.py",
+      "detection_file": "arquivo_com_bug/nm_real_17.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_17.py",
       "function": "_type",
       "categories": [
         "none_misuse"
@@ -1405,8 +1405,8 @@
     },
     {
       "id": "nm_real_18",
-      "detection_file": "detection_full/nm_real_18.py",
-      "harness_file": "bugs/nm_real_18.py",
+      "detection_file": "arquivo_com_bug/nm_real_18.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_18.py",
       "function": "after_log",
       "categories": [
         "none_misuse"
@@ -1437,8 +1437,8 @@
     },
     {
       "id": "nm_real_19",
-      "detection_file": "detection_full/nm_real_19.py",
-      "harness_file": "bugs/nm_real_19.py",
+      "detection_file": "arquivo_com_bug/nm_real_19.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_19.py",
       "function": "IsFile",
       "categories": [
         "none_misuse"
@@ -1469,8 +1469,8 @@
     },
     {
       "id": "nm_real_20",
-      "detection_file": "detection_full/nm_real_20.py",
-      "harness_file": "bugs/nm_real_20.py",
+      "detection_file": "arquivo_com_bug/nm_real_20.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_20.py",
       "function": "engine.numwords",
       "categories": [
         "none_misuse"
@@ -1501,8 +1501,8 @@
     },
     {
       "id": "nm_real_21",
-      "detection_file": "detection_full/nm_real_21.py",
-      "harness_file": "bugs/nm_real_21.py",
+      "detection_file": "arquivo_com_bug/nm_real_21.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_21.py",
       "function": "_Projection.get_index",
       "categories": [
         "none_misuse"
@@ -1533,8 +1533,8 @@
     },
     {
       "id": "nm_real_22",
-      "detection_file": "detection_full/nm_real_22.py",
-      "harness_file": "bugs/nm_real_22.py",
+      "detection_file": "arquivo_com_bug/nm_real_22.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_22.py",
       "function": "run",
       "categories": [
         "none_misuse"
@@ -1565,8 +1565,8 @@
     },
     {
       "id": "av_real_04",
-      "detection_file": "detection/av_real_04.py",
-      "harness_file": "bugs/av_real_04.py",
+      "detection_file": "funcao_com_bug/av_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_04.py",
       "function": "_partition_tasks / _summary_format",
       "categories": [
         "incorrect_result"
@@ -1597,8 +1597,8 @@
     },
     {
       "id": "av_real_05",
-      "detection_file": "detection_full/av_real_05.py",
-      "harness_file": "bugs/av_real_05.py",
+      "detection_file": "arquivo_com_bug/av_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_05.py",
       "function": "tqdm.__init__",
       "categories": [
         "none_misuse"
@@ -1629,8 +1629,8 @@
     },
     {
       "id": "av_real_09",
-      "detection_file": "detection_full/av_real_09.py",
-      "harness_file": "bugs/av_real_09.py",
+      "detection_file": "arquivo_com_bug/av_real_09.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_09.py",
       "function": "_make_getset_interval",
       "categories": [
         "incorrect_result"
@@ -1661,8 +1661,8 @@
     },
     {
       "id": "av_real_10",
-      "detection_file": "detection_full/av_real_10.py",
-      "harness_file": "bugs/av_real_10.py",
+      "detection_file": "arquivo_com_bug/av_real_10.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_10.py",
       "function": "Driver._partially_consume_prefix",
       "categories": [
         "incorrect_result"
@@ -1693,8 +1693,8 @@
     },
     {
       "id": "av_real_11",
-      "detection_file": "detection_full/av_real_11.py",
-      "harness_file": "bugs/av_real_11.py",
+      "detection_file": "arquivo_com_bug/av_real_11.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_11.py",
       "function": "HTTP1Connection._read_body",
       "categories": [
         "assertion_violation"
@@ -1726,8 +1726,8 @@
     },
     {
       "id": "av_real_12",
-      "detection_file": "detection_full/av_real_12.py",
-      "harness_file": "bugs/av_real_12.py",
+      "detection_file": "arquivo_com_bug/av_real_12.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_12.py",
       "function": "match",
       "categories": [
         "assertion_violation"
@@ -1759,8 +1759,8 @@
     },
     {
       "id": "av_real_13",
-      "detection_file": "detection_full/av_real_13.py",
-      "harness_file": "bugs/av_real_13.py",
+      "detection_file": "arquivo_com_bug/av_real_13.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_13.py",
       "function": "match",
       "categories": [
         "assertion_violation"
@@ -1792,8 +1792,8 @@
     },
     {
       "id": "av_real_14",
-      "detection_file": "detection_full/av_real_14.py",
-      "harness_file": "bugs/av_real_14.py",
+      "detection_file": "arquivo_com_bug/av_real_14.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_14.py",
       "function": "get_new_command",
       "categories": [
         "assertion_violation"
@@ -1826,8 +1826,8 @@
     },
     {
       "id": "av_real_15",
-      "detection_file": "detection_full/av_real_15.py",
-      "harness_file": "bugs/av_real_15.py",
+      "detection_file": "arquivo_com_bug/av_real_15.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_15.py",
       "function": "gunzip",
       "categories": [
         "assertion_violation"
@@ -1859,8 +1859,8 @@
     },
     {
       "id": "av_real_17",
-      "detection_file": "detection_full/av_real_17.py",
-      "harness_file": "bugs/av_real_17.py",
+      "detection_file": "arquivo_com_bug/av_real_17.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_17.py",
       "function": "unified_strdate",
       "categories": [
         "assertion_violation",
@@ -1893,8 +1893,8 @@
     },
     {
       "id": "av_real_21",
-      "detection_file": "detection_full/av_real_21.py",
-      "harness_file": "bugs/av_real_21.py",
+      "detection_file": "arquivo_com_bug/av_real_21.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_21.py",
       "function": "YoutubeDL.process_ie_result",
       "categories": [
         "assertion_violation"
@@ -1925,8 +1925,8 @@
     },
     {
       "id": "oob_real_09",
-      "detection_file": "detection_full/oob_real_09.py",
-      "harness_file": "bugs/oob_real_09.py",
+      "detection_file": "arquivo_com_bug/oob_real_09.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_09.py",
       "function": "parser._parse",
       "categories": [
         "out_of_bounds"
@@ -1954,8 +1954,8 @@
     },
     {
       "id": "oob_real_10",
-      "detection_file": "detection_full/oob_real_10.py",
-      "harness_file": "bugs/oob_real_10.py",
+      "detection_file": "arquivo_com_bug/oob_real_10.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_10.py",
       "function": "_wrap_text_to_colwidths",
       "categories": [
         "out_of_bounds"
@@ -1983,8 +1983,8 @@
     },
     {
       "id": "oob_real_11",
-      "detection_file": "detection_full/oob_real_11.py",
-      "harness_file": "bugs/oob_real_11.py",
+      "detection_file": "arquivo_com_bug/oob_real_11.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_11.py",
       "function": "wcswidth",
       "categories": [
         "out_of_bounds"
@@ -2012,8 +2012,8 @@
     },
     {
       "id": "oob_real_12",
-      "detection_file": "detection_full/oob_real_12.py",
-      "harness_file": "bugs/oob_real_12.py",
+      "detection_file": "arquivo_com_bug/oob_real_12.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_12.py",
       "function": "fast_float",
       "categories": [
         "out_of_bounds"
@@ -2041,8 +2041,8 @@
     },
     {
       "id": "oob_real_13",
-      "detection_file": "detection_full/oob_real_13.py",
-      "harness_file": "bugs/oob_real_13.py",
+      "detection_file": "arquivo_com_bug/oob_real_13.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_13.py",
       "function": "tokenize",
       "categories": [
         "out_of_bounds"
@@ -2070,8 +2070,8 @@
     },
     {
       "id": "oob_real_14",
-      "detection_file": "detection_full/oob_real_14.py",
-      "harness_file": "bugs/oob_real_14.py",
+      "detection_file": "arquivo_com_bug/oob_real_14.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_14.py",
       "function": "LinuxDistribution._parse_uname_content",
       "categories": [
         "out_of_bounds"
@@ -2099,8 +2099,8 @@
     },
     {
       "id": "oob_real_15",
-      "detection_file": "detection_full/oob_real_15.py",
-      "harness_file": "bugs/oob_real_15.py",
+      "detection_file": "arquivo_com_bug/oob_real_15.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_15.py",
       "function": "dfxp2srt",
       "categories": [
         "out_of_bounds"
@@ -2130,8 +2130,8 @@
     },
     {
       "id": "oob_real_16",
-      "detection_file": "detection_full/oob_real_16.py",
-      "harness_file": "bugs/oob_real_16.py",
+      "detection_file": "arquivo_com_bug/oob_real_16.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_16.py",
       "function": "IndexedSet.__getitem__",
       "categories": [
         "out_of_bounds",
@@ -2161,8 +2161,8 @@
     },
     {
       "id": "ip_real_24",
-      "detection_file": "detection_full/ip_real_24.py",
-      "harness_file": "bugs/ip_real_24.py",
+      "detection_file": "arquivo_com_bug/ip_real_24.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_24.py",
       "function": "CentralPlannerScheduler.get_work",
       "categories": [
         "invalid_precondition"
@@ -2193,8 +2193,8 @@
     },
     {
       "id": "ip_real_18",
-      "detection_file": "detection_full/ip_real_18.py",
-      "harness_file": "bugs/ip_real_18.py",
+      "detection_file": "arquivo_com_bug/ip_real_18.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_18.py",
       "function": "croniter._get_low_from_current_date_number",
       "categories": [
         "invalid_precondition"
@@ -2226,8 +2226,8 @@
     },
     {
       "id": "ip_real_01",
-      "detection_file": "detection_full/ip_real_01.py",
-      "harness_file": "bugs/ip_real_01.py",
+      "detection_file": "arquivo_com_bug/ip_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_01.py",
       "function": "Request._set_url",
       "categories": [
         "invalid_precondition"
@@ -2258,8 +2258,8 @@
     },
     {
       "id": "ip_real_03",
-      "detection_file": "detection_full/ip_real_03.py",
-      "harness_file": "bugs/ip_real_03.py",
+      "detection_file": "arquivo_com_bug/ip_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_03.py",
       "function": "Selector.__init__",
       "categories": [
         "invalid_precondition"
@@ -2290,8 +2290,8 @@
     },
     {
       "id": "ip_real_04",
-      "detection_file": "detection/ip_real_04.py",
-      "harness_file": "bugs/ip_real_04.py",
+      "detection_file": "funcao_com_bug/ip_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_04.py",
       "function": "HTTP1Connection.write_headers",
       "categories": [
         "invalid_precondition"
@@ -2322,8 +2322,8 @@
     },
     {
       "id": "ip_real_05",
-      "detection_file": "detection/ip_real_05.py",
-      "harness_file": "bugs/ip_real_05.py",
+      "detection_file": "funcao_com_bug/ip_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_05.py",
       "function": "_Alpha.__gt__ / _Numeric.__gt__",
       "categories": [
         "invalid_precondition"
@@ -2354,8 +2354,8 @@
     },
     {
       "id": "ip_real_06",
-      "detection_file": "detection_full/ip_real_06.py",
-      "harness_file": "bugs/ip_real_06.py",
+      "detection_file": "arquivo_com_bug/ip_real_06.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_06.py",
       "function": "_unstack_multiple",
       "categories": [
         "invalid_precondition"
@@ -2386,8 +2386,8 @@
     },
     {
       "id": "ip_real_07",
-      "detection_file": "detection_full/ip_real_07.py",
-      "harness_file": "bugs/ip_real_07.py",
+      "detection_file": "arquivo_com_bug/ip_real_07.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_07.py",
       "function": "_htmlentity_transform",
       "categories": [
         "invalid_precondition"
@@ -2417,8 +2417,8 @@
     },
     {
       "id": "ip_real_08",
-      "detection_file": "detection_full/ip_real_08.py",
-      "harness_file": "bugs/ip_real_08.py",
+      "detection_file": "arquivo_com_bug/ip_real_08.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_08.py",
       "function": "Sanic.url_for",
       "categories": [
         "incorrect_result"
@@ -2449,8 +2449,8 @@
     },
     {
       "id": "ip_real_09",
-      "detection_file": "detection_full/ip_real_09.py",
-      "harness_file": "bugs/ip_real_09.py",
+      "detection_file": "arquivo_com_bug/ip_real_09.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_09.py",
       "function": "generate_commands",
       "categories": [
         "incorrect_result"
@@ -2481,8 +2481,8 @@
     },
     {
       "id": "ip_real_10",
-      "detection_file": "detection_full/ip_real_10.py",
-      "harness_file": "bugs/ip_real_10.py",
+      "detection_file": "arquivo_com_bug/ip_real_10.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_10.py",
       "function": "_get_spider_loader",
       "categories": [
         "invalid_precondition"
@@ -2513,8 +2513,8 @@
     },
     {
       "id": "ip_real_11",
-      "detection_file": "detection_full/ip_real_11.py",
-      "harness_file": "bugs/ip_real_11.py",
+      "detection_file": "arquivo_com_bug/ip_real_11.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_11.py",
       "function": "HTTPBearer.__call__",
       "categories": [
         "invalid_precondition"
@@ -2544,8 +2544,8 @@
     },
     {
       "id": "ip_real_12",
-      "detection_file": "detection_full/ip_real_12.py",
-      "harness_file": "bugs/ip_real_12.py",
+      "detection_file": "arquivo_com_bug/ip_real_12.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_12.py",
       "function": "map_obj_to_commands",
       "categories": [
         "incorrect_result"
@@ -2576,8 +2576,8 @@
     },
     {
       "id": "ip_real_13",
-      "detection_file": "detection_full/ip_real_13.py",
-      "harness_file": "bugs/ip_real_13.py",
+      "detection_file": "arquivo_com_bug/ip_real_13.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_13.py",
       "function": "StaticFileHandler.get",
       "categories": [
         "invalid_precondition"
@@ -2608,8 +2608,8 @@
     },
     {
       "id": "ip_real_14",
-      "detection_file": "detection_full/ip_real_14.py",
-      "harness_file": "bugs/ip_real_14.py",
+      "detection_file": "arquivo_com_bug/ip_real_14.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_14.py",
       "function": "TimeseriesGenerator.__len__",
       "categories": [
         "invalid_precondition"
@@ -2640,8 +2640,8 @@
     },
     {
       "id": "ip_real_15",
-      "detection_file": "detection_full/ip_real_15.py",
-      "harness_file": "bugs/ip_real_15.py",
+      "detection_file": "arquivo_com_bug/ip_real_15.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_15.py",
       "function": "EmptyLineTracker.maybe_empty_lines",
       "categories": [
         "invalid_precondition"
@@ -2672,8 +2672,8 @@
     },
     {
       "id": "ip_real_16",
-      "detection_file": "detection_full/ip_real_16.py",
-      "harness_file": "bugs/ip_real_16.py",
+      "detection_file": "arquivo_com_bug/ip_real_16.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_16.py",
       "function": "pivot",
       "categories": [
         "invalid_precondition",
@@ -2706,8 +2706,8 @@
     },
     {
       "id": "ip_real_17",
-      "detection_file": "detection_full/ip_real_17.py",
-      "harness_file": "bugs/ip_real_17.py",
+      "detection_file": "arquivo_com_bug/ip_real_17.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_17.py",
       "function": "response_status_message",
       "categories": [
         "invalid_precondition",
@@ -2738,8 +2738,8 @@
     },
     {
       "id": "ip_real_19",
-      "detection_file": "detection_full/ip_real_19.py",
-      "harness_file": "bugs/ip_real_19.py",
+      "detection_file": "arquivo_com_bug/ip_real_19.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_19.py",
       "function": "VersionInfo.__getitem__",
       "categories": [
         "invalid_precondition"
@@ -2768,8 +2768,8 @@
     },
     {
       "id": "ip_real_20",
-      "detection_file": "detection_full/ip_real_20.py",
-      "harness_file": "bugs/ip_real_20.py",
+      "detection_file": "arquivo_com_bug/ip_real_20.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_20.py",
       "function": "generate_sub_moved_events",
       "categories": [
         "incorrect_result"
@@ -2799,8 +2799,8 @@
     },
     {
       "id": "ip_real_21",
-      "detection_file": "detection/ip_real_21.py",
-      "harness_file": "bugs/ip_real_21.py",
+      "detection_file": "funcao_com_bug/ip_real_21.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_21.py",
       "function": "SortedDict.__eq__",
       "categories": [
         "invalid_precondition"
@@ -2830,8 +2830,8 @@
     },
     {
       "id": "ip_real_22",
-      "detection_file": "detection_full/ip_real_22.py",
-      "harness_file": "bugs/ip_real_22.py",
+      "detection_file": "arquivo_com_bug/ip_real_22.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_22.py",
       "function": "match",
       "categories": [
         "invalid_precondition"
@@ -2862,8 +2862,8 @@
     },
     {
       "id": "ip_real_23",
-      "detection_file": "detection_full/ip_real_23.py",
-      "harness_file": "bugs/ip_real_23.py",
+      "detection_file": "arquivo_com_bug/ip_real_23.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_23.py",
       "function": "Task.to_str_params",
       "categories": [
         "invalid_precondition"
@@ -2894,8 +2894,8 @@
     },
     {
       "id": "ip_real_25",
-      "detection_file": "detection_full/ip_real_25.py",
-      "harness_file": "bugs/ip_real_25.py",
+      "detection_file": "arquivo_com_bug/ip_real_25.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_25.py",
       "function": "SimpleTaskState.get_necessary_tasks",
       "categories": [
         "invalid_precondition"
@@ -2926,8 +2926,8 @@
     },
     {
       "id": "ip_real_26",
-      "detection_file": "detection_full/ip_real_26.py",
-      "harness_file": "bugs/ip_real_26.py",
+      "detection_file": "arquivo_com_bug/ip_real_26.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_26.py",
       "function": "Scheduler.add_task",
       "categories": [
         "invalid_precondition"
@@ -2958,8 +2958,8 @@
     },
     {
       "id": "ip_real_28",
-      "detection_file": "detection_full/ip_real_28.py",
-      "harness_file": "bugs/ip_real_28.py",
+      "detection_file": "arquivo_com_bug/ip_real_28.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_28.py",
       "function": "IOLoop.initialize",
       "categories": [
         "invalid_precondition"
@@ -2989,8 +2989,8 @@
     },
     {
       "id": "ip_real_32",
-      "detection_file": "detection_full/ip_real_32.py",
-      "harness_file": "bugs/ip_real_32.py",
+      "detection_file": "arquivo_com_bug/ip_real_32.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_32.py",
       "function": "date_convert",
       "categories": [
         "invalid_precondition"
@@ -3020,8 +3020,8 @@
     },
     {
       "id": "ip_real_33",
-      "detection_file": "detection_full/ip_real_33.py",
-      "harness_file": "bugs/ip_real_33.py",
+      "detection_file": "arquivo_com_bug/ip_real_33.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_33.py",
       "function": "send2trash",
       "categories": [
         "invalid_precondition"
@@ -3049,8 +3049,8 @@
     },
     {
       "id": "ir_real_01",
-      "detection_file": "detection/ir_real_01.py",
-      "harness_file": "bugs/ir_real_01.py",
+      "detection_file": "funcao_com_bug/ir_real_01.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ir_real_01.py",
       "function": "gamma / lgamma",
       "categories": [
         "incorrect_result"
@@ -3080,8 +3080,8 @@
     },
     {
       "id": "ir_real_02",
-      "detection_file": "detection/ir_real_02.py",
-      "harness_file": "bugs/ir_real_02.py",
+      "detection_file": "funcao_com_bug/ir_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ir_real_02.py",
       "function": "module-level",
       "categories": [
         "incorrect_result"
@@ -3111,8 +3111,8 @@
     },
     {
       "id": "ir_real_03",
-      "detection_file": "detection_full/ir_real_03.py",
-      "harness_file": "bugs/ir_real_03.py",
+      "detection_file": "arquivo_com_bug/ir_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ir_real_03.py",
       "function": "try_match_char_class_range",
       "categories": [
         "incorrect_result"
@@ -3142,8 +3142,8 @@
     },
     {
       "id": "ir_real_05",
-      "detection_file": "detection/ir_real_05.py",
-      "harness_file": "bugs/ir_real_05.py",
+      "detection_file": "funcao_com_bug/ir_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ir_real_05.py",
       "function": "string_to_int",
       "categories": [
         "incorrect_result"
@@ -3173,8 +3173,8 @@
     },
     {
       "id": "nm_real_23",
-      "detection_file": "detection_full/nm_real_23.py",
-      "harness_file": "bugs/nm_real_23.py",
+      "detection_file": "arquivo_com_bug/nm_real_23.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_23.py",
       "function": "Markdown._html_class_str_from_tag",
       "categories": [
         "none_misuse"
@@ -3203,8 +3203,8 @@
     },
     {
       "id": "dz_real_04",
-      "detection_file": "detection_full/dz_real_04.py",
-      "harness_file": "bugs/dz_real_04.py",
+      "detection_file": "arquivo_com_bug/dz_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/dz_real_04.py",
       "function": "interpolate_bilinear_2x_fwd",
       "categories": [
         "division_by_zero",
@@ -3236,8 +3236,8 @@
     },
     {
       "id": "nm_real_24",
-      "detection_file": "detection/nm_real_24.py",
-      "harness_file": "bugs/nm_real_24.py",
+      "detection_file": "funcao_com_bug/nm_real_24.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_24.py",
       "function": "reformat_many",
       "categories": [
         "none_misuse"
@@ -3267,8 +3267,8 @@
     },
     {
       "id": "vm_real_03",
-      "detection_file": "detection/vm_real_03.py",
-      "harness_file": "bugs/vm_real_03.py",
+      "detection_file": "funcao_com_bug/vm_real_03.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_03.py",
       "function": "Language.pipe",
       "categories": [
         "variable_misuse"
@@ -3298,8 +3298,8 @@
     },
     {
       "id": "nm_real_25",
-      "detection_file": "detection_full/nm_real_25.py",
-      "harness_file": "bugs/nm_real_25.py",
+      "detection_file": "arquivo_com_bug/nm_real_25.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_25.py",
       "function": "HTTP1Connection._can_keep_alive",
       "categories": [
         "none_misuse"
@@ -3329,8 +3329,8 @@
     },
     {
       "id": "tm_real_11",
-      "detection_file": "detection/tm_real_11.py",
-      "harness_file": "bugs/tm_real_11.py",
+      "detection_file": "funcao_com_bug/tm_real_11.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_11.py",
       "function": "SitemapSpider._parse_sitemap",
       "categories": [
         "type_mismatch"
@@ -3360,8 +3360,8 @@
     },
     {
       "id": "vm_real_04",
-      "detection_file": "detection/vm_real_04.py",
-      "harness_file": "bugs/vm_real_04.py",
+      "detection_file": "funcao_com_bug/vm_real_04.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_04.py",
       "function": "YoutubeDL._build_format_filter",
       "categories": [
         "variable_misuse"
@@ -3392,8 +3392,8 @@
     },
     {
       "id": "vm_real_05",
-      "detection_file": "detection_full/vm_real_05.py",
-      "harness_file": "bugs/vm_real_05.py",
+      "detection_file": "arquivo_com_bug/vm_real_05.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_05.py",
       "function": "LocalFileSystem.move",
       "categories": [
         "variable_misuse"
@@ -3423,8 +3423,8 @@
     },
     {
       "id": "vm_real_06",
-      "detection_file": "detection_full/vm_real_06.py",
-      "harness_file": "bugs/vm_real_06.py",
+      "detection_file": "arquivo_com_bug/vm_real_06.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_06.py",
       "function": "CrawlerProcess.__init__",
       "categories": [
         "variable_misuse"
@@ -3454,8 +3454,8 @@
     },
     {
       "id": "tm_real_12",
-      "detection_file": "detection/tm_real_12.py",
-      "harness_file": "bugs/tm_real_12.py",
+      "detection_file": "funcao_com_bug/tm_real_12.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_12.py",
       "function": "S3CopyToTable.run",
       "categories": [
         "type_mismatch"
@@ -3485,8 +3485,8 @@
     },
     {
       "id": "io_real_02",
-      "detection_file": "detection/io_real_02.py",
-      "harness_file": "bugs/io_real_02.py",
+      "detection_file": "funcao_com_bug/io_real_02.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/io_real_02.py",
       "function": "integer_squareroot",
       "categories": [
         "integer_overflow"
@@ -3517,8 +3517,8 @@
     },
     {
       "id": "vm_real_07",
-      "detection_file": "detection/vm_real_07.py",
-      "harness_file": "bugs/vm_real_07.py",
+      "detection_file": "funcao_com_bug/vm_real_07.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_07.py",
       "function": "fit_generator",
       "categories": [
         "variable_misuse"
@@ -3549,8 +3549,8 @@
     },
     {
       "id": "tm_real_13",
-      "detection_file": "detection_full/tm_real_13.py",
-      "harness_file": "bugs/tm_real_13.py",
+      "detection_file": "arquivo_com_bug/tm_real_13.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_13.py",
       "function": "XmlItemExporter._export_xml_field",
       "categories": [
         "type_mismatch"
@@ -3580,8 +3580,8 @@
     },
     {
       "id": "vm_real_08",
-      "detection_file": "detection/vm_real_08.py",
-      "harness_file": "bugs/vm_real_08.py",
+      "detection_file": "funcao_com_bug/vm_real_08.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/vm_real_08.py",
       "function": "get_write_function",
       "categories": [
         "variable_misuse"
@@ -3611,8 +3611,8 @@
     },
     {
       "id": "ip_real_34",
-      "detection_file": "detection/ip_real_34.py",
-      "harness_file": "bugs/ip_real_34.py",
+      "detection_file": "funcao_com_bug/ip_real_34.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_34.py",
       "function": "find_hook",
       "categories": [
         "invalid_precondition"
@@ -3643,8 +3643,8 @@
     },
     {
       "id": "oob_real_06",
-      "detection_file": "detection_full/oob_real_06.py",
-      "harness_file": "bugs/oob_real_06.py",
+      "detection_file": "arquivo_com_bug/oob_real_06.py",
+      "harness_file": "../harness_bugs_reais/harness_manual_0909/oob_real_06.py",
       "function": "merge_configs",
       "categories": [
         "out_of_bounds"

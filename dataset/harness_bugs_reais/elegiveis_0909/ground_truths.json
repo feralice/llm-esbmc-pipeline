@@ -4,7 +4,7 @@
     "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/. 2026-09-28: 11 items whose bug is visible from the code alone returned to the detection metric (now scored by harness_strategies); the remaining ones need project-specific knowledge. Duplicates av_real_19, av_real_20, ip_real_31 and vm_real_09 were removed.",
     "patch_context_items": []
   },
-  "description": "ESBMC-verifiable subset of v2_real_world (18 of 116 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
+  "description": "ESBMC-verifiable subset of bugs_reais (18 of 116 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
   "items": [
     {
       "id": "dz_real_02",

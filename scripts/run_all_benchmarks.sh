@@ -6,7 +6,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-GROUND_TRUTH="${GROUND_TRUTH:-dataset/labeled/ground_truths}"
+GROUND_TRUTH="${GROUND_TRUTH:-dataset/v1_sintetico/ground_truths}"
 OUT_DIR="${OUT_DIR:-reports/json/v1_benchmark}"
 BOUND="${BOUND:-5}"
 TIMEOUT="${TIMEOUT:-30}"

@@ -36,7 +36,7 @@ def _results(path: Path) -> list[dict]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--report", required=True, help="v2_verify_report.json or v2_checkpoint.json")
-    parser.add_argument("--verification-sources", default="dataset/v2_real_world/detection_full")
+    parser.add_argument("--verification-sources", default="dataset/bugs_reais/arquivo_com_bug")
     parser.add_argument("--verdicts", default=DEFAULT_VERDICTS)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--reason", default="", help="only results whose reason matches this regex")

@@ -1,7 +1,7 @@
 """Build the optional manual-baseline subset from the full V2 corpus.
 
 Usage: python scripts/build_v2_eligible.py
-The full corpus remains dataset/v2_real_world; this command only materializes
+The full corpus remains dataset/bugs_reais; this command only materializes
 the cases whose reference harnesses are already ESBMC-verifiable.
 It fails listing every gate an item explicitly marked eligible does not pass.
 """
@@ -21,7 +21,7 @@ from research_pipeline.v2_eligibility import (
 
 def main() -> int:
     try:
-        summary = build_eligible(ROOT / "dataset" / "v2_real_world", ROOT / "dataset" / "historico" / "v2_real_world_eligible")
+        summary = build_eligible(ROOT / "dataset" / "bugs_reais", ROOT / "dataset" / "harness_bugs_reais" / "elegiveis_0909")
     except EligibilityError as error:
         print(error, file=sys.stderr)
         return 1

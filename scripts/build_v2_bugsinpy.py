@@ -1,8 +1,8 @@
-"""Add the staged BugsInPy candidates to dataset/v2_real_world/, tagged ``"cohort": "bugsinpy_auto"``.
+"""Add the staged BugsInPy candidates to dataset/bugs_reais/, tagged ``"cohort": "rotulo_automatico"``.
 
 Only candidates whose suspect expression grounds in the buggy function are kept. The detection file
 is cut from the real buggy file (the function, inside its class header for a method), so it always
-matches detection_full/. Categories stay as labels.json has them (heuristic or "unclassified"):
+matches arquivo_com_bug/. Categories stay as labels.json has them (heuristic or "unclassified"):
 in V2 they are metadata, and detection is scored by location. Rerunning replaces the cohort.
 """
 
@@ -20,10 +20,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
 
-STAGING = ROOT / "dataset" / "v2_candidates"
-TARGET = ROOT / "dataset" / "v2_real_world"
-COHORT = "bugsinpy_auto"
-FOLDERS = ("detection", "detection_full", "fixed_full", "patches")
+STAGING = ROOT / "dataset" / "coleta_bugsinpy"
+TARGET = ROOT / "dataset" / "bugs_reais"
+COHORT = "rotulo_automatico"
+FOLDERS = ("funcao_com_bug", "arquivo_com_bug", "arquivo_corrigido", "patches")
 
 
 def excerpt(source: str, qualified: str) -> str | None:
@@ -78,9 +78,9 @@ def build() -> Counter:
             counts["skipped: excerpt does not hold the expression"] += 1
             continue
         name = f"{key}.py"
-        (TARGET / "detection" / name).write_text(cut, encoding="utf-8")
-        (TARGET / "detection_full" / name).write_text(buggy, encoding="utf-8")
-        (TARGET / "fixed_full" / name).write_text(fixed, encoding="utf-8")
+        (TARGET / "funcao_com_bug" / name).write_text(cut, encoding="utf-8")
+        (TARGET / "arquivo_com_bug" / name).write_text(buggy, encoding="utf-8")
+        (TARGET / "arquivo_corrigido" / name).write_text(fixed, encoding="utf-8")
         candidate = candidates[key]
         source_file = candidate["source_file"]
         patch = difflib.unified_diff(buggy.splitlines(keepends=True), fixed.splitlines(keepends=True),
@@ -93,7 +93,7 @@ def build() -> Counter:
                 "categories": [label["category"]], "line": label.get("line"),
                 "label_sources": {"expression": label["expression_source"], "category": label["category_source"]},
                 "review": label["review"], "provenance": provenance}
-        manifest.append({**item, "detection_file": f"detection/{name}"})
+        manifest.append({**item, "detection_file": f"funcao_com_bug/{name}"})
         truths.append({**item, "file": name})
         counts["kept"] += 1
         counts[f"category: {label['category']}"] += 1

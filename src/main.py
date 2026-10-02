@@ -14,11 +14,11 @@ Modos de execução:
 
 
 Exemplos:
-  python src/main.py --mode esbmc-only  --input dataset/labeled --bound 5
-  python src/main.py --mode llm-only    --input dataset/labeled --model gpt-4o
-  python src/main.py --mode hybrid      --input dataset/labeled --model gpt-4o --bound 5
-  python src/main.py --mode benchmark   --input dataset/v2_real_world/detection --ground-truth dataset/v2_real_world/ground_truths.json --backend codex --synth-backend codex
-  python src/main.py --mode benchmark-v1 --input dataset/labeled/ground_truths --model gpt-4o
+  python src/main.py --mode esbmc-only  --input dataset/v1_sintetico --bound 5
+  python src/main.py --mode llm-only    --input dataset/v1_sintetico --model gpt-4o
+  python src/main.py --mode hybrid      --input dataset/v1_sintetico --model gpt-4o --bound 5
+  python src/main.py --mode benchmark   --input dataset/bugs_reais/funcao_com_bug --ground-truth dataset/bugs_reais/ground_truths.json --backend codex --synth-backend codex
+  python src/main.py --mode benchmark-v1 --input dataset/v1_sintetico/ground_truths --model gpt-4o
 """
 from __future__ import annotations
 
@@ -106,7 +106,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="CAMINHO",
         help=(
             "Arquivo(s) Python ou diretório. Diretórios são lidos recursivamente. "
-            "No modo benchmark, passe o diretório raiz de ground truth (ex: dataset/labeled/ground_truths). Inclui bugs, clean e smells recursivamente. "
+            "No modo benchmark, passe o diretório raiz de ground truth (ex: dataset/v1_sintetico/ground_truths). Inclui bugs, clean e smells recursivamente. "
             "No modo ensemble, passe 2+ diretórios per_file de --report de modelos diferentes "
             "(ex: reports/json/v1_benchmark/per_file/gpt-5_5 reports/json/v1_benchmark/per_file/claude-sonnet-4-6)."
         ),
@@ -207,7 +207,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Ground truth para comparação. "
             "No modo benchmark, pode ser passado aqui em vez de --input. "
-            "No modo V2, informe dataset/v2_real_world/ground_truths.json; "
+            "No modo V2, informe dataset/bugs_reais/ground_truths.json; "
             "ele é lido somente depois das chamadas às LLMs e ao ESBMC."
         ),
     )
@@ -285,7 +285,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--verification-sources",
         default=None,
         metavar="DIR",
-        help="Motor verify: verifica no arquivo de mesmo nome deste diretório (ex.: detection_full) quando existir.",
+        help="Motor verify: verifica no arquivo de mesmo nome deste diretório (ex.: arquivo_com_bug) quando existir.",
     )
     parser.add_argument(
         "--v2-stage",
@@ -785,7 +785,7 @@ def mode_benchmark_v1(args: argparse.Namespace) -> int:
 
     if not gt_path.exists():
         print(f"Ground truth não encontrado em: {gt_path}", file=sys.stderr)
-        print("Exemplo: --ground-truth dataset/labeled/ground_truths", file=sys.stderr)
+        print("Exemplo: --ground-truth dataset/v1_sintetico/ground_truths", file=sys.stderr)
         return 1
 
 

@@ -1,10 +1,10 @@
 # Candidatos V2 (área de preparação)
 
-Área de preparação para ampliar o dataset `dataset/v2_real_world/` com bugs reais de Python validados pelos mantenedores dos projetos. **Nada aqui faz parte do dataset ainda.** Todo arquivo desta pasta foi gerado por `scripts/collect_validated_bugs.py` (coleta de 2026-09-29), exceto `pr_sources.json` (entrada manual) e este README.
+Área de preparação para ampliar o dataset `dataset/bugs_reais/` com bugs reais de Python validados pelos mantenedores dos projetos. **Nada aqui faz parte do dataset ainda.** Todo arquivo desta pasta foi gerado por `scripts/collect_validated_bugs.py` (coleta de 2026-09-29), exceto `pr_sources.json` (entrada manual) e este README.
 
 ## Fontes
 
-1. **BugsInPy** (`soarsmu/BugsInPy`, branch master, baixado como zip). Cada bug traz commit com bug, commit corrigido, patch da correção e um teste que falha antes da correção. Os 84 bugs BugsInPy que já estão em `dataset/v2_real_world/ground_truths.json` foram pulados.
+1. **BugsInPy** (`soarsmu/BugsInPy`, branch master, baixado como zip). Cada bug traz commit com bug, commit corrigido, patch da correção e um teste que falha antes da correção. Os 84 bugs BugsInPy que já estão em `dataset/bugs_reais/ground_truths.json` foram pulados.
 2. **Pull requests do GitHub** listados em `pr_sources.json`. Hoje só há um: `amazon-ion/ion-python#448`.
 
 ## Critérios de aceitação
@@ -76,7 +76,7 @@ Checagem feita nos 200 aceitos (não só na amostra de 10 pedida): a função ex
 
 - **Categoria do bug e expressão suspeita NÃO foram atribuídas.** O campo `removed_lines` vem direto do patch e indica onde a correção mexeu, não qual expressão causa a falha. A classificação nas categorias do pipeline (divisão por zero, índice fora dos limites etc.) ainda precisa ser feita.
 - Aceitar aqui só significa "bug validado pelos mantenedores e localizado em uma função". Muitos candidatos (bugs de lógica de negócio, formatação, APIs externas) não terão categoria compatível com o ESBMC-Python.
-- Antes de entrar em `dataset/v2_real_world/`, cada candidato precisa passar pelos mesmos portões de auditoria do dataset atual: `scripts/build_v2_eligible.py`, o registro em `eligibility.json` e os portões executáveis (build e pytest do teste que falha).
+- Antes de entrar em `dataset/bugs_reais/`, cada candidato precisa passar pelos mesmos portões de auditoria do dataset atual: `scripts/build_v2_eligible.py`, o registro em `eligibility.json` e os portões executáveis (build e pytest do teste que falha).
 
 ## Arquivos
 
@@ -89,7 +89,7 @@ Para refazer a coleta:
 
 ```
 python scripts/collect_validated_bugs.py bugsinpy
-python scripts/collect_validated_bugs.py prs dataset/v2_candidates/pr_sources.json
+python scripts/collect_validated_bugs.py prs dataset/coleta_bugsinpy/pr_sources.json
 ```
 
 ## Rotulagem (`labels.json`, 29/09/2026)
@@ -108,4 +108,4 @@ escrever o gabarito.
   `isinstance`, ...). Quando nenhuma regra casa, fica `unclassified` (150 casos). Marcada como
   `heuristic_from_fix_diff`; a categoria é só metadado no motor verify.
 - Todo rótulo está com `review: pending` e precisa de revisão humana antes de entrar em
-  `dataset/v2_real_world`.
+  `dataset/bugs_reais`.

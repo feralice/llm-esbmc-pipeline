@@ -4,11 +4,11 @@
     "detection_scope_note": "ir_real_01/02/03 (2026-09-11): the buggy code alone IS self-evident (wrong pi/e/tau constants, an off-by-one contradicting the function's own docstring), but no category in the 8-value taxonomy honestly describes 'wrong hardcoded constant, no exception in real usage' -- assertion_violation would be dishonest (no assert in the real source, only in the harness) and incorrect_result is not a valid categories value. Kept in patch_context_items (excluded from the LLM detection-accuracy metric) for that reason, not because they need the patch to be understood. Still fully mined, patched, and ESBMC-confirmed via bugs/. 2026-09-28: 11 items whose bug is visible from the code alone returned to the detection metric (now scored by harness_strategies); the remaining ones need project-specific knowledge. Duplicates av_real_19, av_real_20, ip_real_31 and vm_real_09 were removed.",
     "patch_context_items": []
   },
-  "description": "ESBMC-verifiable subset of v2_real_world (18 of 116 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
+  "description": "ESBMC-verifiable subset of bugs_reais (18 of 116 items). Built by scripts/build_v2_eligible.py from eligibility.json; do not edit by hand.",
   "items": [
     {
       "id": "dz_real_02",
-      "detection_file": "detection/dz_real_02.py",
+      "detection_file": "funcao_com_bug/dz_real_02.py",
       "harness_file": "bugs/dz_real_02.py",
       "function": "ExactLanguageSearch.choose_best_split",
       "categories": [
@@ -38,7 +38,7 @@
     },
     {
       "id": "dz_real_03",
-      "detection_file": "detection/dz_real_03.py",
+      "detection_file": "funcao_com_bug/dz_real_03.py",
       "harness_file": "bugs/dz_real_03.py",
       "function": "HashExpander.do",
       "categories": [
@@ -72,7 +72,7 @@
     },
     {
       "id": "oob_real_04",
-      "detection_file": "detection/oob_real_04.py",
+      "detection_file": "funcao_com_bug/oob_real_04.py",
       "harness_file": "bugs/oob_real_04.py",
       "function": "SortedCorrectedCommandsSequence._realise",
       "categories": [
@@ -104,7 +104,7 @@
     },
     {
       "id": "oob_real_05",
-      "detection_file": "detection/oob_real_05.py",
+      "detection_file": "funcao_com_bug/oob_real_05.py",
       "harness_file": "bugs/oob_real_05.py",
       "function": "lib2to3_parse",
       "categories": [
@@ -136,7 +136,7 @@
     },
     {
       "id": "tm_real_10",
-      "detection_file": "detection/tm_real_10.py",
+      "detection_file": "funcao_com_bug/tm_real_10.py",
       "harness_file": "bugs/tm_real_10.py",
       "function": "MetricsHandler.get",
       "categories": [
@@ -168,7 +168,7 @@
     },
     {
       "id": "nm_real_12",
-      "detection_file": "detection/nm_real_12.py",
+      "detection_file": "funcao_com_bug/nm_real_12.py",
       "harness_file": "bugs/nm_real_12.py",
       "function": "PamdService.remove",
       "categories": [
@@ -200,7 +200,7 @@
     },
     {
       "id": "nm_real_21",
-      "detection_file": "detection/nm_real_21.py",
+      "detection_file": "funcao_com_bug/nm_real_21.py",
       "harness_file": "bugs/nm_real_21.py",
       "function": "_Projection.get_index",
       "categories": [
@@ -233,7 +233,7 @@
     },
     {
       "id": "oob_real_09",
-      "detection_file": "detection/oob_real_09.py",
+      "detection_file": "funcao_com_bug/oob_real_09.py",
       "harness_file": "bugs/oob_real_09.py",
       "function": "parser._parse",
       "categories": [
@@ -263,7 +263,7 @@
     },
     {
       "id": "oob_real_10",
-      "detection_file": "detection/oob_real_10.py",
+      "detection_file": "funcao_com_bug/oob_real_10.py",
       "harness_file": "bugs/oob_real_10.py",
       "function": "_wrap_text_to_colwidths",
       "categories": [
@@ -293,7 +293,7 @@
     },
     {
       "id": "oob_real_11",
-      "detection_file": "detection/oob_real_11.py",
+      "detection_file": "funcao_com_bug/oob_real_11.py",
       "harness_file": "bugs/oob_real_11.py",
       "function": "wcswidth",
       "categories": [
@@ -323,7 +323,7 @@
     },
     {
       "id": "oob_real_12",
-      "detection_file": "detection/oob_real_12.py",
+      "detection_file": "funcao_com_bug/oob_real_12.py",
       "harness_file": "bugs/oob_real_12.py",
       "function": "fast_float",
       "categories": [
@@ -353,7 +353,7 @@
     },
     {
       "id": "oob_real_13",
-      "detection_file": "detection/oob_real_13.py",
+      "detection_file": "funcao_com_bug/oob_real_13.py",
       "harness_file": "bugs/oob_real_13.py",
       "function": "tokenize",
       "categories": [
@@ -383,7 +383,7 @@
     },
     {
       "id": "oob_real_14",
-      "detection_file": "detection/oob_real_14.py",
+      "detection_file": "funcao_com_bug/oob_real_14.py",
       "harness_file": "bugs/oob_real_14.py",
       "function": "LinuxDistribution._parse_uname_content",
       "categories": [
@@ -413,7 +413,7 @@
     },
     {
       "id": "ip_real_17",
-      "detection_file": "detection/ip_real_17.py",
+      "detection_file": "funcao_com_bug/ip_real_17.py",
       "harness_file": "bugs/ip_real_17.py",
       "function": "response_status_message",
       "categories": [
@@ -445,7 +445,7 @@
     },
     {
       "id": "ip_real_21",
-      "detection_file": "detection/ip_real_21.py",
+      "detection_file": "funcao_com_bug/ip_real_21.py",
       "harness_file": "bugs/ip_real_21.py",
       "function": "SortedDict.__eq__",
       "categories": [
@@ -477,7 +477,7 @@
     },
     {
       "id": "ip_real_28",
-      "detection_file": "detection/ip_real_28.py",
+      "detection_file": "funcao_com_bug/ip_real_28.py",
       "harness_file": "bugs/ip_real_28.py",
       "function": "IOLoop.initialize",
       "categories": [
@@ -509,7 +509,7 @@
     },
     {
       "id": "dz_real_04",
-      "detection_file": "detection/dz_real_04.py",
+      "detection_file": "funcao_com_bug/dz_real_04.py",
       "harness_file": "bugs/dz_real_04.py",
       "function": "interpolate_bilinear_2x_fwd",
       "categories": [
@@ -543,7 +543,7 @@
     },
     {
       "id": "tm_real_13",
-      "detection_file": "detection/tm_real_13.py",
+      "detection_file": "funcao_com_bug/tm_real_13.py",
       "harness_file": "bugs/tm_real_13.py",
       "function": "XmlItemExporter._export_xml_field",
       "categories": [

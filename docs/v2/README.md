@@ -24,9 +24,9 @@ Ponta a ponta (RQ1 e RQ3):
 ```bash
 PYTHONPATH=src .venv/bin/python src/main.py \
     --mode hybrid --v2-stage end-to-end \
-    --input dataset/v2_real_world/detection \
-    --ground-truth dataset/v2_real_world/ground_truths.json \
-    --verification-sources dataset/v2_real_world/detection_full \
+    --input dataset/bugs_reais/funcao_com_bug \
+    --ground-truth dataset/bugs_reais/ground_truths.json \
+    --verification-sources dataset/bugs_reais/arquivo_com_bug \
     --model gpt-4o-mini --synth-backend openai --synth-model gpt-4o-mini \
     --bound 5 --timeout 180 --output-dir artifacts/v2/e2e
 ```
@@ -36,7 +36,7 @@ Hipóteses do gabarito, só verificação (RQ2): troque `--v2-stage end-to-end` 
 
 Linha de base do reparo: acrescente `--spec-strategy resample`.
 
-Confirmação falsa: `--verification-sources dataset/v2_real_world/fixed_full
+Confirmação falsa: `--verification-sources dataset/bugs_reais/arquivo_corrigido
 --verification-sources-strict` (verifica as versões corrigidas; todo `CONFIRMED` é falso).
 
 Retomar uma rodada: repita o comando com `--resume`.

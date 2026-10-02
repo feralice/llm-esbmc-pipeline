@@ -2,7 +2,7 @@
 
 The LLM is what the dataset evaluates, so it must not write the labels. The suspect expression
 comes from the fix itself (buggy vs fixed file); the category from fixed patterns in the code the
-fix adds, marked as heuristic and pending human review. Writes dataset/v2_candidates/labels.json.
+fix adds, marked as heuristic and pending human review. Writes dataset/coleta_bugsinpy/labels.json.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
 
-STAGING = ROOT / "dataset" / "v2_candidates"
+STAGING = ROOT / "dataset" / "coleta_bugsinpy"
 # First match wins: the most specific evidence first.
 _CATEGORY_RULES = (
     ("none_misuse", re.compile(r"\bis (not )?None\b|[!=]= None\b")),
