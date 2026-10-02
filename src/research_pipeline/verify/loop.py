@@ -16,7 +16,9 @@ from .hypothesis import BugHypothesis
 from .llm_client import SynthResult, _bound_untrusted
 from .esbmc_run import check, esbmc_output
 from .oracle import convert, refusals
+from .pytest_gen import pytest_reproducer
 from .outcome import (
+    CONFIRMED,
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
     NO_SOURCE,
@@ -52,6 +54,7 @@ class VerifyResult:
     replay: dict = field(default_factory=dict)
     tokens: int = 0
     seconds: float = 0.0
+    pytest: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -59,6 +62,7 @@ class VerifyResult:
             "attempts": self.attempts, "llm_calls": sum(1 for a in self.attempts if "spec" in a),
             "transforms": list(self.transforms), "program_path": self.program_path, "replay": self.replay,
             "tokens": self.tokens, "seconds": round(self.seconds, 3),
+            **({"pytest": self.pytest} if self.pytest else {}),
         }
 
 
@@ -192,11 +196,25 @@ def verify_hypothesis(
             continue
         replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc))
         result.replay = replay.to_dict()
-        return finish(final_verdict(reading, replay), reading.message)
+        verdict = final_verdict(reading, replay)
+        if verdict == CONFIRMED and esbmc_command:
+            result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command, bound, work_dir)
+        return finish(verdict, reading.message)
     if last_problems and all("unsupported type" in p for p in last_problems):
         # The model kept naming a real type the harness cannot build: a method limit, not a model error.
         return finish(UNSUPPORTED, "input type outside the supported subset: " + "; ".join(last_problems))
     return finish(SPEC_FAILED, feedback)
+
+
+def _pytest_for(program: Program, grounded: Grounded, spec: InputSpec, replay: ReplayVerdict,
+                esbmc_command: list[str], bound: int, work_dir: Path) -> dict:
+    """ESBMC's pytest generator on the confirmed program, kept only if the test reproduces the bug."""
+    if grounded.entry != "function" or any(p.keyword for p in grounded.params):
+        return {"status": "unsupported_shape", "path": "", "reason": "ESBMC's generator handles free functions only"}
+    params, _ = resolved_types(spec, grounded)
+    name = f"bug_{grounded.hypothesis.hypothesis_id}"
+    return pytest_reproducer(program, function=grounded.method_name, params=params, exception=replay.exception_type,
+                             esbmc_command=esbmc_command, bound=bound, out_dir=work_dir / "pytest" / name, name=name)
 
 
 def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Grounded, runs: int,

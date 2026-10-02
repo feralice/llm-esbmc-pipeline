@@ -164,3 +164,27 @@ def test_member_esbmc_refuses_is_stubbed_and_the_rest_of_re_kept(tmp_path):
     result = _verify(tmp_path, "clean", "10 // len(t)", {"stubs": {"_esbmc_re_sub": "str"}}, source=source)
     assert any(t.startswith("esbmc_refused_members_stubbed:_esbmc_re_sub") for t in result.transforms), result.to_dict()
     assert result.verdict == CONFIRMED, result.to_dict()
+
+
+def test_confirmed_free_function_gets_a_pytest_reproducer_from_esbmc(tmp_path):
+    source = "def inverse(n: int):\n    return 100 // n\n"
+    result = _verify(tmp_path, "inverse", "100 // n", {}, source=source)
+    assert result.verdict == CONFIRMED, result.to_dict()
+    assert result.pytest["status"] == "reproduces", result.pytest
+    test = Path(result.pytest["path"])
+    assert test.name == f"test_bug_{result.hypothesis.hypothesis_id}.py" and "parametrize" in test.read_text()
+
+
+def test_method_gets_no_pytest_from_esbmc_generator(tmp_path):
+    result = _verify(tmp_path, "Tracker.unguarded", "self.previous_defs.pop()",
+                     {"attributes": {"previous_defs": "list[int]"}})
+    assert result.verdict == CONFIRMED
+    assert result.pytest["status"] == "unsupported_shape"
+
+
+def test_a_broken_generated_test_is_recorded_and_never_changes_the_verdict(tmp_path):
+    # ESBMC 8.5 drops one of two arguments in the generated call (measured 2026-10-01).
+    source = "def ratio(a: int, b: int):\n    return a // b\n"
+    result = _verify(tmp_path, "ratio", "a // b", {}, source=source)
+    assert result.verdict == CONFIRMED
+    assert result.pytest["status"] in {"reproduces", "invalid"}

@@ -30,6 +30,12 @@ flowchart TD
     K -- sem veredito --> L[Fica só o resultado da LLM, com o motivo]
 ```
 
+Para cada bug confirmado no nível 1, o pipeline pede ao ESBMC um teste pytest
+(`--generate-pytest-testcase`, https://esbmc.github.io/docs/python/pytest-testgen/), roda esse teste e
+só o guarda se ele quebrar com a exceção do bug (campo `pytest` do relatório: `reproduces`,
+`invalid`, `unsupported_shape`...). O gerador do ESBMC só produz teste utilizável para função solta;
+em métodos ele escreve nomes internos (`x&0#1`) e com várias entradas pode perder argumentos.
+
 A verificação tem três níveis, e cada hipótese registra o nível que a decidiu (`levels` no
 relatório):
 
