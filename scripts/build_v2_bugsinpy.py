@@ -94,5 +94,5 @@ def build() -> Counter:
 
 
 if __name__ == "__main__":
-    for key, value in sorted(build().items()):
-        print(f"{value:4d}  {key}")
+    for reason, count in sorted(build().items()):
+        print(f"{count:4d}  {reason}")
