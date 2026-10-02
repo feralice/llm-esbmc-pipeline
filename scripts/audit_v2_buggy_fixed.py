@@ -124,7 +124,9 @@ def main() -> int:
     parser.add_argument("--esbmc", default="esbmc", help="ESBMC binary (default: the one on PATH)")
     parser.add_argument("--output", type=Path, default=OUTPUT)
     args = parser.parse_args()
-    items = json.loads((DATASET / "ground_truths.json").read_text(encoding="utf-8"))["items"]
+    # Only bugs with a hand-written harness in bugs/ have a buggy/fixed pair to audit.
+    items = [item for item in json.loads((DATASET / "ground_truths.json").read_text(encoding="utf-8"))["items"]
+             if "harness_file" in item]
     if args.ids:
         items = [item for item in items if item["id"] in set(args.ids)]
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:

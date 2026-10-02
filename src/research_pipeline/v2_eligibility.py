@@ -175,7 +175,8 @@ def build_eligible(dataset: Path, output: Path) -> dict:
     decisions = _load(dataset / "eligibility.json")
     audit = _load(dataset / "esbmc_audit.json")["results"]
 
-    items = {item["id"]: item for item in ground_truth["items"]}
+    # Eligibility gates the hand-written harnesses of bugs/; bugs added without one are not part of it.
+    items = {item["id"]: item for item in ground_truth["items"] if "harness_file" in item}
     unknown = set(decisions["items"]) ^ set(items)
     if unknown:
         raise EligibilityError(f"eligibility.json and ground_truths.json differ on {sorted(unknown)}")

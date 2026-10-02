@@ -152,7 +152,9 @@ def test_detection_check_distinguishes_buggy_from_fixed_source() -> None:
 
 
 def test_every_real_item_has_a_decision_with_a_valid_status() -> None:
-    gt_ids = {item["id"] for item in json.loads((DATASET / "ground_truths.json").read_text())["items"]}
+    # Only bugs with a hand-written harness in bugs/ go through eligibility.
+    gt_ids = {item["id"] for item in json.loads((DATASET / "ground_truths.json").read_text())["items"]
+              if "harness_file" in item}
     decisions = json.loads((DATASET / "eligibility.json").read_text(encoding="utf-8"))["items"]
     assert set(decisions) == gt_ids
     assert {d["status"] for d in decisions.values()} <= {
