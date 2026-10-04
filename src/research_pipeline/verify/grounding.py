@@ -274,6 +274,22 @@ def _unpacked_inputs(function: ast.FunctionDef, params: set[str], attrs: set[str
     return {key: count for key, count in found.items() if key not in conflicting}
 
 
+def _nested_in_function(tree: ast.Module, qualified: str) -> bool:
+    """``outer.Inner.method`` or ``outer.inner``: the LLM located it, but it only exists once outer runs."""
+    *containers, target = qualified.split(".")
+    scope: list[ast.stmt] = tree.body
+    inside_function = False
+    for name in containers:
+        found = [n for n in scope if isinstance(n, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                 and n.name == name]
+        if len(found) != 1:
+            return False
+        inside_function = inside_function or not isinstance(found[0], ast.ClassDef)
+        scope = found[0].body
+    return inside_function and any(
+        isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == target for n in scope)
+
+
 def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset()) -> Grounded | GroundingFailure:
     try:
         tree = ast.parse(source)
@@ -284,6 +300,9 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
         name = h.function.split(".")[-1]
         if any(isinstance(n, ast.AsyncFunctionDef) and n.name == name for n in ast.walk(tree)):
             return GroundingFailure("async entry point is not supported", unsupported=True)
+        if _nested_in_function(tree, h.function):
+            return GroundingFailure("entry point is nested inside a function; the harness cannot call it",
+                                    unsupported=True)
         return GroundingFailure(f"function {h.function!r} not found (or ambiguous)")
     nodes = expression_nodes(function, h.suspect_expression)
     if not nodes:

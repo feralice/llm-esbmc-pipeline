@@ -1,6 +1,7 @@
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.grounding import Grounded, GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.levels import CONTEXT, limit_group
 
 SOURCE = '''import math
 
@@ -166,3 +167,30 @@ def test_property_with_a_setter_the_class_assigns_is_not_replaced():
     assert "x" not in result.receiver_attrs
     assert "@x.setter" in result.module
     assert "size" in result.receiver_attrs
+
+
+NESTED = """def add_codes(err_cls):
+    class ErrorsWithCodes(object):
+        def __getattribute__(self, code):
+            return getattr(err_cls, code)
+    return ErrorsWithCodes()
+"""
+
+
+def test_method_of_a_class_defined_inside_a_function_is_unsupported_not_missing():
+    h = BugHypothesis("a.py", "add_codes.ErrorsWithCodes.__getattribute__", "getattr(err_cls, code)")
+
+    failure = ground(h, NESTED)
+
+    assert isinstance(failure, GroundingFailure)
+    assert failure.unsupported
+    assert limit_group("UNSUPPORTED", failure.reason) == CONTEXT
+
+
+def test_a_wrong_name_under_a_real_function_is_still_missing():
+    h = BugHypothesis("a.py", "add_codes.ErrorsWithCodes.other", "getattr(err_cls, code)")
+
+    failure = ground(h, NESTED)
+
+    assert isinstance(failure, GroundingFailure)
+    assert not failure.unsupported

@@ -50,7 +50,7 @@ _CONTEXT = re.compile(r"undefined name|not found|not defined|NameError|Base clas
                       r"|list indices must|Cannot unpack|type mismatch|cannot determine the length"
                       r"|no-untyped|missing \d+ required positional|takes \d+ positional|unpacks (it|its result)"
                       r"|input type outside|cannot be stubbed|uses \*args|used as a decorator|external "
-                      r"|inherited member|sliced verbatim")
+                      r"|inherited member|sliced verbatim|nested inside a function")
 
 
 def limit_group(verdict: str, reason: str) -> str:
