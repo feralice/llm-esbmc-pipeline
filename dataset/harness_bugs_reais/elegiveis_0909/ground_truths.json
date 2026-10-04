@@ -37,6 +37,9 @@
         "harness_property": "float(not_parsed) / float(num_substrings)",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com num_substrings == 0",
       "esbmc_property": "ZeroDivisionError",
       "eligibility_reason": "Divisão real por num_substrings == 0; fix protege a divisão. invalid_precondition removida no elegível: não há evidência independente (o fix é um guard local, não validação de entrada)."
     },
@@ -76,6 +79,9 @@
         "harness_property": "(crc >> idx) % rng",
         "provenance_complete": true
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError no % com faixa vazia",
       "esbmc_property": "ZeroDivisionError",
       "eligibility_reason": "Módulo por zero real; o fix valida a faixa e lança CroniterBadCronError, o que é evidência independente de precondição de entrada."
     },
@@ -112,6 +118,9 @@
         "harness_property": "responses.get(status)",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_native_str(None) levanta TypeError",
       "esbmc_property": "TypeError",
       "eligibility_reason": "TypeError real: dict.get sem default devolve None para to_native_str. invalid_precondition removida no elegível: mesma evidência da none_misuse."
     },
@@ -148,6 +157,9 @@
         "harness_property": "self_d[key] != that_d[key]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: that[key] com chave ausente",
       "esbmc_property": "KeyError",
       "eligibility_reason": "KeyError nativo com dicts de mesmo tamanho e chaves diferentes (harness corrigido: o anterior tinha tamanhos diferentes, que o código real curto-circuita)."
     },
@@ -184,6 +196,9 @@
         "harness_property": "if not current_exists:",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida",
       "esbmc_property": "RuntimeError",
       "eligibility_reason": "RuntimeError real lançado com condição invertida em entrada válida; fix inverte o teste."
     },
@@ -222,6 +237,9 @@
         "harness_property": "current_line.next.prev = current_line.prev",
         "provenance_complete": true
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.prev",
       "esbmc_property": "null_dereference",
       "eligibility_reason": "NULL dereference nativo ao acessar current_line.next.prev com next None; fix adiciona o guard."
     },
@@ -260,6 +278,9 @@
         "harness_property": "if matches: return matches",
         "provenance_complete": true
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None quando não há correspondência",
       "esbmc_property": "missing_return",
       "eligibility_reason": "Missing return nativo: caminho sem return devolve None; fix sempre retorna a lista."
     },
@@ -298,6 +319,9 @@
         "harness_property": "cached[0]",
         "provenance_complete": true
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: self._cached[0]",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -336,6 +360,9 @@
         "harness_property": "src_txt[-1]",
         "provenance_complete": true
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: src_txt[-1] de texto vazio",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -370,6 +397,9 @@
         "harness_property": "l[i + 4]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: l[i + 4]",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -404,6 +434,9 @@
         "harness_property": "list_of_lists[0]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list_of_lists[0]",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -438,6 +471,9 @@
         "harness_property": "pwcs[i]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: pwcs[idx]",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -472,6 +508,9 @@
         "harness_property": "x[0]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: x[0] de sequência vazia",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -506,6 +545,9 @@
         "harness_property": "result[-1]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: result[-1]",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -540,6 +582,9 @@
         "harness_property": "lines[0]",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: lines[0]",
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -577,6 +622,9 @@
         "harness_property": "metrics.configure_http_handler(self)",
         "provenance_complete": false
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError no resultado de generate_latest",
       "esbmc_property": "AttributeError",
       "eligibility_reason": "AttributeError nativo: método chamado no objeto errado; fix chama no coletor."
     },
@@ -617,6 +665,9 @@
         "harness_property": "(h_src - wdw_size) / step_size",
         "provenance_complete": true
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com step_size == 0",
       "esbmc_property": "ZeroDivisionError",
       "eligibility_reason": "Divisão por step_size == 0; o fix (PR #126) acrescenta assert chunk_size >= 2 na entrada, evidência independente de precondição."
     },
@@ -653,6 +704,9 @@
         "harness_property": "serialized_value.decode(\"utf-8\")",
         "provenance_complete": true
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: XMLGenerator.characters com valor não texto",
       "esbmc_property": "AttributeError",
       "eligibility_reason": "AttributeError nativo: .decode() em valor int; fix converte com str()."
     }

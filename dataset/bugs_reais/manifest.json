@@ -48,7 +48,10 @@
       "abstraction": {
         "used": true,
         "description": "Real caller precondition (x_ind >= x_ind_prev) modeled via __ESBMC_assume in the harness; detection file omits it."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "divisão de arrays numpy gera inf/NaN, sem exceção"
     },
     {
       "id": "dz_real_02",
@@ -78,7 +81,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced from dateparser search-scoring context to the scalar division term."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com num_substrings == 0"
     },
     {
       "id": "dz_real_03",
@@ -111,7 +117,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced from croniter HashExpander to scalar int arithmetic."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError no % com faixa vazia"
     },
     {
       "id": "oob_real_01",
@@ -142,7 +151,10 @@
       "abstraction": {
         "used": true,
         "description": "re.findall() effect stubbed as a bool flag (findall not modeled by ESBMC-Python re module)."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: re.findall(...)[0] vazio"
     },
     {
       "id": "oob_real_02",
@@ -174,7 +186,10 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N, even with a bounded len(script), still fully unwinds split()/strcmp internals and times out before reaching the real property; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError, 2026-09-11 audit)"
+      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N, even with a bounded len(script), still fully unwinds split()/strcmp internals and times out before reaching the real property; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError, 2026-09-11 audit)",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: split()[1]"
     },
     {
       "id": "oob_real_03",
@@ -205,7 +220,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list.pop"
     },
     {
       "id": "oob_real_04",
@@ -236,7 +254,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: self._cached[0]"
     },
     {
       "id": "oob_real_05",
@@ -267,7 +288,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: src_txt[-1] de texto vazio"
     },
     {
       "id": "av_real_01",
@@ -298,7 +322,10 @@
       "abstraction": {
         "used": true,
         "description": "dict.get()-returns-None-on-missing-key modeled directly with a bool flag + nondet value."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: assert isinstance(None, bool)"
     },
     {
       "id": "av_real_02",
@@ -329,7 +356,10 @@
       "abstraction": {
         "used": true,
         "description": "Object-attribute liveness stubbed as two independent nondet bools."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: assert self.stream is not None"
     },
     {
       "id": "av_real_03",
@@ -362,7 +392,10 @@
       "abstraction": {
         "used": true,
         "description": "pandas index type stubbed as an int tag."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: índice não é PeriodIndex"
     },
     {
       "id": "av_real_06",
@@ -396,7 +429,9 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_07",
@@ -428,7 +463,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_08",
@@ -460,7 +497,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_15",
@@ -492,7 +531,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_01",
@@ -523,7 +564,10 @@
       "abstraction": {
         "used": false,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: int('_')"
     },
     {
       "id": "tm_real_02",
@@ -555,7 +599,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_03",
@@ -587,7 +633,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_04",
@@ -618,7 +666,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: método de str chamado em int"
     },
     {
       "id": "tm_real_05",
@@ -650,7 +701,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "join de str separa os caracteres"
     },
     {
       "id": "tm_real_06",
@@ -682,7 +736,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_07",
@@ -714,7 +770,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_08",
@@ -745,7 +803,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "incerto",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "pelo patch não dá para saber se headerrow None quebra depois"
     },
     {
       "id": "tm_real_09",
@@ -775,7 +836,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: float() de texto"
     },
     {
       "id": "tm_real_10",
@@ -806,7 +870,10 @@
       "abstraction": {
         "used": false,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError no resultado de generate_latest"
     },
     {
       "id": "vm_real_01",
@@ -839,7 +906,9 @@
         "used": true,
         "description": "See harness file comment for full reasoning."
       },
-      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "vm_real_02",
@@ -869,7 +938,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "mensagem de erro com a chave errada"
     },
     {
       "id": "io_real_01",
@@ -900,7 +972,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
     },
     {
       "id": "nm_real_01",
@@ -931,7 +1006,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.decode"
     },
     {
       "id": "nm_real_02",
@@ -962,7 +1040,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: None *= unit_scale"
     },
     {
       "id": "nm_real_03",
@@ -993,7 +1074,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: len(None)"
     },
     {
       "id": "nm_real_04",
@@ -1024,7 +1108,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: re.match(None) levanta TypeError"
     },
     {
       "id": "nm_real_05",
@@ -1055,7 +1142,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "urljoin com None devolve a base, sem exceção"
     },
     {
       "id": "nm_real_06",
@@ -1088,7 +1178,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None em vez de levantar TypeError"
     },
     {
       "id": "nm_real_07",
@@ -1119,7 +1212,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError com args None"
     },
     {
       "id": "nm_real_08",
@@ -1150,7 +1246,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: '//' in None"
     },
     {
       "id": "nm_real_09",
@@ -1181,7 +1280,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: self.total ausente"
     },
     {
       "id": "nm_real_10",
@@ -1212,7 +1314,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: len(None)"
     },
     {
       "id": "nm_real_11",
@@ -1243,7 +1348,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: comparação com limit None"
     },
     {
       "id": "nm_real_12",
@@ -1274,7 +1382,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.prev"
     },
     {
       "id": "nm_real_13",
@@ -1306,7 +1417,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada"
     },
     {
       "id": "nm_real_14",
@@ -1337,7 +1451,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_bytes(None) levanta TypeError"
     },
     {
       "id": "nm_real_16",
@@ -1369,7 +1486,9 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_17",
@@ -1401,7 +1520,9 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_18",
@@ -1433,7 +1554,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: formatação % com None"
     },
     {
       "id": "nm_real_19",
@@ -1465,7 +1589,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: os.path.isfile(None) levanta TypeError"
     },
     {
       "id": "nm_real_20",
@@ -1497,7 +1624,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: str.endswith(None)"
     },
     {
       "id": "nm_real_21",
@@ -1529,7 +1659,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None quando não há correspondência"
     },
     {
       "id": "nm_real_22",
@@ -1561,7 +1694,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "subprocess recusa variável de ambiente None"
     },
     {
       "id": "av_real_04",
@@ -1593,7 +1729,9 @@
       "abstraction": {
         "used": true,
         "description": "set-based logic (ever_failed, failed = ever_failed - completed) reduced to two bool flags; ESBMC-Python has no native set type."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_05",
@@ -1625,7 +1763,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced tqdm.__init__ control flow (disable-branch ordering bug) to a small scalar function; real class/iterable machinery not needed for the bug."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: self.total ausente gera AttributeError em outro método"
     },
     {
       "id": "av_real_09",
@@ -1657,7 +1798,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_10",
@@ -1689,7 +1832,9 @@
       "abstraction": {
         "used": true,
         "description": "Full prefix-consuming loop reduced to the tab-vs-space column increment at its core."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_11",
@@ -1722,7 +1867,9 @@
       "abstraction": {
         "used": true,
         "description": "HTTP header parsing reduced to the boolean comparison at fault."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_12",
@@ -1755,7 +1902,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_13",
@@ -1788,7 +1937,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_14",
@@ -1822,7 +1973,9 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_15",
@@ -1855,7 +2008,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_17",
@@ -1889,7 +2044,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced date-format-matching cascade to the specific failing branch."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "str(None) devolve 'None', sem exceção"
     },
     {
       "id": "av_real_21",
@@ -1921,7 +2079,9 @@
       "abstraction": {
         "used": true,
         "description": "Reduced ie_result dict handling to the specific key-iteration bug."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "oob_real_09",
@@ -1950,7 +2110,10 @@
       "abstraction": {
         "used": true,
         "description": "385-line real parser reduced to the specific HHMM-branch indexing bug."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: l[i + 4]"
     },
     {
       "id": "oob_real_10",
@@ -1979,7 +2142,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list_of_lists[0]"
     },
     {
       "id": "oob_real_11",
@@ -2008,7 +2174,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: pwcs[idx]"
     },
     {
       "id": "oob_real_12",
@@ -2037,7 +2206,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: x[0] de sequência vazia"
     },
     {
       "id": "oob_real_13",
@@ -2066,7 +2238,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: result[-1]"
     },
     {
       "id": "oob_real_14",
@@ -2095,7 +2270,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: lines[0]"
     },
     {
       "id": "oob_real_15",
@@ -2126,7 +2304,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: para.attrib['begin']"
     },
     {
       "id": "oob_real_16",
@@ -2157,7 +2338,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "índice negativo devolve item errado em vez de IndexError"
     },
     {
       "id": "ip_real_24",
@@ -2189,7 +2373,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_18",
@@ -2222,7 +2408,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_01",
@@ -2254,7 +2442,9 @@
       "abstraction": {
         "used": true,
         "description": "URL reduced to three boolean predicates (has_colon, has_dslash, starts_data) standing in for the actual string tests (':' in url, '://' in url, url.startswith('data:')); has_dslash implies has_colon is the only real invariant tying them together, encoded via __ESBMC_assume."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_03",
@@ -2286,7 +2476,10 @@
       "abstraction": {
         "used": true,
         "description": "response/text arguments reduced to their None-ness as two bools; the rest of __init__ (root/type handling) is irrelevant to the missing mutual-exclusivity check and omitted."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar ValueError"
     },
     {
       "id": "ip_real_04",
@@ -2318,7 +2511,9 @@
       "abstraction": {
         "used": true,
         "description": "Method-in-(POST,PUT,PATCH) check is real caller precondition, held fixed true and omitted from the model since the bug is entirely in the header logic; Transfer-Encoding header presence/value modeled as a bool + a held-constant string \"chunked\" (the one value the fix special-cases)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_05",
@@ -2350,7 +2545,9 @@
       "abstraction": {
         "used": true,
         "description": "_Alpha/_Numeric version-component objects reduced to plain ints, since their __lt__/__eq__ ultimately just impose a total order -- the bug is in how __gt__ is derived from __lt__, not in the version-parsing itself."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_06",
@@ -2382,7 +2579,9 @@
       "abstraction": {
         "used": true,
         "description": "Reduced from a list comprehension over `clocs` to a single-element model (buggy_elem/correct_elem applied to one nondet v); ESBMC 8.3.0 crashes (internal type2t::symbolic_type_excp) on a symbolic list literal built inline in a for-loop with a list[int] return type, so the per-element scalar core is used instead of an actual list -- captures the same wrong-variable-reference bug (stale loop index `i` vs. current `val`) without the list."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_07",
@@ -2413,7 +2612,10 @@
       "abstraction": {
         "used": true,
         "description": "Near-verbatim -- no stubbing needed. ESBMC-Python's chr() operational model (src/c2goto/library/python/string.c) enforces the real Unicode range and raises the exact property 'chr() arg not in range(0x110000)', so the real bug (uncaught ValueError from an out-of-range numeric HTML entity) is reproduced directly rather than modeled abstractly."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de chr() com código fora do intervalo"
     },
     {
       "id": "ip_real_08",
@@ -2445,7 +2647,9 @@
       "abstraction": {
         "used": true,
         "description": "uri.find('/')-based host/path splitting reduced to a bool (has_host) plus a held-constant string for the extracted host, since the bug is about whether the extracted host is ever consulted, not the string-splitting mechanics themselves."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_09",
@@ -2477,7 +2681,9 @@
       "abstraction": {
         "used": true,
         "description": "to_remove/to_set dicts reduced to two bools for a single representative key (key_in_to_remove, key_in_to_set); the real function's string formatting (\"no {0}\".format(key)) and the unrelated vlan_id/None-value skip logic are omitted since the bug is purely about the missing to_set membership check."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_10",
@@ -2509,7 +2715,9 @@
       "abstraction": {
         "used": true,
         "description": "SPIDER_LOADER_CLASS/SPIDER_MANAGER_CLASS settings.get() chain reduced to two distinct int values with both 'set' (settings.get with a default only matters when the primary key is present too, which is exactly the case the real deprecation-window bug hits); the real load_object/verifyClass calls are omitted since the bug is purely which value wins."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_11",
@@ -2540,7 +2748,10 @@
       "abstraction": {
         "used": true,
         "description": "Real caller precondition (non-bearer scheme reached this point) preserved via __ESBMC_assume; the actual HTTPException raise is modeled as a bool decision (should_raise) since the bug is that auto_error is never consulted on this branch, only on the missing-header branch above it."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "HTTPException levantada na própria função com auto_error False"
     },
     {
       "id": "ip_real_12",
@@ -2572,7 +2783,9 @@
       "abstraction": {
         "used": true,
         "description": "Pure bool-logic bug, isolable verbatim: the buggy guard skipped a state update whenever vrf also needed updating (`state_needs_update and not vrf_needs_update` instead of just `state_needs_update`). Modeled as buggy/correct function pair, no stubbing needed."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_13",
@@ -2604,7 +2817,9 @@
       "abstraction": {
         "used": true,
         "description": "HTTP Range header handling reduced to int/bool arithmetic on start/end/size; the real bug is an ordering issue (negative-start clamping ran after the satisfiability check instead of before) plus a missing start>=end check, both preserved verbatim in the buggy/correct function pair."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_14",
@@ -2636,7 +2851,10 @@
       "abstraction": {
         "used": true,
         "description": "np.ceil(x/y) rewritten as the equivalent integer ceil-division (x+y-1)//y to drop the numpy dependency; the bug itself (missing +1 for an inclusive end_index) is preserved verbatim. The real fix also adds a start_index<=end_index precondition check, modeled here as an __ESBMC_assume instead of an explicit raise."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "__len__ negativo: len() levanta ValueError"
     },
     {
       "id": "ip_real_15",
@@ -2668,7 +2886,9 @@
       "abstraction": {
         "used": true,
         "description": "Real code subtracted previous_after from before unconditionally, including on the first line where previous_line is None; fix forces 0 in that case. Modeled as pure int arithmetic, no black-internal types needed."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_16",
@@ -2702,7 +2922,10 @@
       "abstraction": {
         "used": true,
         "description": "Real pivot() silently accepted columns=None and fell into groupby logic assuming a real key; fix raises TypeError immediately. Modeled as a buggy/correct boolean pair, no DataFrame/pandas-internal types needed."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro dentro do pandas com columns None"
     },
     {
       "id": "ip_real_17",
@@ -2734,7 +2957,10 @@
       "abstraction": {
         "used": true,
         "description": "dict.get() with no default returned None for status codes outside the known table, crashing downstream string formatting; fix adds an 'Unknown Status' default. Modeled as a bool precondition (was the status in the table), no scrapy-internal types needed."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_native_str(None) levanta TypeError"
     },
     {
       "id": "ip_real_19",
@@ -2764,7 +2990,9 @@
       "abstraction": {
         "used": true,
         "description": "Real code used `tuple(filter(None, ...))` on version-part tuples, which drops a legitimately-zero part (e.g. patch=0) via truthiness instead of only dropping genuinely-absent (None) parts. Reduced to the single-value truthiness-vs-presence decision; counterexample v=0."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_20",
@@ -2795,7 +3023,9 @@
       "abstraction": {
         "used": true,
         "description": "Real code used `full_path.replace(dest_dir_path, src_dir_path)`, replacing ALL occurrences of dest_dir_path in the string instead of only the leading prefix; correct behaviour is prefix-slicing. Reproduced with concrete literal strings where dest_dir_path recurs deeper in the path (\"a/a/a/a\" with dest=\"a/a\"), matching real issue #1158's corrupting example: buggy=\"b/b\", correct=\"b/a/a\"."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_21",
@@ -2826,7 +3056,10 @@
         "used": true,
         "description": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError."
       },
-      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)"
+      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: that[key] com chave ausente"
     },
     {
       "id": "ip_real_22",
@@ -2858,7 +3091,9 @@
       "abstraction": {
         "used": true,
         "description": "Real match() had no guard excluding commands already starting with 'sudo', so a failing 'sudo ...' command whose stderr happened to contain a matched pattern (e.g. \"permission denied\") would be re-suggested with sudo prepended again. Modeled as a bool (starts_with_sudo) + fixed matching stderr string; needs --unwind 30 (not the dataset's usual 6) because the counterexample search passes through ESBMC-Python's str.lower() operational model, which has its own internal unwind-bound loop over the string's characters."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_23",
@@ -2890,7 +3125,9 @@
       "abstraction": {
         "used": true,
         "description": "Old code dropped the 'significant' guard, silently including insignificant params (used e.g. for retries/scheduling metadata) in the serialized/hashed param string. Modeled as a bool-guarded dict-build pair."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_25",
@@ -2922,7 +3159,9 @@
       "abstraction": {
         "used": true,
         "description": "Old tuple membership check omitted UNKNOWN status, treating unknown-status tasks as always necessary; fix adds UNKNOWN to the exclusion tuple. Modeled status membership as bool flags."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_26",
@@ -2954,7 +3193,9 @@
       "abstraction": {
         "used": true,
         "description": "Old guard blocked re-scheduling any RUNNING/BATCH_RUNNING task regardless of which worker was actually running it; fix allows reschedule when a different worker now claims it (worker_running != worker_id). Modeled as a bool-logic pair over the status/worker predicates."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_28",
@@ -2985,7 +3226,10 @@
       "abstraction": {
         "used": true,
         "description": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida"
     },
     {
       "id": "ip_real_32",
@@ -3016,7 +3260,10 @@
       "abstraction": {
         "used": true,
         "description": "Real code added 12 to the hour for PM times with no upper-bound check; when hour was already 12 (12 PM), the result (24) is out of datetime's valid 0..23 range (real GitHub issue #16). Fix subtracts 24 and rolls the day over when the sum exceeds 23. Modeled as pure int arithmetic, sidestepping the actual datetime.py operational model entirely (not yet confirmed to validate hour range) by asserting the 0..23 invariant directly."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24"
     },
     {
       "id": "ip_real_33",
@@ -3045,7 +3292,10 @@
       "abstraction": {
         "used": true,
         "description": "Real code passed an empty paths list straight into the Windows-specific batch-delete pipeline instead of returning early (real GitHub issue #71, has a regression test). Modeled as a bool precondition ('was the empty-list guard missing'), not the full Windows mbcs/path-resolution pipeline, since that part is out of ESBMC-Python's scope."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "API do Windows"
     },
     {
       "id": "ir_real_01",
@@ -3076,7 +3326,9 @@
       "abstraction": {
         "used": true,
         "description": "Inlines pre-fix gamma()/lgamma() + _lanczos_sum verbatim from ESBMC's own math.py; sqrt/pow/exp/log delegated to the real (unaffected) math module."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_02",
@@ -3107,7 +3359,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_03",
@@ -3138,7 +3392,9 @@
       "abstraction": {
         "used": false,
         "description": "Pre-fix function called verbatim, no stubbing needed (pure string/int logic already within ESBMC-Python's supported surface)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_05",
@@ -3169,7 +3425,9 @@
       "abstraction": {
         "used": true,
         "description": "Reduced to a 2-digit scalar decode; alphabet/alphabet_index reduced to their lengths since the bug is purely which length is used as the radix."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_23",
@@ -3199,7 +3457,10 @@
       "abstraction": {
         "used": true,
         "description": "html_classes_from_tag reduced to a bool flag + nondet, since the crash needs to be made explicit for ESBMC-Python to check it."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: 'in' sobre valor que não é dict"
     },
     {
       "id": "dz_real_04",
@@ -3232,7 +3493,10 @@
       "abstraction": {
         "used": true,
         "description": "Real caller precondition (h_src > 0, chunk_size > 0) modeled via __ESBMC_assume in the harness; detection file keeps the full real NKI kernel function untouched (tensor/tile ops out of ESBMC-Python's scope)."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com step_size == 0"
     },
     {
       "id": "nm_real_24",
@@ -3263,7 +3527,10 @@
       "abstraction": {
         "used": true,
         "description": "ProcessPoolExecutor(...) can raise OSError on platforms without multiprocessing (e.g. AWS Lambda); the fix catches that and falls back to executor=None, but the pre-fix finally block called executor.shutdown() unconditionally. Modeled with a bool flag standing in for 'executor is None', same pattern as nm_real_01/02."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "OSError do sistema sem multiprocessamento"
     },
     {
       "id": "vm_real_03",
@@ -3294,7 +3561,10 @@
       "abstraction": {
         "used": true,
         "description": "_pipe(docs, proc, kwargs) does `for doc in docs: proc(doc, **kwargs)`; the buggy call site passes _pipe(pipe, docs, kwargs), swapping the non-iterable pipe component into the docs position. ESBMC-Python's frontend needs static type consistency across the call, so the real precondition (correct argument order) is asserted directly, same pattern as nm_real_*."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: _pipe com argumentos trocados"
     },
     {
       "id": "nm_real_25",
@@ -3325,7 +3595,10 @@
       "abstraction": {
         "used": true,
         "description": "start_line can be a request start line (has .method) or a response start line (no .method attribute at all); the buggy elif branch accesses .method unconditionally, raising AttributeError on a response. Fix uses getattr(start_line, 'method', None). Modeled with a bool flag standing in for 'start_line is a request line', same pattern as nm_real_08/nm_real_14."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: linha de resposta sem method"
     },
     {
       "id": "tm_real_11",
@@ -3356,7 +3629,10 @@
       "abstraction": {
         "used": true,
         "description": "SitemapSpider._parse_sitemap calls sitemap_urls_from_robots(response.body) (bytes); inside, line.lstrip().startswith('Sitemap:') compares bytes against a str literal, raising TypeError. Fix passes response.text (str) instead. Modeled with a bool flag standing in for 'the caller passed str, not bytes'."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: sitemap_urls_from_robots com bytes levanta TypeError"
     },
     {
       "id": "vm_real_04",
@@ -3388,7 +3664,10 @@
       "abstraction": {
         "used": true,
         "description": "`lambda attr, value: not str_op` negates the str_op function object itself (always truthy, attr/value unused) instead of calling str_op(attr, value) and negating the result -- a negated string filter (e.g. \"ext!=mp4\") always evaluates to False. Visible from the real code alone: the lambda's own parameters are unused and str_op is referenced without being called. Modeled as buggy (constant False) vs correct (not attr_matches)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "not str_op é sempre False"
     },
     {
       "id": "vm_real_05",
@@ -3419,7 +3698,10 @@
       "abstraction": {
         "used": false,
         "description": "LocalFileSystem has no `fs` attribute at all; `mkdir` is defined directly on `self`. Visible from the real code alone: the class body shows `def mkdir(self, ...)` right next to the erroneous `self.fs.mkdir(d)` call, same pattern as tm_real_10's wrong-object dispatch."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: self.fs inexistente"
     },
     {
       "id": "vm_real_06",
@@ -3450,7 +3732,10 @@
       "abstraction": {
         "used": true,
         "description": "super().__init__(settings) normalizes a plain dict into a Settings object stored as self.settings; the buggy code calls configure_logging(settings)/log_scrapy_info(settings) with the original local parameter instead of self.settings. Visible from the real code alone: CrawlerRunner.__init__ right above shows the dict-to-Settings normalization that CrawlerProcess.__init__ then ignores. Modeled with a bool flag standing in for 'settings is still a plain dict at the call site'."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: configure_logging com dict em vez de Settings"
     },
     {
       "id": "tm_real_12",
@@ -3481,7 +3766,10 @@
       "abstraction": {
         "used": true,
         "description": "s3_load_path is declared as a property (abc.abstractproperty in the real code); self.s3_load_path already returns the load-path string, so calling self.s3_load_path() tries to call that string. Visible from the real code alone: the property decorator sits right above the erroneous call site in the same class. Modeled with a bool flag standing in for 'the property was called instead of accessed'."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: chamar valor str"
     },
     {
       "id": "vm_real_07",
@@ -3513,7 +3801,10 @@
       "abstraction": {
         "used": true,
         "description": "Inside the branch that builds the VALIDATION data enqueuer, `iter_sequence_infinite(generator)` reuses the TRAINING generator variable instead of `val_data`, so validation silently iterates over training data. Visible from the real code alone: `val_data = validation_data` is assigned on the line right above, unused. Modeled with a bool flag standing in for 'the wrong (training) generator variable was used'."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "valida com os dados de treino"
     },
     {
       "id": "tm_real_13",
@@ -3544,7 +3835,10 @@
       "abstraction": {
         "used": true,
         "description": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: XMLGenerator.characters com valor não texto"
     },
     {
       "id": "vm_real_08",
@@ -3575,7 +3869,10 @@
       "abstraction": {
         "used": true,
         "description": "The enclosing function's parameter is `output`, not `output_path`; `output_path` is never assigned anywhere in the file, so every call to the returned write() function raises NameError. Visible from the real code alone: `output_path` never appears as a parameter or assignment target in the shown function. Modeled with a bool flag standing in for 'the undefined name was referenced'."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "escreve no arquivo errado"
     },
     {
       "id": "ip_real_34",
@@ -3607,7 +3904,10 @@
       "abstraction": {
         "used": true,
         "description": "find_hook returns on the FIRST matching hook file found inside the os.listdir loop, so run_hook only ever executes one script even when multiple hook files match the same hook name (e.g. both pre_gen_project.py and pre_gen_project.sh present); the rest are silently skipped. Visible from the real code alone: an early `return` sits inside a `for` loop that could otherwise match more than once. Modeled as a scalar count of hooks actually run (buggy: always 1 when any match; correct: the real match count)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "só o primeiro hook é devolvido"
     },
     {
       "id": "oob_real_06",
@@ -3638,7 +3938,10 @@
       "abstraction": {
         "used": true,
         "description": "The dictionary lookup is modeled by a boolean precondition because the full recursive configuration merge is outside the useful ESBMC-Python fragment; false means the nested key is absent from default."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: default[k]"
     },
     {
       "id": "bip_ansible_1",
@@ -3663,6 +3966,9 @@
         "source_file": "lib/ansible/galaxy/collection.py",
         "source_function": "verify_collections"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar AnsibleError sem MANIFEST.json; a versão com bug segue sem erro",
       "detection_file": "funcao_com_bug/bip_ansible_1.py"
     },
     {
@@ -3688,6 +3994,8 @@
         "source_file": "lib/ansible/module_utils/facts/system/distribution.py",
         "source_function": "DistributionFiles.parse_distribution_file_Debian"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_ansible_3.py"
     },
     {
@@ -3713,6 +4021,8 @@
         "source_file": "lib/ansible/module_utils/common/validation.py",
         "source_function": "check_required_arguments"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_ansible_5.py"
     },
     {
@@ -3738,6 +4048,8 @@
         "source_file": "lib/ansible/module_utils/facts/hardware/linux.py",
         "source_function": "LinuxHardware.get_cpu_facts"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_ansible_16.py"
     },
     {
@@ -3763,6 +4075,8 @@
         "source_file": "black.py",
         "source_function": "generate_ignored_nodes"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_black_2.py"
     },
     {
@@ -3788,6 +4102,8 @@
         "source_file": "black.py",
         "source_function": "normalize_invisible_parens"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_black_7.py"
     },
     {
@@ -3813,6 +4129,8 @@
         "source_file": "black.py",
         "source_function": "bracket_split_build_line"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_black_8.py"
     },
     {
@@ -3838,6 +4156,9 @@
         "source_file": "black.py",
         "source_function": "get_grammars"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ParseError no parser lib2to3 por gramática errada",
       "detection_file": "funcao_com_bug/bip_black_9.py"
     },
     {
@@ -3863,6 +4184,9 @@
         "source_file": "blib2to3/pgen2/tokenize.py",
         "source_function": "generate_tokens"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "tokens errados para async for",
       "detection_file": "funcao_com_bug/bip_black_13.py"
     },
     {
@@ -3888,6 +4212,9 @@
         "source_file": "black.py",
         "source_function": "gen_python_files_in_dir"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de Path.relative_to com link simbólico para fora da raiz; modelo: Path.relative_to levanta ValueError fora da raiz",
       "detection_file": "funcao_com_bug/bip_black_16.py"
     },
     {
@@ -3913,6 +4240,8 @@
         "source_file": "black.py",
         "source_function": "EmptyLineTracker._maybe_empty_lines"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_black_19.py"
     },
     {
@@ -3938,6 +4267,8 @@
         "source_file": "black.py",
         "source_function": "format_file_in_place"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_black_20.py"
     },
     {
@@ -3963,6 +4294,9 @@
         "source_file": "black.py",
         "source_function": "dump_to_file"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeEncodeError: depende da codificação do sistema",
       "detection_file": "funcao_com_bug/bip_black_21.py"
     },
     {
@@ -3988,6 +4322,9 @@
         "source_file": "cookiecutter/generate.py",
         "source_function": "generate_context"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeDecodeError: depende da codificação do sistema",
       "detection_file": "funcao_com_bug/bip_cookiecutter_1.py"
     },
     {
@@ -4013,6 +4350,8 @@
         "source_file": "cookiecutter/prompt.py",
         "source_function": "read_user_choice"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_cookiecutter_3.py"
     },
     {
@@ -4038,6 +4377,8 @@
         "source_file": "fastapi/routing.py",
         "source_function": "APIRouter.add_api_websocket_route"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_2.py"
     },
     {
@@ -4063,6 +4404,8 @@
         "source_file": "fastapi/openapi/utils.py",
         "source_function": "get_openapi_path"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_4.py"
     },
     {
@@ -4088,6 +4431,8 @@
         "source_file": "fastapi/utils.py",
         "source_function": "create_cloned_field"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_5.py"
     },
     {
@@ -4113,6 +4458,8 @@
         "source_file": "fastapi/dependencies/utils.py",
         "source_function": "get_body_field"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_9.py"
     },
     {
@@ -4138,6 +4485,8 @@
         "source_file": "fastapi/routing.py",
         "source_function": "serialize_response"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_10.py"
     },
     {
@@ -4163,6 +4512,8 @@
         "source_file": "fastapi/dependencies/utils.py",
         "source_function": "is_scalar_field"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_11.py"
     },
     {
@@ -4188,6 +4539,8 @@
         "source_file": "fastapi/encoders.py",
         "source_function": "jsonable_encoder"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_fastapi_16.py"
     },
     {
@@ -4213,6 +4566,8 @@
         "source_file": "httpie/models.py",
         "source_function": "HTTPRequest.headers"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_httpie_4.py"
     },
     {
@@ -4238,6 +4593,9 @@
         "source_file": "keras/models.py",
         "source_function": "_clone_functional_model"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError levantado por compute_mask de camada sem suporte a máscara; código do projeto: incluir Layer.compute_mask no harness",
       "detection_file": "funcao_com_bug/bip_keras_3.py"
     },
     {
@@ -4263,6 +4621,9 @@
         "source_file": "keras/optimizers.py",
         "source_function": "TFOptimizer.get_updates"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "TypeError: argumento posicional para compute_gradients que só aceita nomeado; modelo: método que só aceita argumento nomeado",
       "detection_file": "funcao_com_bug/bip_keras_4.py"
     },
     {
@@ -4288,6 +4649,8 @@
         "source_file": "keras/utils/data_utils.py",
         "source_function": "get_file"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_5.py"
     },
     {
@@ -4313,6 +4676,9 @@
         "source_file": "keras/engine/training_utils.py",
         "source_function": "weighted_masked_objective"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "divisão de tensor por zero gera NaN, sem exceção",
       "detection_file": "funcao_com_bug/bip_keras_6.py"
     },
     {
@@ -4338,6 +4704,8 @@
         "source_file": "keras/wrappers/scikit_learn.py",
         "source_function": "KerasRegressor.predict"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_7.py"
     },
     {
@@ -4363,6 +4731,9 @@
         "source_file": "keras/engine/network.py",
         "source_function": "Network.from_config"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "saídas diferentes após from_config",
       "detection_file": "funcao_com_bug/bip_keras_8.py"
     },
     {
@@ -4388,6 +4759,8 @@
         "source_file": "docs/autogen.py",
         "source_function": "process_list_block"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_9.py"
     },
     {
@@ -4413,6 +4786,9 @@
         "source_file": "keras/engine/training_utils.py",
         "source_function": "standardize_weights"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "class_weight ignorado quando há sample_weight",
       "detection_file": "funcao_com_bug/bip_keras_10.py"
     },
     {
@@ -4438,6 +4814,8 @@
         "source_file": "keras/metrics.py",
         "source_function": "sparse_top_k_categorical_accuracy"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_14.py"
     },
     {
@@ -4463,6 +4841,8 @@
         "source_file": "keras/metrics.py",
         "source_function": "sparse_categorical_accuracy"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_17.py"
     },
     {
@@ -4488,6 +4868,9 @@
         "source_file": "keras/engine/sequential.py",
         "source_function": "Sequential.add"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: primeira camada sem batch_input_shape",
       "detection_file": "funcao_com_bug/bip_keras_23.py"
     },
     {
@@ -4513,6 +4896,9 @@
         "source_file": "keras/callbacks.py",
         "source_function": "TensorBoard.set_model"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro do TensorFlow ao receber lista; modelo: tf.summary.histogram recusa lista",
       "detection_file": "funcao_com_bug/bip_keras_24.py"
     },
     {
@@ -4538,6 +4924,9 @@
         "source_file": "keras/applications/imagenet_utils.py",
         "source_function": "_preprocess_numpy_input"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro do numpy em operação in-place com array inteiro; modelo: operação in-place com float em array inteiro",
       "detection_file": "funcao_com_bug/bip_keras_25.py"
     },
     {
@@ -4563,6 +4952,9 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "rnn"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de formato no tf.where",
       "detection_file": "funcao_com_bug/bip_keras_26.py"
     },
     {
@@ -4588,6 +4980,9 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "ctc_batch_cost"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de formato no TensorFlow com lote de tamanho 1",
       "detection_file": "funcao_com_bug/bip_keras_31.py"
     },
     {
@@ -4613,6 +5008,9 @@
         "source_file": "keras/preprocessing/text.py",
         "source_function": "text_to_word_sequence"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de str.maketrans com tamanhos diferentes",
       "detection_file": "funcao_com_bug/bip_keras_33.py"
     },
     {
@@ -4638,6 +5036,8 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "separable_conv1d"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_36.py"
     },
     {
@@ -4663,6 +5063,9 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "StackedRNNCells.build"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de formato ao construir as células",
       "detection_file": "funcao_com_bug/bip_keras_38.py"
     },
     {
@@ -4688,6 +5091,8 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "RNN.compute_output_shape"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_40.py"
     },
     {
@@ -4713,6 +5118,8 @@
         "source_file": "keras/utils/np_utils.py",
         "source_function": "to_categorical"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_keras_43.py"
     },
     {
@@ -4738,6 +5145,9 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "LSTMCell.call"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: soma com bias None quando use_bias=False",
       "detection_file": "funcao_com_bug/bip_keras_45.py"
     },
     {
@@ -4763,6 +5173,8 @@
         "source_file": "luigi/contrib/redshift.py",
         "source_function": "S3CopyToTable.does_table_exist"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_8.py"
     },
     {
@@ -4788,6 +5200,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "Worker.get_pending_tasks"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_10.py"
     },
     {
@@ -4813,6 +5227,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "CentralPlannerScheduler.prune"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_16.py"
     },
     {
@@ -4838,6 +5254,9 @@
         "source_file": "luigi/interface.py",
         "source_function": "_WorkerSchedulerFactory.create_local_scheduler"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "record_task_history deveria ser False",
       "detection_file": "funcao_com_bug/bip_luigi_17.py"
     },
     {
@@ -4863,6 +5282,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.set_status"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_18.py"
     },
     {
@@ -4888,6 +5309,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.set_status"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_19.py"
     },
     {
@@ -4913,6 +5336,9 @@
         "source_file": "luigi/interface.py",
         "source_function": "run"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "AttributeError: cmdline_args None recebe .insert",
       "detection_file": "funcao_com_bug/bip_luigi_21.py"
     },
     {
@@ -4938,6 +5364,8 @@
         "source_file": "luigi/contrib/spark.py",
         "source_function": "SparkSubmitTask._dict_arg"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_24.py"
     },
     {
@@ -4963,6 +5391,9 @@
         "source_file": "luigi/contrib/hadoop_jar.py",
         "source_function": "HadoopJarJobRunner.run_job"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "mensagem de erro errada",
       "detection_file": "funcao_com_bug/bip_luigi_26.py"
     },
     {
@@ -4988,6 +5419,8 @@
         "source_file": "luigi/task_register.py",
         "source_function": "Register.__get_reg"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_luigi_29.py"
     },
     {
@@ -5013,6 +5446,9 @@
         "source_file": "luigi/task.py",
         "source_function": "Task.get_param_values"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "levanta UnknownParameterException para parâmetro posicional não significativo",
       "detection_file": "funcao_com_bug/bip_luigi_33.py"
     },
     {
@@ -5038,6 +5474,8 @@
         "source_file": "lib/matplotlib/axes/_axes.py",
         "source_function": "Axes.scatter"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_2.py"
     },
     {
@@ -5063,6 +5501,9 @@
         "source_file": "lib/matplotlib/axes/_axes.py",
         "source_function": "Axes._parse_scatter_color_args"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para cor com formato (1, 4)",
       "detection_file": "funcao_com_bug/bip_matplotlib_6.py"
     },
     {
@@ -5088,6 +5529,8 @@
         "source_file": "lib/matplotlib/colors.py",
         "source_function": "LightSource.shade_rgb"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_7.py"
     },
     {
@@ -5113,6 +5556,8 @@
         "source_file": "lib/matplotlib/projections/polar.py",
         "source_function": "PolarAxes.draw"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_9.py"
     },
     {
@@ -5138,6 +5583,8 @@
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "Axis.set_tick_params"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_10.py"
     },
     {
@@ -5163,6 +5610,8 @@
         "source_file": "lib/matplotlib/text.py",
         "source_function": "Text.get_window_extent"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_11.py"
     },
     {
@@ -5188,6 +5637,8 @@
         "source_file": "lib/matplotlib/path.py",
         "source_function": "Path.make_compound_path"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_13.py"
     },
     {
@@ -5213,6 +5664,8 @@
         "source_file": "lib/matplotlib/text.py",
         "source_function": "Text.update"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_14.py"
     },
     {
@@ -5238,6 +5691,9 @@
         "source_file": "lib/matplotlib/transforms.py",
         "source_function": "nonsingular"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção",
       "detection_file": "funcao_com_bug/bip_matplotlib_16.py"
     },
     {
@@ -5263,6 +5719,9 @@
         "source_file": "lib/matplotlib/transforms.py",
         "source_function": "nonsingular"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção",
       "detection_file": "funcao_com_bug/bip_matplotlib_17.py"
     },
     {
@@ -5288,6 +5747,8 @@
         "source_file": "lib/matplotlib/axes/_base.py",
         "source_function": "_AxesBase.apply_aspect"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_23.py"
     },
     {
@@ -5313,6 +5774,9 @@
         "source_file": "lib/matplotlib/collections.py",
         "source_function": "EventCollection.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar ValueError para positions None",
       "detection_file": "funcao_com_bug/bip_matplotlib_25.py"
     },
     {
@@ -5338,6 +5802,8 @@
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "_make_getset_interval"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_26.py"
     },
     {
@@ -5363,6 +5829,8 @@
         "source_file": "lib/matplotlib/colorbar.py",
         "source_function": "ColorbarBase.set_label"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_matplotlib_27.py"
     },
     {
@@ -5388,6 +5856,9 @@
         "source_file": "lib/matplotlib/axes/_base.py",
         "source_function": "_AxesBase.set_xlim"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "o teste espera um aviso; pelo patch não dá para saber se a versão com bug quebra",
       "detection_file": "funcao_com_bug/bip_matplotlib_28.py"
     },
     {
@@ -5413,6 +5884,8 @@
         "source_file": "pandas/core/dtypes/common.py",
         "source_function": "is_string_dtype"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_1.py"
     },
     {
@@ -5438,6 +5911,8 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index._join_multi"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_4.py"
     },
     {
@@ -5463,6 +5938,9 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index._get_nearest_indexer"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError do numpy ao subtrair datas com fuso",
       "detection_file": "funcao_com_bug/bip_pandas_7.py"
     },
     {
@@ -5488,6 +5966,8 @@
         "source_file": "pandas/core/internals/blocks.py",
         "source_function": "Block.replace"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_8.py"
     },
     {
@@ -5513,6 +5993,8 @@
         "source_file": "pandas/core/internals/blocks.py",
         "source_function": "ExtensionBlock.putmask"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_10.py"
     },
     {
@@ -5538,6 +6020,9 @@
         "source_file": "pandas/core/ops/dispatch.py",
         "source_function": "should_series_dispatch"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError em operação com DateOffset",
       "detection_file": "funcao_com_bug/bip_pandas_14.py"
     },
     {
@@ -5563,6 +6048,9 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_LocIndexer._getitem_axis"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "deveria levantar KeyError",
       "detection_file": "funcao_com_bug/bip_pandas_19.py"
     },
     {
@@ -5588,6 +6076,8 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series._get_with"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_21.py"
     },
     {
@@ -5613,6 +6103,8 @@
         "source_file": "pandas/core/indexes/datetimelike.py",
         "source_function": "DatetimeTimedeltaMixin.intersection"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_23.py"
     },
     {
@@ -5638,6 +6130,8 @@
         "source_file": "pandas/core/arrays/datetimes.py",
         "source_function": "DatetimeArray.tz_localize"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_24.py"
     },
     {
@@ -5663,6 +6157,8 @@
         "source_file": "pandas/core/arrays/datetimes.py",
         "source_function": "DatetimeArray.isocalendar"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_25.py"
     },
     {
@@ -5688,6 +6184,8 @@
         "source_file": "pandas/core/strings.py",
         "source_function": "StringMethods._get_series_list"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_28.py"
     },
     {
@@ -5713,6 +6211,8 @@
         "source_file": "pandas/core/arrays/interval.py",
         "source_function": "IntervalArray.__setitem__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_29.py"
     },
     {
@@ -5738,6 +6238,9 @@
         "source_file": "pandas/core/arrays/integer.py",
         "source_function": "IntegerArray._values_for_argsort"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError do numpy: min() de array vazio; modelo: min() de array vazio levanta ValueError",
       "detection_file": "funcao_com_bug/bip_pandas_33.py"
     },
     {
@@ -5763,6 +6266,9 @@
         "source_file": "pandas/core/resample.py",
         "source_function": "TimeGrouper._get_time_bins"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AmbiguousTimeError da conversão de fuso",
       "detection_file": "funcao_com_bug/bip_pandas_34.py"
     },
     {
@@ -5788,6 +6294,9 @@
         "source_file": "pandas/core/indexes/period.py",
         "source_function": "PeriodIndex._engine"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "weakref morta vira None no motor do índice",
       "detection_file": "funcao_com_bug/bip_pandas_35.py"
     },
     {
@@ -5813,6 +6322,8 @@
         "source_file": "pandas/_testing.py",
         "source_function": "assert_series_equal"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_42.py"
     },
     {
@@ -5838,6 +6349,8 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "_cat_compare_op"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_50.py"
     },
     {
@@ -5863,6 +6376,8 @@
         "source_file": "pandas/core/groupby/generic.py",
         "source_function": "SeriesGroupBy.nunique"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_52.py"
     },
     {
@@ -5888,6 +6403,9 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "Categorical.from_codes"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para códigos Int64",
       "detection_file": "funcao_com_bug/bip_pandas_58.py"
     },
     {
@@ -5913,6 +6431,9 @@
         "source_file": "pandas/core/window/rolling.py",
         "source_function": "_Rolling_and_Expanding.corr"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro ao usar janela de frequência",
       "detection_file": "funcao_com_bug/bip_pandas_59.py"
     },
     {
@@ -5938,6 +6459,9 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series._get_with"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "deveria levantar ValueError com outra mensagem",
       "detection_file": "funcao_com_bug/bip_pandas_61.py"
     },
     {
@@ -5963,6 +6487,9 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_AtIndexer._convert_key"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para índice de float",
       "detection_file": "funcao_com_bug/bip_pandas_63.py"
     },
     {
@@ -5988,6 +6515,8 @@
         "source_file": "pandas/io/formats/excel.py",
         "source_function": "ExcelFormatter.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_64.py"
     },
     {
@@ -6013,6 +6542,9 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_AtIndexer._convert_key"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para índice de float",
       "detection_file": "funcao_com_bug/bip_pandas_69.py"
     },
     {
@@ -6038,6 +6570,8 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame._reduce"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_78.py"
     },
     {
@@ -6063,6 +6597,9 @@
         "source_file": "pandas/core/reshape/reshape.py",
         "source_function": "_unstack_multiple"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError na busca de nível com nome tupla; modelo: busca de nível inexistente levanta KeyError",
       "detection_file": "funcao_com_bug/bip_pandas_84.py"
     },
     {
@@ -6088,6 +6625,8 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "crosstab"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_87.py"
     },
     {
@@ -6113,6 +6652,9 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "pivot_table"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "o teste compara o resultado; pelo patch não dá para saber se quebra antes",
       "detection_file": "funcao_com_bug/bip_pandas_88.py"
     },
     {
@@ -6138,6 +6680,8 @@
         "source_file": "pandas/core/reshape/reshape.py",
         "source_function": "_unstack_multiple"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_89.py"
     },
     {
@@ -6163,6 +6707,9 @@
         "source_file": "pandas/core/indexes/timedeltas.py",
         "source_function": "TimedeltaIndex.searchsorted"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "tipo de exceção errado",
       "detection_file": "funcao_com_bug/bip_pandas_91.py"
     },
     {
@@ -6188,6 +6735,8 @@
         "source_file": "pandas/core/arrays/period.py",
         "source_function": "_period_array_cmp"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_95.py"
     },
     {
@@ -6213,6 +6762,8 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index.__new__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_98.py"
     },
     {
@@ -6238,6 +6789,9 @@
         "source_file": "pandas/core/internals/construction.py",
         "source_function": "init_ndarray"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro ao montar blocos com array 2-D",
       "detection_file": "funcao_com_bug/bip_pandas_102.py"
     },
     {
@@ -6263,6 +6817,9 @@
         "source_file": "pandas/core/groupby/groupby.py",
         "source_function": "GroupBy.quantile"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "pode ser o assert len(indices) == len(result) da própria função ou resultado errado",
       "detection_file": "funcao_com_bug/bip_pandas_104.py"
     },
     {
@@ -6288,6 +6845,9 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index.get_indexer_non_unique"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro ao comparar índice de datas com outro tipo",
       "detection_file": "funcao_com_bug/bip_pandas_106.py"
     },
     {
@@ -6313,6 +6873,8 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame.append"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_107.py"
     },
     {
@@ -6338,6 +6900,8 @@
         "source_file": "pandas/core/missing.py",
         "source_function": "interpolate_1d"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_115.py"
     },
     {
@@ -6363,6 +6927,9 @@
         "source_file": "pandas/core/reshape/merge.py",
         "source_function": "_MergeOperation._get_merge_keys"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "MergeError: fuso perdido em .values",
       "detection_file": "funcao_com_bug/bip_pandas_116.py"
     },
     {
@@ -6388,6 +6955,8 @@
         "source_file": "pandas/core/dtypes/missing.py",
         "source_function": "_isna_old"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_117.py"
     },
     {
@@ -6413,6 +6982,8 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "_add_margins"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_119.py"
     },
     {
@@ -6438,6 +7009,9 @@
         "source_file": "pandas/core/generic.py",
         "source_function": "NDFrame.pct_change"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError do reindex com índice duplicado; modelo: reindex com índice duplicado levanta ValueError",
       "detection_file": "funcao_com_bug/bip_pandas_127.py"
     },
     {
@@ -6463,6 +7037,9 @@
         "source_file": "pandas/core/generic.py",
         "source_function": "NDFrame.interpolate"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnboundLocalError com axis='index'",
       "detection_file": "funcao_com_bug/bip_pandas_133.py"
     },
     {
@@ -6488,6 +7065,8 @@
         "source_file": "pandas/core/groupby/grouper.py",
         "source_function": "Grouping.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_139.py"
     },
     {
@@ -6513,6 +7092,8 @@
         "source_file": "pandas/core/indexes/range.py",
         "source_function": "RangeIndex.get_indexer"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_141.py"
     },
     {
@@ -6538,6 +7119,9 @@
         "source_file": "pandas/core/algorithms.py",
         "source_function": "diff"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError do numpy ao subtrair booleanos; modelo: subtração de booleanos levanta TypeError",
       "detection_file": "funcao_com_bug/bip_pandas_142.py"
     },
     {
@@ -6563,6 +7147,8 @@
         "source_file": "pandas/core/indexes/range.py",
         "source_function": "RangeIndex.get_indexer"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_143.py"
     },
     {
@@ -6588,6 +7174,8 @@
         "source_file": "pandas/plotting/_matplotlib/core.py",
         "source_function": "BarPlot._decorate_ticks"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_144.py"
     },
     {
@@ -6613,6 +7201,9 @@
         "source_file": "pandas/core/ops/__init__.py",
         "source_function": "dispatch_to_series"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError em operação com NaT",
       "detection_file": "funcao_com_bug/bip_pandas_145.py"
     },
     {
@@ -6638,6 +7229,8 @@
         "source_file": "pandas/core/apply.py",
         "source_function": "FrameApply.apply_empty_result"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_148.py"
     },
     {
@@ -6663,6 +7256,9 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series.append"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: lista + tupla",
       "detection_file": "funcao_com_bug/bip_pandas_152.py"
     },
     {
@@ -6688,6 +7284,9 @@
         "source_file": "pandas/core/groupby/groupby.py",
         "source_function": "GroupBy._get_cythonized_result"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de tipo no código Cython",
       "detection_file": "funcao_com_bug/bip_pandas_154.py"
     },
     {
@@ -6713,6 +7312,8 @@
         "source_file": "pandas/core/window/rolling.py",
         "source_function": "Rolling._on"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_155.py"
     },
     {
@@ -6738,6 +7339,9 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series.rename"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "TypeError em NDFrame.rename com objeto não chamável",
       "detection_file": "funcao_com_bug/bip_pandas_158.py"
     },
     {
@@ -6763,6 +7367,9 @@
         "source_file": "pandas/core/computation/expressions.py",
         "source_function": "_can_use_numexpr"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: dtype de Series não tem value_counts",
       "detection_file": "funcao_com_bug/bip_pandas_160.py"
     },
     {
@@ -6788,6 +7395,8 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "Categorical.fillna"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_161.py"
     },
     {
@@ -6813,6 +7422,9 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "_normalize"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError no .loc com nome de margem personalizado",
       "detection_file": "funcao_com_bug/bip_pandas_162.py"
     },
     {
@@ -6838,6 +7450,9 @@
         "source_file": "pandas/core/window.py",
         "source_function": "_Window._prep_values"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "altera a entrada do usuário",
       "detection_file": "funcao_com_bug/bip_pandas_163.py"
     },
     {
@@ -6863,6 +7478,8 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame._join_compat"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_pandas_166.py"
     },
     {
@@ -6888,6 +7505,9 @@
         "source_file": "pandas/core/groupby/grouper.py",
         "source_function": "_get_grouper"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError ao ignorar o eixo",
       "detection_file": "funcao_com_bug/bip_pandas_168.py"
     },
     {
@@ -6913,6 +7533,8 @@
         "source_file": "sanic/app.py",
         "source_function": "Sanic.register_named_middleware"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_sanic_1.py"
     },
     {
@@ -6938,6 +7560,8 @@
         "source_file": "scrapy/pipelines/images.py",
         "source_function": "ImagesPipeline.convert_image"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_scrapy_6.py"
     },
     {
@@ -6963,6 +7587,9 @@
         "source_file": "scrapy/item.py",
         "source_function": "ItemMeta.__new__"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro do interpretador na criação da classe sem __classcell__",
       "detection_file": "funcao_com_bug/bip_scrapy_8.py"
     },
     {
@@ -6988,6 +7615,9 @@
         "source_file": "scrapy/utils/url.py",
         "source_function": "_safe_ParseResult"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeError do codec idna; modelo: idna levanta UnicodeError para rótulo vazio ou com mais de 63 caracteres",
       "detection_file": "funcao_com_bug/bip_scrapy_15.py"
     },
     {
@@ -7013,6 +7643,9 @@
         "source_file": "scrapy/responsetypes.py",
         "source_function": "ResponseTypes.from_content_disposition"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeDecodeError; modelo: decodificar bytes inválidos levanta UnicodeDecodeError",
       "detection_file": "funcao_com_bug/bip_scrapy_18.py"
     },
     {
@@ -7038,6 +7671,9 @@
         "source_file": "scrapy/downloadermiddlewares/robotstxt.py",
         "source_function": "RobotsTxtMiddleware._robots_error"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError em outro método depois do pop; código do projeto: incluir o método que lê _parsers no harness",
       "detection_file": "funcao_com_bug/bip_scrapy_21.py"
     },
     {
@@ -7063,6 +7699,8 @@
         "source_file": "scrapy/dupefilters.py",
         "source_function": "RFPDupeFilter.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_scrapy_28.py"
     },
     {
@@ -7088,6 +7726,8 @@
         "source_file": "scrapy/http/request/form.py",
         "source_function": "_get_clickable"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_scrapy_38.py"
     },
     {
@@ -7113,6 +7753,8 @@
         "source_file": "scrapy/spiders/__init__.py",
         "source_function": "Spider.start_requests"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_scrapy_39.py"
     },
     {
@@ -7138,6 +7780,9 @@
         "source_file": "scrapy/exporters.py",
         "source_function": "PythonItemExporter._serialize_value"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError levantado por to_unicode com valor não texto; código do projeto: incluir to_unicode no harness",
       "detection_file": "funcao_com_bug/bip_scrapy_40.py"
     },
     {
@@ -7163,6 +7808,9 @@
         "source_file": "spacy/errors.py",
         "source_function": "add_codes"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError do getattr com nome dunder",
       "detection_file": "funcao_com_bug/bip_spacy_1.py"
     },
     {
@@ -7188,6 +7836,8 @@
         "source_file": "spacy/util.py",
         "source_function": "load_model_from_path"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_spacy_2.py"
     },
     {
@@ -7213,6 +7863,8 @@
         "source_file": "spacy/language.py",
         "source_function": "Language.remove_pipe"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_spacy_6.py"
     },
     {
@@ -7238,6 +7890,8 @@
         "source_file": "thefuck/utils.py",
         "source_function": "get_all_executables"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_2.py"
     },
     {
@@ -7263,6 +7917,8 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "Fish.info"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_3.py"
     },
     {
@@ -7288,6 +7944,9 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "_get_aliases"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError ao desempacotar alias sem espaço",
       "detection_file": "funcao_com_bug/bip_thefuck_4.py"
     },
     {
@@ -7313,6 +7972,8 @@
         "source_file": "thefuck/rules/man.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_10.py"
     },
     {
@@ -7338,6 +7999,8 @@
         "source_file": "thefuck/rules/git_push.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_11.py"
     },
     {
@@ -7363,6 +8026,8 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "Fish._get_overridden_aliases"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_14.py"
     },
     {
@@ -7388,6 +8053,8 @@
         "source_file": "thefuck/rules/git_push_force.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_19.py"
     },
     {
@@ -7413,6 +8080,8 @@
         "source_file": "thefuck/rules/mkdir_p.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_25.py"
     },
     {
@@ -7438,6 +8107,8 @@
         "source_file": "thefuck/rules/vagrant_up.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_26.py"
     },
     {
@@ -7463,6 +8134,8 @@
         "source_file": "thefuck/rules/fix_file.py",
         "source_function": "match"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_thefuck_30.py"
     },
     {
@@ -7488,6 +8161,8 @@
         "source_file": "tornado/ioloop.py",
         "source_function": "PeriodicCallback._update_next"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_tornado_5.py"
     },
     {
@@ -7513,6 +8188,9 @@
         "source_file": "tornado/websocket.py",
         "source_function": "WebSocketProtocol13.accept_connection"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado ao ler cabeçalhos ausentes; código do projeto: incluir a função que lê os cabeçalhos no harness",
       "detection_file": "funcao_com_bug/bip_tornado_8.py"
     },
     {
@@ -7538,6 +8216,8 @@
         "source_file": "tqdm/contrib/__init__.py",
         "source_function": "tenumerate"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_tqdm_1.py"
     },
     {
@@ -7563,6 +8243,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unescapeHTML"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_3.py"
     },
     {
@@ -7588,6 +8270,9 @@
         "source_file": "youtube_dl/jsinterp.py",
         "source_function": "JSInterpreter.interpret_expression"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ExtractorError levantado na própria função para chamada sem argumentos",
       "detection_file": "funcao_com_bug/bip_youtube_dl_4.py"
     },
     {
@@ -7613,6 +8298,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_timestamp"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_5.py"
     },
     {
@@ -7638,6 +8325,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_7.py"
     },
     {
@@ -7663,6 +8352,8 @@
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.build_format_selector"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_8.py"
     },
     {
@@ -7688,6 +8379,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_10.py"
     },
     {
@@ -7713,6 +8406,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_13.py"
     },
     {
@@ -7738,6 +8433,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_15.py"
     },
     {
@@ -7763,6 +8460,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "get_elements_by_attribute"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_20.py"
     },
     {
@@ -7788,6 +8487,9 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: re.match de padrão str sobre bytes",
       "detection_file": "funcao_com_bug/bip_youtube_dl_21.py"
     },
     {
@@ -7813,6 +8515,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_23.py"
     },
     {
@@ -7838,6 +8542,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "_match_one"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_24.py"
     },
     {
@@ -7863,6 +8569,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_25.py"
     },
     {
@@ -7888,6 +8596,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_26.py"
     },
     {
@@ -7913,6 +8623,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "parse_dfxp_time_expr"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_27.py"
     },
     {
@@ -7938,6 +8650,9 @@
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.build_format_selector"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "o teste compara o formato escolhido; pelo patch não dá para saber se quebra",
       "detection_file": "funcao_com_bug/bip_youtube_dl_30.py"
     },
     {
@@ -7963,6 +8678,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_strdate"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_41.py"
     },
     {
@@ -7988,6 +8705,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "url_basename"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "detection_file": "funcao_com_bug/bip_youtube_dl_43.py"
     }
   ]

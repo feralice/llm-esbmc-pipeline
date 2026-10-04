@@ -8,7 +8,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 671,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "deveria levantar AnsibleError sem MANIFEST.json; a versão com bug segue sem erro"
   },
   {
     "id": "bip_ansible_3",
@@ -19,7 +22,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 323,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_ansible_5",
@@ -30,7 +35,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 192,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_ansible_16",
@@ -41,7 +48,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 246,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_black_2",
@@ -52,7 +61,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 3119,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_black_3",
@@ -73,7 +84,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2760,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_black_8",
@@ -84,7 +97,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2408,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_black_9",
@@ -95,7 +110,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 729,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ParseError no parser lib2to3 por gramática errada"
   },
   {
     "id": "bip_black_13",
@@ -106,7 +124,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 519,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "tokens errados para async for"
   },
   {
     "id": "bip_black_16",
@@ -117,7 +138,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2948,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError de Path.relative_to com link simbólico para fora da raiz; modelo: Path.relative_to levanta ValueError fora da raiz"
   },
   {
     "id": "bip_black_19",
@@ -128,7 +152,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1045,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_black_20",
@@ -139,7 +165,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 344,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_black_21",
@@ -150,7 +178,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2328,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "UnicodeEncodeError: depende da codificação do sistema"
   },
   {
     "id": "bip_cookiecutter_1",
@@ -161,7 +192,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 85,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "UnicodeDecodeError: depende da codificação do sistema"
   },
   {
     "id": "bip_cookiecutter_3",
@@ -172,7 +206,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 91,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_2",
@@ -183,7 +219,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 501,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_4",
@@ -194,7 +232,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 183,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_5",
@@ -205,7 +245,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 100,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_6",
@@ -226,7 +268,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 577,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_10",
@@ -237,7 +281,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 55,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_11",
@@ -248,7 +294,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 134,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_fastapi_15",
@@ -269,7 +317,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 18,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_httpie_4",
@@ -280,7 +330,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 106,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_3",
@@ -291,7 +343,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 140,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError levantado por compute_mask de camada sem suporte a máscara; código do projeto: incluir Layer.compute_mask no harness"
   },
   {
     "id": "bip_keras_4",
@@ -302,7 +357,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 706,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "TypeError: argumento posicional para compute_gradients que só aceita nomeado; modelo: método que só aceita argumento nomeado"
   },
   {
     "id": "bip_keras_5",
@@ -313,7 +371,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 173,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_6",
@@ -324,7 +384,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 413,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "divisão de tensor por zero gera NaN, sem exceção"
   },
   {
     "id": "bip_keras_7",
@@ -335,7 +398,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 323,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_8",
@@ -346,7 +411,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 980,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "saídas diferentes após from_config"
   },
   {
     "id": "bip_keras_9",
@@ -357,7 +425,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 120,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_10",
@@ -368,7 +438,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 481,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "class_weight ignorado quando há sample_weight"
   },
   {
     "id": "bip_keras_14",
@@ -379,7 +452,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 48,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_17",
@@ -390,7 +465,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 37,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_22",
@@ -411,7 +488,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 152,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "AttributeError: primeira camada sem batch_input_shape"
   },
   {
     "id": "bip_keras_24",
@@ -422,7 +502,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 789,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro do TensorFlow ao receber lista; modelo: tf.summary.histogram recusa lista"
   },
   {
     "id": "bip_keras_25",
@@ -433,7 +516,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 41,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro do numpy em operação in-place com array inteiro; modelo: operação in-place com float em array inteiro"
   },
   {
     "id": "bip_keras_26",
@@ -444,7 +530,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2874,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro de formato no tf.where"
   },
   {
     "id": "bip_keras_31",
@@ -455,7 +544,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 3945,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro de formato no TensorFlow com lote de tamanho 1"
   },
   {
     "id": "bip_keras_33",
@@ -466,7 +558,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 41,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError de str.maketrans com tamanhos diferentes"
   },
   {
     "id": "bip_keras_36",
@@ -477,7 +572,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 3419,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_38",
@@ -488,7 +585,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 109,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro de formato ao construir as células"
   },
   {
     "id": "bip_keras_39",
@@ -510,7 +610,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 398,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_43",
@@ -521,7 +623,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 22,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_keras_45",
@@ -532,7 +636,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1806,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError: soma com bias None quando use_bias=False"
   },
   {
     "id": "bip_luigi_3",
@@ -554,7 +661,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 335,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_10",
@@ -565,7 +674,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 305,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_11",
@@ -587,7 +698,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 570,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_17",
@@ -598,7 +711,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 134,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "record_task_history deveria ser False"
   },
   {
     "id": "bip_luigi_18",
@@ -609,7 +725,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 405,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_19",
@@ -620,7 +738,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 408,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_21",
@@ -631,7 +751,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 340,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "AttributeError: cmdline_args None recebe .insert"
   },
   {
     "id": "bip_luigi_22",
@@ -652,7 +775,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 272,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_26",
@@ -663,7 +788,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 86,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "mensagem de erro errada"
   },
   {
     "id": "bip_luigi_29",
@@ -674,7 +802,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 138,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_luigi_30",
@@ -696,7 +826,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 334,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "levanta UnknownParameterException para parâmetro posicional não significativo"
   },
   {
     "id": "bip_matplotlib_2",
@@ -707,7 +840,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 4479,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_6",
@@ -718,7 +853,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 4286,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError levantado na própria função para cor com formato (1, 4)"
   },
   {
     "id": "bip_matplotlib_7",
@@ -729,7 +867,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1939,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_9",
@@ -740,7 +880,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 952,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_10",
@@ -751,7 +893,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 827,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_11",
@@ -762,7 +906,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 894,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_13",
@@ -773,7 +919,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 333,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_14",
@@ -784,7 +932,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 178,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_16",
@@ -795,7 +945,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2815,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
   },
   {
     "id": "bip_matplotlib_17",
@@ -806,7 +959,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2794,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
   },
   {
     "id": "bip_matplotlib_21",
@@ -838,7 +994,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1510,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_25",
@@ -849,7 +1007,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1476,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "deveria levantar ValueError para positions None"
   },
   {
     "id": "bip_matplotlib_26",
@@ -860,7 +1021,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1909,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_27",
@@ -871,7 +1034,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 727,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_matplotlib_28",
@@ -882,7 +1047,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 3252,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "incerto",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "o teste espera um aviso; pelo patch não dá para saber se a versão com bug quebra"
   },
   {
     "id": "bip_pandas_1",
@@ -893,7 +1061,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 602,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_4",
@@ -904,7 +1074,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 3531,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_6",
@@ -926,7 +1098,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 3076,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError do numpy ao subtrair datas com fuso"
   },
   {
     "id": "bip_pandas_8",
@@ -937,7 +1112,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 731,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_10",
@@ -948,7 +1125,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1602,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_11",
@@ -970,7 +1149,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 74,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError em operação com DateOffset"
   },
   {
     "id": "bip_pandas_19",
@@ -981,7 +1163,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1085,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "deveria levantar KeyError"
   },
   {
     "id": "bip_pandas_21",
@@ -992,7 +1177,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 952,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_23",
@@ -1003,7 +1190,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 727,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_24",
@@ -1014,7 +1203,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 976,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_25",
@@ -1025,7 +1216,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1280,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_28",
@@ -1036,7 +1229,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2300,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_29",
@@ -1047,7 +1242,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 549,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_30",
@@ -1069,7 +1266,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 502,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError do numpy: min() de array vazio; modelo: min() de array vazio levanta ValueError"
   },
   {
     "id": "bip_pandas_34",
@@ -1080,7 +1280,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1431,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "AmbiguousTimeError da conversão de fuso"
   },
   {
     "id": "bip_pandas_35",
@@ -1091,7 +1294,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 328,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "weakref morta vira None no motor do índice"
   },
   {
     "id": "bip_pandas_39",
@@ -1112,7 +1318,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1163,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_48",
@@ -1145,7 +1353,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 106,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_52",
@@ -1156,7 +1366,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 596,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_58",
@@ -1167,7 +1379,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 647,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError levantado na própria função para códigos Int64"
   },
   {
     "id": "bip_pandas_59",
@@ -1178,7 +1393,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1785,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro ao usar janela de frequência"
   },
   {
     "id": "bip_pandas_60",
@@ -1199,7 +1417,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 922,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "deveria levantar ValueError com outra mensagem"
   },
   {
     "id": "bip_pandas_63",
@@ -1210,7 +1431,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2090,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError levantado na própria função para índice de float"
   },
   {
     "id": "bip_pandas_64",
@@ -1221,7 +1445,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 406,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_69",
@@ -1232,7 +1458,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2127,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError levantado na própria função para índice de float"
   },
   {
     "id": "bip_pandas_76",
@@ -1254,7 +1483,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 8016,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_84",
@@ -1265,7 +1496,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 320,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "KeyError na busca de nível com nome tupla; modelo: busca de nível inexistente levanta KeyError"
   },
   {
     "id": "bip_pandas_85",
@@ -1286,7 +1520,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 592,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_88",
@@ -1297,7 +1533,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 120,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "incerto",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "o teste compara o resultado; pelo patch não dá para saber se quebra antes"
   },
   {
     "id": "bip_pandas_89",
@@ -1308,7 +1547,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 361,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_91",
@@ -1319,7 +1560,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 360,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "tipo de exceção errado"
   },
   {
     "id": "bip_pandas_95",
@@ -1330,7 +1574,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 76,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_98",
@@ -1341,7 +1587,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 298,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_102",
@@ -1352,7 +1600,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 156,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro ao montar blocos com array 2-D"
   },
   {
     "id": "bip_pandas_104",
@@ -1363,7 +1614,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1940,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "incerto",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "pode ser o assert len(indices) == len(result) da própria função ou resultado errado"
   },
   {
     "id": "bip_pandas_106",
@@ -1374,7 +1628,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 4554,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro ao comparar índice de datas com outro tipo"
   },
   {
     "id": "bip_pandas_107",
@@ -1385,7 +1642,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 6760,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_115",
@@ -1396,7 +1655,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 280,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_116",
@@ -1407,7 +1668,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1030,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "MergeError: fuso perdido em .values"
   },
   {
     "id": "bip_pandas_117",
@@ -1418,7 +1682,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 179,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_119",
@@ -1429,7 +1695,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 266,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_127",
@@ -1440,7 +1708,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 10446,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError do reindex com índice duplicado; modelo: reindex com índice duplicado levanta ValueError"
   },
   {
     "id": "bip_pandas_128",
@@ -1461,7 +1732,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 7057,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "UnboundLocalError com axis='index'"
   },
   {
     "id": "bip_pandas_139",
@@ -1472,7 +1746,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 333,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_141",
@@ -1483,7 +1759,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 391,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_142",
@@ -1494,7 +1772,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1913,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError do numpy ao subtrair booleanos; modelo: subtração de booleanos levanta TypeError"
   },
   {
     "id": "bip_pandas_143",
@@ -1505,7 +1786,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 383,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_144",
@@ -1516,7 +1799,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1438,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_145",
@@ -1527,7 +1812,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 501,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError em operação com NaT"
   },
   {
     "id": "bip_pandas_148",
@@ -1538,7 +1826,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 208,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_152",
@@ -1549,7 +1839,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2733,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError: lista + tupla"
   },
   {
     "id": "bip_pandas_154",
@@ -1560,7 +1853,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2269,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro de tipo no código Cython"
   },
   {
     "id": "bip_pandas_155",
@@ -1571,7 +1867,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1656,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_158",
@@ -1582,7 +1880,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 4168,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "TypeError em NDFrame.rename com objeto não chamável"
   },
   {
     "id": "bip_pandas_160",
@@ -1593,7 +1894,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 83,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "AttributeError: dtype de Series não tem value_counts"
   },
   {
     "id": "bip_pandas_161",
@@ -1604,7 +1908,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1843,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_162",
@@ -1615,7 +1921,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 615,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "KeyError no .loc com nome de margem personalizado"
   },
   {
     "id": "bip_pandas_163",
@@ -1626,7 +1935,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 250,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "altera a entrada do usuário"
   },
   {
     "id": "bip_pandas_166",
@@ -1637,7 +1949,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 7213,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_pandas_168",
@@ -1648,7 +1962,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 609,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "KeyError ao ignorar o eixo"
   },
   {
     "id": "bip_sanic_1",
@@ -1659,7 +1976,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 656,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_scrapy_6",
@@ -1670,7 +1989,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 135,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_scrapy_8",
@@ -1681,7 +2002,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 28,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_nao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "erro do interpretador na criação da classe sem __classcell__"
   },
   {
     "id": "bip_scrapy_15",
@@ -1692,7 +2016,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 46,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "UnicodeError do codec idna; modelo: idna levanta UnicodeError para rótulo vazio ou com mais de 63 caracteres"
   },
   {
     "id": "bip_scrapy_18",
@@ -1703,7 +2030,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 62,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "UnicodeDecodeError; modelo: decodificar bytes inválidos levanta UnicodeDecodeError"
   },
   {
     "id": "bip_scrapy_21",
@@ -1714,7 +2044,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 104,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "KeyError em outro método depois do pop; código do projeto: incluir o método que lê _parsers no harness"
   },
   {
     "id": "bip_scrapy_27",
@@ -1736,7 +2069,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 39,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_scrapy_38",
@@ -1747,7 +2082,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 173,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_scrapy_39",
@@ -1758,7 +2095,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 69,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_scrapy_40",
@@ -1769,7 +2108,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 276,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError levantado por to_unicode com valor não texto; código do projeto: incluir to_unicode no harness"
   },
   {
     "id": "bip_spacy_1",
@@ -1780,7 +2122,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 10,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "AttributeError do getattr com nome dunder"
   },
   {
     "id": "bip_spacy_2",
@@ -1791,7 +2136,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 211,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_spacy_6",
@@ -1802,7 +2149,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 407,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_2",
@@ -1813,7 +2162,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 121,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_3",
@@ -1824,7 +2175,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 108,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_4",
@@ -1835,7 +2188,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 23,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError ao desempacotar alias sem espaço"
   },
   {
     "id": "bip_thefuck_10",
@@ -1846,7 +2202,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 21,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_11",
@@ -1857,7 +2215,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 14,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_14",
@@ -1868,7 +2228,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 10,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_19",
@@ -1879,7 +2241,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 15,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_25",
@@ -1890,7 +2254,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 13,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_26",
@@ -1901,7 +2267,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 10,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_thefuck_30",
@@ -1912,7 +2280,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 53,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_tornado_5",
@@ -1923,7 +2293,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1221,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_tornado_8",
@@ -1934,7 +2306,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 619,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_modelavel",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ValueError levantado ao ler cabeçalhos ausentes; código do projeto: incluir a função que lê os cabeçalhos no harness"
   },
   {
     "id": "bip_tqdm_1",
@@ -1945,7 +2320,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 41,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_2",
@@ -1967,7 +2344,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 599,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_4",
@@ -1978,7 +2357,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 201,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "ExtractorError levantado na própria função para chamada sem argumentos"
   },
   {
     "id": "bip_youtube_dl_5",
@@ -1989,7 +2371,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1104,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_7",
@@ -2000,7 +2384,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1704,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_8",
@@ -2011,7 +2397,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 961,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_9",
@@ -2033,7 +2421,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1563,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_13",
@@ -2044,7 +2434,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1871,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_15",
@@ -2055,7 +2447,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2270,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_20",
@@ -2066,7 +2460,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 368,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_21",
@@ -2077,7 +2473,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1755,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "excecao_local",
+    "failure_kind_source": "patch_lido",
+    "failure_kind_note": "TypeError: re.match de padrão str sobre bytes"
   },
   {
     "id": "bip_youtube_dl_22",
@@ -2099,7 +2498,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2110,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_24",
@@ -2110,7 +2511,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2348,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_25",
@@ -2121,7 +2524,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 2041,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_26",
@@ -2132,7 +2537,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1973,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_27",
@@ -2143,7 +2550,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1985,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_30",
@@ -2154,7 +2563,10 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1008,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "incerto",
+    "failure_kind_source": "teste_bugsinpy_lido",
+    "failure_kind_note": "o teste compara o formato escolhido; pelo patch não dá para saber se quebra"
   },
   {
     "id": "bip_youtube_dl_41",
@@ -2165,7 +2577,9 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 759,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   },
   {
     "id": "bip_youtube_dl_43",
@@ -2176,6 +2590,8 @@
     "category_source": "heuristic_from_fix_diff",
     "grounded": true,
     "line": 1090,
-    "review": "pending"
+    "review": "pending",
+    "failure_kind": "resultado_errado",
+    "failure_kind_source": "patch_lido"
   }
 ]

@@ -34,6 +34,9 @@
         "used": true,
         "description": "Reduced from dateparser search-scoring context to the scalar division term."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com num_substrings == 0",
       "esbmc_property": "ZeroDivisionError"
     },
     {
@@ -68,6 +71,9 @@
         "used": true,
         "description": "Reduced from croniter HashExpander to scalar int arithmetic."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError no % com faixa vazia",
       "esbmc_property": "ZeroDivisionError"
     },
     {
@@ -100,6 +106,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: self._cached[0]",
       "esbmc_property": "IndexError"
     },
     {
@@ -132,6 +141,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: src_txt[-1] de texto vazio",
       "esbmc_property": "IndexError"
     },
     {
@@ -164,6 +176,9 @@
         "used": false,
         "description": "See harness file comment for full reasoning."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError no resultado de generate_latest",
       "esbmc_property": "AttributeError"
     },
     {
@@ -196,6 +211,9 @@
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.prev",
       "esbmc_property": "null_dereference"
     },
     {
@@ -229,6 +247,9 @@
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None quando não há correspondência",
       "esbmc_property": "missing_return"
     },
     {
@@ -259,6 +280,9 @@
         "used": true,
         "description": "385-line real parser reduced to the specific HHMM-branch indexing bug."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: l[i + 4]",
       "esbmc_property": "IndexError"
     },
     {
@@ -289,6 +313,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list_of_lists[0]",
       "esbmc_property": "IndexError"
     },
     {
@@ -319,6 +346,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: pwcs[idx]",
       "esbmc_property": "IndexError"
     },
     {
@@ -349,6 +379,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: x[0] de sequência vazia",
       "esbmc_property": "IndexError"
     },
     {
@@ -379,6 +412,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: result[-1]",
       "esbmc_property": "IndexError"
     },
     {
@@ -409,6 +445,9 @@
         "used": false,
         "description": ""
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: lines[0]",
       "esbmc_property": "IndexError"
     },
     {
@@ -441,6 +480,9 @@
         "used": true,
         "description": "dict.get() with no default returned None for status codes outside the known table, crashing downstream string formatting; fix adds an 'Unknown Status' default. Modeled as a bool precondition (was the status in the table), no scrapy-internal types needed."
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_native_str(None) levanta TypeError",
       "esbmc_property": "TypeError"
     },
     {
@@ -473,6 +515,9 @@
         "description": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError."
       },
       "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: that[key] com chave ausente",
       "esbmc_property": "KeyError"
     },
     {
@@ -505,6 +550,9 @@
         "used": true,
         "description": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida",
       "esbmc_property": "RuntimeError"
     },
     {
@@ -539,6 +587,9 @@
         "used": true,
         "description": "Real caller precondition (h_src > 0, chunk_size > 0) modeled via __ESBMC_assume in the harness; detection file keeps the full real NKI kernel function untouched (tensor/tile ops out of ESBMC-Python's scope)."
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com step_size == 0",
       "esbmc_property": "ZeroDivisionError"
     },
     {
@@ -571,6 +622,9 @@
         "used": true,
         "description": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'."
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: XMLGenerator.characters com valor não texto",
       "esbmc_property": "AttributeError"
     }
   ]

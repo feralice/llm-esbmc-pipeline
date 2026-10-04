@@ -62,6 +62,25 @@ coorte inteira a cada execução e não toca na outra. Dos 199 coletados, 23 fic
 expressão tirada do patch não foi encontrada dentro da função com bug (`grounded: false` em
 `coleta_bugsinpy/labels.json`), e 2 porque a correção reescreveu uma função aninhada inteira.
 
+### Tipo de falha (campo `failure_kind`, todos os bugs)
+
+Diz se o ESBMC tem como confirmar o bug com um harness bem montado. Vem da leitura do patch oficial
+e, em 13 bugs da coorte `rotulo_automatico` em que o patch não bastava, também do teste do BugsInPy
+que falha (`failure_kind_source`); `failure_kind_note` dá o motivo. É o gabarito da triagem
+(`evaluation.triage`): a LLM acerta quando manda ao ESBMC os dois primeiros e segura os demais.
+
+| Valor | Significado | À mão | Automático | Total |
+|---|---|---|---|---|
+| `excecao_local` | a versão com bug levanta exceção numa operação da própria função | 44 | 16 | 60 |
+| `excecao_modelavel` | a exceção vem de outra função do projeto ou de biblioteca com regra simples e documentada | 10 | 14 | 24 |
+| `excecao_nao_modelavel` | a exceção depende do ambiente, do interpretador ou de biblioteca complexa (TensorFlow, pandas por dentro) | 4 | 20 | 24 |
+| `resultado_errado` | nada quebra, a função devolve o valor errado | 56 | 120 | 176 |
+| `incerto` | nem o patch nem o teste deixam claro | 1 | 4 | 5 |
+
+Todos entram na métrica de detecção da LLM; só os dois primeiros (84) são alcançáveis pelo ESBMC.
+Na coorte à mão, a categoria antiga nem sempre bate com isso: vários `assertion_violation` vinham do
+harness manual de 09/09, que comparava o resultado, e são `resultado_errado`.
+
 Os 12 bugs fora da métrica de detecção estão em `manifest.json`, campo
 `evaluation_policy.patch_context_items`: só se percebem vendo a correção (ex.: uma constante errada).
 No V2 a categoria é só metadado: a detecção é medida por localização.

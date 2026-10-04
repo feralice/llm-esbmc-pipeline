@@ -48,7 +48,10 @@
       "abstraction": {
         "used": true,
         "description": "Real caller precondition (x_ind >= x_ind_prev) modeled via __ESBMC_assume in the harness; detection file omits it."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "divisão de arrays numpy gera inf/NaN, sem exceção"
     },
     {
       "id": "dz_real_02",
@@ -78,7 +81,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced from dateparser search-scoring context to the scalar division term."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com num_substrings == 0"
     },
     {
       "id": "dz_real_03",
@@ -111,7 +117,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced from croniter HashExpander to scalar int arithmetic."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError no % com faixa vazia"
     },
     {
       "id": "oob_real_01",
@@ -142,7 +151,10 @@
       "abstraction": {
         "used": true,
         "description": "re.findall() effect stubbed as a bool flag (findall not modeled by ESBMC-Python re module)."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: re.findall(...)[0] vazio"
     },
     {
       "id": "oob_real_02",
@@ -174,7 +186,10 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N, even with a bounded len(script), still fully unwinds split()/strcmp internals and times out before reaching the real property; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError, 2026-09-11 audit)"
+      "recommended_flags": "--incremental-bmc --timeout 120 (plain --unwind N, even with a bounded len(script), still fully unwinds split()/strcmp internals and times out before reaching the real property; incremental BMC confirms VERIFICATION FAILED at k=1 on the real IndexError, 2026-09-11 audit)",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: split()[1]"
     },
     {
       "id": "oob_real_03",
@@ -205,7 +220,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list.pop"
     },
     {
       "id": "oob_real_04",
@@ -236,7 +254,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: self._cached[0]"
     },
     {
       "id": "oob_real_05",
@@ -267,7 +288,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: src_txt[-1] de texto vazio"
     },
     {
       "id": "av_real_01",
@@ -298,7 +322,10 @@
       "abstraction": {
         "used": true,
         "description": "dict.get()-returns-None-on-missing-key modeled directly with a bool flag + nondet value."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: assert isinstance(None, bool)"
     },
     {
       "id": "av_real_02",
@@ -329,7 +356,10 @@
       "abstraction": {
         "used": true,
         "description": "Object-attribute liveness stubbed as two independent nondet bools."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: assert self.stream is not None"
     },
     {
       "id": "av_real_03",
@@ -362,7 +392,10 @@
       "abstraction": {
         "used": true,
         "description": "pandas index type stubbed as an int tag."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: índice não é PeriodIndex"
     },
     {
       "id": "av_real_06",
@@ -396,7 +429,9 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_07",
@@ -428,7 +463,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_08",
@@ -460,7 +497,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_15",
@@ -492,7 +531,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_01",
@@ -523,7 +564,10 @@
       "abstraction": {
         "used": false,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: int('_')"
     },
     {
       "id": "tm_real_02",
@@ -555,7 +599,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_03",
@@ -587,7 +633,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_04",
@@ -618,7 +666,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: método de str chamado em int"
     },
     {
       "id": "tm_real_05",
@@ -650,7 +701,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "join de str separa os caracteres"
     },
     {
       "id": "tm_real_06",
@@ -682,7 +736,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_07",
@@ -714,7 +770,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_08",
@@ -745,7 +803,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "incerto",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "pelo patch não dá para saber se headerrow None quebra depois"
     },
     {
       "id": "tm_real_09",
@@ -775,7 +836,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: float() de texto"
     },
     {
       "id": "tm_real_10",
@@ -806,7 +870,10 @@
       "abstraction": {
         "used": false,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError no resultado de generate_latest"
     },
     {
       "id": "vm_real_01",
@@ -839,7 +906,9 @@
         "used": true,
         "description": "See harness file comment for full reasoning."
       },
-      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "vm_real_02",
@@ -869,7 +938,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "mensagem de erro com a chave errada"
     },
     {
       "id": "io_real_01",
@@ -900,7 +972,10 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
     },
     {
       "id": "nm_real_01",
@@ -931,7 +1006,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.decode"
     },
     {
       "id": "nm_real_02",
@@ -962,7 +1040,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: None *= unit_scale"
     },
     {
       "id": "nm_real_03",
@@ -993,7 +1074,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: len(None)"
     },
     {
       "id": "nm_real_04",
@@ -1024,7 +1108,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: re.match(None) levanta TypeError"
     },
     {
       "id": "nm_real_05",
@@ -1055,7 +1142,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "urljoin com None devolve a base, sem exceção"
     },
     {
       "id": "nm_real_06",
@@ -1088,7 +1178,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None em vez de levantar TypeError"
     },
     {
       "id": "nm_real_07",
@@ -1119,7 +1212,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError com args None"
     },
     {
       "id": "nm_real_08",
@@ -1150,7 +1246,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: '//' in None"
     },
     {
       "id": "nm_real_09",
@@ -1181,7 +1280,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: self.total ausente"
     },
     {
       "id": "nm_real_10",
@@ -1212,7 +1314,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: len(None)"
     },
     {
       "id": "nm_real_11",
@@ -1243,7 +1348,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: comparação com limit None"
     },
     {
       "id": "nm_real_12",
@@ -1274,7 +1382,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.prev"
     },
     {
       "id": "nm_real_13",
@@ -1306,7 +1417,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada"
     },
     {
       "id": "nm_real_14",
@@ -1337,7 +1451,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_bytes(None) levanta TypeError"
     },
     {
       "id": "nm_real_16",
@@ -1369,7 +1486,9 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_17",
@@ -1401,7 +1520,9 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_18",
@@ -1433,7 +1554,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: formatação % com None"
     },
     {
       "id": "nm_real_19",
@@ -1465,7 +1589,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: os.path.isfile(None) levanta TypeError"
     },
     {
       "id": "nm_real_20",
@@ -1497,7 +1624,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: str.endswith(None)"
     },
     {
       "id": "nm_real_21",
@@ -1529,7 +1659,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None quando não há correspondência"
     },
     {
       "id": "nm_real_22",
@@ -1561,7 +1694,10 @@
       "abstraction": {
         "used": true,
         "description": "Harness abstracts the None-carrying value as a bool flag + nondet, since ESBMC-Python needs the None case made explicit for the crash to surface as a checkable property."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "subprocess recusa variável de ambiente None"
     },
     {
       "id": "av_real_04",
@@ -1593,7 +1729,9 @@
       "abstraction": {
         "used": true,
         "description": "set-based logic (ever_failed, failed = ever_failed - completed) reduced to two bool flags; ESBMC-Python has no native set type."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_05",
@@ -1625,7 +1763,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced tqdm.__init__ control flow (disable-branch ordering bug) to a small scalar function; real class/iterable machinery not needed for the bug."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: self.total ausente gera AttributeError em outro método"
     },
     {
       "id": "av_real_09",
@@ -1657,7 +1798,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_10",
@@ -1689,7 +1832,9 @@
       "abstraction": {
         "used": true,
         "description": "Full prefix-consuming loop reduced to the tab-vs-space column increment at its core."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_11",
@@ -1722,7 +1867,9 @@
       "abstraction": {
         "used": true,
         "description": "HTTP header parsing reduced to the boolean comparison at fault."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_12",
@@ -1755,7 +1902,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_13",
@@ -1788,7 +1937,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_14",
@@ -1822,7 +1973,9 @@
         "used": false,
         "description": ""
       },
-      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)"
+      "recommended_flags": "--incremental-bmc (unwind-bound guessing hits an internal string-model unwinding-assertion artifact instead of the real property; --incremental-bmc bypasses it, confirmed real VERIFICATION FAILED at k=2/20/21)",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_15",
@@ -1855,7 +2008,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_17",
@@ -1889,7 +2044,10 @@
       "abstraction": {
         "used": true,
         "description": "Reduced date-format-matching cascade to the specific failing branch."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "str(None) devolve 'None', sem exceção"
     },
     {
       "id": "av_real_21",
@@ -1921,7 +2079,9 @@
       "abstraction": {
         "used": true,
         "description": "Reduced ie_result dict handling to the specific key-iteration bug."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "oob_real_09",
@@ -1950,7 +2110,10 @@
       "abstraction": {
         "used": true,
         "description": "385-line real parser reduced to the specific HHMM-branch indexing bug."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: l[i + 4]"
     },
     {
       "id": "oob_real_10",
@@ -1979,7 +2142,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list_of_lists[0]"
     },
     {
       "id": "oob_real_11",
@@ -2008,7 +2174,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: pwcs[idx]"
     },
     {
       "id": "oob_real_12",
@@ -2037,7 +2206,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: x[0] de sequência vazia"
     },
     {
       "id": "oob_real_13",
@@ -2066,7 +2238,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: result[-1]"
     },
     {
       "id": "oob_real_14",
@@ -2095,7 +2270,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: lines[0]"
     },
     {
       "id": "oob_real_15",
@@ -2126,7 +2304,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: para.attrib['begin']"
     },
     {
       "id": "oob_real_16",
@@ -2157,7 +2338,10 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "índice negativo devolve item errado em vez de IndexError"
     },
     {
       "id": "ip_real_24",
@@ -2189,7 +2373,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_18",
@@ -2222,7 +2408,9 @@
       "abstraction": {
         "used": true,
         "description": "See harness file comment for full reasoning."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_01",
@@ -2254,7 +2442,9 @@
       "abstraction": {
         "used": true,
         "description": "URL reduced to three boolean predicates (has_colon, has_dslash, starts_data) standing in for the actual string tests (':' in url, '://' in url, url.startswith('data:')); has_dslash implies has_colon is the only real invariant tying them together, encoded via __ESBMC_assume."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_03",
@@ -2286,7 +2476,10 @@
       "abstraction": {
         "used": true,
         "description": "response/text arguments reduced to their None-ness as two bools; the rest of __init__ (root/type handling) is irrelevant to the missing mutual-exclusivity check and omitted."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar ValueError"
     },
     {
       "id": "ip_real_04",
@@ -2318,7 +2511,9 @@
       "abstraction": {
         "used": true,
         "description": "Method-in-(POST,PUT,PATCH) check is real caller precondition, held fixed true and omitted from the model since the bug is entirely in the header logic; Transfer-Encoding header presence/value modeled as a bool + a held-constant string \"chunked\" (the one value the fix special-cases)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_05",
@@ -2350,7 +2545,9 @@
       "abstraction": {
         "used": true,
         "description": "_Alpha/_Numeric version-component objects reduced to plain ints, since their __lt__/__eq__ ultimately just impose a total order -- the bug is in how __gt__ is derived from __lt__, not in the version-parsing itself."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_06",
@@ -2382,7 +2579,9 @@
       "abstraction": {
         "used": true,
         "description": "Reduced from a list comprehension over `clocs` to a single-element model (buggy_elem/correct_elem applied to one nondet v); ESBMC 8.3.0 crashes (internal type2t::symbolic_type_excp) on a symbolic list literal built inline in a for-loop with a list[int] return type, so the per-element scalar core is used instead of an actual list -- captures the same wrong-variable-reference bug (stale loop index `i` vs. current `val`) without the list."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_07",
@@ -2413,7 +2612,10 @@
       "abstraction": {
         "used": true,
         "description": "Near-verbatim -- no stubbing needed. ESBMC-Python's chr() operational model (src/c2goto/library/python/string.c) enforces the real Unicode range and raises the exact property 'chr() arg not in range(0x110000)', so the real bug (uncaught ValueError from an out-of-range numeric HTML entity) is reproduced directly rather than modeled abstractly."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de chr() com código fora do intervalo"
     },
     {
       "id": "ip_real_08",
@@ -2445,7 +2647,9 @@
       "abstraction": {
         "used": true,
         "description": "uri.find('/')-based host/path splitting reduced to a bool (has_host) plus a held-constant string for the extracted host, since the bug is about whether the extracted host is ever consulted, not the string-splitting mechanics themselves."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_09",
@@ -2477,7 +2681,9 @@
       "abstraction": {
         "used": true,
         "description": "to_remove/to_set dicts reduced to two bools for a single representative key (key_in_to_remove, key_in_to_set); the real function's string formatting (\"no {0}\".format(key)) and the unrelated vlan_id/None-value skip logic are omitted since the bug is purely about the missing to_set membership check."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_10",
@@ -2509,7 +2715,9 @@
       "abstraction": {
         "used": true,
         "description": "SPIDER_LOADER_CLASS/SPIDER_MANAGER_CLASS settings.get() chain reduced to two distinct int values with both 'set' (settings.get with a default only matters when the primary key is present too, which is exactly the case the real deprecation-window bug hits); the real load_object/verifyClass calls are omitted since the bug is purely which value wins."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_11",
@@ -2540,7 +2748,10 @@
       "abstraction": {
         "used": true,
         "description": "Real caller precondition (non-bearer scheme reached this point) preserved via __ESBMC_assume; the actual HTTPException raise is modeled as a bool decision (should_raise) since the bug is that auto_error is never consulted on this branch, only on the missing-header branch above it."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "HTTPException levantada na própria função com auto_error False"
     },
     {
       "id": "ip_real_12",
@@ -2572,7 +2783,9 @@
       "abstraction": {
         "used": true,
         "description": "Pure bool-logic bug, isolable verbatim: the buggy guard skipped a state update whenever vrf also needed updating (`state_needs_update and not vrf_needs_update` instead of just `state_needs_update`). Modeled as buggy/correct function pair, no stubbing needed."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_13",
@@ -2604,7 +2817,9 @@
       "abstraction": {
         "used": true,
         "description": "HTTP Range header handling reduced to int/bool arithmetic on start/end/size; the real bug is an ordering issue (negative-start clamping ran after the satisfiability check instead of before) plus a missing start>=end check, both preserved verbatim in the buggy/correct function pair."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_14",
@@ -2636,7 +2851,10 @@
       "abstraction": {
         "used": true,
         "description": "np.ceil(x/y) rewritten as the equivalent integer ceil-division (x+y-1)//y to drop the numpy dependency; the bug itself (missing +1 for an inclusive end_index) is preserved verbatim. The real fix also adds a start_index<=end_index precondition check, modeled here as an __ESBMC_assume instead of an explicit raise."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "__len__ negativo: len() levanta ValueError"
     },
     {
       "id": "ip_real_15",
@@ -2668,7 +2886,9 @@
       "abstraction": {
         "used": true,
         "description": "Real code subtracted previous_after from before unconditionally, including on the first line where previous_line is None; fix forces 0 in that case. Modeled as pure int arithmetic, no black-internal types needed."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_16",
@@ -2702,7 +2922,10 @@
       "abstraction": {
         "used": true,
         "description": "Real pivot() silently accepted columns=None and fell into groupby logic assuming a real key; fix raises TypeError immediately. Modeled as a buggy/correct boolean pair, no DataFrame/pandas-internal types needed."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro dentro do pandas com columns None"
     },
     {
       "id": "ip_real_17",
@@ -2734,7 +2957,10 @@
       "abstraction": {
         "used": true,
         "description": "dict.get() with no default returned None for status codes outside the known table, crashing downstream string formatting; fix adds an 'Unknown Status' default. Modeled as a bool precondition (was the status in the table), no scrapy-internal types needed."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_native_str(None) levanta TypeError"
     },
     {
       "id": "ip_real_19",
@@ -2764,7 +2990,9 @@
       "abstraction": {
         "used": true,
         "description": "Real code used `tuple(filter(None, ...))` on version-part tuples, which drops a legitimately-zero part (e.g. patch=0) via truthiness instead of only dropping genuinely-absent (None) parts. Reduced to the single-value truthiness-vs-presence decision; counterexample v=0."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_20",
@@ -2795,7 +3023,9 @@
       "abstraction": {
         "used": true,
         "description": "Real code used `full_path.replace(dest_dir_path, src_dir_path)`, replacing ALL occurrences of dest_dir_path in the string instead of only the leading prefix; correct behaviour is prefix-slicing. Reproduced with concrete literal strings where dest_dir_path recurs deeper in the path (\"a/a/a/a\" with dest=\"a/a\"), matching real issue #1158's corrupting example: buggy=\"b/b\", correct=\"b/a/a\"."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_21",
@@ -2826,7 +3056,10 @@
         "used": true,
         "description": "Real code indexed `that[key]` for every key in `self` without first checking `key in that`, raising KeyError when comparing against a dict missing one of self's keys. Reproduced near-verbatim with two literal dict values (self_d={a:1,b:2}, that_d={a:1}); ESBMC's dict subscript model raises the missing-key access as an array-bounds violation (CWE-125), the internal representation of the same real KeyError."
       },
-      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)"
+      "recommended_timeout": "60s (1740 VCCs, times out at the default 20s)",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: that[key] com chave ausente"
     },
     {
       "id": "ip_real_22",
@@ -2858,7 +3091,9 @@
       "abstraction": {
         "used": true,
         "description": "Real match() had no guard excluding commands already starting with 'sudo', so a failing 'sudo ...' command whose stderr happened to contain a matched pattern (e.g. \"permission denied\") would be re-suggested with sudo prepended again. Modeled as a bool (starts_with_sudo) + fixed matching stderr string; needs --unwind 30 (not the dataset's usual 6) because the counterexample search passes through ESBMC-Python's str.lower() operational model, which has its own internal unwind-bound loop over the string's characters."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_23",
@@ -2890,7 +3125,9 @@
       "abstraction": {
         "used": true,
         "description": "Old code dropped the 'significant' guard, silently including insignificant params (used e.g. for retries/scheduling metadata) in the serialized/hashed param string. Modeled as a bool-guarded dict-build pair."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_25",
@@ -2922,7 +3159,9 @@
       "abstraction": {
         "used": true,
         "description": "Old tuple membership check omitted UNKNOWN status, treating unknown-status tasks as always necessary; fix adds UNKNOWN to the exclusion tuple. Modeled status membership as bool flags."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_26",
@@ -2954,7 +3193,9 @@
       "abstraction": {
         "used": true,
         "description": "Old guard blocked re-scheduling any RUNNING/BATCH_RUNNING task regardless of which worker was actually running it; fix allows reschedule when a different worker now claims it (worker_running != worker_id). Modeled as a bool-logic pair over the status/worker predicates."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_28",
@@ -2985,7 +3226,10 @@
       "abstraction": {
         "used": true,
         "description": "Inverted 'is None' where 'is not None' was intended, so make_current() raised RuntimeError exactly backwards (when there wasn't already a current loop instead of when there was). Modeled as a bool-inversion pair."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida"
     },
     {
       "id": "ip_real_32",
@@ -3016,7 +3260,10 @@
       "abstraction": {
         "used": true,
         "description": "Real code added 12 to the hour for PM times with no upper-bound check; when hour was already 12 (12 PM), the result (24) is out of datetime's valid 0..23 range (real GitHub issue #16). Fix subtracts 24 and rolls the day over when the sum exceeds 23. Modeled as pure int arithmetic, sidestepping the actual datetime.py operational model entirely (not yet confirmed to validate hour range) by asserting the 0..23 invariant directly."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24"
     },
     {
       "id": "ip_real_33",
@@ -3045,7 +3292,10 @@
       "abstraction": {
         "used": true,
         "description": "Real code passed an empty paths list straight into the Windows-specific batch-delete pipeline instead of returning early (real GitHub issue #71, has a regression test). Modeled as a bool precondition ('was the empty-list guard missing'), not the full Windows mbcs/path-resolution pipeline, since that part is out of ESBMC-Python's scope."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "API do Windows"
     },
     {
       "id": "ir_real_01",
@@ -3076,7 +3326,9 @@
       "abstraction": {
         "used": true,
         "description": "Inlines pre-fix gamma()/lgamma() + _lanczos_sum verbatim from ESBMC's own math.py; sqrt/pow/exp/log delegated to the real (unaffected) math module."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_02",
@@ -3107,7 +3359,9 @@
       "abstraction": {
         "used": false,
         "description": ""
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_03",
@@ -3138,7 +3392,9 @@
       "abstraction": {
         "used": false,
         "description": "Pre-fix function called verbatim, no stubbing needed (pure string/int logic already within ESBMC-Python's supported surface)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_05",
@@ -3169,7 +3425,9 @@
       "abstraction": {
         "used": true,
         "description": "Reduced to a 2-digit scalar decode; alphabet/alphabet_index reduced to their lengths since the bug is purely which length is used as the radix."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_23",
@@ -3199,7 +3457,10 @@
       "abstraction": {
         "used": true,
         "description": "html_classes_from_tag reduced to a bool flag + nondet, since the crash needs to be made explicit for ESBMC-Python to check it."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: 'in' sobre valor que não é dict"
     },
     {
       "id": "dz_real_04",
@@ -3232,7 +3493,10 @@
       "abstraction": {
         "used": true,
         "description": "Real caller precondition (h_src > 0, chunk_size > 0) modeled via __ESBMC_assume in the harness; detection file keeps the full real NKI kernel function untouched (tensor/tile ops out of ESBMC-Python's scope)."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com step_size == 0"
     },
     {
       "id": "nm_real_24",
@@ -3263,7 +3527,10 @@
       "abstraction": {
         "used": true,
         "description": "ProcessPoolExecutor(...) can raise OSError on platforms without multiprocessing (e.g. AWS Lambda); the fix catches that and falls back to executor=None, but the pre-fix finally block called executor.shutdown() unconditionally. Modeled with a bool flag standing in for 'executor is None', same pattern as nm_real_01/02."
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "OSError do sistema sem multiprocessamento"
     },
     {
       "id": "vm_real_03",
@@ -3294,7 +3561,10 @@
       "abstraction": {
         "used": true,
         "description": "_pipe(docs, proc, kwargs) does `for doc in docs: proc(doc, **kwargs)`; the buggy call site passes _pipe(pipe, docs, kwargs), swapping the non-iterable pipe component into the docs position. ESBMC-Python's frontend needs static type consistency across the call, so the real precondition (correct argument order) is asserted directly, same pattern as nm_real_*."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: _pipe com argumentos trocados"
     },
     {
       "id": "nm_real_25",
@@ -3325,7 +3595,10 @@
       "abstraction": {
         "used": true,
         "description": "start_line can be a request start line (has .method) or a response start line (no .method attribute at all); the buggy elif branch accesses .method unconditionally, raising AttributeError on a response. Fix uses getattr(start_line, 'method', None). Modeled with a bool flag standing in for 'start_line is a request line', same pattern as nm_real_08/nm_real_14."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: linha de resposta sem method"
     },
     {
       "id": "tm_real_11",
@@ -3356,7 +3629,10 @@
       "abstraction": {
         "used": true,
         "description": "SitemapSpider._parse_sitemap calls sitemap_urls_from_robots(response.body) (bytes); inside, line.lstrip().startswith('Sitemap:') compares bytes against a str literal, raising TypeError. Fix passes response.text (str) instead. Modeled with a bool flag standing in for 'the caller passed str, not bytes'."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: sitemap_urls_from_robots com bytes levanta TypeError"
     },
     {
       "id": "vm_real_04",
@@ -3388,7 +3664,10 @@
       "abstraction": {
         "used": true,
         "description": "`lambda attr, value: not str_op` negates the str_op function object itself (always truthy, attr/value unused) instead of calling str_op(attr, value) and negating the result -- a negated string filter (e.g. \"ext!=mp4\") always evaluates to False. Visible from the real code alone: the lambda's own parameters are unused and str_op is referenced without being called. Modeled as buggy (constant False) vs correct (not attr_matches)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "not str_op é sempre False"
     },
     {
       "id": "vm_real_05",
@@ -3419,7 +3698,10 @@
       "abstraction": {
         "used": false,
         "description": "LocalFileSystem has no `fs` attribute at all; `mkdir` is defined directly on `self`. Visible from the real code alone: the class body shows `def mkdir(self, ...)` right next to the erroneous `self.fs.mkdir(d)` call, same pattern as tm_real_10's wrong-object dispatch."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: self.fs inexistente"
     },
     {
       "id": "vm_real_06",
@@ -3450,7 +3732,10 @@
       "abstraction": {
         "used": true,
         "description": "super().__init__(settings) normalizes a plain dict into a Settings object stored as self.settings; the buggy code calls configure_logging(settings)/log_scrapy_info(settings) with the original local parameter instead of self.settings. Visible from the real code alone: CrawlerRunner.__init__ right above shows the dict-to-Settings normalization that CrawlerProcess.__init__ then ignores. Modeled with a bool flag standing in for 'settings is still a plain dict at the call site'."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: configure_logging com dict em vez de Settings"
     },
     {
       "id": "tm_real_12",
@@ -3481,7 +3766,10 @@
       "abstraction": {
         "used": true,
         "description": "s3_load_path is declared as a property (abc.abstractproperty in the real code); self.s3_load_path already returns the load-path string, so calling self.s3_load_path() tries to call that string. Visible from the real code alone: the property decorator sits right above the erroneous call site in the same class. Modeled with a bool flag standing in for 'the property was called instead of accessed'."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: chamar valor str"
     },
     {
       "id": "vm_real_07",
@@ -3513,7 +3801,10 @@
       "abstraction": {
         "used": true,
         "description": "Inside the branch that builds the VALIDATION data enqueuer, `iter_sequence_infinite(generator)` reuses the TRAINING generator variable instead of `val_data`, so validation silently iterates over training data. Visible from the real code alone: `val_data = validation_data` is assigned on the line right above, unused. Modeled with a bool flag standing in for 'the wrong (training) generator variable was used'."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "valida com os dados de treino"
     },
     {
       "id": "tm_real_13",
@@ -3544,7 +3835,10 @@
       "abstraction": {
         "used": true,
         "description": "A non-list-like serialized field value falls into `self._xg_characters(serialized_value)` unconditionally; _xg_characters calls `.decode(self.encoding)` on anything not already text, so an int/float field (no .decode method) raises AttributeError. Visible from the real code alone: _xg_characters's own body (shown right below the call site) does the isinstance check that decides whether .decode() runs. Modeled with a bool flag standing in for 'the field value is already text'."
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: XMLGenerator.characters com valor não texto"
     },
     {
       "id": "vm_real_08",
@@ -3575,7 +3869,10 @@
       "abstraction": {
         "used": true,
         "description": "The enclosing function's parameter is `output`, not `output_path`; `output_path` is never assigned anywhere in the file, so every call to the returned write() function raises NameError. Visible from the real code alone: `output_path` never appears as a parameter or assignment target in the shown function. Modeled with a bool flag standing in for 'the undefined name was referenced'."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "escreve no arquivo errado"
     },
     {
       "id": "ip_real_34",
@@ -3607,7 +3904,10 @@
       "abstraction": {
         "used": true,
         "description": "find_hook returns on the FIRST matching hook file found inside the os.listdir loop, so run_hook only ever executes one script even when multiple hook files match the same hook name (e.g. both pre_gen_project.py and pre_gen_project.sh present); the rest are silently skipped. Visible from the real code alone: an early `return` sits inside a `for` loop that could otherwise match more than once. Modeled as a scalar count of hooks actually run (buggy: always 1 when any match; correct: the real match count)."
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "só o primeiro hook é devolvido"
     },
     {
       "id": "oob_real_06",
@@ -3638,7 +3938,10 @@
       "abstraction": {
         "used": true,
         "description": "The dictionary lookup is modeled by a boolean precondition because the full recursive configuration merge is outside the useful ESBMC-Python fragment; false means the nested key is absent from default."
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: default[k]"
     }
   ]
 }

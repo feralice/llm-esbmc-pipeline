@@ -51,7 +51,10 @@
         "source_expression": "assert isinstance(param, bool)",
         "harness_property": "assert isinstance(param, bool)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: assert isinstance(None, bool)"
     },
     {
       "id": "av_real_02",
@@ -85,7 +88,10 @@
         "source_expression": "assert self.stream is not None",
         "harness_property": "assert self.stream is not None",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: assert self.stream is not None"
     },
     {
       "id": "av_real_03",
@@ -121,7 +127,10 @@
         "source_expression": "assert isinstance(self.index, PeriodIndex)",
         "harness_property": "assert isinstance(self.index, PeriodIndex)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AssertionError: índice não é PeriodIndex"
     },
     {
       "id": "av_real_04",
@@ -156,7 +165,9 @@
         "source_expression": "set_tasks[\"failed\"] = {task for (task, status, ext) in task_history if status == 'FAILED'}",
         "harness_property": "assert smiley == \":)\"",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_05",
@@ -191,7 +202,10 @@
         "source_expression": "self.iterable = iterable",
         "harness_property": "assert result == iterable_len",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: self.total ausente gera AttributeError em outro método"
     },
     {
       "id": "av_real_06",
@@ -229,7 +243,9 @@
         "source_expression": "return '{} --staged'.format(command.script)",
         "harness_property": "buggy_diff_staged(script) == correct_diff_staged(script)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_07",
@@ -266,7 +282,9 @@
         "source_expression": "'ls' in command.script and not ('ls -' in command.script)",
         "harness_property": "buggy_match(script) == correct_match(script)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_08",
@@ -303,7 +321,9 @@
         "source_expression": "conf.update(kwargs)",
         "harness_property": "buggy_merge(...) == correct_merge(...)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_09",
@@ -340,7 +360,9 @@
         "source_expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
         "harness_property": "buggy_bounds(...) == correct_bounds(...)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_10",
@@ -377,7 +399,9 @@
         "source_expression": "current_column += 1",
         "harness_property": "buggy_column(...) == correct_column(...)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_11",
@@ -414,7 +438,9 @@
         "source_expression": "headers.get(\"Transfer-Encoding\") == \"chunked\"",
         "harness_property": "buggy_is_chunked(value) == correct_is_chunked(value)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_12",
@@ -449,7 +475,9 @@
         "source_expression": "\"php -s\" in command.script",
         "harness_property": "match_buggy(script) == match_correct(script)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_13",
@@ -484,7 +512,9 @@
         "source_expression": "'set-upstream' in command.output",
         "harness_property": "match_buggy(output) == match_correct(output)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_14",
@@ -520,7 +550,9 @@
         "source_expression": "'open http://' + command.script[5:]",
         "harness_property": "'open http://' + script[5:]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_15",
@@ -555,7 +587,9 @@
         "source_expression": "output += f.extrabuf",
         "harness_property": "output += f.extrabuf",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "av_real_17",
@@ -591,7 +625,10 @@
         "source_expression": "return compat_str(upload_date)",
         "harness_property": "return compat_str(upload_date)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "str(None) devolve 'None', sem exceção"
     },
     {
       "id": "av_real_21",
@@ -626,7 +663,9 @@
         "source_expression": "del force_properties[f]",
         "harness_property": "for f in ('_type', 'url', 'ie_key')",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "dz_real_01",
@@ -662,7 +701,10 @@
         "source_expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
         "harness_property": "(xind_i - x_ind_prev) / (x_ind - x_ind_prev)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "divisão de arrays numpy gera inf/NaN, sem exceção"
     },
     {
       "id": "dz_real_02",
@@ -695,7 +737,10 @@
         "source_expression": "float(not_parsed)/float(num_substrings)",
         "harness_property": "float(not_parsed) / float(num_substrings)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com num_substrings == 0"
     },
     {
       "id": "dz_real_03",
@@ -732,7 +777,10 @@
         "source_expression": "(crc >> idx) % (range_end - range_begin + 1)",
         "harness_property": "(crc >> idx) % rng",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError no % com faixa vazia"
     },
     {
       "id": "ip_real_01",
@@ -769,7 +817,9 @@
         "source_expression": "not isinstance(url, six.string_types)",
         "harness_property": "b == c",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_03",
@@ -806,7 +856,10 @@
         "source_expression": "text is not None",
         "harness_property": "b == c",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar ValueError"
     },
     {
       "id": "ip_real_04",
@@ -843,7 +896,9 @@
         "source_expression": "content_length",
         "harness_property": "b == c",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_05",
@@ -880,7 +935,9 @@
         "source_expression": "return not self.__lt__(other)",
         "harness_property": "r1 == r2",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_06",
@@ -917,7 +974,9 @@
         "source_expression": "clocs",
         "harness_property": "b == c",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_07",
@@ -953,7 +1012,10 @@
         "source_expression": "compat_html_entities.name2codepoint",
         "harness_property": "chr(codepoint)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de chr() com código fora do intervalo"
     },
     {
       "id": "ip_real_08",
@@ -990,7 +1052,9 @@
         "source_expression": "self.router.find_route_by_view_name(view_name, **kw)",
         "harness_property": "b == c",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_09",
@@ -1027,7 +1091,9 @@
         "source_expression": "\"vlan_id\" in to_remove",
         "harness_property": "b == c",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_10",
@@ -1064,7 +1130,9 @@
         "source_expression": "settings.get('SPIDER_MANAGER_CLASS')",
         "harness_property": "result == manager_val",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_11",
@@ -1100,7 +1168,10 @@
         "source_expression": "authorization",
         "harness_property": "should_raise == auto_error",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "HTTPException levantada na própria função com auto_error False"
     },
     {
       "id": "ip_real_12",
@@ -1137,7 +1208,9 @@
         "source_expression": "want.get",
         "harness_property": "buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_13",
@@ -1174,7 +1247,9 @@
         "source_expression": "(start is not None and start >= size) or end == 0",
         "harness_property": "buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_14",
@@ -1211,7 +1286,10 @@
         "source_expression": "self.end_index - self.start_index",
         "harness_property": "buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "__len__ negativo: len() levanta ValueError"
     },
     {
       "id": "ip_real_15",
@@ -1246,7 +1324,9 @@
         "source_expression": "before -= self.previous_after",
         "harness_property": "before - previous_after",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_16",
@@ -1283,7 +1363,10 @@
         "source_expression": "columns",
         "harness_property": "columns is None",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro dentro do pandas com columns None"
     },
     {
       "id": "ip_real_17",
@@ -1318,7 +1401,10 @@
         "source_expression": "http.RESPONSES.get(int(status))",
         "harness_property": "responses.get(status)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_native_str(None) levanta TypeError"
     },
     {
       "id": "ip_real_18",
@@ -1356,7 +1442,9 @@
         "source_expression": "return dt.month % step",
         "harness_property": "buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_19",
@@ -1389,7 +1477,9 @@
         "source_expression": "self.to_tuple()[index]",
         "harness_property": "bool(v)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_20",
@@ -1423,7 +1513,9 @@
         "source_expression": "full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else \"\"",
         "harness_property": "buggy == correct",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_21",
@@ -1457,7 +1549,10 @@
         "source_expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
         "harness_property": "self_d[key] != that_d[key]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: that[key] com chave ausente"
     },
     {
       "id": "ip_real_22",
@@ -1492,7 +1587,9 @@
         "source_expression": "pattern.lower() in command.stderr.lower()",
         "harness_property": "buggy == correct",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_23",
@@ -1527,7 +1624,9 @@
         "source_expression": "params[param_name].significant",
         "harness_property": "if params[param_name].significant:",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_24",
@@ -1563,7 +1662,9 @@
         "source_expression": "in_workers = assistant or worker in task.workers",
         "harness_property": "assistant or worker in task.workers",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_25",
@@ -1598,7 +1699,9 @@
         "source_expression": "necessary_tasks",
         "harness_property": "task.status not in (DONE, DISABLED)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_26",
@@ -1633,7 +1736,9 @@
         "source_expression": "worker is not None",
         "harness_property": "task.status in (RUNNING, BATCH_RUNNING) and status == PENDING",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ip_real_28",
@@ -1667,7 +1772,10 @@
         "source_expression": "IOLoop.current(instance=False) is None",
         "harness_property": "if not current_exists:",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida"
     },
     {
       "id": "ip_real_32",
@@ -1703,7 +1811,10 @@
         "source_expression": "H += 12",
         "harness_property": "hour + 12",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24"
     },
     {
       "id": "ip_real_33",
@@ -1735,7 +1846,10 @@
         "source_expression": "SHFileOperationW(byref(fileop))",
         "harness_property": "if paths_empty: return 1",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "API do Windows"
     },
     {
       "id": "nm_real_01",
@@ -1771,7 +1885,10 @@
         "source_expression": "value = value.decode('utf8')",
         "harness_property": "assert not value_is_none",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.decode"
     },
     {
       "id": "nm_real_02",
@@ -1806,7 +1923,10 @@
         "source_expression": "total *= unit_scale",
         "harness_property": "assert not total_is_none",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: None *= unit_scale"
     },
     {
       "id": "nm_real_03",
@@ -1841,7 +1961,10 @@
         "source_expression": "len(video_title) > 80 + 3",
         "harness_property": "len(video_title)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: len(None)"
     },
     {
       "id": "nm_real_04",
@@ -1876,7 +1999,10 @@
         "source_expression": "url_pattern.match(domain)",
         "harness_property": "assert not domain_is_none",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: re.match(None) levanta TypeError"
     },
     {
       "id": "nm_real_05",
@@ -1911,7 +2037,10 @@
         "source_expression": "url = self.urljoin(url)",
         "harness_property": "assert not url_is_none",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "urljoin com None devolve a base, sem exceção"
     },
     {
       "id": "nm_real_06",
@@ -1948,7 +2077,10 @@
         "source_expression": "return objcls.from_crawler(crawler, *args, **kwargs)",
         "harness_property": "assert not constructor_returns_none",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None em vez de levantar TypeError"
     },
     {
       "id": "nm_real_07",
@@ -1983,7 +2115,10 @@
         "source_expression": "isinstance(args, dict)",
         "harness_property": "assert not args_is_none",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError com args None"
     },
     {
       "id": "nm_real_08",
@@ -2018,7 +2153,10 @@
         "source_expression": "\"//\" in self.app.config.SERVER_NAME",
         "harness_property": "config.SERVER_NAME",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: '//' in None"
     },
     {
       "id": "nm_real_09",
@@ -2053,7 +2191,10 @@
         "source_expression": "self.total if self.iterable is None else self.iterable.shape[0] if hasattr(self.iterable, \"shape\") else len(self.iterable) if hasattr(self.iterable, \"__len__\") else self.total",
         "harness_property": "assert not total_not_yet_set",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: self.total ausente"
     },
     {
       "id": "nm_real_10",
@@ -2089,7 +2230,10 @@
         "source_expression": "len(self.columns)",
         "harness_property": "assert not columns_is_none",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: len(None)"
     },
     {
       "id": "nm_real_11",
@@ -2125,7 +2269,10 @@
         "source_expression": "len(self) >= self.limit",
         "harness_property": "assert not limit_is_none",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: comparação com limit None"
     },
     {
       "id": "nm_real_12",
@@ -2161,7 +2308,10 @@
         "source_expression": "current_line.next.prev = current_line.prev",
         "harness_property": "current_line.next.prev = current_line.prev",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: None.prev"
     },
     {
       "id": "nm_real_13",
@@ -2198,7 +2348,10 @@
         "source_expression": "self._instance_cache.get(self.io_loop) is not self",
         "harness_property": "buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada"
     },
     {
       "id": "nm_real_14",
@@ -2233,7 +2386,10 @@
         "source_expression": "to_bytes(parsed.hostname)",
         "harness_property": "to_bytes(hostname)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: to_bytes(None) levanta TypeError"
     },
     {
       "id": "nm_real_15",
@@ -2269,7 +2425,9 @@
         "source_expression": "responses = {**responses, **route.responses}",
         "harness_property": "responses = responses or route1_has_key",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_16",
@@ -2305,7 +2463,9 @@
         "source_expression": "linewidths = rcParams['lines.linewidth']",
         "harness_property": "linewidths = rcParams['lines.linewidth']",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_17",
@@ -2341,7 +2501,9 @@
         "source_expression": "_isint(string)",
         "harness_property": "_isint(string)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_18",
@@ -2377,7 +2539,10 @@
         "source_expression": "sec_format % retry_state.seconds_since_start",
         "harness_property": "'%s' % retry_state.seconds_since_start",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: formatação % com None"
     },
     {
       "id": "nm_real_19",
@@ -2413,7 +2578,10 @@
         "source_expression": "return os.path.isfile(v)",
         "harness_property": "os.path.isfile(v)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: os.path.isfile(None) levanta TypeError"
     },
     {
       "id": "nm_real_20",
@@ -2450,7 +2618,10 @@
         "source_expression": "first = not num.endswith(decimal)",
         "harness_property": "num.endswith(decimal)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: str.endswith(None)"
     },
     {
       "id": "nm_real_21",
@@ -2486,7 +2657,10 @@
         "source_expression": "if matches:\n            return self.__class__(matches)",
         "harness_property": "if matches: return matches",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "devolve None quando não há correspondência"
     },
     {
       "id": "nm_real_22",
@@ -2522,7 +2696,10 @@
         "source_expression": "dotenv_as_dict = dotenv_values(file)",
         "harness_property": "to_env(v)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "subprocess recusa variável de ambiente None"
     },
     {
       "id": "oob_real_01",
@@ -2556,7 +2733,10 @@
         "source_expression": "re.findall(r'ERROR: unknown command \\\"([a-z]+)\\\"',\n                            command.output)[0]",
         "harness_property": "matches[0]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: re.findall(...)[0] vazio"
     },
     {
       "id": "oob_real_02",
@@ -2591,7 +2771,10 @@
         "source_expression": "command.script.split()[1]",
         "harness_property": "tokens[1]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: split()[1]"
     },
     {
       "id": "oob_real_03",
@@ -2625,7 +2808,10 @@
         "source_expression": "command.script_parts.pop(upstream_option_index)",
         "harness_property": "parts.pop(idx)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list.pop"
     },
     {
       "id": "oob_real_04",
@@ -2661,7 +2847,10 @@
         "source_expression": "self._cached[0]",
         "harness_property": "cached[0]",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: self._cached[0]"
     },
     {
       "id": "oob_real_05",
@@ -2697,7 +2886,10 @@
         "source_expression": "src_txt[-1]",
         "harness_property": "src_txt[-1]",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: src_txt[-1] de texto vazio"
     },
     {
       "id": "oob_real_09",
@@ -2729,7 +2921,10 @@
         "source_expression": "l[i + 4]",
         "harness_property": "l[i + 4]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: l[i + 4]"
     },
     {
       "id": "oob_real_10",
@@ -2761,7 +2956,10 @@
         "source_expression": "list_of_lists[0]",
         "harness_property": "list_of_lists[0]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list_of_lists[0]"
     },
     {
       "id": "oob_real_11",
@@ -2793,7 +2991,10 @@
         "source_expression": "pwcs[idx]",
         "harness_property": "pwcs[i]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: pwcs[idx]"
     },
     {
       "id": "oob_real_12",
@@ -2825,7 +3026,10 @@
         "source_expression": "x[0]",
         "harness_property": "x[0]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: x[0] de sequência vazia"
     },
     {
       "id": "oob_real_13",
@@ -2857,7 +3061,10 @@
         "source_expression": "result[-1]",
         "harness_property": "result[-1]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: result[-1]"
     },
     {
       "id": "oob_real_14",
@@ -2889,7 +3096,10 @@
         "source_expression": "lines[0]",
         "harness_property": "lines[0]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: lines[0]"
     },
     {
       "id": "oob_real_15",
@@ -2923,7 +3133,10 @@
         "source_expression": "para.attrib['begin']",
         "harness_property": "attrs[\"begin\"]",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: para.attrib['begin']"
     },
     {
       "id": "oob_real_16",
@@ -2957,7 +3170,10 @@
         "source_expression": "self.item_list[real_index]",
         "harness_property": "normalized + length if normalized < 0 else normalized",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "índice negativo devolve item errado em vez de IndexError"
     },
     {
       "id": "tm_real_01",
@@ -2993,7 +3209,10 @@
         "source_expression": "head = (int(head) - 1) if head != \"0\" else id_",
         "harness_property": "int(head) - 1",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: int('_')"
     },
     {
       "id": "tm_real_02",
@@ -3030,7 +3249,9 @@
         "source_expression": "return stdout and table in stdout",
         "harness_property": "table in stdout",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_03",
@@ -3066,7 +3287,9 @@
         "source_expression": "UNARY_OPERATORS = {'': lambda v: v is not None, '!': lambda v: v is None}",
         "harness_property": "v is not None",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_04",
@@ -3102,7 +3325,10 @@
         "source_expression": "if int_str is None:\n        return None",
         "harness_property": "assert is_str",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: método de str chamado em int"
     },
     {
       "id": "tm_real_05",
@@ -3139,7 +3365,10 @@
         "source_expression": "msg['To'] = COMMASPACE.join(to)",
         "harness_property": "assert to_is_list",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "join de str separa os caracteres"
     },
     {
       "id": "tm_real_06",
@@ -3176,7 +3405,9 @@
         "source_expression": "exc_info = failure.value, failure.type, failure.getTracebackObject()",
         "harness_property": "result == True",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_07",
@@ -3213,7 +3444,9 @@
         "source_expression": "self._filled = True",
         "harness_property": "buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "tm_real_08",
@@ -3248,7 +3481,10 @@
         "source_expression": "TableFormat(None, None, None, None, headerrow=None, datarow=DataRow('', separator, ''), padding=0, with_header_hide=None)",
         "harness_property": "headerrow=None",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "incerto",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "pelo patch não dá para saber se headerrow None quebra depois"
     },
     {
       "id": "tm_real_09",
@@ -3282,7 +3518,10 @@
         "source_expression": "formatted_val = format(float(raw_val), floatfmt)",
         "harness_property": "format(float(raw_val), floatfmt)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: float() de texto"
     },
     {
       "id": "tm_real_10",
@@ -3317,7 +3556,10 @@
         "source_expression": "metrics.configure_http_handler(self)",
         "harness_property": "metrics.configure_http_handler(self)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError no resultado de generate_latest"
     },
     {
       "id": "vm_real_01",
@@ -3355,7 +3597,9 @@
         "source_expression": "l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)",
         "harness_property": "picked_l = l_bar",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "vm_real_02",
@@ -3389,7 +3633,10 @@
         "source_expression": "type(skey) is not Optional",
         "harness_property": "assert skey_assigned",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "mensagem de erro com a chave errada"
     },
     {
       "id": "io_real_01",
@@ -3425,7 +3672,10 @@
         "source_expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
         "harness_property": "numpy_int8_abs(vmin)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
     },
     {
       "id": "ir_real_01",
@@ -3460,7 +3710,9 @@
         "source_expression": "sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
         "harness_property": "sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_02",
@@ -3495,7 +3747,9 @@
         "source_expression": "pi: float = 3.14153",
         "harness_property": "pi: float = 3.14153",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_03",
@@ -3530,7 +3784,9 @@
         "source_expression": "pattern_len != 7",
         "harness_property": "if pattern_len != 7:",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "ir_real_05",
@@ -3564,7 +3820,9 @@
         "source_expression": "alpha_len = len(alphabet)",
         "harness_property": "alpha_len = len(alphabet)",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido"
     },
     {
       "id": "nm_real_23",
@@ -3597,7 +3855,10 @@
         "source_expression": "tag in html_classes_from_tag",
         "harness_property": "if tag in html_classes_from_tag:",
         "provenance_complete": false
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: 'in' sobre valor que não é dict"
     },
     {
       "id": "dz_real_04",
@@ -3635,7 +3896,10 @@
         "source_expression": "(h_src - wdw_size) / step_size",
         "harness_property": "(h_src - wdw_size) / step_size",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError com step_size == 0"
     },
     {
       "id": "nm_real_24",
@@ -3669,7 +3933,10 @@
         "source_expression": "executor.shutdown()",
         "harness_property": "assert not executor_is_none",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "OSError do sistema sem multiprocessamento"
     },
     {
       "id": "vm_real_03",
@@ -3703,7 +3970,10 @@
         "source_expression": "docs = _pipe(pipe, docs, kwargs)",
         "harness_property": "assert not args_swapped",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: _pipe com argumentos trocados"
     },
     {
       "id": "nm_real_25",
@@ -3737,7 +4007,10 @@
         "source_expression": "start_line.method in (\"HEAD\", \"GET\")",
         "harness_property": "assert is_request_line",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: linha de resposta sem method"
     },
     {
       "id": "tm_real_11",
@@ -3771,7 +4044,10 @@
         "source_expression": "sitemap_urls_from_robots(response.body)",
         "harness_property": "assert passed_text",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: sitemap_urls_from_robots com bytes levanta TypeError"
     },
     {
       "id": "vm_real_04",
@@ -3806,7 +4082,10 @@
         "source_expression": "op = lambda attr, value: not str_op",
         "harness_property": "assert buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "not str_op é sempre False"
     },
     {
       "id": "vm_real_05",
@@ -3840,7 +4119,10 @@
         "source_expression": "self.fs.mkdir(d)",
         "harness_property": "self.fs.mkdir(new_dir)",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: self.fs inexistente"
     },
     {
       "id": "vm_real_06",
@@ -3874,7 +4156,10 @@
         "source_expression": "configure_logging(settings)",
         "harness_property": "assert not settings_is_dict",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "código do projeto: configure_logging com dict em vez de Settings"
     },
     {
       "id": "tm_real_12",
@@ -3908,7 +4193,10 @@
         "source_expression": "path = self.s3_load_path()",
         "harness_property": "assert not called_as_function",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: chamar valor str"
     },
     {
       "id": "vm_real_07",
@@ -3943,7 +4231,10 @@
         "source_expression": "val_enqueuer_gen = iter_sequence_infinite(generator)",
         "harness_property": "assert not uses_train_generator",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "valida com os dados de treino"
     },
     {
       "id": "tm_real_13",
@@ -3977,7 +4268,10 @@
         "source_expression": "self._xg_characters(serialized_value)",
         "harness_property": "serialized_value.decode(\"utf-8\")",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "modelo: XMLGenerator.characters com valor não texto"
     },
     {
       "id": "vm_real_08",
@@ -4011,7 +4305,10 @@
         "source_expression": "open(output_path, 'a')",
         "harness_property": "assert not uses_undefined_name",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "escreve no arquivo errado"
     },
     {
       "id": "ip_real_34",
@@ -4046,7 +4343,10 @@
         "source_expression": "return os.path.abspath(os.path.join(hooks_dir, hook_file))",
         "harness_property": "assert buggy == correct",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "só o primeiro hook é devolvido"
     },
     {
       "id": "oob_real_06",
@@ -4080,7 +4380,10 @@
         "source_expression": "merge_configs(default[k], v)",
         "harness_property": "assert default_has_key",
         "provenance_complete": true
-      }
+      },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: default[k]"
     },
     {
       "id": "bip_ansible_1",
@@ -4105,6 +4408,9 @@
         "source_file": "lib/ansible/galaxy/collection.py",
         "source_function": "verify_collections"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar AnsibleError sem MANIFEST.json; a versão com bug segue sem erro",
       "file": "bip_ansible_1.py"
     },
     {
@@ -4130,6 +4436,8 @@
         "source_file": "lib/ansible/module_utils/facts/system/distribution.py",
         "source_function": "DistributionFiles.parse_distribution_file_Debian"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_ansible_3.py"
     },
     {
@@ -4155,6 +4463,8 @@
         "source_file": "lib/ansible/module_utils/common/validation.py",
         "source_function": "check_required_arguments"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_ansible_5.py"
     },
     {
@@ -4180,6 +4490,8 @@
         "source_file": "lib/ansible/module_utils/facts/hardware/linux.py",
         "source_function": "LinuxHardware.get_cpu_facts"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_ansible_16.py"
     },
     {
@@ -4205,6 +4517,8 @@
         "source_file": "black.py",
         "source_function": "generate_ignored_nodes"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_black_2.py"
     },
     {
@@ -4230,6 +4544,8 @@
         "source_file": "black.py",
         "source_function": "normalize_invisible_parens"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_black_7.py"
     },
     {
@@ -4255,6 +4571,8 @@
         "source_file": "black.py",
         "source_function": "bracket_split_build_line"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_black_8.py"
     },
     {
@@ -4280,6 +4598,9 @@
         "source_file": "black.py",
         "source_function": "get_grammars"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ParseError no parser lib2to3 por gramática errada",
       "file": "bip_black_9.py"
     },
     {
@@ -4305,6 +4626,9 @@
         "source_file": "blib2to3/pgen2/tokenize.py",
         "source_function": "generate_tokens"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "tokens errados para async for",
       "file": "bip_black_13.py"
     },
     {
@@ -4330,6 +4654,9 @@
         "source_file": "black.py",
         "source_function": "gen_python_files_in_dir"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de Path.relative_to com link simbólico para fora da raiz; modelo: Path.relative_to levanta ValueError fora da raiz",
       "file": "bip_black_16.py"
     },
     {
@@ -4355,6 +4682,8 @@
         "source_file": "black.py",
         "source_function": "EmptyLineTracker._maybe_empty_lines"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_black_19.py"
     },
     {
@@ -4380,6 +4709,8 @@
         "source_file": "black.py",
         "source_function": "format_file_in_place"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_black_20.py"
     },
     {
@@ -4405,6 +4736,9 @@
         "source_file": "black.py",
         "source_function": "dump_to_file"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeEncodeError: depende da codificação do sistema",
       "file": "bip_black_21.py"
     },
     {
@@ -4430,6 +4764,9 @@
         "source_file": "cookiecutter/generate.py",
         "source_function": "generate_context"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeDecodeError: depende da codificação do sistema",
       "file": "bip_cookiecutter_1.py"
     },
     {
@@ -4455,6 +4792,8 @@
         "source_file": "cookiecutter/prompt.py",
         "source_function": "read_user_choice"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_cookiecutter_3.py"
     },
     {
@@ -4480,6 +4819,8 @@
         "source_file": "fastapi/routing.py",
         "source_function": "APIRouter.add_api_websocket_route"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_2.py"
     },
     {
@@ -4505,6 +4846,8 @@
         "source_file": "fastapi/openapi/utils.py",
         "source_function": "get_openapi_path"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_4.py"
     },
     {
@@ -4530,6 +4873,8 @@
         "source_file": "fastapi/utils.py",
         "source_function": "create_cloned_field"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_5.py"
     },
     {
@@ -4555,6 +4900,8 @@
         "source_file": "fastapi/dependencies/utils.py",
         "source_function": "get_body_field"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_9.py"
     },
     {
@@ -4580,6 +4927,8 @@
         "source_file": "fastapi/routing.py",
         "source_function": "serialize_response"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_10.py"
     },
     {
@@ -4605,6 +4954,8 @@
         "source_file": "fastapi/dependencies/utils.py",
         "source_function": "is_scalar_field"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_11.py"
     },
     {
@@ -4630,6 +4981,8 @@
         "source_file": "fastapi/encoders.py",
         "source_function": "jsonable_encoder"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_fastapi_16.py"
     },
     {
@@ -4655,6 +5008,8 @@
         "source_file": "httpie/models.py",
         "source_function": "HTTPRequest.headers"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_httpie_4.py"
     },
     {
@@ -4680,6 +5035,9 @@
         "source_file": "keras/models.py",
         "source_function": "_clone_functional_model"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError levantado por compute_mask de camada sem suporte a máscara; código do projeto: incluir Layer.compute_mask no harness",
       "file": "bip_keras_3.py"
     },
     {
@@ -4705,6 +5063,9 @@
         "source_file": "keras/optimizers.py",
         "source_function": "TFOptimizer.get_updates"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "TypeError: argumento posicional para compute_gradients que só aceita nomeado; modelo: método que só aceita argumento nomeado",
       "file": "bip_keras_4.py"
     },
     {
@@ -4730,6 +5091,8 @@
         "source_file": "keras/utils/data_utils.py",
         "source_function": "get_file"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_5.py"
     },
     {
@@ -4755,6 +5118,9 @@
         "source_file": "keras/engine/training_utils.py",
         "source_function": "weighted_masked_objective"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "divisão de tensor por zero gera NaN, sem exceção",
       "file": "bip_keras_6.py"
     },
     {
@@ -4780,6 +5146,8 @@
         "source_file": "keras/wrappers/scikit_learn.py",
         "source_function": "KerasRegressor.predict"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_7.py"
     },
     {
@@ -4805,6 +5173,9 @@
         "source_file": "keras/engine/network.py",
         "source_function": "Network.from_config"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "saídas diferentes após from_config",
       "file": "bip_keras_8.py"
     },
     {
@@ -4830,6 +5201,8 @@
         "source_file": "docs/autogen.py",
         "source_function": "process_list_block"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_9.py"
     },
     {
@@ -4855,6 +5228,9 @@
         "source_file": "keras/engine/training_utils.py",
         "source_function": "standardize_weights"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "class_weight ignorado quando há sample_weight",
       "file": "bip_keras_10.py"
     },
     {
@@ -4880,6 +5256,8 @@
         "source_file": "keras/metrics.py",
         "source_function": "sparse_top_k_categorical_accuracy"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_14.py"
     },
     {
@@ -4905,6 +5283,8 @@
         "source_file": "keras/metrics.py",
         "source_function": "sparse_categorical_accuracy"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_17.py"
     },
     {
@@ -4930,6 +5310,9 @@
         "source_file": "keras/engine/sequential.py",
         "source_function": "Sequential.add"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: primeira camada sem batch_input_shape",
       "file": "bip_keras_23.py"
     },
     {
@@ -4955,6 +5338,9 @@
         "source_file": "keras/callbacks.py",
         "source_function": "TensorBoard.set_model"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro do TensorFlow ao receber lista; modelo: tf.summary.histogram recusa lista",
       "file": "bip_keras_24.py"
     },
     {
@@ -4980,6 +5366,9 @@
         "source_file": "keras/applications/imagenet_utils.py",
         "source_function": "_preprocess_numpy_input"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro do numpy em operação in-place com array inteiro; modelo: operação in-place com float em array inteiro",
       "file": "bip_keras_25.py"
     },
     {
@@ -5005,6 +5394,9 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "rnn"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de formato no tf.where",
       "file": "bip_keras_26.py"
     },
     {
@@ -5030,6 +5422,9 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "ctc_batch_cost"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de formato no TensorFlow com lote de tamanho 1",
       "file": "bip_keras_31.py"
     },
     {
@@ -5055,6 +5450,9 @@
         "source_file": "keras/preprocessing/text.py",
         "source_function": "text_to_word_sequence"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError de str.maketrans com tamanhos diferentes",
       "file": "bip_keras_33.py"
     },
     {
@@ -5080,6 +5478,8 @@
         "source_file": "keras/backend/tensorflow_backend.py",
         "source_function": "separable_conv1d"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_36.py"
     },
     {
@@ -5105,6 +5505,9 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "StackedRNNCells.build"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de formato ao construir as células",
       "file": "bip_keras_38.py"
     },
     {
@@ -5130,6 +5533,8 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "RNN.compute_output_shape"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_40.py"
     },
     {
@@ -5155,6 +5560,8 @@
         "source_file": "keras/utils/np_utils.py",
         "source_function": "to_categorical"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_keras_43.py"
     },
     {
@@ -5180,6 +5587,9 @@
         "source_file": "keras/layers/recurrent.py",
         "source_function": "LSTMCell.call"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: soma com bias None quando use_bias=False",
       "file": "bip_keras_45.py"
     },
     {
@@ -5205,6 +5615,8 @@
         "source_file": "luigi/contrib/redshift.py",
         "source_function": "S3CopyToTable.does_table_exist"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_8.py"
     },
     {
@@ -5230,6 +5642,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "Worker.get_pending_tasks"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_10.py"
     },
     {
@@ -5255,6 +5669,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "CentralPlannerScheduler.prune"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_16.py"
     },
     {
@@ -5280,6 +5696,9 @@
         "source_file": "luigi/interface.py",
         "source_function": "_WorkerSchedulerFactory.create_local_scheduler"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "record_task_history deveria ser False",
       "file": "bip_luigi_17.py"
     },
     {
@@ -5305,6 +5724,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.set_status"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_18.py"
     },
     {
@@ -5330,6 +5751,8 @@
         "source_file": "luigi/scheduler.py",
         "source_function": "SimpleTaskState.set_status"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_19.py"
     },
     {
@@ -5355,6 +5778,9 @@
         "source_file": "luigi/interface.py",
         "source_function": "run"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "AttributeError: cmdline_args None recebe .insert",
       "file": "bip_luigi_21.py"
     },
     {
@@ -5380,6 +5806,8 @@
         "source_file": "luigi/contrib/spark.py",
         "source_function": "SparkSubmitTask._dict_arg"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_24.py"
     },
     {
@@ -5405,6 +5833,9 @@
         "source_file": "luigi/contrib/hadoop_jar.py",
         "source_function": "HadoopJarJobRunner.run_job"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "mensagem de erro errada",
       "file": "bip_luigi_26.py"
     },
     {
@@ -5430,6 +5861,8 @@
         "source_file": "luigi/task_register.py",
         "source_function": "Register.__get_reg"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_luigi_29.py"
     },
     {
@@ -5455,6 +5888,9 @@
         "source_file": "luigi/task.py",
         "source_function": "Task.get_param_values"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "levanta UnknownParameterException para parâmetro posicional não significativo",
       "file": "bip_luigi_33.py"
     },
     {
@@ -5480,6 +5916,8 @@
         "source_file": "lib/matplotlib/axes/_axes.py",
         "source_function": "Axes.scatter"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_2.py"
     },
     {
@@ -5505,6 +5943,9 @@
         "source_file": "lib/matplotlib/axes/_axes.py",
         "source_function": "Axes._parse_scatter_color_args"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para cor com formato (1, 4)",
       "file": "bip_matplotlib_6.py"
     },
     {
@@ -5530,6 +5971,8 @@
         "source_file": "lib/matplotlib/colors.py",
         "source_function": "LightSource.shade_rgb"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_7.py"
     },
     {
@@ -5555,6 +5998,8 @@
         "source_file": "lib/matplotlib/projections/polar.py",
         "source_function": "PolarAxes.draw"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_9.py"
     },
     {
@@ -5580,6 +6025,8 @@
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "Axis.set_tick_params"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_10.py"
     },
     {
@@ -5605,6 +6052,8 @@
         "source_file": "lib/matplotlib/text.py",
         "source_function": "Text.get_window_extent"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_11.py"
     },
     {
@@ -5630,6 +6079,8 @@
         "source_file": "lib/matplotlib/path.py",
         "source_function": "Path.make_compound_path"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_13.py"
     },
     {
@@ -5655,6 +6106,8 @@
         "source_file": "lib/matplotlib/text.py",
         "source_function": "Text.update"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_14.py"
     },
     {
@@ -5680,6 +6133,9 @@
         "source_file": "lib/matplotlib/transforms.py",
         "source_function": "nonsingular"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção",
       "file": "bip_matplotlib_16.py"
     },
     {
@@ -5705,6 +6161,9 @@
         "source_file": "lib/matplotlib/transforms.py",
         "source_function": "nonsingular"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "estouro de inteiro do numpy, sem exceção",
       "file": "bip_matplotlib_17.py"
     },
     {
@@ -5730,6 +6189,8 @@
         "source_file": "lib/matplotlib/axes/_base.py",
         "source_function": "_AxesBase.apply_aspect"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_23.py"
     },
     {
@@ -5755,6 +6216,9 @@
         "source_file": "lib/matplotlib/collections.py",
         "source_function": "EventCollection.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "deveria levantar ValueError para positions None",
       "file": "bip_matplotlib_25.py"
     },
     {
@@ -5780,6 +6244,8 @@
         "source_file": "lib/matplotlib/axis.py",
         "source_function": "_make_getset_interval"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_26.py"
     },
     {
@@ -5805,6 +6271,8 @@
         "source_file": "lib/matplotlib/colorbar.py",
         "source_function": "ColorbarBase.set_label"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_matplotlib_27.py"
     },
     {
@@ -5830,6 +6298,9 @@
         "source_file": "lib/matplotlib/axes/_base.py",
         "source_function": "_AxesBase.set_xlim"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "o teste espera um aviso; pelo patch não dá para saber se a versão com bug quebra",
       "file": "bip_matplotlib_28.py"
     },
     {
@@ -5855,6 +6326,8 @@
         "source_file": "pandas/core/dtypes/common.py",
         "source_function": "is_string_dtype"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_1.py"
     },
     {
@@ -5880,6 +6353,8 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index._join_multi"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_4.py"
     },
     {
@@ -5905,6 +6380,9 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index._get_nearest_indexer"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError do numpy ao subtrair datas com fuso",
       "file": "bip_pandas_7.py"
     },
     {
@@ -5930,6 +6408,8 @@
         "source_file": "pandas/core/internals/blocks.py",
         "source_function": "Block.replace"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_8.py"
     },
     {
@@ -5955,6 +6435,8 @@
         "source_file": "pandas/core/internals/blocks.py",
         "source_function": "ExtensionBlock.putmask"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_10.py"
     },
     {
@@ -5980,6 +6462,9 @@
         "source_file": "pandas/core/ops/dispatch.py",
         "source_function": "should_series_dispatch"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError em operação com DateOffset",
       "file": "bip_pandas_14.py"
     },
     {
@@ -6005,6 +6490,9 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_LocIndexer._getitem_axis"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "deveria levantar KeyError",
       "file": "bip_pandas_19.py"
     },
     {
@@ -6030,6 +6518,8 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series._get_with"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_21.py"
     },
     {
@@ -6055,6 +6545,8 @@
         "source_file": "pandas/core/indexes/datetimelike.py",
         "source_function": "DatetimeTimedeltaMixin.intersection"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_23.py"
     },
     {
@@ -6080,6 +6572,8 @@
         "source_file": "pandas/core/arrays/datetimes.py",
         "source_function": "DatetimeArray.tz_localize"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_24.py"
     },
     {
@@ -6105,6 +6599,8 @@
         "source_file": "pandas/core/arrays/datetimes.py",
         "source_function": "DatetimeArray.isocalendar"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_25.py"
     },
     {
@@ -6130,6 +6626,8 @@
         "source_file": "pandas/core/strings.py",
         "source_function": "StringMethods._get_series_list"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_28.py"
     },
     {
@@ -6155,6 +6653,8 @@
         "source_file": "pandas/core/arrays/interval.py",
         "source_function": "IntervalArray.__setitem__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_29.py"
     },
     {
@@ -6180,6 +6680,9 @@
         "source_file": "pandas/core/arrays/integer.py",
         "source_function": "IntegerArray._values_for_argsort"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError do numpy: min() de array vazio; modelo: min() de array vazio levanta ValueError",
       "file": "bip_pandas_33.py"
     },
     {
@@ -6205,6 +6708,9 @@
         "source_file": "pandas/core/resample.py",
         "source_function": "TimeGrouper._get_time_bins"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AmbiguousTimeError da conversão de fuso",
       "file": "bip_pandas_34.py"
     },
     {
@@ -6230,6 +6736,9 @@
         "source_file": "pandas/core/indexes/period.py",
         "source_function": "PeriodIndex._engine"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "weakref morta vira None no motor do índice",
       "file": "bip_pandas_35.py"
     },
     {
@@ -6255,6 +6764,8 @@
         "source_file": "pandas/_testing.py",
         "source_function": "assert_series_equal"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_42.py"
     },
     {
@@ -6280,6 +6791,8 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "_cat_compare_op"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_50.py"
     },
     {
@@ -6305,6 +6818,8 @@
         "source_file": "pandas/core/groupby/generic.py",
         "source_function": "SeriesGroupBy.nunique"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_52.py"
     },
     {
@@ -6330,6 +6845,9 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "Categorical.from_codes"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para códigos Int64",
       "file": "bip_pandas_58.py"
     },
     {
@@ -6355,6 +6873,9 @@
         "source_file": "pandas/core/window/rolling.py",
         "source_function": "_Rolling_and_Expanding.corr"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro ao usar janela de frequência",
       "file": "bip_pandas_59.py"
     },
     {
@@ -6380,6 +6901,9 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series._get_with"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "deveria levantar ValueError com outra mensagem",
       "file": "bip_pandas_61.py"
     },
     {
@@ -6405,6 +6929,9 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_AtIndexer._convert_key"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para índice de float",
       "file": "bip_pandas_63.py"
     },
     {
@@ -6430,6 +6957,8 @@
         "source_file": "pandas/io/formats/excel.py",
         "source_function": "ExcelFormatter.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_64.py"
     },
     {
@@ -6455,6 +6984,9 @@
         "source_file": "pandas/core/indexing.py",
         "source_function": "_AtIndexer._convert_key"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado na própria função para índice de float",
       "file": "bip_pandas_69.py"
     },
     {
@@ -6480,6 +7012,8 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame._reduce"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_78.py"
     },
     {
@@ -6505,6 +7039,9 @@
         "source_file": "pandas/core/reshape/reshape.py",
         "source_function": "_unstack_multiple"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError na busca de nível com nome tupla; modelo: busca de nível inexistente levanta KeyError",
       "file": "bip_pandas_84.py"
     },
     {
@@ -6530,6 +7067,8 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "crosstab"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_87.py"
     },
     {
@@ -6555,6 +7094,9 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "pivot_table"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "o teste compara o resultado; pelo patch não dá para saber se quebra antes",
       "file": "bip_pandas_88.py"
     },
     {
@@ -6580,6 +7122,8 @@
         "source_file": "pandas/core/reshape/reshape.py",
         "source_function": "_unstack_multiple"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_89.py"
     },
     {
@@ -6605,6 +7149,9 @@
         "source_file": "pandas/core/indexes/timedeltas.py",
         "source_function": "TimedeltaIndex.searchsorted"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "tipo de exceção errado",
       "file": "bip_pandas_91.py"
     },
     {
@@ -6630,6 +7177,8 @@
         "source_file": "pandas/core/arrays/period.py",
         "source_function": "_period_array_cmp"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_95.py"
     },
     {
@@ -6655,6 +7204,8 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index.__new__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_98.py"
     },
     {
@@ -6680,6 +7231,9 @@
         "source_file": "pandas/core/internals/construction.py",
         "source_function": "init_ndarray"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro ao montar blocos com array 2-D",
       "file": "bip_pandas_102.py"
     },
     {
@@ -6705,6 +7259,9 @@
         "source_file": "pandas/core/groupby/groupby.py",
         "source_function": "GroupBy.quantile"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "pode ser o assert len(indices) == len(result) da própria função ou resultado errado",
       "file": "bip_pandas_104.py"
     },
     {
@@ -6730,6 +7287,9 @@
         "source_file": "pandas/core/indexes/base.py",
         "source_function": "Index.get_indexer_non_unique"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro ao comparar índice de datas com outro tipo",
       "file": "bip_pandas_106.py"
     },
     {
@@ -6755,6 +7315,8 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame.append"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_107.py"
     },
     {
@@ -6780,6 +7342,8 @@
         "source_file": "pandas/core/missing.py",
         "source_function": "interpolate_1d"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_115.py"
     },
     {
@@ -6805,6 +7369,9 @@
         "source_file": "pandas/core/reshape/merge.py",
         "source_function": "_MergeOperation._get_merge_keys"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "MergeError: fuso perdido em .values",
       "file": "bip_pandas_116.py"
     },
     {
@@ -6830,6 +7397,8 @@
         "source_file": "pandas/core/dtypes/missing.py",
         "source_function": "_isna_old"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_117.py"
     },
     {
@@ -6855,6 +7424,8 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "_add_margins"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_119.py"
     },
     {
@@ -6880,6 +7451,9 @@
         "source_file": "pandas/core/generic.py",
         "source_function": "NDFrame.pct_change"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError do reindex com índice duplicado; modelo: reindex com índice duplicado levanta ValueError",
       "file": "bip_pandas_127.py"
     },
     {
@@ -6905,6 +7479,9 @@
         "source_file": "pandas/core/generic.py",
         "source_function": "NDFrame.interpolate"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnboundLocalError com axis='index'",
       "file": "bip_pandas_133.py"
     },
     {
@@ -6930,6 +7507,8 @@
         "source_file": "pandas/core/groupby/grouper.py",
         "source_function": "Grouping.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_139.py"
     },
     {
@@ -6955,6 +7534,8 @@
         "source_file": "pandas/core/indexes/range.py",
         "source_function": "RangeIndex.get_indexer"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_141.py"
     },
     {
@@ -6980,6 +7561,9 @@
         "source_file": "pandas/core/algorithms.py",
         "source_function": "diff"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError do numpy ao subtrair booleanos; modelo: subtração de booleanos levanta TypeError",
       "file": "bip_pandas_142.py"
     },
     {
@@ -7005,6 +7589,8 @@
         "source_file": "pandas/core/indexes/range.py",
         "source_function": "RangeIndex.get_indexer"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_143.py"
     },
     {
@@ -7030,6 +7616,8 @@
         "source_file": "pandas/plotting/_matplotlib/core.py",
         "source_function": "BarPlot._decorate_ticks"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_144.py"
     },
     {
@@ -7055,6 +7643,9 @@
         "source_file": "pandas/core/ops/__init__.py",
         "source_function": "dispatch_to_series"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError em operação com NaT",
       "file": "bip_pandas_145.py"
     },
     {
@@ -7080,6 +7671,8 @@
         "source_file": "pandas/core/apply.py",
         "source_function": "FrameApply.apply_empty_result"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_148.py"
     },
     {
@@ -7105,6 +7698,9 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series.append"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: lista + tupla",
       "file": "bip_pandas_152.py"
     },
     {
@@ -7130,6 +7726,9 @@
         "source_file": "pandas/core/groupby/groupby.py",
         "source_function": "GroupBy._get_cythonized_result"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro de tipo no código Cython",
       "file": "bip_pandas_154.py"
     },
     {
@@ -7155,6 +7754,8 @@
         "source_file": "pandas/core/window/rolling.py",
         "source_function": "Rolling._on"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_155.py"
     },
     {
@@ -7180,6 +7781,9 @@
         "source_file": "pandas/core/series.py",
         "source_function": "Series.rename"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "TypeError em NDFrame.rename com objeto não chamável",
       "file": "bip_pandas_158.py"
     },
     {
@@ -7205,6 +7809,9 @@
         "source_file": "pandas/core/computation/expressions.py",
         "source_function": "_can_use_numexpr"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: dtype de Series não tem value_counts",
       "file": "bip_pandas_160.py"
     },
     {
@@ -7230,6 +7837,8 @@
         "source_file": "pandas/core/arrays/categorical.py",
         "source_function": "Categorical.fillna"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_161.py"
     },
     {
@@ -7255,6 +7864,9 @@
         "source_file": "pandas/core/reshape/pivot.py",
         "source_function": "_normalize"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError no .loc com nome de margem personalizado",
       "file": "bip_pandas_162.py"
     },
     {
@@ -7280,6 +7892,9 @@
         "source_file": "pandas/core/window.py",
         "source_function": "_Window._prep_values"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "altera a entrada do usuário",
       "file": "bip_pandas_163.py"
     },
     {
@@ -7305,6 +7920,8 @@
         "source_file": "pandas/core/frame.py",
         "source_function": "DataFrame._join_compat"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_pandas_166.py"
     },
     {
@@ -7330,6 +7947,9 @@
         "source_file": "pandas/core/groupby/grouper.py",
         "source_function": "_get_grouper"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError ao ignorar o eixo",
       "file": "bip_pandas_168.py"
     },
     {
@@ -7355,6 +7975,8 @@
         "source_file": "sanic/app.py",
         "source_function": "Sanic.register_named_middleware"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_sanic_1.py"
     },
     {
@@ -7380,6 +8002,8 @@
         "source_file": "scrapy/pipelines/images.py",
         "source_function": "ImagesPipeline.convert_image"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_scrapy_6.py"
     },
     {
@@ -7405,6 +8029,9 @@
         "source_file": "scrapy/item.py",
         "source_function": "ItemMeta.__new__"
       },
+      "failure_kind": "excecao_nao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "erro do interpretador na criação da classe sem __classcell__",
       "file": "bip_scrapy_8.py"
     },
     {
@@ -7430,6 +8057,9 @@
         "source_file": "scrapy/utils/url.py",
         "source_function": "_safe_ParseResult"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeError do codec idna; modelo: idna levanta UnicodeError para rótulo vazio ou com mais de 63 caracteres",
       "file": "bip_scrapy_15.py"
     },
     {
@@ -7455,6 +8085,9 @@
         "source_file": "scrapy/responsetypes.py",
         "source_function": "ResponseTypes.from_content_disposition"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeDecodeError; modelo: decodificar bytes inválidos levanta UnicodeDecodeError",
       "file": "bip_scrapy_18.py"
     },
     {
@@ -7480,6 +8113,9 @@
         "source_file": "scrapy/downloadermiddlewares/robotstxt.py",
         "source_function": "RobotsTxtMiddleware._robots_error"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError em outro método depois do pop; código do projeto: incluir o método que lê _parsers no harness",
       "file": "bip_scrapy_21.py"
     },
     {
@@ -7505,6 +8141,8 @@
         "source_file": "scrapy/dupefilters.py",
         "source_function": "RFPDupeFilter.__init__"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_scrapy_28.py"
     },
     {
@@ -7530,6 +8168,8 @@
         "source_file": "scrapy/http/request/form.py",
         "source_function": "_get_clickable"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_scrapy_38.py"
     },
     {
@@ -7555,6 +8195,8 @@
         "source_file": "scrapy/spiders/__init__.py",
         "source_function": "Spider.start_requests"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_scrapy_39.py"
     },
     {
@@ -7580,6 +8222,9 @@
         "source_file": "scrapy/exporters.py",
         "source_function": "PythonItemExporter._serialize_value"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError levantado por to_unicode com valor não texto; código do projeto: incluir to_unicode no harness",
       "file": "bip_scrapy_40.py"
     },
     {
@@ -7605,6 +8250,9 @@
         "source_file": "spacy/errors.py",
         "source_function": "add_codes"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError do getattr com nome dunder",
       "file": "bip_spacy_1.py"
     },
     {
@@ -7630,6 +8278,8 @@
         "source_file": "spacy/util.py",
         "source_function": "load_model_from_path"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_spacy_2.py"
     },
     {
@@ -7655,6 +8305,8 @@
         "source_file": "spacy/language.py",
         "source_function": "Language.remove_pipe"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_spacy_6.py"
     },
     {
@@ -7680,6 +8332,8 @@
         "source_file": "thefuck/utils.py",
         "source_function": "get_all_executables"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_2.py"
     },
     {
@@ -7705,6 +8359,8 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "Fish.info"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_3.py"
     },
     {
@@ -7730,6 +8386,9 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "_get_aliases"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError ao desempacotar alias sem espaço",
       "file": "bip_thefuck_4.py"
     },
     {
@@ -7755,6 +8414,8 @@
         "source_file": "thefuck/rules/man.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_10.py"
     },
     {
@@ -7780,6 +8441,8 @@
         "source_file": "thefuck/rules/git_push.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_11.py"
     },
     {
@@ -7805,6 +8468,8 @@
         "source_file": "thefuck/shells/fish.py",
         "source_function": "Fish._get_overridden_aliases"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_14.py"
     },
     {
@@ -7830,6 +8495,8 @@
         "source_file": "thefuck/rules/git_push_force.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_19.py"
     },
     {
@@ -7855,6 +8522,8 @@
         "source_file": "thefuck/rules/mkdir_p.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_25.py"
     },
     {
@@ -7880,6 +8549,8 @@
         "source_file": "thefuck/rules/vagrant_up.py",
         "source_function": "get_new_command"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_26.py"
     },
     {
@@ -7905,6 +8576,8 @@
         "source_file": "thefuck/rules/fix_file.py",
         "source_function": "match"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_thefuck_30.py"
     },
     {
@@ -7930,6 +8603,8 @@
         "source_file": "tornado/ioloop.py",
         "source_function": "PeriodicCallback._update_next"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_tornado_5.py"
     },
     {
@@ -7955,6 +8630,9 @@
         "source_file": "tornado/websocket.py",
         "source_function": "WebSocketProtocol13.accept_connection"
       },
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError levantado ao ler cabeçalhos ausentes; código do projeto: incluir a função que lê os cabeçalhos no harness",
       "file": "bip_tornado_8.py"
     },
     {
@@ -7980,6 +8658,8 @@
         "source_file": "tqdm/contrib/__init__.py",
         "source_function": "tenumerate"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_tqdm_1.py"
     },
     {
@@ -8005,6 +8685,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unescapeHTML"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_3.py"
     },
     {
@@ -8030,6 +8712,9 @@
         "source_file": "youtube_dl/jsinterp.py",
         "source_function": "JSInterpreter.interpret_expression"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ExtractorError levantado na própria função para chamada sem argumentos",
       "file": "bip_youtube_dl_4.py"
     },
     {
@@ -8055,6 +8740,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_timestamp"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_5.py"
     },
     {
@@ -8080,6 +8767,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_7.py"
     },
     {
@@ -8105,6 +8794,8 @@
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.build_format_selector"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_8.py"
     },
     {
@@ -8130,6 +8821,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_10.py"
     },
     {
@@ -8155,6 +8848,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_13.py"
     },
     {
@@ -8180,6 +8875,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_15.py"
     },
     {
@@ -8205,6 +8902,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "get_elements_by_attribute"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_20.py"
     },
     {
@@ -8230,6 +8929,9 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: re.match de padrão str sobre bytes",
       "file": "bip_youtube_dl_21.py"
     },
     {
@@ -8255,6 +8957,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_23.py"
     },
     {
@@ -8280,6 +8984,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "_match_one"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_24.py"
     },
     {
@@ -8305,6 +9011,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_25.py"
     },
     {
@@ -8330,6 +9038,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "js_to_json"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_26.py"
     },
     {
@@ -8355,6 +9065,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "parse_dfxp_time_expr"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_27.py"
     },
     {
@@ -8380,6 +9092,9 @@
         "source_file": "youtube_dl/YoutubeDL.py",
         "source_function": "YoutubeDL.build_format_selector"
       },
+      "failure_kind": "incerto",
+      "failure_kind_source": "teste_bugsinpy_lido",
+      "failure_kind_note": "o teste compara o formato escolhido; pelo patch não dá para saber se quebra",
       "file": "bip_youtube_dl_30.py"
     },
     {
@@ -8405,6 +9120,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "unified_strdate"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_41.py"
     },
     {
@@ -8430,6 +9147,8 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "url_basename"
       },
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
       "file": "bip_youtube_dl_43.py"
     }
   ]
