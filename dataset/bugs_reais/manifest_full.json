@@ -654,7 +654,7 @@
     },
     {
       "id": "tm_real_06",
-      "detection_file": "funcao_com_bug/tm_real_06.py",
+      "detection_file": "arquivo_com_bug/tm_real_06.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/tm_real_06.py",
       "function": "ContractsManager._clean_req.eb_wrapper",
       "categories": [
@@ -1565,7 +1565,7 @@
     },
     {
       "id": "av_real_04",
-      "detection_file": "funcao_com_bug/av_real_04.py",
+      "detection_file": "arquivo_com_bug/av_real_04.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/av_real_04.py",
       "function": "_partition_tasks / _summary_format",
       "categories": [
@@ -2322,7 +2322,7 @@
     },
     {
       "id": "ip_real_05",
-      "detection_file": "funcao_com_bug/ip_real_05.py",
+      "detection_file": "arquivo_com_bug/ip_real_05.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_05.py",
       "function": "_Alpha.__gt__ / _Numeric.__gt__",
       "categories": [
@@ -2799,7 +2799,7 @@
     },
     {
       "id": "ip_real_21",
-      "detection_file": "funcao_com_bug/ip_real_21.py",
+      "detection_file": "arquivo_com_bug/ip_real_21.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/ip_real_21.py",
       "function": "SortedDict.__eq__",
       "categories": [
@@ -3049,7 +3049,7 @@
     },
     {
       "id": "ir_real_01",
-      "detection_file": "funcao_com_bug/ir_real_01.py",
+      "detection_file": "arquivo_com_bug/ir_real_01.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/ir_real_01.py",
       "function": "gamma / lgamma",
       "categories": [
@@ -3142,7 +3142,7 @@
     },
     {
       "id": "ir_real_05",
-      "detection_file": "funcao_com_bug/ir_real_05.py",
+      "detection_file": "arquivo_com_bug/ir_real_05.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/ir_real_05.py",
       "function": "string_to_int",
       "categories": [
@@ -3236,7 +3236,7 @@
     },
     {
       "id": "nm_real_24",
-      "detection_file": "funcao_com_bug/nm_real_24.py",
+      "detection_file": "arquivo_com_bug/nm_real_24.py",
       "harness_file": "../harness_bugs_reais/harness_manual_0909/nm_real_24.py",
       "function": "reformat_many",
       "categories": [
@@ -3481,38 +3481,6 @@
       "abstraction": {
         "used": true,
         "description": "s3_load_path is declared as a property (abc.abstractproperty in the real code); self.s3_load_path already returns the load-path string, so calling self.s3_load_path() tries to call that string. Visible from the real code alone: the property decorator sits right above the erroneous call site in the same class. Modeled with a bool flag standing in for 'the property was called instead of accessed'."
-      }
-    },
-    {
-      "id": "io_real_02",
-      "detection_file": "funcao_com_bug/io_real_02.py",
-      "harness_file": "../harness_bugs_reais/harness_manual_0909/io_real_02.py",
-      "function": "integer_squareroot",
-      "categories": [
-        "integer_overflow"
-      ],
-      "harness_strategies": [
-        "unsupported"
-      ],
-      "expression": "y = (x + 1) // 2",
-      "provenance": {
-        "project": "consensus-specs",
-        "source_file": "specs/phase0/beacon-chain.md",
-        "source_function": "integer_squareroot",
-        "repo_url": "https://github.com/ethereum/consensus-specs",
-        "buggy_commit": "2faa44b6b68997beb6a64654be2b345a4bb7b8a8",
-        "fixed_commit": "f82a3af97852867e8922b57ccc6815f9659c209a",
-        "pr_url": "https://github.com/ethereum/consensus-specs/pull/3600",
-        "note": "Not a BugsInPy case. Reported as found by ESBMC-Python against Ethereum's executable consensus specification (a real, maintained reference implementation used to generate the eth2spec package, embedded as Python code blocks in a markdown spec file). Verified against the actual PR #3600 diff and the remerkleable uint64 source (protolambda/remerkleable v0.1.27) on 2026-09-11: remerkleable's uint64 bounds-checks every arithmetic result and raises ValueError on overflow rather than silently wrapping to 0, so the real crash on n == 2**64-1 is an unhandled ValueError from `x + 1`, not a silent wraparound followed by a division by zero."
-      },
-      "oracle": {
-        "kind": "native_property",
-        "expression": "assert x != TYPE_MAX (stands in for the real remerkleable uint64 bounds check raising ValueError on x + 1 at the type's maximum value)",
-        "source": "Real bug mechanism (unconditional arithmetic on a fixed-width value already at its maximum representable value)"
-      },
-      "abstraction": {
-        "used": true,
-        "description": "The literal UINT64_MAX = 2**64-1 itself overflows ESBMC-Python's fixed-width int representation (approximated as a bitvector), so the bound is modeled at a smaller scale (TYPE_MAX = 255) preserving the same mechanism: x == TYPE_MAX makes x + 1 exceed the type's bound. Same technique io_real_01 uses for numpy int8."
       }
     },
     {

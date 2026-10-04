@@ -17,27 +17,40 @@ from pathlib import Path
 from urllib import error, request
 
 
-def _function(source: str, qualified: str) -> ast.AST | None:
-    try:
-        tree = ast.parse(source)
-    except SyntaxError:
-        return None
+_DEFS = (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+
+
+def _one_function(tree: ast.Module, qualified: str) -> ast.AST | None:
+    """Resolve Class.method or outer.inner; excerpts may repeat a class once per method."""
     parts = qualified.split(".")
     scope = tree.body
     for name in parts[:-1]:
-        classes = [n for n in scope if isinstance(n, ast.ClassDef) and n.name == name]
-        if len(classes) != 1:
-            return None
-        scope = classes[0].body
+        scope = [n for c in scope if isinstance(c, _DEFS) and c.name == name for n in c.body]
     found = [n for n in scope if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == parts[-1]]
     return found[0] if len(found) == 1 else None
 
 
+def _function(source: str, qualified: str) -> ast.AST | None:
+    """The labelled function, or all of them when the label lists several ("f / g")."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return None
+    found = [_one_function(tree, name.strip()) for name in qualified.split(" / ")]
+    if None in found:
+        return None
+    return found[0] if len(found) == 1 else ast.Module(body=found, type_ignores=[])
+
+
 def _without_docstrings(node: ast.AST) -> str:
-    """Docstrings carry no behaviour and dataset extraction sometimes dropped them."""
+    """Docstrings and annotations carry no behaviour and dataset extraction sometimes dropped them."""
     import copy
     node = copy.deepcopy(node)
     for child in ast.walk(node):
+        if isinstance(child, ast.arg):
+            child.annotation = None
+        elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            child.returns = None
         body = getattr(child, "body", None)
         if (isinstance(body, list) and body and isinstance(body[0], ast.Expr)
                 and isinstance(body[0].value, ast.Constant) and isinstance(body[0].value.value, str)):
@@ -54,12 +67,20 @@ def _raw_url(repo_url: str, commit: str, path: str) -> str:
     return f"https://raw.githubusercontent.com/{owner_repo}/{commit}/{path}"
 
 
-def _download(url: str) -> str | None:
-    try:
-        with request.urlopen(url, timeout=30) as response:  # noqa: S310 -- fixed https host
-            return response.read().decode("utf-8")
-    except (error.URLError, TimeoutError, UnicodeDecodeError):
-        return None
+def _download(url: str, attempts: int = 3) -> str | None:
+    for attempt in range(attempts):
+        try:
+            with request.urlopen(url, timeout=30) as response:  # noqa: S310 -- fixed https host
+                return response.read().decode("utf-8")
+        except error.HTTPError as exc:
+            if exc.code == 404:
+                return None
+        except (error.URLError, TimeoutError):
+            pass
+        except UnicodeDecodeError:
+            return None
+        time.sleep(2 * (attempt + 1))
+    return None
 
 
 def _parent(repo_url: str, commit: str) -> str | None:
@@ -87,7 +108,9 @@ def main() -> int:
     previous_path = out / "fetch_report.json"
     previous = json.loads(previous_path.read_text(encoding="utf-8")) if previous_path.exists() else {}
     report = {}
-    for item in manifest["items"]:
+    # The BugsInPy cohort gets its complete files from build_v2_bugsinpy.py.
+    curated = [item for item in manifest["items"] if "cohort" not in item]
+    for item in curated:
         case_id = str(item["id"])
         if args.only_unmatched and str(previous.get(case_id, "")).startswith("matched"):
             report[case_id] = previous[case_id]
@@ -113,13 +136,17 @@ def main() -> int:
         print(f"{case_id:14s} {status}")
     (out / "fetch_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     # Same cases and labels; only detection_file points at the complete buggy file when verified.
-    full = dict(manifest)
-    full["items"] = [
-        {**item, "detection_file": f"arquivo_com_bug/{item['id']}.py"}
-        if report[str(item["id"])].startswith("matched") else item
-        for item in manifest["items"]
-    ]
-    (root / "manifest_full.json").write_text(json.dumps(full, indent=2, ensure_ascii=False), encoding="utf-8")
+    # Starts from the existing manifest_full, whose harness_file paths are newer than manifest.json's.
+    full_path = root / "manifest_full.json"
+    full = json.loads(full_path.read_text(encoding="utf-8")) if full_path.exists() else dict(manifest)
+    existing = {str(item["id"]): item for item in full.get("items", [])}
+    full["items"] = []
+    for item in curated:
+        case_id = str(item["id"])
+        base = existing.get(case_id, item)
+        verified = report[case_id].startswith("matched")
+        full["items"].append({**base, "detection_file": f"arquivo_com_bug/{case_id}.py" if verified else item["detection_file"]})
+    full_path.write_text(json.dumps(full, indent=2, ensure_ascii=False), encoding="utf-8")
     matched = sum(value.startswith("matched") for value in report.values())
     print(f"matched {matched}/{len(report)}")
     return 0

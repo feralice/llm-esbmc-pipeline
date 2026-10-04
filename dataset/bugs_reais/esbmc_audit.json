@@ -578,26 +578,6 @@
       "fixed": null,
       "id": "io_real_01"
     },
-    "io_real_02": {
-      "buggy": {
-        "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/io_real_02.py",
-        "conversion_error": false,
-        "esbmc_property": "assertion",
-        "tail": [
-          "** 1 of 1 properties failed",
-          "",
-          "VERIFICATION FAILED"
-        ],
-        "vccs": [
-          1
-        ],
-        "verdict": "failed",
-        "violated_line": 16,
-        "violated_property": "file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/bugs/io_real_02.py line 16 column 4 function integer_squareroot_first_step | assertion x != TYPE_MAX | x != TYPE_MAX"
-      },
-      "fixed": null,
-      "id": "io_real_02"
-    },
     "ip_real_01": {
       "buggy": {
         "command": "esbmc --z3 --unwind 6 --timeout 20s dataset/v2_real_world/bugs/ip_real_01.py",

@@ -432,7 +432,7 @@ llm-esbmc-pipeline/
 │           ├── report.py           # Resumo e avaliação
 │           └── agent_arm.py        # Braço experimental com agente
 ├── dataset/                        # mapa completo em dataset/README.md
-│   ├── bugs_reais/                 # V2: 290 bugs reais (o código com bug de cada um)
+│   ├── bugs_reais/                 # V2: 289 bugs reais (o código com bug de cada um)
 │   ├── harness_bugs_reais/         # harnesses feitos à mão em 09/09 (legado)
 │   ├── coleta_bugsinpy/            # coleta do BugsInPy (origem da coorte de rótulo automático)
 │   ├── v1_sintetico/               # V1: 70 arquivos sintéticos

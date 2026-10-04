@@ -2,7 +2,7 @@
 
 ```
 dataset/
-  bugs_reais/           o dataset: 290 bugs reais, o código com bug de cada um
+  bugs_reais/           o dataset: 289 bugs reais, o código com bug de cada um
   harness_bugs_reais/   harnesses escritos à mão em 09/09 para parte desses bugs (legado)
   coleta_bugsinpy/      a coleta do BugsInPy que gerou a coorte de rótulo automático
   v1_sintetico/         as 70 funções sintéticas da V1
@@ -24,8 +24,8 @@ dataset/
 
 | Pasta | O que é | Versão | Bug validado? | O pipeline usa hoje? |
 |---|---|---|---|---|
-| `bugs_reais/` | **o dataset**: 290 bugs reais de 42 projetos | V2 | sim | **sim** |
-| `harness_bugs_reais/` | harnesses escritos à mão em 09/09 (116 bugs) e os 18 que o ESBMC rodava | V2 antiga | sim | só o avaliador, pelos nomes dos arquivos |
+| `bugs_reais/` | **o dataset**: 289 bugs reais de 41 projetos | V2 | sim | **sim** |
+| `harness_bugs_reais/` | harnesses escritos à mão em 09/09 (115 bugs) e os 18 que o ESBMC rodava | V2 antiga | sim | só o avaliador, pelos nomes dos arquivos |
 | `coleta_bugsinpy/` | os 199 bugs coletados do BugsInPy: arquivos baixados e rótulos | V2 | sim | não (o pipeline lê o `bugs_reais/`) |
 | `v1_sintetico/` | 70 funções sintéticas (bugs, funções limpas e code smells) | V1 | não se aplica | só no benchmark V1 |
 | `code_smell/` | 379 trechos com code smells rotulados por humanos (3 fontes externas) | nenhuma | rótulo humano | não |
@@ -38,9 +38,9 @@ conferência: o controle de confirmação falsa e a prova de onde está o bug.
 
 | Pasta ou arquivo | Conteúdo | Quem lê |
 |---|---|---|
-| `funcao_com_bug/` | só a função com bug, um arquivo por bug (290) | a LLM, para apontar o bug |
-| `arquivo_com_bug/` | o arquivo completo do projeto no commit com bug (273) | o pipeline, para montar o harness |
-| `arquivo_corrigido/` | o arquivo completo no commit da correção (272) | o controle: ali qualquer confirmação seria falsa |
+| `funcao_com_bug/` | só a função com bug, um arquivo por bug (289) | a LLM, para apontar o bug |
+| `arquivo_com_bug/` | o arquivo completo do projeto no commit com bug (280) | o pipeline, para montar o harness |
+| `arquivo_corrigido/` | o arquivo completo no commit da correção (280) | o controle: ali qualquer confirmação seria falsa |
 | `patches/` | o patch oficial da correção de cada bug | consulta e auditoria |
 | `ground_truths.json` | gabarito: função, expressão e categoria de cada bug | só a avaliação |
 | `manifest.json`, `manifest_full.json` | de onde veio cada bug (projeto, commits) e onde estão os arquivos | a avaliação e os scripts `fetch_v2_*` |
@@ -50,12 +50,12 @@ conferência: o controle de confirmação falsa e a prova de onde está o bug.
 
 | Coorte | Bugs | De onde | Como foi rotulado |
 |---|---|---|---|
-| rotulada à mão (sem campo `cohort`) | 116 | 85 do BugsInPy e 31 de commits de correção nos próprios projetos | à mão, com categoria da taxonomia de 8 valores |
+| rotulada à mão (sem campo `cohort`) | 115 | 85 do BugsInPy e 30 de commits de correção nos próprios projetos | à mão, com categoria da taxonomia de 8 valores |
 | `rotulo_automatico` | 174 | BugsInPy (critérios em `coleta_bugsinpy/README.md`) | automático: a expressão é a linha que a correção oficial mudou; a categoria vem de uma heurística (a maioria fica `unclassified`, pendente de revisão) |
 
-Na coorte rotulada à mão, 17 bugs não têm `arquivo_com_bug/`: o trecho de `funcao_com_bug/` foi
-recortado à mão e não coincide com o arquivo original, então o pipeline usa o trecho, que não traz os
-imports. Na coorte `rotulo_automatico`, o trecho sai automaticamente do arquivo real e sempre coincide.
+Na coorte rotulada à mão, 9 bugs não têm `arquivo_com_bug/`: o trecho de `funcao_com_bug/` foi
+editado à mão (linhas removidas, outra função colada junto) e não coincide com o arquivo original, então
+o pipeline usa o trecho, que não traz os imports. Docstrings e anotações de tipo são ignoradas nessa comparação. Na coorte `rotulo_automatico`, o trecho sai automaticamente do arquivo real e sempre coincide.
 
 A coorte `rotulo_automatico` é gerada por `python3 scripts/build_v2_bugsinpy.py`, que substitui essa
 coorte inteira a cada execução e não toca na outra. Dos 199 coletados, 23 ficaram de fora porque a

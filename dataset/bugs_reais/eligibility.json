@@ -150,10 +150,6 @@
       "status": "rejected",
       "reason": "Overflow depende de int8 do NumPy, codificado à mão no harness."
     },
-    "io_real_02": {
-      "status": "rejected",
-      "reason": "Overflow depende do uint64 da remerkleable, reduzido a 255 e codificado com assert."
-    },
     "ip_real_01": {
       "status": "rejected",
       "reason": "O bug real produz valor/decisão errada sem falha de runtime; o harness só detecta via oráculo diferencial ou flag, o que na prática é incorrect_result."
