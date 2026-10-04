@@ -28,13 +28,13 @@ class AnthropicAnalyzer:
         model: str = "claude-opus-4-8",
         timeout_seconds: int = 60,
         include_smells: bool = True,
-        v2_categories: bool = False,
+        v2_detection: bool = False,
     ) -> None:
         resolved_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.include_smells = include_smells
-        self.v2_categories = v2_categories
+        self.v2_detection = v2_detection
         if not resolved_key:
             raise ValueError(
                 "ANTHROPIC_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -46,9 +46,9 @@ class AnthropicAnalyzer:
         payload = {
             "model": self.model,
             "max_tokens": 4096,
-            "system": load_system_prompt(include_smells=self.include_smells, v2_categories=self.v2_categories),
+            "system": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection),
             "messages": [
-                {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells, v2_categories=self.v2_categories)},
+                {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells)},
             ],
         }
 
@@ -67,7 +67,7 @@ class AnthropicAnalyzer:
         ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
-        return normalize_findings(unit, findings)
+        return normalize_findings(unit, findings, v2_detection=self.v2_detection)
 
 
     def _post_json(self, payload: dict) -> dict:

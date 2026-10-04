@@ -30,7 +30,7 @@ class ChatCompletionsAnalyzer:
         timeout_seconds: int = 300,
         request_delay: float = 0.0,
         include_smells: bool = True,
-        v2_categories: bool = False,
+        v2_detection: bool = False,
     ) -> None:
         self.base_url = base_url.rstrip("/") + "/chat/completions"
         self.model = model
@@ -38,7 +38,7 @@ class ChatCompletionsAnalyzer:
         self.timeout_seconds = timeout_seconds
         self.request_delay = request_delay
         self.include_smells = include_smells
-        self.v2_categories = v2_categories
+        self.v2_detection = v2_detection
         self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
@@ -47,8 +47,8 @@ class ChatCompletionsAnalyzer:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": load_system_prompt(include_smells=self.include_smells, v2_categories=self.v2_categories)},
-                {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells, v2_categories=self.v2_categories)},
+                {"role": "system", "content": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection)},
+                {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells)},
             ],
             "response_format": {"type": "json_object"},
             "temperature": 0,
@@ -69,7 +69,7 @@ class ChatCompletionsAnalyzer:
         ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
-        return normalize_findings(unit, findings)
+        return normalize_findings(unit, findings, v2_detection=self.v2_detection)
 
 
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:

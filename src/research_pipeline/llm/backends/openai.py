@@ -23,14 +23,14 @@ class OpenAIResponsesAnalyzer:
         base_url: str = "https://api.openai.com/v1/responses",
         timeout_seconds: int = 60,
         include_smells: bool = True,
-        v2_categories: bool = False,
+        v2_detection: bool = False,
     ) -> None:
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self.model = model
         self.base_url = base_url
         self.timeout_seconds = timeout_seconds
         self.include_smells = include_smells
-        self.v2_categories = v2_categories
+        self.v2_detection = v2_detection
         if not self.api_key:
             raise ValueError(
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -43,14 +43,14 @@ class OpenAIResponsesAnalyzer:
             "input": [
                 {
                     "role": "system",
-                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells, v2_categories=self.v2_categories)}],
+                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection)}],
                 },
                 {
                     "role": "user",
-                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells, v2_categories=self.v2_categories)}],
+                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells)}],
                 },
             ],
-            "text": {"format": {"type": "json_schema", **(V2_FINDINGS_JSON_SCHEMA if self.v2_categories else FINDINGS_JSON_SCHEMA)}},
+            "text": {"format": {"type": "json_schema", **(V2_FINDINGS_JSON_SCHEMA if self.v2_detection else FINDINGS_JSON_SCHEMA)}},
         }
 
         started = time.monotonic()
@@ -68,7 +68,7 @@ class OpenAIResponsesAnalyzer:
         ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
-        return normalize_findings(unit, findings)
+        return normalize_findings(unit, findings, v2_detection=self.v2_detection)
 
 
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:

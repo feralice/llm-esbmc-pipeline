@@ -57,7 +57,7 @@ from research_pipeline.llm.backends.factory import (
     _GEMINI_OPENAI_BASE_URL,
     build_analyzer,
 )
-from research_pipeline.llm.categories import FORMAL_CATEGORIES, HARNESS_STRATEGIES
+from research_pipeline.llm.schema import V2_FINDINGS_JSON_SCHEMA
 from research_pipeline.pipeline import (
     Backend,
     run_pipeline_esbmc_direct,
@@ -469,8 +469,9 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
             for path in input_paths
         },
         "detector_prompt": sha256(
-            (REPO_ROOT / "src/research_pipeline/prompts/system_prompt.txt").read_bytes()
+            (REPO_ROOT / "src/research_pipeline/prompts/system_prompt_v2.txt").read_bytes()
         ).hexdigest(),
+        "detector_schema": sha256(json.dumps(V2_FINDINGS_JSON_SCHEMA, sort_keys=True).encode()).hexdigest(),
         "spec_prompt": sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/input_spec_prompt.txt").read_bytes()
         ).hexdigest(),
@@ -1145,7 +1146,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             ollama_base_url=args.ollama_base_url,
             timeout_seconds=args.llm_timeout,
             include_smells=False,
-            v2_categories=True,
+            v2_detection=True,
         )
         synthesizer = LLMClient(
             backend=synth_backend,
@@ -1234,9 +1235,6 @@ def mode_v2(args: argparse.Namespace) -> int:
     # append the same trace twice when the checkpoint already contains an
     # aggregate copy.
     detection_trace: list[dict] = []
-    # Accept legacy labels from test doubles/checkpoints while requiring new
-    # V2 model responses to use the four ESBMC-oriented categories.
-    formal_bug_categories = set(HARNESS_STRATEGIES) | set(FORMAL_CATEGORIES)
     detection_errors: list[dict[str, str]] = []
     analyzed_units = 0
     detection_inputs = [] if args.v2_stage == "synthesis" else input_paths
@@ -1289,32 +1287,25 @@ def mode_v2(args: argparse.Namespace) -> int:
             unit_candidates: list[Candidate] = []
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:
-                if (
-                    not finding.verifiable
-                    or finding.finding_type != "suspected_bug"
-                    or finding.category not in formal_bug_categories
-                ):
-                    if finding.finding_type in {
-                        "llm_false_positive", "out_of_scope_finding", "suspected_bug"
-                    }:
-                        unit_rejections.append(
-                            {
-                                "file": str(file_path),
-                                "function": unit.qualname,
-                                "category": finding.category,
-                                "finding_type": finding.finding_type,
-                                "expression": str(finding.metadata.get("expression", "")),
-                                "reason": str(finding.metadata.get("ast_rejection_reason", "")),
-                            }
-                        )
+                # The LLM decides: only findings it marks formally verifiable reach ESBMC.
+                if not finding.verifiable:
+                    unit_rejections.append(
+                        {
+                            "file": str(file_path),
+                            "function": unit.qualname,
+                            "finding_type": finding.finding_type,
+                            "expression": str(finding.metadata.get("expression", "")),
+                            "violated_property": str(finding.metadata.get("violated_property", "")),
+                        }
+                    )
                     continue
                 unit_candidates.append(
                     Candidate(
                         file=str(file_path),
                         function=unit.qualname,
-                        category=finding.category,
                         expression=str(finding.metadata.get("expression", "")),
                         note=finding.explanation,
+                        violated_property=str(finding.metadata.get("violated_property", "")),
                     )
                 )
             candidates.extend(unit_candidates)

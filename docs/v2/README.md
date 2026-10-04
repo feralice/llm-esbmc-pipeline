@@ -6,7 +6,9 @@ em [`desenho_motor_verify.md`](desenho_motor_verify.md).
 ## Fluxo
 
 1. **Detecção (LLM):** cada função do arquivo é analisada em uma chamada; a LLM devolve a
-   expressão suspeita, a categoria e uma explicação.
+   expressão suspeita, uma explicação, a propriedade violada e se o bug é verificável
+   formalmente (`verifiable`). Só os verificáveis seguem para o ESBMC; os outros contam na
+   detecção. Não há categoria (prompt em `src/research_pipeline/prompts/system_prompt_v2.txt`).
 2. **Aterramento (AST):** a expressão precisa existir na função; senão, `GROUNDING_FAILED`.
 3. **Recorte:** a função e o que ela usa são copiados do arquivo completo sem alteração lógica.
    Bibliotecas que o ESBMC não modela viram stubs; métodos ganham um `__init__` que cria o estado
@@ -50,7 +52,7 @@ Retomar uma rodada: repita o comando com `--resume`.
 | `verification.by_verdict` | contagem por veredito |
 | `verification.success_at_k` | fração de hipóteses com veredito do ESBMC em até k chamadas da LLM |
 | `evaluation.detection_by_location` | detecção por arquivo, função e expressão (RQ1) |
-| `evaluation.detection_by_category_label` | detecção por rótulo de categoria |
+| `evaluation.triage` | acerto da triagem: dos bugs achados, quantos o ESBMC pode confirmar e foram enviados (`sent_when_should`) e quantos não pode e foram segurados (`held_when_should`); o gabarito é `failure_kind` |
 | `evaluation.confirmed_by_location` | confirmações na função certa (RQ3) |
 | `results[]` | uma entrada por hipótese: veredito, motivo, tentativas, transformações, reexecução |
 

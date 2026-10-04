@@ -49,11 +49,13 @@ def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: st
     items, base = _expected_items(Path(ground_truth_path), evaluated_sources)
     confirmed = [
         {"file": r["hypothesis"]["file"], "function": r["hypothesis"]["function"],
-         "expression": r["hypothesis"]["suspect_expression"], "category": r["hypothesis"].get("category", "")}
+         "expression": r["hypothesis"]["suspect_expression"]}
         for r in results if r["verdict"] == CONFIRMED
     ]
+    confirmed_by_location = _bug_detection_metrics(items, confirmed, base)
+    confirmed_by_location.pop("triage")  # every confirmed hypothesis was sent; triage says nothing here
     return {
-        "detection_by_category_label": detection["category_label"],
+        "triage": detection["triage"],
         "detection_by_location": detection["bug_detection"],
-        "confirmed_by_location": _bug_detection_metrics(items, confirmed, base),
+        "confirmed_by_location": confirmed_by_location,
     }

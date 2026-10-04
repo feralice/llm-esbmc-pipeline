@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import ast
 import json
-from collections import Counter
 from pathlib import Path
 
 
@@ -23,30 +22,19 @@ def _prf(tp: int, fp: int, fn: int) -> dict[str, float | None]:
     return {"precision": precision, "recall": recall, "f1": f1}
 
 
-def _signature(file: str, category: str) -> tuple[str, str]:
-    return str(Path(file).resolve()), category
+# Ground-truth failure kinds the ESBMC can confirm (dataset/README.md, campo failure_kind).
+_REACHES_ESBMC = {"excecao_local": True, "excecao_modelavel": True,
+                  "excecao_nao_modelavel": False, "resultado_errado": False, "incerto": None}
 
 
-def _accepted_answers(item: dict) -> list[str]:
-    """Every label that counts as the right answer for a manifest item."""
-    return [*map(str, item.get("categories", [])), *map(str, item.get("harness_strategies", []))]
-
-
-def _expected_slots(item: dict) -> list[frozenset[str]]:
-    """One expected label per slot.
-
-    An item with ``harness_strategies`` is one slot answered by any listed
-    strategy (the V2 detector's four-value output). Legacy items keep one
-    slot per semantic category.
-    """
-    strategies = item.get("harness_strategies")
-    if strategies:
-        return [frozenset(map(str, strategies))]
-    return [frozenset({str(category)}) for category in item.get("categories", [])]
-
-
-def _slot_key(slot: frozenset[str]) -> str:
-    return "|".join(sorted(slot))
+def should_reach_esbmc(item: dict) -> bool | None:
+    """Whether the bug violates a property ESBMC checks on its own; None when unlabelled or uncertain."""
+    if "failure_kind" not in item:
+        return None
+    kind = str(item["failure_kind"])
+    if kind not in _REACHES_ESBMC:
+        raise ValueError(f"unknown failure_kind {kind!r} in item {item.get('id')}")
+    return _REACHES_ESBMC[kind]
 
 
 _STATEMENT_PREFIXES = ("if ", "elif ", "while ", "return ", "assert ")
@@ -88,18 +76,47 @@ def expressions_equivalent(expected: str, found: str) -> bool:
     return ast.dump(a) == ast.dump(b) or ast.dump(a) in _subexpressions(b) or ast.dump(b) in _subexpressions(a)
 
 
+def _ratio(part: int, whole: int) -> float | None:
+    return part / whole if whole else None
+
+
+def _triage_metrics(expected: list[dict], generated: list[dict]) -> dict:
+    """Did detection send to ESBMC exactly the found bugs that ESBMC can confirm?
+
+    Only bugs found as in ``expression_equivalent`` count, so a finding about another line of the same
+    function says nothing about the bug. A bug is "sent" when any matching finding was sent.
+    """
+    counts = {"should_send": {"sent": 0, "held": 0}, "should_hold": {"sent": 0, "held": 0}, "uncertain_label": 0}
+    for item in expected:
+        found = [c for c in generated if c["file"] == item["file"] and c["function"] in item["functions"]
+                 and (not item["expression"] or expressions_equivalent(item["expression"], c["expression"]))]
+        if not found:
+            continue
+        if item["reaches_esbmc"] is None:
+            counts["uncertain_label"] += 1
+            continue
+        group = counts["should_send" if item["reaches_esbmc"] else "should_hold"]
+        group["sent" if any(c["sent"] for c in found) else "held"] += 1
+    send, hold = counts["should_send"], counts["should_hold"]
+    return {
+        **counts,
+        "sent_when_should": _ratio(send["sent"], send["sent"] + send["held"]),
+        "held_when_should": _ratio(hold["held"], hold["sent"] + hold["held"]),
+    }
+
+
 def _bug_detection_metrics(
     expected_items: list[dict], candidates: list, base: Path,
     rejected_findings: list[dict] | None = None,
 ) -> dict:
-    """Measure case localization independently from category classification."""
+    """Measure case localization and the triage decision."""
     expected = [
         {
             "file": str((base / item["detection_file"]).resolve()),
             # "gamma / lgamma": the same bug appears in each listed function.
             "functions": {part.strip() for part in str(item.get("function", "")).split("/") if part.strip()},
             "expression": str(item.get("expression", "")),
-            "categories": set(_accepted_answers(item)),
+            "reaches_esbmc": should_reach_esbmc(item),
         }
         for item in expected_items
         if item.get("categories")
@@ -115,11 +132,10 @@ def _bug_detection_metrics(
             "expression": str(candidate.get("expression", ""))
             if isinstance(candidate, dict)
             else str(candidate.expression),
-            "category": str(candidate.get("category", ""))
-            if isinstance(candidate, dict)
-            else str(candidate.category),
+            # Candidates are what detection sent to ESBMC; rejected findings were held back.
+            "sent": not isinstance(candidate, dict) or bool(candidate.get("sent", True)),
         }
-        for candidate in [*candidates, *(rejected_findings or [])]
+        for candidate in [*candidates, *({**r, "sent": False} for r in (rejected_findings or []))]
     ]
 
     def count_matches(predicate) -> dict[str, float | None | int]:
@@ -171,33 +187,14 @@ def _bug_detection_metrics(
         )
     )
     detection_metrics = count_matches(matches_primary_location)
-    category_given_location = {
-        "tp": sum(
-            any(
-                candidate["file"] == item["file"]
-                and candidate["function"] in item["functions"]
-                and candidate["category"] in item["categories"]
-                for candidate in generated
-            )
-            for item in expected
-        ),
-    }
-    category_given_location["fp"] = 0
-    category_given_location["fn"] = len(expected) - category_given_location["tp"]
-    category_given_location.update(
-        _prf(
-            category_given_location["tp"],
-            category_given_location["fp"],
-            category_given_location["fn"],
-        )
-    )
+    triage = _triage_metrics(expected, generated)
     return {
         "detection": detection_metrics,
         "file": file_metrics,
         "location": location_metrics,
         "expression": expression_metrics,
         "expression_equivalent": equivalent_metrics,
-        "category_given_location": category_given_location,
+        "triage": triage,
     }
 
 
@@ -209,7 +206,7 @@ def evaluate_detection(
     evaluated_sources: list[str | Path] | None = None,
     rejected_findings: list[dict] | None = None,
 ) -> dict:
-    """Detection by category label (the original metric) and by location (file, function, expression)."""
+    """Detection by location (file, function, expression) and the triage of what goes to ESBMC."""
     gt_path = Path(ground_truth_path)
     manifest_file = Path(manifest_path) if manifest_path else gt_path.parent / "manifest.json"
     gt_items = json.loads(gt_path.read_text(encoding="utf-8")).get("items", [])
@@ -228,29 +225,13 @@ def evaluate_detection(
         if str(item.get("id")) not in patch_context_ids
         and (allowed is None or str((base / item["detection_file"]).resolve()) in allowed)
     ]
-    slots_by_file: dict[str, list[frozenset[str]]] = {}
-    for item in evaluated_items:
-        slots_by_file.setdefault(str((base / item["detection_file"]).resolve()), []).extend(_expected_slots(item))
-    expected = Counter((source, _slot_key(slot)) for source, slots in slots_by_file.items() for slot in slots)
-
-    def answer_signature(file: str, category: str) -> tuple[str, str]:
-        source, category = _signature(file, category)
-        slot = next((s for s in slots_by_file.get(source, []) if category in s), None)
-        return (source, _slot_key(slot)) if slot else (source, category)
-
-    generated = Counter(answer_signature(c.file, c.category) for c in candidates)
-    generated.update(answer_signature(str(i["file"]), str(i["category"])) for i in (rejected_findings or []))
-    tp = sum((expected & generated).values())
-    fp = sum((generated - expected).values())
-    fn = sum((expected - generated).values())
     location = _bug_detection_metrics(evaluated_items, candidates, base, rejected_findings)
     return {
         "detection_scope": "items without patch context",
         "excluded_patch_context_items": len(patch_context_ids),
-        "expected_labels": sum(expected.values()),
         # Primary location match (file, function and, when labelled, the exact expression).
         "detection": location["detection"],
-        # Category label per detection file, ignoring where in the file it points.
-        "category_label": {"tp": tp, "fp": fp, "fn": fn, **_prf(tp, fp, fn)},
+        # Whether detection sent to ESBMC the found bugs ESBMC can confirm, and held back the rest.
+        "triage": location["triage"],
         "bug_detection": location,
     }

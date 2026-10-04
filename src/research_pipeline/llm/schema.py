@@ -82,8 +82,20 @@ FINDINGS_JSON_SCHEMA: dict = {
     "strict": True,
 }
 
+_V1_ITEM = FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"]
+_V2_ITEM_PROPERTIES = {
+    "finding_type": {"type": "string", "enum": ["suspected_bug"]},
+    "metadata": deepcopy(_V1_ITEM["properties"]["metadata"]),
+    "explanation": {"type": "string"},
+    # Evidence first, decision last: see system_prompt_v2.txt, item 5.
+    "violated_property": {"type": "string"},
+    "verifiable": {"type": "boolean"},
+}
 V2_FINDINGS_JSON_SCHEMA: dict = deepcopy(FINDINGS_JSON_SCHEMA)
 V2_FINDINGS_JSON_SCHEMA["name"] = "pipeline_v2_findings"
-V2_FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"]["properties"]["category"]["enum"] = [
-    "native_runtime", "explicit_assertion", "differential_assertion", "unsupported",
-]
+V2_FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"] = {
+    "type": "object",
+    "additionalProperties": False,
+    "properties": _V2_ITEM_PROPERTIES,
+    "required": list(_V2_ITEM_PROPERTIES),
+}

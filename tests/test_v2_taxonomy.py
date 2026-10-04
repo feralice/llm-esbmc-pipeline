@@ -8,12 +8,11 @@ from research_pipeline.ast_utils import expression_exists_in_executable_ast
 from research_pipeline.evaluator import _flow_a_findings_from_direct, load_ground_truth_cases
 from research_pipeline.llm.categories import (
     FORMAL_CATEGORIES,
-    HARNESS_STRATEGIES,
     SUPPORTED_CATEGORIES,
 )
 from research_pipeline.llm.findings import normalize_findings
 from research_pipeline.llm.prompts import load_system_prompt
-from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA
+from research_pipeline.llm.schema import FINDINGS_JSON_SCHEMA, V2_FINDINGS_JSON_SCHEMA
 from research_pipeline.models import ESBMCDirectResult, Finding
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.report import UNWINDING_BOUND, _esbmc_result_matches_category
@@ -45,7 +44,7 @@ def _finding(category: str, expression: str) -> Finding:
     )
 
 
-def test_v2_categories_are_aligned_across_prompt_schema_and_registry() -> None:
+def test_v1_categories_are_aligned_across_prompt_schema_and_registry() -> None:
     enum = set(
         FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"]
         ["properties"]["category"]["enum"]
@@ -103,33 +102,31 @@ def test_v2_semantic_category_rejects_expression_not_in_source(tmp_path: Path) -
     assert normalized.verifiable is False
 
 
-@pytest.mark.parametrize("strategy", sorted(HARNESS_STRATEGIES - {"unsupported"}))
-def test_v2_harness_strategy_survives_shared_finding_normalizer(tmp_path: Path, strategy: str) -> None:
+@pytest.mark.parametrize("verifiable", [True, False])
+def test_v2_normalizer_keeps_the_llm_decision_and_drops_the_category(tmp_path: Path, verifiable: bool) -> None:
     path = tmp_path / "sample.py"
-    path.write_text(
-        "def sample(value: int) -> int:\n    return value + 1\n",
-        encoding="utf-8",
-    )
+    path.write_text("def sample(value: int) -> int:\n    return value + 1\n", encoding="utf-8")
     unit = preprocess_file(path)[0]
+    finding = _finding("unknown", "value + 1")
+    finding.verifiable = verifiable
 
-    normalized = normalize_findings(unit, [_finding(strategy, "value + 1")])[0]
+    normalized = normalize_findings(unit, [finding], v2_detection=True)[0]
 
     assert normalized.finding_type == "suspected_bug"
-    assert normalized.verifiable is True
+    assert normalized.verifiable is verifiable
+    assert normalized.category == ""
 
 
-def test_v2_unsupported_strategy_is_reported_but_not_sent_to_esbmc(tmp_path: Path) -> None:
-    path = tmp_path / "sample.py"
-    path.write_text(
-        "def sample(value: int) -> int:\n    return value + 1\n",
-        encoding="utf-8",
-    )
-    unit = preprocess_file(path)[0]
+def test_v2_prompt_and_schema_ask_for_no_category() -> None:
+    item = V2_FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"]
+    prompt = load_system_prompt(include_smells=False, v2_detection=True)
 
-    normalized = normalize_findings(unit, [_finding("unsupported", "value + 1")])[0]
-
-    assert normalized.finding_type == "suspected_bug"
-    assert normalized.verifiable is False
+    assert "category" not in item["properties"]
+    assert set(item["required"]) == set(item["properties"])
+    assert list(item["properties"])[-2:] == ["violated_property", "verifiable"]
+    assert '"category"' not in prompt
+    assert "native_runtime" not in prompt and "8 categorias" not in prompt
+    assert "violated_property" in prompt
 
 
 def test_ast_grounding_does_not_classify_bug_category() -> None:
@@ -249,3 +246,10 @@ def test_unwinding_assertion_is_not_a_flow_a_finding() -> None:
     )
     findings = _flow_a_findings_from_direct(direct)
     assert [(f.metadata["function"], f.category) for f in findings] == [("g", "out_of_bounds")]
+
+
+@pytest.mark.parametrize(("raw", "expected"), [(True, True), (False, False), ("false", False), ("True", True), (1, False)])
+def test_verifiable_must_be_a_real_true_to_reach_esbmc(raw, expected) -> None:
+    from research_pipeline.llm.findings import finding_from_dict
+
+    assert finding_from_dict({"finding_type": "suspected_bug", "verifiable": raw}).verifiable is expected

@@ -6,7 +6,6 @@ import json
 from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
 from ..models import CONFIDENCE_SOURCE_LLM_SELF_REPORT, CodeUnit, Finding
 from .categories import (
-    HARNESS_STRATEGIES,
     SOURCE_GROUNDED_CATEGORIES,
     SUPPORTED_CATEGORIES,
     VERIFIABLE_OPERATION_KIND,
@@ -66,7 +65,7 @@ def finding_from_dict(data: dict) -> Finding:
         title=str(data.get("title") or ""),
         explanation=str(data.get("explanation") or ""),
         evidence=_normalize_evidence(data.get("evidence", [])),
-        verifiable=bool(data.get("verifiable", False)),
+        verifiable=_strict_bool(data.get("verifiable", False)),
         confidence=str(data.get("confidence") or "low"),
         confidence_source=CONFIDENCE_SOURCE_LLM_SELF_REPORT,
         metadata={
@@ -78,11 +77,19 @@ def finding_from_dict(data: dict) -> Finding:
             "missing_guard": str(metadata_raw.get("missing_guard", "")),
             "context_needed": _metadata_strings(metadata_raw.get("context_needed", [])),
             "expected_exception": str(data.get("expected_exception", "")),
+            "violated_property": str(data.get("violated_property", "")),
         },
     )
 
 
-def normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]:
+def _strict_bool(value: object) -> bool:
+    """Backends without a strict schema may answer "false" as text; bool("false") would be True."""
+    if isinstance(value, str):
+        return value.strip().lower() == "true"
+    return value is True
+
+
+def normalize_findings(unit: CodeUnit, findings: list[Finding], *, v2_detection: bool = False) -> list[Finding]:
     """Normalize LLM findings for one CodeUnit.
 
     Supported categories are checked against the function source. Unsupported
@@ -98,12 +105,10 @@ def normalize_findings(unit: CodeUnit, findings: list[Finding]) -> list[Finding]
             used_ids=seen_ids,
         )
 
-        # V2 detection deliberately classifies a finding by harness strategy
-        # (native_runtime/explicit_assertion/...), while the legacy detector
-        # uses the semantic eight-category taxonomy.  Both are valid inputs to
-        # this shared normalizer; strategy findings are checked later by the
-        # harness synthesizer and ESBMC, not by the legacy AST category rules.
-        if finding.category not in SUPPORTED_CATEGORIES | HARNESS_STRATEGIES:
+        if v2_detection:
+            normalized.append(_v2_finding(finding, finding_id))
+            continue
+        if finding.category not in SUPPORTED_CATEGORIES:
             normalized.append(_out_of_scope_finding(finding, finding_id))
             continue
 
@@ -198,22 +203,30 @@ def _out_of_scope_finding(finding: Finding, finding_id: str) -> Finding:
     )
 
 
+def _v2_finding(finding: Finding, finding_id: str) -> Finding:
+    """V2 findings carry no category; grounding of the expression happens later, in verify."""
+    return Finding(
+        id=finding_id,
+        stage=finding.stage or "llm_analysis",
+        finding_type="suspected_bug",
+        category="",
+        title=finding.title,
+        explanation=finding.explanation,
+        evidence=finding.evidence,
+        verifiable=finding.verifiable,
+        confidence=finding.confidence,
+        confidence_source=finding.confidence_source,
+        metadata=dict(finding.metadata),
+    )
+
+
 def _normalize_supported_finding(unit: CodeUnit, finding: Finding, finding_id: str) -> Finding:
     """Normalize a finding whose category is inside the benchmark scope."""
     metadata = dict(finding.metadata)
     finding_type = finding.finding_type
     verifiable = finding.verifiable
 
-    if finding.category in HARNESS_STRATEGIES:
-        # V2 categories describe how synthesis should model the hypothesis;
-        # they are not semantic AST categories.  Do not run the legacy
-        # expression/category matcher here.  ``unsupported`` remains visible
-        # to the V2 report but cannot enter ESBMC as a candidate.
-        if finding.category == "unsupported":
-            finding_type, verifiable = "suspected_bug", False
-        elif verifiable:
-            finding_type, verifiable = "suspected_bug", True
-    elif verifiable:
+    if verifiable:
         finding_type, verifiable = _normalize_operation_finding(unit, finding.category, metadata)
 
     return Finding(

@@ -49,21 +49,21 @@ class _AnalyzerWithSmell:
                 metadata={},
             ),
             Finding(
-                id="fake-smell-bug",
+                id="wrong-result-bug",
                 stage="llm_analysis",
                 finding_type="suspected_bug",
-                category="many_parameters",
+                category="",
                 title="",
-                explanation="not a formal bug",
+                explanation="returns the wrong value, nothing raises",
                 evidence=[],
-                verifiable=True,
+                verifiable=False,
                 confidence="high",
                 metadata={"expression": "f(...)"},
             ),
         ]
 
 
-def test_v2_does_not_forward_smells_to_synthesis(tmp_path: Path, monkeypatch) -> None:
+def test_v2_forwards_only_findings_the_llm_marks_verifiable(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "sample.py"
     source.write_text("def f(value: int) -> int:\n    return value\n", encoding="utf-8")
     captured = {}
@@ -106,7 +106,7 @@ def test_v2_detects_before_synthesizing(tmp_path: Path, monkeypatch) -> None:
     assert len(captured["candidates"]) == 1
     candidate = captured["candidates"][0]
     assert candidate.function == "divide"
-    assert candidate.category == "division_by_zero"
+    assert candidate.category == ""  # V2 detection gives no category
     assert candidate.suspect_expression == "x // y"
 
 

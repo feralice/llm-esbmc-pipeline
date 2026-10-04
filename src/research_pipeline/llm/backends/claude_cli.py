@@ -36,24 +36,24 @@ class ClaudeCliAnalyzer:
         timeout_seconds: int = 300,
         claude_command: str = "claude",
         include_smells: bool = True,
-        v2_categories: bool = False,
+        v2_detection: bool = False,
     ) -> None:
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.claude_command = claude_command
         self.include_smells = include_smells
-        self.v2_categories = v2_categories
+        self.v2_detection = v2_detection
         self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         started = time.monotonic()
         try:
             response = self._run_cli(
-                load_system_prompt(include_smells=self.include_smells, v2_categories=self.v2_categories),
-                build_user_prompt(unit, include_smells=self.include_smells, v2_categories=self.v2_categories),
+                load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection),
+                build_user_prompt(unit, include_smells=self.include_smells),
             )
             findings = [finding_from_dict(item) for item in coerce_findings_payload(response["payload"])]
-            result = normalize_findings(unit, findings)
+            result = normalize_findings(unit, findings, v2_detection=self.v2_detection)
         except Exception as exc:
             self.telemetry_events.append(response_event(
                 provider="claude_cli",
@@ -72,7 +72,7 @@ class ClaudeCliAnalyzer:
 
 
     def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
-        schema = schema or (V2_FINDINGS_JSON_SCHEMA if self.v2_categories else FINDINGS_JSON_SCHEMA)["schema"]
+        schema = schema or (V2_FINDINGS_JSON_SCHEMA if self.v2_detection else FINDINGS_JSON_SCHEMA)["schema"]
         command = [
             self.claude_command, "--print",
             "--output-format", "json",

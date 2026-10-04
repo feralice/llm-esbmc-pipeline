@@ -41,7 +41,7 @@ def test_detection_counts_one_true_positive_and_ignores_duplicates_by_location(t
     assert metrics["detection"]["fn"] == 0
 
 
-def test_v2_reports_location_even_when_category_is_wrong(tmp_path) -> None:
+def test_v2_reports_location_whatever_the_category_label(tmp_path) -> None:
     detection = tmp_path / "detection"
     detection.mkdir()
     source = detection / "bug.py"
@@ -70,8 +70,6 @@ def test_v2_reports_location_even_when_category_is_wrong(tmp_path) -> None:
     assert metrics["bug_detection"]["file"]["tp"] == 1
     assert metrics["bug_detection"]["location"]["tp"] == 1
     assert metrics["bug_detection"]["expression"]["tp"] == 1
-    assert metrics["bug_detection"]["category_given_location"]["tp"] == 0
-    assert metrics["bug_detection"]["category_given_location"]["fn"] == 1
 
 
 def test_v2_excludes_patch_context_items_from_detection_metrics(tmp_path) -> None:

@@ -243,10 +243,13 @@ estratégia de harness e definia se a detecção estava certa.
 "uso de `None`" ou "fora dos limites"? A LLM que achava a função certa com a outra categoria era
 contada como erro, e o harness escolhido podia ser o errado.
 
-**Agora:** a categoria é só metadado.
-- O harness é o mesmo para qualquer bug.
-- A confirmação olha a exceção real, não a categoria.
-- A detecção é medida pela localização (função e expressão); a categoria é medida à parte (49%).
+**Depois (29/09):** a categoria virou só metadado. O harness passou a ser o mesmo para qualquer
+bug, e a confirmação olha a exceção real.
+
+**Agora (04/10):** a LLM não dá mais categoria. Para cada bug, ela diz se ele é verificável
+formalmente (viola uma propriedade que o ESBMC checa sozinho) e qual é a propriedade. Só esses vão
+ao ESBMC; os outros contam na detecção. A detecção é medida pela localização, e a decisão de mandar
+ou não é medida como triagem, contra o campo `failure_kind` do gabarito.
 
 | Categoria (rótulos no dataset) | Exceção que costuma confirmar |
 |---|---|

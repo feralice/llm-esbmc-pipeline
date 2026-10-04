@@ -15,7 +15,7 @@ como baseline experimental (seção de benchmark V1).
 
 ```mermaid
 flowchart TD
-    A[Código Python real] --> B[LLM indica função, expressão suspeita e categoria]
+    A[Código Python real] --> B[LLM indica função, expressão suspeita e se é verificável formalmente]
     B --> C[AST confere que a expressão existe na função]
     C --> D[Recorte verbatim + stubs de bibliotecas + estado do objeto]
     D --> E[LLM descreve só os tipos das entradas em JSON]
@@ -413,7 +413,7 @@ llm-esbmc-pipeline/
 │       ├── preprocess.py           # Extrai CodeUnit por função via AST
 │       ├── pipeline.py             # Orquestra os flows A/B/C da V1
 │       ├── report.py, evaluator.py # Classificações e métricas da V1
-│       ├── v2_evaluator.py         # Métricas de detecção da V2 (localização e categoria)
+│       ├── v2_evaluator.py         # Métricas de detecção da V2 (localização e triagem)
 │       ├── llm/                    # Backends da LLM de detecção (openai, anthropic, ollama, google, codex, claude_cli)
 │       ├── prompts/
 │       │   ├── system_prompt.txt       # Detecção

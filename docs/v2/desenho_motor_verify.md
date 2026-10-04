@@ -120,8 +120,9 @@ para k em 0..2:
 
 ## 7. O que muda nas perguntas de pesquisa
 
-- **RQ1 (detecção):** medida por localização (função + expressão), com a categoria como
-  análise secundária. Usa `_bug_detection_metrics` que já existe.
+- **RQ1 (detecção):** medida por localização (função + expressão). A LLM não dá categoria; em
+  vez disso decide se o bug é verificável formalmente, e essa decisão é medida como triagem
+  (`evaluation.triage`, gabarito `failure_kind`). Usa `_bug_detection_metrics`.
 - **RQ2 (síntese):** hipóteses do gabarito como entrada controlada (decisão pendente com o
   orientador). Métrica: `success@k` = chegou a um veredito do grupo verificado
   (`CONFIRMED`, `ESBMC_MISSED`, `UNVALIDATED`, `OTHER_FAILURE`, `NOT_CONFIRMED`)

@@ -33,7 +33,7 @@ def build_analyzer(
     google_api_key: str | None = None,
     timeout_seconds: int = 300,
     include_smells: bool = True,
-    v2_categories: bool = False,
+    v2_detection: bool = False,
 ) -> LLMAnalyzer:
     if backend not in _DEFAULT_MODEL:
         raise ValueError(
@@ -46,7 +46,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
-            v2_categories=v2_categories,
+            v2_detection=v2_detection,
         )
     if backend == "anthropic":
         return AnthropicAnalyzer(
@@ -54,7 +54,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
-            v2_categories=v2_categories,
+            v2_detection=v2_detection,
         )
     if backend == "ollama":
         return ChatCompletionsAnalyzer(
@@ -62,7 +62,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
-            v2_categories=v2_categories,
+            v2_detection=v2_detection,
         )
     if backend == "google":
         return ChatCompletionsAnalyzer(
@@ -72,10 +72,10 @@ def build_analyzer(
             timeout_seconds=timeout_seconds,
             request_delay=4.0,
             include_smells=include_smells,
-            v2_categories=v2_categories,
+            v2_detection=v2_detection,
         )
     if backend == "codex":
-        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_categories=v2_categories)
+        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection)
     if backend == "claude_cli":
-        return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_categories=v2_categories)
+        return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection)
     raise AssertionError(f"unreachable: {backend!r} passed the _DEFAULT_MODEL membership check above")
