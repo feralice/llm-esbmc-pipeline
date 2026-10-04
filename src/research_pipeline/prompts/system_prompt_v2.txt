@@ -42,11 +42,24 @@ sozinho, sem que ninguém escreva qual seria o resultado correto:
 - um `assert` alcançável com condição falsa;
 - estouro de aritmética de largura fixa (não vale para int Python comum).
 
-A exceção pode nascer numa função chamada, desde que essa função seja do
-próprio projeto ou tenha um comportamento documentado e simples de descrever.
-`verifiable` é false quando o bug só aparece como valor errado (nada quebra),
-ou quando a falha depende do ambiente (codificação do sistema, arquivos,
-rede, horário) ou do funcionamento interno de uma biblioteca complexa.
+A exceção pode nascer dentro de uma chamada, inclusive de biblioteca padrão ou
+de terceiros, quando a regra que a levanta é documentada e depende só dos
+argumentos. Exemplos: `int("abc")` levanta ValueError, `json.loads("")` levanta
+JSONDecodeError, `[].pop()` levanta IndexError, `"a" + 1` levanta TypeError.
+Isso é verificável: o harness modela essa regra, e a reexecução no CPython
+confere.
+
+`verifiable` é false somente quando:
+- o bug só aparece como valor errado (nada quebra);
+- a falha depende do ambiente (codificação do sistema, arquivos existentes,
+  rede, horário, sistema operacional);
+- a falha depende de comportamento interno de biblioteca que não se resume a
+  uma regra sobre os argumentos (formatos de tensor, estado interno de objetos
+  de bibliotecas numéricas).
+
+Na dúvida entre true e false para uma falha que levanta exceção, use true: o
+ESBMC e a reexecução no CPython decidem, e um envio a mais custa menos que um
+bug que nunca chega a ser verificado.
 
 Reporte também os bugs com `verifiable` false: eles contam na detecção, só não
 vão para o ESBMC.
