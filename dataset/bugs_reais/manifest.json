@@ -669,7 +669,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "AttributeError: método de str chamado em int"
+      "failure_kind_note": "AttributeError: método de str chamado em int",
+      "crash_expressions": [
+        "int_str = re.sub(r'[,\\.\\+]', '', int_str)"
+      ]
     },
     {
       "id": "tm_real_05",
@@ -1215,7 +1218,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "TypeError com args None"
+      "failure_kind_note": "TypeError com args None",
+      "crash_expressions": [
+        "raise TypeError(err)"
+      ]
     },
     {
       "id": "nm_real_08",
@@ -1420,7 +1426,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada"
+      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada",
+      "crash_expressions": [
+        "raise RuntimeError(\"inconsistent AsyncHTTPClient cache\")"
+      ]
     },
     {
       "id": "nm_real_14",
@@ -2751,7 +2760,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "HTTPException levantada na própria função com auto_error False"
+      "failure_kind_note": "HTTPException levantada na própria função com auto_error False",
+      "crash_expressions": [
+        "raise HTTPException(\n                status_code=HTTP_403_FORBIDDEN,\n                detail=\"Invalid authentication credentials\",\n            )"
+      ]
     },
     {
       "id": "ip_real_12",
@@ -3229,7 +3241,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida"
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida",
+      "crash_expressions": [
+        "raise RuntimeError(\"current IOLoop already exists\")"
+      ]
     },
     {
       "id": "ip_real_32",
@@ -3263,7 +3278,11 @@
       },
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24"
+      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24",
+      "crash_expressions": [
+        "d = time(H, M, S, u, tzinfo=tz)",
+        "d = datetime(y, m, d, H, M, S, u, tzinfo=tz)"
+      ]
     },
     {
       "id": "ip_real_33",
@@ -4297,6 +4316,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "UnicodeEncodeError: depende da codificação do sistema",
+      "crash_expressions": [
+        "f.write(lines)"
+      ],
       "detection_file": "funcao_com_bug/bip_black_21.py"
     },
     {
@@ -4325,6 +4347,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "UnicodeDecodeError: depende da codificação do sistema",
+      "crash_expressions": [
+        "obj = json.load(file_handle, object_pairs_hook=OrderedDict)"
+      ],
       "detection_file": "funcao_com_bug/bip_cookiecutter_1.py"
     },
     {
@@ -4596,6 +4621,9 @@
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "TypeError levantado por compute_mask de camada sem suporte a máscara; código do projeto: incluir Layer.compute_mask no harness",
+      "crash_expressions": [
+        "output_masks = to_list(\n                        layer.compute_mask(computed_tensors,\n                                           computed_masks))"
+      ],
       "detection_file": "funcao_com_bug/bip_keras_3.py"
     },
     {
@@ -4927,6 +4955,13 @@
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "erro do numpy em operação in-place com array inteiro; modelo: operação in-place com float em array inteiro",
+      "crash_expressions": [
+        "x /= 127.5",
+        "x /= 255.",
+        "x[0, :, :] -= mean[0]",
+        "x[:, 0, :, :] -= mean[0]",
+        "x[..., 0] -= mean[0]"
+      ],
       "detection_file": "funcao_com_bug/bip_keras_25.py"
     },
     {
@@ -5011,6 +5046,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ValueError de str.maketrans com tamanhos diferentes",
+      "crash_expressions": [
+        "translate_map = maketrans(filters, split * len(filters))"
+      ],
       "detection_file": "funcao_com_bug/bip_keras_33.py"
     },
     {
@@ -5066,6 +5104,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "erro de formato ao construir as células",
+      "crash_expressions": [
+        "cell.build(input_shape)"
+      ],
       "detection_file": "funcao_com_bug/bip_keras_38.py"
     },
     {
@@ -5339,6 +5380,10 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "teste_bugsinpy_lido",
       "failure_kind_note": "AttributeError: cmdline_args None recebe .insert",
+      "crash_expressions": [
+        "cmdline_args.insert(0, main_task_cls.task_family)",
+        "cmdline_args.insert(0, '--local-scheduler')"
+      ],
       "detection_file": "funcao_com_bug/bip_luigi_21.py"
     },
     {
@@ -5449,6 +5494,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "teste_bugsinpy_lido",
       "failure_kind_note": "levanta UnknownParameterException para parâmetro posicional não significativo",
+      "crash_expressions": [
+        "raise parameter.UnknownParameterException('%s: takes at most %d parameters (%d given)' % (exc_desc, len(positional_params), len(args)))"
+      ],
       "detection_file": "funcao_com_bug/bip_luigi_33.py"
     },
     {
@@ -5941,6 +5989,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "TypeError do numpy ao subtrair datas com fuso",
+      "crash_expressions": [
+        "left_distances = abs(self.values[left_indexer] - target)"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_7.py"
     },
     {
@@ -6406,6 +6457,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ValueError levantado na própria função para códigos Int64",
+      "crash_expressions": [
+        "raise ValueError(\"codes need to be array-like integers\")"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_58.py"
     },
     {
@@ -6490,6 +6544,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ValueError levantado na própria função para índice de float",
+      "crash_expressions": [
+        "raise ValueError(\n                        \"At based indexing on an non-integer \"\n                        \"index can only have non-integer \"\n                        \"indexers\"\n                    )"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_63.py"
     },
     {
@@ -6545,6 +6602,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ValueError levantado na própria função para índice de float",
+      "crash_expressions": [
+        "raise ValueError(\n                        \"At based indexing on an non-integer \"\n                        \"index can only have non-integer \"\n                        \"indexers\"\n                    )"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_69.py"
     },
     {
@@ -6848,6 +6908,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "erro ao comparar índice de datas com outro tipo",
+      "crash_expressions": [
+        "tgt_values = target.asi8"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_106.py"
     },
     {
@@ -7040,6 +7103,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "UnboundLocalError com axis='index'",
+      "crash_expressions": [
+        "ax = _maybe_transposed_self._get_axis_number(ax)"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_133.py"
     },
     {
@@ -7122,6 +7188,9 @@
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "TypeError do numpy ao subtrair booleanos; modelo: subtração de booleanos levanta TypeError",
+      "crash_expressions": [
+        "out_arr[res_indexer] = arr[res_indexer] - arr[lag_indexer]"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_142.py"
     },
     {
@@ -7342,6 +7411,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "teste_bugsinpy_lido",
       "failure_kind_note": "TypeError em NDFrame.rename com objeto não chamável",
+      "crash_expressions": [
+        "return super().rename(index=index, **kwargs)"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_158.py"
     },
     {
@@ -7370,6 +7442,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "AttributeError: dtype de Series não tem value_counts",
+      "crash_expressions": [
+        "s = o.dtypes.value_counts()"
+      ],
       "detection_file": "funcao_com_bug/bip_pandas_160.py"
     },
     {
@@ -7590,6 +7665,9 @@
       "failure_kind": "excecao_nao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "erro do interpretador na criação da classe sem __classcell__",
+      "crash_expressions": [
+        "_class = super(ItemMeta, mcs).__new__(mcs, 'x_' + class_name, new_bases, attrs)"
+      ],
       "detection_file": "funcao_com_bug/bip_scrapy_8.py"
     },
     {
@@ -7783,6 +7861,10 @@
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "TypeError levantado por to_unicode com valor não texto; código do projeto: incluir to_unicode no harness",
+      "crash_expressions": [
+        "return to_bytes(value, encoding=self.encoding)",
+        "return to_unicode(value, encoding=self.encoding)"
+      ],
       "detection_file": "funcao_com_bug/bip_scrapy_40.py"
     },
     {
@@ -7947,6 +8029,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ValueError ao desempacotar alias sem espaço",
+      "crash_expressions": [
+        "name, value = alias.replace('alias ', '', 1).split(' ', 1)"
+      ],
       "detection_file": "funcao_com_bug/bip_thefuck_4.py"
     },
     {
@@ -8188,9 +8273,9 @@
         "source_file": "tornado/websocket.py",
         "source_function": "WebSocketProtocol13.accept_connection"
       },
-      "failure_kind": "excecao_modelavel",
+      "failure_kind": "resultado_errado",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "ValueError levantado ao ler cabeçalhos ausentes; código do projeto: incluir a função que lê os cabeçalhos no harness",
+      "failure_kind_note": "o ValueError é capturado pelo try/except da própria função; falta responder 400",
       "detection_file": "funcao_com_bug/bip_tornado_8.py"
     },
     {
@@ -8273,6 +8358,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ExtractorError levantado na própria função para chamada sem argumentos",
+      "crash_expressions": [
+        "raise ExtractorError('Unsupported JS expression %r' % expr)"
+      ],
       "detection_file": "funcao_com_bug/bip_youtube_dl_4.py"
     },
     {
@@ -8487,9 +8575,9 @@
         "source_file": "youtube_dl/utils.py",
         "source_function": "urljoin"
       },
-      "failure_kind": "excecao_local",
+      "failure_kind": "resultado_errado",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "TypeError: re.match de padrão str sobre bytes",
+      "failure_kind_note": "path em bytes devolve None na primeira checagem, sem exceção",
       "detection_file": "funcao_com_bug/bip_youtube_dl_21.py"
     },
     {

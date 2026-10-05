@@ -93,8 +93,8 @@ def build() -> Counter:
                 "categories": [label["category"]], "line": label.get("line"),
                 "label_sources": {"expression": label["expression_source"], "category": label["category_source"]},
                 "review": label["review"], "provenance": provenance}
-        item.update({key: label[key] for key in ("failure_kind", "failure_kind_source", "failure_kind_note")
-                     if key in label})
+        item.update({key: label[key] for key in ("failure_kind", "failure_kind_source", "failure_kind_note",
+                                                 "crash_expressions") if key in label})
         manifest.append({**item, "detection_file": f"funcao_com_bug/{name}"})
         truths.append({**item, "file": name})
         counts["kept"] += 1

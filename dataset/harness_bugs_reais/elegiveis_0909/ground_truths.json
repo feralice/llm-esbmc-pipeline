@@ -199,6 +199,9 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida",
+      "crash_expressions": [
+        "raise RuntimeError(\"current IOLoop already exists\")"
+      ],
       "esbmc_property": "RuntimeError",
       "eligibility_reason": "RuntimeError real lançado com condição invertida em entrada válida; fix inverte o teste."
     },

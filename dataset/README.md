@@ -71,15 +71,24 @@ que falha (`failure_kind_source`); `failure_kind_note` dá o motivo. É o gabari
 
 | Valor | Significado | À mão | Automático | Total |
 |---|---|---|---|---|
-| `excecao_local` | a versão com bug levanta exceção numa operação da própria função | 44 | 16 | 60 |
-| `excecao_modelavel` | a exceção vem de outra função do projeto ou de biblioteca com regra simples e documentada | 10 | 14 | 24 |
+| `excecao_local` | a versão com bug levanta exceção numa operação da própria função | 44 | 15 | 59 |
+| `excecao_modelavel` | a exceção vem de outra função do projeto ou de biblioteca com regra simples e documentada | 10 | 13 | 23 |
 | `excecao_nao_modelavel` | a exceção depende do ambiente, do interpretador ou de biblioteca complexa (TensorFlow, pandas por dentro) | 4 | 20 | 24 |
-| `resultado_errado` | nada quebra, a função devolve o valor errado | 56 | 120 | 176 |
+| `resultado_errado` | nada quebra, a função devolve o valor errado | 56 | 122 | 178 |
 | `incerto` | nem o patch nem o teste deixam claro | 1 | 4 | 5 |
 
-Todos entram na métrica de detecção da LLM; só os dois primeiros (84) são alcançáveis pelo ESBMC.
+Todos entram na métrica de detecção da LLM; só os dois primeiros (82) são alcançáveis pelo ESBMC.
 Na coorte à mão, a categoria antiga nem sempre bate com isso: vários `assertion_violation` vinham do
 harness manual de 09/09, que comparava o resultado, e são `resultado_errado`.
+
+### Onde o bug quebra (campo `crash_expressions`)
+
+Um bug de exceção tem dois lugares: onde ele nasce (`expression`, a linha que a correção mexe) e
+onde ele quebra na versão com bug. Quando são linhas diferentes, `crash_expressions` lista as linhas
+que levantam a exceção (27 bugs; mais de uma quando há vários caminhos, como no `bip_keras_25`).
+Na avaliação, apontar qualquer uma das duas conta como achar o bug. Isso importa sobretudo na coorte
+`rotulo_automatico`: quando a correção só acrescenta código, `expression` é a linha logo depois da
+inserção, que não tem defeito nenhum (no `bip_keras_25`, `mode == 'tf'`; a quebra é `x /= 127.5`).
 
 Os 12 bugs fora da métrica de detecção estão em `manifest.json`, campo
 `evaluation_policy.patch_context_items`: só se percebem vendo a correção (ex.: uma constante errada).

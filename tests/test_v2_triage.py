@@ -106,3 +106,16 @@ def test_a_finding_on_another_line_of_the_same_function_does_not_count_for_the_b
 def test_an_unknown_failure_kind_is_an_error_not_an_uncertain_label() -> None:
     with pytest.raises(ValueError, match="excecao_locl"):
         should_reach_esbmc({"id": "typo", "failure_kind": "excecao_locl"})
+
+
+def test_the_crash_site_counts_as_finding_the_bug_like_the_patched_line(tmp_path) -> None:
+    ground_truth = _dataset(tmp_path, [{"id": "crash", "failure_kind": "excecao_local",
+                                        "expression": "mode == 'tf'", "crash_expressions": ["x /= 127.5"]}])
+    at_crash = Candidate(str(tmp_path / "detection" / "crash.py"), "f", expression="x /= 127.5")
+    elsewhere = Candidate(str(tmp_path / "detection" / "crash.py"), "f", expression="x -= 1.")
+
+    hit = evaluate_detection(candidates=[at_crash], ground_truth_path=ground_truth)
+    miss = evaluate_detection(candidates=[elsewhere], ground_truth_path=ground_truth)
+
+    assert hit["detection"]["tp"] == 1 and hit["triage"]["should_send"] == {"sent": 1, "held": 0}
+    assert miss["detection"]["tp"] == 0 and miss["triage"]["should_send"] == {"sent": 0, "held": 0}

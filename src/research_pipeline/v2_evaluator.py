@@ -76,6 +76,15 @@ def expressions_equivalent(expected: str, found: str) -> bool:
     return ast.dump(a) == ast.dump(b) or ast.dump(a) in _subexpressions(b) or ast.dump(b) in _subexpressions(a)
 
 
+def _points_at(item: dict, expression: str, *, equivalent: bool) -> bool:
+    """An unlabelled item matches any expression; otherwise the cause or any crash site counts."""
+    if not item["expressions"]:
+        return True
+    if equivalent:
+        return any(expressions_equivalent(expected, expression) for expected in item["expressions"])
+    return expression in item["expressions"]
+
+
 def _ratio(part: int, whole: int) -> float | None:
     return part / whole if whole else None
 
@@ -89,7 +98,7 @@ def _triage_metrics(expected: list[dict], generated: list[dict]) -> dict:
     counts = {"should_send": {"sent": 0, "held": 0}, "should_hold": {"sent": 0, "held": 0}, "uncertain_label": 0}
     for item in expected:
         found = [c for c in generated if c["file"] == item["file"] and c["function"] in item["functions"]
-                 and (not item["expression"] or expressions_equivalent(item["expression"], c["expression"]))]
+                 and _points_at(item, c["expression"], equivalent=True)]
         if not found:
             continue
         if item["reaches_esbmc"] is None:
@@ -115,7 +124,8 @@ def _bug_detection_metrics(
             "file": str((base / item["detection_file"]).resolve()),
             # "gamma / lgamma": the same bug appears in each listed function.
             "functions": {part.strip() for part in str(item.get("function", "")).split("/") if part.strip()},
-            "expression": str(item.get("expression", "")),
+            # Where the patch fixes the bug, then where the buggy version raises (exception bugs only).
+            "expressions": [e for e in [str(item.get("expression", "")), *item.get("crash_expressions", [])] if e],
             "reaches_esbmc": should_reach_esbmc(item),
         }
         for item in expected_items
@@ -161,9 +171,7 @@ def _bug_detection_metrics(
             return False
         if item["functions"] and candidate["function"] not in item["functions"]:
             return False
-        if item["expression"] and candidate["expression"] != item["expression"]:
-            return False
-        return True
+        return _points_at(item, candidate["expression"], equivalent=False)
 
     file_metrics = count_matches(lambda item, candidate: candidate["file"] == item["file"])
     location_metrics = count_matches(
@@ -176,14 +184,14 @@ def _bug_detection_metrics(
         lambda item, candidate: (
             candidate["file"] == item["file"]
             and candidate["function"] in item["functions"]
-            and candidate["expression"] == item["expression"]
+            and bool(item["expressions"]) and _points_at(item, candidate["expression"], equivalent=False)
         )
     )
     equivalent_metrics = count_matches(
         lambda item, candidate: (
             candidate["file"] == item["file"]
             and candidate["function"] in item["functions"]
-            and expressions_equivalent(item["expression"], candidate["expression"])
+            and bool(item["expressions"]) and _points_at(item, candidate["expression"], equivalent=True)
         )
     )
     detection_metrics = count_matches(matches_primary_location)

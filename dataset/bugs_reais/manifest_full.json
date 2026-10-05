@@ -669,7 +669,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "AttributeError: método de str chamado em int"
+      "failure_kind_note": "AttributeError: método de str chamado em int",
+      "crash_expressions": [
+        "int_str = re.sub(r'[,\\.\\+]', '', int_str)"
+      ]
     },
     {
       "id": "tm_real_05",
@@ -1215,7 +1218,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "TypeError com args None"
+      "failure_kind_note": "TypeError com args None",
+      "crash_expressions": [
+        "raise TypeError(err)"
+      ]
     },
     {
       "id": "nm_real_08",
@@ -1420,7 +1426,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada"
+      "failure_kind_note": "RuntimeError levantado na própria função quando o cache não tem a entrada",
+      "crash_expressions": [
+        "raise RuntimeError(\"inconsistent AsyncHTTPClient cache\")"
+      ]
     },
     {
       "id": "nm_real_14",
@@ -2751,7 +2760,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "HTTPException levantada na própria função com auto_error False"
+      "failure_kind_note": "HTTPException levantada na própria função com auto_error False",
+      "crash_expressions": [
+        "raise HTTPException(\n                status_code=HTTP_403_FORBIDDEN,\n                detail=\"Invalid authentication credentials\",\n            )"
+      ]
     },
     {
       "id": "ip_real_12",
@@ -3229,7 +3241,10 @@
       },
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida"
+      "failure_kind_note": "RuntimeError levantado na própria função pela condição invertida",
+      "crash_expressions": [
+        "raise RuntimeError(\"current IOLoop already exists\")"
+      ]
     },
     {
       "id": "ip_real_32",
@@ -3263,7 +3278,11 @@
       },
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
-      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24"
+      "failure_kind_note": "modelo: datetime levanta ValueError com hora 24",
+      "crash_expressions": [
+        "d = time(H, M, S, u, tzinfo=tz)",
+        "d = datetime(y, m, d, H, M, S, u, tzinfo=tz)"
+      ]
     },
     {
       "id": "ip_real_33",
