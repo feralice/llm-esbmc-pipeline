@@ -16,27 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.candidate import Candidate  # noqa: E402
-from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
 from research_pipeline.verify.outcome import EsbmcReading, _python_exceptions, final_verdict  # noqa: E402
-from research_pipeline.verify.render import Program  # noqa: E402
 from research_pipeline.verify.replay import ReplayVerdict, concrete_replay  # noqa: E402
+from research_pipeline.verify.validation import program_for_result  # noqa: E402
 from research_pipeline.verify.report import evaluate_verify, summarize  # noqa: E402
 
-import ast  # noqa: E402
 
 _CHECKED_READINGS = {"violation", "artifact", "safe"}
-
-
-def _program(path: Path, hypothesis: dict) -> Program | None:
-    source = path.read_text(encoding="utf-8")
-    function = find_function(ast.parse(source), hypothesis["function"])
-    if function is None:
-        return None
-    nodes = expression_nodes(function, hypothesis["suspect_expression"])
-    if not nodes:
-        return None
-    spans = tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes}))
-    return Program(source, 0, spans, (), (function.lineno, function.end_lineno))
 
 
 def reverdict_result(result: dict) -> dict:
@@ -52,7 +38,7 @@ def reverdict_result(result: dict) -> dict:
         replay = ReplayVerdict("unavailable", reason="rewritten artifact has no preserved replay program")
     else:
         try:
-            program = _program(Path(replay_path or result["program_path"]), result["hypothesis"])
+            program = program_for_result(Path(replay_path or result["program_path"]), result["hypothesis"])
         except (OSError, SyntaxError) as exc:
             replay = ReplayVerdict("unavailable", reason=f"cannot read replay program: {exc}")
         else:

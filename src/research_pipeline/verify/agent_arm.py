@@ -17,7 +17,7 @@ import time
 from pathlib import Path
 from typing import Callable
 
-from .astutil import expression_nodes, find_function
+from .astutil import body_signature, expression_nodes, find_function
 from .context import context_module
 
 from .hypothesis import BugHypothesis
@@ -144,14 +144,6 @@ def _source_for(cwd: Path, prompt: str) -> str:
     return sliced or source[:_SOURCE_LIMIT]
 
 
-def _body(function: ast.FunctionDef) -> list[str]:
-    body = function.body
-    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
-            and isinstance(body[0].value.value, str):
-        body = body[1:]
-    return [ast.dump(stmt, include_attributes=False) for stmt in body]
-
-
 def _target(tree: ast.Module, qualified: str) -> ast.FunctionDef | None:
     found = find_function(tree, qualified)
     if found is not None:
@@ -237,7 +229,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
     if not nodes:
         return AGENT_FAILED, "suspect expression missing from the harness target"
     original_target = _target(original_tree, h.function)
-    result["target_preserved"] = original_target is not None and _body(original_target) == _body(target)
+    result["target_preserved"] = original_target is not None and body_signature(original_target) == body_signature(target)
 
     esbmc, reading, how = check(harness_path, esbmc_command=esbmc_command, bound=bound,
                                 timeout_seconds=timeout_seconds, work_dir=output_dir or case_dir)

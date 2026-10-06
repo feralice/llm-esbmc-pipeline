@@ -62,6 +62,15 @@ def _matching(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
             if isinstance(node, kind) and ast.dump(node, include_attributes=False) == wanted]
 
 
+def body_signature(function: ast.FunctionDef) -> list[str]:
+    """The body without its docstring as AST dumps: equal signatures run the same code."""
+    body = function.body
+    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
+            and isinstance(body[0].value.value, str):
+        body = body[1:]
+    return [ast.dump(stmt, include_attributes=False) for stmt in body]
+
+
 def expression_nodes(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
     """Nodes equal to the suspect; datasets give either an expression or one statement."""
     for reading in _readings(expression):
