@@ -740,6 +740,9 @@ def _is_verifier_artifact(kind: str, file: str) -> bool:
     """
     if kind.startswith("unwinding assertion"):
         return True
+    # A NULL pointer reaches a model only when the program passed None (``None.insert(x)``).
+    if "null pointer" in kind.lower():
+        return False
     return any(part in file for part in _ESBMC_LIBRARY_PATHS) and not _PYTHON_EXCEPTION_MESSAGE.match(kind)
 
 

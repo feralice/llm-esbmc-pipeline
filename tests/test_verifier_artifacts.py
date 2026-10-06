@@ -57,6 +57,15 @@ USER_NULL_DEREFERENCE = """Violated property:
 VERIFICATION FAILED
 """
 
+# `cmdline_args.insert(0, x)` with cmdline_args None (bip_luigi_21, 2026-10-05 agent run).
+NONE_RECEIVER_IN_LIST_MODEL = """Violated property:
+  file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 540 column 3 function __ESBMC_list_insert
+  dereference failure: NULL pointer
+  CWE: CWE-476
+
+VERIFICATION FAILED
+"""
+
 
 def test_details_record_the_file_of_each_violated_property() -> None:
     details = _extract_esbmc_details(STRSTR_INVALID_POINTER + NATIVE_INDEX_ERROR)
@@ -72,6 +81,7 @@ def test_details_record_the_file_of_each_violated_property() -> None:
         (LIST_POP_INDEX_ERROR, False),
         (INT_INVALID_LITERAL, False),
         (USER_NULL_DEREFERENCE, False),
+        (NONE_RECEIVER_IN_LIST_MODEL, False),
         (STRSTR_INVALID_POINTER + NATIVE_INDEX_ERROR, False),
     ],
 )
