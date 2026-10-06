@@ -138,7 +138,7 @@ Detalhes: `docs/projeto/harness_oraculo_esbmc_2026-10-01.md`.
 | 06/10 | `agent-2026-10-05-sonnet-reverify.json` | reavaliação dos harnesses do agente, sem agente | + não commitado (→ fcf3611) | confirmados 2 → 4 |
 | 06/10 | `control-fixed-2026-10-06` | controle do nível 1 nas versões corrigidas | + não commitado (→ 4160200, fcf3611) | 1 confirmação na versão corrigida (ir_real_03) |
 | 06/10 | `replay-2026-10-06-nullrule` | regra do ponteiro nulo nos "seguro" do nível 1 | fcf3611 | nenhum veredito mudou |
-| 06/10 em diante | `agent-2026-10-06-e2e` | **agente em todas as 156 travadas**, sem filtro | fcf3611 | em andamento |
+| 06/10 em diante | `agent-2026-10-06-e2e` | **agente em todas as 156 travadas**, sem filtro | fcf3611 | parado em 82 de 156: 4 confirmações, nenhuma no bug do gabarito |
 
 ## Rodadas
 
@@ -236,14 +236,21 @@ Detalhes: `docs/projeto/harness_oraculo_esbmc_2026-10-01.md`.
 - **Resultado:** nenhuma das 9 hipóteses mudou. (O `scripts/v2_reverdict.py` não serve para isso: ele
   reexecuta sem os valores do contraexemplo e não refaz a leitura do ESBMC.)
 
-### agent-2026-10-06-e2e (em andamento)
+### agent-2026-10-06-e2e (parado em 82 de 156)
 
 - **Objetivo:** número ponta a ponta honesto do nível 2: agente em todas as hipóteses travadas no
   nível 1, sem usar o gabarito na escolha.
 - **Entrada:** 156 hipóteses (as 184 travadas distintas menos as 28 já feitas em `agent-2026-10-05-sonnet`).
 - **Comando:** `scripts/v2_agent_arm.py --report artifacts/v2/agent-2026-10-06-e2e/input_report.json --model claude-sonnet-5-5 --out artifacts/v2/agent-2026-10-06-e2e`.
 - **Observação:** processos `esbmc` órfãos do agente acumularam memória (21 de 23 GB) e foram
-  encerrados com `kill -9` em 06/10; correção planejada (parte 0 da especificação de 06/10).
+  encerrados com `kill -9` em 06/10; corrigido em `procs.run_group` (o pipeline adota e mata os
+  órfãos), que também pega os laços de espera que o agente deixava em segundo plano.
+- **Resultado (parado em 06/10, 82 de 156):** UNSUPPORTED 29, UNVALIDATED 17, AGENT_FAILED 13,
+  CONFIRMED 4, NOT_CONFIRMED 4, ESBMC_ERROR 4, MISSING_DEPENDENCY 4, ESBMC_TIMEOUT 3, ESBMC_MISSED 3,
+  OTHER_FAILURE 1. As 4 confirmações (bip_fastapi_10, bip_matplotlib_16, bip_matplotlib_6,
+  bip_youtube_dl_3) não estão na linha do bug do gabarito.
+- **Decisão:** parado porque não acrescentava à métrica principal. Daqui em diante as mudanças de
+  harness são medidas num conjunto fixo de casos difíceis, não em rodadas completas.
 
 ## Resultado consolidado (até 06/10)
 

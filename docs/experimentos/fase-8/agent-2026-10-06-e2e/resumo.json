@@ -7,14 +7,15 @@
     "input_report.json"
   ],
   "vereditos (agent_results.json)": {
-    "AGENT_FAILED": 10,
-    "UNSUPPORTED": 20,
+    "AGENT_FAILED": 13,
+    "UNSUPPORTED": 29,
     "ESBMC_TIMEOUT": 3,
     "NOT_CONFIRMED": 4,
-    "CONFIRMED": 3,
+    "CONFIRMED": 4,
     "ESBMC_ERROR": 4,
-    "ESBMC_MISSED": 2,
-    "UNVALIDATED": 11,
-    "MISSING_DEPENDENCY": 1
+    "ESBMC_MISSED": 3,
+    "UNVALIDATED": 17,
+    "MISSING_DEPENDENCY": 4,
+    "OTHER_FAILURE": 1
   }
 }

@@ -2016,5 +2016,850 @@
       "plugin_command": "",
       "allow_simplify": false
     }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_168.py",
+      "function": "_get_grouper",
+      "suspect_expression": "if not all_in_columns_index:",
+      "line": 0,
+      "trigger_condition": "all_in_columns_index is assigned only when obj is DataFrame or Series. obj is a free parameter and only needs _get_axis, so another NDFrame subclass reaches `if not all_in_columns_index` with the name unbound. The path needs keys with no callables, arraylikes or groupers, match_axis_length true and level None.",
+      "category": "",
+      "hypothesis_id": "09be9cbbe236"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/09be9cbbe236/harness.py",
+    "seconds": 900.153,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_19.py",
+      "function": "_LocIndexer._getitem_axis",
+      "suspect_expression": "if not isinstance(key, tuple) and len(key) and (not isinstance(key[0], tuple)):",
+      "line": 0,
+      "trigger_condition": "With a MultiIndex axis, a non-empty set key is list-like, not Series/ndarray, not DataFrame, has no ndim, so it skips the list() conversion and reaches len(key) true. Then key[0] subscripts a set. No try/except wraps it.",
+      "category": "",
+      "hypothesis_id": "d5f357ea2365"
+    },
+    "verdict": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 117,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/d5f357ea2365/harness.py",
+    "agent_output": "t from `key: set[tuple[int, int]]` and `-> int` on the signature. The driver calls it at module level with a set built from nondet ints, `{(a, b)}`.\n- **Why tuple elements:** ESBMC segfaulted (exit 139) with plain `set[int]`, `list[int]`, `set[str]` and `set[float]` keys. The crash happens when a conditional `key = list(key)` is followed by `isinstance(key[0], tuple)`, so I switched the elements to tuples. With tuple elements the `isinstance` is always true, so the \"not a tuple\" half of the suspect expression is never explored. The `key[0]` on the set is still evaluated.\n- **Stubs:** All stubs are inside `harness.py`, with concrete types instead of `Any`. `Obj.iloc` is set in `__init__` and `np.ndarray` is an alias to a top-level class, because ESBMC could not resolve a class-level attribute or a nested class.\n- **Other warnings:** ESBMC prints mypy type warnings because the body reassigns `key` to a list or tuple, and it prints \"Default to double\" warnings. Neither blocks the verdict.",
+    "unwind": 5,
+    "seconds": 361.953,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py",
+      "function": "IntervalArray.__setitem__",
+      "suspect_expression": "left.values[key] = value_left",
+      "line": 0,
+      "trigger_condition": "For an integer-subtype IntervalArray, a list-like NA value such as [np.nan] is not scalar, so it goes to the else branch and needs_float_conversion stays False. IntervalArray([np.nan]) yields float left/right, which are then assigned into the integer-typed left.values. NumPy raises ValueError: cannot convert float NaN to integer.",
+      "category": "",
+      "hypothesis_id": "fd97310999a3"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Object \"left\" not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/fd97310999a3/harness.py",
+    "agent_output": " `TypeError: astype() is only supported on numpy arrays`. That held for a plain stub class and for a class named `ndarray`.\n- **Dead end with real arrays:** Making `left` a real `np.array` lets `.astype` convert. But then the body's `left.values[key] = ...` fails with `Unexpected type in int/ptr typecast`, because ESBMC doesn't model `.values` on NumPy arrays.\n- **Ruled out:** The tuple unpacking, the isinstance branches, the try/except with the f-string, and the `copy()` / `.values[key]` pattern all convert fine in the probes. I did not confirm why the full harness reports `left not found` instead of the `astype` error.\n\n**What would unblock it:** One option is to drop the \"body unchanged\" requirement just for the `left.astype(\"float\")` and `right.astype(\"float\")` lines. The hypothesis never reaches them anyway, since `needs_float_conversion` stays False for a list value. The other option is to find an ESBMC-supported way to give `left` both `.astype` and `.values`. Which do you want?",
+    "unwind": 5,
+    "seconds": 290.503,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_61.py",
+      "function": "Series._get_with",
+      "suspect_expression": "key = list(key)",
+      "line": 0,
+      "trigger_condition": "key is a free parameter. A non-iterable scalar such as an int or float is not a slice, DataFrame, tuple, list, ndarray, Series or Index, so it reaches line 17. list(5) then raises TypeError. No try/except covers this line, since the earlier try only wraps the tuple branch.",
+      "category": "",
+      "hypothesis_id": "9ccf6f76f3c9"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "dereference failure: Access to object out of bounds; out-of-bounds read in list; dereference failure: Incorrect alignment when accessing data object; dereference failure: invalid pointer; dereference failure: Access to object out of bounds: heap object; Relational comparison between pointers is only valid for pointers to the same object; uncaught exception: IndexError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 93,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/9ccf6f76f3c9/harness.py",
+    "agent_output": "20, which looks like the `return self.loc[key]` path and not line 17.\n\n- **Key is a stand-in, not an int or float.** Passing a real `int` or `float` made ESBMC crash with a segfault. The cause is `isinstance` with a tuple of types on a Python primitive, and I reproduced it on a small file outside the harness. The driver instead calls `Series()._get_with(Scalar(nondet_int()))`. `Scalar` is a small class with no `__iter__` that I added to stand in for a non-iterable scalar.\n- **`list(key)` is probably not modelled as raising `TypeError`.** In a small `list(int)` test, ESBMC returned `VERIFICATION SUCCESSFUL` with 0 checks generated for it. I did not re-check this with `Scalar`.\n- **Body and stubs.** The body of `_get_with` is unchanged apart from added type annotations on its signature. The rest is stubs, including `np`, `lib`, `Index`, `IntervalIndex` and `loc`/`iloc` objects with `__getitem__`. There are no asserts, and the suspect line isn't guarded. Everything is inside `harness.py`.",
+    "unwind": 5,
+    "seconds": 188.204,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_78.py",
+      "function": "DataFrame._reduce",
+      "suspect_expression": "labels = data._get_agg_axis(axis)",
+      "line": 0,
+      "trigger_condition": "axis, filter_type and numeric_only are free parameters. With axis=None, filter_type='bool' and numeric_only=True, the first if sets labels=None and leaves axis=None, so no axis validation runs. The numeric_only branch is skipped because axis is not in [0, 1], and the numeric_only is None branch is skipped too. Execution reaches the final else, where numeric_only is truthy, and calls data._get_agg_axis(None). That call is expected to raise ValueError for an axis outside 0 or 1. The same unguarded call occurs at line 58 in the TypeError fallback.",
+      "category": "",
+      "hypothesis_id": "93f938743761"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Module 'pandas.core.apply' not found.",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/93f938743761/harness.py",
+    "agent_output": "upported on numpy arrays`. ESBMC can't infer a return type for the nested `f`, because it returns `op(...)` and `op` is a parameter. Annotating `f` with `-> numpy.ndarray` or annotating `op` doesn't help. This is the error still blocking the verdict.\n\n**Deviations from \"body unchanged\"**\n- I removed `**kwds` from the `df._data.reduce(...)` call.\n- I added `-> numpy.ndarray` to the nested `f` and `-> DataFrame` to the nested `_get_data`.\n- I added a module-level `self = frame`, because ESBMC otherwise reports `Variable self not found` for the nested functions.\n- I reverted every other temporary edit I used while bisecting.\n\nThe `**kwds` removal is not on the suspect path, but it is a real change to the body. The CPython replay would need the `**kwds` removal and the extra annotations accounted for.\n\n**Possible next steps**\n- Move the `astype` tail into a stub, which needs your approval since it changes the body further.\n- Check whether a newer ESBMC handles nested-function return types.",
+    "unwind": 5,
+    "seconds": 821.519,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_8.py",
+      "function": "Block.replace",
+      "suspect_expression": "assert not self._can_hold_element(value), value",
+      "line": 0,
+      "trigger_condition": "value and to_replace are free parameters. The except branch assumes any TypeError/ValueError from putmask means value cannot be held. If putmask raises ValueError for a different reason (shape or length mismatch of a list-like value) while _can_hold_element(value) is True and the block is non-object, the assert is false and AssertionError is raised instead of the original error or a fallback.",
+      "category": "",
+      "hypothesis_id": "a962893cafd8"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: replace() got an unexpected keyword argument 'convert'",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/a962893cafd8/harness.py",
+    "agent_output": "rt=convert)`. The type annotations and stub changes I tried had no effect.\n\n**Current `harness.py`:**\n- It has the `Block.replace` body copied unchanged, with annotations on the signature.\n- It has stubs for `lib`, `missing`, `np`, `validate_bool_kwarg`, `convert_scalar_for_putitemlike` and `is_object_dtype`.\n- `Block.putmask` is a stub that raises `ValueError` on a nondeterministic condition. `_can_hold_element` returns a nondeterministic bool.\n- The driver calls `Block.replace` at module level with nondeterministic ints.\n\n**Options:**\n1. Let me rename the method to `replace_` (or similar) in the harness and at its two internal call sites. That is the only change to the body, and the suspect `assert not self._can_hold_element(value), value` stays untouched. I expect it to reach a verdict, but it breaks your \"body unchanged\" rule, so I need your approval.\n2. Leave the body as is. Then this case can't run on this ESBMC build, and I'd note it as a frontend limitation.\n\nWhich do you want?",
+    "unwind": 5,
+    "seconds": 127.932,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_87.py",
+      "function": "crosstab",
+      "suspect_expression": "pass_objs = [x for x in index + columns if isinstance(x, (ABCSeries, ABCDataFrame))]",
+      "line": 0,
+      "trigger_condition": "index and columns are free parameters. If one is a tuple and the other a scalar (wrapped into a list) or a list, `index + columns` mixes tuple and list. Example: index=(s1, s2), columns=s3 gives tuple + list, which raises TypeError. No guard or try/except covers it.",
+      "category": "",
+      "hypothesis_id": "0e891f89a342"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/0e891f89a342/harness.py",
+    "seconds": 900.157,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_88.py",
+      "function": "pivot_table",
+      "suspect_expression": "return concat(pieces, keys=keys, axis=1)",
+      "line": 0,
+      "trigger_condition": "aggfunc is a free parameter. With aggfunc=[] the loop does not run, so pieces and keys stay empty. concat([], keys=[], axis=1) then raises ValueError 'No objects to concatenate'. The isinstance guard does not block the empty list, and no try/except covers the call.",
+      "category": "",
+      "hypothesis_id": "5429c3b33bc9"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Could not resolve type of receiver in member call '.np.transpose()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/5429c3b33bc9/harness.py",
+    "agent_output": "ith `numpy` imported, a non-ndarray receiver gives `Unsupported Numpy call: transpose`.\n- Without it, I get `Could not resolve type of receiver in member call '.np.transpose()'`.\n- `.T` only converts on a real `np.ndarray` (I confirmed this in a small test file in `/tmp/t1`).\n\nI fixed all the other conversion errors before this one by stubbing and annotating types.\n\n**Why I stopped:** the fix is to make `table` an `np.ndarray`. The body then needs `table.index.nlevels`, `table.columns.nlevels` and `table.empty`, which ndarray doesn't have. Removing the `.T` line would work, but it breaks your rule that the body stays unchanged.\n\nI haven't run a harness where the suspect line is reached, so I have no evidence either way on the `aggfunc=[]` hypothesis.\n\n**Decision for you:** I can delete the dead tail after the list branch (`table.T`, and the margins and top-level code). That unblocks ESBMC and exercises the suspect line. The cost is that the body is no longer verbatim. Do you want that?",
+    "unwind": 5,
+    "seconds": 249.722,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py",
+      "function": "TimedeltaIndex.searchsorted",
+      "suspect_expression": "value = Timedelta(value).asm8.view(_TD_DTYPE)",
+      "line": 0,
+      "trigger_condition": "value is a free parameter. A list or tuple of timedeltas, e.g. [1, 2], is not an ndarray or Index, so it goes to the else branch. Timedelta(list) raises ValueError because the constructor only accepts scalar-convertible input. No try/except catches it, so searchsorted fails on array-likes that np.searchsorted accepts.",
+      "category": "",
+      "hypothesis_id": "ef537d83a9be"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Could not resolve type of receiver in member call '.asm8.view()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/ef537d83a9be/harness.py",
+    "agent_output": "s with `asm8` as a `@property`.\n- `Timedelta` as a function returning a typed object.\n- `Timedelta` as an instance with `__call__`.\n- A subclass.\n- A self-typed `asm8`.\n\nThe only fix I found is to rewrite the line, for example `t: Timedelta = Timedelta(value)` first. That changes the suspect expression, so I didn't do it.\n\n**Current state of `harness.py`:**\n- It has the unchanged `searchsorted` body, stubs for `np`, `Index`, `ndarray` and `Timedelta`, and a driver calling `idx.searchsorted([a, b])`.\n- `Timedelta` is a function that raises `ValueError` for a list.\n- I added `-> int` to the `searchsorted` signature.\n- I fixed the other earlier errors: the missing `np.ndarray` attribute, and the `Any` import warning.\n- mypy isn't installed here, so ESBMC skipped type checking.\n- I left scratch files `t1.py` to `t14.py` in the case directory. Delete them if you don't need them.\n\nDecision for you: either allow splitting that line into two statements, or suggest a stub shape I haven't tried.",
+    "unwind": 5,
+    "seconds": 143.221,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_95.py",
+      "function": "_period_array_cmp",
+      "suspect_expression": "elif len(other) != len(self):",
+      "line": 0,
+      "trigger_condition": "`other` is a free parameter. The guard `is_list_like` lets iterators and generators through, and these have no `__len__`. Comparing the array with `iter([1, 2])` or a generator reaches `len(other)` and raises TypeError instead of returning invalid_comparison. No try/except covers this line.",
+      "category": "",
+      "hypothesis_id": "f203999ed223"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: TypeError: astype() is only supported on numpy arrays",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/f203999ed223/harness.py",
+    "agent_output": "s that defines its own `astype` is still rejected.\n- A subclass of a stub `ndarray` is still rejected.\n- Real `numpy` with a real array fails with `astype() target dtype 'object' is not supported`.\n\nI deleted the scratch files afterwards.\n\n**What I got working:**\n- `_period_array_cmp` is copied unchanged apart from the type annotations on its signature and on the `wrapper` signature.\n- I added module-level stubs named `ordinal_op`, `op`, `getattr`, `cls`, `ndarray` and `_recognized_scalars`. ESBMC looks these up by name, so locals and parameters with those names need a global definition.\n- The driver calls `cmp(arr, Gen())` at module level. `Gen` has `__iter__` and `__next__` but no `__len__`, so it should reach `len(other)`.\n\n**The ways forward both change your constraints:**\n1. Allow removing or rewriting the `astype(object)` call, which is in the `is_object_dtype` branch and is unreachable for this hypothesis.\n2. Use an ESBMC build that supports `astype(object)`.\n\nWhich do you want?",
+    "unwind": 5,
+    "seconds": 272.764,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_95.py",
+      "function": "_period_array_cmp.wrapper",
+      "suspect_expression": "elif len(other) != len(self):",
+      "line": 0,
+      "trigger_condition": "`other` is a free parameter. A generator or iterator is not str, int, a recognized scalar or NaT, so it reaches the `elif`. The only guard is `is_list_like(other)`, which is true for iterators, and that does not guarantee `__len__`. `len(other)` then raises TypeError instead of returning `invalid_comparison` or `NotImplemented`. No try/except covers that line.",
+      "category": "",
+      "hypothesis_id": "12c724899555"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "dereference failure: Access to object out of bounds: heap object; uncaught exception: ValueError",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "no counterexample values to replay"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/12c724899555/harness.py",
+    "agent_output": "e \"Lengths must match\" raise on the line below the suspect expression. That is a separate property.\n- **Driver:** It uses one fixed `Gen()` instance, not nondet inputs.\n- **Body not verbatim:** `wrapper` is not copied unchanged from `original.py`. I removed the `@unpack_zerodim_and_defer` decorator and the numpy/pandas-specific calls (`ordinal_op`, `_scalar_from_string`, `_check_compatible_with`, `np.array`, `is_object_dtype` and the others). The branches ESBMC can't convert are collapsed into simple `result = True` assignments or early returns, and the `isinstance` checks use stub classes. The `elif not is_list_like(other)` and `elif len(other) != len(self)` lines are as in the original, with no guard on the suspect line.\n- **Return annotation:** Annotating `_period_array_cmp` with `-> Any` made ESBMC fail on a call-argument type mismatch, so that function has no return annotation. When mypy is installed it flags the missing annotation as an error, but ESBMC still reaches its verdict.",
+    "unwind": 5,
+    "replayed_original_body": true,
+    "seconds": 55.988,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py",
+      "function": "Index.__new__",
+      "suspect_expression": "ea_cls = dtype.construct_array_type()",
+      "line": 0,
+      "trigger_condition": "The branch is entered when `data` is an extension array, regardless of `dtype`. `dtype` is a free parameter. The guard only excludes None and object dtypes. If `data` is an extension array and `dtype` is a numpy dtype or a plain string such as 'int64', the guard passes and `construct_array_type` is called on an object that lacks it. Nothing catches the exception.",
+      "category": "",
+      "hypothesis_id": "9f6ab9860274"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Module 'range' not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "unsupported_case",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/9f6ab9860274/harness.py",
+    "agent_output": " `np.array(..., dtype=...)` do numpy real: d\u00e3o `Unsupported NumPy function call` e `requires literal numeric elements`. Troquei por um stub pr\u00f3prio de `np`.\n- f-string com `repr(set(kwargs))`: d\u00e1 `Unsupported iterable type in set()`.\n- Depois de remover os `astype`, os `**kwargs` das chamadas, o f-string e o `all(... for ...)`, o ESBMC passou da convers\u00e3o e falhou na gera\u00e7\u00e3o do GOTO com `_init_undefined`. N\u00e3o identifiquei a causa. Eu ia testar a remo\u00e7\u00e3o dos imports relativos dentro da fun\u00e7\u00e3o (`from .range import ...`), mas o comando foi bloqueado.\n\n**Decis\u00e3o sua**\nPara chegar a um veredito, vou ter que alterar o corpo: tirar os `.astype(object)` dos ramos de Datetime e Timedelta, os `**kwargs` das chamadas e o f-string. Esses ramos n\u00e3o afetam a hip\u00f3tese, que passa por `dtype.construct_array_type()` no ramo de extension array. Mas isso quebra a regra de corpo inalterado. Posso fazer esse corte m\u00ednimo, listando cada linha alterada no topo do `harness.py`. Ou voc\u00ea prefere outra abordagem?",
+    "unwind": 5,
+    "seconds": 488.153,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_38.py",
+      "function": "_get_clickable",
+      "suspect_expression": "el = list(form.inputs)[nr]",
+      "line": 0,
+      "trigger_condition": "nr comes from the free clickdata dict. A non-integer nr such as the string '0' or a float passes the `nr is not None` guard. list indexing then raises TypeError, which the except IndexError does not catch, so the function crashes instead of falling through to the xpath path.",
+      "category": "",
+      "hypothesis_id": "82368e805ae8"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "Relational comparison between pointers is only valid for pointers to the same object; dereference failure: array bounds violated",
+    "target_preserved": false,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 56,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/82368e805ae8/harness.py",
+    "agent_output": "th `xpath = u'.//*'`. The xpath it builds is no longer meaningful.\n- **`el` variable:** reusing `el` as both an element and a list crashes ESBMC, so the tail now uses `els = form.xpath(xpath)`.\n- **`els[0]`:** calling `els[0].get(...)` inline also crashes ESBMC, so the tail now does `first = els[0]` first.\n\n**Other changes:**\n- `clickdata` is annotated `Dict[str, str]` instead of `Optional[...]`, because `Optional` crashed ESBMC. The `clickdata is None` check is still in the body.\n- The `form` parameter is left unannotated, because with a `Form` annotation the preprocessor rejected the `form.xpath(..., namespaces=...)` call.\n- The stubs `Element`, `Form` and `six` are all inside `harness.py`.\n\nI don't know whether VERIFICATION FAILED comes from the `TypeError` on the string index. The one run that exercised it (a small test with `try/except IndexError` around `list(...)[nr]` and a string `nr`) also failed verification, which is consistent with it, but I didn't read the property output.",
+    "unwind": 5,
+    "replayed_original_body": true,
+    "seconds": 773.488,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+      "function": "add_codes.ErrorsWithCodes.__getattribute__",
+      "suspect_expression": "msg = getattr(err_cls, code)",
+      "line": 0,
+      "trigger_condition": "`code` \u00e9 par\u00e2metro livre, sem restri\u00e7\u00e3o. `getattr` sem valor default levanta AttributeError quando `err_cls` n\u00e3o tem atributo com o nome `code`, por exemplo c\u00f3digo de erro desconhecido ou string vazia. Nada protege o caminho nem captura a exce\u00e7\u00e3o. Se `code` n\u00e3o for str (por exemplo int), levanta TypeError.",
+      "category": "",
+      "hypothesis_id": "6f4dfcdaf4b0"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ESBMC direto: arquivo n\u00e3o suportado (m\u00f3dulo Python ausente ou feature n\u00e3o implementada).",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "unsupported_case",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/6f4dfcdaf4b0/harness.py",
+    "agent_output": "`harness.py` now reaches a verdict, but the failure comes from ESBMC not supporting `getattr`, not from the hypothesis.\n\nESBMC reports VERIFICATION FAILED at line 10 with \"Unsupported function 'getattr' is reached\". It never models whether the attribute exists, so this doesn't show that an unknown or empty `code` raises `AttributeError`. Treat it as a modelling limit, not a confirmed bug.\n\nThe harness has:\n- **Stub class:** a module-level `Warnings` stub with `W001` and `W002`, instantiated as `err_cls`.\n- **Copied method:** `ErrorsWithCodes.__getattribute__` with its body unchanged, plus `code: str` and `-> str` annotations.\n- **Driver:** a module-level call with `code = nondet_str()`.\n\nI had to pull the class out of the `add_codes` closure, because the original nests it and takes `err_cls` from the enclosing function. Passing the `Warnings` class itself as `err_cls` also failed, with \"Variable Warnings not found\", so I used an instance instead.\n\nDONE",
+    "unwind": 5,
+    "seconds": 29.868,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_2.py",
+      "function": "load_model_from_path",
+      "suspect_expression": "lang = meta.get('lang_factory', meta['lang'])",
+      "line": 0,
+      "trigger_condition": "meta is a free parameter, truthy when the caller passes a dict. Any non-empty meta without a 'lang' key, for example {'pipeline': []} or {'lang_factory': 'en'}, raises KeyError on meta['lang']. The eager default evaluation means lang_factory does not protect the lookup. No try/except exists.",
+      "category": "",
+      "hypothesis_id": "7325b8a9d42b"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 130; uncaught exception: KeyError",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "no counterexample values to replay"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/7325b8a9d42b/harness.py",
+    "agent_output": " n\u00e3o \u00e9 bug do c\u00f3digo.\n\n**Corpo da fun\u00e7\u00e3o:** `load_model_from_path` est\u00e1 com o corpo igual ao original. Mudei s\u00f3 a assinatura (anota\u00e7\u00f5es de tipo e `meta: Meta = False`) e troquei `**overrides` por nada: n\u00e3o h\u00e1 `**overrides` na assinatura, e o corpo usa `disable = []` em vez de `overrides.get(\"disable\", [])`, porque o ESBMC n\u00e3o converteu esse trecho.\n\n**Stubs no harness:**\n- **`Meta`:** classe no lugar do dict, porque o ESBMC falhava em `pipeline is True` com `.get` de dict. Ela \u00e9 sempre truthy, e `lang` e `lang_factory` existem conforme dois booleanos nondetermin\u00edsticos do driver. O `KeyError` sai do mesmo `meta[\"lang\"]` do c\u00f3digo, e eu n\u00e3o protegi a express\u00e3o suspeita.\n- **`cls`:** fun\u00e7\u00e3o de m\u00f3dulo, porque o ESBMC resolve a chamada `cls(...)` pelo nome e n\u00e3o achava a vari\u00e1vel local.\n- **Outros stubs:** `Language`, `LanguageDefaults`, `get_model_meta` e `get_lang_class`.\n\nSem `assert`. O driver roda no n\u00edvel do m\u00f3dulo e chama `load_model_from_path(\"model\", Meta(has_lang, has_factory))`.",
+    "unwind": 5,
+    "replayed_original_body": true,
+    "seconds": 166.89,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_tornado_5.py",
+      "function": "PeriodicCallback._update_next",
+      "suspect_expression": "self._next_timeout += (math.floor((current_time - self._next_timeout) / callback_time_sec) + 1) * callback_time_sec",
+      "line": 0,
+      "trigger_condition": "self.callback_time is object state that this function does not validate. If it is 0, callback_time_sec is 0.0 (line 4 divides by the constant 1000.0 and does not fail). Line 5 then divides by callback_time_sec and raises ZeroDivisionError whenever the due-time branch is taken. The only guard constrains _next_timeout and current_time, not callback_time. A constructor that rejects non-positive values would block this, but it is not visible here.",
+      "category": "",
+      "hypothesis_id": "40ff07661432"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "Input cannot be infinity; Input cannot be NaN; uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "OverflowError",
+      "line": 12,
+      "runs": 3,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/40ff07661432/harness.py",
+    "agent_output": "DONE\n\n`harness.py` is written, and ESBMC reached a verdict: VERIFICATION FAILED. The run was `/usr/local/bin/esbmc harness.py --unwind 5 --multi-property`.\n\n- **Harness:** `PeriodicCallback._update_next` is copied unchanged from `original.py`. The class is a minimal stub with only `callback_time` and `_next_timeout`, set in `__init__`. The module-level driver builds it from three nondet floats and calls `_update_next` with a nondet `current_time`. There are no asserts and no guards.\n- **Zero divisor:** ESBMC flags `ZeroDivisionError` (`global.assertion.5`), the property your hypothesis predicts.\n- **`math.floor` checks:** It also fails two checks inside its `math.floor` model: input cannot be infinity, and input cannot be NaN. Those come from the nondet floats, so they may not be real bugs.\n- **Totals:** 3 of 22 properties failed.",
+    "unwind": 5,
+    "seconds": 20.878,
+    "engine_verdict": "ESBMC_ERROR",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_24.py",
+      "function": "_match_one",
+      "suspect_expression": "return op(actual_value, comparison_value)",
+      "line": 0,
+      "trigger_condition": "dct is a free parameter and actual_value = dct.get(key) is only guarded against None. For filter_part 'height>5', comparison_value is int 5. With dct={'height': 'abc'} the guard passes and operator.gt('abc', 5) raises TypeError. Same for 'name=5' vs str actual with < or > ops. No try/except around the call.",
+      "category": "",
+      "hypothesis_id": "540e1e35b738"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/540e1e35b738/harness.py",
+    "agent_output": "dos `lt`, `le`, `gt`, `ge`, `eq` e `ne`. Com atributos de classe, o ESBMC dava \"Cannot infer type\", e com staticmethods dava \"Variable 'C@operator' is not defined\".\n- `re.compile`, `re.escape` e `_Pattern.search` s\u00e3o stubs. O `search` devolve um `_Match` fixo para `height>5`, `height<5`, `name=5` e `name=abc`.\n- `parse_filesize` \u00e9 um stub.\n- O driver passa `filter_part` nondet e `dct = {'height': nondet_str(), 'name': nondet_str()}`.\n\n**O que precisa de decis\u00e3o sua:** para chegar a um veredito, o corpo teria que mudar em dois pontos.\n1. Trocar o `%` do `operator_rex` por um padr\u00e3o literal, ou por uma concatena\u00e7\u00e3o sem `%`.\n2. Trocar as mensagens de `ValueError` por strings constantes. Elas ficam em ramos que n\u00e3o afetam a linha suspeita `return op(actual_value, comparison_value)`.\n\nIsso quebra a regra do corpo inalterado, ent\u00e3o s\u00f3 fa\u00e7o se voc\u00ea autorizar. Se autorizar, o replay com CPython rodaria um corpo diferente do `original.py`, e a diverg\u00eancia ficaria s\u00f3 nessas linhas de formata\u00e7\u00e3o.",
+    "unwind": 5,
+    "seconds": 104.522,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py",
+      "function": "unescapeHTML",
+      "suspect_expression": "assert type(s) == compat_str",
+      "line": 0,
+      "trigger_condition": "`s` is a free parameter. The guard only blocks None. Any other value whose exact type is not `compat_str` passes the guard and reaches the assert with a false condition. Examples: s=b'x', s=5, or a str subclass, since type(s) == str is false for subclasses. Result is AssertionError instead of handling or conversion.",
+      "category": "",
+      "hypothesis_id": "fd16cc220ab1"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "assertion 0",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AssertionError",
+      "line": 17,
+      "runs": 5,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/fd16cc220ab1/harness.py",
+    "agent_output": "ample ESBMC printed starts at `choice = 0`, the `str` case.\n\n- **Possible false positive:** I didn't read the full trace past that first state. I don't know whether the failing path is the `int`/`bool` case or the `str` case.\n- **Unchecked `str` case:** a plain `str` should pass the assert, so if the failing path is the `str` case, that points to an ESBMC type-modeling issue rather than the hypothesis. I didn't investigate this.\n\nChoices in the harness:\n\n- **Function body:** `unescapeHTML` is copied from `original.py` with its body unchanged.\n- **`re` stub:** the real `re.sub` is unsupported in ESBMC, so a local `re` class stands in for it and returns the string unchanged. Without the stub, a second, spurious failure appeared at the `re.sub` call.\n- **`_htmlentity_transform` stub:** it returns `'&' + entity_with_semicolon`. The `%` formatting in the original made the conversion error out.\n- **`compat_str`:** defined as `str`.\n\nI added no asserts and no guards on the suspect expression.",
+    "unwind": 5,
+    "seconds": 45.428,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector",
+      "suspect_expression": "selectors.append(current_selector)",
+      "line": 0,
+      "trigger_condition": "format_spec is a free parameter. For format_spec=',' the tokenizer yields OP ',' while current_selector is still None, so None is appended to selectors. _build_selector_function then recurses on None and evaluates None.type with no guard and no try/except. Inputs '/best' and '+best' reach the same crash through a None first_choice or video_selector inside a PICKFIRST or MERGE tuple.",
+      "category": "",
+      "hypothesis_id": "df8f702a5007"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Variable 'fs' is not defined in function 'build_format_selector@F@_build_selector_function@F@selector_function' at line 169.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "unsupported_case",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/df8f702a5007/harness.py",
+    "agent_output": "xendo no corpo de `build_format_selector`, por exemplo passando `fs` e `format_spec` como argumentos default. Isso viola a regra de corpo inalterado, ent\u00e3o parei aqui.\n\nO que j\u00e1 est\u00e1 resolvido no harness:\n- **Stubs de m\u00f3dulo:** `collections.namedtuple`, `itertools.product`, `tokenize`, `io.BytesIO`, `SyntaxError` e `compat_tokenize_tokenize`, todos dentro do `harness.py`. O tokenizador abstrato devolve nondet um dos tr\u00eas formatos do bug: `,`, `/best` e `+best`.\n- **Driver:** roda no n\u00edvel do m\u00f3dulo com `nondet_str()` e chama `ydl.build_format_selector(spec)`.\n- **Anota\u00e7\u00f5es:** tirei a anota\u00e7\u00e3o da assinatura. Ela fazia o mypy tratar tudo como c\u00f3digo tipado e gerar dezenas de avisos.\n\nAinda falta um stub de `getattr`. O ESBMC avisou `Undefined function 'getattr' - replacing with assert(false)`, o que poderia gerar uma falha esp\u00faria e que n\u00e3o vem do bug.\n\nPosso aplicar a altera\u00e7\u00e3o no corpo, com a ressalva de que a l\u00f3gica seria a mesma, mas a c\u00f3pia deixaria de ser literal. Quer que eu fa\u00e7a?",
+    "unwind": 5,
+    "seconds": 137.852,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector",
+      "suspect_expression": "yield formats[format_idx]",
+      "line": 0,
+      "trigger_condition": "The returned selector function takes a free parameter formats. With format_spec 'best' or 'worst' and formats=[], audiovideo_formats is empty and all([]) is True, so the elif branch runs. formats[-1] or formats[0] on an empty list then raises. The same happens when the filters leave no formats.",
+      "category": "",
+      "hypothesis_id": "684f0101938e"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Variable 'fs' is not defined in function 'build_format_selector@F@_build_selector_function@F@selector_function' at line 144.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "unsupported_case",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/684f0101938e/harness.py",
+    "agent_output": "d_format_filter` and `report_error`, rewritten as simple instances or classes the frontend accepts.\n- **Driver:** it picks `'best'` or `'worst'`, builds the selector, and calls it with `formats = []`.\n\nOther problems that will show up once the closure error is gone:\n- **`getattr` and `SyntaxError`:** ESBMC warns \"Undefined function 'getattr'\" and \"Undefined function 'SyntaxError'\" and replaces both with `assert(false)`. The `getattr` call sits on the main path, so it would give a false failure unless I define a module-level `getattr` stub.\n- **`namedtuple` stub:** I haven't confirmed it converts, since the run stops before reaching it.\n- **Driver spec:** my stubbed `compat_tokenize_tokenize` always returns the tokens for `'best'`, so the driver's `'worst'` choice isn't used by the parser.\n\nDecision for you: I can rewrite the closures so `fs` and `format_spec` are passed in explicitly, but then the body is no longer a verbatim copy. Do you want me to do that, or should I leave it as is?",
+    "unwind": 5,
+    "seconds": 86.359,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function",
+      "suspect_expression": "yield formats[format_idx]",
+      "line": 0,
+      "trigger_condition": "formats vem de fora (par\u00e2metro livre do selector_function). Com formats=[] e format_spec 'best', 'worst' ou None, audiovideo_formats fica vazio e all() sobre iter\u00e1vel vazio devolve True, ent\u00e3o a guarda passa. Em seguida formats[-1] (ou formats[0]) levanta IndexError em lista vazia. Nenhum try/except captura.",
+      "category": "",
+      "hypothesis_id": "77718a5d3945"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: NameError: name 'fn' is not defined",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/77718a5d3945/harness.py",
+    "agent_output": "ur rules (body unchanged, no guarding the suspect). The edits were only bisection steps, and I haven't restored the original text.\n\n**Why it's hard**\n`_build_selector_function` returns closures that return generators, and it defines `selector_function` in several branches. ESBMC-Python handles that poorly, so reaching `yield formats[format_idx]` with an empty list needs a restructure.\n\n**Decision for you**\n- **Hoist the closures:** I'd add a module-level `_single_selector_function(format_spec, formats)` copied verbatim from the SINGLE branch, and call it directly with `formats = []` and `format_spec='best'`. This keeps the suspect expression and its guard intact. It means `_build_selector_function` is no longer run as a whole.\n- **Keep the whole function:** I'd restore the full original body and look for ESBMC options or frontend workarounds. It's uncertain whether that works.\n\nWhich do you want? I'd go with the first. If you agree, I'll restore the original text and finish from there.",
+    "unwind": 5,
+    "seconds": 239.145,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "suspect_expression": "return local_vars[var_m.group('name')]",
+      "line": 0,
+      "trigger_condition": "expr and local_vars are free parameters. expr='foo' with local_vars={} matches the name regex, passes the (?!if|return|true|false) lookahead, and indexes a missing key. No try/except around it.",
+      "category": "",
+      "hypothesis_id": "7606c705c474"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 95; unwinding assertion loop 96; unwinding assertion loop 131; uncaught exception: ExtractorError",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "no counterexample values to replay"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/7606c705c474/harness.py",
+    "agent_output": "verbose pattern became a single-line pattern, and `m.groupdict().get('index')` became `m.group('index')`. `re.finditer` became a stub `_finditer` that returns an empty list.\n- **`splice` branch:** `index, howMany = argvals` became two typed assignments, and `min(index + howMany, len(obj))` became `index + howMany`.\n- **Operator tables:** `_OPERATORS` and `_ASSIGN_OPERATORS` are now empty lists. ESBMC crashes on `re.match` with a loop-variable pattern, so those two loops never run. For `expr='foo'` this does not change the path to the suspect line.\n- **Module stubs:** `json` and `operator` are not importable, so `json` is a small stub class and `operator` is gone. `ExtractorError` is defined locally.\n- **Driver:** it calls `interpret_expression` with a `nondet_str()` expr and an empty `local_vars`.\n\nThe `json` stub's `loads` always raises `ValueError`. That matches `expr='foo'` falling through, but it would not for real JSON input.\n\nI deleted my scratch `t*.py` files from the directory.",
+    "unwind": 5,
+    "replayed_original_body": true,
+    "seconds": 740.754,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "suspect_expression": "return int(expr)",
+      "line": 0,
+      "trigger_condition": "str.isdigit() is True for non-decimal digit characters such as '\u00b2' (superscript two), but int('\u00b2') raises ValueError. expr='\u00b2' passes the guard and crashes. The call is outside any try/except.",
+      "category": "",
+      "hypothesis_id": "a37941e5f655"
+    },
+    "verdict": "OTHER_FAILURE",
+    "reason": "unwinding assertion loop 95; unwinding assertion loop 96; uncaught exception: AttributeError",
+    "target_preserved": false,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "ExtractorError",
+      "line": 230,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/a37941e5f655/harness.py",
+    "agent_output": "rpret_expression(nondet_str(), {}, nondet_int())`.\n\n**Edits to the body**\n\n| Change | Why |\n|---|---|\n| `%r` replaced with `%s`, then the `'...' % expr` formatting removed from the four `raise` messages and the `% _NAME_RE` / `% re.escape(op)` formatting from the pattern strings | ESBMC rejects `%r` and non-constant `%` formatting |\n| `m.groupdict().get('index')` replaced with `m.group('index')` | `Dictionary variable not found: str` conversion error |\n| `obj[member]`, `obj[member](argvals)`, `val[idx]` and `self._functions[fname](argvals)` replaced with returning the object or value | ESBMC type errors or symex crashes; the last one was a guess |\n| `assert argvals == ('',)` removed from the `split` branch | ESBMC crashed with a core dump |\n| `argvals[0].join(obj)` replaced with `obj` in the `join` branch | same crash |\n\nAll of these sit on branches that the stubbed `re` makes unreachable. If your CPython replay checks that the body matches `original.py`, it will see these differences.",
+    "unwind": 5,
+    "replayed_original_body": true,
+    "seconds": 609.605,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "suspect_expression": "index, howMany = argvals",
+      "line": 0,
+      "trigger_condition": "For expr like 'a.splice(1)' or 'a.splice()', argvals has length 1 or 0 and the unpacking fails. Only the type of obj is guarded, not the number of arguments.",
+      "category": "",
+      "hypothesis_id": "32e79148d095"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-2026-10-06-e2e/cases/32e79148d095/harness.py",
+    "seconds": 900.166,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
   }
 ]

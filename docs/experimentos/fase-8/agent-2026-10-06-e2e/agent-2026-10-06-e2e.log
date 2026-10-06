@@ -115,3 +115,80 @@
 [58/156] bip_pandas_166.py::DataFrame._join_compat (engine: UNSUPPORTED)
     -> ESBMC_TIMEOUT preserved=True ESBMC direto excedeu o tempo limite de 180s.
 [59/156] bip_pandas_168.py::_get_grouper (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[60/156] bip_pandas_19.py::_LocIndexer._getitem_axis (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True no_violation_found
+[61/156] bip_pandas_29.py::IntervalArray.__setitem__ (engine: MISSING_DEPENDENCY)
+    -> MISSING_DEPENDENCY preserved=True ERROR: Object "left" not found.
+[62/156] bip_pandas_61.py::Series._get_with (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True dereference failure: Access to object out of bounds; out-of-bounds read in list; dereference failure
+[63/156] bip_pandas_78.py::DataFrame._reduce (engine: UNSUPPORTED)
+    -> MISSING_DEPENDENCY preserved=False ERROR: Module 'pandas.core.apply' not found.
+[64/156] bip_pandas_8.py::Block.replace (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: replace() got an unexpected keyword argument 'convert'
+[65/156] bip_pandas_87.py::crosstab (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[66/156] bip_pandas_88.py::pivot_table (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: Could not resolve type of receiver in member call '.np.transpose()'. Add a type annotation to
+[67/156] bip_pandas_91.py::TimedeltaIndex.searchsorted (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Could not resolve type of receiver in member call '.asm8.view()'. Add a type annotation to th
+[68/156] bip_pandas_95.py::_period_array_cmp (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: TypeError: astype() is only supported on numpy arrays
+[69/156] bip_pandas_95.py::_period_array_cmp.wrapper (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False dereference failure: Access to object out of bounds: heap object; uncaught exception: ValueError
+[70/156] bip_pandas_98.py::Index.__new__ (engine: UNSUPPORTED)
+    -> MISSING_DEPENDENCY preserved=True ERROR: Module 'range' not found.
+[71/156] bip_scrapy_38.py::_get_clickable (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False Relational comparison between pointers is only valid for pointers to the same object; dereference fa
+[72/156] bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__ (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ESBMC direto: arquivo não suportado (módulo Python ausente ou feature não implementada).
+[73/156] bip_spacy_2.py::load_model_from_path (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False unwinding assertion loop 130; uncaught exception: KeyError
+[74/156] bip_tornado_5.py::PeriodicCallback._update_next (engine: ESBMC_ERROR)
+    -> UNVALIDATED preserved=True Input cannot be infinity; Input cannot be NaN; uncaught exception: ZeroDivisionError
+[75/156] bip_youtube_dl_24.py::_match_one (engine: MISSING_DEPENDENCY)
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+[76/156] bip_youtube_dl_3.py::unescapeHTML (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True assertion 0
+[77/156] bip_youtube_dl_30.py::YoutubeDL.build_format_selector (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Variable 'fs' is not defined in function 'build_format_selector@F@_build_selector_function@F@
+[78/156] bip_youtube_dl_30.py::YoutubeDL.build_format_selector (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Variable 'fs' is not defined in function 'build_format_selector@F@_build_selector_function@F@
+[79/156] bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=False ERROR: NameError: name 'fn' is not defined
+[80/156] bip_youtube_dl_4.py::JSInterpreter.interpret_expression (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=False unwinding assertion loop 95; unwinding assertion loop 96; unwinding assertion loop 131; uncaught exc
+[81/156] bip_youtube_dl_4.py::JSInterpreter.interpret_expression (engine: MISSING_DEPENDENCY)
+    -> OTHER_FAILURE preserved=False unwinding assertion loop 95; unwinding assertion loop 96; uncaught exception: AttributeError
+[82/156] bip_youtube_dl_4.py::JSInterpreter.interpret_expression (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[83/156] bip_youtube_dl_4.py::JSInterpreter.interpret_expression (engine: MISSING_DEPENDENCY)
+Traceback (most recent call last):
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/scripts/v2_agent_arm.py", line 110, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/scripts/v2_agent_arm.py", line 96, in main
+    result = run_agent_arm(h, work_dir=out / "cases", run_agent=agent, esbmc_command=[args.esbmc],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/research_pipeline/verify/agent_arm.py", line 194, in run_agent_arm
+    result["agent_output"] = run_agent(prompt, case_dir, agent_timeout)[-1000:]
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/research_pipeline/verify/agent_arm.py", line 79, in run
+    completed = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 2115, in _communicate
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+exit=130
