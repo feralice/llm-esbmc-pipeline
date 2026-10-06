@@ -87,3 +87,33 @@ def test_rebound_or_ambiguous_unpacking_adds_no_constraint():
               "    def inner(z):\n        p, q = z\n    return a\n")
     grounded = ground(BugHypothesis("x.py", "f", "a"), source)
     assert grounded.unpacked_inputs == {}
+
+
+def test_a_missing_module_constant_is_refused_like_a_missing_function():
+    assert refusals("ERROR: Module member 'VERBOSE' not found in module 're'", PROGRAM) == {"re.VERBOSE"}
+
+
+BASES = """import collections
+from collections import MutableMapping
+
+
+class Sorted(MutableMapping):
+    def first(self, keys):
+        return keys[0]
+
+
+class Cache(collections.OrderedDict):
+    def first(self, keys):
+        return keys[0]
+"""
+
+
+def test_a_missing_library_base_class_is_refused_and_becomes_a_stub():
+    diagnostics = "ERROR: Base class not found: MutableMapping\nERROR: Base class not found: OrderedDict"
+    refused = frozenset(refusals(diagnostics, BASES))
+    assert refused == {"collections.MutableMapping", "collections.OrderedDict"}
+
+    module, plan, _ = stub_imports(BASES, refused)
+
+    assert "(MutableMapping)" not in module and "(collections.OrderedDict)" not in module
+    assert set(plan.classes) == {"_esbmc_collections_MutableMapping", "_esbmc_collections_OrderedDict"}

@@ -22,6 +22,8 @@ _NUMPY = (re.compile(r"Unsupported NumPy function call: (\w+)"),
           re.compile(r"numpy\.(\w+)\(\) currently supports"))
 _NOT_YET = re.compile(r"([\w.]+)\.(\w+) is not yet supported by ESBMC")
 _OBJECT = re.compile(r'Object "(\w+)" not found')
+_MEMBER = re.compile(r"Module member '(\w+)' not found in module '([\w.]+)'")
+_BASE = re.compile(r"Base class not found: (\w+)")
 
 
 def _defined(tree: ast.Module) -> set[str]:
@@ -36,6 +38,14 @@ def refusals(diagnostics: str, source: str) -> set[str]:
     modules, members = import_bindings(tree)
     found = {m.split(".")[0] for m in _MODULE.findall(diagnostics)}
     found |= {modules[name].split(".")[0] for name in _OBJECT.findall(diagnostics) if name in modules}
+    found |= {f"{module}.{member}" for member, module in _MEMBER.findall(diagnostics)}
+    for base in _BASE.findall(diagnostics):
+        if base in members:
+            found.add(members[base])
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Attribute) and node.attr == base and isinstance(node.value, ast.Name)
+                    and node.value.id in modules):
+                found.add(f"{modules[node.value.id]}.{base}")
     for pattern in _NUMPY:
         found |= {f"numpy.{name}" for name in pattern.findall(diagnostics)}
     for prefix, member in _NOT_YET.findall(diagnostics):

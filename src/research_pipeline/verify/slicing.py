@@ -156,8 +156,9 @@ def import_bindings(tree: ast.Module) -> tuple[dict[str, str], dict[str, str]]:
 
 
 def _unmodeled_imports(tree: ast.Module, refused: frozenset[str]) -> list[tuple[ast.stmt, list[str]]]:
+    """Every unmodeled import, also those inside a function or method: ESBMC resolves them all."""
     found = []
-    for node in _top_level_imports(tree.body):
+    for node in (n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))):
         if isinstance(node, ast.Import):
             names = [_bound(a) for a in node.names if not _modeled(a.name.split(".")[0], refused)]
         else:

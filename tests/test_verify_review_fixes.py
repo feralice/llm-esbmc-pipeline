@@ -513,3 +513,17 @@ def test_library_type_also_constructed_is_one_class_so_isinstance_holds():
     assert "lib_Model" in grounded.externals.constructors
     program = render_program(grounded, InputSpec({}, {}, ()))
     assert concrete_replay(program, "f").exception_type == "ZeroDivisionError"
+
+
+def test_an_import_inside_the_function_is_stubbed_like_a_top_level_one():
+    source = ("def target(n: int) -> int:\n"
+              "    import pandas.core.computation.expressions as expressions\n"
+              "    from ..layers import deserialize\n"
+              "    expressions.evaluate(n)\n"
+              "    deserialize(n)\n"
+              "    return 10 // n\n")
+    grounded = _ground(source, "target", "10 // n")
+    assert "import pandas" not in grounded.module and "from ..layers" not in grounded.module
+    assert set(grounded.stub_keys) == {"expressions.evaluate", "deserialize"}
+    spec = InputSpec({"n": "int"}, {}, (), {"expressions.evaluate": "None", "deserialize": "None"})
+    assert concrete_replay(render_program(grounded, spec), "target").status == "reproduced"
