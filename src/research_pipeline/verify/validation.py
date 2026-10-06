@@ -75,3 +75,22 @@ def reachability(program: Program, *, esbmc: str, unwind: int, timeout_seconds: 
     done = run_group([esbmc, path.name, "--enable-unreachability-intrinsic", "--unwind", str(unwind),
                       "--multi-property"], timeout_seconds=timeout_seconds, cwd=work_dir)
     return read_reachability(None if done is None else done.stdout + done.stderr)
+
+
+def natural_mutation_matrix(buggy: list[dict], fixed: list[dict]) -> dict:
+    """Confirmed on the buggy version only: the bug. On both: a crash the fix did not touch (a false
+    alarm for the reported bug, e.g. an input no caller passes)."""
+    fixed_confirmed = {r["hypothesis"]["hypothesis_id"] for r in fixed if r["verdict"] == CONFIRMED}
+    matrix: dict = {"only_buggy": [], "both": [], "only_fixed": [], "neither": 0}
+    for result in buggy:
+        hid = result["hypothesis"]["hypothesis_id"]
+        on_buggy, on_fixed = result["verdict"] == CONFIRMED, hid in fixed_confirmed
+        if on_buggy and on_fixed:
+            matrix["both"].append(hid)
+        elif on_buggy:
+            matrix["only_buggy"].append(hid)
+        elif on_fixed:
+            matrix["only_fixed"].append(hid)
+        else:
+            matrix["neither"] += 1
+    return matrix
