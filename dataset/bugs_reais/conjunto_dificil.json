@@ -1,0 +1,127 @@
+{
+  "source_report": "artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json",
+  "rule": "A case is a hypothesis of a finished run that points at the ground-truth bug line (cause or crash site) of its function: detection already succeeded there, so only the harness decides the outcome. Every case with an ESBMC verdict is kept (regression and vacuity checks); the rest are taken one per stuck verdict in turn, so no single limit fills the set. Selection uses only the rule, never a case picked by hand.",
+  "ids": "91c7494248a2,b8edde5a7e1e,ddcad8260108,2abbc0787351,ef639b3fabe3,134eed05190b,f5a460ae2fd2,edce49fc532d,91509f265939,cd22a8de947d,a408047609c9,244a2dc788a7,c3491e72eff2,528ca8730d1f,8fa98b8997cb,52e8c7dc508a,57916072238c,b5652fda143e,7f4509a77e6f,a9cdf5adabac",
+  "cases": [
+    {
+      "hypothesis_id": "91c7494248a2",
+      "bug": "av_real_01",
+      "function": "cli_bool_option",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "b8edde5a7e1e",
+      "bug": "bip_scrapy_15",
+      "function": "_safe_ParseResult",
+      "verdict": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "ddcad8260108",
+      "bug": "bip_scrapy_15",
+      "function": "_safe_ParseResult",
+      "verdict": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "2abbc0787351",
+      "bug": "bip_scrapy_21",
+      "function": "RobotsTxtMiddleware._robots_error",
+      "verdict": "ESBMC_MISSED"
+    },
+    {
+      "hypothesis_id": "ef639b3fabe3",
+      "bug": "bip_youtube_dl_41",
+      "function": "unified_strdate",
+      "verdict": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "134eed05190b",
+      "bug": "oob_real_01",
+      "function": "get_new_command",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "f5a460ae2fd2",
+      "bug": "oob_real_02",
+      "function": "match",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "edce49fc532d",
+      "bug": "bip_black_16",
+      "function": "gen_python_files_in_dir",
+      "verdict": "ESBMC_ERROR"
+    },
+    {
+      "hypothesis_id": "91509f265939",
+      "bug": "ip_real_22",
+      "function": "match",
+      "verdict": "ESBMC_TIMEOUT"
+    },
+    {
+      "hypothesis_id": "cd22a8de947d",
+      "bug": "bip_scrapy_40",
+      "function": "PythonItemExporter._serialize_value",
+      "verdict": "GROUNDING_FAILED"
+    },
+    {
+      "hypothesis_id": "a408047609c9",
+      "bug": "bip_keras_33",
+      "function": "text_to_word_sequence",
+      "verdict": "MISSING_DEPENDENCY"
+    },
+    {
+      "hypothesis_id": "244a2dc788a7",
+      "bug": "tm_real_04",
+      "function": "str_to_int",
+      "verdict": "OTHER_FAILURE"
+    },
+    {
+      "hypothesis_id": "c3491e72eff2",
+      "bug": "nm_real_04",
+      "function": "OffsiteMiddleware.get_host_regex",
+      "verdict": "SPEC_FAILED"
+    },
+    {
+      "hypothesis_id": "528ca8730d1f",
+      "bug": "av_real_03",
+      "function": "Series.to_timestamp",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "hypothesis_id": "8fa98b8997cb",
+      "bug": "bip_keras_38",
+      "function": "StackedRNNCells.build",
+      "verdict": "UNVALIDATED"
+    },
+    {
+      "hypothesis_id": "52e8c7dc508a",
+      "bug": "nm_real_14",
+      "function": "request_httprepr",
+      "verdict": "ESBMC_ERROR"
+    },
+    {
+      "hypothesis_id": "57916072238c",
+      "bug": "oob_real_03",
+      "function": "get_new_command",
+      "verdict": "ESBMC_TIMEOUT"
+    },
+    {
+      "hypothesis_id": "b5652fda143e",
+      "bug": "dz_real_02",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "verdict": "MISSING_DEPENDENCY"
+    },
+    {
+      "hypothesis_id": "7f4509a77e6f",
+      "bug": "bip_ansible_16",
+      "function": "LinuxHardware.get_cpu_facts",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "hypothesis_id": "a9cdf5adabac",
+      "bug": "oob_real_12",
+      "function": "fast_float",
+      "verdict": "ESBMC_TIMEOUT"
+    }
+  ]
+}
