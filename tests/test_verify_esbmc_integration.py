@@ -201,3 +201,22 @@ REACH = ("def f(n: int) -> int:\n    if n > 10:\n        return 1 // (n - 11)\n 
 def test_reachability_of_the_hypothesis_line(tmp_path, limit, expected):
     program = Program(REACH.format(limit=limit), 0, ((3, 3),), (), (1, 4))
     assert reachability(program, esbmc=str(ESBMC), unwind=5, timeout_seconds=60, work_dir=tmp_path) == expected
+
+
+from research_pipeline.verify.validation import KILLED, NOT_COUNTED, Mutant, run_mutant
+
+DRIVEN = ("def f(xs: list[int], i: int) -> int:\n    if i >= len(xs):\n        return 0\n    return xs[i]\n\n\n"
+          "def driver() -> None:\n    xs: list[int] = [nondet_int(), nondet_int()]\n    i: int = nondet_int()\n"
+          "    __ESBMC_assume(i >= 0)\n    f(xs, i)\n\n\ndriver()\n")
+
+
+def test_removing_the_bound_guard_is_killed(tmp_path):
+    mutant = Mutant("remove_guard", 2, DRIVEN.replace("    if i >= len(xs):\n        return 0\n", "    pass\n\n"))
+    assert run_mutant(mutant, "f", (1, 4), esbmc_command=[str(ESBMC)], bound=5, timeout_seconds=60,
+                      work_dir=tmp_path) == KILLED
+
+
+def test_a_mutant_no_input_breaks_does_not_count(tmp_path):
+    mutant = Mutant("assign_none", 4, DRIVEN.replace("return xs[i]", "return len(xs)"))
+    assert run_mutant(mutant, "f", (1, 4), esbmc_command=[str(ESBMC)], bound=5, timeout_seconds=60,
+                      work_dir=tmp_path) == NOT_COUNTED

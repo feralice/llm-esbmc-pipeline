@@ -9,9 +9,11 @@ from pathlib import Path
 from typing import NamedTuple
 
 from .astutil import body_signature, expression_nodes, find_function
+from .esbmc_run import check, esbmc_output
 from .outcome import CONFIRMED
 from .procs import run_group
 from .render import Program
+from .replay import concrete_replay, counterexample_seeds
 
 REACHABLE, UNREACHABLE, INCONCLUSIVE = "reachable", "unreachable", "inconclusive"
 _REACH = "reachability: unreachable code reached"
@@ -165,3 +167,22 @@ def mutants(source: str, function: str, near_line: int, *, window: int = 5, per_
             add("index_plus_one", statement, _mutated(statement, _plus_one))
             add("lt_to_le", statement, _mutated(statement, _lt_to_le))
     return found
+
+
+KILLED, SURVIVED, NOT_COUNTED = "killed", "survived", "not_counted"
+
+
+def run_mutant(mutant: Mutant, function: str, target_range: tuple[int, int], *, esbmc_command: list[str],
+               bound: int, timeout_seconds: int, work_dir: Path) -> str:
+    """Killed: ESBMC reports a violation and CPython raises. Survived: CPython raises, ESBMC says safe.
+    Not counted: no input made CPython raise (equivalent mutant or out of the search)."""
+    work_dir.mkdir(parents=True, exist_ok=True)
+    path = work_dir / f"mutant_{mutant.operator}_{mutant.line}.py"
+    path.write_text(mutant.source, encoding="utf-8")
+    result, reading, _ = check(path, esbmc_command=esbmc_command, bound=bound, timeout_seconds=timeout_seconds,
+                               work_dir=work_dir / path.stem)
+    program = Program(mutant.source, 0, ((mutant.line, mutant.line),), (), target_range)
+    replay = concrete_replay(program, function.split(".")[-1], seeds=counterexample_seeds(esbmc_output(result), None))
+    if replay.status not in {"reproduced", "other_failure"}:
+        return NOT_COUNTED
+    return KILLED if reading.kind == "violation" else SURVIVED
