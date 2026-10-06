@@ -34,6 +34,7 @@ def build_analyzer(
     timeout_seconds: int = 300,
     include_smells: bool = True,
     v2_detection: bool = False,
+    v2_variants: tuple[str, ...] = (),
 ) -> LLMAnalyzer:
     if backend not in _DEFAULT_MODEL:
         raise ValueError(
@@ -46,7 +47,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
-            v2_detection=v2_detection,
+            v2_detection=v2_detection, v2_variants=v2_variants,
         )
     if backend == "anthropic":
         return AnthropicAnalyzer(
@@ -54,7 +55,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
-            v2_detection=v2_detection,
+            v2_detection=v2_detection, v2_variants=v2_variants,
         )
     if backend == "ollama":
         return ChatCompletionsAnalyzer(
@@ -62,7 +63,7 @@ def build_analyzer(
             model=model,
             timeout_seconds=timeout_seconds,
             include_smells=include_smells,
-            v2_detection=v2_detection,
+            v2_detection=v2_detection, v2_variants=v2_variants,
         )
     if backend == "google":
         return ChatCompletionsAnalyzer(
@@ -72,10 +73,10 @@ def build_analyzer(
             timeout_seconds=timeout_seconds,
             request_delay=4.0,
             include_smells=include_smells,
-            v2_detection=v2_detection,
+            v2_detection=v2_detection, v2_variants=v2_variants,
         )
     if backend == "codex":
-        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection)
+        return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection, v2_variants=v2_variants)
     if backend == "claude_cli":
-        return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection)
+        return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection, v2_variants=v2_variants)
     raise AssertionError(f"unreachable: {backend!r} passed the _DEFAULT_MODEL membership check above")

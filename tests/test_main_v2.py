@@ -275,3 +275,19 @@ def test_detection_stage_stops_before_verification(tmp_path: Path, monkeypatch) 
     report = json.loads((out / "v2_verify_report.json").read_text())
     assert report["coverage"] == {"status": "complete", "stage": "detection"}
     assert len(report["detection"]["candidates"]) == 1 and report["results"] == []
+
+
+def test_variants_enter_the_run_config(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    seen = {}
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: seen.update(kwargs) or _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", _Synthesizer)
+    out = tmp_path / "out"
+    args = main.build_parser().parse_args(["--mode", "hybrid", "--v2-stage", "detection", "--v2-variants", "A1,A2",
+                                           "--input", str(source), "--output-dir", str(out)])
+
+    assert main.mode_v2(args) == 0
+    assert seen["v2_variants"] == ("A1", "A2")
+    assert json.loads((out / "v2_verify_report.json").read_text())["config"]["v2_variants"] == ["A1", "A2"]

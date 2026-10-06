@@ -29,12 +29,14 @@ class AnthropicAnalyzer:
         timeout_seconds: int = 60,
         include_smells: bool = True,
         v2_detection: bool = False,
+        v2_variants: tuple[str, ...] = (),
     ) -> None:
         resolved_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.include_smells = include_smells
         self.v2_detection = v2_detection
+        self.v2_variants = v2_variants
         if not resolved_key:
             raise ValueError(
                 "ANTHROPIC_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -46,7 +48,7 @@ class AnthropicAnalyzer:
         payload = {
             "model": self.model,
             "max_tokens": 4096,
-            "system": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection),
+            "system": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants),
             "messages": [
                 {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells)},
             ],

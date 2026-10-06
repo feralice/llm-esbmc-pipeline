@@ -7,6 +7,7 @@ from pathlib import Path
 
 from ..models import CodeUnit
 from ..smell_policy import load_smell_thresholds
+from .prompt_variants import apply_variants
 from .schema import (
     FINDINGS_JSON_SCHEMA,  # noqa: F401 - re-exported for backward compatibility
 )
@@ -49,8 +50,9 @@ def _reasoning_steps(*, include_smells: bool = True) -> str:
     )
 
 
-@lru_cache(maxsize=4)
-def load_system_prompt(*, include_smells: bool = True, v2_detection: bool = False) -> str:
+@lru_cache(maxsize=16)
+def load_system_prompt(*, include_smells: bool = True, v2_detection: bool = False,
+                       v2_variants: tuple[str, ...] = ()) -> str:
     """Load the system prompt once and reuse it across LLM calls.
 
     V2 has its own prompt, without smells (``include_smells`` is ignored): no category, and
@@ -58,7 +60,8 @@ def load_system_prompt(*, include_smells: bool = True, v2_detection: bool = Fals
     eight-category prompt unchanged so its benchmark stays reproducible.
     """
     if v2_detection:
-        return (PROMPTS_DIR / "system_prompt_v2.txt").read_text(encoding="utf-8").strip()
+        base = (PROMPTS_DIR / "system_prompt_v2.txt").read_text(encoding="utf-8").strip()
+        return apply_variants(base, v2_variants)
     prompt = (PROMPTS_DIR / "system_prompt.txt").read_text(encoding="utf-8").strip()
     if not include_smells:
         start = prompt.index("## CODE SMELLS")

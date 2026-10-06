@@ -289,6 +289,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Motor verify: verifica no arquivo de mesmo nome deste diretório (ex.: arquivo_com_bug) quando existir.",
     )
     parser.add_argument(
+        "--v2-variants",
+        default="",
+        metavar="A1,A2",
+        help="Variantes do prompt V2 (research_pipeline/llm/prompt_variants.py), aplicadas em ordem.",
+    )
+    parser.add_argument(
         "--v2-stage",
         choices=["end-to-end", "synthesis", "detection"],
         default="end-to-end",
@@ -1108,6 +1114,7 @@ def _mode_v2_verify(
 
 
 def mode_v2(args: argparse.Namespace) -> int:
+    variants = tuple(v for v in args.v2_variants.split(",") if v)
     input_paths = _resolve_input_paths(args.input)
     if not input_paths:
         print("Nenhum arquivo Python encontrado para a V2.", file=sys.stderr)
@@ -1154,6 +1161,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             timeout_seconds=args.llm_timeout,
             include_smells=False,
             v2_detection=True,
+            v2_variants=variants,
         )
         synthesizer = LLMClient(
             backend=synth_backend,
@@ -1184,6 +1192,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "synth_backend": synth_backend,
         "synth_model": synth_model,
         "v2_stage": args.v2_stage,
+        "v2_variants": list(variants),
         "input_files": [str(path.resolve()) for path in input_paths],
         "excluded_patch_context_files": len(all_input_paths) - len(input_paths),
         "verification_sources": args.verification_sources,

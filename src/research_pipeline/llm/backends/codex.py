@@ -31,19 +31,21 @@ class CodexAnalyzer:
         codex_command: str = "codex",
         include_smells: bool = True,
         v2_detection: bool = False,
+        v2_variants: tuple[str, ...] = (),
     ) -> None:
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.codex_command = codex_command
         self.include_smells = include_smells
         self.v2_detection = v2_detection
+        self.v2_variants = v2_variants
         self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         started = time.monotonic()
         try:
             response = self._run_cli(
-                load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection),
+                load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants),
                 build_user_prompt(unit, include_smells=self.include_smells),
             )
             payload = json.loads(strip_markdown_json(response["output_text"]))

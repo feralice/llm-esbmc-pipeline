@@ -31,6 +31,7 @@ class ChatCompletionsAnalyzer:
         request_delay: float = 0.0,
         include_smells: bool = True,
         v2_detection: bool = False,
+        v2_variants: tuple[str, ...] = (),
     ) -> None:
         self.base_url = base_url.rstrip("/") + "/chat/completions"
         self.model = model
@@ -39,6 +40,7 @@ class ChatCompletionsAnalyzer:
         self.request_delay = request_delay
         self.include_smells = include_smells
         self.v2_detection = v2_detection
+        self.v2_variants = v2_variants
         self.telemetry_events: list[dict] = []
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
@@ -47,7 +49,7 @@ class ChatCompletionsAnalyzer:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection)},
+                {"role": "system", "content": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants)},
                 {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells)},
             ],
             "response_format": {"type": "json_object"},

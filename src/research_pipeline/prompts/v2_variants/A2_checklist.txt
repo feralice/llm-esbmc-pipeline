@@ -1,0 +1,11 @@
+## PARTIÇÃO DE ENTRADAS
+
+Antes do item 1, percorra cada parâmetro e cada atributo de `self` que a função
+lê e pergunte, um por um, o que acontece quando ele é:
+- None (inclusive quando o padrão do parâmetro é None ou o nome sugere opcional);
+- vazio (string, lista, dicionário, conjunto);
+- zero ou negativo;
+- de outro tipo plausível (bytes no lugar de str, int no lugar de str, lista no lugar de tupla);
+- uma chave ausente num dicionário, ou um índice fora do intervalo.
+Cada caso que leva a uma exceção ou a um resultado errado e passa pelas guardas
+existentes é uma hipótese.

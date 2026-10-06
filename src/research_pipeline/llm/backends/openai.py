@@ -24,6 +24,7 @@ class OpenAIResponsesAnalyzer:
         timeout_seconds: int = 60,
         include_smells: bool = True,
         v2_detection: bool = False,
+        v2_variants: tuple[str, ...] = (),
     ) -> None:
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self.model = model
@@ -31,6 +32,7 @@ class OpenAIResponsesAnalyzer:
         self.timeout_seconds = timeout_seconds
         self.include_smells = include_smells
         self.v2_detection = v2_detection
+        self.v2_variants = v2_variants
         if not self.api_key:
             raise ValueError(
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
@@ -43,7 +45,7 @@ class OpenAIResponsesAnalyzer:
             "input": [
                 {
                     "role": "system",
-                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection)}],
+                    "content": [{"type": "input_text", "text": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants)}],
                 },
                 {
                     "role": "user",
