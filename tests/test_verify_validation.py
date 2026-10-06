@@ -137,3 +137,52 @@ def test_validate_results_reclassifies_and_skips_results_without_program(tmp_pat
     assert rows["2"]["validated_verdict"] == "TARGET_ALTERED"
     assert rows["3"]["checked"] is False
     assert report["summary"]["vacuous"] == 1 and report["summary"]["altered"] == 1
+
+
+def _row(tmp_path: Path, verdict: str, program_text: str = HARNESS, **extra) -> dict:
+    src = tmp_path / "src"
+    src.mkdir(exist_ok=True)
+    (src / "a.py").write_text(SOURCE)
+    program = tmp_path / f"{verdict}_a0.py"
+    program.write_text(program_text)
+    hypothesis = {"function": "f", "suspect_expression": "10 // n", "file": str(tmp_path / "a.py"),
+                  "hypothesis_id": verdict}
+    return {"hypothesis": hypothesis, "verdict": verdict, "program_path": str(program), "attempts": [{}], **extra}
+
+
+def _validate(tmp_path: Path, results: list[dict], **kwargs) -> dict:
+    return validate_results(results, sources=tmp_path / "src", esbmc="esbmc", timeout_seconds=5,
+                            work_dir=tmp_path / "w", reach=lambda *a, **k: "reachable", **kwargs)
+
+
+def test_a_verdict_without_an_esbmc_reading_is_not_checked(tmp_path: Path) -> None:
+    # SPEC_FAILED can keep the program_path of an earlier, rewritten attempt.
+    report = _validate(tmp_path, [_row(tmp_path, "SPEC_FAILED")])
+    assert report["rows"][0]["checked"] is False and report["summary"]["with_program"] == 0
+
+
+def test_a_catalogue_rewrite_without_its_replay_program_is_not_called_altered(tmp_path: Path) -> None:
+    rewritten = HARNESS.replace("10 // n", "10 // int(n)")
+    report = _validate(tmp_path, [_row(tmp_path, "NOT_CONFIRMED", rewritten, transforms=["compat_percent"])])
+    row = report["rows"][0]
+    assert row["preserved"] is None and row["validated_verdict"] == "NOT_CONFIRMED"
+    assert report["summary"]["altered"] == 0
+
+
+def test_mutants_run_only_on_safe_verdicts(tmp_path: Path) -> None:
+    mutable = HARNESS.replace("    return 10 // n\n", "    k = n\n    return 10 // n\n")
+    calls = []
+    _validate(tmp_path, [_row(tmp_path, "NOT_CONFIRMED", mutable)], with_mutants=True,
+              run=lambda m, *a, **k: calls.append(m) or "killed")
+    assert calls
+    report = _validate(tmp_path, [_row(tmp_path, "CONFIRMED", mutable)], with_mutants=True,
+                       run=lambda *a, **k: pytest.fail("a confirmed program already violates: mutants say nothing"))
+    assert "mutants" not in report["rows"][0]
+
+
+def test_an_error_in_one_row_is_recorded_and_the_rest_still_run(tmp_path: Path) -> None:
+    broken = _row(tmp_path, "NOT_CONFIRMED")
+    broken["program_path"] = str(tmp_path / "missing.py")
+    good = _row(tmp_path, "ESBMC_MISSED")
+    report = _validate(tmp_path, [broken, good])
+    assert "error" in report["rows"][0] and report["rows"][1]["checked"] is True

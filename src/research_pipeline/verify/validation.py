@@ -197,37 +197,61 @@ def _original(hypothesis: dict, sources: Path) -> str:
     return (candidate if candidate.exists() else Path(hypothesis["file"])).read_text(encoding="utf-8")
 
 
+def _replay_program(result: dict) -> Path | None:
+    """The pre-rewrite program of the attempt the verdict came from; None when a catalogue rewrite
+    left no replay program (preservation is then unknown, not altered)."""
+    program = Path(result["program_path"])
+    for attempt in result.get("attempts") or []:
+        replay = attempt.get("replay_program_path")
+        if replay and Path(replay).stem.startswith(program.stem):
+            return Path(replay)
+    if any(str(t).startswith("compat_") for t in result.get("transforms") or []):
+        return None
+    return program
+
+
+def _validate_row(result: dict, row: dict, *, sources: Path, esbmc: str, timeout_seconds: int, work_dir: Path,
+                  with_mutants: bool, reach, run) -> None:
+    hypothesis = result["hypothesis"]
+    row["checked"] = True
+    replay_path = _replay_program(result)
+    row["preserved"] = None if replay_path is None else target_preserved(
+        _original(hypothesis, sources), replay_path.read_text(encoding="utf-8"), hypothesis["function"])
+    program = program_for_result(Path(result["program_path"]), hypothesis)
+    attempt = (result.get("attempts") or [{}])[-1]
+    unwind = attempt.get("unwind") if isinstance(attempt.get("unwind"), int) else 5
+    if program is not None and result["verdict"] in _REACH_VERDICTS:
+        row["reachability"] = reach(program, esbmc=esbmc, unwind=unwind, timeout_seconds=timeout_seconds,
+                                    work_dir=work_dir / f"reach_{row['hypothesis_id']}")
+    # A program that already violates gets every mutant "killed" by its own bug: score safe verdicts only.
+    if with_mutants and program is not None and result["verdict"] == "NOT_CONFIRMED":
+        outcomes = [run(m, hypothesis["function"], program.target_range, esbmc_command=[esbmc], bound=unwind,
+                        timeout_seconds=timeout_seconds, work_dir=work_dir / f"mut_{row['hypothesis_id']}")
+                    for m in mutants(program.source, hypothesis["function"], program.target_spans[0][0])]
+        row["mutants"] = {k: outcomes.count(k) for k in (KILLED, SURVIVED, NOT_COUNTED)}
+    row["validated_verdict"] = ("TARGET_ALTERED" if row["preserved"] is False else
+                                "NOT_CONFIRMED_VACUOUS" if result["verdict"] == "NOT_CONFIRMED"
+                                and row.get("reachability") == UNREACHABLE else result["verdict"])
+
+
 def validate_results(results: list[dict], *, sources: Path, esbmc: str, timeout_seconds: int, work_dir: Path,
                      control: list[dict] | None = None, with_mutants: bool = False,
                      reach=reachability, run=run_mutant) -> dict:
     rows = []
     for result in results:
-        hypothesis = result["hypothesis"]
-        row = {"hypothesis_id": hypothesis.get("hypothesis_id"), "verdict": result["verdict"], "checked": False}
+        row = {"hypothesis_id": result["hypothesis"].get("hypothesis_id"), "verdict": result["verdict"],
+               "checked": False}
         rows.append(row)
-        if not result.get("program_path"):
+        if not result.get("program_path") or result["verdict"] not in _CHECKED:
             continue
-        attempt = (result.get("attempts") or [{}])[-1]
-        replay_path = Path(attempt.get("replay_program_path") or result["program_path"])
-        row["checked"] = True
-        row["preserved"] = target_preserved(_original(hypothesis, sources), replay_path.read_text(encoding="utf-8"),
-                                            hypothesis["function"])
-        program = program_for_result(Path(result["program_path"]), hypothesis)
-        unwind = attempt.get("unwind") if isinstance(attempt.get("unwind"), int) else 5
-        if program is not None and result["verdict"] in _REACH_VERDICTS:
-            row["reachability"] = reach(program, esbmc=esbmc, unwind=unwind, timeout_seconds=timeout_seconds,
-                                        work_dir=work_dir / f"reach_{row['hypothesis_id']}")
-        if with_mutants and program is not None and result["verdict"] in _CHECKED:
-            outcomes = [run(m, hypothesis["function"], program.target_range, esbmc_command=[esbmc], bound=unwind,
-                            timeout_seconds=timeout_seconds, work_dir=work_dir / f"mut_{row['hypothesis_id']}")
-                        for m in mutants(program.source, hypothesis["function"], program.target_spans[0][0])]
-            row["mutants"] = {k: outcomes.count(k) for k in (KILLED, SURVIVED, NOT_COUNTED)}
-        row["validated_verdict"] = ("TARGET_ALTERED" if not row["preserved"] else
-                                    "NOT_CONFIRMED_VACUOUS" if result["verdict"] == "NOT_CONFIRMED"
-                                    and row.get("reachability") == UNREACHABLE else result["verdict"])
+        try:
+            _validate_row(result, row, sources=sources, esbmc=esbmc, timeout_seconds=timeout_seconds,
+                          work_dir=work_dir, with_mutants=with_mutants, reach=reach, run=run)
+        except Exception as exc:  # noqa: BLE001 - one bad row must not discard hours of ESBMC runs
+            row.update(checked=False, error=f"{type(exc).__name__}: {exc}")
     checked = [r for r in rows if r["checked"]]
-    summary = {"results": len(rows), "with_program": len(checked),
-               "altered": sum(not r["preserved"] for r in checked),
+    summary = {"results": len(rows), "with_program": len(checked), "errors": sum("error" in r for r in rows),
+               "altered": sum(r["preserved"] is False for r in checked),
                "vacuous": sum(r["validated_verdict"] == "NOT_CONFIRMED_VACUOUS" for r in checked),
                "reachability": {k: sum(r.get("reachability") == k for r in checked)
                                 for k in (REACHABLE, UNREACHABLE, INCONCLUSIVE)}}
