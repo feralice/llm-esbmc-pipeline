@@ -186,3 +186,55 @@ def run_mutant(mutant: Mutant, function: str, target_range: tuple[int, int], *, 
     if replay.status not in {"reproduced", "other_failure"}:
         return NOT_COUNTED
     return KILLED if reading.kind == "violation" else SURVIVED
+
+
+_REACH_VERDICTS = {"NOT_CONFIRMED", "ESBMC_MISSED", CONFIRMED}
+_CHECKED = {"NOT_CONFIRMED", "ESBMC_MISSED", CONFIRMED, "UNVALIDATED", "OTHER_FAILURE"}
+
+
+def _original(hypothesis: dict, sources: Path) -> str:
+    candidate = sources / Path(hypothesis["file"]).name
+    return (candidate if candidate.exists() else Path(hypothesis["file"])).read_text(encoding="utf-8")
+
+
+def validate_results(results: list[dict], *, sources: Path, esbmc: str, timeout_seconds: int, work_dir: Path,
+                     control: list[dict] | None = None, with_mutants: bool = False,
+                     reach=reachability, run=run_mutant) -> dict:
+    rows = []
+    for result in results:
+        hypothesis = result["hypothesis"]
+        row = {"hypothesis_id": hypothesis.get("hypothesis_id"), "verdict": result["verdict"], "checked": False}
+        rows.append(row)
+        if not result.get("program_path"):
+            continue
+        attempt = (result.get("attempts") or [{}])[-1]
+        replay_path = Path(attempt.get("replay_program_path") or result["program_path"])
+        row["checked"] = True
+        row["preserved"] = target_preserved(_original(hypothesis, sources), replay_path.read_text(encoding="utf-8"),
+                                            hypothesis["function"])
+        program = program_for_result(Path(result["program_path"]), hypothesis)
+        unwind = attempt.get("unwind") if isinstance(attempt.get("unwind"), int) else 5
+        if program is not None and result["verdict"] in _REACH_VERDICTS:
+            row["reachability"] = reach(program, esbmc=esbmc, unwind=unwind, timeout_seconds=timeout_seconds,
+                                        work_dir=work_dir / f"reach_{row['hypothesis_id']}")
+        if with_mutants and program is not None and result["verdict"] in _CHECKED:
+            outcomes = [run(m, hypothesis["function"], program.target_range, esbmc_command=[esbmc], bound=unwind,
+                            timeout_seconds=timeout_seconds, work_dir=work_dir / f"mut_{row['hypothesis_id']}")
+                        for m in mutants(program.source, hypothesis["function"], program.target_spans[0][0])]
+            row["mutants"] = {k: outcomes.count(k) for k in (KILLED, SURVIVED, NOT_COUNTED)}
+        row["validated_verdict"] = ("TARGET_ALTERED" if not row["preserved"] else
+                                    "NOT_CONFIRMED_VACUOUS" if result["verdict"] == "NOT_CONFIRMED"
+                                    and row.get("reachability") == UNREACHABLE else result["verdict"])
+    checked = [r for r in rows if r["checked"]]
+    summary = {"results": len(rows), "with_program": len(checked),
+               "altered": sum(not r["preserved"] for r in checked),
+               "vacuous": sum(r["validated_verdict"] == "NOT_CONFIRMED_VACUOUS" for r in checked),
+               "reachability": {k: sum(r.get("reachability") == k for r in checked)
+                                for k in (REACHABLE, UNREACHABLE, INCONCLUSIVE)}}
+    if with_mutants:
+        summary["mutants"] = {k: sum(r.get("mutants", {}).get(k, 0) for r in checked)
+                              for k in (KILLED, SURVIVED, NOT_COUNTED)}
+    report = {"rows": rows, "summary": summary}
+    if control is not None:
+        report["natural_mutation"] = natural_mutation_matrix(results, control)
+    return report

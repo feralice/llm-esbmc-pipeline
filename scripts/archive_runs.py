@@ -23,7 +23,7 @@ ARTIFACTS = ROOT / "artifacts" / "v2"
 DOCS = ROOT / "docs" / "experimentos"
 KEEP = ("v2_verify_report.json", "v2_report.json", "v2_checkpoint.json", "agent_results.json",
         "llm_telemetry.json", "run.log", "input_report.json", "smoke.json", "report_0of1.json",
-        "replay_specs_0of1.json")
+        "replay_specs_0of1.json", "validation.json")
 
 PHASES = {
     1: ["local_validation", "driver-slice-117-rerun", "end-to-end-117"],

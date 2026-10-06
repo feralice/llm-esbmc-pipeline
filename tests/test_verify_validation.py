@@ -107,3 +107,33 @@ def test_each_operator_yields_a_mutant_that_keeps_the_line_numbers() -> None:
 
 def test_no_mutant_far_from_the_hypothesis() -> None:
     assert mutants(TARGET, "f", near_line=40, window=2) == []
+
+
+from research_pipeline.verify.validation import validate_results
+
+
+def test_validate_results_reclassifies_and_skips_results_without_program(tmp_path: Path) -> None:
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "a.py").write_text(SOURCE)
+    program = tmp_path / "p.py"
+    program.write_text(HARNESS)
+    altered = tmp_path / "q.py"
+    altered.write_text(HARNESS.replace("10 // n", "10 // (n or 1)"))
+    base = {"function": "f", "suspect_expression": "10 // n", "file": str(tmp_path / "a.py")}
+    results = [
+        {"hypothesis": {**base, "hypothesis_id": "1"}, "verdict": "NOT_CONFIRMED", "program_path": str(program),
+         "attempts": [{}]},
+        {"hypothesis": {**base, "hypothesis_id": "2"}, "verdict": "CONFIRMED", "program_path": str(altered),
+         "attempts": [{}]},
+        {"hypothesis": {**base, "hypothesis_id": "3"}, "verdict": "GROUNDING_FAILED", "attempts": []},
+    ]
+
+    report = validate_results(results, sources=src, esbmc="esbmc", timeout_seconds=5, work_dir=tmp_path / "w",
+                              reach=lambda *a, **k: "unreachable")
+
+    rows = {r["hypothesis_id"]: r for r in report["rows"]}
+    assert rows["1"]["validated_verdict"] == "NOT_CONFIRMED_VACUOUS"
+    assert rows["2"]["validated_verdict"] == "TARGET_ALTERED"
+    assert rows["3"]["checked"] is False
+    assert report["summary"]["vacuous"] == 1 and report["summary"]["altered"] == 1
