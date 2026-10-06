@@ -1,0 +1,12 @@
+{
+  "pasta": "fp12-gpt4o-mini-rerun",
+  "modificado_em": "2026-09-28T19:08",
+  "arquivos": [
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "partial_synthesis"
+}

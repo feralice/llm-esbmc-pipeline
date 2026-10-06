@@ -1,0 +1,2033 @@
+{
+  "counts": {
+    "READY_FOR_LLM": 204,
+    "UNSUPPORTED": 69,
+    "MISSING_DEPENDENCY": 12,
+    "GROUNDING_FAILED": 4
+  },
+  "rows": [
+    {
+      "id": "av_real_01",
+      "source": "arquivo_com_bug",
+      "function": "cli_bool_option",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_02",
+      "source": "arquivo_com_bug",
+      "function": "WebSocketHandler.set_nodelay",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_03",
+      "source": "arquivo_com_bug",
+      "function": "Series.to_timestamp",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "av_real_04",
+      "source": "arquivo_com_bug",
+      "function": "_partition_tasks",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_05",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.__init__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_06",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_07",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_08",
+      "source": "arquivo_com_bug",
+      "function": "Settings.update",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_09",
+      "source": "arquivo_com_bug",
+      "function": "_make_getset_interval",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_10",
+      "source": "arquivo_com_bug",
+      "function": "Driver._partially_consume_prefix",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_11",
+      "source": "arquivo_com_bug",
+      "function": "HTTP1Connection._read_body",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_12",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_13",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_14",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_15",
+      "source": "arquivo_com_bug",
+      "function": "gunzip",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): read1"
+    },
+    {
+      "id": "av_real_17",
+      "source": "arquivo_com_bug",
+      "function": "unified_strdate",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "av_real_21",
+      "source": "arquivo_com_bug",
+      "function": "YoutubeDL.process_ie_result",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed"
+    },
+    {
+      "id": "dz_real_01",
+      "source": "arquivo_com_bug",
+      "function": "makeMappingArray",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "dz_real_02",
+      "source": "arquivo_com_bug",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "dz_real_03",
+      "source": "arquivo_com_bug",
+      "function": "HashExpander.do",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_01",
+      "source": "arquivo_com_bug",
+      "function": "Request._set_url",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_03",
+      "source": "arquivo_com_bug",
+      "function": "Selector.__init__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_04",
+      "source": "funcao_com_bug",
+      "function": "HTTP1Connection.write_headers",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_05",
+      "source": "arquivo_com_bug",
+      "function": "_Alpha.__gt__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_06",
+      "source": "arquivo_com_bug",
+      "function": "_unstack_multiple",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "ip_real_07",
+      "source": "arquivo_com_bug",
+      "function": "_htmlentity_transform",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_08",
+      "source": "arquivo_com_bug",
+      "function": "Sanic.url_for",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_09",
+      "source": "arquivo_com_bug",
+      "function": "generate_commands",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_10",
+      "source": "arquivo_com_bug",
+      "function": "_get_spider_loader",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_11",
+      "source": "arquivo_com_bug",
+      "function": "HTTPBearer.__call__",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "async entry point is not supported"
+    },
+    {
+      "id": "ip_real_12",
+      "source": "arquivo_com_bug",
+      "function": "map_obj_to_commands",
+      "verdict": "UNSUPPORTED",
+      "reason": "input 'updates': the code unpacks it into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "ip_real_13",
+      "source": "arquivo_com_bug",
+      "function": "StaticFileHandler.get",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "async entry point is not supported"
+    },
+    {
+      "id": "ip_real_14",
+      "source": "arquivo_com_bug",
+      "function": "TimeseriesGenerator.__len__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_15",
+      "source": "arquivo_com_bug",
+      "function": "EmptyLineTracker.maybe_empty_lines",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator"
+    },
+    {
+      "id": "ip_real_16",
+      "source": "arquivo_com_bug",
+      "function": "pivot",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_17",
+      "source": "arquivo_com_bug",
+      "function": "response_status_message",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_18",
+      "source": "arquivo_com_bug",
+      "function": "croniter._get_low_from_current_date_number",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_19",
+      "source": "arquivo_com_bug",
+      "function": "VersionInfo.__getitem__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_20",
+      "source": "arquivo_com_bug",
+      "function": "generate_sub_moved_events",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_21",
+      "source": "arquivo_com_bug",
+      "function": "SortedDict.__eq__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_22",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_23",
+      "source": "arquivo_com_bug",
+      "function": "Task.to_str_params",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_24",
+      "source": "arquivo_com_bug",
+      "function": "CentralPlannerScheduler.get_work",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_25",
+      "source": "arquivo_com_bug",
+      "function": "SimpleTaskState.get_necessary_tasks",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_26",
+      "source": "arquivo_com_bug",
+      "function": "Scheduler.add_task",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_28",
+      "source": "arquivo_com_bug",
+      "function": "IOLoop.initialize",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ip_real_32",
+      "source": "arquivo_com_bug",
+      "function": "date_convert",
+      "verdict": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'"
+    },
+    {
+      "id": "ip_real_33",
+      "source": "arquivo_com_bug",
+      "function": "send2trash",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_01",
+      "source": "arquivo_com_bug",
+      "function": "Session.update_headers",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_02",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.format_meter",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_03",
+      "source": "arquivo_com_bug",
+      "function": "FacebookIE._real_extract",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_04",
+      "source": "arquivo_com_bug",
+      "function": "OffsiteMiddleware.get_host_regex",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_05",
+      "source": "arquivo_com_bug",
+      "function": "Response.follow",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_06",
+      "source": "arquivo_com_bug",
+      "function": "create_instance",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_07",
+      "source": "arquivo_com_bug",
+      "function": "url_concat",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_08",
+      "source": "arquivo_com_bug",
+      "function": "Request.url_for",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_09",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.__len__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_10",
+      "source": "arquivo_com_bug",
+      "function": "S3CopyToTable.copy",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _credentials"
+    },
+    {
+      "id": "nm_real_11",
+      "source": "arquivo_com_bug",
+      "function": "LocalCache.__setitem__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_12",
+      "source": "arquivo_com_bug",
+      "function": "PamdService.remove",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_13",
+      "source": "arquivo_com_bug",
+      "function": "AsyncHTTPClient.close",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_14",
+      "source": "arquivo_com_bug",
+      "function": "request_httprepr",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_15",
+      "source": "arquivo_com_bug",
+      "function": "APIRouter.include_router",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call run_in_threadpool(...) uses *args/**kwargs"
+    },
+    {
+      "id": "nm_real_16",
+      "source": "arquivo_com_bug",
+      "function": "Axes.scatter",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed"
+    },
+    {
+      "id": "nm_real_17",
+      "source": "arquivo_com_bug",
+      "function": "_type",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_18",
+      "source": "arquivo_com_bug",
+      "function": "after_log",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_19",
+      "source": "arquivo_com_bug",
+      "function": "IsFile",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_20",
+      "source": "arquivo_com_bug",
+      "function": "engine.numwords",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_21",
+      "source": "arquivo_com_bug",
+      "function": "_Projection.get_index",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_22",
+      "source": "arquivo_com_bug",
+      "function": "run",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_01",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_02",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_03",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_04",
+      "source": "arquivo_com_bug",
+      "function": "SortedCorrectedCommandsSequence._realise",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_05",
+      "source": "arquivo_com_bug",
+      "function": "lib2to3_parse",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_09",
+      "source": "arquivo_com_bug",
+      "function": "parser._parse",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_10",
+      "source": "arquivo_com_bug",
+      "function": "_wrap_text_to_colwidths",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call textwrap_TextWrapper.__init__(...) cannot be stubbed"
+    },
+    {
+      "id": "oob_real_11",
+      "source": "arquivo_com_bug",
+      "function": "wcswidth",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_12",
+      "source": "arquivo_com_bug",
+      "function": "fast_float",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_13",
+      "source": "arquivo_com_bug",
+      "function": "tokenize",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_14",
+      "source": "arquivo_com_bug",
+      "function": "LinuxDistribution._parse_uname_content",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_15",
+      "source": "arquivo_com_bug",
+      "function": "dfxp2srt",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "oob_real_16",
+      "source": "arquivo_com_bug",
+      "function": "IndexedSet.__getitem__",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call chain(...) uses *args/**kwargs"
+    },
+    {
+      "id": "tm_real_01",
+      "source": "arquivo_com_bug",
+      "function": "read_conllx",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_02",
+      "source": "arquivo_com_bug",
+      "function": "HiveCommandClient.table_exists",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): partition_spec"
+    },
+    {
+      "id": "tm_real_03",
+      "source": "arquivo_com_bug",
+      "function": "_match_one",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_04",
+      "source": "arquivo_com_bug",
+      "function": "str_to_int",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_05",
+      "source": "arquivo_com_bug",
+      "function": "MailSender.send",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call MIMENonMultipart(...) uses *args/**kwargs"
+    },
+    {
+      "id": "tm_real_06",
+      "source": "arquivo_com_bug",
+      "function": "ContractsManager._clean_req.eb_wrapper",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "entry point is nested inside a function; the harness cannot call it"
+    },
+    {
+      "id": "tm_real_07",
+      "source": "arquivo_com_bug",
+      "function": "MarkerStyle._recache",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_08",
+      "source": "arquivo_com_bug",
+      "function": "simple_separated_format",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_09",
+      "source": "arquivo_com_bug",
+      "function": "_format",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_10",
+      "source": "arquivo_com_bug",
+      "function": "MetricsHandler.get",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "vm_real_01",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.format_meter",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "vm_real_02",
+      "source": "arquivo_com_bug",
+      "function": "Schema.validate",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "io_real_01",
+      "source": "arquivo_com_bug",
+      "function": "nonsingular",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ir_real_01",
+      "source": "arquivo_com_bug",
+      "function": "gamma",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt"
+    },
+    {
+      "id": "ir_real_02",
+      "source": "funcao_com_bug",
+      "function": "module-level",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "function 'module-level' not found (or ambiguous)"
+    },
+    {
+      "id": "ir_real_03",
+      "source": "arquivo_com_bug",
+      "function": "try_match_char_class_range",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "ir_real_05",
+      "source": "arquivo_com_bug",
+      "function": "string_to_int",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_23",
+      "source": "arquivo_com_bug",
+      "function": "Markdown._html_class_str_from_tag",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "dz_real_04",
+      "source": "arquivo_com_bug",
+      "function": "interpolate_bilinear_2x_fwd",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_24",
+      "source": "arquivo_com_bug",
+      "function": "reformat_many",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'contextmanager' is used as a decorator"
+    },
+    {
+      "id": "vm_real_03",
+      "source": "funcao_com_bug",
+      "function": "Language.pipe",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "nm_real_25",
+      "source": "arquivo_com_bug",
+      "function": "HTTP1Connection._can_keep_alive",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_11",
+      "source": "funcao_com_bug",
+      "function": "SitemapSpider._parse_sitemap",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): Request"
+    },
+    {
+      "id": "vm_real_04",
+      "source": "funcao_com_bug",
+      "function": "YoutubeDL._build_format_filter",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): operator, re"
+    },
+    {
+      "id": "vm_real_05",
+      "source": "arquivo_com_bug",
+      "function": "LocalFileSystem.move",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "vm_real_06",
+      "source": "arquivo_com_bug",
+      "function": "CrawlerProcess.__init__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "tm_real_12",
+      "source": "funcao_com_bug",
+      "function": "S3CopyToTable.run",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "vm_real_07",
+      "source": "funcao_com_bug",
+      "function": "fit_generator",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): OrderedEnqueuer, Sequence, do_validation, iter_sequence_infinite, max_queue_size, use_multiprocessing, workers"
+    },
+    {
+      "id": "tm_real_13",
+      "source": "arquivo_com_bug",
+      "function": "XmlItemExporter._export_xml_field",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "vm_real_08",
+      "source": "funcao_com_bug",
+      "function": "get_write_function",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): output_path, pycompat, sys, utils"
+    },
+    {
+      "id": "ip_real_34",
+      "source": "funcao_com_bug",
+      "function": "find_hook",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): logger, os, valid_hook"
+    },
+    {
+      "id": "oob_real_06",
+      "source": "arquivo_com_bug",
+      "function": "merge_configs",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_ansible_1",
+      "source": "arquivo_com_bug",
+      "function": "verify_collections",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'contextmanager' is used as a decorator"
+    },
+    {
+      "id": "bip_ansible_3",
+      "source": "arquivo_com_bug",
+      "function": "DistributionFiles.parse_distribution_file_Debian",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_ansible_5",
+      "source": "arquivo_com_bug",
+      "function": "check_required_arguments",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_ansible_16",
+      "source": "arquivo_com_bug",
+      "function": "LinuxHardware.get_cpu_facts",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_black_2",
+      "source": "arquivo_com_bug",
+      "function": "generate_ignored_nodes",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_black_7",
+      "source": "arquivo_com_bug",
+      "function": "normalize_invisible_parens",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator"
+    },
+    {
+      "id": "bip_black_8",
+      "source": "arquivo_com_bug",
+      "function": "bracket_split_build_line",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator"
+    },
+    {
+      "id": "bip_black_9",
+      "source": "arquivo_com_bug",
+      "function": "get_grammars",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_black_13",
+      "source": "arquivo_com_bug",
+      "function": "generate_tokens",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): ASYNC, AWAIT, COMMENT, DEDENT, ENDMARKER, ERRORTOKEN, INDENT, NAME, NEWLINE, NL, NUMBER, OP, STRING"
+    },
+    {
+      "id": "bip_black_16",
+      "source": "arquivo_com_bug",
+      "function": "gen_python_files_in_dir",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_black_19",
+      "source": "arquivo_com_bug",
+      "function": "EmptyLineTracker._maybe_empty_lines",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator"
+    },
+    {
+      "id": "bip_black_20",
+      "source": "arquivo_com_bug",
+      "function": "format_file_in_place",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator"
+    },
+    {
+      "id": "bip_black_21",
+      "source": "arquivo_com_bug",
+      "function": "dump_to_file",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_cookiecutter_1",
+      "source": "arquivo_com_bug",
+      "function": "generate_context",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_cookiecutter_3",
+      "source": "arquivo_com_bug",
+      "function": "read_user_choice",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_fastapi_2",
+      "source": "arquivo_com_bug",
+      "function": "APIRouter.add_api_websocket_route",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compile_path': the code unpacks its result into 3 names, so it needs tuple[...] with 3 items, not 'int'"
+    },
+    {
+      "id": "bip_fastapi_4",
+      "source": "arquivo_com_bug",
+      "function": "get_openapi_path",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'field_schema': the code unpacks its result into 3 names, so it needs tuple[...] with 3 items, not 'int'"
+    },
+    {
+      "id": "bip_fastapi_5",
+      "source": "arquivo_com_bug",
+      "function": "create_cloned_field",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_fastapi_9",
+      "source": "arquivo_com_bug",
+      "function": "get_body_field",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_fastapi_10",
+      "source": "arquivo_com_bug",
+      "function": "serialize_response",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_fastapi_11",
+      "source": "arquivo_com_bug",
+      "function": "is_scalar_field",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_fastapi_16",
+      "source": "arquivo_com_bug",
+      "function": "jsonable_encoder",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'obj.Config': missing return type; stub 'obj.dict': missing return type; stub 'obj.items': missing return type; stub 'obj.value': missing return type"
+    },
+    {
+      "id": "bip_httpie_4",
+      "source": "arquivo_com_bug",
+      "function": "HTTPRequest.headers",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_3",
+      "source": "arquivo_com_bug",
+      "function": "_clone_functional_model",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_4",
+      "source": "arquivo_com_bug",
+      "function": "TFOptimizer.get_updates",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_5",
+      "source": "arquivo_com_bug",
+      "function": "get_file",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): urlretrieve"
+    },
+    {
+      "id": "bip_keras_6",
+      "source": "arquivo_com_bug",
+      "function": "weighted_masked_objective",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_7",
+      "source": "arquivo_com_bug",
+      "function": "KerasRegressor.predict",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): filter_sk_params"
+    },
+    {
+      "id": "bip_keras_8",
+      "source": "arquivo_com_bug",
+      "function": "Network.from_config",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_9",
+      "source": "arquivo_com_bug",
+      "function": "process_list_block",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_10",
+      "source": "arquivo_com_bug",
+      "function": "standardize_weights",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_14",
+      "source": "arquivo_com_bug",
+      "function": "sparse_top_k_categorical_accuracy",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_17",
+      "source": "arquivo_com_bug",
+      "function": "sparse_categorical_accuracy",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_23",
+      "source": "arquivo_com_bug",
+      "function": "Sequential.add",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_24",
+      "source": "arquivo_com_bug",
+      "function": "TensorBoard.set_model",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): projector, tf"
+    },
+    {
+      "id": "bip_keras_25",
+      "source": "arquivo_com_bug",
+      "function": "_preprocess_numpy_input",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_26",
+      "source": "arquivo_com_bug",
+      "function": "rnn",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): uses_learning_phase"
+    },
+    {
+      "id": "bip_keras_31",
+      "source": "arquivo_com_bug",
+      "function": "ctc_batch_cost",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_33",
+      "source": "arquivo_com_bug",
+      "function": "text_to_word_sequence",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): unicode"
+    },
+    {
+      "id": "bip_keras_36",
+      "source": "arquivo_com_bug",
+      "function": "separable_conv1d",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_38",
+      "source": "arquivo_com_bug",
+      "function": "StackedRNNCells.build",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_40",
+      "source": "arquivo_com_bug",
+      "function": "RNN.compute_output_shape",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_43",
+      "source": "arquivo_com_bug",
+      "function": "to_categorical",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_keras_45",
+      "source": "arquivo_com_bug",
+      "function": "LSTMCell.call",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_8",
+      "source": "arquivo_com_bug",
+      "function": "S3CopyToTable.does_table_exist",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_10",
+      "source": "arquivo_com_bug",
+      "function": "Worker.get_pending_tasks",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_16",
+      "source": "arquivo_com_bug",
+      "function": "CentralPlannerScheduler.prune",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_17",
+      "source": "arquivo_com_bug",
+      "function": "_WorkerSchedulerFactory.create_local_scheduler",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_18",
+      "source": "arquivo_com_bug",
+      "function": "SimpleTaskState.set_status",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_19",
+      "source": "arquivo_com_bug",
+      "function": "SimpleTaskState.set_status",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_21",
+      "source": "arquivo_com_bug",
+      "function": "run",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_24",
+      "source": "arquivo_com_bug",
+      "function": "SparkSubmitTask._dict_arg",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_26",
+      "source": "arquivo_com_bug",
+      "function": "HadoopJarJobRunner.run_job",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_29",
+      "source": "arquivo_com_bug",
+      "function": "Register.__get_reg",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_luigi_33",
+      "source": "arquivo_com_bug",
+      "function": "Task.get_param_values",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_2",
+      "source": "arquivo_com_bug",
+      "function": "Axes.scatter",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_matplotlib_6",
+      "source": "arquivo_com_bug",
+      "function": "Axes._parse_scatter_color_args",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_matplotlib_7",
+      "source": "arquivo_com_bug",
+      "function": "LightSource.shade_rgb",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'np.gradient': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'; stub 'np.moveaxis': the code unpacks its result into 3 names, so it needs tuple[...] with "
+    },
+    {
+      "id": "bip_matplotlib_9",
+      "source": "arquivo_com_bug",
+      "function": "PolarAxes.draw",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Axes.draw(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_matplotlib_10",
+      "source": "arquivo_com_bug",
+      "function": "Axis.set_tick_params",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_11",
+      "source": "arquivo_com_bug",
+      "function": "Text.get_window_extent",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_13",
+      "source": "arquivo_com_bug",
+      "function": "Path.make_compound_path",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_14",
+      "source": "arquivo_com_bug",
+      "function": "Text.update",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call FancyBboxPatch(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_matplotlib_16",
+      "source": "arquivo_com_bug",
+      "function": "nonsingular",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_17",
+      "source": "arquivo_com_bug",
+      "function": "nonsingular",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_23",
+      "source": "arquivo_com_bug",
+      "function": "_AxesBase.apply_aspect",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtransforms_Bbox.from_bounds(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_matplotlib_25",
+      "source": "arquivo_com_bug",
+      "function": "EventCollection.__init__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_26",
+      "source": "arquivo_com_bug",
+      "function": "_make_getset_interval",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_27",
+      "source": "arquivo_com_bug",
+      "function": "ColorbarBase.set_label",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_matplotlib_28",
+      "source": "arquivo_com_bug",
+      "function": "_AxesBase.set_xlim",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_1",
+      "source": "arquivo_com_bug",
+      "function": "is_string_dtype",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_4",
+      "source": "arquivo_com_bug",
+      "function": "Index._join_multi",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_7",
+      "source": "arquivo_com_bug",
+      "function": "Index._get_nearest_indexer",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_8",
+      "source": "arquivo_com_bug",
+      "function": "Block.replace",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'maybe_promote': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "bip_pandas_10",
+      "source": "arquivo_com_bug",
+      "function": "ExtensionBlock.putmask",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): make_block"
+    },
+    {
+      "id": "bip_pandas_14",
+      "source": "arquivo_com_bug",
+      "function": "should_series_dispatch",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_19",
+      "source": "arquivo_com_bug",
+      "function": "_LocIndexer._getitem_axis",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _getbool_axis, _validate_key"
+    },
+    {
+      "id": "bip_pandas_21",
+      "source": "arquivo_com_bug",
+      "function": "Series._get_with",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_23",
+      "source": "arquivo_com_bug",
+      "function": "DatetimeTimedeltaMixin.intersection",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): equals"
+    },
+    {
+      "id": "bip_pandas_24",
+      "source": "arquivo_com_bug",
+      "function": "DatetimeArray.tz_localize",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_25",
+      "source": "arquivo_com_bug",
+      "function": "DatetimeArray.isocalendar",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_28",
+      "source": "arquivo_com_bug",
+      "function": "StringMethods._get_series_list",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_29",
+      "source": "arquivo_com_bug",
+      "function": "IntervalArray.__setitem__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_33",
+      "source": "arquivo_com_bug",
+      "function": "IntegerArray._values_for_argsort",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'register_extension_dtype' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_34",
+      "source": "arquivo_com_bug",
+      "function": "TimeGrouper._get_time_bins",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_35",
+      "source": "arquivo_com_bug",
+      "function": "PeriodIndex._engine",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_42",
+      "source": "arquivo_com_bug",
+      "function": "assert_series_equal",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_50",
+      "source": "arquivo_com_bug",
+      "function": "_cat_compare_op",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_52",
+      "source": "arquivo_com_bug",
+      "function": "SeriesGroupBy.nunique",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'algorithms.factorize': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "bip_pandas_58",
+      "source": "arquivo_com_bug",
+      "function": "Categorical.from_codes",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call ops.maybe_dispatch_ufunc_to_dunder_op(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_pandas_59",
+      "source": "arquivo_com_bug",
+      "function": "_Rolling_and_Expanding.corr",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_61",
+      "source": "arquivo_com_bug",
+      "function": "Series._get_with",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_63",
+      "source": "arquivo_com_bug",
+      "function": "_AtIndexer._convert_key",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call np.ix_(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_pandas_64",
+      "source": "arquivo_com_bug",
+      "function": "ExcelFormatter.__init__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_69",
+      "source": "arquivo_com_bug",
+      "function": "_AtIndexer._convert_key",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call np.ix_(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_pandas_78",
+      "source": "arquivo_com_bug",
+      "function": "DataFrame._reduce",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_84",
+      "source": "arquivo_com_bug",
+      "function": "_unstack_multiple",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "bip_pandas_87",
+      "source": "arquivo_com_bug",
+      "function": "crosstab",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_88",
+      "source": "arquivo_com_bug",
+      "function": "pivot_table",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_89",
+      "source": "arquivo_com_bug",
+      "function": "_unstack_multiple",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "bip_pandas_91",
+      "source": "arquivo_com_bug",
+      "function": "TimedeltaIndex.searchsorted",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_95",
+      "source": "arquivo_com_bug",
+      "function": "_period_array_cmp",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_98",
+      "source": "arquivo_com_bug",
+      "function": "Index.__new__",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_102",
+      "source": "arquivo_com_bug",
+      "function": "init_ndarray",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_104",
+      "source": "arquivo_com_bug",
+      "function": "GroupBy.quantile",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _iterate_slices, _wrap_aggregated_output, _wrap_transformed_output, ngroups"
+    },
+    {
+      "id": "bip_pandas_106",
+      "source": "arquivo_com_bug",
+      "function": "Index.get_indexer_non_unique",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_107",
+      "source": "arquivo_com_bug",
+      "function": "DataFrame.append",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_115",
+      "source": "arquivo_com_bug",
+      "function": "interpolate_1d",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_116",
+      "source": "arquivo_com_bug",
+      "function": "_MergeOperation._get_merge_keys",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call com.any_not_none(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_pandas_117",
+      "source": "arquivo_com_bug",
+      "function": "_isna_old",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_119",
+      "source": "arquivo_com_bug",
+      "function": "_add_margins",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_127",
+      "source": "arquivo_com_bug",
+      "function": "NDFrame.pct_change",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'validate_fillna_kwargs': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "bip_pandas_133",
+      "source": "arquivo_com_bug",
+      "function": "NDFrame.interpolate",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_139",
+      "source": "arquivo_com_bug",
+      "function": "Grouping.__init__",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'"
+    },
+    {
+      "id": "bip_pandas_141",
+      "source": "arquivo_com_bug",
+      "function": "RangeIndex.get_indexer",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_142",
+      "source": "arquivo_com_bug",
+      "function": "diff",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_143",
+      "source": "arquivo_com_bug",
+      "function": "RangeIndex.get_indexer",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_144",
+      "source": "arquivo_com_bug",
+      "function": "BarPlot._decorate_ticks",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_145",
+      "source": "arquivo_com_bug",
+      "function": "dispatch_to_series",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_148",
+      "source": "arquivo_com_bug",
+      "function": "FrameApply.apply_empty_result",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_152",
+      "source": "arquivo_com_bug",
+      "function": "Series.append",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_154",
+      "source": "arquivo_com_bug",
+      "function": "GroupBy._get_cythonized_result",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _iterate_slices"
+    },
+    {
+      "id": "bip_pandas_155",
+      "source": "arquivo_com_bug",
+      "function": "Rolling._on",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_158",
+      "source": "arquivo_com_bug",
+      "function": "Series.rename",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_160",
+      "source": "arquivo_com_bug",
+      "function": "_can_use_numexpr",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_161",
+      "source": "arquivo_com_bug",
+      "function": "Categorical.fillna",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call ops.maybe_dispatch_ufunc_to_dunder_op(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_pandas_162",
+      "source": "arquivo_com_bug",
+      "function": "_normalize",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_pandas_163",
+      "source": "arquivo_com_bug",
+      "function": "_Window._prep_values",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_pandas_166",
+      "source": "arquivo_com_bug",
+      "function": "DataFrame._join_compat",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs"
+    },
+    {
+      "id": "bip_pandas_168",
+      "source": "arquivo_com_bug",
+      "function": "_get_grouper",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator"
+    },
+    {
+      "id": "bip_sanic_1",
+      "source": "arquivo_com_bug",
+      "function": "Sanic.register_named_middleware",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_6",
+      "source": "arquivo_com_bug",
+      "function": "ImagesPipeline.convert_image",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_8",
+      "source": "arquivo_com_bug",
+      "function": "ItemMeta.__new__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_15",
+      "source": "arquivo_com_bug",
+      "function": "_safe_ParseResult",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_18",
+      "source": "arquivo_com_bug",
+      "function": "ResponseTypes.from_content_disposition",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_21",
+      "source": "arquivo_com_bug",
+      "function": "RobotsTxtMiddleware._robots_error",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_28",
+      "source": "arquivo_com_bug",
+      "function": "RFPDupeFilter.__init__",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_38",
+      "source": "arquivo_com_bug",
+      "function": "_get_clickable",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_39",
+      "source": "arquivo_com_bug",
+      "function": "Spider.start_requests",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_scrapy_40",
+      "source": "arquivo_com_bug",
+      "function": "PythonItemExporter._serialize_value",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _get_serialized_fields, export_item"
+    },
+    {
+      "id": "bip_spacy_1",
+      "source": "arquivo_com_bug",
+      "function": "add_codes",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_spacy_2",
+      "source": "arquivo_com_bug",
+      "function": "load_model_from_path",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_spacy_6",
+      "source": "arquivo_com_bug",
+      "function": "Language.remove_pipe",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_2",
+      "source": "arquivo_com_bug",
+      "function": "get_all_executables",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_3",
+      "source": "arquivo_com_bug",
+      "function": "Fish.info",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_4",
+      "source": "arquivo_com_bug",
+      "function": "_get_aliases",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_10",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_11",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_14",
+      "source": "arquivo_com_bug",
+      "function": "Fish._get_overridden_aliases",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_19",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_25",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_26",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_thefuck_30",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'memoize' is used as a decorator"
+    },
+    {
+      "id": "bip_tornado_5",
+      "source": "arquivo_com_bug",
+      "function": "PeriodicCallback._update_next",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_tornado_8",
+      "source": "arquivo_com_bug",
+      "function": "WebSocketProtocol13.accept_connection",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _abort, _run_callback"
+    },
+    {
+      "id": "bip_tqdm_1",
+      "source": "arquivo_com_bug",
+      "function": "tenumerate",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_3",
+      "source": "arquivo_com_bug",
+      "function": "unescapeHTML",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_4",
+      "source": "arquivo_com_bug",
+      "function": "JSInterpreter.interpret_expression",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_5",
+      "source": "arquivo_com_bug",
+      "function": "unified_timestamp",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_7",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_8",
+      "source": "arquivo_com_bug",
+      "function": "YoutubeDL.build_format_selector",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_youtube_dl_10",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_13",
+      "source": "arquivo_com_bug",
+      "function": "urljoin",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_15",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_20",
+      "source": "arquivo_com_bug",
+      "function": "get_elements_by_attribute",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_21",
+      "source": "arquivo_com_bug",
+      "function": "urljoin",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_23",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_24",
+      "source": "arquivo_com_bug",
+      "function": "_match_one",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_25",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_26",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_27",
+      "source": "arquivo_com_bug",
+      "function": "parse_dfxp_time_expr",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_30",
+      "source": "arquivo_com_bug",
+      "function": "YoutubeDL.build_format_selector",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed"
+    },
+    {
+      "id": "bip_youtube_dl_41",
+      "source": "arquivo_com_bug",
+      "function": "unified_strdate",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    },
+    {
+      "id": "bip_youtube_dl_43",
+      "source": "arquivo_com_bug",
+      "function": "url_basename",
+      "verdict": "READY_FOR_LLM",
+      "reason": ""
+    }
+  ]
+}

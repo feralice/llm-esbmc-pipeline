@@ -1,0 +1,1086 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "gpt-4o-mini",
+      "backend": "openai",
+      "detection_strategy": "single",
+      "synth_backend": "openai",
+      "synth_model": "gpt-4o-mini",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py",
+        "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py",
+        "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py",
+        "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py"
+      ],
+      "excluded_patch_context_files": 6,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 20,
+      "timeout": 60,
+      "llm_timeout": 300,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py": "6ee86eae76e21a7ea2e2adbe69164f35191ee07944c24a7dbed987a150fd8da1",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py": "ef4d92e7dd49502746dbd7a0073bbe63b3b2161c2efc94ade0e8a68ff3f1a7d0",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py": "aad9318d1ccb1d88e0838fa047b9c3b5811a6471f08c943eafe1ebe414f36184",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py": "1454323cec3c4b74fc57f41eb112440876729592e32faf1c5937d61176a31ce0",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py": "b79d64da53e963f5f0eda73194db06972d20d2cdaaec7c514a0db1f1b08b7f05"
+    },
+    "detector_prompt": "68fef48564b4ae28623932d38f697efe9c9b0627495ce7492cdfdc711666ffab",
+    "synth_prompt": "51087945594199cffe156cd3bac7435852b689bb4bf547cf24513437df122621"
+  },
+  "detection_units": {
+    "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py::HTTP1Connection.write_headers": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "HTTP1Connection.write_headers",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py::_htmlentity_transform": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "int(numstr, base)",
+          "note": "O valor de 'numstr' é controlado pela entrada do parâmetro 'entity', que pode ser um valor malicioso. Embora exista uma guarda, não há proteção suficiente para garantir que 'numstr' seja um valor que pode ser corretamente convertido para um inteiro, especialmente se for um número não válido. Isso pode levar a um ValueError ao tentar converter, se 'numstr' não for um formato aceito."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_htmlentity_transform",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py::match": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_22.py",
+          "function": "match",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "pattern.lower() in command.stderr.lower()",
+          "note": "O operando 'command.stderr' pode ser None, o que iria causar um AttributeError ao tentar chamar 'lower()' sobre None. Não há guarda que impeda que 'command.stderr' seja None, portanto existe um valor que passa pela verificação e causa uma falha."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_22.py",
+          "function": "match",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "pattern.lower() in command.stdout.lower()",
+          "note": "O operando 'command.stdout' pode ser None, o que resultaria em um AttributeError ao chamar 'lower()' sobre None. Não há guarda que impeça que 'command.stdout' seja None, logo há um valor que pode causar uma falha."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/oob_real_03.py",
+          "function": "get_new_command",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]",
+          "note": "A expressão tenta acessar o terceiro elemento do resultado da divisão da string 'stderr' sem verificar se o comprimento da lista resultante é suficiente. Se 'stderr' tiver menos de três linhas, isso causará um IndexError."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py::read_conllx": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/tm_real_01.py",
+          "function": "read_conllx",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "id_ = int(id_) - 1",
+          "note": "A variável id_ é convertida para um inteiro sem qualquer verificação prévia. Se id_ contiver um valor que não seja uma string válida para conversão, uma ValueError será lançada. Nenhuma guarda protege contra isso, já que id_ não é validado antes da conversão."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/tm_real_01.py",
+          "function": "read_conllx",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "head = int(head) - 1 if head != '0' else id_",
+          "note": "A variável head é convertida para um inteiro sem qualquer verificação. Assim como com id_, se head contiver um valor que não seja uma string válida para conversão, uma ValueError será lançada. A guarda existente não protege contra valores inválidos."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "read_conllx",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py::HiveCommandClient.table_exists": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/tm_real_02.py",
+          "function": "HiveCommandClient.table_exists",
+          "category": "native_runtime",
+          "harness_strategy": "native_runtime",
+          "expression": "if stdout:",
+          "note": "A variável 'stdout' é proveniente de uma chamada externa que pode retornar None. A condição 'if stdout:' não protege totalmente contra o cenário onde 'stdout' pode ser None, podendo levar a um erro subsequente se houver um acesso a propriedades não verificadas de 'stdout'."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "HiveCommandClient.table_exists",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    }
+  },
+  "detection_trace": [
+    {
+      "function": "HTTP1Connection.write_headers",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_htmlentity_transform",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "match",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "get_new_command",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "read_conllx",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "HiveCommandClient.table_exists",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    }
+  ],
+  "synthesis_results": {
+    "0": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "int(numstr, base)",
+        "note": "O valor de 'numstr' é controlado pela entrada do parâmetro 'entity', que pode ser um valor malicioso. Embora exista uma guarda, não há proteção suficiente para garantir que 'numstr' seja um valor que pode ser corretamente convertido para um inteiro, especialmente se for um número não válido. Isso pode levar a um ValueError ao tentar converter, se 'numstr' não for um formato aceito."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model_harness():\n    # Model the inputs as symbolic values\n    entity: str = nondet_str()\n    numstr: str = nondet_str()\n    base: int = nondet_int()\n    \n    # Enforce a loose upper limit for the integer search bound\n    __ESBMC_assume(abs(base) <= 16)\n    __ESBMC_assume(abs(len(numstr)) <= 1000)\n    \n    # Cover the condition that triggers the division by zero\n    __ESBMC_cover(base == 10)\n\n    # The property being checked\n    result: int = int(numstr, base)\n    assert result >= 0, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model_harness()\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7889,
+      "synth_seconds": 7.396,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "harness must contain exactly one expected assertion written as assert <condition>, \"LLM_ESBMC_EXPECTED_PROPERTY\""
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3810,
+          "synth_seconds": 3.938603,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4079,
+          "synth_seconds": 3.457847,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- harness must contain exactly one expected assertion written as assert <condition>, \"LLM_ESBMC_EXPECTED_PROPERTY\""
+        }
+      ],
+      "seconds": 16.22,
+      "error": "",
+      "driver_note": "invalid x2: suspect expression operators ['call:int'] not preserved in the harness (the slice must keep the real arithmetic, only its operands become nondet)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    "1": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_22.py",
+        "function": "match",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "pattern.lower() in command.stderr.lower()",
+        "note": "O operando 'command.stderr' pode ser None, o que iria causar um AttributeError ao tentar chamar 'lower()' sobre None. Não há guarda que impeda que 'command.stderr' seja None, portanto existe um valor que passa pela verificação e causa uma falha."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    pattern: str = nondet_str()\n    stderr: str = nondet_str()\n    \n    __ESBMC_assume(abs(len(pattern)) <= 1000)\n    __ESBMC_assume(abs(len(stderr)) <= 1000)\n\n    command_stderr: str = stderr.lower()\n    command_pattern: str = pattern.lower()\n    \n    __ESBMC_cover(command_pattern in command_stderr)\n\n    assert command_pattern in command_stderr, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7273,
+      "synth_seconds": 6.541,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3525,
+          "synth_seconds": 3.300936,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3748,
+          "synth_seconds": 3.239968,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 14.84,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    "2": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_22.py",
+        "function": "match",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "pattern.lower() in command.stdout.lower()",
+        "note": "O operando 'command.stdout' pode ser None, o que resultaria em um AttributeError ao chamar 'lower()' sobre None. Não há guarda que impeça que 'command.stdout' seja None, logo há um valor que pode causar uma falha."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    command_stdout: str = nondet_str()\n    pattern: str = nondet_str()\n    \n    __ESBMC_assume(len(command_stdout) <= 1000)\n    __ESBMC_assume(len(pattern) <= 1000)\n\n    # Covering the case where pattern lowercased is found in command's stdout lowercased\n    __ESBMC_cover(len(command_stdout) > 0)  # This makes sure the command's output is not empty\n    \n    result: bool = pattern.lower() in command_stdout.lower()\n    assert result, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7249,
+      "synth_seconds": 6.049,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3506,
+          "synth_seconds": 3.037204,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3743,
+          "synth_seconds": 3.011951,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 18.44,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    "3": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]",
+        "note": "A expressão tenta acessar o terceiro elemento do resultado da divisão da string 'stderr' sem verificar se o comprimento da lista resultante é suficiente. Se 'stderr' tiver menos de três linhas, isso causará um IndexError."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model_function() -> str:\n    command_stderr: str = nondet_str()  # command.stderr\n    __ESBMC_assume(abs(len(command_stderr)) <= 1000)  # loose magnitude bound for string length\n    __ESBMC_cover(len(command_stderr) >= 3)  # condition to ensure enough lines in stderr\n    push_upstream: str = command_stderr.split('\\n')[-3].strip().partition('git ')[2]\n    assert push_upstream != \"\", \"LLM_ESBMC_EXPECTED_PROPERTY\"  # check for native runtime property\n\ndef main():\n    model_function()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7622,
+      "synth_seconds": 6.21,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3694,
+          "synth_seconds": 4.148749,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3928,
+          "synth_seconds": 2.061646,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 71.91,
+      "error": "",
+      "driver_note": "invalid x1: assertion is tautological (the same expression appears on both sides)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    "4": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "id_ = int(id_) - 1",
+        "note": "A variável id_ é convertida para um inteiro sem qualquer verificação prévia. Se id_ contiver um valor que não seja uma string válida para conversão, uma ValueError será lançada. Nenhuma guarda protege contra isso, já que id_ não é validado antes da conversão."
+      },
+      "classification": "safe_driver",
+      "failure_stage": "",
+      "harness": "# Function: read_conllx, hypothesis_category: native_runtime\n# __ESBMC_assume(0 <= id_ <= 1073741824) encodes a loose bound for id_\n# assert result == id_ - 1 checks the intended result\n# Operands turned into nondet: id_\n\ndef slice_model(id_: int) -> int:\n    # real: id_ = int(id_) - 1\n    id_ = int(id_) - 1  # Keeping the original expression arithmetic\n    return id_\n\ndef main():\n    id_ = nondet_int()  # real: id_\n    __ESBMC_assume(0 <= id_ <= 1073741824)  # Additional magnitude bound\n    result = slice_model(id_)\n    assert result == id_ - 1  # Check the intended result\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-rerun/harnesses/scan_004_read_conllx_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "no_violation_found",
+      "esbmc_summary": "ESBMC direto: sem violação até o bound analisado (k=20).",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {
+        "0 <= id_ <= 1073741824": "NO_VIOLATION_FOUND"
+      },
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 5208,
+      "synth_seconds": 5.579,
+      "esbmc_seconds": 0.573,
+      "attempts": 2,
+      "attempt_history": [],
+      "seconds": 7.38,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    "5": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "head = int(head) - 1 if head != '0' else id_",
+        "note": "A variável head é convertida para um inteiro sem qualquer verificação. Assim como com id_, se head contiver um valor que não seja uma string válida para conversão, uma ValueError será lançada. A guarda existente não protege contra valores inválidos."
+      },
+      "classification": "confirmed_on_abstraction",
+      "failure_stage": "synthesis",
+      "harness": "# Harness for read_conllx, modeling the loop with head expression\n\na = nondet_int()\nb = nondet_int()\nc = nondet_int()\n__ESBMC_assume(-1000 <= a <= 1000)  # example bounds for illustration\n__ESBMC_assume(-1000 <= b <= 1000)\n__ESBMC_assume(-1000 <= c <= 1000)\n\ninput_data: list[str] = [\"0\\tword\\tlemma\\tpos\\ttag\\tmorph\\t0\\tdep\\t_\\tO\", \"1\\tword2\\tlemma2\\tpos2\\ttag2\\tmorph2\\t2\\tdep2\\t_\\tO\"]\nuse_morphology: bool = nondet_bool()\nn: int = nondet_int()\n__ESBMC_assume(-1000 <= n <= 1000)\n\nfor i in range(3):\n    head: int = a  # this simulates head being derived from the input\n    id_: int = b   # simulating id_\n    \n    ok: bool = head != 0\n    assert ok, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n    head = (head - 1) if head != 0 else id_\n\n    # Further logic could go here, but is not necessary for this harness\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-rerun/harnesses/scan_005_read_conllx_loop.py",
+      "compat_verdict": "ok",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: LLM_ESBMC_EXPECTED_PROPERTY. Local: linha 20.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 9914,
+      "synth_seconds": 7.49,
+      "esbmc_seconds": 1.401,
+      "attempts": 3,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3772,
+          "synth_seconds": 2.259351,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3967,
+          "synth_seconds": 1.921508,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        },
+        {
+          "attempt": 3,
+          "style": "loop",
+          "classification": "confirmed_on_abstraction",
+          "esbmc_status": "violation_found",
+          "esbmc_summary": "ESBMC direto encontrou violação: LLM_ESBMC_EXPECTED_PROPERTY. Local: linha 20.",
+          "error": ""
+        }
+      ],
+      "seconds": 22.86,
+      "error": "",
+      "driver_note": "invalid x1: slice result is not asserted on (it will be sliced away)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    "6": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "if stdout:",
+        "note": "A variável 'stdout' é proveniente de uma chamada externa que pode retornar None. A condição 'if stdout:' não protege totalmente contra o cenário onde 'stdout' pode ser None, podendo levar a um erro subsequente se houver um acesso a propriedades não verificadas de 'stdout'."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "def slice_model(stdout: bool) -> bool:\n    return stdout and nondet_str() in stdout  # real: table in stdout\n\ndef main():\n    stdout = nondet_bool()\n    __ESBMC_assume(0 <= stdout <= 1)\n    result = slice_model(stdout)\n    assert result == (stdout and nondet_str() in stdout)\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-rerun/harnesses/scan_006_table_exists_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion (signed int)result == (signed int)tmp$2. Local: main, linha 8.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2242,
+      "synth_seconds": 1.596,
+      "esbmc_seconds": 0.793,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 3.05,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    }
+  },
+  "status": "partial_synthesis",
+  "telemetry_events": [
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.055393,
+      "prompt_tokens": 1705,
+      "completion_tokens": 9,
+      "total_tokens": 1714,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.483384,
+      "prompt_tokens": 1742,
+      "completion_tokens": 207,
+      "total_tokens": 1949,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 5.024076,
+      "prompt_tokens": 1649,
+      "completion_tokens": 323,
+      "total_tokens": 1972,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.197982,
+      "prompt_tokens": 1742,
+      "completion_tokens": 172,
+      "total_tokens": 1914,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.700963,
+      "prompt_tokens": 1905,
+      "completion_tokens": 343,
+      "total_tokens": 2248,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.880673,
+      "prompt_tokens": 1728,
+      "completion_tokens": 167,
+      "total_tokens": 1895,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.603523,
+      "prompt_tokens": 2211,
+      "completion_tokens": 231,
+      "total_tokens": 2442,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 4.130924,
+      "prompt_tokens": 2545,
+      "completion_tokens": 240,
+      "total_tokens": 2785,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.938603,
+      "prompt_tokens": 3525,
+      "completion_tokens": 285,
+      "total_tokens": 3810,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.457847,
+      "prompt_tokens": 3908,
+      "completion_tokens": 171,
+      "total_tokens": 4079,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 4.332528,
+      "prompt_tokens": 1747,
+      "completion_tokens": 203,
+      "total_tokens": 1950,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.645566,
+      "prompt_tokens": 2083,
+      "completion_tokens": 160,
+      "total_tokens": 2243,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.716142,
+      "prompt_tokens": 2340,
+      "completion_tokens": 198,
+      "total_tokens": 2538,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.300936,
+      "prompt_tokens": 3397,
+      "completion_tokens": 128,
+      "total_tokens": 3525,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.239968,
+      "prompt_tokens": 3620,
+      "completion_tokens": 128,
+      "total_tokens": 3748,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 4.202981,
+      "prompt_tokens": 1619,
+      "completion_tokens": 268,
+      "total_tokens": 1887,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 6.821668,
+      "prompt_tokens": 2083,
+      "completion_tokens": 206,
+      "total_tokens": 2289,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.784671,
+      "prompt_tokens": 2386,
+      "completion_tokens": 275,
+      "total_tokens": 2661,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.037204,
+      "prompt_tokens": 3397,
+      "completion_tokens": 109,
+      "total_tokens": 3506,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.011951,
+      "prompt_tokens": 3601,
+      "completion_tokens": 142,
+      "total_tokens": 3743,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.824987,
+      "prompt_tokens": 1619,
+      "completion_tokens": 233,
+      "total_tokens": 1852,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.268448,
+      "prompt_tokens": 2242,
+      "completion_tokens": 125,
+      "total_tokens": 2367,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.753983,
+      "prompt_tokens": 2455,
+      "completion_tokens": 178,
+      "total_tokens": 2633,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 4.148749,
+      "prompt_tokens": 3556,
+      "completion_tokens": 138,
+      "total_tokens": 3694,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.061646,
+      "prompt_tokens": 3789,
+      "completion_tokens": 139,
+      "total_tokens": 3928,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.786828,
+      "prompt_tokens": 1778,
+      "completion_tokens": 232,
+      "total_tokens": 2010,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.066615,
+      "prompt_tokens": 2350,
+      "completion_tokens": 110,
+      "total_tokens": 2460,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.512316,
+      "prompt_tokens": 2565,
+      "completion_tokens": 183,
+      "total_tokens": 2748,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 6.456528,
+      "prompt_tokens": 2357,
+      "completion_tokens": 567,
+      "total_tokens": 2924,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 5.254379,
+      "prompt_tokens": 3012,
+      "completion_tokens": 514,
+      "total_tokens": 3526,
+      "cached_tokens": 1792,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 2.259351,
+      "prompt_tokens": 3671,
+      "completion_tokens": 101,
+      "total_tokens": 3772,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 1.921508,
+      "prompt_tokens": 3867,
+      "completion_tokens": 100,
+      "total_tokens": 3967,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 3.309419,
+      "prompt_tokens": 1893,
+      "completion_tokens": 282,
+      "total_tokens": 2175,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4o-mini",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "status": "success",
+      "duration_seconds": 1.595924,
+      "prompt_tokens": 2152,
+      "completion_tokens": 90,
+      "total_tokens": 2242,
+      "cached_tokens": 1792,
+      "error": null,
+      "stage": "synthesis"
+    }
+  ]
+}

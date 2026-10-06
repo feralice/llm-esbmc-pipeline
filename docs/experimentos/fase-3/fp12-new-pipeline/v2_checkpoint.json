@@ -1,0 +1,135 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "",
+      "backend": "codex",
+      "detection_strategy": "single",
+      "synth_backend": "codex",
+      "synth_model": "",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/tmp/llm_esbmc_fp12_detection/av_real_11.py",
+        "/tmp/llm_esbmc_fp12_detection/av_real_12.py",
+        "/tmp/llm_esbmc_fp12_detection/av_real_13.py",
+        "/tmp/llm_esbmc_fp12_detection/av_real_15.py",
+        "/tmp/llm_esbmc_fp12_detection/ip_real_04.py",
+        "/tmp/llm_esbmc_fp12_detection/ip_real_07.py",
+        "/tmp/llm_esbmc_fp12_detection/ip_real_20.py",
+        "/tmp/llm_esbmc_fp12_detection/ip_real_22.py",
+        "/tmp/llm_esbmc_fp12_detection/ir_real_01.py",
+        "/tmp/llm_esbmc_fp12_detection/oob_real_03.py",
+        "/tmp/llm_esbmc_fp12_detection/tm_real_01.py",
+        "/tmp/llm_esbmc_fp12_detection/tm_real_02.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 20,
+      "timeout": 60,
+      "llm_timeout": 300,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/tmp/llm_esbmc_fp12_detection/av_real_11.py": "550cd6c7992213ded207576291c802d1ae19432c4f4ee3d2c6a8f8cd0a983c0a",
+      "/tmp/llm_esbmc_fp12_detection/av_real_12.py": "c14c2fb2aa199d7e1b763dfe159ea77e73ea4536999f86088f8c0146da44bd41",
+      "/tmp/llm_esbmc_fp12_detection/av_real_13.py": "a096002df689dadbede065fe4a291808f9b99badb2ad0e1b1c68d1d12c992961",
+      "/tmp/llm_esbmc_fp12_detection/av_real_15.py": "c620ddb7274fde09659d1bf3f5de56bf9ceb427326fe5e0aa901352553091baa",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_04.py": "6ee86eae76e21a7ea2e2adbe69164f35191ee07944c24a7dbed987a150fd8da1",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_20.py": "55a9e0e01c56bd35b772ba6ec83725121b4778855380d94188d8141b9a445e41",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_22.py": "ef4d92e7dd49502746dbd7a0073bbe63b3b2161c2efc94ade0e8a68ff3f1a7d0",
+      "/tmp/llm_esbmc_fp12_detection/ir_real_01.py": "fe8cb2f9db42cadd54fd770be0aa74a0bc2de89995eafd876b59d3fb23f5f650",
+      "/tmp/llm_esbmc_fp12_detection/oob_real_03.py": "aad9318d1ccb1d88e0838fa047b9c3b5811a6471f08c943eafe1ebe414f36184",
+      "/tmp/llm_esbmc_fp12_detection/tm_real_01.py": "1454323cec3c4b74fc57f41eb112440876729592e32faf1c5937d61176a31ce0",
+      "/tmp/llm_esbmc_fp12_detection/tm_real_02.py": "b79d64da53e963f5f0eda73194db06972d20d2cdaaec7c514a0db1f1b08b7f05"
+    },
+    "detector_prompt": "68fef48564b4ae28623932d38f697efe9c9b0627495ce7492cdfdc711666ffab",
+    "synth_prompt": "51087945594199cffe156cd3bac7435852b689bb4bf547cf24513437df122621"
+  },
+  "detection_units": {
+    "/tmp/llm_esbmc_fp12_detection/av_real_11.py::HTTP1Connection._read_body": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/tmp/llm_esbmc_fp12_detection/av_real_11.py",
+          "function": "HTTP1Connection._read_body",
+          "category": "explicit_assertion",
+          "finding_type": "out_of_scope_finding",
+          "expression": "return self._read_fixed_body(content_length, delegate)",
+          "reason": ""
+        }
+      ],
+      "trace": {
+        "function": "HTTP1Connection._read_body",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/tmp/llm_esbmc_fp12_detection/av_real_12.py::match": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    }
+  },
+  "detection_trace": [
+    {
+      "function": "HTTP1Connection._read_body",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "match",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    }
+  ],
+  "synthesis_results": {},
+  "status": "running",
+  "telemetry_events": [
+    {
+      "provider": "codex",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 19.099652,
+      "prompt_tokens": 14562,
+      "completion_tokens": 705,
+      "total_tokens": 15267,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "codex",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 10.328809,
+      "prompt_tokens": 14250,
+      "completion_tokens": 258,
+      "total_tokens": 14508,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    }
+  ]
+}

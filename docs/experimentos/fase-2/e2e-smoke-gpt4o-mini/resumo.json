@@ -1,0 +1,12 @@
+{
+  "pasta": "e2e-smoke-gpt4o-mini",
+  "modificado_em": "2026-09-11T22:15",
+  "arquivos": [
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete"
+}

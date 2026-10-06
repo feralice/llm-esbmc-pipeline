@@ -1,0 +1,724 @@
+[
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/av_real_03.py",
+      "function": "Series.to_timestamp",
+      "suspect_expression": "assert isinstance(self.index, PeriodIndex)",
+      "line": 0,
+      "trigger_condition": "self.index is object state not constrained by the function. A Series with a non-Period index (e.g. a default RangeIndex or a DatetimeIndex) passes through the copy branch and reaches the assert with a false condition. The failure is an AssertionError with no message instead of a descriptive TypeError. No try/except surrounds it.",
+      "category": "",
+      "hypothesis_id": "528ca8730d1f"
+    },
+    "verdict": "ESBMC_MISSED",
+    "id": "528ca8730d1f",
+    "file": "av_real_03.py",
+    "function": "Series.to_timestamp",
+    "before": "ESBMC_MISSED",
+    "after": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AssertionError",
+      "line": 37,
+      "runs": 3,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_black_16.py",
+      "function": "gen_python_files_in_dir",
+      "suspect_expression": "normalized_path = '/' + child.resolve().relative_to(root).as_posix()",
+      "line": 0,
+      "trigger_condition": "child.resolve() follows symlinks, so a symlink inside path that points outside root yields a resolved path not under root. Path.relative_to then raises ValueError. Also reachable when path is not under root. The assert only checks that root is absolute, and nothing catches the exception.",
+      "category": "",
+      "hypothesis_id": "edce49fc532d"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "id": "edce49fc532d",
+    "file": "bip_black_16.py",
+    "function": "gen_python_files_in_dir",
+    "before": "NOT_CONFIRMED",
+    "after": "NOT_CONFIRMED",
+    "reason": "unwinding assertion loop 29",
+    "target_preserved": false,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "NameError",
+      "line": 72,
+      "runs": 2,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_33.py",
+      "function": "text_to_word_sequence",
+      "suspect_expression": "translate_map = maketrans(filters, split * len(filters))",
+      "line": 0,
+      "trigger_condition": "`split` is a free parameter. `maketrans` requires both arguments to have the same length, but the second has len(split)*len(filters). With a split of 2 or more characters, e.g. '--' with the default filters, the lengths differ and ValueError is raised. With split='' the second argument is empty and ValueError is also raised. With split=None, `None * len(filters)` raises TypeError. No try/except covers the call, and the default ' ' passes the guard, so only non-default inputs trigger the failure.",
+      "category": "",
+      "hypothesis_id": "a408047609c9"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "a408047609c9",
+    "file": "bip_keras_33.py",
+    "function": "text_to_word_sequence",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: split() only supports constant sep in minimal support",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_21.py",
+      "function": "run",
+      "suspect_expression": "cmdline_args.insert(0, main_task_cls.task_family)",
+      "line": 0,
+      "trigger_condition": "cmdline_args defaults to None and is never normalized to a list. With main_task_cls truthy and cmdline_args omitted, line 7 calls .insert on None. With local_scheduler=True and cmdline_args omitted, line 9 `cmdline_args.insert(0, '--local-scheduler')` fails the same way. Both come from the same missing default handling.",
+      "category": "",
+      "hypothesis_id": "a5a1121afa6c"
+    },
+    "verdict": "CONFIRMED",
+    "id": "a5a1121afa6c",
+    "file": "bip_luigi_21.py",
+    "function": "run",
+    "before": "ESBMC_MISSED",
+    "after": "CONFIRMED",
+    "reason": "dereference failure: NULL pointer; dereference failure: invalid pointer; dereference failure: Incorrect alignment when accessing data object; unwinding assertion loop 11",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 28,
+      "runs": 3,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_133.py",
+      "function": "NDFrame.interpolate",
+      "suspect_expression": "ax = _maybe_transposed_self._get_axis_number(ax)",
+      "line": 0,
+      "trigger_condition": "axis is a free parameter. For any value other than 0 or 1 (e.g. axis=2), the else branch sets only _maybe_transposed_self and never binds ax. Line 13 then reads ax before assignment, so Python raises UnboundLocalError instead of a clear ValueError about the invalid axis.",
+      "category": "",
+      "hypothesis_id": "07db106b0cd6"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "id": "07db106b0cd6",
+    "file": "bip_pandas_133.py",
+    "function": "NDFrame.interpolate",
+    "before": "MISSING_DEPENDENCY",
+    "after": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Object \"_maybe_transposed_self\" not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_152.py",
+      "function": "Series.append",
+      "suspect_expression": "to_concat = [self] + to_append",
+      "line": 0,
+      "trigger_condition": "The guard accepts both list and tuple, but `[self] + to_append` only works for a list. Any tuple passed as `to_append` passes the guard and reaches the concatenation of list + tuple. No try/except catches the error. Example: to_append=(s1, s2) raises TypeError: can only concatenate list (not \"tuple\") to list.",
+      "category": "",
+      "hypothesis_id": "5c232e903238"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "5c232e903238",
+    "file": "bip_pandas_152.py",
+    "function": "Series.append",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: append() takes exactly one argument",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_33.py",
+      "function": "IntegerArray._values_for_argsort",
+      "suspect_expression": "data[self._mask] = data.min() - 1",
+      "line": 0,
+      "trigger_condition": "self._data is object state with no visible constraint on size. If it is a zero-size array, data.min() raises ValueError (zero-size array to reduction operation minimum which has no identity). No guard or try/except covers it, and the mask is irrelevant because the min is computed over the whole array.",
+      "category": "",
+      "hypothesis_id": "af346e18f12b"
+    },
+    "verdict": "CONFIRMED",
+    "id": "af346e18f12b",
+    "file": "bip_pandas_33.py",
+    "function": "IntegerArray._values_for_argsort",
+    "before": "AGENT_FAILED",
+    "after": "CONFIRMED",
+    "reason": "uncaught exception: ValueError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ValueError",
+      "line": 40,
+      "runs": 1,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_18.py",
+      "function": "ResponseTypes.from_content_disposition",
+      "suspect_expression": "to_native_str(content_disposition).split(';')[1].split('=')[1]",
+      "line": 0,
+      "trigger_condition": "If content_disposition is not str or bytes (e.g. None), to_native_str raises TypeError. The try only catches IndexError, so TypeError propagates. The parameter is free and nothing guards it. Exact behavior depends on to_native_str, which is not shown.",
+      "category": "",
+      "hypothesis_id": "5bf91d52630c"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "5bf91d52630c",
+    "file": "bip_scrapy_18.py",
+    "function": "ResponseTypes.from_content_disposition",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: function call: argument \"c:string.c@21403@F@__python_str_split@str\" type mismatch: got empty, expected pointer",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_thefuck_4.py",
+      "function": "_get_aliases",
+      "suspect_expression": "name, value = alias.replace('alias ', '', 1).split(' ', 1)",
+      "line": 0,
+      "trigger_condition": "`alias_out` comes from the stdout of `fish -ic alias`. With no aliases defined, stdout is empty, `.strip().split('\\n')` gives `['']`, and the loop reaches `alias == ''`. `''.split(' ', 1)` returns `['']`, a single element, so unpacking into `name, value` fails. The same happens for any line with no space, such as an alias with an empty value or a stray warning line from the interactive shell. Nothing in the code guards against this, and `overridden` has no effect on the unpacking.",
+      "category": "",
+      "hypothesis_id": "58774b0a0374"
+    },
+    "verdict": "ESBMC_MISSED",
+    "id": "58774b0a0374",
+    "file": "bip_thefuck_4.py",
+    "function": "_get_aliases",
+    "before": "ESBMC_MISSED",
+    "after": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ValueError",
+      "line": 25,
+      "runs": 1,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/dz_real_02.py",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "suspect_expression": "float(not_parsed) / float(num_substrings)",
+      "line": 0,
+      "trigger_condition": "num_substrings = len(possible_substrings_splits[i]) comes from a free parameter and nothing guards against an empty split. With possible_parsed_splits=[[]] and possible_substrings_splits=[[]], the inner loop is skipped and float(0)/float(0) is evaluated, raising ZeroDivisionError. The same applies to the division by num_substrings in the third rating element.",
+      "category": "",
+      "hypothesis_id": "b5652fda143e"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "b5652fda143e",
+    "file": "dz_real_02.py",
+    "function": "ExactLanguageSearch.choose_best_split",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: Variable 'p' is not defined in function 'lam1' at line 37.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/dz_real_03.py",
+      "function": "HashExpander.do",
+      "suspect_expression": "(crc >> idx) % (range_end - range_begin + 1) + range_begin",
+      "line": 0,
+      "trigger_condition": "range_end and range_begin are free parameters or come from cron.RANGES, with no check on their relation. If range_end == range_begin - 1 (e.g. range_end=4, range_begin=5), the modulus is 0. The % operator then raises ZeroDivisionError.",
+      "category": "",
+      "hypothesis_id": "bb4c66bf77ba"
+    },
+    "verdict": "OTHER_FAILURE",
+    "id": "bb4c66bf77ba",
+    "file": "dz_real_03.py",
+    "function": "HashExpander.do",
+    "before": "OTHER_FAILURE",
+    "after": "OTHER_FAILURE",
+    "reason": "uncaught exception: AttributeError; uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "NameError",
+      "line": 38,
+      "runs": 485,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_07.py",
+      "function": "_htmlentity_transform",
+      "suspect_expression": "return compat_chr(int(numstr, base))",
+      "line": 0,
+      "trigger_condition": "entity is a free parameter. Regex '#(x[0-9a-fA-F]+|[0-9]+)' accepts digit strings of any length and value, e.g. '#99999999' or '#x110000'. These pass the match guard, int() succeeds, and chr() gets a value outside range(0x110000). Nothing catches the exception.",
+      "category": "",
+      "hypothesis_id": "9715ff1783d8"
+    },
+    "verdict": "UNVALIDATED",
+    "id": "9715ff1783d8",
+    "file": "ip_real_07.py",
+    "function": "_htmlentity_transform",
+    "before": "UNVALIDATED",
+    "after": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; chr() arg not in range(0x110000); chr() arg is a surrogate code point; uncaught exception: KeyError",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "no counterexample values to replay"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_11.py",
+      "function": "HTTPBearer.__call__",
+      "suspect_expression": "raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Invalid authentication credentials')",
+      "line": 0,
+      "trigger_condition": "The first branch respects self.auto_error and returns None when it is False. The non-bearer branch always raises. With auto_error=False and header 'Basic abc', scheme='Basic' and credentials='abc' pass the first check, scheme.lower() != 'bearer' is true, and HTTPException is raised. The signature Optional[...] and the auto_error flag imply None should be returned so another auth scheme can handle the request.",
+      "category": "",
+      "hypothesis_id": "bcaf6d92d59f"
+    },
+    "verdict": "UNVALIDATED",
+    "id": "bcaf6d92d59f",
+    "file": "ip_real_11.py",
+    "function": "HTTPBearer.__call__",
+    "before": "UNVALIDATED",
+    "after": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; dereference failure: Incorrect alignment when accessing data object; dereference failure: invalid pointer; unwinding assertion loop 68; uncaught exception: HTTPException",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "original function not found"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_14.py",
+      "function": "TimeseriesGenerator.__len__",
+      "suspect_expression": "int(np.ceil((self.end_index - self.start_index) / (self.batch_size * self.stride)))",
+      "line": 0,
+      "trigger_condition": "batch_size and stride are object state with no guard in this function. If either is 0 (e.g. batch_size=0 or stride=0), the divisor batch_size * stride is 0 and the true division raises ZeroDivisionError for Python ints. Nothing catches it.",
+      "category": "",
+      "hypothesis_id": "d06a2222218e"
+    },
+    "verdict": "CONFIRMED",
+    "id": "d06a2222218e",
+    "file": "ip_real_14.py",
+    "function": "TimeseriesGenerator.__len__",
+    "before": "CONFIRMED",
+    "after": "CONFIRMED",
+    "reason": "uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ZeroDivisionError",
+      "line": 21,
+      "runs": 1,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+      "function": "response_status_message",
+      "suspect_expression": "int(status)",
+      "line": 0,
+      "trigger_condition": "`status` is a free parameter and nothing checks it before `int(status)`. A non-numeric string such as 'abc' makes `int` raise ValueError. None or a list makes it raise TypeError. No try/except surrounds the call.",
+      "category": "",
+      "hypothesis_id": "5f44bbc94b3c"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "5f44bbc94b3c",
+    "file": "ip_real_17.py",
+    "function": "response_status_message",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "suspect_expression": "all((self[key] == that[key] for key in self))",
+      "line": 0,
+      "trigger_condition": "`that` is a free parameter. If `that` has the same length as `self._dict` but different keys (self={'a':1}, that={'b':1}), the length check passes. `that[key]` then raises KeyError for a key missing from `that`. Nothing catches it. An equality comparison should return False.",
+      "category": "",
+      "hypothesis_id": "4aa3e5e38a90"
+    },
+    "verdict": "UNVALIDATED",
+    "id": "4aa3e5e38a90",
+    "file": "ip_real_21.py",
+    "function": "SortedDict.__eq__",
+    "before": "UNVALIDATED",
+    "after": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; unwinding assertion loop 29; uncaught exception: KeyError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 15,
+      "runs": 1,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+      "function": "date_convert",
+      "suspect_expression": "H += 12",
+      "line": 0,
+      "trigger_condition": "For a 12-hour time such as '12:00 PM', H is int 12 and am is 'PM', so H becomes 24. time(24, ...) or datetime(..., 24, ...) then raises ValueError (hour must be in 0..23). The guard only tests for 'PM' and does not protect H == 12.",
+      "category": "",
+      "hypothesis_id": "528c0187a852"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "id": "528c0187a852",
+    "file": "ip_real_32.py",
+    "function": "date_convert",
+    "before": "ESBMC_TIMEOUT",
+    "after": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_01.py",
+      "function": "Session.update_headers",
+      "suspect_expression": "value = value.decode('utf8')",
+      "line": 0,
+      "trigger_condition": "request_headers is a free parameter and value comes straight from its items. Nothing checks the type of value. A header whose value is a str, for example {'Accept': 'text/html'}, has no .decode method. The loop raises on the first such header, and no try/except covers it.",
+      "category": "",
+      "hypothesis_id": "942d61a91efc"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "942d61a91efc",
+    "file": "nm_real_01.py",
+    "function": "Session.update_headers",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: TypeError at artifacts/v2/agent-2026-10-05-sonnet/cases/942d61a91efc/harness.py 24: list indices must be integers or slices, not str",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_02.py",
+      "function": "tqdm.format_meter",
+      "suspect_expression": "total *= unit_scale",
+      "line": 0,
+      "trigger_condition": "total is free and may be None, or the earlier `if total and n > total: total = None` sets it to None when n exceeds total. With unit_scale=1000 the guard passes and `None *= 1000` runs with no try/except. Concrete input: n=5, total=None, elapsed=1, unit_scale=1000.",
+      "category": "",
+      "hypothesis_id": "31409e1ca2c6"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "id": "31409e1ca2c6",
+    "file": "nm_real_02.py",
+    "function": "tqdm.format_meter",
+    "before": "MISSING_DEPENDENCY",
+    "after": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Object \"l_bar_user\" not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_08.py",
+      "function": "Request.url_for",
+      "suspect_expression": "'//' in self.app.config.SERVER_NAME",
+      "line": 0,
+      "trigger_condition": "SERVER_NAME comes from the app config, which is object state. In Flask the default is None. When it is None, the `'//' in None` test on line 3 runs before any other code and raises TypeError. No guard or try/except protects it.",
+      "category": "",
+      "hypothesis_id": "09be948e3172"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "09be948e3172",
+    "file": "nm_real_08.py",
+    "function": "Request.url_for",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: [json.exception.type_error.302] type must be string, but is null",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_12.py",
+      "function": "PamdService.remove",
+      "suspect_expression": "current_line.next.prev = current_line.prev",
+      "line": 0,
+      "trigger_condition": "Rule matches a node that has a predecessor but is the tail of the list, so next is None. The line current_line.next.prev = ... then accesses .prev on None. The guard only checks prev, so tail node removal is not protected. A list with two nodes where the last one matches triggers it.",
+      "category": "",
+      "hypothesis_id": "6e33562fdd8f"
+    },
+    "verdict": "AGENT_FAILED",
+    "id": "6e33562fdd8f",
+    "file": "nm_real_12.py",
+    "function": "PamdService.remove",
+    "before": "AGENT_FAILED",
+    "after": "AGENT_FAILED",
+    "reason": "target PamdService.remove missing from the harness",
+    "target_preserved": null,
+    "replay": {}
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_14.py",
+      "function": "request_httprepr",
+      "suspect_expression": "s += b'Host: ' + to_bytes(parsed.hostname) + b'\\r\\n'",
+      "line": 0,
+      "trigger_condition": "request is a free parameter. urlparse(...).hostname returns None when the URL has no netloc, e.g. 'file:///etc/passwd' or 'data:text/plain,x'. No guard exists on any path, so to_bytes(None) is called. Scrapy's to_bytes raises TypeError for values that are neither str nor bytes.",
+      "category": "",
+      "hypothesis_id": "52e8c7dc508a"
+    },
+    "verdict": "CONFIRMED",
+    "id": "52e8c7dc508a",
+    "file": "nm_real_14.py",
+    "function": "request_httprepr",
+    "before": "CONFIRMED",
+    "after": "CONFIRMED",
+    "reason": "uncaught exception: TypeError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 66,
+      "runs": 1,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "suspect_expression": "numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)",
+      "line": 0,
+      "trigger_condition": "list_of_lists is a free parameter. Empty list reaches list_of_lists[0] with no guard on any path. The IndexError is not caught.",
+      "category": "",
+      "hypothesis_id": "554b072a0396"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "id": "554b072a0396",
+    "file": "oob_real_10.py",
+    "function": "_wrap_text_to_colwidths",
+    "before": "AGENT_FAILED",
+    "after": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_11.py",
+      "function": "wcswidth",
+      "suspect_expression": "char = pwcs[idx]",
+      "line": 0,
+      "trigger_condition": "n is a free parameter. When n is not None, end = n with no clamp to len(pwcs). The loop guard idx < end only bounds idx by n. With pwcs='ab' and n=5, idx reaches 2 and pwcs[2] raises IndexError. Nothing catches it. The early return on line 3 applies only when n is None.",
+      "category": "",
+      "hypothesis_id": "2ed3d4fce93b"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "id": "2ed3d4fce93b",
+    "file": "oob_real_11.py",
+    "function": "wcswidth",
+    "before": "ESBMC_TIMEOUT",
+    "after": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_14.py",
+      "function": "LinuxDistribution._parse_uname_content",
+      "suspect_expression": "lines[0].strip()",
+      "line": 0,
+      "trigger_condition": "`lines` \u00e9 par\u00e2metro livre do tipo Sequence[str] e nada impede uma sequ\u00eancia vazia. N\u00e3o h\u00e1 guarda nem try/except antes de `lines[0]`. Com `lines=[]` a fun\u00e7\u00e3o levanta IndexError em vez de devolver `{}`, como faz quando nada casa com a regex.",
+      "category": "",
+      "hypothesis_id": "148424345a89"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "148424345a89",
+    "file": "oob_real_14.py",
+    "function": "LinuxDistribution._parse_uname_content",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_15.py",
+      "function": "dfxp2srt",
+      "suspect_expression": "begin_time = parse_dfxp_time_expr(para.attrib['begin'])",
+      "line": 0,
+      "trigger_condition": "para comes from findall on the parsed XML, so attributes are controlled by dfxp_data. A <p> element without a begin attribute passes the 'if not paras' guard and reaches the subscript. No try/except, so KeyError escapes.",
+      "category": "",
+      "hypothesis_id": "42ade76be585"
+    },
+    "verdict": "UNSUPPORTED",
+    "id": "42ade76be585",
+    "file": "oob_real_15.py",
+    "function": "dfxp2srt",
+    "before": "UNSUPPORTED",
+    "after": "UNSUPPORTED",
+    "reason": "ERROR: TypeError: 'int' object is not subscriptable at artifacts/v2/agent-2026-10-05-sonnet/cases/42ade76be585/harness.py:137",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/tm_real_09.py",
+      "function": "_format",
+      "suspect_expression": "formatted_val = format(float(raw_val), floatfmt)",
+      "line": 0,
+      "trigger_condition": "valtype is float, has_invisible defaults to True and val is a str such as '1,000'. is_a_colored_number is true, so the branch that removes commas is skipped. float('1,000') then raises ValueError. The else branch handles the same input correctly, so the two branches are inconsistent.",
+      "category": "",
+      "hypothesis_id": "af2f5e755263"
+    },
+    "verdict": "ESBMC_MISSED",
+    "id": "af2f5e755263",
+    "file": "tm_real_09.py",
+    "function": "_format",
+    "before": "ESBMC_MISSED",
+    "after": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ValueError",
+      "line": 44,
+      "runs": 2,
+      "reason": ""
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/tm_real_10.py",
+      "function": "MetricsHandler.get",
+      "suspect_expression": "metrics.configure_http_handler(self)",
+      "line": 0,
+      "trigger_condition": "`metrics` recebe o retorno de generate_latest(). Em coletores no estilo prometheus_client, esse retorno \u00e9 bytes ou str com a sa\u00edda de texto. A guarda `if metrics:` s\u00f3 testa se o valor \u00e9 truthy, e um bytes n\u00e3o vazio passa. Nesse caso a linha 4 chama `.configure_http_handler` sobre um objeto sem esse atributo. Em seguida, `self.write(metrics)` escreveria o payload, o que indica que `metrics` \u00e9 dado e n\u00e3o o coletor. Se o retorno for de fato um bytes/str n\u00e3o vazio, a fun\u00e7\u00e3o levanta AttributeError em toda requisi\u00e7\u00e3o com m\u00e9tricas.",
+      "category": "",
+      "hypothesis_id": "6e9d7c84fc8b"
+    },
+    "verdict": "ESBMC_MISSED",
+    "id": "6e9d7c84fc8b",
+    "file": "tm_real_10.py",
+    "function": "MetricsHandler.get",
+    "before": "ESBMC_MISSED",
+    "after": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 32,
+      "runs": 1,
+      "reason": ""
+    }
+  }
+]

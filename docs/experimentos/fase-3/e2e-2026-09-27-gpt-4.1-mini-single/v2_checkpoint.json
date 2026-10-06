@@ -1,0 +1,1262 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "gpt-4.1-mini",
+      "backend": "openai",
+      "detection_strategy": "single",
+      "synth_backend": "openai",
+      "synth_model": "gpt-4.1-mini",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_19.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_23.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_24.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_25.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_26.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_27.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_28.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_32.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_33.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_34.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_18.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_19.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_20.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_22.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_23.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_24.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_25.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_26.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_16.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_09.py"
+      ],
+      "excluded_patch_context_files": 24,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 20,
+      "timeout": 120,
+      "llm_timeout": 300,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py": "c57f0dc1d72c4398bc403eb137c464ab5a587706e8661d311fdf444ae88722dd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py": "be6a0b38a60c273f386b7cd1fa9744955dd4c0b0b122c779fafdb158759ee8a8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py": "7e36068737982a63582fe69a48d95c336d8379d9c67535ba68eccc5d669293c0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py": "b61fc9487d1817b46e687b390b62f9bd3b641182d9e78583517adb852a3c3ceb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py": "d5fde0b64e1df50d414955a84e5f36bd254052d696b95960b77dcdd3714226da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py": "6212a401a602e38b13f68afbabb416a755d654354065ef686579b05bd82706cd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py": "835d4b0ca17a8269a6ea65eb2f507e1a331c0504ec9156bf1e62bb9d3b3fc0b4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py": "92dfc8884c14525a1448520bad5d7fca17bf981ff0d688bd94a3ee8e9c05ea06",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py": "b2e57d33c8942c3e6e9f6b87dc1296065caaae26b0609b24dcf646870a9620a4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py": "923ead12a818662d862556d719d90b8889d4c835ce2529790041f0fd547da21f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py": "a819501e567a8615c0a586aa55754944106efa6fb630af42e4942370d8436bfe",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py": "55a1f3eddce44d810a46d47a7bec955729d9bff608718c7baf2d1233dbd77893",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py": "6ee86eae76e21a7ea2e2adbe69164f35191ee07944c24a7dbed987a150fd8da1",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py": "9f441697f54570affd4c07cb69b8ce06035994571d9ea4548451a13ceb71b48f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py": "41c054941311b864c168282de9ff02d29999e209d4154b39295b3385f5176fe5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py": "f2a5d06289fd888683f313d35f019d12d029d980cfa2b7cd31e630aa45f5401f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py": "bbc35add60a11ced8de11b5312e24f486094413aa09f538819abe4ef72c1d9ae",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py": "bbf9711f78b6758acc8bc8375a6712d14673421ea3605ccf6f3680f80ebb98c2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py": "16d28467c86c623c96e908ed5f82f135339fb5288e4ae7bf2c88cc9765a1c068",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py": "a74e14dc842cd00d78d962a8bc82992973cbe240ed931537a6e77b670d9cda66",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py": "e2957543875409a8143a6e5c7fcb674bb0a2b9fc39001bd4a7bd01cd6d191413",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py": "31a00628365f82429594246ff08441d1c65036ad5cac16415a6173298ea11357",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py": "35f5963985a66b936aff03ef041a498821ffcb1f21cf6de5a5319ddf47358800",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_19.py": "bedf34522c30245eb6505c4ef4c53a2ad76ad222a272f7b83475d570439843fc",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_21.py": "cee0680cbc50e2a184587eb6f189a083f2343ccebf33c5c375e7bcf6612b2af0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py": "ef4d92e7dd49502746dbd7a0073bbe63b3b2161c2efc94ade0e8a68ff3f1a7d0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_23.py": "7350fd835785e21aa5a29e4b639b3f15c9d7f4cd502c4208dae29ddb296897d3",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_24.py": "2c5054d83f1430ff58cd249f0c72108dbcabf8f878b8d751f593b361c514a239",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_25.py": "93459dfb036685949ecb0850979d43bfff81668a0ba79ca9b6e6d38c259eb3f9",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_26.py": "e70946aa0c332907a33a6d5a4bd0a864b6c11a8881776fdce578cbea9e90cfa5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_27.py": "982b3105c33a802027304e5f000bae5dae9ab375a817f42aa107db0d6e9b8b33",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_28.py": "a9685fb198e8ad345d1b6df970ebea0e810c3e7b499572dfdc42a5e6297bb9a6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_32.py": "2e2d51770fe7b0ec83323394ec4c8eaa8ba0cb97afd3b2c9466580abc1b7690f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_33.py": "87111f81e1e6df941f8776cea987433a4d8a202f248168690ba35712e269bbc0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_34.py": "ad61ae3d81d3b63cb0bf86576a64262ae4feb687cff8a3b93576c84076450201",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_01.py": "e46499ed6c027bfe90e1ac05bbc4d5603ba2d7e5a58cee266e5ee8eecab7d67f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_02.py": "f6a4af11e1a5cfd04d3d55d7ae98fd7121566726fa1203c094341401bb8049ed",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_03.py": "7da39a69c451173996a1becede4d232ee0af1774f08e654f1529888837bf0114",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_04.py": "73ac11aa6e22768f9861100fe1b494a450a77cb0c74bb0e832f4c558bf173e96",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_05.py": "f17ad1acca9c2a47710827b566f6dbf19953fb7b38e287ac0bc052c52e5fb25f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_06.py": "487b78d7dfa8e29db05c8502a0608a6cd6e35bdeab151a637d3effcdb2497e26",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_07.py": "f4b04cce6c2f69524866cfea5c3b68e0551719599851a2705b73d305bd573ccc",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_08.py": "2b8e3567ca6b7157d10c4bc4d2a4c5d78a929eb42e22ec57bc8e2b314e53e722",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_09.py": "2d87eaaf37baa5fa1f66fff1d198805685b39dc695542d4d20ea6efe2371cb43",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_10.py": "f21ebe284145dba26624c2cc8353216b9e8f483f54a3bbb9ba0f9dba071d144e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_11.py": "ca74fc8811e1a300ca6144fb98171de41320f7aa2856d8eb8a7d106a9f5e4142",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_12.py": "d965992939cfecc6dd29d257dcb31f723e07279ca5236152a558aec0a1433fb2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_13.py": "bed213e8eba4dad3f2bfc5d5ed4fbb4bbd3f4f73905d2db424ef001df0d15360",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_14.py": "3ed3553e1468dd2585ed62ac671b49d53802ea26676b9823c09956328c749ed1",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_17.py": "752243df22aa5ee48c80e1729f244bd74032d493de85df3abf9be9d0687c82c4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_18.py": "a6f57e5c5263339e2a6f01bd2547f1ade5742968a3a9b00fb6b798bf11619a3f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_19.py": "bf7ba216b51673734bfd2645e068adb4df737aa22501bc7aba463b679588b7cc",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_20.py": "7a1466c9ec5ad761c3448f322c3fbb3b25f9e25f2dc5953cdacfd97342ca852c",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_21.py": "d2c5ac55163164f698b81cc01437f169a92db35d4b0e9751b9b6a1ef344b5421",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_22.py": "3b782cafb98ba34f00204bdd3238689541d2bce4a69f4113069b405bcbdd059d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_23.py": "2bf5eef775c87d12c12cf185d24ef4cc17a1c0d876428b736dd36b41f523b22b",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_24.py": "2e97defacc7b3fd00003f4b59fc3b58ec8052b868c834c5f5408d4be8d4455eb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_25.py": "70389c1ad51130bb9e80d52f92518322c0dfe0d8c0d5fa56b00f30fb2a3eff87",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_26.py": "1a06bbc2dd41602ef245dfc253450f59c3871540cad5ed52a69afb1b4dd97578",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_01.py": "2a0a17b32a5ecefff4cbeec0ad330ad814a78eccc2251541a9418f3c50a9e8d2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_02.py": "67d7d4dc8b5a6675d562667b766a234aae554bcdca53d3f411479ec24caa6041",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py": "aad9318d1ccb1d88e0838fa047b9c3b5811a6471f08c943eafe1ebe414f36184",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_04.py": "bb63466ce2a2ff2efcc9b53fe32fe19b36e1a880d21b444a20bdaa74955df53a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_05.py": "b520618753c4f369acc78d0dfa82b2375c6d2c95408dd531eb11abaa223c1c05",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py": "7d8e73cc17f1e38be7d1434f418721ad2b35f747b3ac207409c8f7bb754c0f30",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_09.py": "9641598d6814d3af6659ed7910bb1a1a9fad1d2124a7ee30df9c99736aec1305",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_10.py": "16ae104c4dac7fab2b6cb11df410323ae233bb894efebfd894559bd0322a3347",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_11.py": "989b0953c1d6f993e51983bd84af53139fd5434ffebe4a82ead3779020c97e28",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_12.py": "6e68c94587c085652483bbc14c00066c892065bc5e76ca0a4ceac4d5defdc9c0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_13.py": "bc78fc9df3fac35c27005de0036bdbfeee103326fbc74d4810f8d92f12690b46",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_14.py": "a08c5cd465e3b3905a03dc2aff09c160c349e5d6b5cf92cf942e284986d188ac",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_15.py": "2ab80a3f91aa43baddfefd1fd5a3630f7b1696f104db4baa21c79cecedc0fcf2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_16.py": "6a41536a5ac5b2d97fa60fe5e5af2272af9491337270dbd0b3ef7ff2202596f6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py": "1454323cec3c4b74fc57f41eb112440876729592e32faf1c5937d61176a31ce0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py": "b79d64da53e963f5f0eda73194db06972d20d2cdaaec7c514a0db1f1b08b7f05",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_03.py": "3baed111a42071ca9ae83868ae82d4d5f057cffbd4669c727a51d22d2d9eee56",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_04.py": "2fd952f3bf8dc282fab4403490279676a5dc492e087ead6c179d7a8b536d66a5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_05.py": "d21b1957e7f0043a54dae15bbe35ade96f08c6b7e03e849bfebaa0305671b086",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_06.py": "5940baf491009c8e2b321d407632d161c11eebb19779a632963f3fa04ddd5f3d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_07.py": "cdf9f6bac09722814e5238d9fd6091904eead873139e49a40ae8df0b9c8f6c70",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_08.py": "4c721df2faa76e7f8c6a02dd304a16fe0d5ffca6280d1020c057b9ab19f10a86",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_09.py": "a5b7aec8185506ce78c02d36f275964c5593cb593b2f75adde55a3184d0da9e8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_10.py": "40f3a3a0f6f08048bd83a03cb242d7ae2663593051b8b2b79de09a64cd484f80",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_11.py": "e2053daccc05150fa992dcbfd7c570680869facc3cc392cc99bdbdb5fb74529a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_12.py": "9c070aa8d47110a04c0cb8534b88287cb4bdb76cfa768e651ef1ec7c245c9561",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_13.py": "e8c1a13e987177232089115e1798a912a16c4f21af31bbdf4b8c0333a6403873",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_14.py": "8bf6aca91b7d94ef99045a9ef917f37f1813a8a33a020ad169d5866c49197318",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_01.py": "82dd77a64981d6652d865840343204d08a91eefcaa8caadeb0ff790ecec9d248",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_02.py": "13812b47ebfb5c596a4ccec14915ee6d5902d34930cd8d2722d1c6d766d39b55",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_03.py": "bcd4c89f34249e0c676f984d6fc6a908dcb9b9f11256f50dc5b761b2a36ea90e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_04.py": "29d0b65205a01ed0c7d62557d9d01ed0afe3ef40e4f0660eabec8924b4d55cb8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_05.py": "cf2fffabc00cedd8ca1f7d329c9ede28ba1c56395d3de138c8467289a45fbe8c",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_06.py": "01ab46877ed196d0616a7b389d19c33b033ba7f28db4a982ed5e95a9a027d167",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_07.py": "7a806567a397183c22618209de402adf93e4e64c162cb0237413a4480134a34d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_08.py": "7d018e13a255e2d6e846b4b9694e86df0ef4f454cde9616e67b6a929ee7098ce",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_09.py": "284ef65cb6bcf54218ee4903cb77d8c227eb3c8a5107b5eea361ac7644cbb701"
+    },
+    "detector_prompt": "68fef48564b4ae28623932d38f697efe9c9b0627495ce7492cdfdc711666ffab",
+    "synth_prompt": "7b22f8e59df273cb808e413683dabde09e96a6941c242890c63a9ab221741ae4"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py::cli_bool_option": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/av_real_01.py",
+          "function": "cli_bool_option",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(param, bool)",
+          "note": "O parâmetro livre 'param' é atribuído via params.get(param), que pode retornar None ou qualquer valor não bool. Não há guarda que impeça que 'param' seja None ou tipo diferente de bool antes do assert, portanto o assert pode falhar e gerar AssertionError alcançável."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "cli_bool_option",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py::WebSocketHandler.set_nodelay": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "WebSocketHandler.set_nodelay",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py::Series.to_timestamp": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Series.to_timestamp",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py::tqdm.__init__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "tqdm.__init__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py::makeMappingArray": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "ind = np.searchsorted(x, xind)[1:-1]",
+          "note": "The parameter 'ind' is derived by taking the indices from np.searchsorted and slicing [1:-1], which can result in ind being empty or having elements potentially out of range when used for indexing next. Since no guard validates if ind is not empty and all indices are within valid range, accessing y0[ind] or y1[ind - 1] or x[ind] can cause out-of-bounds indexing if ind contains elements 0 or greater than len(x) - 1."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "division_by_zero",
+          "expression": "distance = (xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+          "note": "In the denominator, (x[ind] - x[ind - 1]) can be zero if x[ind] == x[ind - 1], causing a division by zero. Although x is strictly increasing, no guard explicitly ensures that ind values are valid indices and that denominator differences are strictly positive. Because ind is derived dynamically and can potentially select invalid indices or positions leading to zero denominator (for example, repeated x values or incorrect ind from searchsorted), a ZeroDivisionError is possible."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "makeMappingArray",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py::ExactLanguageSearch.choose_best_split": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "division_by_zero",
+          "expression": "float(not_parsed) / float(num_substrings)",
+          "note": "num_substrings is assigned len(possible_substrings_splits[i]) which can be zero if possible_substrings_splits[i] is an empty list; the code divides by num_substrings without checking if it is zero, causing a potential ZeroDivisionError."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "division_by_zero",
+          "expression": "float(num_substrings_without_digits) / float(num_substrings)",
+          "note": "Same as above; division by num_substrings without checking if num_substrings is zero can cause ZeroDivisionError if possible_substrings_splits[i] is empty."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "out_of_bounds",
+          "expression": "possible_substrings_splits[i][j]",
+          "note": "Indexing possible_substrings_splits[i][j] assumes it is aligned with possible_parsed_splits[i], but there's no guard to ensure both have same length or j is valid index for possible_substrings_splits[i]. This can raise IndexError if lengths differ."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "ExactLanguageSearch.choose_best_split",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py::HashExpander.do": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "division_by_zero",
+          "expression": "(range_end - range_begin + 1)",
+          "note": "Os parâmetros range_end e range_begin são usados para calcular o denominador da operação de módulo. Eles são controlados externamente e não possuem guarda para garantir que range_end seja maior que range_begin, o que pode tornar a expressão (range_end - range_begin + 1) zero ou negativa, causando divisão por zero na operação modulo."
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "HashExpander.do",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py::interpolate_bilinear_2x_fwd": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "division_by_zero",
+          "expression": "step_size = wdw_size - 1",
+          "note": "The parameter chunk_size controls wdw_size, which derives step_size as wdw_size - 1. If chunk_size is 1, step_size is zero, leading to a division by zero in math.ceil((h_src - wdw_size) / step_size) + 1 in the for loop range, causing a runtime error."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src_056, i_w_src_056]",
+          "note": "Indices i_h_src_056 and i_w_src_056 are computed from i_h_y+i_h_x and i_w_y+i_w_x, which are derived from ranges without explicit bounds checks. These indices may be out of bounds if h_tile_size_src or w_src is 0 or 1, or near the edges causing indices exceeding dims. Thus indexing in_tile may cause IndexError if indices exceed input shape limits."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src_006, i_w_src_006]",
+          "note": "Indices i_h_src_006 and i_w_src_006 involve computation i_h_y + (-1 * i_h_x + 1) and i_w_y + (-1 * i_w_x +1), creating possible negative indices or indices too large. Without guard checking ranges, these indices might access out-of-bounds positions causing IndexError."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src_018_h, i_w_src_018_h]",
+          "note": "Similar to other index computations, i_h_src_018_h = i_h_y + (-1 * i_h_x + 1) and i_w_src_018_h = i_w_y + i_w_x can go out of bounds without guards. Hence out-of-bounds indexing is possible."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src_018_w, i_w_src_018_w]",
+          "note": "Computed indices i_h_src_018_w and i_w_src_018_w involve expressions that may produce out-of-range indices without explicit guards preventing access out of src_arr bounds, risking IndexError."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src_075, i_w_src]",
+          "note": "Here i_w_src is (w_src - 1) * i_w, which is either 0 or w_src-1, but i_h_src_075 can be at edge indices. Without checks, accessing in_tile might cause IndexError if shape dimensions are small or zero."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src_025, i_w_src]",
+          "note": "Similar to above, indexing in_tile without bounds validation may cause IndexError due to potentially negative or out-of-range indices from i_h_src_025."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "expression": "in_tile[i_p, i_h_src, i_w_src]",
+          "note": "Indices i_h_src = (h_tile_size_src - 1) * i_h and i_w_src = (w_src - 1) * i_w involve multiplication by values from i_h and i_w indices (0 or 1). Without range checks, these can result in out-of-bounds if h_tile_size_src or w_src are invalid or dimensions zero, causing IndexError."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "finding_type": "llm_false_positive",
+          "expression": "in_tile[i_p, i_h_src_075, i_w_src_075]",
+          "reason": "expression_not_found"
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "out_of_bounds",
+          "finding_type": "llm_false_positive",
+          "expression": "in_tile[i_p, i_h_src_025, i_w_src_025]",
+          "reason": "expression_not_found"
+        }
+      ],
+      "trace": {
+        "function": "interpolate_bilinear_2x_fwd",
+        "strategy": "single",
+        "located_candidates": 10,
+        "classified_candidates": 10,
+        "rejected_candidates": 2
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py::nonsingular": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "nonsingular",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py::integer_squareroot": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "integer_squareroot",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py::Request._set_url": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Request._set_url",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py::Selector.__init__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Selector.__init__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py::HTTP1Connection.write_headers": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "HTTP1Connection.write_headers",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py::_Alpha.__gt__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_Alpha.__gt__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py::_Numeric.__gt__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_Numeric.__gt__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py::_unstack_multiple": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "invalid_precondition",
+          "expression": "clocs = [index._get_level_number(i) for i in clocs]",
+          "note": "The parameter 'clocs' is controlled externally and assumed to be index level names or integers. The function calls index._get_level_number(i) on each element of clocs without explicit validation. If 'clocs' contains values that are not valid level names or indexes, _get_level_number(i) can raise an exception (e.g., KeyError). There is no guard to prevent invalid level names or indices in clocs, so this can cause failure."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "invalid_precondition",
+          "expression": "unstacked = dummy.unstack('__placeholder__', fill_value=fill_value)",
+          "note": "The dummy Index or MultiIndex constructed has a last level named '__placeholder__'. The unstack is performed on this placeholder level, assumed to exist. If the dummy_index does not have '__placeholder__' level due to empty or small input, unstack throws exception. There is no explicit guard ensuring dummy_index contains the level '__placeholder__' before unstack. Since dummy_index is built dynamically and external data may affect levels, this can cause a failure."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "invalid_precondition",
+          "expression": "rec.take(unstcols.codes[-1])",
+          "note": "The method rec.take is called with unstcols.codes[-1] as argument. If unstcols.codes[-1] contains indices that are out of bounds for rec, or rec is not compatible, this can raise an exception. There is no explicit guard to ensure codes indices are valid for rec.take. As these are derived from data and dynamic MultiIndex manipulations, invalid indexing can occur causing failure."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "dummy = MultiIndex(levels=rlevels + [obs_ids], codes=rcodes + [comp_ids], names=rnames + ['__placeholder__'], verify_integrity=False)",
+          "reason": "expression_not_found"
+        },
+        {
+          "file": "dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "val = clocs[i]\nresult = result.unstack(val, fill_value=fill_value)",
+          "reason": "invalid_expression_syntax"
+        }
+      ],
+      "trace": {
+        "function": "_unstack_multiple",
+        "strategy": "single",
+        "located_candidates": 5,
+        "classified_candidates": 5,
+        "rejected_candidates": 2
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py::_htmlentity_transform": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_htmlentity_transform",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py::_get_spider_loader": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_get_spider_loader",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py::HTTPBearer.__call__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "HTTPBearer.__call__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    }
+  },
+  "detection_trace": [
+    {
+      "function": "cli_bool_option",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "WebSocketHandler.set_nodelay",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Series.to_timestamp",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "tqdm.__init__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "makeMappingArray",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "ExactLanguageSearch.choose_best_split",
+      "strategy": "single",
+      "located_candidates": 3,
+      "classified_candidates": 3,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "HashExpander.do",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "interpolate_bilinear_2x_fwd",
+      "strategy": "single",
+      "located_candidates": 10,
+      "classified_candidates": 10,
+      "rejected_candidates": 2
+    },
+    {
+      "function": "nonsingular",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "integer_squareroot",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Request._set_url",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Selector.__init__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "HTTP1Connection.write_headers",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_Alpha.__gt__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_Numeric.__gt__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_unstack_multiple",
+      "strategy": "single",
+      "located_candidates": 5,
+      "classified_candidates": 5,
+      "rejected_candidates": 2
+    },
+    {
+      "function": "_htmlentity_transform",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_get_spider_loader",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "HTTPBearer.__call__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    }
+  ],
+  "synthesis_results": {},
+  "status": "running",
+  "telemetry_events": [
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.01837,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.002072,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.0019,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.002062,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.002174,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001806,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001526,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001567,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001784,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001922,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001934,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001607,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001716,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.002111,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.002114,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001975,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001696,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001971,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.002166,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001962,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 3.001664,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 2.683474,
+      "prompt_tokens": 1847,
+      "completion_tokens": 145,
+      "total_tokens": 1992,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.683439,
+      "prompt_tokens": 1801,
+      "completion_tokens": 6,
+      "total_tokens": 1807,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.128167,
+      "prompt_tokens": 1859,
+      "completion_tokens": 6,
+      "total_tokens": 1865,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.889199,
+      "prompt_tokens": 3937,
+      "completion_tokens": 6,
+      "total_tokens": 3943,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 2.983879,
+      "prompt_tokens": 2121,
+      "completion_tokens": 386,
+      "total_tokens": 2507,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 4.311325,
+      "prompt_tokens": 2010,
+      "completion_tokens": 399,
+      "total_tokens": 2409,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.856662,
+      "prompt_tokens": 1905,
+      "completion_tokens": 150,
+      "total_tokens": 2055,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 11.360379,
+      "prompt_tokens": 3364,
+      "completion_tokens": 1736,
+      "total_tokens": 5100,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 0.995231,
+      "prompt_tokens": 1996,
+      "completion_tokens": 7,
+      "total_tokens": 2003,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 0.983201,
+      "prompt_tokens": 1829,
+      "completion_tokens": 6,
+      "total_tokens": 1835,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.110761,
+      "prompt_tokens": 1844,
+      "completion_tokens": 6,
+      "total_tokens": 1850,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.703076,
+      "prompt_tokens": 1952,
+      "completion_tokens": 7,
+      "total_tokens": 1959,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.097718,
+      "prompt_tokens": 1846,
+      "completion_tokens": 7,
+      "total_tokens": 1853,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.709251,
+      "prompt_tokens": 1772,
+      "completion_tokens": 6,
+      "total_tokens": 1778,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.003571,
+      "prompt_tokens": 1772,
+      "completion_tokens": 6,
+      "total_tokens": 1778,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 7.007511,
+      "prompt_tokens": 2409,
+      "completion_tokens": 919,
+      "total_tokens": 3328,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 0.952614,
+      "prompt_tokens": 1883,
+      "completion_tokens": 6,
+      "total_tokens": 1889,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 0.9211,
+      "prompt_tokens": 1854,
+      "completion_tokens": 6,
+      "total_tokens": 1860,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "openai",
+      "requested_model": "gpt-4.1-mini",
+      "returned_model": "gpt-4.1-mini-2025-04-14",
+      "status": "success",
+      "duration_seconds": 1.010837,
+      "prompt_tokens": 1903,
+      "completion_tokens": 7,
+      "total_tokens": 1910,
+      "cached_tokens": 0,
+      "error": null,
+      "stage": "detection"
+    }
+  ]
+}

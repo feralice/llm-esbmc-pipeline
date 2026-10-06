@@ -1,0 +1,122 @@
+
+Modo V2 — etapa 1: detecção em 40 arquivo(s)
+  [1/40] Analisando av_real_01.py::cli_bool_option...
+  [2/40] Analisando av_real_02.py::WebSocketHandler.set_nodelay...
+  [3/40] Analisando av_real_03.py::Series.to_timestamp...
+  [4/40] Analisando av_real_04.py::_partition_tasks...
+  [4/40] Analisando av_real_04.py::_summary_format...
+  [5/40] Analisando av_real_05.py::tqdm.__init__...
+  [6/40] Analisando av_real_06.py::get_new_command...
+  [7/40] Analisando av_real_07.py::match...
+  [8/40] Analisando av_real_08.py::Settings.update...
+  [9/40] Analisando av_real_09.py::_make_getset_interval...
+  [9/40] Analisando av_real_09.py::_make_getset_interval.getter...
+  [9/40] Analisando av_real_09.py::_make_getset_interval.setter...
+  [10/40] Analisando av_real_10.py::Driver._partially_consume_prefix...
+  [11/40] Analisando av_real_11.py::HTTP1Connection._read_body...
+  [12/40] Analisando av_real_12.py::match...
+  [13/40] Analisando av_real_13.py::match...
+  [14/40] Analisando av_real_14.py::get_new_command...
+  [15/40] Analisando av_real_15.py::gunzip...
+  [16/40] Analisando av_real_17.py::unified_strdate...
+  [17/40] Analisando av_real_21.py::YoutubeDL.process_ie_result...
+  [17/40] Analisando av_real_21.py::YoutubeDL.process_ie_result.iter_playlistitems...
+  [17/40] Analisando av_real_21.py::YoutubeDL.process_ie_result._fixup...
+  [18/40] Analisando dz_real_01.py::makeMappingArray...
+  [19/40] Analisando dz_real_02.py::ExactLanguageSearch.choose_best_split...
+  [20/40] Analisando dz_real_03.py::HashExpander.do...
+  [21/40] Analisando dz_real_04.py::interpolate_bilinear_2x_fwd...
+  [22/40] Analisando io_real_01.py::nonsingular...
+  [23/40] Analisando io_real_02.py::integer_squareroot...
+  [24/40] Analisando ip_real_01.py::Request._set_url...
+  [25/40] Analisando ip_real_03.py::Selector.__init__...
+  [26/40] Analisando ip_real_04.py::HTTP1Connection.write_headers...
+Traceback (most recent call last):
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/research_pipeline/llm/backends/chat_completions.py", line 84, in _post_json
+    with request.urlopen(req, timeout=self.timeout_seconds) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/main.py", line 1160, in mode_v2
+    findings = analyzer.analyze(unit)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/research_pipeline/llm/backends/chat_completions.py", line 56, in analyze
+    raw_response = self._post_json(payload)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/research_pipeline/llm/backends/chat_completions.py", line 92, in _post_json
+    raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
+RuntimeError: Falha ao chamar API Chat Completions: 429 [{
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 25.714726314s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-3.6-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "25s"
+      }
+    ]
+  }
+}
+]
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/main.py", line 1465, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/main.py", line 1459, in main
+    return dispatch[args.mode](args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/main.py", line 1166, in mode_v2
+    _write_json_atomic(checkpoint_path, checkpoint)
+  File "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/src/main.py", line 403, in _write_json_atomic
+    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+  File "/usr/lib/python3.12/pathlib.py", line 1050, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 12] Cannot allocate memory

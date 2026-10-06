@@ -1,0 +1,11 @@
+{
+  "pasta": "e2e-gpt-4o-mini-cobertura",
+  "modificado_em": "2026-09-29T21:57",
+  "arquivos": [
+    "e2e-gpt-4o-mini-cobertura.log",
+    "v2_checkpoint.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "running"
+}

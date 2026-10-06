@@ -1,0 +1,13 @@
+{
+  "pasta": "agent-control-fixed-2026-10-04",
+  "modificado_em": "2026-10-04T18:17",
+  "arquivos": [
+    "agent-control-fixed-2026-10-04.log",
+    "agent_results.json",
+    "input_report.json"
+  ],
+  "vereditos (agent_results.json)": {
+    "NOT_CONFIRMED": 1,
+    "UNVALIDATED": 1
+  }
+}

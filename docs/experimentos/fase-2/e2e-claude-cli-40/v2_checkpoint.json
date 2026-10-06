@@ -1,0 +1,1892 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "",
+      "backend": "claude_cli",
+      "synth_backend": "claude_cli",
+      "synth_model": "",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 6,
+      "timeout": 120,
+      "llm_timeout": 300,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py": "c57f0dc1d72c4398bc403eb137c464ab5a587706e8661d311fdf444ae88722dd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py": "be6a0b38a60c273f386b7cd1fa9744955dd4c0b0b122c779fafdb158759ee8a8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py": "7e36068737982a63582fe69a48d95c336d8379d9c67535ba68eccc5d669293c0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py": "f7dc9ea5b44d0c63565b79716730450d2893918b3606a2a71ad5a1b606f366c9",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py": "b61fc9487d1817b46e687b390b62f9bd3b641182d9e78583517adb852a3c3ceb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py": "a6c50b83b74691a2249694062697998827db8a7f89faa1f68559245e11b28dd4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py": "50147a90d550d480938f5fda4a466584a908c0cb182f95c46e89446a131cb13e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py": "1325c182ad4b87c622665bf33f0787da3a8390b97961f4bad04da078f8655dbd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py": "a6598be5faf74259c2d8bae63359684a8ddc4332b82a0e76fa68f53bd8cf9077",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py": "3cb4f26700f69189a820fb36aad0c538a6fa71d5b174d148d17033d3ccb4b163",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py": "550cd6c7992213ded207576291c802d1ae19432c4f4ee3d2c6a8f8cd0a983c0a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py": "c14c2fb2aa199d7e1b763dfe159ea77e73ea4536999f86088f8c0146da44bd41",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py": "a096002df689dadbede065fe4a291808f9b99badb2ad0e1b1c68d1d12c992961",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py": "829e951d80fff1ebdcbb61928d186bffd107a5f06ad13ecceea4010fbcb8ff1b",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py": "c620ddb7274fde09659d1bf3f5de56bf9ceb427326fe5e0aa901352553091baa",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py": "9179e371ae65a68371897037b744b7a7c2c0d6534733c70c80ad4dc024503f32",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py": "d005158c47ec687865c3dcb6710f81dde58ad52adc4ae72a4654f391a2a6a2ca",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py": "d5fde0b64e1df50d414955a84e5f36bd254052d696b95960b77dcdd3714226da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py": "6212a401a602e38b13f68afbabb416a755d654354065ef686579b05bd82706cd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py": "835d4b0ca17a8269a6ea65eb2f507e1a331c0504ec9156bf1e62bb9d3b3fc0b4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py": "92dfc8884c14525a1448520bad5d7fca17bf981ff0d688bd94a3ee8e9c05ea06",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py": "b2e57d33c8942c3e6e9f6b87dc1296065caaae26b0609b24dcf646870a9620a4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py": "923ead12a818662d862556d719d90b8889d4c835ce2529790041f0fd547da21f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py": "a819501e567a8615c0a586aa55754944106efa6fb630af42e4942370d8436bfe",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py": "55a1f3eddce44d810a46d47a7bec955729d9bff608718c7baf2d1233dbd77893",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py": "6ee86eae76e21a7ea2e2adbe69164f35191ee07944c24a7dbed987a150fd8da1",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py": "9f441697f54570affd4c07cb69b8ce06035994571d9ea4548451a13ceb71b48f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py": "41c054941311b864c168282de9ff02d29999e209d4154b39295b3385f5176fe5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py": "586c433d7ce4ac5da6224d5f89f695e4660b5e1b8c9747879ea6cafe52a2ad2e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py": "5e1c03cb58eb47d6c43a2bc8a675bbec6ffb037c05121d0f855ced31e37f82ad",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py": "f2a5d06289fd888683f313d35f019d12d029d980cfa2b7cd31e630aa45f5401f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py": "bbc35add60a11ced8de11b5312e24f486094413aa09f538819abe4ef72c1d9ae",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py": "46c5f9a590938942c6234e27ad100240fce97e2bd2e5066b73937240c47fee9a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py": "bbf9711f78b6758acc8bc8375a6712d14673421ea3605ccf6f3680f80ebb98c2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py": "16d28467c86c623c96e908ed5f82f135339fb5288e4ae7bf2c88cc9765a1c068",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py": "a74e14dc842cd00d78d962a8bc82992973cbe240ed931537a6e77b670d9cda66",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py": "e2957543875409a8143a6e5c7fcb674bb0a2b9fc39001bd4a7bd01cd6d191413",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py": "31a00628365f82429594246ff08441d1c65036ad5cac16415a6173298ea11357",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py": "35f5963985a66b936aff03ef041a498821ffcb1f21cf6de5a5319ddf47358800"
+    },
+    "detector_prompt": "b23342598b84cf75ce35d6e83b94fc38cda1160209d1fcbad519beb983c4dddf",
+    "synth_prompt": "fcda291038d65ba8db233029300fc98f57368aa2e6d739ccf0c9054a88635714"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py::cli_bool_option": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+          "function": "cli_bool_option",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(param, bool)",
+          "note": "param vira params.get(param), livre via params e param. dict.get retorna None se chave ausente, ou qualquer valor não-bool armazenado. Nenhuma guarda antes do assert bloqueia esses casos, e não há try/except em volta. Com params={} e param='x', params.get('x') é None, e assert isinstance(None, bool) falha, levantando AssertionError."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py::WebSocketHandler.set_nodelay": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+          "function": "WebSocketHandler.set_nodelay",
+          "category": "assertion_violation",
+          "finding_type": "suspected_bug",
+          "expression": "assert self.stream is not None",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py::Series.to_timestamp": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+          "function": "Series.to_timestamp",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(self.index, PeriodIndex)",
+          "note": "self.index vem do estado do objeto (self), livre e sem validação anterior no método. O assert isinstance(self.index, PeriodIndex) não tem guarda prévia que restrinja o tipo de self.index; qualquer Series/objeto cujo index não seja PeriodIndex (DatetimeIndex, RangeIndex, etc.) alcança esse assert com cond falso, disparando AssertionError. Não há try/except em volta."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py::_partition_tasks": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+          "function": "_partition_tasks",
+          "category": "none_misuse",
+          "expression": "worker._add_task_history",
+          "note": "worker livre, sem guarda contra None. Se worker=None, worker._add_task_history dispara AttributeError. Nenhum try/except cobre. Valor concreto worker=None passa e falha."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+          "function": "_partition_tasks",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "for task, status, ext in task_history",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py::_summary_format": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+          "function": "_summary_format",
+          "category": "invalid_precondition",
+          "expression": "num_all_tasks = sum([len(set_tasks['already_done']), len(set_tasks['completed']), len(set_tasks['failed']), len(set_tasks['scheduling_error']), len(set_tasks['still_pending_ext']), len(set_tasks['still_pending_not_ext'])])",
+          "note": "set_tasks is a free dict parameter with no validation anywhere in the function that it contains the specific keys the code assumes ('already_done', 'completed', 'failed', 'scheduling_error', 'still_pending_ext', 'still_pending_not_ext', 'not_run'). No try/except wraps these accesses. Any caller passing a dict missing one of these keys (e.g. only 'failed' and 'completed' present) reaches direct subscript access and raises KeyError, both in the num_all_tasks sum and in the smiley/reason branch using set_tasks['not_run']. No guard anywhere restricts set_tasks to have this exact key set before it is indexed."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py::tqdm.__init__": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+          "function": "tqdm.__init__",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "self._instances.remove(self)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+          "function": "get_new_command",
+          "category": "none_misuse",
+          "expression": "command.script",
+          "note": "command livre, sem guarda. Se command=None, command.script dispara AttributeError. Nenhum try/except no trecho. Valor concreto command=None passa (não há checagem) e causa falha."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py::match": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+          "function": "match",
+          "category": "none_misuse",
+          "expression": "command.script",
+          "note": "command eh parametro livre, sem guarda, sem try/except. Se command for None, command.script lanca AttributeError; contrato exato da classe command nao esta disponivel no contexto."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py::Settings.update": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "invalid_precondition",
+          "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+          "note": "lim_name and attr_name are free string parameters of target_function, used unvalidated in getattr(getattr(self.axes, lim_name), attr_name) and the matching setattr call. No guard checks that self.axes actually has an attribute named lim_name or that the resulting object has attr_name; any lim_name/attr_name not matching self.axes's real attribute names reaches getattr with no default, raising AttributeError. Concrete failure: target_function('m','bogus_lim','bogus_attr') then calling getter(instance) where instance.axes lacks 'bogus_lim'."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "if oldmin < oldmax:",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval.getter": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.getter",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval.setter": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "oldmin, oldmax = getter(self)",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "setattr(getattr(self.axes, lim_name), attr_name, (vmin, vmax))",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py::Driver._partially_consume_prefix": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+          "function": "Driver._partially_consume_prefix",
+          "category": "none_misuse",
+          "expression": "current_column < column",
+          "note": "column é parâmetro livre, sem type hint e sem guarda (isinstance/None check) em nenhum caminho antes de current_column < column. Esse ramo é alcançável com prefix = \"a\\n\" (char não-espaço seta wait_for_nl=True, '\\n' seguinte entra no if e avalia a comparação). Se column=None chega até essa comparação, current_column (int) < None dispara TypeError não capturado (sem try/except na função), satisfazendo o item 4 do teste de evidência."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py::HTTP1Connection._read_body": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py::match": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+          "function": "match",
+          "category": "none_misuse",
+          "expression": "command.script",
+          "note": "command é parâmetro livre sem validação de tipo. Se command for None ou objeto sem atributo script, command.script lança AttributeError. Não há guarda nem try/except protegendo o acesso."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py::match": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+          "function": "match",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "command.script_parts",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+          "function": "get_new_command",
+          "category": "none_misuse",
+          "expression": "command.script[5:]",
+          "note": "command.script alcança slicing e concatenação sem checagem prévia. Se command.script for None (valor livre, sem restrição), command.script[5:] lança TypeError 'NoneType' object is not subscriptable. Nenhum guard bloqueia esse valor e não há try/except cobrindo a linha."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py::gunzip": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+          "function": "gunzip",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "output += f.extrabuf",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py::unified_strdate": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+          "function": "unified_strdate",
+          "category": "invalid_precondition",
+          "expression": "upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')",
+          "note": "date_str is a free string parameter. email.utils.parsedate_tz performs lenient regex-based parsing without range-checking the numeric fields it extracts, so it can return a tuple with an out-of-range day/month (e.g. day=32) for a string that still matches its loose pattern. The only guard is 'if timetuple:', which checks truthiness (not None/empty), not value validity, so it does not block an invalid day/month. There is no try/except around the datetime.datetime(*timetuple[:6]) call, so a concrete input like 'Mon, 32 Jan 2020 00:00:00 +0000' (fails all strptime formats, then reaches parsedate_tz) yields a tuple whose day exceeds days-in-month and datetime.datetime raises an uncaught ValueError, propagating out of the function."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+          "function": "unified_strdate",
+          "category": "type_mismatch",
+          "finding_type": "suspected_bug",
+          "expression": "return compat_str(upload_date)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py::YoutubeDL.process_ie_result": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result",
+          "category": "out_of_bounds",
+          "expression": "entries = [entry_list[i - 1] for i in playlistitems]",
+          "note": "playlistitems values (from self.params.get('playlist_items'), fully free) index entry_list with no range check in this branch, unlike the sibling list-branch at line 53 which filters with '-n_all_entries <= i - 1 < n_all_entries'. Any i beyond len(entry_list) (e.g. playlist_items='999') reaches lst[i-1] and raises IndexError; no try/except wraps this call."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result",
+          "category": "invalid_precondition",
+          "expression": "start, end = string_segment.split('-')",
+          "note": "playlistitems_str comes from self.params.get('playlist_items'), an unconstrained string. iter_playlistitems only checks '-' is present before unpacking into exactly two names; a segment with two dashes (e.g. '1-2-3') or a leading dash (e.g. '-5', which splits to ['','5']) produces a different element count or empty numeric string, raising ValueError on the unpack or the subsequent int() call. No try/except surrounds this generator's consumption."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py::YoutubeDL.process_ie_result.iter_playlistitems": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+          "category": "invalid_precondition",
+          "expression": "start, end = string_segment.split('-')",
+          "note": "string_segment vem de format.split(','), parâmetro livre sem restrição. A guarda 'if '-' in string_segment' só verifica presença de um hífen, não que existam exatamente duas partes não vazias. Valor concreto format='1-2-3' produz string_segment='1-2-3', cujo split('-') retorna 3 elementos, causando ValueError ('too many values to unpack') não capturado por try/except."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+          "category": "invalid_precondition",
+          "expression": "yield int(string_segment)",
+          "note": "No ramo else, string_segment (derivado de parâmetro livre format) é passado direto a int() sem validação de que é numérico. Valor concreto format='abc' faz string_segment='abc', e int('abc') lança ValueError, não capturado por try/except."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+          "category": "none_misuse",
+          "expression": "format.split(',')",
+          "note": "format é parâmetro livre sem type hint nem checagem. Se format=None, format.split(',') lança AttributeError ('NoneType' object has no attribute 'split'), não capturado. Nenhuma guarda impede None chegar à chamada de método."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py::YoutubeDL.process_ie_result._fixup": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result._fixup",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "ie_result['extractor']",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py::makeMappingArray": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "x[0] != 0.0 or x[-1] != 1.0",
+          "note": "data is a free parameter; nothing prevents shape[0]==0 (e.g. data=np.zeros((0,3))). The precondition check only tests len(shape)!=2 or shape[1]!=3, never shape[0]>0, so an empty-row array passes and x=adata[:,0] becomes a length-0 array. x[0] then raises IndexError, which is not caught anywhere in the function."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "x[ind] - x[ind - 1]",
+          "note": "gamma is a free parameter with no sign/range restriction. For gamma<0, np.linspace(0,1,N)**gamma inverts values in (0,1) to be >1, so xind=(N-1)*linspace**gamma can exceed x[-1]=N-1 for interior points. np.searchsorted(x, xind) then returns len(x) (one past the last valid index) for those entries, and x[ind]/y0[ind] index out of bounds. Concretely N=4, gamma=-1 with any valid monotone x in [0,1] reproduces IndexError on x[ind]."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "invalid_precondition",
+          "expression": "np.linspace(0, 1, N)",
+          "note": "N is a free parameter passed directly to np.linspace(0, 1, N) with no validation that it is a non-negative integer. N<0 (e.g. N=-1) makes numpy itself raise ValueError('Number of samples, -1, must be non-negative.'), which propagates uncaught since the only try/except in the function wraps just the np.array(data) conversion."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py::ExactLanguageSearch.choose_best_split": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "out_of_bounds",
+          "expression": "possible_substrings_splits[i][j]",
+          "note": "j vem de enumerate(possible_parsed_splits[i]), mas indexa possible_substrings_splits[i][j]. Nenhuma guarda compara len(possible_parsed_splits[i]) com len(possible_substrings_splits[i]); se a segunda lista for mais curta (parâmetro livre, sem restrição de forma), j alcança um índice fora de [0, len(possible_substrings_splits[i])-1] e lança IndexError. Caso concreto: possible_parsed_splits=[[{'date_obj':None}]], possible_substrings_splits=[[]] dispara o erro na primeira iteração (j=0)."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "invalid_precondition",
+          "expression": "return (possible_parsed_splits[best_index], possible_substrings_splits[best_index])",
+          "note": "best_index e best_rating só são atribuídos dentro do for externo (linha do min()). Se possible_parsed_splits for lista vazia (parâmetro livre, sem validação de não-vazio), o loop nunca executa e o return referencia best_index não definido, causando UnboundLocalError. Não há try/except nem checagem de len(possible_parsed_splits) > 0."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py::HashExpander.do": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "none_misuse",
+          "expression": "crc = binascii.crc32(hash_id) & 4294967295",
+          "note": "hash_id defaults to None and hash_type defaults to 'h'. When hash_type != 'r' (the default path), binascii.crc32(hash_id) is called directly with no guard checking hash_id is not None. Calling target_function(self, idx) with all defaults reaches binascii.crc32(None), which raises TypeError since crc32 requires bytes-like data."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "division_by_zero",
+          "expression": "(crc >> idx) % (range_end - range_begin + 1) + range_begin",
+          "note": "range_end and range_begin are free parameters (or derived from RANGES[idx] without validation) with no constraint that range_end >= range_begin. If a caller passes range_begin = range_end + 1 (e.g. range_end=5, range_begin=6), the modulus (range_end - range_begin + 1) evaluates to 0, and % 0 raises ZeroDivisionError. No guard exists on either path (explicit args or RANGES lookup) preventing this relation."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "out_of_bounds",
+          "expression": "self.cron.RANGES[idx][1]",
+          "note": "idx is a free parameter used directly to index self.cron.RANGES twice with no bounds check. If idx >= len(self.cron.RANGES) or idx too negative in magnitude, RANGES[idx] raises IndexError. This only fires when range_end/range_begin are left as None (default), which is the common call pattern."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "invalid_precondition",
+          "expression": "crc >> idx",
+          "note": "idx is used as a right-shift count with no validation that it is non-negative. Python raises ValueError ('negative shift count') for a negative shift amount. Calling target_function(self, idx=-1, hash_type='r') (avoiding the hash_id issue and keeping RANGES[-1] valid) reaches crc >> -1 and fails; no guard anywhere restricts idx's sign before the shift."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py::interpolate_bilinear_2x_fwd": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+          "function": "interpolate_bilinear_2x_fwd",
+          "category": "division_by_zero",
+          "expression": "math.ceil((h_src - wdw_size) / step_size)",
+          "note": "chunk_size is a free int parameter (default 10, caller can pass any value). wdw_size = chunk_size, step_size = wdw_size - 1. If chunk_size == 1, step_size == 0, and step_size is then used as divisor in math.ceil((h_src - wdw_size) / step_size). No assert or guard checks chunk_size > 1 anywhere in the function, so ZeroDivisionError is reachable with e.g. target_function(src_arr, chunk_size=1)."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py::nonsingular": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "none_misuse",
+          "expression": "not np.isfinite(vmin) or not np.isfinite(vmax)",
+          "note": "vmin/vmax are free parameters with no type or null guard before use. If either is None, np.isfinite(vmin) raises TypeError since numpy ufuncs reject object-dtype None input, and no try/except surrounds the call. Concrete failing input: vmin=None, vmax=1.0 (or vice versa) reaches line 2 directly."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "division_by_zero",
+          "expression": "1000000.0 / tiny * np.finfo(float).tiny",
+          "note": "tiny is a free parameter (default 1e-15) with no guard preventing zero. When tiny=0.0 and vmin/vmax are finite, execution reaches 1000000.0 / tiny, causing ZeroDivisionError (float division by zero). No try/except wraps this expression."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py::integer_squareroot": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+          "function": "integer_squareroot",
+          "category": "integer_overflow",
+          "expression": "x + 1",
+          "note": "n é uint64 livre, x=n na linha 2. Se n = UINT64_MAX (2**64-1), x+1 estoura a largura fixa de 64 bits e sofre wraparound para 0, dando y=0//2=0. Não há guarda que limite n abaixo do valor máximo representável antes dessa soma. Nenhum try/except captura o resultado."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+          "function": "integer_squareroot",
+          "category": "division_by_zero",
+          "expression": "n // x",
+          "note": "x é reatribuído a y dentro do loop (linha 5) e usado como denominador em n // x na linha 6. A guarda do while (y < x) não impede x=0: com n = UINT64_MAX, o wraparound da linha 3 produz y=0, o while entra pois 0 < UINT64_MAX, x vira 0 na linha 5, e n // x na linha 6 divide por zero. Não há checagem explícita de x != 0 e nenhum try/except protege a chamada."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py::Request._set_url": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+          "function": "Request._set_url",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "if ':' not in self._url:",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py::Selector.__init__": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+          "function": "Selector.__init__",
+          "category": "type_mismatch",
+          "expression": "text = response.text",
+          "note": "response is a free parameter with no type contract enforced; the only guard is `if response is not None`, which blocks None but not any other type. If the caller passes a value lacking `.text`/`.url` (e.g. response=\"foo\" or response=42), `response.text` and `response.url` raise AttributeError, uncaught by any try/except. A concrete failing call exists: target_function(response=\"foo\")."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py::HTTP1Connection.write_headers": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+          "function": "HTTP1Connection.write_headers",
+          "category": "none_misuse",
+          "expression": "'Content-Length' not in headers",
+          "note": "headers free param, tipado dict mas type hint não é validação runtime. Se caller passa headers=None, 'Content-Length' not in headers dispara TypeError: argument of type 'NoneType' is not iterable. Sem guard nenhum antes do uso, sem try/except cobrindo."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py::_Alpha.__gt__": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+          "function": "_Alpha.__gt__",
+          "category": "type_mismatch",
+          "finding_type": "suspected_bug",
+          "expression": "not self.__lt__(other)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py::_Numeric.__gt__": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+          "function": "_Numeric.__gt__",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "not self.__lt__(other)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py::_unstack_multiple": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "invalid_precondition",
+          "expression": "clevels = [index.levels[i] for i in clocs]",
+          "note": "index vem de data.index (parâmetro livre data) e nada no código garante que seja um MultiIndex antes de acessar index.levels/index.codes. Um data.index simples (Index comum) passa por len(clocs)!=0, pelo teste 'clocs in index.names' (falso, sem efeito) e por index._get_level_number(i) sem erro, mas Index comum não tem atributo .levels, então a linha 'clevels = [index.levels[i] for i in clocs]' lança AttributeError. Não há try/except cobrindo esse trecho, então a falha é alcançável com data=DataFrame(index=Index simples) e clocs=[0]."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py::_htmlentity_transform": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "invalid_precondition",
+          "expression": "return compat_chr(int(numstr, base))",
+          "note": "numstr comes from unconstrained regex group matching arbitrary digit sequences ('[0-9]+' or 'x[0-9a-fA-F]+'), no upper bound on magnitude. int(numstr, base) can yield a codepoint far outside Unicode's valid range (0 to 0x10FFFF), and compat_chr (chr) raises ValueError for such values. No try/except wraps this call, so e.g. entity='#99999999' reaches compat_chr(99999999) and raises unhandled ValueError."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py::Sanic.url_for": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "none_misuse",
+          "expression": "filename.startswith('/')",
+          "note": "filename = kwargs.pop('filename', None) defaults to None when caller omits 'filename'. When uri contains '<file_uri:' (true for the standard static route), filename.startswith('/') is called unconditionally with no None-check. Caller need only invoke url_for('static', ...) without a filename kwarg to reach None.startswith('/') and raise AttributeError."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "type_mismatch",
+          "expression": "netloc[:8]",
+          "note": "netloc = kwargs.pop('_server', None) is a fully free kwarg; only the None case is normalized (line 31-32) via config default. If a caller passes _external=True and _server=123 (or any non-str/non-slice-safe object), netloc keeps that type and reaches netloc[:8] unguarded, raising TypeError: 'int' object is not subscriptable. The guard 'netloc is None and external' blocks only None, not other free-param types."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "invalid_precondition",
+          "expression": "out = re.sub(replacement_regex, supplied_param, out)",
+          "note": "supplied_param is caller-controlled (via **kwargs), stringified, and only checked against specific_pattern -- a domain regex that does not exclude backslashes. It is then passed as the repl argument to re.sub, where backslash sequences are interpreted specially (backreferences/escapes). A value such as name='9' (a digit-only backreference to a non-existent group, since replacement_regex has only one capturing group) triggers re.error 'invalid group reference' at runtime, uncaught by any try/except in the function."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py::generate_commands": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+          "function": "generate_commands",
+          "category": "none_misuse",
+          "finding_type": "llm_false_positive",
+          "expression": "if 'vlan_id' in to_remove:",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+          "function": "generate_commands",
+          "category": "none_misuse",
+          "finding_type": "llm_false_positive",
+          "expression": "for key, value in to_set.items():",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py::_get_spider_loader": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "none_misuse",
+          "expression": "loader_cls = load_object(cls_path)",
+          "note": "cls_path vem de settings.get('SPIDER_LOADER_CLASS', settings.get('SPIDER_MANAGER_CLASS')): se nenhuma das duas chaves existir em settings (parametro livre, sem restricao), ambos os get retornam None e cls_path fica None. Nao ha guarda que bloqueie esse valor antes de load_object(cls_path); load_object espera string de path (import_module/getattr), entao None causa falha (AttributeError/TypeError) ou comportamento indefinido. Nao ha try/except cobrindo a chamada."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py::HTTPBearer.__call__": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py::map_obj_to_commands": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "none_misuse",
+          "expression": "return want.get(x) is not None and want.get(x) != have.get(x)",
+          "note": "want e have vêm de 'want, have = updates' sem checagem de tipo. Se want ou have for None (ou não suportar .get), a primeira chamada de needs_update já falha em want.get(x)/have.get(x) com AttributeError. Não há try/except nem validação de updates antes disso, e nenhuma guarda impede None. Valor concreto: updates=(None, {}) faz needs_update('http') explodir na primeira chamada em any(...)."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if want['http'] is False:",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if want['https'] is False:",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if want['local_http'] is False:",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if want['state'] == 'stopped':",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py::map_obj_to_commands.needs_update": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py::map_obj_to_commands.add": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands.add",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "'management api http-commands' not in commands",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py::StaticFileHandler.get": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "assertion_violation",
+          "expression": "assert self.request.method == 'HEAD'",
+          "note": "include_body is a free bool parameter (default True); the else-branch when include_body is False asserts self.request.method == 'HEAD' with no guard anywhere in the function restricting request.method for that branch. Concrete case: include_body=False and self.request.method == 'GET' reaches the assert and raises AssertionError; nothing catches it. The correctness of this assert depends entirely on caller discipline outside this function's own logic."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "content_length = end - start",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py::TimeseriesGenerator.__len__": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+          "function": "TimeseriesGenerator.__len__",
+          "category": "division_by_zero",
+          "expression": "(self.end_index - self.start_index) / (self.batch_size * self.stride)",
+          "note": "denominador self.batch_size * self.stride vem de atributos livres sem validacao visivel no corpo da funcao. Se batch_size=0 ou stride=0, produto=0, np.ceil(x/0) gera ZeroDivisionError (int) ou ZeroDivisionError/RuntimeWarning dependendo do tipo de x. Nenhuma guarda no codigo bloqueia esses valores, e passa item 4 do teste: batch_size=0 causa falha direta."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py::EmptyLineTracker._maybe_empty_lines": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py::pivot": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+          "function": "pivot",
+          "category": "invalid_precondition",
+          "expression": "indexed = data.set_index(cols, append=append)",
+          "note": "columns is free (default None) and never validated before being used as a column label. With values=None (the default), cols=[columns]=[None] and data.set_index([None], append=append) is called on line 7; with values set, data[columns] on line 13 does the same. No guard anywhere checks columns is not None, and calling target_function(data) with all defaults already exercises the first branch and crashes (KeyError: no such column None). Not caught by try/except."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+          "function": "pivot",
+          "category": "invalid_precondition",
+          "expression": "index = data[index]",
+          "note": "When values is not None, index is either data.index or data[index], with index a free unvalidated param; if index is anything other than a real column label of data, data[index] raises KeyError. Same missing-validation pattern as columns but on a separate parameter/branch, so reported as a distinct root cause."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py::response_status_message": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+          "function": "response_status_message",
+          "category": "none_misuse",
+          "expression": "to_native_str(http.RESPONSES.get(int(status)))",
+          "note": "status livre, sem guarda. int(status) pode não estar em http.RESPONSES, então .get() retorna None. to_native_str(None) alcança função que provavelmente exige str/bytes, não None. Sem try/except na função. Falta apenas saber contrato exato de to_native_str pra confirmar tipo de falha exato."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+          "function": "response_status_message",
+          "category": "invalid_precondition",
+          "expression": "int(status)",
+          "note": "Parâmetro status sem restrição de tipo/valor, passado direto a int(status). Se status for string não numérica (ex: 'abc') ou tipo incompatível (None, objeto), int() lança ValueError/TypeError. Nenhuma validação nem try/except na função cobre isso."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py::croniter._get_low_from_current_date_number": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+          "function": "croniter._get_low_from_current_date_number",
+          "category": "division_by_zero",
+          "expression": "dt.minute % step",
+          "note": "step vem livre, sem checagem. Nenhum guard bloqueia step==0 em nenhum ramo. dt.minute%step, dt.hour%step, (dt.day-1)%step+1, dt.month%step, (dt.weekday()+1)%step todos usam step como divisor do %. Não há try/except. step=0 com qualquer field_index in {0,1,2,3,4} dispara ZeroDivisionError."
+        }
+      ],
+      "rejected_findings": []
+    }
+  },
+  "synthesis_results": {
+    "0": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(param, bool)",
+        "note": "param vira params.get(param), livre via params e param. dict.get retorna None se chave ausente, ou qualquer valor não-bool armazenado. Nenhuma guarda antes do assert bloqueia esses casos, e não há try/except em volta. Com params={} e param='x', params.get('x') é None, e assert isinstance(None, bool) falha, levantando AssertionError."
+      },
+      "classification": "confirmed_unverified",
+      "failure_stage": "",
+      "harness": "# Slice of cli_bool_option (params.get(param) -> assert isinstance(param, bool))\n# category: assertion_violation\n# real function does: param = params.get(param); assert isinstance(param, bool)\n# params.get(param) is an unresolved dict lookup -> modeled as tagged nondet:\n#   kind == 0 means params.get returned a bool (expected), kind != 0 means it\n#   returned some other type (e.g. None, str, int) that a caller could pass in.\n# __ESBMC_assume(0 <= kind <= 2): restrict tag to a small enumerated range\n# assert checks: the looked-up value was actually the expected bool type\n# nondet operand: value of params.get(param) (real: params.get(param))\n\ndef slice_model(kind: int) -> bool:\n    is_bool_type: bool = kind == 0\n    result: bool = is_bool_type\n    assert result\n    return result\n\n\ndef main() -> None:\n    kind: int = nondet_int()\n    __ESBMC_assume(0 <= kind)\n    __ESBMC_assume(kind <= 2)\n    result = slice_model(kind)\n    assert result\n\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-claude-cli-40/harnesses/scan_000_cli_bool_option_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [
+        "outcome-category confirmation has no differential assertion (compare the buggy result with a separately computed expected value)"
+      ],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion result. Local: slice_model, linha 14.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": 620,
+      "synth_seconds": 15.617,
+      "esbmc_seconds": 2.819,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 21.8,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    "1": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(self.index, PeriodIndex)",
+        "note": "self.index vem do estado do objeto (self), livre e sem validação anterior no método. O assert isinstance(self.index, PeriodIndex) não tem guarda prévia que restrinja o tipo de self.index; qualquer Series/objeto cujo index não seja PeriodIndex (DatetimeIndex, RangeIndex, etc.) alcança esse assert com cond falso, disparando AssertionError. Não há try/except em volta."
+      },
+      "classification": "confirmed_unverified",
+      "failure_stage": "",
+      "harness": "# Real function: to_timestamp (module path not given), line: assert isinstance(self.index, PeriodIndex)\n# Category: assertion_violation\n# self.index origin unresolved -> modeled as index_kind: int nondet + tag (0=PeriodIndex, 1=DatetimeIndex, 2=RangeIndex)\n# __ESBMC_assume: only magnitude bound on index_kind (0..2) to bound the search; no real preconditions exist (function validates nothing)\n# assert: checks the real isinstance(self.index, PeriodIndex) contract via the tag, since isinstance on a same-typed stand-in is always true\n# nondet operands: self.index (index_kind)\n\ndef slice_model(index_kind: int) -> bool:\n    # real: isinstance(self.index, PeriodIndex)\n    is_period_index = index_kind == 0\n    return is_period_index\n\n\ndef main() -> None:\n    index_kind: int = nondet_int()\n    __ESBMC_assume(0 <= index_kind)\n    __ESBMC_assume(index_kind <= 2)\n\n    result = slice_model(index_kind)\n    assert result\n\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-claude-cli-40/harnesses/scan_001_to_timestamp_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [
+        "outcome-category confirmation has no differential assertion (compare the buggy result with a separately computed expected value)"
+      ],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion result. Local: main, linha 20.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": 601,
+      "synth_seconds": 12.613,
+      "esbmc_seconds": 2.647,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 17.57,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    "2": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "none_misuse",
+        "expression": "worker._add_task_history",
+        "note": "worker livre, sem guarda contra None. Se worker=None, worker._add_task_history dispara AttributeError. Nenhum try/except cobre. Valor concreto worker=None passa e falha."
+      },
+      "classification": "confirmed_native",
+      "failure_stage": "",
+      "harness": "",
+      "harness_path": "",
+      "compat_verdict": "native_function",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC encontrou violação: uncaught exception: AttributeError (!(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 13)).",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": null,
+      "synth_seconds": 0.0,
+      "esbmc_seconds": 3.068,
+      "attempts": 0,
+      "attempt_history": [],
+      "seconds": 3.1,
+      "error": "",
+      "driver_note": "",
+      "verification_target": "original_function",
+      "abstraction_level": "none"
+    },
+    "3": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "invalid_precondition",
+        "expression": "num_all_tasks = sum([len(set_tasks['already_done']), len(set_tasks['completed']), len(set_tasks['failed']), len(set_tasks['scheduling_error']), len(set_tasks['still_pending_ext']), len(set_tasks['still_pending_not_ext'])])",
+        "note": "set_tasks is a free dict parameter with no validation anywhere in the function that it contains the specific keys the code assumes ('already_done', 'completed', 'failed', 'scheduling_error', 'still_pending_ext', 'still_pending_not_ext', 'not_run'). No try/except wraps these accesses. Any caller passing a dict missing one of these keys (e.g. only 'failed' and 'completed' present) reaches direct subscript access and raises KeyError, both in the num_all_tasks sum and in the smiley/reason branch using set_tasks['not_run']. No guard anywhere restricts set_tasks to have this exact key set before it is indexed."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "# Slice of _summary_format (research target module, function _summary_format).\n# Category: invalid_precondition -- the real function indexes\n# set_tasks[\"already_done\"], [\"completed\"], [\"failed\"], [\"scheduling_error\"],\n# [\"still_pending_ext\"], [\"still_pending_not_ext\"] with no check that the\n# caller-supplied dict actually carries every one of those keys.\n# nondet operands: len(set_tasks[<key>]) for each of the 6 keys -> nondet_int()\n# (real: len(set_tasks[\"already_done\"]) etc, the container itself is dropped,\n# only the length used by sum() is kept); presence of each key -> nondet_bool()\n# (real: implicit dict membership the source never checks).\n# __ESBMC_assume: only loose magnitude bounds on the 6 length ints (0..1<<30)\n# so the search terminates -- no precondition is enforced by the real function,\n# per the finding, so no assume constrains the has_* flags.\n# assert: has_x asserted true right before the dict access it stands for\n# (the KeyError-causing unchecked precondition); final assert in main ties the\n# returned result back to the same 6 lengths.\n\n\ndef slice_model(has_already_done: bool, len_already_done: int,\n                 has_completed: bool, len_completed: int,\n                 has_failed: bool, len_failed: int,\n                 has_scheduling_error: bool, len_scheduling_error: int,\n                 has_still_pending_ext: bool, len_still_pending_ext: int,\n                 has_still_pending_not_ext: bool, len_still_pending_not_ext: int) -> int:\n    # real: len(set_tasks[\"already_done\"])\n    assert has_already_done\n    # real: len(set_tasks[\"completed\"])\n    assert has_completed\n    # real: len(set_tasks[\"failed\"])\n    assert has_failed\n    # real: len(set_tasks[\"scheduling_error\"])\n    assert has_scheduling_error\n    # real: len(set_tasks[\"still_pending_ext\"])\n    assert has_still_pending_ext\n    # real: len(set_tasks[\"still_pending_not_ext\"])\n    assert has_still_pending_not_ext\n    num_all_tasks = sum([len_already_done, len_completed, len_failed,\n                          len_scheduling_error, len_still_pending_ext,\n                          len_still_pending_not_ext])\n    return num_all_tasks\n\n\ndef main() -> None:\n    has_already_done: bool = nondet_bool()\n    len_already_done: int = nondet_int()\n    __ESBMC_assume(0 <= len_already_done)\n    __ESBMC_assume(len_already_done <= 1073741824)\n\n    has_completed: bool = nondet_bool()\n    len_completed: int = nondet_int()\n    __ESBMC_assume(0 <= len_completed)\n    __ESBMC_assume(len_completed <= 1073741824)\n\n    has_failed: bool = nondet_bool()\n    len_failed: int = nondet_int()\n    __ESBMC_assume(0 <= len_failed)\n    __ESBMC_assume(len_failed <= 1073741824)\n\n    has_scheduling_error: bool = nondet_bool()\n    len_scheduling_error: int = nondet_int()\n    __ESBMC_assume(0 <= len_scheduling_error)\n    __ESBMC_assume(len_scheduling_error <= 1073741824)\n\n    has_still_pending_ext: bool = nondet_bool()\n    len_still_pending_ext: int = nondet_int()\n    __ESBMC_assume(0 <= len_still_pending_ext)\n    __ESBMC_assume(len_still_pending_ext <= 1073741824)\n\n    has_still_pending_not_ext: bool = nondet_bool()\n    len_still_pending_not_ext: int = nondet_int()\n    __ESBMC_assume(0 <= len_still_pending_not_ext)\n    __ESBMC_assume(len_still_pending_not_ext <= 1073741824)\n\n    result = slice_model(has_already_done, len_already_done,\n                          has_completed, len_completed,\n                          has_failed, len_failed,\n                          has_scheduling_error, len_scheduling_error,\n                          has_still_pending_ext, len_still_pending_ext,\n                          has_still_pending_not_ext, len_still_pending_not_ext)\n\n    assert result == (len_already_done + len_completed + len_failed +\n                       len_scheduling_error + len_still_pending_ext +\n                       len_still_pending_not_ext)\n\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-claude-cli-40/harnesses/scan_003__summary_format_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion has_already_done. Local: slice_model, linha 25.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": 3909,
+      "synth_seconds": 39.438,
+      "esbmc_seconds": 47.101,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 89.14,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    "4": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "function": "get_new_command",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "command livre, sem guarda. Se command=None, command.script dispara AttributeError. Nenhum try/except no trecho. Valor concreto command=None passa (não há checagem) e causa falha."
+      },
+      "classification": "safe_native",
+      "failure_stage": "verification",
+      "harness": "",
+      "harness_path": "",
+      "compat_verdict": "native_function",
+      "compat_reasons": [],
+      "esbmc_status": "no_violation_found",
+      "esbmc_summary": "ESBMC não encontrou violação até o limite k=6.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": null,
+      "synth_seconds": 0.0,
+      "esbmc_seconds": 2.515,
+      "attempts": 0,
+      "attempt_history": [],
+      "seconds": 2.54,
+      "error": "",
+      "driver_note": "",
+      "verification_target": "original_function",
+      "abstraction_level": "none"
+    },
+    "5": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "command eh parametro livre, sem guarda, sem try/except. Se command for None, command.script lanca AttributeError; contrato exato da classe command nao esta disponivel no contexto."
+      },
+      "classification": "safe_native",
+      "failure_stage": "verification",
+      "harness": "",
+      "harness_path": "",
+      "compat_verdict": "native_function",
+      "compat_reasons": [],
+      "esbmc_status": "no_violation_found",
+      "esbmc_summary": "ESBMC não encontrou violação até o limite k=6.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": null,
+      "synth_seconds": 0.0,
+      "esbmc_seconds": 2.338,
+      "attempts": 0,
+      "attempt_history": [],
+      "seconds": 2.36,
+      "error": "",
+      "driver_note": "",
+      "verification_target": "original_function",
+      "abstraction_level": "none"
+    },
+    "6": {
+      "candidate": {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "invalid_precondition",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "note": "lim_name and attr_name are free string parameters of target_function, used unvalidated in getattr(getattr(self.axes, lim_name), attr_name) and the matching setattr call. No guard checks that self.axes actually has an attribute named lim_name or that the resulting object has attr_name; any lim_name/attr_name not matching self.axes's real attribute names reaches getattr with no default, raising AttributeError. Concrete failure: target_function('m','bogus_lim','bogus_attr') then calling getter(instance) where instance.axes lacks 'bogus_lim'."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "# Slice of matplotlib.axis._make_getset_interval.getter\n# (getter = _make_getset_interval(method_name, lim_name, attr_name), the\n#  suspect expression: getattr(getattr(self.axes, lim_name), attr_name))\n# category: invalid_precondition\n# The real function never checks that lim_name/attr_name name attributes\n# that actually exist on self.axes / self.axes.<lim_name> -- it just chains\n# two getattr() calls on caller-supplied strings.\n# __ESBMC_assume(0 <= kind <= 2): only a loose range bound so the tag search\n#   terminates; NOT a precondition the real function enforces (it enforces\n#   none, per the finding).\n# assert result: fails exactly when the (lim_name, attr_name) pair does not\n#   resolve to a real attribute chain on self.axes, modelling the\n#   AttributeError the real getattr chain would raise.\n# nondet operands: self.axes / lim_name / attr_name collapsed into one\n#   tag `kind`, since ESBMC-Python cannot model dynamic attribute existence\n#   directly; kind == 0 stands for \"chain resolves\", kind in {1,2} for the\n#   other cases (missing intermediate attribute, missing final attribute).\n\ndef slice_model(kind: int) -> bool:\n    # real: getattr(getattr(self.axes, lim_name), attr_name)\n    is_valid_attr_chain: bool = kind == 0\n    return is_valid_attr_chain\n\n\ndef main() -> None:\n    kind: int = nondet_int()\n    __ESBMC_assume(0 <= kind <= 2)\n\n    result: bool = slice_model(kind)\n    assert result\n\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-claude-cli-40/harnesses/scan_006__make_getset_interval_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion result. Local: main, linha 30.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "",
+      "synth_total_tokens": 1709,
+      "synth_seconds": 24.401,
+      "esbmc_seconds": 2.774,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 29.49,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    }
+  },
+  "status": "running",
+  "telemetry_events": [
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 21.036074,
+      "prompt_tokens": 4,
+      "completion_tokens": 1649,
+      "total_tokens": 1653,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 19.227142,
+      "prompt_tokens": 4,
+      "completion_tokens": 1145,
+      "total_tokens": 1149,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 21.747621,
+      "prompt_tokens": 2,
+      "completion_tokens": 1449,
+      "total_tokens": 1451,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 17.365408,
+      "prompt_tokens": 4,
+      "completion_tokens": 1489,
+      "total_tokens": 1493,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 52.68774,
+      "prompt_tokens": 4,
+      "completion_tokens": 5294,
+      "total_tokens": 5298,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 86.580452,
+      "prompt_tokens": 2,
+      "completion_tokens": 9210,
+      "total_tokens": 9212,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 8.719253,
+      "prompt_tokens": 2,
+      "completion_tokens": 396,
+      "total_tokens": 398,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 15.932457,
+      "prompt_tokens": 4,
+      "completion_tokens": 666,
+      "total_tokens": 670,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 10.876501,
+      "prompt_tokens": 4,
+      "completion_tokens": 297,
+      "total_tokens": 301,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 51.403293,
+      "prompt_tokens": 4,
+      "completion_tokens": 4767,
+      "total_tokens": 4771,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 28.062643,
+      "prompt_tokens": 2,
+      "completion_tokens": 2029,
+      "total_tokens": 2031,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 26.823013,
+      "prompt_tokens": 4,
+      "completion_tokens": 2072,
+      "total_tokens": 2076,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 102.747604,
+      "prompt_tokens": 2,
+      "completion_tokens": 9929,
+      "total_tokens": 9931,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 21.640991,
+      "prompt_tokens": 4,
+      "completion_tokens": 957,
+      "total_tokens": 961,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 21.030188,
+      "prompt_tokens": 6,
+      "completion_tokens": 909,
+      "total_tokens": 915,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 13.141231,
+      "prompt_tokens": 4,
+      "completion_tokens": 842,
+      "total_tokens": 846,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 9.906862,
+      "prompt_tokens": 2,
+      "completion_tokens": 573,
+      "total_tokens": 575,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 45.795292,
+      "prompt_tokens": 4,
+      "completion_tokens": 4105,
+      "total_tokens": 4109,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 41.178947,
+      "prompt_tokens": 2,
+      "completion_tokens": 3656,
+      "total_tokens": 3658,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 64.228824,
+      "prompt_tokens": 4,
+      "completion_tokens": 6693,
+      "total_tokens": 6697,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 65.991005,
+      "prompt_tokens": 4,
+      "completion_tokens": 6196,
+      "total_tokens": 6200,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 17.929571,
+      "prompt_tokens": 4,
+      "completion_tokens": 1005,
+      "total_tokens": 1009,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 136.524893,
+      "prompt_tokens": 4,
+      "completion_tokens": 13580,
+      "total_tokens": 13584,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 40.826438,
+      "prompt_tokens": 2,
+      "completion_tokens": 3866,
+      "total_tokens": 3868,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 57.451463,
+      "prompt_tokens": 4,
+      "completion_tokens": 5949,
+      "total_tokens": 5953,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 24.650727,
+      "prompt_tokens": 4,
+      "completion_tokens": 2220,
+      "total_tokens": 2224,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 37.877978,
+      "prompt_tokens": 4,
+      "completion_tokens": 3163,
+      "total_tokens": 3167,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 50.426615,
+      "prompt_tokens": 2,
+      "completion_tokens": 4579,
+      "total_tokens": 4581,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 9.01515,
+      "prompt_tokens": 2,
+      "completion_tokens": 480,
+      "total_tokens": 482,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 37.917244,
+      "prompt_tokens": 4,
+      "completion_tokens": 3166,
+      "total_tokens": 3170,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 14.366886,
+      "prompt_tokens": 4,
+      "completion_tokens": 948,
+      "total_tokens": 952,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 18.907239,
+      "prompt_tokens": 4,
+      "completion_tokens": 1248,
+      "total_tokens": 1252,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 12.484376,
+      "prompt_tokens": 4,
+      "completion_tokens": 802,
+      "total_tokens": 806,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 166.309963,
+      "prompt_tokens": 6,
+      "completion_tokens": 15371,
+      "total_tokens": 15377,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 18.693356,
+      "prompt_tokens": 2,
+      "completion_tokens": 1301,
+      "total_tokens": 1303,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 61.92438,
+      "prompt_tokens": 2,
+      "completion_tokens": 6162,
+      "total_tokens": 6164,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 27.988004,
+      "prompt_tokens": 2,
+      "completion_tokens": 2370,
+      "total_tokens": 2372,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 25.004545,
+      "prompt_tokens": 4,
+      "completion_tokens": 1775,
+      "total_tokens": 1779,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 15.649379,
+      "prompt_tokens": 2,
+      "completion_tokens": 1179,
+      "total_tokens": 1181,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 116.223056,
+      "prompt_tokens": 4,
+      "completion_tokens": 11413,
+      "total_tokens": 11417,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.446545,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.224644,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.378147,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.255614,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.521041,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.154265,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 5.381019,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 4.341954,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "claude -p saiu com código 1: ",
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 11.757173,
+      "prompt_tokens": 4,
+      "completion_tokens": 285,
+      "total_tokens": 289,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 17.411138,
+      "prompt_tokens": 4,
+      "completion_tokens": 872,
+      "total_tokens": 876,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 57.085385,
+      "prompt_tokens": 4,
+      "completion_tokens": 5594,
+      "total_tokens": 5598,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 7.987525,
+      "prompt_tokens": 2,
+      "completion_tokens": 450,
+      "total_tokens": 452,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 13.839075,
+      "prompt_tokens": 4,
+      "completion_tokens": 641,
+      "total_tokens": 645,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 86.858434,
+      "prompt_tokens": 4,
+      "completion_tokens": 8387,
+      "total_tokens": 8391,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 24.612586,
+      "prompt_tokens": 4,
+      "completion_tokens": 1875,
+      "total_tokens": 1879,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 18.145809,
+      "prompt_tokens": 4,
+      "completion_tokens": 1025,
+      "total_tokens": 1029,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 15.617217,
+      "prompt_tokens": 2,
+      "completion_tokens": 618,
+      "total_tokens": 620,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 12.612557,
+      "prompt_tokens": 2,
+      "completion_tokens": 599,
+      "total_tokens": 601,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 39.438476,
+      "prompt_tokens": 2,
+      "completion_tokens": 3907,
+      "total_tokens": 3909,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "",
+      "returned_model": "",
+      "status": "success",
+      "duration_seconds": 24.400759,
+      "prompt_tokens": 2,
+      "completion_tokens": 1707,
+      "total_tokens": 1709,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    }
+  ],
+  "detection_errors": [
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+      "function": "map_obj_to_commands.needs_update",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+      "function": "map_obj_to_commands.add",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+      "function": "StaticFileHandler.get",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+      "function": "TimeseriesGenerator.__len__",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+      "function": "EmptyLineTracker._maybe_empty_lines",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+      "function": "pivot",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+      "function": "response_status_message",
+      "error": "claude -p saiu com código 1: "
+    },
+    {
+      "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+      "function": "croniter._get_low_from_current_date_number",
+      "error": "claude -p saiu com código 1: "
+    }
+  ]
+}

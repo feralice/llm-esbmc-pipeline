@@ -1,0 +1,83 @@
+{
+  "counts": {
+    "UNSUPPORTED": 5
+  },
+  "rows": [
+    {
+      "id": "4aa3e5e38a90",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping"
+      ]
+    },
+    {
+      "id": "2629816a29ef",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "a1578927c83f",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__ne__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping"
+      ]
+    },
+    {
+      "id": "2ede9629917e",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__ne__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "e7b6853db8fa",
+      "file": "nm_real_11.py",
+      "function": "LocalCache.__setitem__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "esbmc_refused_members_stubbed:_esbmc_collections_OrderedDict"
+      ]
+    }
+  ]
+}

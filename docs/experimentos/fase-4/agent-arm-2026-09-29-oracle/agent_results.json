@@ -1,0 +1,1234 @@
+[
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/dz_real_01.py",
+      "function": "makeMappingArray",
+      "suspect_expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "division_by_zero",
+      "hypothesis_id": "d413552720dd"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/d413552720dd/harness.py",
+    "seconds": 900.081,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_05.py",
+      "function": "lib2to3_parse",
+      "suspect_expression": "src_txt[-1]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "98817400561e"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "unwinding assertion loop 131; unwinding assertion loop 108; unwinding assertion loop 53; uncaught exception: IndexError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "IndexError",
+      "line": 65,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/98817400561e/harness.py",
+    "agent_output": "d and not by a real bug.\n\n`harness.py` keeps the body of `lib2to3_parse` unchanged, with `src_txt[-1]` unguarded and no `assert`. At module level the driver passes `nondet_str()` into it. The stubs:\n- **Module-level objects:** `pygram`, `syms`, `pytree` and `driver` are object instances with the attributes the function reads. ESBMC could not use the plain-class and class-alias versions I tried first.\n- **`ParseError`:** `context` is a tuple, because the frontend can't unpack a list element.\n- **`Node` and `Leaf`:** minimal classes, just enough for the function to run.\n\nOne odd workaround: this ESBMC build doesn't support `raise` on a variable. It reads `raise exc` as a class name, which even an annotated local variable triggers, and fails with `NameError: name 'exc' is not defined`. To get past it without touching the body, the harness defines a helper `class exc(Exception)` with a one-line comment explaining why. That trick is worth reusing in other cases that have `raise <variable>`.",
+    "seconds": 153.186,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_02.py",
+      "function": "WebSocketHandler.set_nodelay",
+      "suspect_expression": "assert self.stream is not None",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "assertion_violation",
+      "hypothesis_id": "9791fef294e6"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "assertion !(ISNONE(self->stream, 0)); dereference failure: NULL pointer",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AssertionError",
+      "line": 17,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/9791fef294e6/harness.py",
+    "agent_output": "DONE\n\nI wrote `harness.py`, and ESBMC reaches **VERIFICATION FAILED** with no conversion error.\n\n- **Harness:** `WebSocketHandler.set_nodelay` is copied from `original.py:561-562` with its body unchanged. Two small stubs support it: an `IOStream` class with `set_nodelay`, and a `WebSocketHandler` constructor that sets `self.stream`. The driver uses `nondet_bool()` to decide whether `stream` is `None` or a real `IOStream`, then calls `set_nodelay` with a nondet `value`.\n- **Suspect expression:** ESBMC fails `[set_nodelay.assertion.2]` at line 17 (`assert self.stream is not None`) when the stream is `None`.\n- **Second failure:** ESBMC also fails `[set_nodelay.null-pointer-dereference.1]` at line 9, inside the stub's `IOStream.set_nodelay`. Most likely this comes from `--multi-property` checking the call after the failed assertion. It is in the stub, not the original code.\n\nTotals: 2 of 18 properties failed, 16 passed.",
+    "seconds": 26.591,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_03.py",
+      "function": "Series.to_timestamp",
+      "suspect_expression": "assert isinstance(self.index, PeriodIndex)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "assertion_violation",
+      "hypothesis_id": "7fa63f4b93e4"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "assertion ISINSTANCE(self->index, PeriodIndex)",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: uses dunder attribute __finalize__"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/7fa63f4b93e4/harness.py",
+    "agent_output": "s were added to its signature. Two ESBMC-Python limitations meant the stubs needed workarounds:\n\n1. **Same method name in two classes.** `Index.to_timestamp` and `Series.to_timestamp` share a name, and ESBMC looks up local variables across both. Conversion stopped with `Object \"new_values\" not found`. The fix: the `Index.to_timestamp` stub declares the same local names (`new_values`, `new_index`).\n2. **`isinstance` only looks at structure.** If `PeriodIndex` has the same fields as `Index`, ESBMC treats them as the same class and the assertion always passed. The fix: `PeriodIndex` gets an extra `freq` field.\n\nI also rewrote the driver, which chooses `PeriodIndex` or `Index` nondeterministically. The first version stored a `PeriodIndex` in a variable typed `Index`, and that caused a false heap out-of-bounds report because the variable only had room for an `Index`. Now each branch builds its own Series.\n\nScratch probe files in the case folder are deleted. A few copies are still in `/tmp`.",
+    "seconds": 458.355,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_15.py",
+      "function": "APIRouter.include_router",
+      "suspect_expression": "responses = {**responses, **route.responses}",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "incorrect_result",
+      "hypothesis_id": "eb4f8aa25d79"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: dict unpacking ({**d}) is not supported",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "unsupported_case",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/eb4f8aa25d79/harness.py",
+    "agent_output": "y, so no stub or annotation can get past it without changing line 292. The mypy \"implicit Optional\" errors in the output are only warnings; they don't stop conversion.\n\nTo check the rest of the harness, I ran a copy in `/tmp/probe.py` with only that line changed to `responses = route.responses`. It converted and reached `VERIFICATION FAILED`, with 1 of 92 properties failing. That failure is an unwinding assertion inside ESBMC's own `__memcpy_impl` from `--unwind 5`, not a bug in `include_router`. That probe rewrites the suspect expression, so it doesn't count as testing the hypothesis.\n\nFor this case to count, one of two things has to happen:\n- **Frontend support:** ESBMC-Python learns dict unpacking, and then `harness.py` should work as it is.\n- **Rule change:** the rules allow rewriting the expression as `merged = dict(responses); merged.update(route.responses)`, which changes the body.\n\nEither way, this case should be recorded as a known ESBMC-Python limit, not as a harness failure.",
+    "seconds": 84.136,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/tm_real_01.py",
+      "function": "read_conllx",
+      "suspect_expression": "head = (int(head) - 1) if head != \"0\" else id_",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "type_mismatch",
+      "hypothesis_id": "ca3ec10aecb9"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Unsupported expression Starred at line 26",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/ca3ec10aecb9/harness.py",
+    "agent_output": "ned `def zip(*args)` stub:** the same error, so a stub can't get around it.\n- **`f(*xs)` on a normal function:** this one doesn't give the Starred error, but the list isn't unpacked either (`TypeError: f() missing 1 required positional argument: 'b'`).\n\nNo stub or driver change can get past this while the body stays the same. I also don't know yet whether the `yield` generator converts, because conversion stops before reaching it. A run with line 26 replaced, to check just that, was held for your approval and hasn't run.\n\nDecision for you: the smallest change would be to replace `zip(*tokens)` with an equivalent that doesn't unpack, for example `zip(*tokens)` \u2192 `[[tok[k] for tok in tokens] for k in range(6)]`. That line runs after the suspect `head = ...` expression, so the hypothesis is still exercised. But it breaks the \"body unchanged\" rule, so I'll only do it if you say so. Otherwise this case should be recorded as an ESBMC-Python limit: argument unpacking with `*` isn't supported.",
+    "seconds": 56.092,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/tm_real_05.py",
+      "function": "MailSender.send",
+      "suspect_expression": "msg['To'] = COMMASPACE.join(to)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "type_mismatch",
+      "hypothesis_id": "b64dba9619ad"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Unsupported expression Starred at line 100",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/b64dba9619ad/harness.py",
+    "agent_output": "ce failed ... Variable A not found`.\n\nThe error is raised at conversion time, so it happens even if that branch is never executed. Even past this line, the rest of the body still has constructs likely to hit more limits: a 3-way tuple unpack in the `for`, a `lambda: dfd`, a keyword call on an `_callback: object`, and `%`-formatting.\n\n**State:** `harness.py` is written. It has the stubs (`Message`, the MIME classes, `logger`, `reactor`, `Deferred`, `formatdate`, `COMMASPACE`), the unchanged `send`, and a nondet driver (`to=[nondet_str(), nondet_str()]`, `debug=nondet_bool()`). I removed the in-case probe files. `/tmp/probe` is still there because deleting it needed approval.\n\n**Options:**\n1. Mark this case as a conversion failure (Starred call arg not supported) in the V2 results.\n2. Relax the rule for this case: replace line 50 with an explicit two-element split. The suspect line 52 stays unguarded, and I rerun.\n3. Fix it in the ESBMC frontend: expand Starred call args of known length.",
+    "seconds": 110.137,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/tm_real_07.py",
+      "function": "MarkerStyle._recache",
+      "suspect_expression": "self._filled = True",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "type_mismatch",
+      "hypothesis_id": "9f32a45807a7"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/9f32a45807a7/harness.py",
+    "agent_output": "y_path`, and a driver at module level that builds a `MarkerStyle` and calls `_recache()`.\n- **`_marker_function` had to change.** In the real code it is an attribute holding a bound method or `None`. The first attempt kept that and ESBMC stopped with `ERROR: Function 'py:harness.py@C@MarkerStyle@F@_marker_function' not found`. So I made it a regular method on the class. As a result, the `is None` early-return branch can never be taken in the harness, and the method always runs.\n- **Suspect line coverage:** the per-property output lists checks on lines 29 to 31 of the harness. Line 31 is `self._filled = True`, so the suspect expression is exercised.\n- **Nondet inputs:** the driver uses none. `_recache` takes no arguments, and the nondet flag I first used only chose between the two `_marker_function` values, which went away with the change above.\n- **Result meaning:** the harness has no asserts, so the SUCCESSFUL verdict covers only ESBMC's built-in memory checks, which all passed.\n\nDONE",
+    "seconds": 48.604,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/tm_real_08.py",
+      "function": "simple_separated_format",
+      "suspect_expression": "TableFormat(None, None, None, None, headerrow=None, datarow=DataRow('', separator, ''), padding=0, with_header_hide=None)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "type_mismatch",
+      "hypothesis_id": "a25d8874bca4"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/a25d8874bca4/harness.py",
+    "agent_output": "DONE\n\nI wrote `harness.py` and ran ESBMC on it. It reached **VERIFICATION SUCCESSFUL**: all 24 properties passed and there was no conversion error.\n\n- **`simple_separated_format`:** copied from `original.py` with the body unchanged. The only change is type annotations on the signature (`separator: str -> TableFormat`).\n- **Stubs:** in `original.py`, `DataRow` and `TableFormat` are `namedtuple`s. In the harness they are plain classes with the same fields, since I didn't try `namedtuple` with ESBMC.\n- **Driver:** at module level it runs `sep = nondet_str()` and then `simple_separated_format(sep)`. It has no asserts and nothing guards the suspect expression.\n\nThe properties ESBMC checked are memory-safety ones: out-of-bounds access, invalid dynamic objects and misaligned access. They were checked on the `TableFormat` constructor and on the suspect expression's `return` line, and all passed.",
+    "seconds": 27.312,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/tm_real_10.py",
+      "function": "MetricsHandler.get",
+      "suspect_expression": "metrics.configure_http_handler(self)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "variable_misuse",
+      "hypothesis_id": "9e2b1f73b2c7"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/9e2b1f73b2c7/harness.py",
+    "agent_output": "5 properties failed and no conversion error.\n\n- **Code under test:** the body of `MetricsHandler.get` is copied unchanged from `original.py`. The suspect call `metrics.configure_http_handler(self)` is not guarded, and there are no asserts.\n- **Stubs:** `Scheduler`, `State` and `MetricsCollector` are minimal stand-ins. `MetricsCollector.generate_latest()` always returns a `Metrics` stub that is truthy and has an empty `configure_http_handler`. `MetricsHandler` stands on its own and doesn't inherit from `tornado.web.RequestHandler`.\n- **Driver:** it builds the object chain from a `nondet_bool()` and calls `handler.get()` at module level.\n\n**Limit of this result:** the stub always provides a working `configure_http_handler`, so ESBMC never sees a return value without that method, or a falsy one. The SUCCESSFUL verdict only shows that the call runs. It doesn't test the hypothesis that the real `generate_latest()` result could lack the method. The nondet flag is stored but nothing reads it.",
+    "seconds": 30.361,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/io_real_01.py",
+      "function": "nonsingular",
+      "suspect_expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "integer_overflow",
+      "hypothesis_id": "7e9831a3258f"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: imports np"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/7e9831a3258f/harness.py",
+    "agent_output": "o` has to be a class. A class nested inside a `class np` stub is not supported (\"Cannot resolve attribute 'tiny' on Call result\"), so it has to live in a module.\n- `(not f(x)) or (not f(y))`: ESBMC does not expand the function call inside that `or`, and the solver dumps core. This happens with any user function, not just `isfinite`. The fix was to make `isfinite` a class with `__bool__`. I checked that `__bool__` is really honoured: with NaN excluded by an assume, the early return can't happen.\n- ESBMC's own numpy support has no `isfinite`, and `from math import isfinite` gives \"Unsupported function\".\n\n**Two ESBMC typing problems that affect the hypothesis:**\n- `maxabsvalue` is typed `signed long` in ESBMC's internal program, so the float result of `max(abs(...))` gets truncated to an integer before the comparison with the threshold.\n- The swap `vmin, vmax = vmax, vmin` goes through `void*` temporaries.\n\nSo the verdict on the code after the suspect line may not match what CPython does.",
+    "seconds": 555.048,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_04.py",
+      "function": "OffsiteMiddleware.get_host_regex",
+      "suspect_expression": "url_pattern.match(domain)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "1eeaa7e3fa74"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/1eeaa7e3fa74/harness.py",
+    "agent_output": "\"])`, still failed. `join` always returns a plain `str`, so there's no class to hook, and the only fix is editing the body, which the task forbids.\n\n**What harness.py has now:**\n- Stubs for `re` (a `Pattern` class with `compile`, `match` and `escape`) and `warnings.warn`, because ESBMC has no model for either module.\n- A `getattr` stub, because ESBMC swaps the builtin for `assert(false)`.\n- `URLWarning` with no base class, because ESBMC doesn't know `Warning`.\n- The unchanged body, typed `-> Pattern`.\n- A driver that picks, via `nondet_bool()`, between `[\"example.com\"]` and `[\"example.com\", None]`. The `None` entry is what should hit the suspect `url_pattern.match(domain)`.\n\nAll my temporary test files are deleted.\n\n**Ways forward:**\n- Allow one edit to line 63's formatting (e.g. `r'^(.*\\.)?(' + '|'.join(domains) + ')$'`). That changes a line after the suspect expression, not the expression itself.\n- Log this case in the V2 results as blocked by the ESBMC frontend's `str %` limitation.",
+    "seconds": 185.132,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_06.py",
+      "function": "create_instance",
+      "suspect_expression": "return objcls.from_crawler(crawler, *args, **kwargs)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "0810e8f2097e"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Unsupported expression Starred at line 42",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/0810e8f2097e/harness.py",
+    "agent_output": "nt]`. So it isn't about types or the call target: the frontend rejects `*x` in any call. I deleted the probe file afterwards.\n\n**Current `harness.py`:** stub classes `Settings`, `Crawler` and `Component` (with `from_crawler` and `from_settings` classmethods), `create_instance` with its body unchanged and the types above, and a module-level driver. The driver uses `nondet_int()` for the settings value and `nondet_bool()` to choose between passing `settings=None` or `settings=s`. The crawler is always set, so both paths lead to the suspect `from_crawler` line.\n\n**Ways forward:**\n1. Allow one edit to the body: drop `*args, **kwargs` from the three calls. That only works because the driver passes no extra arguments anyway. The suspect expression becomes `objcls.from_crawler(crawler)`, which should convert, but it changes the body.\n2. Mark this case as an ESBMC-Python conversion limit (no argument unpacking in calls) and exclude it from the synthesis-only evaluation.\n\nWhich one do you want?",
+    "seconds": 83.238,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_09.py",
+      "function": "tqdm.__len__",
+      "suspect_expression": "self.total if self.iterable is None else self.iterable.shape[0] if hasattr(self.iterable, \"shape\") else len(self.iterable) if hasattr(self.iterable, \"__len__\") else self.total",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "7fc202fe9e3e"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: uses dunder attribute __len__"
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/7fc202fe9e3e/harness.py",
+    "agent_output": "DONE\n\n`harness.py` is written and ESBMC reaches a verdict: **VERIFICATION SUCCESSFUL** (0 of 46 properties failed).\n\nIt copies `tqdm.__len__` with its body unchanged and adds only type annotations. `Array` is a stub class whose `shape` is a `list[int]` that holds either one nondet int or nothing. A small `tqdm` stub stores `iterable` and `total`, and the driver at module level calls `t.__len__()`.\n\n**Don't trust the SUCCESSFUL yet.** When `shape` is empty, CPython raises IndexError on `self.iterable.shape[0]`. ESBMC reported no failure there. The likely reason is that ESBMC-Python treats `hasattr(...)` as False, so the `shape[0]` branch never runs and the suspect expression is not really exercised. I tried a probe on a temp copy with an extra assert to confirm this, but the command was blocked by the permission prompt, so it's unconfirmed.\n\nThe fix, if you want it, is to replace `hasattr` with a stub that always returns True in the harness.",
+    "seconds": 31.044,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_12.py",
+      "function": "PamdService.remove",
+      "suspect_expression": "current_line.next.prev = current_line.prev",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "7f57559b6887"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "dereference failure: NULL pointer",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 35,
+      "runs": 66,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/7f57559b6887/harness.py",
+    "agent_output": "ariable remove not found\". `getattr` converts but never runs the method (\"Unsupported function\"), and `*args` isn't supported. When I renamed the method, ESBMC reached a verdict, so the name is what triggers it. The harness has a comment saying this.\n\n**Harness:** the linked list is `a \u2194 b \u2194 c`, with nondet `int` fields and nondet rule arguments. `PamdRule.matches` has the same logic as the original.\n\n**Result** (`/usr/local/bin/esbmc harness.py --unwind 5 --multi-property`): **VERIFICATION FAILED**, 2 of 79 properties failed:\n- line 35 is the suspect `current_line.next.prev = current_line.prev`, reported as `dereference failure: NULL pointer`. It fails when the last node matches, because its `next` is `None`.\n- line 38 is `current_line.next.prev = None` in the head branch, which fails the same way when the head matches and is the only node left.\n\nIf the method has to stay on `PamdService` for your evaluation, this case can't be run with this ESBMC version unless the frontend is fixed.",
+    "seconds": 333.004,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_13.py",
+      "function": "AsyncHTTPClient.close",
+      "suspect_expression": "self._instance_cache.get(self.io_loop) is not self",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "de21015dac10"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: del on subscript requires a dictionary (struct) type",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/de21015dac10/harness.py",
+    "agent_output": "me `del` error |\n\nSmall test programs show where the limitation is:\n- A module-level dict with both `get` and `del` converts and verifies.\n- On a `self.` dict attribute, `del self.d[k]` converts but `self.d.get(k)` never does.\n\nSo the combination the original code needs (`self.<dict attr>.get()` together with `del self.<dict attr>[k]`) looks unsupported by this frontend.\n\n`harness.py` holds the version that gets furthest: class-level `_instance_cache: dict[int, \"AsyncHTTPClient\"] = None`, with `io_loop` modeled as an `int`. `get` and the `is not self` check both convert, and only the final `del` line fails. If I remove that `del` line, ESBMC does reach VERIFICATION FAILED, but that breaks the \"body unchanged\" rule, so I didn't keep it. The scratch probe script is deleted.\n\nWays forward:\n1. Allow removing that one `del` line. It comes after the suspect expression, so the bug is still exercised.\n2. Log this case as an ESBMC frontend limitation, and optionally report the pattern upstream.",
+    "seconds": 407.961,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_16.py",
+      "function": "Axes.scatter",
+      "suspect_expression": "linewidths = rcParams['lines.linewidth']",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "incorrect_result",
+      "hypothesis_id": "05e8c850b9a5"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/05e8c850b9a5/harness.py",
+    "seconds": 900.187,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_20.py",
+      "function": "engine.numwords",
+      "suspect_expression": "first = not num.endswith(decimal)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "9cb6175ab030"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Type inference failed for Assign at line 154",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/9cb6175ab030/harness.py",
+    "agent_output": "ing `-> str` to the signature did not fix it. In the probes, `%` is the error that shows up.\n\n**What's in `harness.py`:**\n- the body of `numwords` copied verbatim, with type annotations only on the signature;\n- stubs for `resub`, `search`, `subn`, `ordinal`, `ordinal_suff`, `BadChunkingOptionError`, and for `enword`, `blankfn`, `commafn`, `spacefn` on `engine`;\n- a module-level driver calling it with `nondet_str()` for `num` and `decimal`.\n\nNo asserts, and the suspect line is unguarded. I deleted my probe file from the case directory; three scratch files are left in `/tmp` (`p1.py`, `p2.py`, `p3.py`).\n\n**Options, each needs your call:**\n1. Allow rewriting the `%` formats in the body as concatenation (for example `num = str(num)`, `signout + numchunks.pop(0)`). That breaks the \"body unchanged\" rule.\n2. Record this case as a frontend limitation (`% formatting`) in the V2 evaluation and don't count it as a harness failure.\n3. Open an issue on ESBMC for `str %` with non-constant arguments.",
+    "seconds": 149.72,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_05.py",
+      "function": "tqdm.__init__",
+      "suspect_expression": "self.iterable = iterable",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "9d5416ae6c86"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Type inference failed for Assign at line 258",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/9d5416ae6c86/harness.py",
+    "agent_output": "eports `List variable not found`. Declaring `_instances: list[int] = []` on the class gets past this.\n- **Called variables `dynamic_ncols(file)` / `_dynamic_ncols(file)`:** module-level functions with those names get past this.\n- **Other stubs:** `sys`, `time`, `_supports_unicode`, `_unicode`, the two exception classes, `_lock` as a context manager, and `sp`/`__repr__`.\n\n**Options:**\n1. Allow minimal changes to those four statements that keep their meaning (e.g. `ascii = _supports_unicode(file) == False`, a plain `if/else` around the `raise`, a call to a `_time()` method). Then the harness should reach a verdict, though that's untested.\n2. Give up on the full body and cut it down to the disable branch. With everything after the early `return` cut, ESBMC converted it and returned `VERIFICATION FAILED`. That branch contains `self.iterable = iterable`.\n3. Fix the ESBMC frontend. The `x = not <call>` bug is the most general one, and a 3-line reproducer is ready.\n\nTell me which one to take.",
+    "seconds": 679.514,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_09.py",
+      "function": "_make_getset_interval",
+      "suspect_expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "incorrect_result",
+      "hypothesis_id": "4729c08b6696"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/4729c08b6696/harness.py",
+    "seconds": 905.378,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_15.py",
+      "function": "gunzip",
+      "suspect_expression": "output += f.extrabuf",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "assertion_violation",
+      "hypothesis_id": "c95da1adb307"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/c95da1adb307/harness.py",
+    "seconds": 900.139,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_17.py",
+      "function": "unified_strdate",
+      "suspect_expression": "return compat_str(upload_date)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "assertion_violation",
+      "hypothesis_id": "f94730440977"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "timeout",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/f94730440977/harness.py",
+    "agent_output": "Esperando ESBMC terminar (timeout 300s); aviso quando sair veredito.",
+    "seconds": 331.904,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_09.py",
+      "function": "parser._parse",
+      "suspect_expression": "l[i + 4]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "b24cb919e9da"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Tuple unpacking only supports simple names, not Attribute",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/b24cb919e9da/harness.py",
+    "agent_output": " forbid.\n\n**Done so far:**\n- `harness.py` holds `_parse` copied verbatim from original. Around it: stubs for `parserinfo`, `_ymd`, `_result`, `InvalidDatetimeError` and helper functions, plus a module-level driver `parser()._parse(\"10:20:\")`.\n- `_timelex.py` is a separate module. It returns either `[\"10\", \":\", \"20\", \":\"]` or `[\"10\", \":\", \"20\", \":\", \"30\"]` (chosen by `nondet_bool()`). First list makes `l[i + 4]` go out of bounds. Needs its own file because ESBMC treats any `X.split(var)` defined in same file as `str.split` and fails with `split() only supports constant sep`. Imported as a module, it converts and verifies fine.\n\n**Two ways forward:**\n1. Relax rule for this case: split each of those 7 assignments into a temporary tuple plus separate attribute assignments. Suspect expression `l[i+4]` stays unguarded and semantics don't change. I expect ESBMC to then reach a verdict, but haven't run it.\n2. Log this case as \"frontend limitation\" in experiment results and skip it.\n\nWhich one?",
+    "seconds": 135.87,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "suspect_expression": "list_of_lists[0]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "a7bb12c94401"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "timeout",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/a7bb12c94401/harness.py",
+    "agent_output": "ESBMC rerunning with simpler driver; waiting for completion.",
+    "seconds": 755.201,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_11.py",
+      "function": "wcswidth",
+      "suspect_expression": "pwcs[idx]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "adbab526559e"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/adbab526559e/harness.py",
+    "seconds": 900.127,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_13.py",
+      "function": "tokenize",
+      "suspect_expression": "result[-1]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "4c1b926de1d5"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: TypeError at artifacts/v2/agent-arm-2026-09-29-oracle/cases/4c1b926de1d5/harness.py 94: list indices must be integers or slices, not str",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/4c1b926de1d5/harness.py",
+    "agent_output": "nged (docstring included); only the signature has annotations.\n- `NamedTuple` is replaced with a plain `Token` class, because the frontend reports `Base class not found: NamedTuple`.\n- The search tree is a `Node` stub class; `EMOJI_DATA` and `STATUS` are typed dicts.\n- The driver uses `nondet_str()` and `nondet_bool()` and loops over `tokenize(s, k)`.\n\nThe hypothesis is still reachable in a real run: if the input starts with `\\u200D`, `result` is empty and `result[-1]` raises IndexError. ESBMC just can't reach it without changing the body.\n\n**Decision for you:** to reach a verdict, the body would need two changes: annotate the local `EMOJI_DATA` and replace `yield from result` with `for t in result: yield t`. If this frontend doesn't support plain `yield` either, it would need to return a list instead. That breaks the \"body unchanged\" rule, so it's your call. My suggestion is to record this case as **frontend-unsupported (`yield from`)** in the experiment instead of rewriting the body.",
+    "seconds": 429.116,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_14.py",
+      "function": "LinuxDistribution._parse_uname_content",
+      "suspect_expression": "lines[0]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "e970792fa2b1"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Object \"name\" not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/e970792fa2b1/harness.py",
+    "agent_output": "fun\u00e7\u00e3o, e o enunciado pro\u00edbe. Tamb\u00e9m n\u00e3o funcionou devolver `Optional[_Match]` no stub: vira ponteiro e d\u00e1 `Cannot unpack pointer`.\n\n**Outro problema, mesmo trocando o nome:** numa variante com inst\u00e2ncia chamada `rx`, a convers\u00e3o avan\u00e7a mais e para em `ERROR: Incompatible struct in cast-to-struct`. N\u00e3o isolei a causa. Suspeito do `props = {}` sem tipo ou do `if match:` testando um objeto.\n\n`harness.py` ficou na melhor vers\u00e3o com o corpo intacto (stub `class re` + `_Match`, lista nondet de 0 a 2 elementos) e ainda termina em erro de convers\u00e3o.\n\nPara seguir, uma destas decis\u00f5es \u00e9 sua:\n1. **Aceitar trocar um token no corpo** (`re.search` para `_re.search`) e registrar como desvio. Ainda falta resolver o `cast-to-struct`.\n2. **Registrar o caso como limita\u00e7\u00e3o do frontend** (nome `re` sequestrado e unpacking do `groups()`) e n\u00e3o contar no bra\u00e7o de s\u00edntese.\n3. **Abrir uma issue no ESBMC** com o reprodutor m\u00ednimo que isolei em `/tmp/h5.py` e `/tmp/h6.py` (id\u00eanticos exceto pelo nome da classe).",
+    "seconds": 456.314,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_15.py",
+      "function": "dfxp2srt",
+      "suspect_expression": "para.attrib['begin']",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "63796330961e"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: TypeError: 'int' object is not subscriptable at artifacts/v2/agent-arm-2026-09-29-oracle/cases/63796330961e/harness.py:115",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/63796330961e/harness.py",
+    "agent_output": "the other rules: the `dfxp2srt` body is unchanged, there are no asserts, the suspect expression has no guard, and the driver calls it with `nondet_str()`. The stubs cover `functools.partial`, `xml.etree.ElementTree.tostring`, `compat_etree_fromstring` and the helper functions. The stubbed `attrib` has a nondet `'begin'` key, so a verdict would exercise the KeyError hypothesis. `str_or_empty` and `_x` needed module-level functions under the same names, because ESBMC can't call `partial` objects.\n\nTwo ways to get a verdict:\n- **Change the loop header** to something like `for index, para in enumerate(paras, 1)`. It behaves the same, but it breaks the \"body unchanged\" rule, so it's your call.\n- **Treat this case as a frontend limitation.** A model for `itertools.count` (or `.count` dispatch that checks user classes first) would fix it in ESBMC itself.\n\nThe ESBMC sources I read under `~/esbmc` are a 2026-09-27 checkout. The failures above all come from runs of `/usr/local/bin/esbmc` itself.",
+    "seconds": 901.007,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/oob_real_16.py",
+      "function": "IndexedSet.__getitem__",
+      "suspect_expression": "self.item_list[real_index]",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "out_of_bounds",
+      "hypothesis_id": "49bdcf695655"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "dereference failure: Incorrect alignment when accessing data object; dereference failure: invalid pointer",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 4,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/49bdcf695655/harness.py",
+    "agent_output": "ise `AttributeError` there, so the `except AttributeError:` branch never runs and the int-index path is unreachable. ESBMC reports no properties at all on lines 44\u201353, which include the suspect line.\n\nWhat I tried to get past it, keeping the body unchanged:\n- **Annotating the signature as `(self, index: int) -> int`:** ESBMC crashed inside the Bitwuzla solver (\"terms with mismatching sort\"), so no verdict.\n- **An `Index` class whose `start`/`stop`/`step` properties raise `AttributeError`:** ESBMC ignores the property getters, treats them as plain field reads, and fails at the same line.\n\nGetting ESBMC to the suspect line would mean changing the `try/except AttributeError` in the body, which the rules forbid. The earlier `scratch_*.py` files do exactly that. For this evaluation, treat this case as \"verdict reached, suspect not covered\", not as a confirmation of the hypothesis.\n\nI didn't run `try_idx.py` (an earlier attempt with an `Index`-typed argument) because it needed your approval.",
+    "seconds": 77.933,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_07.py",
+      "function": "_htmlentity_transform",
+      "suspect_expression": "compat_chr(int(numstr, base))",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "85f9daddd16a"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "uncaught exception: TypeError",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/85f9daddd16a/harness.py",
+    "agent_output": "defines `_group` returning `_Str`. That makes `numstr` a `_Str` and the `%` converts.\n\n**Why the verdict isn't about the bug:** ESBMC treats `re.match` as a built-in no matter what `re` is. I tried an annotated instance, an unannotated instance, a class with a `@staticmethod`, and a local `re.py` module; ESBMC ignored all of them. Its model makes `mobj` a `bool` and throws `TypeError: expected string or bytes-like object, got ''` because `entity` is a `_Str`, not a plain `str`. Every path stops there, before `int(...)` and `chr(...)`.\n\nThe body can't be converted either way without changing it:\n- If `entity` is `_Str`, ESBMC's `re.match` model raises `TypeError`.\n- If `entity` is plain `str`, `'&%s;' % entity` fails to convert.\n\nRenaming `re` inside the body (for example `rx.match`) would fix it: in a small test, that pattern let the `%` convert. Reaching `int(numstr, base)` / `chr(...)` needs that edit or an ESBMC fix to how it handles `re.match`.\n\nI deleted all temporary probe files.",
+    "seconds": 373.77,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_11.py",
+      "function": "HTTPBearer.__call__",
+      "suspect_expression": "scheme.lower() != \"bearer\"",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "879f538b054c"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; unwinding assertion loop 68; dereference failure: invalid pointer; uncaught exception: HTTPException",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: uses dunder attribute __call__"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/879f538b054c/harness.py",
+    "agent_output": "ver:** runs at module level with `nondet_str()` for the Authorization header and `nondet_bool()` for `auto_error`.\n\n**Why the fixed pairs instead of `nondet_str()`:** when the helper returned two `nondet_str()` values, ESBMC crashed with `ERROR: Incompatible struct in cast-to-struct` (core dump). I reproduced this in a separate small test file: unpacking the two strings and then calling `.lower()` crashes, while `.lower()` on a single `nondet_str()` works. Because of this, the harness only tries those fixed scheme strings, not arbitrary ones.\n\n**What ESBMC reported as violated:**\n- **Uncaught `HTTPException`:** the real outcome, raised by one of the method's two 403 branches.\n- **Unwinding assertions in `strlen` and `__python_str_lower`:** these come from the unbounded nondet header string with `--unwind 5`, not from the code.\n- **`dereference failure: invalid pointer` in `Exception`:** comes from the `super().__init__` call in my `HTTPException` stub, so it is probably not a real bug.",
+    "seconds": 88.005,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_13.py",
+      "function": "StaticFileHandler.get",
+      "suspect_expression": "(start is not None and start >= size) or end == 0",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "cfbc6501b31e"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/cfbc6501b31e/harness.py",
+    "agent_output": ". **String formatting.** `\"bytes */%s\" % (size,)` gives `ERROR: unsupported: non-constant argument in str % formatting`.\n\n`harness.py` is left as a best-effort version with stubs, a nondet driver, no asserts and the suspect expression unguarded. It already breaks the body rule in one place: `async` was dropped from `get` and `flush`, and `await self.flush()` became `self.flush()`. It still stops at blocker 2, so it is not a valid entry for the evaluation as it stands.\n\nTo get a verdict, one of these has to give:\n- **Allow minimal body rewrites**: drop `await`, annotate or retype `request_range`, and use an f-string or constant for `Content-Range`. The suspect expression would be kept word for word.\n- **Log the case as \"frontend unsupported\"** (async plus `%` formatting) in the oracle arm, not as a harness failure. I think this is the cleaner choice, since this case measures what ESBMC-Python can't handle rather than how well the harness was built.\n\nTell me which one and I'll finish it.",
+    "seconds": 123.307,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_14.py",
+      "function": "TimeseriesGenerator.__len__",
+      "suspect_expression": "self.end_index - self.start_index",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "6a68dc0d3c17"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: uses dunder attribute __len__"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/6a68dc0d3c17/harness.py",
+    "agent_output": "DONE\n\n`harness.py` is written, and ESBMC reaches a verdict with no conversion error: `VERIFICATION FAILED`, with 1 of 22 properties failed.\n\n- **What failed:** `uncaught exception: ZeroDivisionError`. It comes from the divisor `self.batch_size * self.stride` in `__len__`, which is 0 when either input is 0. It does not come from the suspect expression `self.end_index - self.start_index`. That subtraction ran with nondet inputs, and no check on it failed.\n- **The copied method:** `__len__` has its body unchanged from `original.py`; I only added the `-> int` annotation. There are no asserts and no guard on the suspect expression.\n- **Stubs:** `np.ceil` is a small stand-in class. `TimeseriesGenerator.__init__` is a minimal version that only sets the 4 fields `__len__` uses.\n- **Driver:** it runs at module level, builds the object from 4 `nondet_int()` values, and calls `gen.__len__()`.",
+    "seconds": 24.285,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_15.py",
+      "function": "EmptyLineTracker.maybe_empty_lines",
+      "suspect_expression": "before -= self.previous_after",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "ace80ef46799"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "NameError",
+      "line": 28,
+      "runs": 258,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/ace80ef46799/harness.py",
+    "agent_output": "nt]`. The suspect line `before -= self.previous_after` is line 29, with no assert and no guard.\n- **Simplifications:**\n  - The real `_maybe_empty_lines` is replaced by a stub that returns a nondet `before` in 0..2 and `after` in 0..1.\n  - `Line` is cut down to a class with only `depth`.\n  - `EmptyLineTracker` is a plain class instead of a `@dataclass`, and `previous_defs` is dropped.\n- **Driver:** at module level it builds a tracker with a nondet `is_pyi` and a nondet `previous_after` in 0..1. It then calls `maybe_empty_lines` twice, so the second call subtracts the `after` value from the first.\n- **Why it passes:** the only checks ESBMC generated at the suspect line are pointer and heap checks, and they all pass. `before` can go negative, since the nondet ranges allow `0 - 1`. But nothing in the default checks flags a negative number, and the command did not include `--overflow-check`. So the SUCCESSFUL result means the line runs, not that the bug hypothesis is confirmed or ruled out.",
+    "seconds": 30.562,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_17.py",
+      "function": "response_status_message",
+      "suspect_expression": "http.RESPONSES.get(int(status))",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "04d5bdded633"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/04d5bdded633/harness.py",
+    "agent_output": "ass or instance attribute.\n- **`to_native_str`:** it raises `TypeError` when given `None`, which models what scrapy does (reproduced from memory; I didn't check the scrapy source).\n- **The hypothesis:** a status with no entry makes `get` return `None`, and `to_native_str` then raises. With these stubs the chain `http.RESPONSES.get(int(status))` gets past the error it failed on at first. The failure now comes later, at the `%` line.\n- **Driver:** `status: int = nondet_int()`, then a call to `response_status_message(status)` at module level. There are no asserts and no guard.\n\n**Ways to unblock it (your call):**\n1. Allow one change to the body: build the string with `+`, or pass `to_native_str(...)` on its own. That would reach a verdict on the suspect expression.\n2. Try an ESBMC build that supports `%` with variables. I couldn't look at the frontend source in `~/esbmc` because it's outside the folders this session can read.\n3. Record this case as a frontend limitation in the experiment.",
+    "seconds": 87.268,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "suspect_expression": "len(self._dict) == len(that) and all((self[key] == that[key] for key in self))",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "bd7d19b11602"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; dereference failure: Access to object out of bounds: heap object; out-of-bounds read in list; uncaught exception: IndexError; uncaught exception: KeyError",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: uses dunder attribute __eq__"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/bd7d19b11602/harness.py",
+    "agent_output": "d. I added type annotations only, with `that: dict[int, int]`. The stubs are:\n- `__init__`, which stores a `dict[int, int]` in `self._dict`\n- `__getitem__`, which returns `self._dict[key]`\n- `__iter__ -> list[int]`, which returns `list(self._dict.keys())`. The version returning `iter(...)` failed with `ERROR: the result of 'iter()' is not modelled`.\n\nThe driver builds two one-entry dicts from nondet keys and values, wraps one in `SortedDict`, and calls `sd.__eq__(b)` at module level.\n\nThe failed properties:\n- `uncaught exception: KeyError` is the suspect expression firing. When the lengths match but the keys differ, `that[key]` raises.\n- `uncaught exception: IndexError`, plus out-of-bounds reads in `__ESBMC_list_at` and `__ESBMC_list_size`, come from ESBMC's internal list model. They are probably side effects of my `__iter__` stub rather than of the original code.\n- `unwinding assertion loop 131` in `strlen` means `--unwind 5` isn't enough for a string-length loop inside ESBMC's model.",
+    "seconds": 105.633,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_32.py",
+      "function": "date_convert",
+      "suspect_expression": "H += 12",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "a085752415f5"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/a085752415f5/harness.py",
+    "seconds": 900.133,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_33.py",
+      "function": "send2trash",
+      "suspect_expression": "SHFileOperationW(byref(fileop))",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "6fcf2dea1784"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Unexpected type in int/ptr typecast",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/6fcf2dea1784/harness.py",
+    "agent_output": "Bisecting solver crash (\"Unexpected type in int/ptr typecast\") in background; waiting on result.",
+    "seconds": 231.449,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ir_real_01.py",
+      "function": "gamma",
+      "suspect_expression": "sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "incorrect_result",
+      "hypothesis_id": "d838271663f1"
+    },
+    "verdict": "OTHER_FAILURE",
+    "reason": "unwinding assertion loop 155; unwinding assertion loop 124; uncaught exception: ValueError",
+    "target_preserved": true,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "ValueError",
+      "line": 17,
+      "runs": 3,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/d838271663f1/harness.py",
+    "agent_output": "Verdict reached with no conversion error: `VERIFICATION FAILED` (3 of 8 properties failed, 5 passed).\n\nWhat `harness.py` contains:\n- **`gamma`:** copied unchanged from `original.py`.\n- **Imports:** `sqrt` and `exp` come from `math`. `pow` is the builtin.\n- **`_lanczos_sum`:** not defined in `original.py`, so it's a stub that returns `nondet_float()`.\n- **Driver:** `x = nondet_float()`, then `gamma(x)` at module level.\n\nThe three failures, none of which is the suspect expression itself:\n- **Uncaught `ValueError`:** from `gamma`'s own domain checks when `x <= 0`.\n- **Unwinding assertion in `gamma`'s factorial loop (line 21):** `--unwind 5` isn't enough for that loop.\n- **Unwinding assertion in `expm1`:** from ESBMC's libm model, reached through `exp`. So the Lanczos return line (the suspect expression) is reached.\n\nDONE",
+    "seconds": 36.212,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_23.py",
+      "function": "Markdown._html_class_str_from_tag",
+      "suspect_expression": "tag in html_classes_from_tag",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "30915ef1d767"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/30915ef1d767/harness.py",
+    "agent_output": " an instance of my own class\n\nSo no harness can get past this line with the body kept as is.\n\n`harness.py` is written anyway and follows the rules: the body is copied unchanged, it has type annotations and no asserts. Its driver can set `extras[\"html-classes\"]` to `None`, which is exactly the case the hypothesis is about: `tag in None` raises a `TypeError` outside the `try`.\n\nThree ways to go on, your call:\n1. **Allow a small body change:** replace only that `return` with string concatenation, `' class=\"' + html_classes_from_tag[tag] + '\"'`. The check on `tag in html_classes_from_tag` stays exactly the same. I'd expect this to convert and exercise the `None` case, but I haven't run it.\n2. **Record the case as a frontend limitation** of ESBMC-Python and leave it out of the synthesis-only results.\n3. **Use a newer ESBMC build** in `~/esbmc`, if one supports this. I couldn't check: the instructions pin `/usr/local/bin/esbmc`, and the session had no permission to read the `~/esbmc` source.",
+    "seconds": 92.939,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/dz_real_04.py",
+      "function": "interpolate_bilinear_2x_fwd",
+      "suspect_expression": "(h_src - wdw_size) / step_size",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "division_by_zero",
+      "hypothesis_id": "64db4833b7e4"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/64db4833b7e4/harness.py",
+    "agent_output": " `@nki.jit`. Tamb\u00e9m tem stubs de `nl`, `Tensor` e `MGrid`, e um driver com entradas nondet: n, c \u2208 [1,2]; h, w \u2208 [1,4]; `chunk_size` \u2208 [1,4]. Com `chunk_size = 1` a conta d\u00e1 `step_size = 0`, e a express\u00e3o suspeita `(h_src - wdw_size) / step_size` divide por zero. O driver cobre esse caso, mas o ESBMC nunca chega a execut\u00e1-lo. Hoje `MGrid.__getitem__` devolve uma lista fixa de 5 zeros. O CPython rejeitaria isso nos desempacotamentos de 3 e 4 vari\u00e1veis, mas n\u00e3o importa enquanto a convers\u00e3o falhar.\n\n**Op\u00e7\u00f5es:**\n1. Permitir uma mudan\u00e7a m\u00ednima no corpo: guardar `nl.mgrid` numa vari\u00e1vel local no in\u00edcio da fun\u00e7\u00e3o (`mgrid = nl.mgrid`) e usar `mgrid[...]` no lugar. O programa continua fazendo a mesma coisa. N\u00e3o testei o harness completo com essa mudan\u00e7a; pelo teste m\u00ednimo, indexar uma vari\u00e1vel funciona. A express\u00e3o suspeita fica intocada.\n2. Registrar este caso como \"convers\u00e3o imposs\u00edvel sem alterar o corpo\" e abrir uma issue no ESBMC sobre `__getitem__` em atributos.\n\nQuer que eu siga com a 1?",
+    "seconds": 264.478,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_24.py",
+      "function": "reformat_many",
+      "suspect_expression": "executor.shutdown()",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "36ea3527c223"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 400,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/36ea3527c223/harness.py",
+    "agent_output": "al.py` with its body unchanged. I only added type annotations to the signature.\n- **Stubs:** `asyncio`, `os` and `sys` are replaced by simple objects. `os.cpu_count()` returns a nondet int. There are also minimal stand-ins for `ProcessPoolExecutor` (its `shutdown()` does nothing), the event loop, `shutdown` and `schedule_formatting`.\n- **Driver:** it calls `reformat_many` at module level with nondet inputs. There are no asserts and no guard around `executor.shutdown()`.\n\nThe SUCCESSFUL verdict does not say much about the bug hypothesis, because the stubs remove nearly everything that could fail:\n- `sys.platform` is fixed to `\"linux\"`, so the Windows branch with `min(worker_count, 61)` never runs.\n- The worker count is never checked, and none of the stubs can raise, so the `finally` path always ends the same way.\n\nThe only checks ESBMC made were the automatic memory-access ones on the stubs. It found no violation around `executor.shutdown()` because the stub gives it nothing to violate.",
+    "seconds": 29.218,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/tm_real_11.py",
+      "function": "SitemapSpider._parse_sitemap",
+      "suspect_expression": "sitemap_urls_from_robots(response.body)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "type_mismatch",
+      "hypothesis_id": "17de5454d9c4"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; dereference failure: Incorrect alignment when accessing data object; dereference failure: invalid pointer; out-of-bounds read in list; unwinding assertion loop 189; uncaught exception: IndexError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 24,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/17de5454d9c4/harness.py",
+    "agent_output": "`nondet_bool()` chooses between a URL ending in `/robots.txt` and one that doesn't, so both branches get explored. The body is a fixed `b\"Sitemap: http://example.com/s.xml\"`.\n\n**What the failures are:**\n- The failed properties are all memory failures (\"invalid pointer\" and \"incorrect alignment\" when accessing data) in `__ESBMC_list_at` and `__ESBMC_list_size`, which are in ESBMC's own list library, not the harness. Two more are on the driver's `for` loop over the generator (harness line 34).\n- There is also an unwinding assertion failure on that same loop, which means `--unwind 5` did not fully cover it.\n\nI think the actual bug here is a type mismatch: under Python 3, `response.body` is `bytes`, so `line.lstrip().startswith('Sitemap:')` compares bytes with a str and raises `TypeError`. ESBMC did not report that. What it reported looks more like limitations in how it handles generators and lists than a confirmation of the bug. Checking the counterexample trace would tell us which it is.",
+    "seconds": 32.758,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/vm_real_04.py",
+      "function": "YoutubeDL._build_format_filter",
+      "suspect_expression": "op = lambda attr, value: not str_op",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "variable_misuse",
+      "hypothesis_id": "355675f86246"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Unsupported expression for 'in' operation",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/355675f86246/harness.py",
+    "agent_output": "tr()` input. Strictly, that means it's no longer a method of `YoutubeDL`.\n\n**Stubs:**\n- **`operator`:** an object whose `eq` is a string marker. ESBMC can't store a function reference in the dict.\n- **`re`:** `compile` returns a pattern object, and `escape` returns its input unchanged.\n- **Match object:** its operator is one of the four real ones, the negation flag is nondet, and the value is the input.\n\n**Options:**\n1. Allow a minimal edit to the `'*='` lambda, such as `lambda attr, value: attr.find(value) >= 0`. The same code with only the `'='`, `'^='` and `'$='` entries converted and reached VERIFICATION FAILED. That run was an early probe without the full `re`/`map` stubs, so the complete harness hasn't been checked past this point. It's also not certain the `not str_op` lambda converts on the real code path.\n2. Record this case as a frontend limitation (untyped lambda with `in`) in the V2 results.\n3. Report both limitations upstream to ESBMC as frontend bugs. I haven't done this.",
+    "seconds": 203.658,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/vm_real_05.py",
+      "function": "LocalFileSystem.move",
+      "suspect_expression": "self.fs.mkdir(d)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "variable_misuse",
+      "hypothesis_id": "9294074a31a9"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "uncaught exception: RuntimeError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 44,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/9294074a31a9/harness.py",
+    "agent_output": "or`, which comes from the `raise_if_exists` branch. It is not the bug at `self.fs.mkdir(d)`.\n\nWhat I had to change around `move` (its body is unchanged in `harness.py`):\n- **Path type:** ESBMC rejects `'...%s' % new_path` whenever the right-hand side is a non-constant `str`. I probed this separately: even a function parameter called with a literal fails. So the paths are a `PathStr` class with `__rmod__` and `__bool__`, and `os` is replaced by a small stub (`exists`, `dirname`, `rename`) that returns nondet values.\n- **`self.fs`:** ESBMC needs a type for `self.fs` to convert `self.fs.mkdir()`. I added only a class-level annotation, `fs: _Fs`, with no value. In CPython the attribute still doesn't exist, so the real bug (`AttributeError`) is kept.\n\n**Limitation:** ESBMC models this annotation as an existing attribute. So it reaches `self.fs.mkdir(d)` but does not report the missing `fs` as an error. The verdict shows that the path is exercised, not that the `AttributeError` was detected.",
+    "seconds": 99.793,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/vm_real_06.py",
+      "function": "CrawlerProcess.__init__",
+      "suspect_expression": "configure_logging(settings)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "variable_misuse",
+      "hypothesis_id": "203a38091db1"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "uncaught exception: AttributeError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 32,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/203a38091db1/harness.py",
+    "agent_output": "pied verbatim from `original.py`, including `super(CrawlerProcess, self).__init__(settings)`. I added type annotations to the signature and no asserts or guards.\n- **Stubs:** `Settings` has a nondet `is_dict` flag that picks between a dict and a real `Settings`. `install_shutdown_handlers` and `log_scrapy_info` do nothing. The driver runs at module level with `Settings(nondet_bool())`.\n- **Fixes to get a verdict:**\n  1. **Handler annotation:** I dropped the type annotation on the `install_shutdown_handlers` parameter. With it, passing a bound method stopped ESBMC with \"argument type mismatch: got empty\".\n  2. **Empty `CrawlerRunner.__init__`:** assigning attributes inside it, reached through `super(...)`, caused false \"dereference failure\" results (\"incompatible base type\"). Since the conversion never reaches the caller's `settings` anyway, leaving the stub empty doesn't change the path under test.\n\nI didn't run the harness under CPython, because `nondet_bool` only exists inside ESBMC.",
+    "seconds": 47.123,
+    "engine_verdict": "UNSUPPORTED"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/vm_real_07.py",
+      "function": "fit_generator",
+      "suspect_expression": "val_enqueuer_gen = iter_sequence_infinite(generator)",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "variable_misuse",
+      "hypothesis_id": "0b44fbc0f978"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 400,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/0b44fbc0f978/harness.py",
+    "agent_output": "ts body unchanged. I only added type annotations to the signature. For the numeric parameters whose default was `None`, I changed the default to `0`.\n- The function reads several names it never defines (`do_validation`, `use_multiprocessing`, `workers`, `max_queue_size`), so I made them module-level nondet values.\n- I added small stubs for `Sequence`, `OrderedEnqueuer` and `iter_sequence_infinite`. The `iter_sequence_infinite` stub just returns its input.\n- The driver builds `generator` and `validation_data` as `Sequence` objects and calls `fit_generator` with nondet inputs. So when `do_validation` and `val_gen` are both true, the path reaches `val_enqueuer_gen = iter_sequence_infinite(generator)`.\n\nThere are no asserts, and the suspect line is not guarded. The only properties ESBMC checked were memory accesses, and all passed. Because the stub is trivial, this result doesn't test the oracle's hypothesis itself. It only shows the suspect line is reached and runs without a memory error.",
+    "seconds": 30.041,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/vm_real_08.py",
+      "function": "get_write_function",
+      "suspect_expression": "open(output_path, 'a')",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "variable_misuse",
+      "hypothesis_id": "0dadc1349644"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "not executed on host: uses open"
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/0dadc1349644/harness.py",
+    "agent_output": "cause at module level, ESBMC's preprocessor gives `stderr` (from `stderr = sys.stderr`) the type \"Any\". It then matches `stderr.write(s)` to the nested `write`, drops its one parameter as if it were `self`, and fails with \"write() takes 0 positional arguments but 1 was given\". Inside a class, the nested defs are registered as `_Module.write` and the wrong match doesn't happen. I confirmed this in the preprocessor extracted from the installed binary (`_resolve_function_signature`). The code in `~/esbmc` is a different version.\n\nThese two frontend problems look like ESBMC-Python bugs you could report:\n1. `obj.method(x)` on a receiver typed \"Any\" gets matched to a nested function of the same name.\n2. A `with` inside a def nested in an `if` branch fails with `Object \"__esbmc_mgr_0\" not found`. The class wrapping also made this one go away.\n\nTo actually test the hypothesis, the body needs `return write` and a call to the returned function. Tell me if I should build a variant that does that.",
+    "seconds": 414.569,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_34.py",
+      "function": "find_hook",
+      "suspect_expression": "return os.path.abspath(os.path.join(hooks_dir, hook_file))",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "a5575485ae04"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 130; unwinding assertion loop 53; unwinding assertion loop 54",
+    "target_preserved": true,
+    "replay": {
+      "status": "not_reproduced",
+      "exception_type": "",
+      "line": null,
+      "runs": 20,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-arm-2026-09-29-oracle/cases/a5575485ae04/harness.py",
+    "agent_output": " unwinding assertions (loop not fully unrolled at `--unwind 5`) inside ESBMC's own string concatenation model, not a runtime bug in `find_hook`. Only the tail of the log was shown, so I haven't checked all 5 individually. `find_hook`'s own checks all passed.\n\n`harness.py` has the `find_hook` body unchanged from `original.py`, with only type annotations added to its signature. The rest is stubs and a driver:\n\n- **`os` replaced by a stub.** The real module didn't work: `os.path.isdir` is unsupported (\"Unsupported function 'isdir' is reached\"), and `os.listdir` crashed the Bitwuzla solver. The stub makes `isdir` return a nondet bool, `listdir` return two nondet strings, and `join`/`abspath` do plain string concatenation. The suspect line therefore runs against these stand-ins, not the real path functions.\n- **`logger` and `valid_hook`:** a no-op logger, and `valid_hook` returns true when `hook_file == hook_name`.\n- **Driver:** calls `find_hook(nondet_str(), nondet_str())` at module level.",
+    "seconds": 181.834,
+    "engine_verdict": "MISSING_DEPENDENCY"
+  }
+]

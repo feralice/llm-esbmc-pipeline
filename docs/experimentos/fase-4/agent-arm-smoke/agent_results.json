@@ -1,0 +1,28 @@
+[
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/av_real_01.py",
+      "function": "cli_bool_option",
+      "suspect_expression": "assert isinstance(param, bool)",
+      "line": 0,
+      "trigger_condition": "O operando 'param' \u00e9 controlado pelo par\u00e2metro 'params', que pode ser uma entrada externa. N\u00e3o h\u00e1 uma guarda que garante que 'param' ser\u00e1 sempre um valor booleano. Se 'params' n\u00e3o contiver a chave esperada ou se o valor n\u00e3o for um booleano, a asser\u00e7\u00e3o falhar\u00e1. Um dicion\u00e1rio 'params' pode conter valores que n\u00e3o s\u00e3o booleanos, como strings ou inteiros, permitindo que a fun\u00e7\u00e3o falhe.",
+      "category": "explicit_assertion",
+      "hypothesis_id": "907f4443dc8a"
+    },
+    "verdict": "ESBMC_ERROR",
+    "reason": "ESBMC direto: resultado inconclusivo.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "inconclusive",
+    "harness_path": "artifacts/v2/agent-arm-smoke/cases/907f4443dc8a/harness.py",
+    "agent_output": "sinstance(param, bool)`.\n\n- **Harness:** `cli_bool_option` is copied from `original.py:2734` with its body unchanged. I only added type annotations. The driver builds `params = {\"nocheckcertificate\": nondet_bool()}` and looks up either that key or `\"other\"`, chosen nondeterministically.\n- **How it fails:** the lookup uses the missing key, `params.get` returns `None`, and the assert fails. That confirms the \"missing key\" part of the hypothesis.\n- **Not tested:** the \"non-bool value\" part. My first harness mixed a `bool` and an `int` value for the same key, and ESBMC crashed with `irep2_cast_error: struct_union_member_names() called on incompatible type (type_id = pointer)`. That is a frontend limitation, not a verdict, so the int/str-value case is still unchecked.\n- **Other failures:** the list shows `unwinding assertion loop 4` in `__python_str_concat` (library code, caused by the `--unwind 5` bound). I only looked at the tail of the output, so I didn't identify the other two failures.",
+    "seconds": 45.848,
+    "engine_verdict": "UNSUPPORTED"
+  }
+]

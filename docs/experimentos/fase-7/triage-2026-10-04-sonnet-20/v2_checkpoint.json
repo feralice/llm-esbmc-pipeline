@@ -1,0 +1,1211 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "claude-sonnet-5-5",
+      "backend": "claude_cli",
+      "synth_backend": "claude_cli",
+      "synth_model": "claude-sonnet-5-5",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/nm_real_25.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_142.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/vm_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/ip_real_24.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_fastapi_9.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/tm_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_tornado_5.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_5.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_httpie_4.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_102.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_106.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_35.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "verification_sources": "dataset/bugs_reais/arquivo_com_bug",
+      "verification_sources_strict": false,
+      "spec_strategy": "repair",
+      "bound": 5,
+      "timeout": 180,
+      "llm_timeout": 300,
+      "esbmc_command": [
+        "/usr/local/bin/esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/nm_real_25.py": "70389c1ad51130bb9e80d52f92518322c0dfe0d8c0d5fa56b00f30fb2a3eff87",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py": "798f0949802818a5c50b5a78843d47dc0d20082c057d6bb7c7a07d4d25a38f7e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/av_real_02.py": "be6a0b38a60c273f386b7cd1fa9744955dd4c0b0b122c779fafdb158759ee8a8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/oob_real_09.py": "9641598d6814d3af6659ed7910bb1a1a9fad1d2124a7ee30df9c99736aec1305",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py": "9ef461e4f594ba3662bc65c3ddf3586c9dca8e7f39b9cba0c96190b77506412f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py": "d0c3e951997ad426b95397804bc825ca683b3c3a2276e554a91f5e1e16a7204d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_142.py": "2da4795a89cb2ebcf05d0b7892c558eb12deb78422c898757b53e393acfca806",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_3.py": "1f43a118c3253fb239e8ff20cd3f9bd2b54d0a17480c9b1c2be06cd42fade120",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py": "b88f84136c6ddf525cede34df8805be1e883f8b0ed9be6656585feef7905d9f3",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/vm_real_06.py": "01ab46877ed196d0616a7b389d19c33b033ba7f28db4a982ed5e95a9a027d167",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/ip_real_24.py": "2c5054d83f1430ff58cd249f0c72108dbcabf8f878b8d751f593b361c514a239",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_fastapi_9.py": "7a363ab3331e2550c57b1103d30f41c9a3214359438b3dca792dbb88f5c0ab1a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/tm_real_02.py": "b79d64da53e963f5f0eda73194db06972d20d2cdaaec7c514a0db1f1b08b7f05",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_tornado_5.py": "8c47de1113268106fff0a3c90e3cbb8a5e4753b4da9ffdc97cef5dcbcdc921cf",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_5.py": "058af4340cf73b7790684903e14a5880a871dd87a7f6558f9285bfe2f8157bfb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py": "9d44250bcce00694b2ffff0adfe3496b36a10f1a0c826fb3cbe18deefd0f39c0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_httpie_4.py": "5cea08692a69f67aa4c35948b0501c095cc5b324522b96350b5e3d79c87e7375",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_102.py": "a1f2d1e9d79f1ec6eed9e21b65a76e13d8ce12da6fbac4ac93946d29c75fe51d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_106.py": "e2d46143d91b5031c2fab051276aade237839488dcc20703e1e694b7444dd118",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_35.py": "978dd607a5424c7183a4f273aefca449c389661035ddc52f6b542ef175c0d5b2"
+    },
+    "detector_prompt": "c0f3a1914904476dc701e94e82b06edfa4811ee7387b8ef10dfe0c2f83dc8dcd",
+    "detector_schema": "cba60103465915c1990fe9a56a452e84f3a92912dea378eaa9bfddcf6d284dc6",
+    "spec_prompt": "89d7838d5cbedada6d55ebd6783667f0b3d2cc21c4dc8d2eb0bcca060fdb4990"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/nm_real_25.py::HTTP1Connection._can_keep_alive": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/nm_real_25.py",
+          "function": "HTTP1Connection._can_keep_alive",
+          "finding_type": "suspected_bug",
+          "expression": "return connection_header != 'close'",
+          "violated_property": "resultado errado: header com múltiplos tokens ('x, close') mantém a conexão aberta; nenhuma exceção ou assert é violado"
+        }
+      ],
+      "trace": {
+        "function": "HTTP1Connection._can_keep_alive",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py::Task.get_param_values": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py",
+          "function": "Task.get_param_values",
+          "finding_type": "suspected_bug",
+          "expression": "positional_params = [(n, p) for n, p in params if p.significant]",
+          "violated_property": "resultado errado: positional args são mapeados por `significant` em vez de `positional`; nada quebra necessariamente, e o contrato de Parameter não está disponível ao ESBMC"
+        }
+      ],
+      "trace": {
+        "function": "Task.get_param_values",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py::Task.get_param_values.list_to_tuple": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Task.get_param_values.list_to_tuple",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/av_real_02.py::WebSocketHandler.set_nodelay": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+          "function": "WebSocketHandler.set_nodelay",
+          "finding_type": "suspected_bug",
+          "expression": "assert self.stream is not None",
+          "violated_property": "none"
+        }
+      ],
+      "trace": {
+        "function": "WebSocketHandler.set_nodelay",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/oob_real_09.py::parser._parse": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+          "function": "parser._parse",
+          "category": "",
+          "expression": "hour = int(value)",
+          "note": "timestr is a free parameter. For timestr='inf pm' the tokens are ['inf',' ','pm']. float('inf') succeeds, so value=inf. The branches before the jump/ampm one are skipped, so it reaches `if i + 2 < len_l and info.ampm(l[i + 2]) is not None`, then `int(value)` raises OverflowError. No handler catches it, so parse crashes instead of returning (None, None).",
+          "violated_property": "OverflowError em int(value) com value=float('inf')"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "parser._parse",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py::urljoin": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py",
+          "function": "urljoin",
+          "finding_type": "suspected_bug",
+          "expression": "return compat_urlparse.urljoin(base, path)",
+          "violated_property": "não verificável pelo ESBMC: ValueError nasce do funcionamento interno de urllib.parse (urlsplit), biblioteca complexa sem modelo simples"
+        }
+      ],
+      "trace": {
+        "function": "urljoin",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py::add_codes": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "add_codes",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+          "function": "add_codes.ErrorsWithCodes.__getattribute__",
+          "category": "",
+          "expression": "msg = getattr(err_cls, code)",
+          "note": "code is a free parameter and getattr is called without a default. Any string that is not an attribute of err_cls, for example 'UNKNOWN_CODE', raises AttributeError. No guard and no try/except protects the call. This assumes err_cls is a project class with a fixed set of error-code attributes, but its definition is not in the snippet.",
+          "violated_property": "AttributeError em getattr(err_cls, code) quando code não é atributo de err_cls"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "add_codes.ErrorsWithCodes.__getattribute__",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_142.py::diff": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_142.py",
+          "function": "diff",
+          "finding_type": "suspected_bug",
+          "expression": "out_arr[res_indexer] = arr[res_indexer] - arr[lag_indexer]",
+          "violated_property": "TypeError in arr[res_indexer] - arr[lag_indexer] for a bool ndarray. Not verifiable: the failure comes from the internals of numpy, which ESBMC does not model."
+        }
+      ],
+      "trace": {
+        "function": "diff",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_3.py::_clone_functional_model": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+          "function": "_clone_functional_model",
+          "category": "",
+          "expression": "name = model._input_layers[i].name",
+          "note": "input_tensors is a free parameter and i comes from enumerate over it. If the caller passes more tensors than the model has input layers and one of the extra ones is not a Keras tensor, i >= len(model._input_layers). The index then raises IndexError before any guard.",
+          "violated_property": "IndexError em model._input_layers[i]"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+          "function": "_clone_functional_model",
+          "finding_type": "suspected_bug",
+          "expression": "kwargs = node.arguments ... kwargs['mask'] = computed_mask",
+          "violated_property": "resultado errado: mutação do node.arguments do modelo original, sem exceção levantada"
+        }
+      ],
+      "trace": {
+        "function": "_clone_functional_model",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py::_preprocess_numpy_input": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "finding_type": "suspected_bug",
+          "expression": "x[..., 2] -= mean[2]",
+          "violated_property": "não verificável: IndexError depende da semântica de indexação de ndarray do numpy, biblioteca complexa que o ESBMC não modela"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "finding_type": "suspected_bug",
+          "expression": "x[..., 0] -= mean[0]",
+          "violated_property": "não verificável: TypeError vem do casting interno de ufuncs do numpy, não modelado pelo ESBMC"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "finding_type": "suspected_bug",
+          "expression": "x /= 127.5",
+          "violated_property": "resultado errado: a entrada do chamador é alterada no lugar, nada levanta exceção"
+        }
+      ],
+      "trace": {
+        "function": "_preprocess_numpy_input",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 3
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/vm_real_06.py::CrawlerRunner.__init__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "CrawlerRunner.__init__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/vm_real_06.py::CrawlerProcess.__init__": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "CrawlerProcess.__init__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/ip_real_24.py::CentralPlannerScheduler.get_work": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "CentralPlannerScheduler.get_work",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_fastapi_9.py::get_body_field": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "get_body_field",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/tm_real_02.py::HiveCommandClient.table_exists": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_02.py",
+          "function": "HiveCommandClient.table_exists",
+          "finding_type": "suspected_bug",
+          "expression": "return stdout and table in stdout",
+          "violated_property": "resultado errado: comparação case-sensitive contra saída lowercase do Hive devolve False para tabela existente; nada levanta exceção"
+        }
+      ],
+      "trace": {
+        "function": "HiveCommandClient.table_exists",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_tornado_5.py::PeriodicCallback._update_next": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "PeriodicCallback._update_next",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_5.py::check_required_arguments": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "check_required_arguments",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+          "function": "DistributionFiles.parse_distribution_file_Debian",
+          "category": "",
+          "expression": "collected_facts['distribution_release'] == 'NA'",
+          "note": "collected_facts é parâmetro livre. Quando data contém 'Debian' ou 'Raspbian', a condição `'Debian' in data` já foi satisfeita e o acesso por chave é feito sem guarda. Se collected_facts for um dict sem a chave 'distribution_release' (por exemplo {}), levanta KeyError. Não há try/except.",
+          "violated_property": "KeyError em collected_facts['distribution_release']"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+          "function": "DistributionFiles.parse_distribution_file_Debian",
+          "category": "",
+          "expression": "major, _minor, _dummy_ver = version.group(1).split('.')",
+          "note": "data é livre. Com 'Cumulus' e 'VERSION_ID=3.7' em data, a regex casa e version.group(1) vale '3.7'. O split dá 2 elementos e o desempacotamento em 3 variáveis falha. O mesmo ocorre com 4 ou mais partes (ex.: '3.7.1.2') ou sem ponto. A guarda `if version` só verifica que a regex casou, não a quantidade de partes. Sem try/except.",
+          "violated_property": "ValueError: not enough values to unpack (ou too many) em major, _minor, _dummy_ver = version.group(1).split('.')"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_httpie_4.py::HTTPRequest.headers": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_httpie_4.py",
+          "function": "HTTPRequest.headers",
+          "finding_type": "suspected_bug",
+          "expression": "if 'Host' not in target_function:\n        target_function['Host'] = url.netloc.split('@')[-1]",
+          "violated_property": "resultado errado: header Host duplicado quando o nome vem em outra caixa; nenhuma exceção, então o ESBMC não detecta sozinho"
+        }
+      ],
+      "trace": {
+        "function": "HTTPRequest.headers",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_102.py::init_ndarray": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "init_ndarray",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_106.py::Index.get_indexer_non_unique": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_106.py",
+          "function": "Index.get_indexer_non_unique",
+          "finding_type": "suspected_bug",
+          "expression": "tgt_values = target.asi8",
+          "violated_property": "não verificável: a falha depende do comportamento interno de Index.asi8 e do engine Cython do pandas"
+        }
+      ],
+      "trace": {
+        "function": "Index.get_indexer_non_unique",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_35.py::PeriodIndex._engine": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "PeriodIndex._engine",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    }
+  },
+  "detection_trace": [
+    {
+      "function": "HTTP1Connection._can_keep_alive",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "Task.get_param_values",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "Task.get_param_values.list_to_tuple",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "WebSocketHandler.set_nodelay",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "parser._parse",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "urljoin",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "add_codes",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "add_codes.ErrorsWithCodes.__getattribute__",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "diff",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "_clone_functional_model",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "_preprocess_numpy_input",
+      "strategy": "single",
+      "located_candidates": 3,
+      "classified_candidates": 3,
+      "rejected_candidates": 3
+    },
+    {
+      "function": "CrawlerRunner.__init__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "CrawlerProcess.__init__",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "CentralPlannerScheduler.get_work",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "get_body_field",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "HiveCommandClient.table_exists",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "PeriodicCallback._update_next",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "check_required_arguments",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "DistributionFiles.parse_distribution_file_Debian",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "HTTPRequest.headers",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "init_ndarray",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Index.get_indexer_non_unique",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "PeriodIndex._engine",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    }
+  ],
+  "status": "complete",
+  "telemetry_events": [
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 13.825441,
+      "prompt_tokens": 2,
+      "completion_tokens": 1046,
+      "total_tokens": 1048,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.17073,
+      "prompt_tokens": 2,
+      "completion_tokens": 1276,
+      "total_tokens": 1278,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 6.341628,
+      "prompt_tokens": 2,
+      "completion_tokens": 53,
+      "total_tokens": 55,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 8.473984,
+      "prompt_tokens": 2,
+      "completion_tokens": 250,
+      "total_tokens": 252,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 18.845217,
+      "prompt_tokens": 2,
+      "completion_tokens": 1811,
+      "total_tokens": 1813,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 11.128385,
+      "prompt_tokens": 2,
+      "completion_tokens": 805,
+      "total_tokens": 807,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 8.873826,
+      "prompt_tokens": 6,
+      "completion_tokens": 293,
+      "total_tokens": 299,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 12.09804,
+      "prompt_tokens": 6,
+      "completion_tokens": 923,
+      "total_tokens": 929,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.104122,
+      "prompt_tokens": 6,
+      "completion_tokens": 1660,
+      "total_tokens": 1666,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 20.611517,
+      "prompt_tokens": 2,
+      "completion_tokens": 2002,
+      "total_tokens": 2004,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 24.410708,
+      "prompt_tokens": 4,
+      "completion_tokens": 2681,
+      "total_tokens": 2685,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 6.082872,
+      "prompt_tokens": 2,
+      "completion_tokens": 53,
+      "total_tokens": 55,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 6.803586,
+      "prompt_tokens": 2,
+      "completion_tokens": 273,
+      "total_tokens": 275,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 9.452069,
+      "prompt_tokens": 6,
+      "completion_tokens": 406,
+      "total_tokens": 412,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 9.17739,
+      "prompt_tokens": 2,
+      "completion_tokens": 312,
+      "total_tokens": 314,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 13.118501,
+      "prompt_tokens": 6,
+      "completion_tokens": 1140,
+      "total_tokens": 1146,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 10.82826,
+      "prompt_tokens": 6,
+      "completion_tokens": 563,
+      "total_tokens": 569,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 8.573525,
+      "prompt_tokens": 6,
+      "completion_tokens": 337,
+      "total_tokens": 343,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 14.63767,
+      "prompt_tokens": 2,
+      "completion_tokens": 1325,
+      "total_tokens": 1327,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 12.528027,
+      "prompt_tokens": 6,
+      "completion_tokens": 1073,
+      "total_tokens": 1079,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 10.668306,
+      "prompt_tokens": 2,
+      "completion_tokens": 673,
+      "total_tokens": 675,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 11.755347,
+      "prompt_tokens": 2,
+      "completion_tokens": 872,
+      "total_tokens": 874,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 6.302639,
+      "prompt_tokens": 6,
+      "completion_tokens": 62,
+      "total_tokens": 68,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 8.892016,
+      "prompt_tokens": 2,
+      "completion_tokens": 364,
+      "total_tokens": 366,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 8.75597,
+      "prompt_tokens": 2,
+      "completion_tokens": 480,
+      "total_tokens": 482,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 7.705277,
+      "prompt_tokens": 2,
+      "completion_tokens": 389,
+      "total_tokens": 391,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 10.372103,
+      "prompt_tokens": 2,
+      "completion_tokens": 674,
+      "total_tokens": 676,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 6.168801,
+      "prompt_tokens": 2,
+      "completion_tokens": 114,
+      "total_tokens": 116,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 7.186491,
+      "prompt_tokens": 2,
+      "completion_tokens": 304,
+      "total_tokens": 306,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    }
+  ],
+  "verify_results": {
+    "0": {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+        "function": "parser._parse",
+        "suspect_expression": "hour = int(value)",
+        "line": 0,
+        "trigger_condition": "timestr is a free parameter. For timestr='inf pm' the tokens are ['inf',' ','pm']. float('inf') succeeds, so value=inf. The branches before the jump/ampm one are skipped, so it reaches `if i + 2 < len_l and info.ampm(l[i + 2]) is not None`, then `int(value)` raises OverflowError. No handler catches it, so parse crashes instead of returning (None, None).",
+        "category": "",
+        "hypothesis_id": "501b80e5bc1d"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"str\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"str\"}, \"assumptions\": []}\n",
+          "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"str\"}, \"assumptions\": []}\n",
+          "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:parse",
+        "stubbed_imports:StringIO,binary_type,integer_types,text_type",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 1239,
+      "seconds": 35.732
+    },
+    "1": {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+        "function": "add_codes.ErrorsWithCodes.__getattribute__",
+        "suspect_expression": "msg = getattr(err_cls, code)",
+        "line": 0,
+        "trigger_condition": "code is a free parameter and getattr is called without a default. Any string that is not an attribute of err_cls, for example 'UNKNOWN_CODE', raises AttributeError. No guard and no try/except protects the call. This assumes err_cls is a project class with a fixed set of error-code attributes, but its definition is not in the snippet.",
+        "category": "",
+        "hypothesis_id": "6f4dfcdaf4b0"
+      },
+      "verdict": "GROUNDING_FAILED",
+      "reason": "function 'add_codes.ErrorsWithCodes.__getattribute__' not found (or ambiguous)",
+      "attempts": [],
+      "llm_calls": 0,
+      "transforms": [],
+      "program_path": "",
+      "replay": {},
+      "tokens": 0,
+      "seconds": 0.005
+    },
+    "2": {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+        "function": "_clone_functional_model",
+        "suspect_expression": "name = model._input_layers[i].name",
+        "line": 0,
+        "trigger_condition": "input_tensors is a free parameter and i comes from enumerate over it. If the caller passes more tensors than the model has input layers and one of the extra ones is not a Keras tensor, i >= len(model._input_layers). The index then raises IndexError before any guard.",
+        "category": "",
+        "hypothesis_id": "df4db19deb29"
+      },
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"model\": \"object\", \"input_tensors\": \"Optional[list[int]]\"}, \"attributes\": {}, \"stubs\": {\"Input\": \"object\", \"K.is_keras_tensor\": \"bool\", \"has_arg\": \"bool\", \"to_list\": \"list[int]\", \"model._input_layers\": \"list[object]\", \"model._nodes_by_depth\": \"dict[int, list[object]]\", \"model.inputs\": \"list[int]\", \"model.name\": \"str\", \"model.outputs\": \"list[int]\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/df4db19deb29_a0_replay.py",
+          "esbmc_status": "inconclusive",
+          "reading": "error",
+          "message": "ESBMC direto: resultado inconclusivo.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:Input,InputLayer,K,Model,Sequential,has_arg,to_list",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/df4db19deb29_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 676,
+      "seconds": 14.439
+    },
+    "3": {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "suspect_expression": "collected_facts['distribution_release'] == 'NA'",
+        "line": 0,
+        "trigger_condition": "collected_facts é parâmetro livre. Quando data contém 'Debian' ou 'Raspbian', a condição `'Debian' in data` já foi satisfeita e o acesso por chave é feito sem guarda. Se collected_facts for um dict sem a chave 'distribution_release' (por exemplo {}), levanta KeyError. Não há try/except.",
+        "category": "",
+        "hypothesis_id": "9a0fef3a0dc0"
+      },
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"name\": \"str\", \"data\": \"str\", \"path\": \"str\", \"collected_facts\": \"dict[str, str]\"}, \"attributes\": {\"module\": \"object\"}, \"stubs\": {\"self.module.get_bin_path\": \"Optional[str]\", \"self.module.run_command\": \"tuple[int, str, str]\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/9a0fef3a0dc0_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "missing_dependency",
+          "message": "ERROR: Object \"out\" not found.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/9a0fef3a0dc0_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 116,
+      "seconds": 10.212
+    },
+    "4": {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "suspect_expression": "major, _minor, _dummy_ver = version.group(1).split('.')",
+        "line": 0,
+        "trigger_condition": "data é livre. Com 'Cumulus' e 'VERSION_ID=3.7' em data, a regex casa e version.group(1) vale '3.7'. O split dá 2 elementos e o desempacotamento em 3 variáveis falha. O mesmo ocorre com 4 ou mais partes (ex.: '3.7.1.2') ou sem ponto. A guarda `if version` só verifica que a regex casou, não a quantidade de partes. Sem try/except.",
+        "category": "",
+        "hypothesis_id": "3dadbe9389f2"
+      },
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"name\": \"str\", \"data\": \"str\", \"path\": \"str\", \"collected_facts\": \"dict[str, str]\"}, \"attributes\": {\"module\": \"object\"}, \"stubs\": {\"self.module.get_bin_path\": \"Optional[str]\", \"self.module.run_command\": \"tuple[int, str, str]\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/3dadbe9389f2_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "missing_dependency",
+          "message": "ERROR: Object \"out\" not found.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/3dadbe9389f2_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 306,
+      "seconds": 10.922
+    }
+  }
+}

@@ -1,0 +1,1540 @@
+{
+  "config": {
+    "model": "gpt-4o-mini",
+    "backend": "openai",
+    "detection_strategy": "single",
+    "synth_backend": "openai",
+    "synth_model": "gpt-4o-mini",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_20.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ir_real_01.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py",
+      "/mnt/c/users/ferna/documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "compat": true,
+    "guards": true,
+    "ablation": true,
+    "driver": true,
+    "real_driver": true,
+    "synth_retries": 1,
+    "bound": 20,
+    "timeout": 60,
+    "llm_timeout": 300,
+    "include_smells": false,
+    "esbmc_command": [
+      "esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "partial",
+    "stage": "synthesis",
+    "planned_hypotheses": 20,
+    "evaluated_hypotheses": 20
+  },
+  "detection": {
+    "evaluated": true,
+    "oracle_seeded": false,
+    "analyzed_units": 13,
+    "hypotheses": 20,
+    "failed_units": 0,
+    "errors": [],
+    "candidates": [
+      {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "explicit_assertion",
+        "expression": "int(headers['Content-Length'])"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "native_runtime",
+        "expression": "int(headers['Content-Length'])"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "native_runtime",
+        "expression": "raise httputil.HTTPInputError('Content-Length too long')"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "native_runtime",
+        "expression": "'set-upstream' in command.output"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "native_runtime",
+        "expression": "chunk = read1(f, 8196)"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_04.py",
+        "function": "HTTP1Connection.write_headers",
+        "category": "explicit_assertion",
+        "expression": "self._chunking_output = is_post_put_patch and 'Content-Length' not in headers and ('Transfer-Encoding' not in headers)"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "expression": "int(numstr, base)"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_20.py",
+        "function": "generate_sub_moved_events",
+        "category": "explicit_assertion",
+        "expression": "renamed_path = full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else ''"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_22.py",
+        "function": "match",
+        "category": "native_runtime",
+        "expression": "if pattern.lower() in command.stderr.lower() or pattern.lower() in command.stdout.lower()"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "gamma",
+        "category": "explicit_assertion",
+        "expression": "if xi <= 0: raise ValueError('math domain error')"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "gamma",
+        "category": "explicit_assertion",
+        "expression": "if x <= 0.0: raise ValueError('math domain error')"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "lgamma",
+        "category": "native_runtime",
+        "expression": "result = result + log(i * 1.0)"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "lgamma",
+        "category": "native_runtime",
+        "expression": "if x <= 0.0"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "expression": "upstream_option_index = command.script_parts.index('--set-upstream')"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "expression": "upstream_option_index = command.script_parts.index('-u')"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "expression": "push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "expression": "id_ = int(id_) - 1"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "expression": "head = int(head) - 1 if head != '0' else id_"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "expression": "dep = 'ROOT' if dep == 'root' else dep"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "expression": "tag = tag + '__' + morph if use_morphology else tag"
+      }
+    ],
+    "rejected_findings": [
+      {
+        "file": "dataset/v2_real_world/detection/av_real_12.py",
+        "function": "match",
+        "category": "unsupported",
+        "finding_type": "suspected_bug",
+        "expression": "'php -s' in command.script",
+        "reason": ""
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "category": "unsupported",
+        "finding_type": "suspected_bug",
+        "expression": "if stdout:",
+        "reason": ""
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "category": "unsupported",
+        "finding_type": "suspected_bug",
+        "expression": "stdout and table in stdout",
+        "reason": ""
+      }
+    ],
+    "trace": [
+      {
+        "function": "HTTP1Connection._read_body",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "gunzip",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "HTTP1Connection.write_headers",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_htmlentity_transform",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "generate_sub_moved_events",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "gamma",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "lgamma",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "read_conllx",
+        "strategy": "single",
+        "located_candidates": 4,
+        "classified_candidates": 4,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "HiveCommandClient.table_exists",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 2
+      }
+    ],
+    "trace_summary": {
+      "units": 13,
+      "located_candidates": 23,
+      "classified_candidates": 23,
+      "rejected_candidates": 3,
+      "localization_failures": 0,
+      "classification_failures": 0
+    }
+  },
+  "summary": {
+    "n": 20,
+    "by_classification": {
+      "invalid_harness": 9,
+      "confirmed_on_abstraction": 2,
+      "safe_native": 1,
+      "esbmc_inconclusive": 2,
+      "confirmed_unverified": 2,
+      "over_restricted": 1,
+      "confirmed_driver": 3
+    },
+    "by_category": {
+      "explicit_assertion": {
+        "total": 5,
+        "confirmed": 0,
+        "native": 0,
+        "driver": 0,
+        "abstraction_only": 0,
+        "unverified": 2
+      },
+      "native_runtime": {
+        "total": 15,
+        "confirmed": 3,
+        "native": 0,
+        "driver": 3,
+        "abstraction_only": 2,
+        "unverified": 0
+      }
+    },
+    "driver_notes": {
+      "inconclusive": 8,
+      "invalid x1": 2,
+      "invalid x2": 3,
+      "conclusive": 6
+    },
+    "verification_targets": {
+      "scalar_harness": 13,
+      "original_function": 1,
+      "verbatim_slice": 6
+    },
+    "abstraction_levels": {
+      "scalar": 13,
+      "none": 1,
+      "slice": 6
+    },
+    "harness_tiers": {
+      "scalar": 13,
+      "native": 1,
+      "driver": 6
+    },
+    "total_synth_tokens": 123829,
+    "total_synth_seconds": 115.004,
+    "total_esbmc_seconds": 167.964,
+    "mean_attempts": 1.75
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 13,
+      "failed_calls": 0,
+      "tokens": 27110,
+      "prompt_tokens": 22864,
+      "cached_tokens": 1792,
+      "calls_with_cache_data": 13,
+      "seconds": 49.505,
+      "localization_calls": 0,
+      "classification_calls": 0,
+      "cache_hit_rate": 0.0784
+    },
+    "synthesis": {
+      "calls": 72,
+      "failed_calls": 0,
+      "tokens": 219063,
+      "prompt_tokens": 203529,
+      "cached_tokens": 47744,
+      "calls_with_cache_data": 72,
+      "seconds": 252.025,
+      "localization_calls": 0,
+      "classification_calls": 0,
+      "cache_hit_rate": 0.2346
+    }
+  },
+  "evaluation": null,
+  "results": [
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "explicit_assertion",
+        "harness_strategy": "explicit_assertion",
+        "expression": "int(headers['Content-Length'])",
+        "note": "O valor de 'Content-Length' é convertido para um inteiro sem garantir que seja um inteiro válido primeiro, dependendo da entrada do usuário nos cabeçalhos. Embora haja uma captura de exceção para ValueError, se não houver controle sobre a entrada, diferentes valores podem ser passados. Isso pode resultar em uma falha de execução se a entrada não for corretamente validada."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model_read_body(headers: dict) -> int:\n    __ESBMC_assume(abs(headers.get('Content-Length', 0)) <= 1000)\n    content_length: str = nondet_str()\n    __ESBMC_cover(content_length != \"\")\n    content_length_int: int = int(content_length)\n    assert isinstance(content_length_int, int), \"LLM_ESBMC_EXPECTED_PROPERTY\"\n    return content_length_int\n\ndef main() -> None:\n    headers = {'Content-Length': nondet_str()}\n    model_read_body(headers)\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 8131,
+      "synth_seconds": 6.103,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3954,
+          "synth_seconds": 2.262461,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4177,
+          "synth_seconds": 3.840851,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 133.54,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto excedeu o tempo limite de 60s.",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "int(headers['Content-Length'])",
+        "note": "A guarda que verifica a presença de 'Content-Length' não previne a execução do código se 'Content-Length' existir, mas for um valor não convertível (como uma string que não é um número). Input inesperado após a verificação poderia causar um erro não previsto."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    content_length_str: str = nondet_str()  # Simulate the Content-Length header as a string.\n    \n    __ESBMC_assume(abs(len(content_length_str)) <= 1000)  # Termination bound.\n    __ESBMC_assume(content_length_str == content_length_str)  # Exclude NaN.\n\n    __ESBMC_cover(content_length_str != '')  # Trigger condition for conversion to int.\n\n    result: int = int(content_length_str)  # The suspect expression\n    assert result >= 0, \"LLM_ESBMC_EXPECTED_PROPERTY\"  # Ensure converted value is non-negative.\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 8251,
+      "synth_seconds": 7.078,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4004,
+          "synth_seconds": 3.446378,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4247,
+          "synth_seconds": 3.631202,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 74.1,
+      "error": "",
+      "driver_note": "invalid x1: assertion is tautological (the same expression appears on both sides)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "raise httputil.HTTPInputError('Content-Length too long')",
+        "note": "A lógica que lança o erro se o comprimento do conteúdo excede um limite máximo não verifica se o comprimento do conteúdo é um valor negativo ou inválido, o que pode resultar em um comportamento inesperado se a entrada não for validada corretamente, levando a um possível bug com base na definição não segura do limite."
+      },
+      "classification": "confirmed_on_abstraction",
+      "failure_stage": "synthesis",
+      "harness": "# Harness for _read_body\n\na: int = nondet_int()  # hypothetical maximum body size\n__ESBMC_assume(-1000 <= a <= 1000)\n\nheaders: list[str] = [nondet_str(), nondet_str(), nondet_str()]\ncontent_length: int = nondet_int()\n__ESBMC_assume(-1000 <= content_length <= 1000)\n\nfor i in range(1, 3):\n    ok: bool = content_length <= a  # check for content length exceeding maximum body size\n    assert ok, \"LLM_ESBMC_EXPECTED_PROPERTY\"  # check for Content-Length too long\n    content_length += 1  # Simulating a hypothetical operation in the loop\n\n# Trigger the harness execution\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_002__read_body_loop.py",
+      "compat_verdict": "ok",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: LLM_ESBMC_EXPECTED_PROPERTY. Local: linha 12.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 10351,
+      "synth_seconds": 8.374,
+      "esbmc_seconds": 37.363,
+      "attempts": 3,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3956,
+          "synth_seconds": 2.963625,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4164,
+          "synth_seconds": 2.965928,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+        },
+        {
+          "attempt": 3,
+          "style": "loop",
+          "classification": "confirmed_on_abstraction",
+          "esbmc_status": "violation_found",
+          "esbmc_summary": "ESBMC direto encontrou violação: LLM_ESBMC_EXPECTED_PROPERTY. Local: linha 12.",
+          "error": ""
+        }
+      ],
+      "seconds": 55.25,
+      "error": "",
+      "driver_note": "invalid x2: slice result is not asserted on (it will be sliced away)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "'set-upstream' in command.output",
+        "note": "O parâmetro 'command' é controlado externamente e não há garantia de que 'command.output' seja uma string ou liste elementos seguros. Se 'command.output' for None ou um tipo inesperado, isso pode resultar em uma exceção. A guarda existente não protege adequadamente contra essa situação."
+      },
+      "classification": "safe_native",
+      "failure_stage": "verification",
+      "harness": "",
+      "harness_path": "",
+      "compat_verdict": "native_function",
+      "compat_reasons": [],
+      "esbmc_status": "no_violation_found",
+      "esbmc_summary": "ESBMC não encontrou violação até o limite k=20.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": null,
+      "synth_seconds": 0.0,
+      "esbmc_seconds": 0.811,
+      "attempts": 0,
+      "attempt_history": [],
+      "seconds": 0.84,
+      "error": "",
+      "driver_note": "",
+      "verification_target": "original_function",
+      "abstraction_level": "none",
+      "harness_tier": "native",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "chunk = read1(f, 8196)",
+        "note": "O operando 'chunk' é controlado pela função 'read1', que pode retornar None. A guarda 'while chunk:' não impede que um valor None seja atribuído a 'chunk', o que pode levar a um loop infinito ou a erros subsequentes. Com 'data' como entrada que não pode ser lida corretamente, 'chunk' poderá ser None e causar falha."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    f: bytes = nondet_str()  # Placeholder for the bytes-like input\n    chunk: bytes = b'.'\n    \n    __ESBMC_assume(abs(len(f)) <= 1000)  # Loose bound for the input\n    __ESBMC_cover(len(f) > 0)  # Condition to trigger the bug (since read1 should return data)\n\n    chunk = read1(f, 8196)  # The suspect expression\n\n    assert chunk is not None, \"LLM_ESBMC_EXPECTED_PROPERTY\"  # Check for native runtime errors on read1\n\ndef main():\n    model()\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7659,
+      "synth_seconds": 5.915,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "imports gzip, io, struct"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3714,
+          "synth_seconds": 3.088469,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3945,
+          "synth_seconds": 2.826524,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- imports gzip, io, struct"
+        }
+      ],
+      "seconds": 12.79,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_04.py",
+        "function": "HTTP1Connection.write_headers",
+        "category": "explicit_assertion",
+        "harness_strategy": "explicit_assertion",
+        "expression": "self._chunking_output = is_post_put_patch and 'Content-Length' not in headers and ('Transfer-Encoding' not in headers)",
+        "note": "O operando 'headers' é um dicionário que pode ser controlado externamente. Não há guarda que impeça que a chave 'Content-Length' seja manipulada de forma a evitar que a expressão falhe de forma inesperada. O uso de 'not in' permite que valores inesperados causem lógica incorreta. A execução da expressão resulta em problemas lógicos com valores fora do controle."
+      },
+      "classification": "esbmc_inconclusive",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    is_post_put_patch: bool = nondet_bool()\n    headers_key: str = nondet_str()  # Using a nondet_str for header keys\n    headers_value: str = nondet_str()  # Using a nondet_str for header values\n    headers: dict = {headers_key: headers_value}  # Constructing a dict with nondet values\n\n    __ESBMC_assume(abs(is_post_put_patch) <= 1)  # Loose bound for search termination\n    __ESBMC_assume(headers_key == headers_key)  # To enforce headers_key is not NaN\n\n    # Rebuilding the expression\n    self_chunking_output: bool = (\n        is_post_put_patch\n        and 'Content-Length' not in headers\n        and 'Transfer-Encoding' not in headers\n    )\n\n    # Assert the expected property\n    assert self_chunking_output, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_005_write_headers_try1.py",
+      "compat_verdict": "ok",
+      "compat_reasons": [],
+      "esbmc_status": "timeout",
+      "esbmc_summary": "ESBMC direto excedeu o tempo limite de 60s.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7545,
+      "synth_seconds": 6.097,
+      "esbmc_seconds": 60.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "abs() receives dict, expected a numeric value"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3625,
+          "synth_seconds": 2.676375,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "esbmc_inconclusive",
+          "compat_reasons": [],
+          "esbmc_status": "timeout",
+          "esbmc_summary": "ESBMC direto excedeu o tempo limite de 60s.",
+          "error": "",
+          "tokens": 3920,
+          "synth_seconds": 3.420912,
+          "esbmc_seconds": 60.0,
+          "repair_feedback": "Compatibility validation failed:\n- abs() receives dict, expected a numeric value"
+        }
+      ],
+      "seconds": 89.49,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "int(numstr, base)",
+        "note": "A função int(numstr, base) pode falhar se numstr não for uma string válida para conversão em inteiro, como caracteres alfabéticos que não fazem parte da representação hexadecimal ou decimal. O regex utilizado garante que numstr seja um número ou comece com 'x', mas não verifica se o restante é válido para a conversão."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    entity: str = nondet_str()\n    \n    # Simulate the regex match outcome and the number string\n    mobj: bool = nondet_bool()  # This controls whether the regex matched\n    numstr: str = nondet_str()  # The number string to convert\n    base: int = 10  # Default base for conversion\n\n    # Check if there's a match\n    ok: bool = mobj  \n    __ESBMC_cover(ok)  # Cover condition that depends on the symbolic input\n\n    # Mock the number string condition\n    if ok:\n        __ESBMC_cover(numstr.startswith('x'))  # Condition for hexadecimal\n        \n        if numstr.startswith('x'):\n            base = 16\n            numstr = '0' + numstr\n\n    # Loose bound for search termination\n    __ESBMC_assume(abs(len(entity)) <= 1000)   \n    result: int = int(numstr, base)  # This line is suspected for native runtime issues\n    assert result >= 0, \"LLM_ESBMC_EXPECTED_PROPERTY\"  # Assert the result is non-negative\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7834,
+      "synth_seconds": 6.387,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3743,
+          "synth_seconds": 3.136721,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4091,
+          "synth_seconds": 3.25072,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 15.21,
+      "error": "",
+      "driver_note": "invalid x2: suspect expression operators ['call:int'] not preserved in the harness (the slice must keep the real arithmetic, only its operands become nondet)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_20.py",
+        "function": "generate_sub_moved_events",
+        "category": "explicit_assertion",
+        "harness_strategy": "explicit_assertion",
+        "expression": "renamed_path = full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else ''",
+        "note": "O operando 'src_dir_path' vem de fora da função sem restrições e pode ser de tipo 'bytes' ou 'str'. Se for de um formato inesperado (por exemplo, uma string em bytes), a operação .replace pode falhar. Não há uma guarda completa que bloquee esse caso porque 'src_dir_path' só é verificado se não é None, mas não se está no formato esperado."
+      },
+      "classification": "esbmc_inconclusive",
+      "failure_stage": "synthesis",
+      "harness": "def model_function():\n    src_dir_path: str = nondet_str()\n    dest_dir_path: str = nondet_str()\n\n    full_path: str = nondet_str()\n    renamed_path: str = full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else \"\"\n\n    __ESBMC_assume(abs(len(src_dir_path)) <= 1000)\n    __ESBMC_assume(abs(len(dest_dir_path)) <= 1000)\n    __ESBMC_assume(src_dir_path == src_dir_path)  # Exclude NaN equivalent for strings\n\n    assert renamed_path != \"\", \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model_function()\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_007_generate_sub_moved_events_try1.py",
+      "compat_verdict": "ok",
+      "compat_reasons": [],
+      "esbmc_status": "inconclusive",
+      "esbmc_summary": "ESBMC direto: resultado inconclusivo.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 8103,
+      "synth_seconds": 5.691,
+      "esbmc_seconds": 10.088,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3928,
+          "synth_seconds": 3.332282,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "esbmc_inconclusive",
+          "compat_reasons": [],
+          "esbmc_status": "inconclusive",
+          "esbmc_summary": "ESBMC direto: resultado inconclusivo.",
+          "error": "",
+          "tokens": 4175,
+          "synth_seconds": 2.359146,
+          "esbmc_seconds": 10.088,
+          "repair_feedback": "Compatibility validation failed:\n- expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+        }
+      ],
+      "seconds": 144.33,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto excedeu o tempo limite de 60s.",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ip_real_22.py",
+        "function": "match",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "if pattern.lower() in command.stderr.lower() or pattern.lower() in command.stdout.lower()",
+        "note": "O operando 'command.stderr' é controlado externamente, pois vem do parâmetro 'command'. Não há guarda que garanta que 'command.stderr' seja seguro para ser tratado como uma string, o que pode causar um erro caso 'command.stderr' seja 'None' ou outro tipo que não suporte o método 'lower'. Um valor concreto poderia ser 'None' para 'command.stderr'."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    pattern: str = nondet_str()\n    stderr: str = nondet_str()\n    stdout: str = nondet_str()\n\n    __ESBMC_assume(abs(len(stderr)) <= 1000)\n    __ESBMC_assume(abs(len(stdout)) <= 1000)\n    __ESBMC_assume(abs(len(pattern)) <= 1000)\n\n    pattern_lower: str = pattern.lower()\n    stderr_lower: str = stderr.lower()\n    stdout_lower: str = stdout.lower()\n    \n    __ESBMC_cover(pattern_lower in stderr_lower or pattern_lower in stdout_lower)  # reachability check\n    assert (pattern_lower in stderr_lower or pattern_lower in stdout_lower), \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7357,
+      "synth_seconds": 6.185,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3547,
+          "synth_seconds": 3.19672,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3810,
+          "synth_seconds": 2.988124,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 19.45,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "gamma",
+        "category": "explicit_assertion",
+        "harness_strategy": "explicit_assertion",
+        "expression": "if xi <= 0: raise ValueError('math domain error')",
+        "note": "O parâmetro 'x' é controlado externamente e, se um valor negativo ou zero for passado (x <= 0), o código levantará uma exceção. A guarda atual não impede que 'xi' seja zero ou negativo antes de levantar a exceção, o que pode levar a um erro de domínio matemático quando 'x' é um número inteiro não positivo."
+      },
+      "classification": "confirmed_unverified",
+      "failure_stage": "",
+      "harness": "# Function: gamma (line not provided)\n# Category: explicit_assertion\n# Preconditions: No preconditions are enforced. A loose bound is applied.\n# Assert checks: The function returns a result that does not raise.\n# Operands turned into nondet: x\n\ndef slice_model(x: float) -> float:\n    xi: int = int(x)  # real: int(x)\n    if xi <= 0:  # real: xi <= 0\n        raise ValueError(\"math domain error\")\n    factorial_x_minus_1: int = 1\n    i: int = 2\n    while i <= xi - 1:\n        factorial_x_minus_1 = factorial_x_minus_1 * i\n        i = i + 1\n    return float(factorial_x_minus_1)\n\ndef main():\n    x = nondet_float()  # real: x\n    __ESBMC_assume(abs(x) <= 1000)  # Loose magnitude bound for termination\n    result = slice_model(x)\n    assert result != float('inf')  # Assert that the result does not yield an infinite value on valid input.\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_009_gamma_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [
+        "violated property location does not match any of the harness's own asserts (expected lines [22], ESBMC reported ['slice_model, linha 10']); the driver body kept the real function's own code, so a native check unrelated to the modeled bug may have fired instead"
+      ],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: uncaught exception: ValueError. Local: slice_model, linha 10.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 5410,
+      "synth_seconds": 6.901,
+      "esbmc_seconds": 22.763,
+      "attempts": 2,
+      "attempt_history": [],
+      "seconds": 33.63,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "gamma",
+        "category": "explicit_assertion",
+        "harness_strategy": "explicit_assertion",
+        "expression": "if x <= 0.0: raise ValueError('math domain error')",
+        "note": "Se 'x' é 0.0, o código levanta uma exceção, mas não há proteção para valores negativos não inteiros que possam levar a uma situação de domínio matemático ao calcular '_lanczos_sum(z)'."
+      },
+      "classification": "confirmed_unverified",
+      "failure_stage": "",
+      "harness": "def slice_model(x: float) -> float:\n    # real: x\n    if x <= 0.0:  # real: x <= 0.0\n        raise ValueError(\"math domain error\")\n    return x  # Placeholder return to satisfy function signature\n\ndef main():\n    x = nondet_float()  # parameter\n    __ESBMC_assume(0 <= x <= 1<<30)  # Loose magnitude bound to ensure search termination\n    __ESBMC_assume(x == x)  # Exclude NaN\n    try:\n        result = slice_model(x)\n    except ValueError:\n        result = None  # Handling the raised ValueError\n    assert result is None  # Check that result is None when raising ValueError\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_010_gamma_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [
+        "outcome-category confirmation has no differential assertion (compare the buggy result with a separately computed expected value)"
+      ],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion ISNONE(result, 0). Local: main, linha 15.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2511,
+      "synth_seconds": 2.733,
+      "esbmc_seconds": 1.393,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 5.89,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "lgamma",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "result = result + log(i * 1.0)",
+        "note": "O operando 'i' é controlado por um limite inferior (1), mas a guarda não impede que i seja '0' em casos onde xi é 0 ou negativo, causando uma chamada a log(0), que resulta em um erro. Portanto, valores de xi <= 0 não bloqueiam todos os caminhos. 'log(i * 1.0)' pode ser problemático quando i é 0."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    # Symbolic variables\n    i: float = nondet_int()\n    result: float = nondet_float()\n\n    # Loose bound for search termination\n    __ESBMC_assume(abs(i) <= 1000)\n    __ESBMC_assume(abs(result) <= 1000)\n    __ESBMC_assume(i == i)  # To exclude NaN\n\n    # Cover the potential bug: i must be >= 2 to avoid math domain error in log\n    __ESBMC_cover(i < 2)\n\n    # The suspect expression\n    result = result + log(i * 1.0)\n\n    # Asserting the property\n    assert result == result, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7755,
+      "synth_seconds": 6.344,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3744,
+          "synth_seconds": 3.150641,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4011,
+          "synth_seconds": 3.193648,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+        }
+      ],
+      "seconds": 15.75,
+      "error": "",
+      "driver_note": "invalid x2: harness imports a module (intrinsics are bare)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "lgamma",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "if x <= 0.0",
+        "note": "O operando 'x' não está restrito ao intervalo positivo em todos os casos, uma vez que não existe uma proteção após a primeira verificação. A linha que levanta um ValueError para valores não positivos pode ser alcançada, já que x pode ser controlado externamente. 'x' precisa de uma validação mais robusta além da simples verificação de 'x <= 0.0'."
+      },
+      "classification": "over_restricted",
+      "failure_stage": "",
+      "harness": "def slice_model(x: float) -> float:\n    pi_const: float = 3.14153\n    # real: x <= 0.0\n    if x <= 0.0:  # real: x <= 0.0\n        raise ValueError(\"math domain error\")\n    return 0.0  # Dummy return, to satisfy the function's signature\n\ndef main() -> None:\n    x = nondet_float()  # fresh input\n    __ESBMC_assume(0 < x <= 1073741824)  # loose bound to terminate search\n    __ESBMC_assume(x == x)  # to exclude NaN\n    result = slice_model(x)\n    assert result == 0.0  # Dummy assertion, placeholder for actual checks\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_012_lgamma_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "no_violation_found",
+      "esbmc_summary": "ESBMC direto: sem violação até o bound analisado (k=20).",
+      "masking_assumptions": [
+        "0 < x <= 1073741824"
+      ],
+      "ablation_per_assumption": {
+        "0 < x <= 1073741824": "FAILED"
+      },
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2448,
+      "synth_seconds": 2.882,
+      "esbmc_seconds": 0.732,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 5.46,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "upstream_option_index = command.script_parts.index('--set-upstream')",
+        "note": "O índice `upstream_option_index` pode ser calculado a partir de um comando que não contém `--set-upstream`, resultando em um ValueError que não é capturado. Um valor negativo é usado posteriormente em um contexto onde é esperado um índice válido, pois o código interpreta um índice de -1 como válido para remover itens da lista."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "def slice_model(script_parts: list) -> int:\n    upstream_option_index = -1\n    try:\n        upstream_option_index = script_parts.index('--set-upstream')  # real: command.script_parts.index('--set-upstream')\n    except ValueError:\n        pass\n    try:\n        upstream_option_index = script_parts.index('-u')  # real: command.script_parts.index('-u')\n    except ValueError:\n        pass\n    return upstream_option_index\n\ndef main():\n    script_parts = nondet_str()  # real: command.script_parts\n    __ESBMC_assume(0 <= len(script_parts) <= 1073741824)  # bound for script_parts\n    result = slice_model(script_parts)\n    \n    # Since we are testing index retrieval, we check for valid index retrieval(-1 on not found)\n    assert result == -1 or (0 <= result < len(script_parts))\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_013_get_new_command_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: dereference failure: array bounds violated. Local: __ESBMC_list_try_find_index, linha 1004.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2438,
+      "synth_seconds": 3.329,
+      "esbmc_seconds": 27.081,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 31.1,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "upstream_option_index = command.script_parts.index('-u')",
+        "note": "Semelhante ao primeiro caso, o índice `upstream_option_index` pode ser -1 se `-u` não estiver presente. Isso pode levar a um erro ao tentar acessar ou remover elementos da lista, uma vez que não há proteção contra este valor."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "def slice_model(script_parts: list[str]) -> int:\n    upstream_option_index = -1\n    try:\n        upstream_option_index = script_parts.index('-u')  # real: command.script_parts.index('-u')\n    except ValueError:\n        pass\n    return upstream_option_index\n\ndef main():\n    script_parts = nondet_str()  # real: command.script_parts\n    __ESBMC_assume(len(script_parts) <= 1073741824)  # loose magnitude bound\n    result = slice_model(script_parts)\n    assert result == -1 or (0 <= result < len(script_parts))  # assert valid index or -1\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_014_get_new_command_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: dereference failure: array bounds violated. Local: __ESBMC_list_try_find_index, linha 1004.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2374,
+      "synth_seconds": 14.609,
+      "esbmc_seconds": 4.997,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 20.14,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]",
+        "note": "O código assume que `command.stderr` sempre terá pelo menos três linhas. Se houver menos de três linhas, isso resultará em um IndexError ao tentar acessar `[-3]`. Não há guarda para verificar se esse índice está dentro do intervalo esperado."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model_command() -> str:\n    stderr: str = nondet_str()\n    __ESBMC_assume(abs(len(stderr)) <= 1000)  # Loose magnitude bound\n    __ESBMC_assume(stderr == stderr)  # Exclude NaN for string operations\n\n    __ESBMC_cover(len(stderr) >= 3)  # Trigger condition for the suspect expression\n    push_upstream: str = stderr.split('\\n')[-3].strip().partition('git ')[2]\n    assert push_upstream != \"\", \"LLM_ESBMC_EXPECTED_PROPERTY\"  # Check property\n\ndef main() -> None:\n    model_command()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7638,
+      "synth_seconds": 4.993,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3700,
+          "synth_seconds": 2.464075,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3938,
+          "synth_seconds": 2.529327,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 132.28,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto excedeu o tempo limite de 60s.",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "id_ = int(id_) - 1",
+        "note": "A variável 'id_' é convertida em inteiro sem uma verificação prévia. Se 'id_' não pode ser convertido em um inteiro (por exemplo, se for uma string externa malformada), isso causará uma exceção. Não há guarda que proteja este acesso, e um valor negativo ou um string não numérico resultará em erro."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "def slice_model(input_data: str, use_morphology: bool, n: int) -> int:\n    id_: int = nondet_int()  # real: id_\n    # The expression to analyze\n    id_ = int(id_) - 1\n    \n    return id_\n\ndef main():\n    input_data = nondet_str()\n    use_morphology = nondet_bool()\n    n = nondet_int()\n    \n    # Loose bounds for the symbolic inputs\n    __ESBMC_assume(0 <= n <= 1073741824)\n    __ESBMC_assume(len(input_data) >= 0)\n    __ESBMC_assume(len(input_data) <= 1073741824)\n\n    # Call the slice function\n    result = slice_model(input_data, use_morphology, n)\n\n    # Assert property to check resulting id_ is non-negative\n    assert result >= -1\n\nmain()\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_016_read_conllx_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion result >= -1. Local: main, linha 22.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2547,
+      "synth_seconds": 2.633,
+      "esbmc_seconds": 0.978,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 4.49,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice",
+      "harness_tier": "driver",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "head = int(head) - 1 if head != '0' else id_",
+        "note": "A conversão de 'head' para inteiro ocorre sem uma verificação de que 'head' é realmente um número. Um valor inadequado, como uma string ou um número negativo, causará uma exceção. A guarda 'head != '0'' não é suficiente para garantir que 'head' pode ser convertido em inteiro."
+      },
+      "classification": "confirmed_on_abstraction",
+      "failure_stage": "synthesis",
+      "harness": "# Harness for the read_conllx function, focusing on the head index manipulation.\n\na = nondet_int()  # id_\nb = nondet_int()  # head\n__ESBMC_assume(-1000 <= a <= 1000)\n__ESBMC_assume(-1000 <= b <= 1000)\n\ntokens: list[int] = [a, b, a]  # Mock tokens list with fresh scalar values\n\nfor i in range(3):  # Small constant bound loop\n    ok: bool = (b != 0)  # Before using head\n    assert ok, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n    head = (b - 1) if b != 0 else a  # The suspect expression\n\n# Call the harness at module level; no further definitions.\n",
+      "harness_path": "artifacts/v2/fp12-gpt4o-mini-full/harnesses/scan_017_read_conllx_loop.py",
+      "compat_verdict": "ok",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: LLM_ESBMC_EXPECTED_PROPERTY. Local: linha 12.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 9884,
+      "synth_seconds": 8.044,
+      "esbmc_seconds": 1.758,
+      "attempts": 3,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3795,
+          "synth_seconds": 2.706373,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4020,
+          "synth_seconds": 2.631457,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+        },
+        {
+          "attempt": 3,
+          "style": "loop",
+          "classification": "confirmed_on_abstraction",
+          "esbmc_status": "violation_found",
+          "esbmc_summary": "ESBMC direto encontrou violação: LLM_ESBMC_EXPECTED_PROPERTY. Local: linha 12.",
+          "error": ""
+        }
+      ],
+      "seconds": 23.9,
+      "error": "",
+      "driver_note": "invalid x1: slice result is not asserted on (it will be sliced away)",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "marked_assertion",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "dep = 'ROOT' if dep == 'root' else dep",
+        "note": "O valor de 'dep' é assumido como um valor válido sem verificação. Se 'dep' contiver um valor inesperado, o comportamento do programa poderá ser indesejado. Não há proteção contra valores imprevistos."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    dep: str = nondet_str()\n    __ESBMC_assume(dep == dep)  # Exclude NaN for string\n    __ESBMC_assume(abs(len(dep)) <= 1000)  # Loose magnitude bound\n\n    trigger_condition: bool = dep == 'root'\n    __ESBMC_cover(trigger_condition)\n\n    dep = 'ROOT' if dep == 'root' else dep\n\n    assert dep == 'ROOT', \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nmain()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7726,
+      "synth_seconds": 5.425,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3756,
+          "synth_seconds": 3.202168,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3970,
+          "synth_seconds": 2.223112,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+        }
+      ],
+      "seconds": 19.83,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "harness_strategy": "native_runtime",
+        "expression": "tag = tag + '__' + morph if use_morphology else tag",
+        "note": "O valor de 'morph' é concatenado à variável 'tag' sem verificação. Caso 'morph' não seja uma string válida, a operação pode falhar. A guarda 'use_morphology' não é suficiente para garantir que 'morph' esteja no formato correto."
+      },
+      "classification": "invalid_harness",
+      "failure_stage": "synthesis",
+      "harness": "def model():\n    use_morphology: bool = nondet_bool()\n    morph: str = nondet_str()\n    tag: str = nondet_str()\n\n    __ESBMC_assume(abs(len(tag)) <= 1000)\n    __ESBMC_assume(abs(len(morph)) <= 1000)\n\n    # Condition to trigger the hypothesized bug\n    __ESBMC_cover(use_morphology)\n\n    new_tag: str = tag + '__' + morph if use_morphology else tag\n    assert new_tag != tag, \"LLM_ESBMC_EXPECTED_PROPERTY\"\n\ndef main():\n    model()\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "",
+      "compat_verdict": "invalid_harness",
+      "compat_reasons": [
+        "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+      ],
+      "esbmc_status": "",
+      "esbmc_summary": "",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 7867,
+      "synth_seconds": 5.278,
+      "esbmc_seconds": 0.0,
+      "attempts": 2,
+      "attempt_history": [
+        {
+          "attempt": 1,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 3812,
+          "synth_seconds": 2.520746,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": ""
+        },
+        {
+          "attempt": 2,
+          "classification": "invalid_harness",
+          "compat_reasons": [
+            "cover condition does not depend on a symbolic input; the reachability check is vacuous or unreachable"
+          ],
+          "esbmc_status": "",
+          "esbmc_summary": "",
+          "error": "",
+          "tokens": 4055,
+          "synth_seconds": 2.757653,
+          "esbmc_seconds": 0.0,
+          "repair_feedback": "Compatibility validation failed:\n- expected assertion compares two identical expressions; only a NaN input can make it fail, not the suspected bug"
+        }
+      ],
+      "seconds": 18.0,
+      "error": "",
+      "driver_note": "inconclusive: ESBMC direto encontrou erro interno (tipo não suportado, annotation ausente, etc.).",
+      "verification_target": "scalar_harness",
+      "abstraction_level": "scalar",
+      "harness_tier": "scalar",
+      "category_evidence": "",
+      "esbmc_category": "",
+      "pytest_test_path": "",
+      "pytest_generation_status": "",
+      "pytest_generation_summary": ""
+    }
+  ]
+}

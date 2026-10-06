@@ -1,0 +1,310 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+        "function": "SortedDict.__eq__",
+        "suspect_expression": "all((self[key] == that[key] for key in self))",
+        "line": 0,
+        "trigger_condition": "`that` is a free parameter. If `that` has the same length as `self._dict` but different keys (self={'a':1}, that={'b':1}), the length check passes. `that[key]` then raises KeyError for a key missing from `that`. Nothing catches it. An equality comparison should return False.",
+        "category": "",
+        "hypothesis_id": "4aa3e5e38a90"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fcb79c33dac2_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fcb79c33dac2_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fcb79c33dac2_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fcb79c33dac2_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 13.884
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+        "function": "SortedDict.__eq__",
+        "suspect_expression": "len(self._dict) == len(that)",
+        "line": 0,
+        "trigger_condition": "`that` is not type-checked. For an object without __len__ (None, int), `len(that)` raises TypeError before any comparison. No guard or try/except exists. A comparison against an unrelated type should return False or NotImplemented.",
+        "category": "",
+        "hypothesis_id": "2629816a29ef"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"that\": \"Optional[dict[str, int]]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/bdc9343958a2_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"that\": \"Optional[dict[str, int]]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/bdc9343958a2_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"that\": \"Optional[dict[str, int]]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/bdc9343958a2_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-bases/programs/bdc9343958a2_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 14.036
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+        "function": "SortedDict.__ne__",
+        "suspect_expression": "any((self[key] != that[key] for key in self))",
+        "line": 0,
+        "trigger_condition": "`that` is a free parameter. If `that` has the same length as `self._dict` but a different key set, the length check is False and `any` evaluates `that[key]` for a key of `self` that `that` lacks. Example: self={'a':1}, that={'b':1}. This raises KeyError instead of returning True for 'not equal'. Nothing catches the exception.",
+        "category": "",
+        "hypothesis_id": "a1578927c83f"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fc34ede9254e_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fc34ede9254e_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fc34ede9254e_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-bases/programs/fc34ede9254e_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 12.801
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+        "function": "SortedDict.__ne__",
+        "suspect_expression": "len(self._dict) != len(that)",
+        "line": 0,
+        "trigger_condition": "`that` is not type-checked. If a caller compares against an object without __len__ (None, int), `len(that)` raises TypeError. A well-behaved __ne__ would return NotImplemented or True. No try/except is present.",
+        "category": "",
+        "hypothesis_id": "2ede9629917e"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"that\": \"Optional[list[int]]\"}, \"attributes\": {\"_dict\": \"dict[int, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/5f10a9ad7446_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"that\": \"Optional[list[int]]\"}, \"attributes\": {\"_dict\": \"dict[int, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/5f10a9ad7446_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"that\": \"Optional[list[int]]\"}, \"attributes\": {\"_dict\": \"dict[int, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/5f10a9ad7446_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-bases/programs/5f10a9ad7446_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 15.481
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/nm_real_11.py",
+        "function": "LocalCache.__setitem__",
+        "suspect_expression": "self.popitem(last=False)",
+        "line": 0,
+        "trigger_condition": "self.limit \u00e9 estado do objeto, sem restri\u00e7\u00e3o vis\u00edvel. Com limit == 0, ou negativo, o la\u00e7o entra com len(self) == 0, pois 0 >= 0. popitem(last=False) sobre um mapeamento vazio levanta KeyError. A guarda do while s\u00f3 mede o tamanho e n\u00e3o impede o popitem de rodar com o dicion\u00e1rio vazio. Isso sup\u00f5e que LocalCache herda de OrderedDict e que o construtor n\u00e3o rejeita limit <= 0.",
+        "category": "",
+        "hypothesis_id": "e7b6853db8fa"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"key\": \"str\", \"value\": \"int\"}, \"attributes\": {\"limit\": \"int\", \"popitem\": \"tuple[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/f209eb25db75_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"key\": \"str\", \"value\": \"int\"}, \"attributes\": {\"limit\": \"int\", \"popitem\": \"tuple[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/f209eb25db75_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"key\": \"str\", \"value\": \"int\"}, \"attributes\": {\"limit\": \"int\", \"popitem\": \"tuple[str, int]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-bases/programs/f209eb25db75_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "esbmc_refused_members_stubbed:_esbmc_collections_OrderedDict"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-bases/programs/f209eb25db75_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 15.468
+    }
+  ]
+}

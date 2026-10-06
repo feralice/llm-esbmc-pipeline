@@ -1,0 +1,10 @@
+{
+  "pasta": "agent-arm-smoke",
+  "modificado_em": "2026-09-29T13:44",
+  "arquivos": [
+    "agent_results.json"
+  ],
+  "vereditos (agent_results.json)": {
+    "ESBMC_ERROR": 1
+  }
+}

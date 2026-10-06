@@ -1,0 +1,2036 @@
+{
+  "config": {
+    "model": "gpt-5.5",
+    "backend": "openai",
+    "synth_backend": "openai",
+    "synth_model": "gpt-5.5",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_19.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_20.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_21.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_22.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_23.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_24.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_25.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_26.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_28.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_32.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_33.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_34.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ir_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ir_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ir_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ir_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_18.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_19.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_20.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_21.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_22.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_23.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_24.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/nm_real_25.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_16.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/vm_real_08.py"
+    ],
+    "excluded_patch_context_files": 12,
+    "verification_sources": "dataset/v2_real_world/detection_full",
+    "verification_sources_strict": false,
+    "spec_strategy": "repair",
+    "bound": 5,
+    "timeout": 180,
+    "llm_timeout": 300,
+    "esbmc_command": [
+      "/usr/local/bin/esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "partial",
+    "stage": "detection"
+  },
+  "detection": {
+    "analyzed_units": 124,
+    "hypotheses": 44,
+    "failed_units": 96,
+    "errors": [
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_11.py",
+        "function": "HTTPBearer.__call__",
+        "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_14.py",
+        "function": "TimeseriesGenerator.__len__",
+        "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_15.py",
+        "function": "EmptyLineTracker.maybe_empty_lines",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_16.py",
+        "function": "pivot",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_17.py",
+        "function": "response_status_message",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_18.py",
+        "function": "croniter._get_low_from_current_date_number",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_19.py",
+        "function": "VersionInfo.__getitem__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_20.py",
+        "function": "generate_sub_moved_events",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_21.py",
+        "function": "SortedDict.__eq__",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_21.py",
+        "function": "SortedDict.__ne__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_22.py",
+        "function": "match",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_23.py",
+        "function": "Task.to_str_params",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_24.py",
+        "function": "CentralPlannerScheduler.get_work",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_25.py",
+        "function": "SimpleTaskState.get_necessary_tasks",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_26.py",
+        "function": "Scheduler.add_task",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_28.py",
+        "function": "IOLoop.initialize",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_32.py",
+        "function": "date_convert",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_33.py",
+        "function": "send2trash",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_34.py",
+        "function": "find_hook",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_34.py",
+        "function": "run_hook",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "gamma",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_01.py",
+        "function": "lgamma",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_02.py",
+        "function": "module-level",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_03.py",
+        "function": "try_match_char_class_range",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ir_real_05.py",
+        "function": "string_to_int",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_01.py",
+        "function": "Session.update_headers",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_02.py",
+        "function": "tqdm.format_meter",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_03.py",
+        "function": "FacebookIE._real_extract",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_04.py",
+        "function": "OffsiteMiddleware.get_host_regex",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_05.py",
+        "function": "Response.follow",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_06.py",
+        "function": "create_instance",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_07.py",
+        "function": "url_concat",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_08.py",
+        "function": "Request.url_for",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_09.py",
+        "function": "tqdm.__len__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_10.py",
+        "function": "S3CopyToTable.copy",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_11.py",
+        "function": "LocalCache.__setitem__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_12.py",
+        "function": "PamdService.remove",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_13.py",
+        "function": "AsyncHTTPClient.close",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_14.py",
+        "function": "request_httprepr",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_15.py",
+        "function": "APIRouter.include_router",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_17.py",
+        "function": "_type",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_18.py",
+        "function": "after_log",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_18.py",
+        "function": "after_log.log_it",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_19.py",
+        "function": "IsFile",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_20.py",
+        "function": "engine.numwords",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_21.py",
+        "function": "_Projection.get_index",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_22.py",
+        "function": "run",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_23.py",
+        "function": "Markdown._html_class_str_from_tag",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_24.py",
+        "function": "reformat_many",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/nm_real_25.py",
+        "function": "HTTP1Connection._can_keep_alive",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_01.py",
+        "function": "get_new_command",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_02.py",
+        "function": "match",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_03.py",
+        "function": "get_new_command",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_04.py",
+        "function": "SortedCorrectedCommandsSequence._realise",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_05.py",
+        "function": "lib2to3_parse",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_06.py",
+        "function": "merge_configs",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_09.py",
+        "function": "parser._parse",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_10.py",
+        "function": "_wrap_text_to_colwidths",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_11.py",
+        "function": "wcswidth",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_12.py",
+        "function": "fast_float",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_13.py",
+        "function": "tokenize",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_14.py",
+        "function": "LinuxDistribution._parse_uname_content",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_15.py",
+        "function": "dfxp2srt",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_15.py",
+        "function": "dfxp2srt.parse_node",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_16.py",
+        "function": "IndexedSet._get_real_index",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_16.py",
+        "function": "IndexedSet.__getitem__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_01.py",
+        "function": "read_conllx",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_03.py",
+        "function": "_match_one",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_04.py",
+        "function": "str_to_int",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_05.py",
+        "function": "MailSender.send",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_06.py",
+        "function": "ContractsManager._clean_req",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_06.py",
+        "function": "ContractsManager._clean_req.eb_wrapper",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_07.py",
+        "function": "MarkerStyle._recache",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_08.py",
+        "function": "simple_separated_format",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_09.py",
+        "function": "_format",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_10.py",
+        "function": "MetricsHandler.get",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_11.py",
+        "function": "sitemap_urls_from_robots",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_11.py",
+        "function": "SitemapSpider._parse_sitemap",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_12.py",
+        "function": "S3CopyToTable.s3_load_path",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_12.py",
+        "function": "S3CopyToTable.run",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_13.py",
+        "function": "XmlItemExporter._export_xml_field",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/tm_real_13.py",
+        "function": "XmlItemExporter._xg_characters",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_01.py",
+        "function": "tqdm.format_meter",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_02.py",
+        "function": "Schema.validate",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_03.py",
+        "function": "_pipe",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_03.py",
+        "function": "Language.pipe",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_04.py",
+        "function": "YoutubeDL._build_format_filter",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_05.py",
+        "function": "LocalFileSystem.mkdir",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_05.py",
+        "function": "LocalFileSystem.move",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_06.py",
+        "function": "CrawlerRunner.__init__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_06.py",
+        "function": "CrawlerProcess.__init__",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_07.py",
+        "function": "fit_generator",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_08.py",
+        "function": "get_write_function",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_08.py",
+        "function": "get_write_function.write",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/vm_real_08.py",
+        "function": "get_write_function.write",
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}"
+      }
+    ],
+    "candidates": [
+      {
+        "file": "dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "native_runtime",
+        "expression": "param = params.get(param)",
+        "note": "The operand params is a free parameter and is dereferenced with .get before any type or capability check. There is no try/except around this statement. A concrete input such as params=None reaches line 2 and raises an AttributeError before any later guard can execute."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "explicit_assertion",
+        "expression": "assert isinstance(param, bool)",
+        "note": "After line 2, param is assigned from params.get(param), whose result is controlled by the external params mapping and key. No guard ensures the retrieved value is a bool before the assertion. A concrete input such as params={} with any key makes params.get return None, reaches the assertion, and violates it."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "native_runtime",
+        "expression": "command_option + separator + (true_value if param else false_value)",
+        "note": "The concatenation operands are free parameters, and the only guard is truthiness of separator. That guard does not ensure command_option, separator, or the selected true_value/false_value support compatible addition. A concrete input such as params={'k': True}, param='k', command_option='', separator=':', true_value=1 reaches line 5 and raises a TypeError when concatenating a string with an integer."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_02.py",
+        "function": "WebSocketHandler.set_nodelay",
+        "category": "explicit_assertion",
+        "expression": "assert self.stream is not None",
+        "note": "O operando self.stream é controlado por parâmetro livre via self, sem guarda anterior que impeça exatamente o valor None. A exceção AssertionError não é capturada na função. Um objeto self com stream igual a None passa pela entrada da função e causa falha diretamente no assert."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "category": "native_runtime",
+        "expression": "assert isinstance(self.index, PeriodIndex)",
+        "note": "The operand self.index is derived from the free parameter self and is not constrained locally. There is no preceding guard that blocks a non-PeriodIndex value on all paths, and no try/except catches the AssertionError. A concrete caller-provided self with an index attribute that is not an instance of PeriodIndex reaches the assertion and fails."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_05.py",
+        "function": "tqdm.__init__",
+        "category": "native_runtime",
+        "expression": "not file.isatty()",
+        "note": "O parâmetro livre file controla o receptor da chamada. A guarda existente verifica apenas hasattr(file, \"isatty\"), mas não bloqueia o caso em que o atributo existe e não é chamável; por exemplo, disable=None e file com isatty=1 passa pelos dois primeiros termos e causa TypeError na chamada. A exceção não é capturada neste ponto."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_05.py",
+        "function": "tqdm.__init__",
+        "category": "native_runtime",
+        "expression": "self.pos = -position",
+        "note": "O parâmetro livre position chega ao operador unário de negação no ramo else. A guarda só separa None de não-None e não bloqueia valores não numéricos; por exemplo, position=\"x\" alcança esse ramo e a expressão -position causa TypeError. Não há try/except envolvendo essa operação."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "category": "native_runtime",
+        "expression": "command.script",
+        "note": "The parameter command is free and is dereferenced directly via command.script. There is no guard before the dereference, and no try/except catches AttributeError. A concrete value such as command=None reaches line 2 and causes an exception."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "category": "native_runtime",
+        "expression": "'ls' in command.script",
+        "note": "The value of command.script is derived from the free parameter command and is used as the right operand of a membership test. There is no guard requiring it to be iterable or compatible with a str membership operand, and no try/except catches TypeError. A concrete object with script=None reaches the expression and causes a runtime exception."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "native_runtime",
+        "expression": "getattr(self.axes, lim_name)",
+        "note": "O operando lim_name vem do parâmetro livre de target_function e é usado diretamente como nome de atributo. Não há guarda que impeça lim_name de ser não-string; por exemplo, com lim_name=0 e um self que possua axes, a chamada a getter(self) alcança esta expressão e getattr levanta TypeError sem captura."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "native_runtime",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "note": "O operando attr_name vem do parâmetro livre de target_function e é usado diretamente como nome de atributo. Não há guarda que bloqueie attr_name não-string; por exemplo, com lim_name apontando para um atributo existente e attr_name=0, getter(self) alcança esta expressão e getattr levanta TypeError sem captura."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "native_runtime",
+        "expression": "oldmin, oldmax = getter(self)",
+        "note": "No caminho ignore=False, o retorno de getter(self) é desempacotado em dois valores sem validação. Há valores concretos que passam pela guarda, como um atributo alvo contendo 5, em que getter(self) retorna um não-iterável e o desempacotamento levanta TypeError sem captura."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "native_runtime",
+        "expression": "oldmin < oldmax",
+        "note": "Após o desempacotamento, oldmin e oldmax são comparados diretamente. Não há guarda de tipo ou comparabilidade; por exemplo, se getter(self) retornar (0, \"a\"), a expressão oldmin < oldmax é alcançada e levanta TypeError sem captura."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "native_runtime",
+        "expression": "setter(self, min(vmin, vmax, oldmin), max(vmin, vmax, oldmax), ignore=True)",
+        "note": "Mesmo quando a guarda oldmin < oldmax é verdadeira, vmin e vmax vêm de parâmetros livres de setter e são passados a min/max sem validação. Por exemplo, com oldmin=0, oldmax=1, vmin=\"a\" e vmax=\"b\", a chamada a min(vmin, vmax, oldmin) é alcançada e levanta TypeError sem captura."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "native_runtime",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "note": "The parameter self is unconstrained and is dereferenced via self.axes with no guard and no try/except. A concrete call such as target_function(object()) reaches the return expression and raises AttributeError because object() has no axes attribute; if lim_name or attr_name are absent or invalid, the same expression can also fail at runtime. The failure is directly reachable from the free parameter without any blocking condition."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "explicit_assertion",
+        "expression": "return self._read_fixed_body(content_length, delegate)",
+        "note": "O valor de content_length vem de headers['Content-Length'] via int(...) e pode ser controlado pelo parâmetro headers. A guarda existente só rejeita valores maiores que self._max_body_size; ela não bloqueia valores negativos. Um caso concreto como code=200, headers={'Content-Length': '-1'} e self._max_body_size=0 passa pelas guardas e chama _read_fixed_body com content_length=-1."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "expression": "command.script",
+        "note": "The operand command is a free parameter and is dereferenced without any prior guard. There is no try/except around the return statement. A concrete call with command=None reaches this expression and raises AttributeError before any slicing or concatenation occurs."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "expression": "command.script[5:]",
+        "note": "The value command.script is derived from the free parameter command and is sliced without a type or capability check. There is no guard that ensures the attribute is a subscriptable/sliceable object, and no exception handler is present. A concrete object with script=None reaches this expression and raises TypeError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "expression": "'open http://' + command.script[5:]",
+        "note": "The right operand of the string concatenation comes from the free parameter command through command.script and is not constrained to produce a string after slicing. No guard enforces the result type, and the exception is not caught. A concrete object with script=[0, 1, 2, 3, 4, 5] reaches the concatenation with a list slice and raises TypeError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "category": "native_runtime",
+        "expression": "date_str = date_str.replace(',', ' ')",
+        "note": "O parâmetro date_str é livre e a única guarda bloqueia apenas None. Um valor concreto como date_str=1 passa pela guarda e alcança a chamada date_str.replace(',', ' '), que levanta AttributeError porque int não possui replace. Não há try/except envolvendo essa operação."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "category": "differential_assertion",
+        "expression": "date_str = re.sub('(?i)\\\\s*(?:AM|PM)(?:\\\\s+[A-Z]+)?', '', date_str)",
+        "note": "O parâmetro date_str controla diretamente a substituição e não há guarda que preserve sufixos AM/PM. Um valor concreto como date_str='Jan 1st 2020 01:30PM' tem o 'PM' removido antes do laço, embora a própria lista de formatos contenha '%b %dst %Y %I:%M%p', que exigiria esse sufixo para produzir '20200101'. Assim, a entrada passa pelas guardas mas o resultado fica diferente do comportamento pretendido indicado pelo formato listado."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "category": "native_runtime",
+        "expression": "upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')",
+        "note": "O parâmetro date_str pode alcançar parsedate_tz quando nenhum formato anterior define upload_date. Um valor concreto como date_str='32 Jan 2020' pode produzir um timetuple truthy com dia 32, passando pela guarda if timetuple, mas datetime.datetime(*timetuple[:6]) levanta ValueError por data inválida. Essa chamada não está protegida por try/except."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "native_runtime",
+        "expression": "if x[0] != 0.0 or x[-1] != 1.0:",
+        "note": "O parâmetro data pode produzir um array com shape (0, 3), que passa pela guarda de dimensionalidade porque len(shape) == 2 e shape[1] == 3. Nesse caminho, x = adata[:, 0] é vazio, e a expressão x[0] é avaliada antes de qualquer guarda de quantidade de linhas. A exceção não é capturada após o bloco try inicial."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "native_runtime",
+        "expression": "xind = (N - 1) * np.linspace(0, 1, N) ** gamma",
+        "note": "O parâmetro N é livre e alcança np.linspace como número de amostras sem validação. Um valor concreto como N = -1, com data em formato nx3 válido, passa pelas guardas anteriores e faz np.linspace(0, 1, N) lançar exceção por quantidade negativa de amostras. Essa exceção não está dentro de try/except."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "native_runtime",
+        "expression": "distance = (xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+        "note": "O parâmetro gamma é livre e não há guarda que impeça valores negativos. Com N = 3, gamma = -1 e data válido com pontos x [0, 1], o valor interior de xind fica maior que o último x escalado; np.searchsorted então pode produzir ind == len(x). Esse valor passa até x[ind] na linha 23, causando acesso fora dos limites, e não há try/except envolvendo essa operação."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "native_runtime",
+        "expression": "possible_substrings_splits[i]",
+        "note": "O índice i é derivado apenas de len(possible_parsed_splits), enquanto possible_substrings_splits é um parâmetro livre independente. Não há guarda garantindo que possible_substrings_splits tenha pelo menos o mesmo comprimento. Um valor concreto como possible_parsed_splits=[[]] e possible_substrings_splits=[] passa pela guarda do loop e causa IndexError nesta expressão."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "native_runtime",
+        "expression": "item['date_obj']",
+        "note": "O valor item vem de possible_parsed_splits, que é parâmetro livre, e é indexado pela chave 'date_obj' sem validação local. A iteração apenas garante que item é um elemento da lista, não que seja um dicionário com essa chave. Um valor concreto como possible_parsed_splits=[[{}]] e possible_substrings_splits=[['1']] alcança a linha e causa KeyError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "native_runtime",
+        "expression": "possible_substrings_splits[i][j]",
+        "note": "O índice j é controlado pelo comprimento de possible_parsed_splits[i], mas é usado para acessar possible_substrings_splits[i]. A linha 5 apenas calcula len(possible_substrings_splits[i]) e não impede que essa lista interna seja menor que possible_parsed_splits[i]. Um valor concreto como possible_parsed_splits=[[{'date_obj': None}]] e possible_substrings_splits=[[]] alcança a expressão e causa IndexError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "native_runtime",
+        "expression": "float(not_parsed) / float(num_substrings)",
+        "note": "num_substrings é calculado a partir de possible_substrings_splits[i], que é controlado por parâmetro livre. Não há guarda impedindo que esse comprimento seja zero antes da divisão. Um valor concreto como possible_parsed_splits=[[]] e possible_substrings_splits=[[]] alcança a linha 13 e causa divisão por zero."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "native_runtime",
+        "expression": "return (possible_parsed_splits[best_index], possible_substrings_splits[best_index])",
+        "note": "best_index só é atribuído dentro do loop sobre range(len(possible_parsed_splits)). Se possible_parsed_splits for vazio, o loop não executa e a função ainda tenta usar best_index no retorno. Um valor concreto como possible_parsed_splits=[] e possible_substrings_splits=[] alcança o return e causa UnboundLocalError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "native_runtime",
+        "expression": "binascii.crc32(hash_id)",
+        "note": "O parâmetro hash_id é livre e seu valor padrão é None. No caminho em que hash_type != 'r', por exemplo com hash_type='h', range_begin=0, range_end=1 e idx=0, a execução alcança binascii.crc32(hash_id) sem uma guarda que exclua None ou outros tipos inválidos. Essa chamada levanta exceção antes do retorno."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "native_runtime",
+        "expression": "crc >> idx",
+        "note": "O parâmetro idx é livre e é usado diretamente como contagem de deslocamento. Com hash_type='r', range_begin=0, range_end=1 e idx=-1, as atribuições anteriores não acessam self.cron.RANGES e a execução alcança crc >> idx. Não há guarda que bloqueie idx negativo, e Python levanta exceção para deslocamento negativo."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "native_runtime",
+        "expression": "(crc >> idx) % (range_end - range_begin + 1)",
+        "note": "Os parâmetros range_end e range_begin são livres quando fornecidos pelo chamador e são usados diretamente como divisor do módulo. Com hash_type='r', idx=0, range_begin=1 e range_end=0, a execução alcança a expressão de módulo e o divisor calculado é zero. Não há guarda que impeça range_end == range_begin - 1."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_04.py",
+        "function": "interpolate_bilinear_2x_fwd",
+        "category": "native_runtime",
+        "expression": "math.ceil((h_src - wdw_size) / step_size) + 1",
+        "note": "`chunk_size` is a free parameter and is assigned to `wdw_size`, then `step_size` is computed as `wdw_size - 1`. There is no guard preventing `chunk_size == 1`, so `step_size` can be zero. With `chunk_size = 1`, the expression divides by zero before entering the loop, and there is no try/except catching the exception."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/io_real_01.py",
+        "function": "nonsingular",
+        "category": "native_runtime",
+        "expression": "maxabsvalue < 1000000.0 / tiny * np.finfo(float).tiny",
+        "note": "O operando `tiny` é um parâmetro livre e é usado como divisor em `1000000.0 / tiny`. A única guarda anterior verifica finitude de `vmin` e `vmax`, mas não restringe `tiny`; portanto um caso concreto como `vmin=1.0`, `vmax=2.0`, `tiny=0.0` passa pela guarda anterior e causa divisão por zero nesta expressão. Não há `try/except` capturando a exceção."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/io_real_02.py",
+        "function": "integer_squareroot",
+        "category": "native_runtime",
+        "expression": "y = (x + 1) // 2",
+        "note": "O operando x vem diretamente do parâmetro livre n pela atribuição x = n. Não há guarda antes da expressão que exclua n = UINT64_MAX; nesse caso, x + 1 excede o intervalo de uint64 antes da divisão por 2. A expressão não está dentro de try/except, então a falha é alcançável com n = UINT64_MAX."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_03.py",
+        "function": "Selector.__init__",
+        "category": "native_runtime",
+        "expression": "text = response.text",
+        "note": "The parameter response is free and reaches the attribute access when text is None and response is not None. The only local guard excludes None, but an object without a text attribute still satisfies it and the AttributeError is not caught."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_03.py",
+        "function": "Selector.__init__",
+        "category": "native_runtime",
+        "expression": "kwargs.setdefault('base_url', response.url)",
+        "note": "The parameter response is free and can pass the non-None guard while lacking a url attribute. A concrete object with a text attribute but no url attribute reaches this statement after line 13 succeeds, and evaluating response.url raises an uncaught AttributeError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_06.py",
+        "function": "_unstack_multiple",
+        "category": "native_runtime",
+        "expression": "len(clocs)",
+        "note": "clocs é um parâmetro livre e a primeira operação executada sobre ele é len(clocs), antes de qualquer normalização. Não há guarda que bloqueie valores escalares sem comprimento, e a exceção não é capturada por try/except. Um valor concreto como clocs=0 alcança a linha 2 e causa TypeError."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "expression": "entity in compat_html_entities.name2codepoint",
+        "note": "O parâmetro entity é livre e chega diretamente ao teste de pertinência. Não há guarda anterior que restrinja entity a tipos hashable, e a expressão não está protegida por try/except. Um valor concreto como entity=[] alcança a linha 2 e causa TypeError por uso de objeto unhashable em lookup de dicionário."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "expression": "re.match('#(x[0-9a-fA-F]+|[0-9]+)', entity)",
+        "note": "O parâmetro entity é livre e, se não retornar no lookup inicial, é passado diretamente para re.match com um padrão str. A guarda anterior apenas testa pertinência em name2codepoint e não garante que entity seja string. Um valor concreto hashable e não string, como entity=None ou entity=1, pode passar pela guarda inicial e causar TypeError em re.match."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "expression": "compat_chr(int(numstr, base))",
+        "note": "O valor numérico vem de entity por meio do grupo da regex e não há limite superior para o codepoint aceito. A regex permite valores hexadecimais ou decimais arbitrariamente grandes, e nenhuma guarda verifica o intervalo válido de caracteres antes da chamada. Um valor concreto como entity='#x110000' passa pelas guardas, produz int(numstr, base) == 0x110000 e causa falha se compat_chr tiver a semântica de chr/unichr para codepoints fora do intervalo."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_10.py",
+        "function": "_get_spider_loader",
+        "category": "native_runtime",
+        "expression": "settings.get('SPIDER_MANAGER_CLASS')",
+        "note": "O parâmetro livre settings é dereferenciado diretamente pela chamada settings.get sem uma guarda anterior. Não há try/except envolvendo a expressão, e um valor concreto como settings=None passa por nenhuma guarda e causa AttributeError antes de qualquer helper externo ser chamado."
+      },
+      {
+        "file": "dataset/v2_real_world/detection/ip_real_13.py",
+        "function": "StaticFileHandler.get",
+        "category": "explicit_assertion",
+        "expression": "assert self.request.method == 'HEAD'",
+        "note": "The parameter include_body is free and selecting include_body=False reaches the else branch. There is no preceding guard that forces self.request.method to be 'HEAD' on that path, and the assertion is not inside a try/except. A concrete failing case is include_body=False with self.request.method equal to 'GET', assuming earlier normal-returning method calls do not take an early return."
+      }
+    ],
+    "rejected_findings": [],
+    "trace": [
+      {
+        "function": "cli_bool_option",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "WebSocketHandler.set_nodelay",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "Series.to_timestamp",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "tqdm.__init__",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_make_getset_interval",
+        "strategy": "single",
+        "located_candidates": 5,
+        "classified_candidates": 5,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_make_getset_interval.getter",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_make_getset_interval.setter",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "HTTP1Connection._read_body",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "unified_strdate",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "makeMappingArray",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "ExactLanguageSearch.choose_best_split",
+        "strategy": "single",
+        "located_candidates": 5,
+        "classified_candidates": 5,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "HashExpander.do",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "interpolate_bilinear_2x_fwd",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "nonsingular",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "integer_squareroot",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "Request._set_url",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "Selector.__init__",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "HTTP1Connection.write_headers",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_Alpha.__gt__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_Alpha.__ge__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_Numeric.__gt__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_Numeric.__ge__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_unstack_multiple",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_htmlentity_transform",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "_get_spider_loader",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "HTTPBearer.__call__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "StaticFileHandler.get",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      },
+      {
+        "function": "TimeseriesGenerator.__len__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha de rede ao chamar OpenAI Responses API: [Errno -3] Temporary failure in name resolution",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "EmptyLineTracker.maybe_empty_lines",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "pivot",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "response_status_message",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "croniter._get_low_from_current_date_number",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "VersionInfo.__getitem__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "generate_sub_moved_events",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "SortedDict.__eq__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Remote end closed connection without response",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "SortedDict.__ne__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Task.to_str_params",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "CentralPlannerScheduler.get_work",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "SimpleTaskState.get_necessary_tasks",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Scheduler.add_task",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "IOLoop.initialize",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "date_convert",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "send2trash",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "find_hook",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "run_hook",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "gamma",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "lgamma",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "module-level",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "try_match_char_class_range",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "string_to_int",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Session.update_headers",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "tqdm.format_meter",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Remote end closed connection without response",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "FacebookIE._real_extract",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "OffsiteMiddleware.get_host_regex",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Response.follow",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "create_instance",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "url_concat",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Remote end closed connection without response",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Request.url_for",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "tqdm.__len__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "S3CopyToTable.copy",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "LocalCache.__setitem__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "PamdService.remove",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "AsyncHTTPClient.close",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "request_httprepr",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "APIRouter.include_router",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "_type",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "after_log",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "after_log.log_it",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "IsFile",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "engine.numwords",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "_Projection.get_index",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "run",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Markdown._html_class_str_from_tag",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "reformat_many",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "HTTP1Connection._can_keep_alive",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Remote end closed connection without response",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "SortedCorrectedCommandsSequence._realise",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "lib2to3_parse",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "merge_configs",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "parser._parse",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "_wrap_text_to_colwidths",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "wcswidth",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "fast_float",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "tokenize",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "LinuxDistribution._parse_uname_content",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "dfxp2srt",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "dfxp2srt.parse_node",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "IndexedSet._get_real_index",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "IndexedSet.__getitem__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "read_conllx",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "HiveCommandClient.table_exists",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "_match_one",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "str_to_int",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "MailSender.send",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Remote end closed connection without response",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "ContractsManager._clean_req",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "ContractsManager._clean_req.eb_wrapper",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "MarkerStyle._recache",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "simple_separated_format",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "_format",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "MetricsHandler.get",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "sitemap_urls_from_robots",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "SitemapSpider._parse_sitemap",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "S3CopyToTable.s3_load_path",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "S3CopyToTable.run",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "XmlItemExporter._export_xml_field",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "XmlItemExporter._xg_characters",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "tqdm.format_meter",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Schema.validate",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "_pipe",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "Language.pipe",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "YoutubeDL._build_format_filter",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "LocalFileSystem.mkdir",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Remote end closed connection without response",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "LocalFileSystem.move",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "CrawlerRunner.__init__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "CrawlerProcess.__init__",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "fit_generator",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "get_write_function",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "get_write_function.write",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      },
+      {
+        "function": "get_write_function.write",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0,
+        "error": "Falha ao chamar OpenAI Responses API: 429 {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}",
+        "failure_stage": "detection"
+      }
+    ],
+    "trace_summary": {
+      "units": 124,
+      "located_candidates": 44,
+      "classified_candidates": 44,
+      "rejected_candidates": 0,
+      "localization_failures": 0,
+      "classification_failures": 0
+    }
+  },
+  "verification": {
+    "n": 0,
+    "by_verdict": {
+      "CONFIRMED": 0,
+      "ESBMC_MISSED": 0,
+      "UNVALIDATED": 0,
+      "OTHER_FAILURE": 0,
+      "NOT_CONFIRMED": 0,
+      "GROUNDING_FAILED": 0,
+      "MISSING_DEPENDENCY": 0,
+      "UNSUPPORTED": 0,
+      "SPEC_FAILED": 0,
+      "ESBMC_TIMEOUT": 0,
+      "ESBMC_ERROR": 0,
+      "PIPELINE_ERROR": 0,
+      "NO_SOURCE": 0
+    },
+    "reached_llm": 0,
+    "success_at_k": {
+      "1": null,
+      "2": null,
+      "3": null
+    }
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 126,
+      "failed_calls": 98,
+      "tokens": 116528,
+      "prompt_tokens": 53341,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 28,
+      "seconds": 2283.734,
+      "localization_calls": 0,
+      "classification_calls": 0,
+      "cache_hit_rate": 0.0
+    }
+  },
+  "results": []
+}

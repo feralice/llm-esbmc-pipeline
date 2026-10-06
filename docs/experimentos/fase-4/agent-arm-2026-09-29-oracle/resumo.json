@@ -1,0 +1,18 @@
+{
+  "pasta": "agent-arm-2026-09-29-oracle",
+  "modificado_em": "2026-09-29T14:34",
+  "arquivos": [
+    "agent-arm-2026-09-29-oracle.log",
+    "agent_results.json"
+  ],
+  "vereditos (agent_results.json)": {
+    "AGENT_FAILED": 6,
+    "CONFIRMED": 4,
+    "UNVALIDATED": 9,
+    "UNSUPPORTED": 17,
+    "NOT_CONFIRMED": 9,
+    "ESBMC_TIMEOUT": 2,
+    "MISSING_DEPENDENCY": 1,
+    "OTHER_FAILURE": 1
+  }
+}

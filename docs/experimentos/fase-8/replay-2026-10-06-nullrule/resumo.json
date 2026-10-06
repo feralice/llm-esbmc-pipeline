@@ -1,0 +1,12 @@
+{
+  "pasta": "replay-2026-10-06-nullrule",
+  "modificado_em": "2026-10-06T10:37",
+  "arquivos": [
+    "replay_specs_0of1.json",
+    "report_0of1.json"
+  ],
+  "vereditos (report_0of1.json)": {
+    "NOT_CONFIRMED": 8,
+    "ESBMC_MISSED": 1
+  }
+}

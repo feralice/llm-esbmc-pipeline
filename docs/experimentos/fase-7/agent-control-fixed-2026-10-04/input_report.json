@@ -1,0 +1,214 @@
+{
+ "results": [
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_02.py",
+    "function": "WebSocketHandler.set_nodelay",
+    "suspect_expression": "assert self.stream is not None",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "9791fef294e6"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in WebSocketHandler.set_nodelay",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.009
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_03.py",
+    "function": "Series.to_timestamp",
+    "suspect_expression": "assert isinstance(self.index, PeriodIndex)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "7fa63f4b93e4"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Series.to_timestamp",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.016
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_12.py",
+    "function": "PamdService.remove",
+    "suspect_expression": "current_line.next.prev = current_line.prev",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "7f57559b6887"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot resolve nested attribute: next",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"rule_type\": \"object\", \"rule_control\": \"object\", \"rule_path\": \"object\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"rule_type\": \"object\", \"rule_control\": \"object\", \"rule_path\": \"object\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"current_line.next\": \"object\", \"current_line.prev\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: next",
+     "ignored": [
+      "stub current_line.next",
+      "stub current_line.prev"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"rule_type\": \"object\", \"rule_control\": \"object\", \"rule_path\": \"object\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"current_line.next\": \"Optional[object]\", \"current_line.prev\": \"Optional[object]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: next",
+     "ignored": [
+      "stub current_line.next",
+      "stub current_line.prev"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:add_module_arguments,append,get,has_rule,insert_after,insert_before,remove_module_arguments,update_rule,validate"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 16.584
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/vm_real_06.py",
+    "function": "CrawlerProcess.__init__",
+    "suspect_expression": "configure_logging(settings)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "variable_misuse",
+    "hypothesis_id": "203a38091db1"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in CrawlerProcess.__init__",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_14.py",
+    "function": "TimeseriesGenerator.__len__",
+    "suspect_expression": "self.end_index - self.start_index",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "6a68dc0d3c17"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"list[int]\", \"range\": \"list[int]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"int\", \"range\": \"list[int]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"int\", \"range\": \"list[int]\"}, \"assumptions\": [\"self.end_index >= self.start_index\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_empty_batch",
+    "stubbed_imports:Sequence,np,range",
+    "external_chains_flattened:np_random"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 9.207
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_05.py",
+    "function": "lib2to3_parse",
+    "suspect_expression": "src_txt[-1]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "98817400561e"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in lib2to3_parse",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.018
+  }
+ ]
+}

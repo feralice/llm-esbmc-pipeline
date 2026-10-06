@@ -1,0 +1,366 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/av_real_17.py",
+        "function": "unified_strdate",
+        "suspect_expression": "upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')",
+        "line": 0,
+        "trigger_condition": "date_str is a free parameter. email.utils.parsedate_tz does not validate calendar ranges, so '31 Feb 2020 10:00:00' or '1 Jan 2020 25:00:00' yields a truthy tuple with day 31 in Feb or hour 25. The guard `if timetuple` only checks non-None. datetime.datetime(*timetuple[:6]) then raises ValueError, and this call sits outside the try/except that protects strptime.",
+        "category": "",
+        "hypothesis_id": "61b022bf446a"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108; unwinding assertion loop 131",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"date_str\": \"str\", \"day_first\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_sub\": \"str\", \"compat_str\": \"str\", \"email_utils.parsedate_tz\": \"Optional[tuple[int, int, int, int, int, int, int, int, int, int]]\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/25487e9a161b_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "artifact",
+          "message": "unwinding assertion loop 108; unwinding assertion loop 131",
+          "unwind": 10
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,email,shlex_quote",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/25487e9a161b_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "not executed on host: imports datetime"
+      },
+      "tokens": 0,
+      "seconds": 283.658
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_15.py",
+        "function": "_safe_ParseResult",
+        "suspect_expression": "to_native_str(parts.netloc.encode('idna'))",
+        "line": 0,
+        "trigger_condition": "parts.netloc comes from the caller with no constraint. Python's idna codec raises UnicodeError ('label empty or too long') for an empty label or a label over 63 characters. Netloc 'example..com' passes every path with no guard or try/except and raises. The rule depends only on the argument string.",
+        "category": "",
+        "hypothesis_id": "b8edde5a7e1e"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"parts\": \"object\", \"encoding\": \"str\", \"path_encoding\": \"str\"}, \"attributes\": {}, \"stubs\": {\"parts.scheme\": \"str\", \"parts.netloc\": \"str\", \"parts.path\": \"str\", \"parts.params\": \"str\", \"parts.query\": \"str\", \"parts.fragment\": \"str\", \"_safe_chars\": \"str\", \"quote\": \"str\", \"to_bytes\": \"bytes\", \"to_native_str\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/2cc3e92f07c8_a0_replay.py",
+          "esbmc_status": "no_violation_found",
+          "reading": "safe",
+          "message": "no_violation_found",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:ParseResult,_safe_chars,parse_qsl,quote,to_bytes,to_native_str,to_unicode,unquote,urldefrag,urlencode,urlparse,urlunparse"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/2cc3e92f07c8_a0.py",
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 400,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 8.748
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_15.py",
+        "function": "_safe_ParseResult",
+        "suspect_expression": "quote(to_bytes(parts.path, path_encoding), _safe_chars)",
+        "line": 0,
+        "trigger_condition": "path_encoding and encoding are free parameters, and parts.path/params/query/fragment are free strings. If the encoding cannot represent a character (e.g. encoding='ascii' with path 'caf\u00e9', or a lone surrogate with utf8), str.encode with strict errors raises UnicodeEncodeError. An unknown encoding name raises LookupError. Nothing guards or catches either one.",
+        "category": "",
+        "hypothesis_id": "ddcad8260108"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"parts\": \"object\", \"encoding\": \"str\", \"path_encoding\": \"str\"}, \"attributes\": {}, \"stubs\": {\"_safe_chars\": \"bytes\", \"quote\": \"str\", \"to_bytes\": \"bytes\", \"to_native_str\": \"str\", \"parts.scheme\": \"str\", \"parts.netloc\": \"str\", \"parts.path\": \"str\", \"parts.params\": \"str\", \"parts.query\": \"str\", \"parts.fragment\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/80476c835e23_a0_replay.py",
+          "esbmc_status": "no_violation_found",
+          "reading": "safe",
+          "message": "no_violation_found",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:ParseResult,_safe_chars,parse_qsl,quote,to_bytes,to_native_str,to_unicode,unquote,urldefrag,urlencode,urlparse,urlunparse"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/80476c835e23_a0.py",
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 400,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 7.969
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_21.py",
+        "function": "RobotsTxtMiddleware._robots_error",
+        "suspect_expression": "self._parsers.pop(netloc).callback(None)",
+        "line": 0,
+        "trigger_condition": "netloc is a free parameter and self._parsers is object state. dict.pop(key) with no default raises KeyError when the key is absent. No guard or try/except surrounds the call. Any netloc not registered in self._parsers (for example a second failure for the same netloc, after the first call already popped it) reaches the pop and raises.",
+        "category": "",
+        "hypothesis_id": "2abbc0787351"
+      },
+      "verdict": "ESBMC_MISSED",
+      "reason": "unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 28",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"failure\": \"object\", \"netloc\": \"str\"}, \"attributes\": {\"_parsers\": \"dict[str, object]\"}, \"stubs\": {}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/e52278d4bcdc_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "artifact",
+          "message": "unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 28",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_logerror,_parse_robots,from_crawler,process_request,process_request_2,robot_parser",
+        "opaque_values"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/e52278d4bcdc_a0.py",
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "KeyError",
+        "line": 31,
+        "runs": 1,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 220.049
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+        "function": "urljoin",
+        "suspect_expression": "base = base.decode('utf-8')",
+        "line": 0,
+        "trigger_condition": "With a valid non-empty `path` that does not start with a scheme or '//', execution reaches the `base` decode. A `base` such as b'\\xff' raises UnicodeDecodeError. The error is uncaught, while the later checks return None for invalid `base`.",
+        "category": "",
+        "hypothesis_id": "1c2e21d2f6c6"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"base\": \"bytes\", \"path\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_urlparse.urljoin\": \"str\"}, \"assumptions\": [\"len(path) > 0\"]}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/b00c3891e98a_a0_replay.py",
+          "esbmc_status": "no_violation_found",
+          "reading": "safe",
+          "message": "no_violation_found",
+          "unwind": 20
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/b00c3891e98a_a0.py",
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 4,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 21.886
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+        "function": "urljoin",
+        "suspect_expression": "return compat_urlparse.urljoin(base, path)",
+        "line": 0,
+        "trigger_condition": "`base` = 'http://[abc' passes the prefix regex and `path` = 'x' is a non-empty relative path. `urljoin` calls `urlparse`, which raises ValueError('Invalid IPv6 URL') for an unbalanced bracket in the netloc. The regex does not check the netloc, so the error escapes uncaught.",
+        "category": "",
+        "hypothesis_id": "729a91d0a090"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"base\": \"str\", \"path\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_urlparse.urljoin\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/8fb8b1ff3eb1_a0_replay.py",
+          "esbmc_status": "no_violation_found",
+          "reading": "safe",
+          "message": "no_violation_found",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/8fb8b1ff3eb1_a0.py",
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 4,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 10.014
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py",
+        "function": "urljoin",
+        "suspect_expression": "return compat_urlparse.urljoin(base, path)",
+        "line": 0,
+        "trigger_condition": "base and path are free parameters. base='//[' passes the prefix regex and path='x' is a non-empty str that does not match the absolute-URL regex, so both guards are bypassed. urljoin then calls urlparse(base), and urlsplit raises ValueError('Invalid IPv6 URL') because the netloc contains '[' without ']'. Nothing catches the exception, so the function raises instead of returning None as it does for other invalid bases.",
+        "category": "",
+        "hypothesis_id": "0a27be725de8"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"base\": \"str\", \"path\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_urlparse.urljoin\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/775f59a688f1_a0_replay.py",
+          "esbmc_status": "no_violation_found",
+          "reading": "safe",
+          "message": "no_violation_found",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/775f59a688f1_a0.py",
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 4,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 10.471
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_41.py",
+        "function": "unified_strdate",
+        "suspect_expression": "date_str = date_str.replace(',', ' ')",
+        "line": 0,
+        "trigger_condition": "date_str is a free parameter and nothing checks its type before .replace. A caller passing None, for example from a missing metadata field, raises AttributeError at once. No try/except covers this line.",
+        "category": "",
+        "hypothesis_id": "ef639b3fabe3"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"date_str\": \"str\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_sub\": \"str\", \"email_utils.parsedate_tz\": \"Optional[tuple[int]]\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/9834c82bf250_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "artifact",
+          "message": "unwinding assertion loop 108",
+          "unwind": 10
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:email",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/9834c82bf250_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "not executed on host: imports datetime"
+      },
+      "tokens": 0,
+      "seconds": 301.179
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_41.py",
+        "function": "unified_strdate",
+        "suspect_expression": "upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')",
+        "line": 0,
+        "trigger_condition": "The guard only checks that parsedate_tz returned a non-empty tuple. It does not check that the fields form a valid date. An input such as '32 Jan 2020 00:00:00' matches none of the strptime formats and is parsed by parsedate_tz into day 32. datetime.datetime(2020, 1, 32, ...) then raises ValueError ('day is out of range for month'), and nothing catches it.",
+        "category": "",
+        "hypothesis_id": "6d754f42710f"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"date_str\": \"str\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_sub\": \"str\", \"email_utils.parsedate_tz\": \"Optional[tuple[int]]\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/405d014ea668_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "artifact",
+          "message": "unwinding assertion loop 108",
+          "unwind": 10
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:email",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-06-nullrule/programs/405d014ea668_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "not executed on host: imports datetime"
+      },
+      "tokens": 0,
+      "seconds": 293.228
+    }
+  ]
+}

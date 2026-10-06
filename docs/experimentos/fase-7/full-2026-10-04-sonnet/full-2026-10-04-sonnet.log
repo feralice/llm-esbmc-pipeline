@@ -1,0 +1,1740 @@
+
+Modo V2 — etapa 1: detecção em 277 arquivo(s)
+  [1/277] Analisando av_real_01.py::cli_bool_option...
+  [2/277] Analisando av_real_02.py::WebSocketHandler.set_nodelay...
+  [3/277] Analisando av_real_03.py::Series.to_timestamp...
+  [4/277] Analisando av_real_05.py::tqdm.__init__...
+  [5/277] Analisando av_real_07.py::match...
+  [6/277] Analisando av_real_09.py::_make_getset_interval...
+  [6/277] Analisando av_real_09.py::_make_getset_interval.getter...
+  [6/277] Analisando av_real_09.py::_make_getset_interval.setter...
+  [7/277] Analisando av_real_11.py::HTTP1Connection._read_body...
+  [8/277] Analisando av_real_14.py::get_new_command...
+  [9/277] Analisando av_real_17.py::unified_strdate...
+  [10/277] Analisando bip_ansible_1.py::verify_collections...
+  [11/277] Analisando bip_ansible_16.py::LinuxHardware.get_cpu_facts...
+  [12/277] Analisando bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian...
+  [13/277] Analisando bip_ansible_5.py::check_required_arguments...
+  [14/277] Analisando bip_black_13.py::generate_tokens...
+  [15/277] Analisando bip_black_16.py::gen_python_files_in_dir...
+  [16/277] Analisando bip_black_19.py::EmptyLineTracker._maybe_empty_lines...
+  [17/277] Analisando bip_black_2.py::generate_ignored_nodes...
+  [18/277] Analisando bip_black_20.py::format_file_in_place...
+  [19/277] Analisando bip_black_21.py::dump_to_file...
+  [20/277] Analisando bip_black_7.py::normalize_invisible_parens...
+  [21/277] Analisando bip_black_8.py::bracket_split_build_line...
+  [22/277] Analisando bip_black_9.py::get_grammars...
+  [23/277] Analisando bip_cookiecutter_1.py::generate_context...
+  [24/277] Analisando bip_cookiecutter_3.py::read_user_choice...
+  [25/277] Analisando bip_fastapi_10.py::serialize_response...
+  [26/277] Analisando bip_fastapi_11.py::is_scalar_field...
+  [27/277] Analisando bip_fastapi_16.py::jsonable_encoder...
+  [28/277] Analisando bip_fastapi_2.py::APIRouter.add_api_websocket_route...
+  [29/277] Analisando bip_fastapi_4.py::get_openapi_path...
+  [30/277] Analisando bip_fastapi_5.py::create_cloned_field...
+  [31/277] Analisando bip_fastapi_9.py::get_body_field...
+  [32/277] Analisando bip_httpie_4.py::HTTPRequest.headers...
+  [33/277] Analisando bip_keras_10.py::standardize_weights...
+  [34/277] Analisando bip_keras_14.py::sparse_top_k_categorical_accuracy...
+  [35/277] Analisando bip_keras_17.py::sparse_categorical_accuracy...
+  [36/277] Analisando bip_keras_23.py::Sequential.add...
+  [37/277] Analisando bip_keras_24.py::TensorBoard.set_model...
+  [37/277] Analisando bip_keras_24.py::TensorBoard.set_model.is_indexed_slices...
+  [38/277] Analisando bip_keras_25.py::_preprocess_numpy_input...
+  [39/277] Analisando bip_keras_26.py::rnn...
+  [39/277] Analisando bip_keras_26.py::rnn._step...
+  [39/277] Retomada: bip_keras_26.py::rnn._step
+  [40/277] Analisando bip_keras_3.py::_clone_functional_model...
+  [41/277] Analisando bip_keras_31.py::ctc_batch_cost...
+  [42/277] Analisando bip_keras_33.py::text_to_word_sequence...
+  [43/277] Analisando bip_keras_36.py::separable_conv1d...
+  [44/277] Analisando bip_keras_38.py::StackedRNNCells.build...
+  [45/277] Analisando bip_keras_4.py::TFOptimizer.get_updates...
+  [46/277] Analisando bip_keras_40.py::RNN.compute_output_shape...
+  [47/277] Analisando bip_keras_43.py::to_categorical...
+  [48/277] Analisando bip_keras_45.py::LSTMCell.call...
+  [49/277] Analisando bip_keras_5.py::get_file...
+  [49/277] Analisando bip_keras_5.py::get_file.dl_progress...
+  [50/277] Analisando bip_keras_6.py::weighted_masked_objective...
+  [50/277] Analisando bip_keras_6.py::weighted_masked_objective.weighted...
+  [51/277] Analisando bip_keras_7.py::KerasRegressor.predict...
+  [52/277] Analisando bip_keras_8.py::Network.from_config...
+  [52/277] Analisando bip_keras_8.py::Network.from_config.add_unprocessed_node...
+  [52/277] Analisando bip_keras_8.py::Network.from_config.process_node...
+  [52/277] Analisando bip_keras_8.py::Network.from_config.process_layer...
+  [53/277] Analisando bip_keras_9.py::process_list_block...
+  [54/277] Analisando bip_luigi_10.py::Worker.get_pending_tasks...
+  [55/277] Analisando bip_luigi_16.py::CentralPlannerScheduler.prune...
+  [56/277] Analisando bip_luigi_17.py::_WorkerSchedulerFactory.create_local_scheduler...
+  [57/277] Analisando bip_luigi_18.py::SimpleTaskState.set_status...
+  [58/277] Analisando bip_luigi_19.py::SimpleTaskState.set_status...
+  [59/277] Analisando bip_luigi_21.py::run...
+  [60/277] Analisando bip_luigi_24.py::SparkSubmitTask._dict_arg...
+  [61/277] Analisando bip_luigi_26.py::HadoopJarJobRunner.run_job...
+  [62/277] Analisando bip_luigi_29.py::Register.__get_reg...
+  [63/277] Analisando bip_luigi_33.py::Task.get_param_values...
+  [63/277] Analisando bip_luigi_33.py::Task.get_param_values.list_to_tuple...
+  [64/277] Analisando bip_luigi_8.py::S3CopyToTable.does_table_exist...
+  [65/277] Analisando bip_matplotlib_10.py::Axis.set_tick_params...
+  [66/277] Analisando bip_matplotlib_11.py::Text.get_window_extent...
+  [67/277] Analisando bip_matplotlib_13.py::Path.make_compound_path...
+  [68/277] Analisando bip_matplotlib_14.py::Text.update...
+  [69/277] Analisando bip_matplotlib_16.py::nonsingular...
+  [70/277] Analisando bip_matplotlib_17.py::nonsingular...
+  [71/277] Analisando bip_matplotlib_2.py::Axes.scatter...
+  [72/277] Analisando bip_matplotlib_23.py::_AxesBase.apply_aspect...
+  [73/277] Analisando bip_matplotlib_25.py::EventCollection.__init__...
+  [74/277] Analisando bip_matplotlib_26.py::_make_getset_interval...
+  [74/277] Analisando bip_matplotlib_26.py::_make_getset_interval.getter...
+  [74/277] Analisando bip_matplotlib_26.py::_make_getset_interval.setter...
+  [75/277] Analisando bip_matplotlib_27.py::ColorbarBase.set_label...
+  [76/277] Analisando bip_matplotlib_28.py::_AxesBase.set_xlim...
+  [77/277] Analisando bip_matplotlib_6.py::Axes._parse_scatter_color_args...
+  [77/277] Analisando bip_matplotlib_6.py::Axes._parse_scatter_color_args.invalid_shape_exception...
+  [78/277] Analisando bip_matplotlib_7.py::LightSource.shade_rgb...
+  [79/277] Analisando bip_matplotlib_9.py::PolarAxes.draw...
+  [80/277] Analisando bip_pandas_1.py::is_string_dtype...
+  [80/277] Analisando bip_pandas_1.py::is_string_dtype.condition...
+  [80/277] Analisando bip_pandas_1.py::is_string_dtype.is_excluded_dtype...
+  [81/277] Analisando bip_pandas_10.py::ExtensionBlock.putmask...
+  [82/277] Analisando bip_pandas_102.py::init_ndarray...
+  [83/277] Analisando bip_pandas_104.py::GroupBy.quantile...
+  [83/277] Analisando bip_pandas_104.py::GroupBy.quantile.pre_processor...
+  [83/277] Analisando bip_pandas_104.py::GroupBy.quantile.post_processor...
+  [84/277] Analisando bip_pandas_106.py::Index.get_indexer_non_unique...
+  [85/277] Analisando bip_pandas_107.py::DataFrame.append...
+  [86/277] Analisando bip_pandas_115.py::interpolate_1d...
+  [87/277] Analisando bip_pandas_116.py::_MergeOperation._get_merge_keys...
+  [88/277] Analisando bip_pandas_117.py::_isna_old...
+  [89/277] Analisando bip_pandas_119.py::_add_margins...
+  [90/277] Analisando bip_pandas_127.py::NDFrame.pct_change...
+  [91/277] Analisando bip_pandas_133.py::NDFrame.interpolate...
+  [92/277] Analisando bip_pandas_139.py::Grouping.__init__...
+  [93/277] Analisando bip_pandas_14.py::should_series_dispatch...
+  [94/277] Analisando bip_pandas_141.py::RangeIndex.get_indexer...
+  [95/277] Analisando bip_pandas_142.py::diff...
+  [96/277] Analisando bip_pandas_143.py::RangeIndex.get_indexer...
+  [97/277] Analisando bip_pandas_144.py::BarPlot._decorate_ticks...
+  [98/277] Analisando bip_pandas_145.py::dispatch_to_series...
+  [98/277] Analisando bip_pandas_145.py::dispatch_to_series.column_op...
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [99/277] Analisando bip_pandas_148.py::FrameApply.apply_empty_result...
+  [100/277] Analisando bip_pandas_152.py::Series.append...
+  [101/277] Analisando bip_pandas_154.py::GroupBy._get_cythonized_result...
+  [102/277] Analisando bip_pandas_155.py::Rolling._on...
+  [103/277] Analisando bip_pandas_158.py::Series.rename...
+  [104/277] Analisando bip_pandas_160.py::_can_use_numexpr...
+  [105/277] Analisando bip_pandas_161.py::Categorical.fillna...
+  [106/277] Analisando bip_pandas_162.py::_normalize...
+  [107/277] Analisando bip_pandas_163.py::_Window._prep_values...
+  [108/277] Analisando bip_pandas_166.py::DataFrame._join_compat...
+  [109/277] Analisando bip_pandas_168.py::_get_grouper...
+  [109/277] Analisando bip_pandas_168.py::_get_grouper.is_in_axis...
+  [109/277] Analisando bip_pandas_168.py::_get_grouper.is_in_obj...
+  [110/277] Analisando bip_pandas_19.py::_LocIndexer._getitem_axis...
+  [111/277] Analisando bip_pandas_21.py::Series._get_with...
+  [112/277] Analisando bip_pandas_23.py::DatetimeTimedeltaMixin.intersection...
+  [113/277] Analisando bip_pandas_24.py::DatetimeArray.tz_localize...
+  [114/277] Analisando bip_pandas_25.py::DatetimeArray.isocalendar...
+  [115/277] Analisando bip_pandas_28.py::StringMethods._get_series_list...
+  [116/277] Analisando bip_pandas_29.py::IntervalArray.__setitem__...
+  [117/277] Analisando bip_pandas_33.py::IntegerArray._values_for_argsort...
+  [118/277] Analisando bip_pandas_34.py::TimeGrouper._get_time_bins...
+  [119/277] Analisando bip_pandas_35.py::PeriodIndex._engine...
+  [120/277] Analisando bip_pandas_4.py::Index._join_multi...
+  [121/277] Analisando bip_pandas_42.py::assert_series_equal...
+  [122/277] Analisando bip_pandas_50.py::_cat_compare_op...
+  [122/277] Analisando bip_pandas_50.py::_cat_compare_op.func...
+  [123/277] Analisando bip_pandas_52.py::SeriesGroupBy.nunique...
+  [124/277] Analisando bip_pandas_58.py::Categorical.from_codes...
+  [125/277] Analisando bip_pandas_59.py::_Rolling_and_Expanding.corr...
+  [125/277] Analisando bip_pandas_59.py::_Rolling_and_Expanding.corr._get_corr...
+  [126/277] Analisando bip_pandas_61.py::Series._get_with...
+  [127/277] Analisando bip_pandas_63.py::_AtIndexer._convert_key...
+  [128/277] Analisando bip_pandas_64.py::ExcelFormatter.__init__...
+  [129/277] Analisando bip_pandas_69.py::_AtIndexer._convert_key...
+  [130/277] Analisando bip_pandas_7.py::Index._get_nearest_indexer...
+  [131/277] Analisando bip_pandas_78.py::DataFrame._reduce...
+  [131/277] Analisando bip_pandas_78.py::DataFrame._reduce.f...
+  [131/277] Analisando bip_pandas_78.py::DataFrame._reduce._get_data...
+  [132/277] Analisando bip_pandas_8.py::Block.replace...
+  [133/277] Analisando bip_pandas_84.py::_unstack_multiple...
+  [134/277] Analisando bip_pandas_87.py::crosstab...
+  [135/277] Analisando bip_pandas_88.py::pivot_table...
+  [136/277] Analisando bip_pandas_89.py::_unstack_multiple...
+  [137/277] Analisando bip_pandas_91.py::TimedeltaIndex.searchsorted...
+  [138/277] Analisando bip_pandas_95.py::_period_array_cmp...
+  [138/277] Analisando bip_pandas_95.py::_period_array_cmp.wrapper...
+  [139/277] Analisando bip_pandas_98.py::Index.__new__...
+  [140/277] Analisando bip_sanic_1.py::Sanic.register_named_middleware...
+  [141/277] Analisando bip_scrapy_15.py::_safe_ParseResult...
+  [142/277] Analisando bip_scrapy_18.py::ResponseTypes.from_content_disposition...
+  [143/277] Analisando bip_scrapy_21.py::RobotsTxtMiddleware._robots_error...
+  [144/277] Analisando bip_scrapy_28.py::RFPDupeFilter.__init__...
+  [145/277] Analisando bip_scrapy_38.py::_get_clickable...
+  [146/277] Analisando bip_scrapy_39.py::Spider.start_requests...
+  [147/277] Analisando bip_scrapy_40.py::PythonItemExporter._serialize_value...
+  [148/277] Analisando bip_scrapy_6.py::ImagesPipeline.convert_image...
+  [149/277] Analisando bip_scrapy_8.py::ItemMeta.__new__...
+  [150/277] Analisando bip_spacy_1.py::add_codes...
+  [150/277] Analisando bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__...
+  [151/277] Analisando bip_spacy_2.py::load_model_from_path...
+  [152/277] Analisando bip_spacy_6.py::Language.remove_pipe...
+  [153/277] Analisando bip_thefuck_10.py::get_new_command...
+  [154/277] Analisando bip_thefuck_11.py::get_new_command...
+  [155/277] Analisando bip_thefuck_14.py::Fish._get_overridden_aliases...
+  [156/277] Analisando bip_thefuck_19.py::get_new_command...
+  [157/277] Analisando bip_thefuck_2.py::get_all_executables...
+  [157/277] Analisando bip_thefuck_2.py::get_all_executables._safe...
+  [158/277] Analisando bip_thefuck_25.py::get_new_command...
+  [159/277] Analisando bip_thefuck_26.py::get_new_command...
+  [160/277] Analisando bip_thefuck_3.py::Fish.info...
+  [161/277] Analisando bip_thefuck_30.py::match...
+  [162/277] Analisando bip_thefuck_4.py::_get_aliases...
+  [163/277] Analisando bip_tornado_5.py::PeriodicCallback._update_next...
+  [164/277] Analisando bip_tornado_8.py::WebSocketProtocol13.accept_connection...
+  [165/277] Analisando bip_tqdm_1.py::tenumerate...
+  [166/277] Analisando bip_youtube_dl_10.py::js_to_json...
+  [166/277] Analisando bip_youtube_dl_10.py::js_to_json.fix_kv...
+  [167/277] Analisando bip_youtube_dl_13.py::urljoin...
+  [168/277] Analisando bip_youtube_dl_15.py::js_to_json...
+  [168/277] Analisando bip_youtube_dl_15.py::js_to_json.fix_kv...
+  [169/277] Analisando bip_youtube_dl_20.py::get_elements_by_attribute...
+  [170/277] Analisando bip_youtube_dl_21.py::urljoin...
+  [171/277] Analisando bip_youtube_dl_23.py::js_to_json...
+  [171/277] Analisando bip_youtube_dl_23.py::js_to_json.fix_kv...
+  [172/277] Analisando bip_youtube_dl_24.py::_match_one...
+  [173/277] Analisando bip_youtube_dl_25.py::js_to_json...
+  [173/277] Analisando bip_youtube_dl_25.py::js_to_json.fix_kv...
+  [174/277] Analisando bip_youtube_dl_26.py::js_to_json...
+  [174/277] Analisando bip_youtube_dl_26.py::js_to_json.fix_kv...
+  [175/277] Analisando bip_youtube_dl_27.py::parse_dfxp_time_expr...
+  [176/277] Analisando bip_youtube_dl_3.py::unescapeHTML...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector.syntax_error...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector._parse_filter...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector._parse_format_selection...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function...
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function._merge...
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.final_selector...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__init__...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__iter__...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__next__...
+  [177/277] Analisando bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.restore_last_token...
+  [178/277] Analisando bip_youtube_dl_4.py::JSInterpreter.interpret_expression...
+  [179/277] Analisando bip_youtube_dl_41.py::unified_strdate...
+  [180/277] Analisando bip_youtube_dl_43.py::url_basename...
+  [181/277] Analisando bip_youtube_dl_5.py::unified_timestamp...
+  [182/277] Analisando bip_youtube_dl_7.py::js_to_json...
+  [182/277] Analisando bip_youtube_dl_7.py::js_to_json.fix_kv...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector.syntax_error...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector._parse_filter...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector._parse_format_selection...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function...
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function._merge...
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.final_selector...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__init__...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__iter__...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__next__...
+  [183/277] Analisando bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.restore_last_token...
+  [184/277] Analisando dz_real_01.py::makeMappingArray...
+  [185/277] Analisando dz_real_02.py::ExactLanguageSearch.choose_best_split...
+  [186/277] Analisando dz_real_03.py::HashExpander.do...
+  [187/277] Analisando dz_real_04.py::interpolate_bilinear_2x_fwd...
+  [188/277] Analisando io_real_01.py::nonsingular...
+  [189/277] Analisando ip_real_01.py::Request._set_url...
+  [190/277] Analisando ip_real_03.py::Selector.__init__...
+  [191/277] Analisando ip_real_04.py::HTTP1Connection.write_headers...
+  [192/277] Analisando ip_real_05.py::_Alpha.__gt__...
+  [192/277] Analisando ip_real_05.py::_Alpha.__ge__...
+  [192/277] Analisando ip_real_05.py::_Numeric.__gt__...
+  [192/277] Analisando ip_real_05.py::_Numeric.__ge__...
+  [193/277] Analisando ip_real_06.py::_unstack_multiple...
+  [194/277] Analisando ip_real_07.py::_htmlentity_transform...
+  [195/277] Analisando ip_real_10.py::_get_spider_loader...
+  [196/277] Analisando ip_real_11.py::HTTPBearer.__call__...
+  [197/277] Analisando ip_real_13.py::StaticFileHandler.get...
+  [198/277] Analisando ip_real_14.py::TimeseriesGenerator.__len__...
+  [199/277] Analisando ip_real_15.py::EmptyLineTracker.maybe_empty_lines...
+  [200/277] Analisando ip_real_16.py::pivot...
+  [201/277] Analisando ip_real_17.py::response_status_message...
+  [202/277] Analisando ip_real_18.py::croniter._get_low_from_current_date_number...
+  [203/277] Analisando ip_real_19.py::VersionInfo.__getitem__...
+  [204/277] Analisando ip_real_20.py::generate_sub_moved_events...
+  [205/277] Analisando ip_real_21.py::SortedDict.__eq__...
+  [205/277] Analisando ip_real_21.py::SortedDict.__ne__...
+  [206/277] Analisando ip_real_22.py::match...
+  [207/277] Analisando ip_real_23.py::Task.to_str_params...
+  [208/277] Analisando ip_real_24.py::CentralPlannerScheduler.get_work...
+  [209/277] Analisando ip_real_25.py::SimpleTaskState.get_necessary_tasks...
+  [210/277] Analisando ip_real_26.py::Scheduler.add_task...
+  [211/277] Analisando ip_real_28.py::IOLoop.initialize...
+  [212/277] Analisando ip_real_32.py::date_convert...
+<unknown>:9: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:11: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:13: SyntaxWarning: invalid escape sequence '\s'
+  [213/277] Analisando ip_real_33.py::send2trash...
+  [214/277] Analisando ip_real_34.py::find_hook...
+  [214/277] Analisando ip_real_34.py::run_hook...
+  [215/277] Analisando ir_real_01.py::gamma...
+  [215/277] Analisando ir_real_01.py::lgamma...
+  [216/277] Analisando ir_real_02.py::module-level...
+  [217/277] Analisando ir_real_03.py::try_match_char_class_range...
+  [218/277] Analisando ir_real_05.py::string_to_int...
+  [219/277] Analisando nm_real_01.py::Session.update_headers...
+  [220/277] Analisando nm_real_02.py::tqdm.format_meter...
+  [221/277] Analisando nm_real_03.py::FacebookIE._real_extract...
+  [222/277] Analisando nm_real_04.py::OffsiteMiddleware.get_host_regex...
+  [223/277] Analisando nm_real_05.py::Response.follow...
+  [224/277] Analisando nm_real_06.py::create_instance...
+  [225/277] Analisando nm_real_07.py::url_concat...
+  [226/277] Analisando nm_real_08.py::Request.url_for...
+  [227/277] Analisando nm_real_09.py::tqdm.__len__...
+  [228/277] Analisando nm_real_10.py::S3CopyToTable.copy...
+  [229/277] Analisando nm_real_11.py::LocalCache.__setitem__...
+  [230/277] Analisando nm_real_12.py::PamdService.remove...
+  [231/277] Analisando nm_real_13.py::AsyncHTTPClient.close...
+  [232/277] Analisando nm_real_14.py::request_httprepr...
+  [233/277] Analisando nm_real_15.py::APIRouter.include_router...
+  [234/277] Analisando nm_real_17.py::_type...
+  [235/277] Analisando nm_real_18.py::after_log...
+  [235/277] Analisando nm_real_18.py::after_log.log_it...
+  [236/277] Analisando nm_real_19.py::IsFile...
+  [237/277] Analisando nm_real_20.py::engine.numwords...
+  [238/277] Analisando nm_real_21.py::_Projection.get_index...
+  [239/277] Analisando nm_real_22.py::run...
+  [240/277] Analisando nm_real_23.py::Markdown._html_class_str_from_tag...
+  [241/277] Analisando nm_real_24.py::reformat_many...
+  [242/277] Analisando nm_real_25.py::HTTP1Connection._can_keep_alive...
+  [243/277] Analisando oob_real_01.py::get_new_command...
+  [244/277] Analisando oob_real_02.py::match...
+  [245/277] Analisando oob_real_03.py::get_new_command...
+  [246/277] Analisando oob_real_04.py::SortedCorrectedCommandsSequence._realise...
+  [247/277] Analisando oob_real_05.py::lib2to3_parse...
+  [248/277] Analisando oob_real_06.py::merge_configs...
+  [249/277] Analisando oob_real_09.py::parser._parse...
+  [250/277] Analisando oob_real_10.py::_wrap_text_to_colwidths...
+  [251/277] Analisando oob_real_11.py::wcswidth...
+  [252/277] Analisando oob_real_12.py::fast_float...
+  [253/277] Analisando oob_real_13.py::tokenize...
+  [254/277] Analisando oob_real_14.py::LinuxDistribution._parse_uname_content...
+  [255/277] Analisando oob_real_15.py::dfxp2srt...
+  [255/277] Analisando oob_real_15.py::dfxp2srt.parse_node...
+  [256/277] Analisando oob_real_16.py::IndexedSet._get_real_index...
+  [256/277] Analisando oob_real_16.py::IndexedSet.__getitem__...
+  [257/277] Analisando tm_real_01.py::read_conllx...
+  [258/277] Analisando tm_real_02.py::HiveCommandClient.table_exists...
+  [259/277] Analisando tm_real_03.py::_match_one...
+  [260/277] Analisando tm_real_04.py::str_to_int...
+  [261/277] Analisando tm_real_05.py::MailSender.send...
+  [262/277] Analisando tm_real_06.py::ContractsManager._clean_req...
+  [262/277] Analisando tm_real_06.py::ContractsManager._clean_req.eb_wrapper...
+  [263/277] Analisando tm_real_07.py::MarkerStyle._recache...
+  [264/277] Analisando tm_real_08.py::simple_separated_format...
+  [265/277] Analisando tm_real_09.py::_format...
+  [266/277] Analisando tm_real_10.py::MetricsHandler.get...
+  [267/277] Analisando tm_real_11.py::sitemap_urls_from_robots...
+  [267/277] Analisando tm_real_11.py::SitemapSpider._parse_sitemap...
+  [268/277] Analisando tm_real_12.py::S3CopyToTable.s3_load_path...
+  [268/277] Analisando tm_real_12.py::S3CopyToTable.run...
+  [269/277] Analisando tm_real_13.py::XmlItemExporter._export_xml_field...
+  [269/277] Analisando tm_real_13.py::XmlItemExporter._xg_characters...
+  [270/277] Analisando vm_real_01.py::tqdm.format_meter...
+  [271/277] Analisando vm_real_02.py::Schema.validate...
+  [272/277] Analisando vm_real_03.py::_pipe...
+  [272/277] Analisando vm_real_03.py::Language.pipe...
+  [273/277] Analisando vm_real_04.py::YoutubeDL._build_format_filter...
+  [274/277] Analisando vm_real_05.py::LocalFileSystem.mkdir...
+  [274/277] Analisando vm_real_05.py::LocalFileSystem.move...
+  [275/277] Analisando vm_real_06.py::CrawlerRunner.__init__...
+  [275/277] Analisando vm_real_06.py::CrawlerProcess.__init__...
+  [276/277] Analisando vm_real_07.py::fit_generator...
+  [277/277] Analisando vm_real_08.py::get_write_function...
+  [277/277] Analisando vm_real_08.py::get_write_function.write...
+  [277/277] Retomada: vm_real_08.py::get_write_function.write
+
+Modo V2 (motor verify): 232 hipótese(s) → especificação de entrada com claude-sonnet-5-5
+[1/232] av_real_01.py::cli_bool_option
+    -> CONFIRMED assertion ISINSTANCE(param, 0); dereference failure: NULL pointer; unwinding assertion loop 131; unwinding assertion loo
+[2/232] av_real_03.py::Series.to_timestamp
+    -> UNSUPPORTED external call Substitution(...) uses *args/**kwargs
+[3/232] av_real_09.py::_make_getset_interval.setter
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[4/232] av_real_17.py::unified_strdate
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+    -> NOT_CONFIRMED unwinding assertion loop 108; unwinding assertion loop 131
+[5/232] bip_ansible_1.py::verify_collections
+    -> UNSUPPORTED external name 'contextmanager' is used as a decorator
+[6/232] bip_ansible_16.py::LinuxHardware.get_cpu_facts
+    -> UNSUPPORTED ERROR: Type inference failed at line 2. Variable OSError not found
+[7/232] bip_ansible_16.py::LinuxHardware.get_cpu_facts
+    -> UNSUPPORTED ERROR: Type inference failed at line 2. Variable OSError not found
+[8/232] bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian
+    -> MISSING_DEPENDENCY ERROR: Object "out" not found.
+[9/232] bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian
+    -> MISSING_DEPENDENCY ERROR: Object "out" not found.
+[10/232] bip_ansible_5.py::check_required_arguments
+    -> GROUNDING_FAILED suspect expression not found in check_required_arguments
+[11/232] bip_black_13.py::generate_tokens
+    -> MISSING_DEPENDENCY undefined name(s): ASYNC, AWAIT, COMMENT, DEDENT, ENDMARKER, ERRORTOKEN, INDENT, NAME, NEWLINE, NL, NUMBER, OP, STRING
+[12/232] bip_black_16.py::gen_python_files_in_dir
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[13/232] bip_fastapi_10.py::serialize_response
+    -> UNSUPPORTED ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+[14/232] bip_fastapi_16.py::jsonable_encoder
+    -> UNSUPPORTED stub 'obj.Config': missing return type; stub 'obj.dict': missing return type; stub 'obj.items': missing return type; stu
+[15/232] bip_keras_10.py::standardize_weights
+    -> GROUNDING_FAILED suspect expression not found in standardize_weights
+[16/232] bip_keras_24.py::TensorBoard.set_model
+    -> MISSING_DEPENDENCY undefined name(s): projector, tf
+[17/232] bip_keras_24.py::TensorBoard.set_model
+    -> MISSING_DEPENDENCY undefined name(s): projector, tf
+[18/232] bip_keras_25.py::_preprocess_numpy_input
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[19/232] bip_keras_26.py::rnn
+    -> MISSING_DEPENDENCY undefined name(s): uses_learning_phase
+[20/232] bip_keras_26.py::rnn._step
+    -> GROUNDING_FAILED function 'rnn._step' not found (or ambiguous)
+[21/232] bip_keras_26.py::rnn._step
+    -> GROUNDING_FAILED function 'rnn._step' not found (or ambiguous)
+[22/232] bip_keras_3.py::_clone_functional_model
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[23/232] bip_keras_3.py::_clone_functional_model
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[24/232] bip_keras_33.py::text_to_word_sequence
+    -> MISSING_DEPENDENCY undefined name(s): unicode
+[25/232] bip_keras_36.py::separable_conv1d
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type annotation to the function paramet
+[26/232] bip_keras_36.py::separable_conv1d
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type annotation to the function paramet
+[27/232] bip_keras_38.py::StackedRNNCells.build
+    -> UNVALIDATED uncaught exception: AttributeError
+[28/232] bip_keras_40.py::RNN.compute_output_shape
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[29/232] bip_keras_40.py::RNN.compute_output_shape
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[30/232] bip_keras_43.py::to_categorical
+    -> OTHER_FAILURE uncaught exception: AttributeError
+[31/232] bip_keras_43.py::to_categorical
+    -> OTHER_FAILURE uncaught exception: AttributeError
+[32/232] bip_keras_43.py::to_categorical
+    -> PIPELINE_ERROR RuntimeError: claude -p saiu com código 1: 
+[33/232] bip_keras_43.py::to_categorical
+    -> PIPELINE_ERROR RuntimeError: claude -p saiu com código 1: 
+[34/232] bip_keras_45.py::LSTMCell.call
+    -> PIPELINE_ERROR RuntimeError: claude -p saiu com código 1: 
+[35/232] bip_keras_8.py::Network.from_config
+    -> PIPELINE_ERROR RuntimeError: claude -p saiu com código 1: 
+[36/232] bip_keras_8.py::Network.from_config
+    -> PIPELINE_ERROR RuntimeError: claude -p saiu com código 1: 
+[37/232] bip_keras_8.py::Network.from_config
+    -> PIPELINE_ERROR RuntimeError: claude -p saiu com código 1: 
+[38/232] bip_keras_8.py::Network.from_config
+=== retomada Mon Oct  5 20:57:26 -04 2026
+
+Modo V2 — etapa 1: detecção em 277 arquivo(s)
+  [1/277] Retomada: av_real_01.py::cli_bool_option
+  [2/277] Retomada: av_real_02.py::WebSocketHandler.set_nodelay
+  [3/277] Retomada: av_real_03.py::Series.to_timestamp
+  [4/277] Retomada: av_real_05.py::tqdm.__init__
+  [5/277] Retomada: av_real_07.py::match
+  [6/277] Retomada: av_real_09.py::_make_getset_interval
+  [6/277] Retomada: av_real_09.py::_make_getset_interval.getter
+  [6/277] Retomada: av_real_09.py::_make_getset_interval.setter
+  [7/277] Retomada: av_real_11.py::HTTP1Connection._read_body
+  [8/277] Retomada: av_real_14.py::get_new_command
+  [9/277] Retomada: av_real_17.py::unified_strdate
+  [10/277] Retomada: bip_ansible_1.py::verify_collections
+  [11/277] Retomada: bip_ansible_16.py::LinuxHardware.get_cpu_facts
+  [12/277] Retomada: bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian
+  [13/277] Retomada: bip_ansible_5.py::check_required_arguments
+  [14/277] Retomada: bip_black_13.py::generate_tokens
+  [15/277] Retomada: bip_black_16.py::gen_python_files_in_dir
+  [16/277] Retomada: bip_black_19.py::EmptyLineTracker._maybe_empty_lines
+  [17/277] Retomada: bip_black_2.py::generate_ignored_nodes
+  [18/277] Retomada: bip_black_20.py::format_file_in_place
+  [19/277] Retomada: bip_black_21.py::dump_to_file
+  [20/277] Retomada: bip_black_7.py::normalize_invisible_parens
+  [21/277] Retomada: bip_black_8.py::bracket_split_build_line
+  [22/277] Retomada: bip_black_9.py::get_grammars
+  [23/277] Retomada: bip_cookiecutter_1.py::generate_context
+  [24/277] Retomada: bip_cookiecutter_3.py::read_user_choice
+  [25/277] Retomada: bip_fastapi_10.py::serialize_response
+  [26/277] Retomada: bip_fastapi_11.py::is_scalar_field
+  [27/277] Retomada: bip_fastapi_16.py::jsonable_encoder
+  [28/277] Retomada: bip_fastapi_2.py::APIRouter.add_api_websocket_route
+  [29/277] Retomada: bip_fastapi_4.py::get_openapi_path
+  [30/277] Retomada: bip_fastapi_5.py::create_cloned_field
+  [31/277] Retomada: bip_fastapi_9.py::get_body_field
+  [32/277] Retomada: bip_httpie_4.py::HTTPRequest.headers
+  [33/277] Retomada: bip_keras_10.py::standardize_weights
+  [34/277] Retomada: bip_keras_14.py::sparse_top_k_categorical_accuracy
+  [35/277] Retomada: bip_keras_17.py::sparse_categorical_accuracy
+  [36/277] Retomada: bip_keras_23.py::Sequential.add
+  [37/277] Retomada: bip_keras_24.py::TensorBoard.set_model
+  [37/277] Retomada: bip_keras_24.py::TensorBoard.set_model.is_indexed_slices
+  [38/277] Retomada: bip_keras_25.py::_preprocess_numpy_input
+  [39/277] Retomada: bip_keras_26.py::rnn
+  [39/277] Retomada: bip_keras_26.py::rnn._step
+  [39/277] Retomada: bip_keras_26.py::rnn._step
+  [40/277] Retomada: bip_keras_3.py::_clone_functional_model
+  [41/277] Retomada: bip_keras_31.py::ctc_batch_cost
+  [42/277] Retomada: bip_keras_33.py::text_to_word_sequence
+  [43/277] Retomada: bip_keras_36.py::separable_conv1d
+  [44/277] Retomada: bip_keras_38.py::StackedRNNCells.build
+  [45/277] Retomada: bip_keras_4.py::TFOptimizer.get_updates
+  [46/277] Retomada: bip_keras_40.py::RNN.compute_output_shape
+  [47/277] Retomada: bip_keras_43.py::to_categorical
+  [48/277] Retomada: bip_keras_45.py::LSTMCell.call
+  [49/277] Retomada: bip_keras_5.py::get_file
+  [49/277] Retomada: bip_keras_5.py::get_file.dl_progress
+  [50/277] Retomada: bip_keras_6.py::weighted_masked_objective
+  [50/277] Retomada: bip_keras_6.py::weighted_masked_objective.weighted
+  [51/277] Retomada: bip_keras_7.py::KerasRegressor.predict
+  [52/277] Retomada: bip_keras_8.py::Network.from_config
+  [52/277] Retomada: bip_keras_8.py::Network.from_config.add_unprocessed_node
+  [52/277] Retomada: bip_keras_8.py::Network.from_config.process_node
+  [52/277] Retomada: bip_keras_8.py::Network.from_config.process_layer
+  [53/277] Retomada: bip_keras_9.py::process_list_block
+  [54/277] Retomada: bip_luigi_10.py::Worker.get_pending_tasks
+  [55/277] Retomada: bip_luigi_16.py::CentralPlannerScheduler.prune
+  [56/277] Retomada: bip_luigi_17.py::_WorkerSchedulerFactory.create_local_scheduler
+  [57/277] Retomada: bip_luigi_18.py::SimpleTaskState.set_status
+  [58/277] Retomada: bip_luigi_19.py::SimpleTaskState.set_status
+  [59/277] Retomada: bip_luigi_21.py::run
+  [60/277] Retomada: bip_luigi_24.py::SparkSubmitTask._dict_arg
+  [61/277] Retomada: bip_luigi_26.py::HadoopJarJobRunner.run_job
+  [62/277] Retomada: bip_luigi_29.py::Register.__get_reg
+  [63/277] Retomada: bip_luigi_33.py::Task.get_param_values
+  [63/277] Retomada: bip_luigi_33.py::Task.get_param_values.list_to_tuple
+  [64/277] Retomada: bip_luigi_8.py::S3CopyToTable.does_table_exist
+  [65/277] Retomada: bip_matplotlib_10.py::Axis.set_tick_params
+  [66/277] Retomada: bip_matplotlib_11.py::Text.get_window_extent
+  [67/277] Retomada: bip_matplotlib_13.py::Path.make_compound_path
+  [68/277] Retomada: bip_matplotlib_14.py::Text.update
+  [69/277] Retomada: bip_matplotlib_16.py::nonsingular
+  [70/277] Retomada: bip_matplotlib_17.py::nonsingular
+  [71/277] Retomada: bip_matplotlib_2.py::Axes.scatter
+  [72/277] Retomada: bip_matplotlib_23.py::_AxesBase.apply_aspect
+  [73/277] Retomada: bip_matplotlib_25.py::EventCollection.__init__
+  [74/277] Retomada: bip_matplotlib_26.py::_make_getset_interval
+  [74/277] Retomada: bip_matplotlib_26.py::_make_getset_interval.getter
+  [74/277] Retomada: bip_matplotlib_26.py::_make_getset_interval.setter
+  [75/277] Retomada: bip_matplotlib_27.py::ColorbarBase.set_label
+  [76/277] Retomada: bip_matplotlib_28.py::_AxesBase.set_xlim
+  [77/277] Retomada: bip_matplotlib_6.py::Axes._parse_scatter_color_args
+  [77/277] Retomada: bip_matplotlib_6.py::Axes._parse_scatter_color_args.invalid_shape_exception
+  [78/277] Retomada: bip_matplotlib_7.py::LightSource.shade_rgb
+  [79/277] Retomada: bip_matplotlib_9.py::PolarAxes.draw
+  [80/277] Retomada: bip_pandas_1.py::is_string_dtype
+  [80/277] Retomada: bip_pandas_1.py::is_string_dtype.condition
+  [80/277] Retomada: bip_pandas_1.py::is_string_dtype.is_excluded_dtype
+  [81/277] Retomada: bip_pandas_10.py::ExtensionBlock.putmask
+  [82/277] Retomada: bip_pandas_102.py::init_ndarray
+  [83/277] Retomada: bip_pandas_104.py::GroupBy.quantile
+  [83/277] Retomada: bip_pandas_104.py::GroupBy.quantile.pre_processor
+  [83/277] Retomada: bip_pandas_104.py::GroupBy.quantile.post_processor
+  [84/277] Retomada: bip_pandas_106.py::Index.get_indexer_non_unique
+  [85/277] Retomada: bip_pandas_107.py::DataFrame.append
+  [86/277] Retomada: bip_pandas_115.py::interpolate_1d
+  [87/277] Retomada: bip_pandas_116.py::_MergeOperation._get_merge_keys
+  [88/277] Retomada: bip_pandas_117.py::_isna_old
+  [89/277] Retomada: bip_pandas_119.py::_add_margins
+  [90/277] Retomada: bip_pandas_127.py::NDFrame.pct_change
+  [91/277] Retomada: bip_pandas_133.py::NDFrame.interpolate
+  [92/277] Retomada: bip_pandas_139.py::Grouping.__init__
+  [93/277] Retomada: bip_pandas_14.py::should_series_dispatch
+  [94/277] Retomada: bip_pandas_141.py::RangeIndex.get_indexer
+  [95/277] Retomada: bip_pandas_142.py::diff
+  [96/277] Retomada: bip_pandas_143.py::RangeIndex.get_indexer
+  [97/277] Retomada: bip_pandas_144.py::BarPlot._decorate_ticks
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [99/277] Retomada: bip_pandas_148.py::FrameApply.apply_empty_result
+  [100/277] Retomada: bip_pandas_152.py::Series.append
+  [101/277] Retomada: bip_pandas_154.py::GroupBy._get_cythonized_result
+  [102/277] Retomada: bip_pandas_155.py::Rolling._on
+  [103/277] Retomada: bip_pandas_158.py::Series.rename
+  [104/277] Retomada: bip_pandas_160.py::_can_use_numexpr
+  [105/277] Retomada: bip_pandas_161.py::Categorical.fillna
+  [106/277] Retomada: bip_pandas_162.py::_normalize
+  [107/277] Retomada: bip_pandas_163.py::_Window._prep_values
+  [108/277] Retomada: bip_pandas_166.py::DataFrame._join_compat
+  [109/277] Retomada: bip_pandas_168.py::_get_grouper
+  [109/277] Retomada: bip_pandas_168.py::_get_grouper.is_in_axis
+  [109/277] Retomada: bip_pandas_168.py::_get_grouper.is_in_obj
+  [110/277] Retomada: bip_pandas_19.py::_LocIndexer._getitem_axis
+  [111/277] Retomada: bip_pandas_21.py::Series._get_with
+  [112/277] Retomada: bip_pandas_23.py::DatetimeTimedeltaMixin.intersection
+  [113/277] Retomada: bip_pandas_24.py::DatetimeArray.tz_localize
+  [114/277] Retomada: bip_pandas_25.py::DatetimeArray.isocalendar
+  [115/277] Retomada: bip_pandas_28.py::StringMethods._get_series_list
+  [116/277] Retomada: bip_pandas_29.py::IntervalArray.__setitem__
+  [117/277] Retomada: bip_pandas_33.py::IntegerArray._values_for_argsort
+  [118/277] Retomada: bip_pandas_34.py::TimeGrouper._get_time_bins
+  [119/277] Retomada: bip_pandas_35.py::PeriodIndex._engine
+  [120/277] Retomada: bip_pandas_4.py::Index._join_multi
+  [121/277] Retomada: bip_pandas_42.py::assert_series_equal
+  [122/277] Retomada: bip_pandas_50.py::_cat_compare_op
+  [122/277] Retomada: bip_pandas_50.py::_cat_compare_op.func
+  [123/277] Retomada: bip_pandas_52.py::SeriesGroupBy.nunique
+  [124/277] Retomada: bip_pandas_58.py::Categorical.from_codes
+  [125/277] Retomada: bip_pandas_59.py::_Rolling_and_Expanding.corr
+  [125/277] Retomada: bip_pandas_59.py::_Rolling_and_Expanding.corr._get_corr
+  [126/277] Retomada: bip_pandas_61.py::Series._get_with
+  [127/277] Retomada: bip_pandas_63.py::_AtIndexer._convert_key
+  [128/277] Retomada: bip_pandas_64.py::ExcelFormatter.__init__
+  [129/277] Retomada: bip_pandas_69.py::_AtIndexer._convert_key
+  [130/277] Retomada: bip_pandas_7.py::Index._get_nearest_indexer
+  [131/277] Retomada: bip_pandas_78.py::DataFrame._reduce
+  [131/277] Retomada: bip_pandas_78.py::DataFrame._reduce.f
+  [131/277] Retomada: bip_pandas_78.py::DataFrame._reduce._get_data
+  [132/277] Retomada: bip_pandas_8.py::Block.replace
+  [133/277] Retomada: bip_pandas_84.py::_unstack_multiple
+  [134/277] Retomada: bip_pandas_87.py::crosstab
+  [135/277] Retomada: bip_pandas_88.py::pivot_table
+  [136/277] Retomada: bip_pandas_89.py::_unstack_multiple
+  [137/277] Retomada: bip_pandas_91.py::TimedeltaIndex.searchsorted
+  [138/277] Retomada: bip_pandas_95.py::_period_array_cmp
+  [138/277] Retomada: bip_pandas_95.py::_period_array_cmp.wrapper
+  [139/277] Retomada: bip_pandas_98.py::Index.__new__
+  [140/277] Retomada: bip_sanic_1.py::Sanic.register_named_middleware
+  [141/277] Retomada: bip_scrapy_15.py::_safe_ParseResult
+  [142/277] Retomada: bip_scrapy_18.py::ResponseTypes.from_content_disposition
+  [143/277] Retomada: bip_scrapy_21.py::RobotsTxtMiddleware._robots_error
+  [144/277] Retomada: bip_scrapy_28.py::RFPDupeFilter.__init__
+  [145/277] Retomada: bip_scrapy_38.py::_get_clickable
+  [146/277] Retomada: bip_scrapy_39.py::Spider.start_requests
+  [147/277] Retomada: bip_scrapy_40.py::PythonItemExporter._serialize_value
+  [148/277] Retomada: bip_scrapy_6.py::ImagesPipeline.convert_image
+  [149/277] Retomada: bip_scrapy_8.py::ItemMeta.__new__
+  [150/277] Retomada: bip_spacy_1.py::add_codes
+  [150/277] Retomada: bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__
+  [151/277] Retomada: bip_spacy_2.py::load_model_from_path
+  [152/277] Retomada: bip_spacy_6.py::Language.remove_pipe
+  [153/277] Retomada: bip_thefuck_10.py::get_new_command
+  [154/277] Retomada: bip_thefuck_11.py::get_new_command
+  [155/277] Retomada: bip_thefuck_14.py::Fish._get_overridden_aliases
+  [156/277] Retomada: bip_thefuck_19.py::get_new_command
+  [157/277] Retomada: bip_thefuck_2.py::get_all_executables
+  [157/277] Retomada: bip_thefuck_2.py::get_all_executables._safe
+  [158/277] Retomada: bip_thefuck_25.py::get_new_command
+  [159/277] Retomada: bip_thefuck_26.py::get_new_command
+  [160/277] Retomada: bip_thefuck_3.py::Fish.info
+  [161/277] Retomada: bip_thefuck_30.py::match
+  [162/277] Retomada: bip_thefuck_4.py::_get_aliases
+  [163/277] Retomada: bip_tornado_5.py::PeriodicCallback._update_next
+  [164/277] Retomada: bip_tornado_8.py::WebSocketProtocol13.accept_connection
+  [165/277] Retomada: bip_tqdm_1.py::tenumerate
+  [166/277] Retomada: bip_youtube_dl_10.py::js_to_json
+  [166/277] Retomada: bip_youtube_dl_10.py::js_to_json.fix_kv
+  [167/277] Retomada: bip_youtube_dl_13.py::urljoin
+  [168/277] Retomada: bip_youtube_dl_15.py::js_to_json
+  [168/277] Retomada: bip_youtube_dl_15.py::js_to_json.fix_kv
+  [169/277] Retomada: bip_youtube_dl_20.py::get_elements_by_attribute
+  [170/277] Retomada: bip_youtube_dl_21.py::urljoin
+  [171/277] Retomada: bip_youtube_dl_23.py::js_to_json
+  [171/277] Retomada: bip_youtube_dl_23.py::js_to_json.fix_kv
+  [172/277] Retomada: bip_youtube_dl_24.py::_match_one
+  [173/277] Retomada: bip_youtube_dl_25.py::js_to_json
+  [173/277] Retomada: bip_youtube_dl_25.py::js_to_json.fix_kv
+  [174/277] Retomada: bip_youtube_dl_26.py::js_to_json
+  [174/277] Retomada: bip_youtube_dl_26.py::js_to_json.fix_kv
+  [175/277] Retomada: bip_youtube_dl_27.py::parse_dfxp_time_expr
+  [176/277] Retomada: bip_youtube_dl_3.py::unescapeHTML
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.syntax_error
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._parse_filter
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._parse_format_selection
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function._merge
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.final_selector
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__init__
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__iter__
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__next__
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.restore_last_token
+  [178/277] Retomada: bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+  [179/277] Retomada: bip_youtube_dl_41.py::unified_strdate
+  [180/277] Retomada: bip_youtube_dl_43.py::url_basename
+  [181/277] Retomada: bip_youtube_dl_5.py::unified_timestamp
+  [182/277] Retomada: bip_youtube_dl_7.py::js_to_json
+  [182/277] Retomada: bip_youtube_dl_7.py::js_to_json.fix_kv
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.syntax_error
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._parse_filter
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._parse_format_selection
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function._merge
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.final_selector
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__init__
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__iter__
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__next__
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.restore_last_token
+  [184/277] Retomada: dz_real_01.py::makeMappingArray
+  [185/277] Retomada: dz_real_02.py::ExactLanguageSearch.choose_best_split
+  [186/277] Retomada: dz_real_03.py::HashExpander.do
+  [187/277] Retomada: dz_real_04.py::interpolate_bilinear_2x_fwd
+  [188/277] Retomada: io_real_01.py::nonsingular
+  [189/277] Retomada: ip_real_01.py::Request._set_url
+  [190/277] Retomada: ip_real_03.py::Selector.__init__
+  [191/277] Retomada: ip_real_04.py::HTTP1Connection.write_headers
+  [192/277] Retomada: ip_real_05.py::_Alpha.__gt__
+  [192/277] Retomada: ip_real_05.py::_Alpha.__ge__
+  [192/277] Retomada: ip_real_05.py::_Numeric.__gt__
+  [192/277] Retomada: ip_real_05.py::_Numeric.__ge__
+  [193/277] Retomada: ip_real_06.py::_unstack_multiple
+  [194/277] Retomada: ip_real_07.py::_htmlentity_transform
+  [195/277] Retomada: ip_real_10.py::_get_spider_loader
+  [196/277] Retomada: ip_real_11.py::HTTPBearer.__call__
+  [197/277] Retomada: ip_real_13.py::StaticFileHandler.get
+  [198/277] Retomada: ip_real_14.py::TimeseriesGenerator.__len__
+  [199/277] Retomada: ip_real_15.py::EmptyLineTracker.maybe_empty_lines
+  [200/277] Retomada: ip_real_16.py::pivot
+  [201/277] Retomada: ip_real_17.py::response_status_message
+  [202/277] Retomada: ip_real_18.py::croniter._get_low_from_current_date_number
+  [203/277] Retomada: ip_real_19.py::VersionInfo.__getitem__
+  [204/277] Retomada: ip_real_20.py::generate_sub_moved_events
+  [205/277] Retomada: ip_real_21.py::SortedDict.__eq__
+  [205/277] Retomada: ip_real_21.py::SortedDict.__ne__
+  [206/277] Retomada: ip_real_22.py::match
+  [207/277] Retomada: ip_real_23.py::Task.to_str_params
+  [208/277] Retomada: ip_real_24.py::CentralPlannerScheduler.get_work
+  [209/277] Retomada: ip_real_25.py::SimpleTaskState.get_necessary_tasks
+  [210/277] Retomada: ip_real_26.py::Scheduler.add_task
+  [211/277] Retomada: ip_real_28.py::IOLoop.initialize
+  [212/277] Retomada: ip_real_32.py::date_convert
+  [213/277] Retomada: ip_real_33.py::send2trash
+  [214/277] Retomada: ip_real_34.py::find_hook
+  [214/277] Retomada: ip_real_34.py::run_hook
+  [215/277] Retomada: ir_real_01.py::gamma
+  [215/277] Retomada: ir_real_01.py::lgamma
+  [216/277] Retomada: ir_real_02.py::module-level
+  [217/277] Retomada: ir_real_03.py::try_match_char_class_range
+  [218/277] Retomada: ir_real_05.py::string_to_int
+  [219/277] Retomada: nm_real_01.py::Session.update_headers
+  [220/277] Retomada: nm_real_02.py::tqdm.format_meter
+  [221/277] Retomada: nm_real_03.py::FacebookIE._real_extract
+  [222/277] Retomada: nm_real_04.py::OffsiteMiddleware.get_host_regex
+  [223/277] Retomada: nm_real_05.py::Response.follow
+  [224/277] Retomada: nm_real_06.py::create_instance
+  [225/277] Retomada: nm_real_07.py::url_concat
+  [226/277] Retomada: nm_real_08.py::Request.url_for
+  [227/277] Retomada: nm_real_09.py::tqdm.__len__
+  [228/277] Retomada: nm_real_10.py::S3CopyToTable.copy
+  [229/277] Retomada: nm_real_11.py::LocalCache.__setitem__
+  [230/277] Retomada: nm_real_12.py::PamdService.remove
+  [231/277] Retomada: nm_real_13.py::AsyncHTTPClient.close
+  [232/277] Retomada: nm_real_14.py::request_httprepr
+  [233/277] Retomada: nm_real_15.py::APIRouter.include_router
+  [234/277] Retomada: nm_real_17.py::_type
+  [235/277] Retomada: nm_real_18.py::after_log
+  [235/277] Retomada: nm_real_18.py::after_log.log_it
+  [236/277] Retomada: nm_real_19.py::IsFile
+  [237/277] Retomada: nm_real_20.py::engine.numwords
+  [238/277] Retomada: nm_real_21.py::_Projection.get_index
+  [239/277] Retomada: nm_real_22.py::run
+  [240/277] Retomada: nm_real_23.py::Markdown._html_class_str_from_tag
+  [241/277] Retomada: nm_real_24.py::reformat_many
+  [242/277] Retomada: nm_real_25.py::HTTP1Connection._can_keep_alive
+  [243/277] Retomada: oob_real_01.py::get_new_command
+  [244/277] Retomada: oob_real_02.py::match
+  [245/277] Retomada: oob_real_03.py::get_new_command
+  [246/277] Retomada: oob_real_04.py::SortedCorrectedCommandsSequence._realise
+  [247/277] Retomada: oob_real_05.py::lib2to3_parse
+  [248/277] Retomada: oob_real_06.py::merge_configs
+  [249/277] Retomada: oob_real_09.py::parser._parse
+  [250/277] Retomada: oob_real_10.py::_wrap_text_to_colwidths
+  [251/277] Retomada: oob_real_11.py::wcswidth
+  [252/277] Retomada: oob_real_12.py::fast_float
+  [253/277] Retomada: oob_real_13.py::tokenize
+  [254/277] Retomada: oob_real_14.py::LinuxDistribution._parse_uname_content
+  [255/277] Retomada: oob_real_15.py::dfxp2srt
+  [255/277] Retomada: oob_real_15.py::dfxp2srt.parse_node
+  [256/277] Retomada: oob_real_16.py::IndexedSet._get_real_index
+  [256/277] Retomada: oob_real_16.py::IndexedSet.__getitem__
+  [257/277] Retomada: tm_real_01.py::read_conllx
+  [258/277] Retomada: tm_real_02.py::HiveCommandClient.table_exists
+  [259/277] Retomada: tm_real_03.py::_match_one
+  [260/277] Retomada: tm_real_04.py::str_to_int
+  [261/277] Retomada: tm_real_05.py::MailSender.send
+  [262/277] Retomada: tm_real_06.py::ContractsManager._clean_req
+  [262/277] Retomada: tm_real_06.py::ContractsManager._clean_req.eb_wrapper
+  [263/277] Retomada: tm_real_07.py::MarkerStyle._recache
+  [264/277] Retomada: tm_real_08.py::simple_separated_format
+  [265/277] Retomada: tm_real_09.py::_format
+  [266/277] Retomada: tm_real_10.py::MetricsHandler.get
+  [267/277] Retomada: tm_real_11.py::sitemap_urls_from_robots
+  [267/277] Retomada: tm_real_11.py::SitemapSpider._parse_sitemap
+  [268/277] Retomada: tm_real_12.py::S3CopyToTable.s3_load_path
+  [268/277] Retomada: tm_real_12.py::S3CopyToTable.run
+  [269/277] Retomada: tm_real_13.py::XmlItemExporter._export_xml_field
+  [269/277] Retomada: tm_real_13.py::XmlItemExporter._xg_characters
+  [270/277] Retomada: vm_real_01.py::tqdm.format_meter
+  [271/277] Retomada: vm_real_02.py::Schema.validate
+  [272/277] Retomada: vm_real_03.py::_pipe
+  [272/277] Retomada: vm_real_03.py::Language.pipe
+  [273/277] Retomada: vm_real_04.py::YoutubeDL._build_format_filter
+  [274/277] Retomada: vm_real_05.py::LocalFileSystem.mkdir
+  [274/277] Retomada: vm_real_05.py::LocalFileSystem.move
+  [275/277] Retomada: vm_real_06.py::CrawlerRunner.__init__
+  [275/277] Retomada: vm_real_06.py::CrawlerProcess.__init__
+  [276/277] Retomada: vm_real_07.py::fit_generator
+  [277/277] Retomada: vm_real_08.py::get_write_function
+  [277/277] Retomada: vm_real_08.py::get_write_function.write
+  [277/277] Retomada: vm_real_08.py::get_write_function.write
+
+Modo V2 (motor verify): 232 hipótese(s) → especificação de entrada com claude-sonnet-5-5
+[32/232] bip_keras_43.py::to_categorical
+    -> OTHER_FAILURE uncaught exception: AttributeError
+[33/232] bip_keras_43.py::to_categorical
+    -> SPEC_FAILED The JSON was rejected: not JSON: Expecting value
+[34/232] bip_keras_45.py::LSTMCell.call
+    -> UNSUPPORTED ERROR: TypeError: strided column slicing (a[:, ::step]) requires a fixed-shape 2-D array at artifacts/v2/full-2026-10-04
+[35/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[36/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[37/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[38/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[39/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[40/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[41/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[42/232] bip_keras_8.py::Network.from_config
+    -> MISSING_DEPENDENCY ERROR: Module 'layers' not found.
+[43/232] bip_keras_8.py::Network.from_config.process_node
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[44/232] bip_keras_8.py::Network.from_config.process_layer
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[45/232] bip_luigi_18.py::SimpleTaskState.set_status
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type annotation to the function para
+[46/232] bip_luigi_19.py::SimpleTaskState.set_status
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type annotation to the function para
+[47/232] bip_luigi_21.py::run
+    -> UNSUPPORTED ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.
+[48/232] bip_luigi_26.py::HadoopJarJobRunner.run_job
+    -> UNSUPPORTED ERROR: unsupported: non-constant argument in str % formatting
+[49/232] bip_matplotlib_13.py::Path.make_compound_path
+    -> MISSING_DEPENDENCY ERROR: Object "np" not found.
+[50/232] bip_matplotlib_16.py::nonsingular
+    -> GROUNDING_FAILED suspect expression not found in nonsingular
+[51/232] bip_matplotlib_17.py::nonsingular
+    -> GROUNDING_FAILED suspect expression not found in nonsingular
+[52/232] bip_matplotlib_23.py::_AxesBase.apply_aspect
+    -> UNSUPPORTED external call mtransforms_Bbox.from_bounds(...) cannot be stubbed
+[53/232] bip_matplotlib_23.py::_AxesBase.apply_aspect
+    -> UNSUPPORTED external call mtransforms_Bbox.from_bounds(...) cannot be stubbed
+[54/232] bip_matplotlib_23.py::_AxesBase.apply_aspect
+    -> UNSUPPORTED external call mtransforms_Bbox.from_bounds(...) cannot be stubbed
+[55/232] bip_matplotlib_25.py::EventCollection.__init__
+    -> MISSING_DEPENDENCY ERROR: Module 'setuptools_scm' not found.
+[56/232] bip_matplotlib_28.py::_AxesBase.set_xlim
+    -> MISSING_DEPENDENCY ERROR: Function "convert" not found (artifacts/v2/full-2026-10-04-sonnet/programs/717929d4e0c9_a0.py line 382)
+[57/232] bip_matplotlib_6.py::Axes._parse_scatter_color_args
+    -> UNSUPPORTED external call mtext.Annotation(...) cannot be stubbed
+[58/232] bip_matplotlib_6.py::Axes._parse_scatter_color_args
+    -> UNSUPPORTED external call mtext.Annotation(...) cannot be stubbed
+[59/232] bip_matplotlib_6.py::Axes._parse_scatter_color_args
+    -> GROUNDING_FAILED suspect expression not found in Axes._parse_scatter_color_args
+[60/232] bip_pandas_10.py::ExtensionBlock.putmask
+    -> UNSUPPORTED receiver reads inherited member(s): make_block
+[61/232] bip_pandas_104.py::GroupBy.quantile
+    -> UNSUPPORTED receiver reads inherited member(s): _iterate_slices, _wrap_aggregated_output, _wrap_transformed_output, ngroups
+[62/232] bip_pandas_104.py::GroupBy.quantile.pre_processor
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[63/232] bip_pandas_107.py::DataFrame.append
+    -> UNSUPPORTED external call Substitution(...) uses *args/**kwargs
+[64/232] bip_pandas_133.py::NDFrame.interpolate
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function p
+[65/232] bip_pandas_139.py::Grouping.__init__
+    -> UNSUPPORTED stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'
+[66/232] bip_pandas_139.py::Grouping.__init__
+    -> UNSUPPORTED stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'
+[67/232] bip_pandas_142.py::diff
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[68/232] bip_pandas_145.py::dispatch_to_series
+    -> MISSING_DEPENDENCY ERROR: Module 'pandas.core.computation.expressions' not found.
+[69/232] bip_pandas_145.py::dispatch_to_series
+    -> MISSING_DEPENDENCY ERROR: Module 'pandas.core.computation.expressions' not found.
+[70/232] bip_pandas_152.py::Series.append
+    -> UNSUPPORTED external call Substitution(...) uses *args/**kwargs
+[71/232] bip_pandas_154.py::GroupBy._get_cythonized_result
+    -> GROUNDING_FAILED suspect expression not found in GroupBy._get_cythonized_result
+[72/232] bip_pandas_162.py::_normalize
+    -> MISSING_DEPENDENCY ERROR: Function "f" not found (artifacts/v2/full-2026-10-04-sonnet/programs/dda668236e74_a0.py line 63)
+[73/232] bip_pandas_166.py::DataFrame._join_compat
+    -> UNSUPPORTED external call Substitution(...) uses *args/**kwargs
+[74/232] bip_pandas_168.py::_get_grouper
+    -> GROUNDING_FAILED suspect expression not found in _get_grouper
+[75/232] bip_pandas_19.py::_LocIndexer._getitem_axis
+    -> GROUNDING_FAILED suspect expression not found in _LocIndexer._getitem_axis
+[76/232] bip_pandas_29.py::IntervalArray.__setitem__
+    -> MISSING_DEPENDENCY ERROR: Module 'pyarrow' not found.
+[77/232] bip_pandas_33.py::IntegerArray._values_for_argsort
+    -> UNSUPPORTED external name 'register_extension_dtype' is used as a decorator
+[78/232] bip_pandas_61.py::Series._get_with
+    -> UNSUPPORTED external call Substitution(...) uses *args/**kwargs
+[79/232] bip_pandas_78.py::DataFrame._reduce
+    -> UNSUPPORTED external call Substitution(...) uses *args/**kwargs
+[80/232] bip_pandas_8.py::Block.replace
+    -> UNSUPPORTED stub 'maybe_promote': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'
+[81/232] bip_pandas_87.py::crosstab
+    -> MISSING_DEPENDENCY ERROR: Module 'pandas' not found.
+[82/232] bip_pandas_88.py::pivot_table
+    -> MISSING_DEPENDENCY ERROR: Module 'pandas' not found.
+[83/232] bip_pandas_91.py::TimedeltaIndex.searchsorted
+    -> UNSUPPORTED ERROR: Cannot infer type for class attribute '_engine_type' in class 'TimedeltaIndex'. Please add explicit type annotati
+[84/232] bip_pandas_95.py::_period_array_cmp
+    -> GROUNDING_FAILED suspect expression not found in _period_array_cmp
+[85/232] bip_pandas_95.py::_period_array_cmp.wrapper
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[86/232] bip_pandas_98.py::Index.__new__
+    -> UNSUPPORTED external name 'cache_readonly' is used as a decorator
+[87/232] bip_scrapy_15.py::_safe_ParseResult
+    -> NOT_CONFIRMED no_violation_found
+[88/232] bip_scrapy_15.py::_safe_ParseResult
+    -> NOT_CONFIRMED no_violation_found
+[89/232] bip_scrapy_18.py::ResponseTypes.from_content_disposition
+    -> UNSUPPORTED input type outside the supported subset: stub 'self.mimetypes.guess_type': unsupported type 'tuple[None, None]'
+[90/232] bip_scrapy_21.py::RobotsTxtMiddleware._robots_error
+    -> ESBMC_MISSED unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 28
+[91/232] bip_scrapy_38.py::_get_clickable
+    -> UNSUPPORTED ERROR: unsupported: non-constant argument in str % formatting
+[92/232] bip_scrapy_40.py::PythonItemExporter._serialize_value
+    -> GROUNDING_FAILED suspect expression not found in PythonItemExporter._serialize_value
+[93/232] bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[94/232] bip_spacy_2.py::load_model_from_path
+    -> UNSUPPORTED ERROR: Type inference failed at line 1. Variable OSError not found
+[95/232] bip_thefuck_11.py::get_new_command
+    -> CONFIRMED unwinding assertion loop 108; uncaught exception: IndexError
+[96/232] bip_thefuck_4.py::_get_aliases
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function paramet
+[97/232] bip_tornado_5.py::PeriodicCallback._update_next
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[98/232] bip_tqdm_1.py::tenumerate
+    -> GROUNDING_FAILED suspect expression not found in tenumerate
+[99/232] bip_youtube_dl_13.py::urljoin
+    -> UNVALIDATED uncaught exception: AttributeError
+[100/232] bip_youtube_dl_13.py::urljoin
+    -> NOT_CONFIRMED no_violation_found
+[101/232] bip_youtube_dl_13.py::urljoin
+    -> NOT_CONFIRMED no_violation_found
+[102/232] bip_youtube_dl_21.py::urljoin
+    -> NOT_CONFIRMED no_violation_found
+[103/232] bip_youtube_dl_24.py::_match_one
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+    -> MISSING_DEPENDENCY ERROR: Object "m" not found.
+[104/232] bip_youtube_dl_3.py::unescapeHTML
+    -> UNSUPPORTED ERROR: unsupported: non-constant argument in str % formatting
+[105/232] bip_youtube_dl_30.py::YoutubeDL.build_format_selector
+    -> UNSUPPORTED external call traceback.format_exception(...) cannot be stubbed
+[106/232] bip_youtube_dl_30.py::YoutubeDL.build_format_selector
+    -> UNSUPPORTED external call traceback.format_exception(...) cannot be stubbed
+[107/232] bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[108/232] bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function._merge
+    -> GROUNDING_FAILED function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)
+[109/232] bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function._merge
+    -> GROUNDING_FAILED function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)
+[110/232] bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function._merge
+    -> GROUNDING_FAILED function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)
+[111/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/7606c705c474_a0.py line 153)
+[112/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/a37941e5f655_a0.py line 153)
+[113/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/32e79148d095_a0.py line 156)
+[114/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b20008796d06_a0.py line 153)
+[115/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/47bae861f782_a0.py line 153)
+[116/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b32e23009859_a0.py line 153)
+[117/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> GROUNDING_FAILED suspect expression not found in JSInterpreter.interpret_expression
+[118/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> MISSING_DEPENDENCY ERROR: Function "opfunc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/ccee75639e21_a0.py line 153)
+[119/232] bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+    -> GROUNDING_FAILED suspect expression not found in JSInterpreter.interpret_expression
+[120/232] bip_youtube_dl_41.py::unified_strdate
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+    -> NOT_CONFIRMED unwinding assertion loop 108
+[121/232] bip_youtube_dl_41.py::unified_strdate
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+    -> NOT_CONFIRMED unwinding assertion loop 108
+[122/232] bip_youtube_dl_5.py::unified_timestamp
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED artifacts/v2/full-2026-10-04-sonnet/programs/7d3fa11c5394_a2.py:2: error: Function is missing a type annotation for one 
+[123/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector
+    -> UNSUPPORTED external call traceback.format_exception(...) cannot be stubbed
+[124/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector
+    -> UNSUPPORTED external call traceback.format_exception(...) cannot be stubbed
+[125/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[126/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[127/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function
+    -> UNSUPPORTED entry point is nested inside a function; the harness cannot call it
+[128/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function._merge
+    -> GROUNDING_FAILED function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)
+[129/232] bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function._merge
+    -> GROUNDING_FAILED function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)
+[130/232] dz_real_01.py::makeMappingArray
+    -> UNSUPPORTED ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at artifacts/v2/full-2026-10-04-sonnet/p
+[131/232] dz_real_01.py::makeMappingArray
+    -> GROUNDING_FAILED suspect expression not found in makeMappingArray
+[132/232] dz_real_02.py::ExactLanguageSearch.choose_best_split
+    -> MISSING_DEPENDENCY ERROR: Function "ESBMC_mmkey_0" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b5652fda143e_a0.py line 22)
+[133/232] dz_real_02.py::ExactLanguageSearch.choose_best_split
+    -> MISSING_DEPENDENCY ERROR: Function "ESBMC_mmkey_0" not found (artifacts/v2/full-2026-10-04-sonnet/programs/c3c74f091418_a0.py line 22)
+[134/232] dz_real_03.py::HashExpander.do
+    -> UNSUPPORTED ERROR: uncaught exception [N6type2t18symbolic_type_excpE]
+[135/232] dz_real_03.py::HashExpander.do
+    -> UNSUPPORTED ERROR: uncaught exception [N6type2t18symbolic_type_excpE]
+[136/232] dz_real_03.py::HashExpander.do
+    -> UNSUPPORTED ERROR: uncaught exception [N6type2t18symbolic_type_excpE]
+[137/232] dz_real_03.py::HashExpander.do
+    -> UNSUPPORTED ERROR: uncaught exception [N6type2t18symbolic_type_excpE]
+[138/232] dz_real_04.py::interpolate_bilinear_2x_fwd
+    -> GROUNDING_FAILED suspect expression not found in interpolate_bilinear_2x_fwd
+[139/232] io_real_01.py::nonsingular
+    -> GROUNDING_FAILED suspect expression not found in nonsingular
+[140/232] ip_real_07.py::_htmlentity_transform
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED ERROR: unsupported: non-constant argument in str % formatting
+[141/232] ip_real_10.py::_get_spider_loader
+    -> OTHER_FAILURE dereference failure: NULL pointer; unwinding assertion loop 131; uncaught exception: AttributeError
+[142/232] ip_real_11.py::HTTPBearer.__call__
+    -> UNSUPPORTED async entry point is not supported
+[143/232] ip_real_14.py::TimeseriesGenerator.__len__
+    -> UNSUPPORTED ERROR: Cannot unpack empty - only tuples and arrays can be unpacked
+[144/232] ip_real_16.py::pivot
+    -> UNSUPPORTED ERROR: NameError: name 'DataFrame' is not defined
+[145/232] ip_real_17.py::response_status_message
+    -> UNSUPPORTED ERROR: Dictionary variable not found: http_RESPONSES
+[146/232] ip_real_17.py::response_status_message
+    -> UNSUPPORTED ERROR: Dictionary variable not found: http_RESPONSES
+[147/232] ip_real_18.py::croniter._get_low_from_current_date_number
+    -> MISSING_DEPENDENCY ERROR: Function "localize" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b5f5de675cd1_a0.py line 294)
+[148/232] ip_real_18.py::croniter._get_low_from_current_date_number
+    -> MISSING_DEPENDENCY ERROR: Function "localize" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b1d66754bbd4_a0.py line 294)
+[149/232] ip_real_19.py::VersionInfo.__getitem__
+    -> UNSUPPORTED ERROR: Type inference failed at line 47. Variable DeprecationWarning not found
+[150/232] ip_real_20.py::generate_sub_moved_events
+    -> UNSUPPORTED ERROR: Variable 'TYPE_CHECKING' is not defined at line 10.
+[151/232] ip_real_21.py::SortedDict.__eq__
+    -> MISSING_DEPENDENCY ERROR: Base class not found: MutableMapping
+[152/232] ip_real_21.py::SortedDict.__eq__
+    -> MISSING_DEPENDENCY ERROR: Base class not found: MutableMapping
+[153/232] ip_real_21.py::SortedDict.__ne__
+    -> MISSING_DEPENDENCY ERROR: Base class not found: MutableMapping
+[154/232] ip_real_21.py::SortedDict.__ne__
+    -> MISSING_DEPENDENCY ERROR: Base class not found: MutableMapping
+[155/232] ip_real_22.py::match
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[156/232] ip_real_26.py::Scheduler.add_task
+    -> UNSUPPORTED ERROR: update() argument must be a dict in ESBMC model
+[157/232] ip_real_28.py::IOLoop.initialize
+    -> UNSUPPORTED ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.
+[158/232] ip_real_32.py::date_convert
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+    -> UNSUPPORTED input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'
+[159/232] ip_real_32.py::date_convert
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+    -> UNSUPPORTED input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'
+[160/232] ip_real_32.py::date_convert
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+    -> UNSUPPORTED input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'
+[161/232] ip_real_32.py::date_convert
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+    -> UNSUPPORTED input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'
+[162/232] ip_real_32.py::date_convert
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+    -> UNSUPPORTED input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'
+[163/232] ip_real_32.py::date_convert
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+    -> UNSUPPORTED input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'
+[164/232] ir_real_01.py::gamma
+    -> GROUNDING_FAILED suspect expression not found in gamma
+[165/232] ir_real_01.py::gamma
+    -> MISSING_DEPENDENCY undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt
+[166/232] ir_real_01.py::gamma
+    -> MISSING_DEPENDENCY undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt
+[167/232] ir_real_01.py::lgamma
+    -> GROUNDING_FAILED suspect expression not found in lgamma
+[168/232] ir_real_03.py::try_match_char_class_range
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+    -> GROUNDING_FAILED suspect expression not found in try_match_char_class_range
+[169/232] nm_real_01.py::Session.update_headers
+    -> UNSUPPORTED ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a2.py 35: list indices must be integers or
+[170/232] nm_real_01.py::Session.update_headers
+    -> UNSUPPORTED ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a2.py 35: list indices must be integers or
+[171/232] nm_real_02.py::tqdm.format_meter
+    -> MISSING_DEPENDENCY ERROR: Object "tqdm" not found.
+[172/232] nm_real_02.py::tqdm.format_meter
+    -> MISSING_DEPENDENCY ERROR: Object "tqdm" not found.
+[173/232] nm_real_02.py::tqdm.format_meter
+    -> GROUNDING_FAILED suspect expression not found in tqdm.format_meter
+[174/232] nm_real_02.py::tqdm.format_meter
+    -> MISSING_DEPENDENCY ERROR: Object "tqdm" not found.
+[175/232] nm_real_03.py::FacebookIE._real_extract
+    -> UNSUPPORTED ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/f377cd5765de_a2.py 131: list indices must be integers o
+[176/232] nm_real_03.py::FacebookIE._real_extract
+    -> GROUNDING_FAILED suspect expression not found in FacebookIE._real_extract
+[177/232] nm_real_03.py::FacebookIE._real_extract
+    -> UNSUPPORTED ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/7f8acd8673b9_a2.py 175: list indices must be integers o
+[178/232] nm_real_03.py::FacebookIE._real_extract
+    -> UNSUPPORTED ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/5059713e6181_a2.py 115: list indices must be integers o
+[179/232] nm_real_03.py::FacebookIE._real_extract
+    -> GROUNDING_FAILED suspect expression not found in FacebookIE._real_extract
+[180/232] nm_real_04.py::OffsiteMiddleware.get_host_regex
+    -> GROUNDING_FAILED suspect expression not found in OffsiteMiddleware.get_host_regex
+[181/232] nm_real_06.py::create_instance
+    -> UNSUPPORTED ERROR: Unsupported expression Starred at line 37
+[182/232] nm_real_07.py::url_concat
+    -> UNSUPPORTED ERROR: function call: argument "py:artifacts/v2/full-2026-10-04-sonnet/programs/51cf515f8948_a2.py@F@urlunparse@a0" type
+[183/232] nm_real_07.py::url_concat
+    -> UNSUPPORTED ERROR: function call: argument "py:artifacts/v2/full-2026-10-04-sonnet/programs/0fbe05b10d1c_a2.py@F@urlunparse@a0" type
+[184/232] nm_real_08.py::Request.url_for
+    -> UNSUPPORTED ERROR: Cannot resolve nested attribute: __dict__
+[185/232] nm_real_11.py::LocalCache.__setitem__
+    -> MISSING_DEPENDENCY ERROR: Base class not found: OrderedDict
+[186/232] nm_real_12.py::PamdService.remove
+    -> UNSUPPORTED ERROR: Cannot resolve nested attribute: next
+[187/232] nm_real_12.py::PamdService.remove
+    -> UNSUPPORTED ERROR: Cannot resolve nested attribute: next
+[188/232] nm_real_14.py::request_httprepr
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[189/232] nm_real_15.py::APIRouter.include_router
+    -> UNSUPPORTED external call run_in_threadpool(...) uses *args/**kwargs
+[190/232] nm_real_20.py::engine.numwords
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+    -> GROUNDING_FAILED suspect expression not found in engine.numwords
+[191/232] nm_real_20.py::engine.numwords
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+    -> GROUNDING_FAILED suspect expression not found in engine.numwords
+[192/232] nm_real_20.py::engine.numwords
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1750: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+    -> SPEC_FAILED The JSON was rejected: not JSON: Expecting value
+[193/232] nm_real_23.py::Markdown._html_class_str_from_tag
+    -> GROUNDING_FAILED suspect expression not found in Markdown._html_class_str_from_tag
+[194/232] nm_real_25.py::HTTP1Connection._can_keep_alive
+    -> GROUNDING_FAILED suspect expression not found in HTTP1Connection._can_keep_alive
+[195/232] oob_real_01.py::get_new_command
+    -> CONFIRMED uncaught exception: IndexError
+[196/232] oob_real_01.py::get_new_command
+    -> CONFIRMED uncaught exception: IndexError
+[197/232] oob_real_02.py::match
+    -> CONFIRMED unwinding assertion loop 108; uncaught exception: IndexError
+[198/232] oob_real_03.py::get_new_command
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[199/232] oob_real_03.py::get_new_command
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[200/232] oob_real_05.py::lib2to3_parse
+    -> GROUNDING_FAILED suspect expression not found in lib2to3_parse
+[201/232] oob_real_06.py::merge_configs
+    -> GROUNDING_FAILED suspect expression not found in merge_configs
+[202/232] oob_real_06.py::merge_configs
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[203/232] oob_real_09.py::parser._parse
+    -> UNSUPPORTED ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.
+[204/232] oob_real_10.py::_wrap_text_to_colwidths
+    -> UNSUPPORTED external call textwrap_TextWrapper.__init__(...) cannot be stubbed
+[205/232] oob_real_10.py::_wrap_text_to_colwidths
+    -> UNSUPPORTED external call textwrap_TextWrapper.__init__(...) cannot be stubbed
+[206/232] oob_real_11.py::wcswidth
+    -> UNSUPPORTED ERROR: Type inference failed for Assign at line 121
+[207/232] oob_real_12.py::fast_float
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[208/232] oob_real_13.py::tokenize
+    -> GROUNDING_FAILED suspect expression not found in tokenize
+[209/232] oob_real_14.py::LinuxDistribution._parse_uname_content
+    -> MISSING_DEPENDENCY ERROR: Object "name" not found.
+[210/232] oob_real_15.py::dfxp2srt
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+    -> MISSING_DEPENDENCY ERROR: Function "str_or_empty" not found (artifacts/v2/full-2026-10-04-sonnet/programs/42ade76be585_a0.py line 110)
+[211/232] oob_real_15.py::dfxp2srt
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+    -> MISSING_DEPENDENCY ERROR: Function "str_or_empty" not found (artifacts/v2/full-2026-10-04-sonnet/programs/02c86fdde9ac_a0.py line 108)
+[212/232] tm_real_01.py::read_conllx
+    -> UNSUPPORTED ERROR: Unsupported expression Starred at line 26
+[213/232] tm_real_01.py::read_conllx
+    -> UNSUPPORTED ERROR: Unsupported expression Starred at line 26
+[214/232] tm_real_01.py::read_conllx
+    -> UNSUPPORTED ERROR: Unsupported expression Starred at line 26
+[215/232] tm_real_04.py::str_to_int
+    -> PIPELINE_ERROR TimeoutError: Timeout ao chamar claude -p.
+[216/232] tm_real_04.py::str_to_int
+    -> OTHER_FAILURE unwinding assertion loop 37; invalid literal for int() with empty string; invalid literal for int() - no digits; invalid
+[217/232] tm_real_05.py::MailSender.send
+    -> UNSUPPORTED external call MIMENonMultipart(...) uses *args/**kwargs
+[218/232] tm_real_05.py::MailSender.send
+    -> UNSUPPORTED external call MIMENonMultipart(...) uses *args/**kwargs
+[219/232] tm_real_05.py::MailSender.send
+    -> GROUNDING_FAILED suspect expression not found in MailSender.send
+[220/232] tm_real_09.py::_format
+    -> UNSUPPORTED ERROR: Module member 'VERBOSE' not found in module 're'
+[221/232] tm_real_10.py::MetricsHandler.get
+    -> UNSUPPORTED ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation 
+[222/232] tm_real_13.py::XmlItemExporter._export_xml_field
+    -> UNSUPPORTED ERROR: Variable 'kwargs' is not defined in function 'BaseItemExporter' at line 43.
+[223/232] tm_real_13.py::XmlItemExporter._xg_characters
+    -> GROUNDING_FAILED function 'XmlItemExporter._xg_characters' not found (or ambiguous)
+[224/232] tm_real_13.py::XmlItemExporter._xg_characters
+    -> GROUNDING_FAILED function 'XmlItemExporter._xg_characters' not found (or ambiguous)
+[225/232] vm_real_01.py::tqdm.format_meter
+    -> MISSING_DEPENDENCY ERROR: Object "tqdm" not found.
+[226/232] vm_real_01.py::tqdm.format_meter
+    -> MISSING_DEPENDENCY ERROR: Object "tqdm" not found.
+[227/232] vm_real_02.py::Schema.validate
+    -> GROUNDING_FAILED suspect expression not found in Schema.validate
+[228/232] vm_real_02.py::Schema.validate
+    -> GROUNDING_FAILED suspect expression not found in Schema.validate
+[229/232] vm_real_02.py::Schema.validate
+    -> UNSUPPORTED TypeError: __init__() takes 1 positional argument but 2 were given
+[230/232] vm_real_03.py::Language.pipe
+    -> MISSING_DEPENDENCY ERROR: Function "proc" not found (artifacts/v2/full-2026-10-04-sonnet/programs/631e1f7799d2_a0.py line 8)
+[231/232] vm_real_03.py::Language.pipe
+    -> GROUNDING_FAILED suspect expression not found in Language.pipe
+[232/232] vm_real_08.py::get_write_function
+    -> GROUNDING_FAILED suspect expression not found in get_write_function
+
+Vereditos: {'CONFIRMED': 5, 'ESBMC_MISSED': 1, 'UNVALIDATED': 2, 'OTHER_FAILURE': 5, 'NOT_CONFIRMED': 8, 'GROUNDING_FAILED': 44, 'MISSING_DEPENDENCY': 52, 'UNSUPPORTED': 98, 'SPEC_FAILED': 2, 'ESBMC_TIMEOUT': 5, 'ESBMC_ERROR': 9, 'PIPELINE_ERROR': 1}
+Níveis: {'esbmc_engine': 21, 'llm_only': 208}; veredito do ESBMC em 21/229, 5 confirmado(s); só LLM por motivo: {'harness_context': 114, 'esbmc_language': 27, 'esbmc_crash': 13, 'esbmc_timeout': 5, 'llm_spec': 2, 'locate_function': 42, 'pipeline_error': 1, 'other': 4}
+Relatório JSON: artifacts/v2/full-2026-10-04-sonnet/v2_verify_report.json
+exit=0
+=== retomada 2 Mon Oct  5 23:16:55 -04 2026
+
+Modo V2 — etapa 1: detecção em 277 arquivo(s)
+  [1/277] Retomada: av_real_01.py::cli_bool_option
+  [2/277] Retomada: av_real_02.py::WebSocketHandler.set_nodelay
+  [3/277] Retomada: av_real_03.py::Series.to_timestamp
+  [4/277] Retomada: av_real_05.py::tqdm.__init__
+  [5/277] Retomada: av_real_07.py::match
+  [6/277] Retomada: av_real_09.py::_make_getset_interval
+  [6/277] Retomada: av_real_09.py::_make_getset_interval.getter
+  [6/277] Retomada: av_real_09.py::_make_getset_interval.setter
+  [7/277] Retomada: av_real_11.py::HTTP1Connection._read_body
+  [8/277] Retomada: av_real_14.py::get_new_command
+  [9/277] Retomada: av_real_17.py::unified_strdate
+  [10/277] Retomada: bip_ansible_1.py::verify_collections
+  [11/277] Retomada: bip_ansible_16.py::LinuxHardware.get_cpu_facts
+  [12/277] Retomada: bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian
+  [13/277] Retomada: bip_ansible_5.py::check_required_arguments
+  [14/277] Retomada: bip_black_13.py::generate_tokens
+  [15/277] Retomada: bip_black_16.py::gen_python_files_in_dir
+  [16/277] Retomada: bip_black_19.py::EmptyLineTracker._maybe_empty_lines
+  [17/277] Retomada: bip_black_2.py::generate_ignored_nodes
+  [18/277] Retomada: bip_black_20.py::format_file_in_place
+  [19/277] Retomada: bip_black_21.py::dump_to_file
+  [20/277] Retomada: bip_black_7.py::normalize_invisible_parens
+  [21/277] Retomada: bip_black_8.py::bracket_split_build_line
+  [22/277] Retomada: bip_black_9.py::get_grammars
+  [23/277] Retomada: bip_cookiecutter_1.py::generate_context
+  [24/277] Retomada: bip_cookiecutter_3.py::read_user_choice
+  [25/277] Retomada: bip_fastapi_10.py::serialize_response
+  [26/277] Retomada: bip_fastapi_11.py::is_scalar_field
+  [27/277] Retomada: bip_fastapi_16.py::jsonable_encoder
+  [28/277] Retomada: bip_fastapi_2.py::APIRouter.add_api_websocket_route
+  [29/277] Retomada: bip_fastapi_4.py::get_openapi_path
+  [30/277] Retomada: bip_fastapi_5.py::create_cloned_field
+  [31/277] Retomada: bip_fastapi_9.py::get_body_field
+  [32/277] Retomada: bip_httpie_4.py::HTTPRequest.headers
+  [33/277] Retomada: bip_keras_10.py::standardize_weights
+  [34/277] Retomada: bip_keras_14.py::sparse_top_k_categorical_accuracy
+  [35/277] Retomada: bip_keras_17.py::sparse_categorical_accuracy
+  [36/277] Retomada: bip_keras_23.py::Sequential.add
+  [37/277] Retomada: bip_keras_24.py::TensorBoard.set_model
+  [37/277] Retomada: bip_keras_24.py::TensorBoard.set_model.is_indexed_slices
+  [38/277] Retomada: bip_keras_25.py::_preprocess_numpy_input
+  [39/277] Retomada: bip_keras_26.py::rnn
+  [39/277] Retomada: bip_keras_26.py::rnn._step
+  [39/277] Retomada: bip_keras_26.py::rnn._step
+  [40/277] Retomada: bip_keras_3.py::_clone_functional_model
+  [41/277] Retomada: bip_keras_31.py::ctc_batch_cost
+  [42/277] Retomada: bip_keras_33.py::text_to_word_sequence
+  [43/277] Retomada: bip_keras_36.py::separable_conv1d
+  [44/277] Retomada: bip_keras_38.py::StackedRNNCells.build
+  [45/277] Retomada: bip_keras_4.py::TFOptimizer.get_updates
+  [46/277] Retomada: bip_keras_40.py::RNN.compute_output_shape
+  [47/277] Retomada: bip_keras_43.py::to_categorical
+  [48/277] Retomada: bip_keras_45.py::LSTMCell.call
+  [49/277] Retomada: bip_keras_5.py::get_file
+  [49/277] Retomada: bip_keras_5.py::get_file.dl_progress
+  [50/277] Retomada: bip_keras_6.py::weighted_masked_objective
+  [50/277] Retomada: bip_keras_6.py::weighted_masked_objective.weighted
+  [51/277] Retomada: bip_keras_7.py::KerasRegressor.predict
+  [52/277] Retomada: bip_keras_8.py::Network.from_config
+  [52/277] Retomada: bip_keras_8.py::Network.from_config.add_unprocessed_node
+  [52/277] Retomada: bip_keras_8.py::Network.from_config.process_node
+  [52/277] Retomada: bip_keras_8.py::Network.from_config.process_layer
+  [53/277] Retomada: bip_keras_9.py::process_list_block
+  [54/277] Retomada: bip_luigi_10.py::Worker.get_pending_tasks
+  [55/277] Retomada: bip_luigi_16.py::CentralPlannerScheduler.prune
+  [56/277] Retomada: bip_luigi_17.py::_WorkerSchedulerFactory.create_local_scheduler
+  [57/277] Retomada: bip_luigi_18.py::SimpleTaskState.set_status
+  [58/277] Retomada: bip_luigi_19.py::SimpleTaskState.set_status
+  [59/277] Retomada: bip_luigi_21.py::run
+  [60/277] Retomada: bip_luigi_24.py::SparkSubmitTask._dict_arg
+  [61/277] Retomada: bip_luigi_26.py::HadoopJarJobRunner.run_job
+  [62/277] Retomada: bip_luigi_29.py::Register.__get_reg
+  [63/277] Retomada: bip_luigi_33.py::Task.get_param_values
+  [63/277] Retomada: bip_luigi_33.py::Task.get_param_values.list_to_tuple
+  [64/277] Retomada: bip_luigi_8.py::S3CopyToTable.does_table_exist
+  [65/277] Retomada: bip_matplotlib_10.py::Axis.set_tick_params
+  [66/277] Retomada: bip_matplotlib_11.py::Text.get_window_extent
+  [67/277] Retomada: bip_matplotlib_13.py::Path.make_compound_path
+  [68/277] Retomada: bip_matplotlib_14.py::Text.update
+  [69/277] Retomada: bip_matplotlib_16.py::nonsingular
+  [70/277] Retomada: bip_matplotlib_17.py::nonsingular
+  [71/277] Retomada: bip_matplotlib_2.py::Axes.scatter
+  [72/277] Retomada: bip_matplotlib_23.py::_AxesBase.apply_aspect
+  [73/277] Retomada: bip_matplotlib_25.py::EventCollection.__init__
+  [74/277] Retomada: bip_matplotlib_26.py::_make_getset_interval
+  [74/277] Retomada: bip_matplotlib_26.py::_make_getset_interval.getter
+  [74/277] Retomada: bip_matplotlib_26.py::_make_getset_interval.setter
+  [75/277] Retomada: bip_matplotlib_27.py::ColorbarBase.set_label
+  [76/277] Retomada: bip_matplotlib_28.py::_AxesBase.set_xlim
+  [77/277] Retomada: bip_matplotlib_6.py::Axes._parse_scatter_color_args
+  [77/277] Retomada: bip_matplotlib_6.py::Axes._parse_scatter_color_args.invalid_shape_exception
+  [78/277] Retomada: bip_matplotlib_7.py::LightSource.shade_rgb
+  [79/277] Retomada: bip_matplotlib_9.py::PolarAxes.draw
+  [80/277] Retomada: bip_pandas_1.py::is_string_dtype
+  [80/277] Retomada: bip_pandas_1.py::is_string_dtype.condition
+  [80/277] Retomada: bip_pandas_1.py::is_string_dtype.is_excluded_dtype
+  [81/277] Retomada: bip_pandas_10.py::ExtensionBlock.putmask
+  [82/277] Retomada: bip_pandas_102.py::init_ndarray
+  [83/277] Retomada: bip_pandas_104.py::GroupBy.quantile
+  [83/277] Retomada: bip_pandas_104.py::GroupBy.quantile.pre_processor
+  [83/277] Retomada: bip_pandas_104.py::GroupBy.quantile.post_processor
+  [84/277] Retomada: bip_pandas_106.py::Index.get_indexer_non_unique
+  [85/277] Retomada: bip_pandas_107.py::DataFrame.append
+  [86/277] Retomada: bip_pandas_115.py::interpolate_1d
+  [87/277] Retomada: bip_pandas_116.py::_MergeOperation._get_merge_keys
+  [88/277] Retomada: bip_pandas_117.py::_isna_old
+  [89/277] Retomada: bip_pandas_119.py::_add_margins
+  [90/277] Retomada: bip_pandas_127.py::NDFrame.pct_change
+  [91/277] Retomada: bip_pandas_133.py::NDFrame.interpolate
+  [92/277] Retomada: bip_pandas_139.py::Grouping.__init__
+  [93/277] Retomada: bip_pandas_14.py::should_series_dispatch
+  [94/277] Retomada: bip_pandas_141.py::RangeIndex.get_indexer
+  [95/277] Retomada: bip_pandas_142.py::diff
+  [96/277] Retomada: bip_pandas_143.py::RangeIndex.get_indexer
+  [97/277] Retomada: bip_pandas_144.py::BarPlot._decorate_ticks
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [98/277] Retomada: bip_pandas_145.py::dispatch_to_series.column_op
+  [99/277] Retomada: bip_pandas_148.py::FrameApply.apply_empty_result
+  [100/277] Retomada: bip_pandas_152.py::Series.append
+  [101/277] Retomada: bip_pandas_154.py::GroupBy._get_cythonized_result
+  [102/277] Retomada: bip_pandas_155.py::Rolling._on
+  [103/277] Retomada: bip_pandas_158.py::Series.rename
+  [104/277] Retomada: bip_pandas_160.py::_can_use_numexpr
+  [105/277] Retomada: bip_pandas_161.py::Categorical.fillna
+  [106/277] Retomada: bip_pandas_162.py::_normalize
+  [107/277] Retomada: bip_pandas_163.py::_Window._prep_values
+  [108/277] Retomada: bip_pandas_166.py::DataFrame._join_compat
+  [109/277] Retomada: bip_pandas_168.py::_get_grouper
+  [109/277] Retomada: bip_pandas_168.py::_get_grouper.is_in_axis
+  [109/277] Retomada: bip_pandas_168.py::_get_grouper.is_in_obj
+  [110/277] Retomada: bip_pandas_19.py::_LocIndexer._getitem_axis
+  [111/277] Retomada: bip_pandas_21.py::Series._get_with
+  [112/277] Retomada: bip_pandas_23.py::DatetimeTimedeltaMixin.intersection
+  [113/277] Retomada: bip_pandas_24.py::DatetimeArray.tz_localize
+  [114/277] Retomada: bip_pandas_25.py::DatetimeArray.isocalendar
+  [115/277] Retomada: bip_pandas_28.py::StringMethods._get_series_list
+  [116/277] Retomada: bip_pandas_29.py::IntervalArray.__setitem__
+  [117/277] Retomada: bip_pandas_33.py::IntegerArray._values_for_argsort
+  [118/277] Retomada: bip_pandas_34.py::TimeGrouper._get_time_bins
+  [119/277] Retomada: bip_pandas_35.py::PeriodIndex._engine
+  [120/277] Retomada: bip_pandas_4.py::Index._join_multi
+  [121/277] Retomada: bip_pandas_42.py::assert_series_equal
+  [122/277] Retomada: bip_pandas_50.py::_cat_compare_op
+  [122/277] Retomada: bip_pandas_50.py::_cat_compare_op.func
+  [123/277] Retomada: bip_pandas_52.py::SeriesGroupBy.nunique
+  [124/277] Retomada: bip_pandas_58.py::Categorical.from_codes
+  [125/277] Retomada: bip_pandas_59.py::_Rolling_and_Expanding.corr
+  [125/277] Retomada: bip_pandas_59.py::_Rolling_and_Expanding.corr._get_corr
+  [126/277] Retomada: bip_pandas_61.py::Series._get_with
+  [127/277] Retomada: bip_pandas_63.py::_AtIndexer._convert_key
+  [128/277] Retomada: bip_pandas_64.py::ExcelFormatter.__init__
+  [129/277] Retomada: bip_pandas_69.py::_AtIndexer._convert_key
+  [130/277] Retomada: bip_pandas_7.py::Index._get_nearest_indexer
+  [131/277] Retomada: bip_pandas_78.py::DataFrame._reduce
+  [131/277] Retomada: bip_pandas_78.py::DataFrame._reduce.f
+  [131/277] Retomada: bip_pandas_78.py::DataFrame._reduce._get_data
+  [132/277] Retomada: bip_pandas_8.py::Block.replace
+  [133/277] Retomada: bip_pandas_84.py::_unstack_multiple
+  [134/277] Retomada: bip_pandas_87.py::crosstab
+  [135/277] Retomada: bip_pandas_88.py::pivot_table
+  [136/277] Retomada: bip_pandas_89.py::_unstack_multiple
+  [137/277] Retomada: bip_pandas_91.py::TimedeltaIndex.searchsorted
+  [138/277] Retomada: bip_pandas_95.py::_period_array_cmp
+  [138/277] Retomada: bip_pandas_95.py::_period_array_cmp.wrapper
+  [139/277] Retomada: bip_pandas_98.py::Index.__new__
+  [140/277] Retomada: bip_sanic_1.py::Sanic.register_named_middleware
+  [141/277] Retomada: bip_scrapy_15.py::_safe_ParseResult
+  [142/277] Retomada: bip_scrapy_18.py::ResponseTypes.from_content_disposition
+  [143/277] Retomada: bip_scrapy_21.py::RobotsTxtMiddleware._robots_error
+  [144/277] Retomada: bip_scrapy_28.py::RFPDupeFilter.__init__
+  [145/277] Retomada: bip_scrapy_38.py::_get_clickable
+  [146/277] Retomada: bip_scrapy_39.py::Spider.start_requests
+  [147/277] Retomada: bip_scrapy_40.py::PythonItemExporter._serialize_value
+  [148/277] Retomada: bip_scrapy_6.py::ImagesPipeline.convert_image
+  [149/277] Retomada: bip_scrapy_8.py::ItemMeta.__new__
+  [150/277] Retomada: bip_spacy_1.py::add_codes
+  [150/277] Retomada: bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__
+  [151/277] Retomada: bip_spacy_2.py::load_model_from_path
+  [152/277] Retomada: bip_spacy_6.py::Language.remove_pipe
+  [153/277] Retomada: bip_thefuck_10.py::get_new_command
+  [154/277] Retomada: bip_thefuck_11.py::get_new_command
+  [155/277] Retomada: bip_thefuck_14.py::Fish._get_overridden_aliases
+  [156/277] Retomada: bip_thefuck_19.py::get_new_command
+  [157/277] Retomada: bip_thefuck_2.py::get_all_executables
+  [157/277] Retomada: bip_thefuck_2.py::get_all_executables._safe
+  [158/277] Retomada: bip_thefuck_25.py::get_new_command
+  [159/277] Retomada: bip_thefuck_26.py::get_new_command
+  [160/277] Retomada: bip_thefuck_3.py::Fish.info
+  [161/277] Retomada: bip_thefuck_30.py::match
+  [162/277] Retomada: bip_thefuck_4.py::_get_aliases
+  [163/277] Retomada: bip_tornado_5.py::PeriodicCallback._update_next
+  [164/277] Retomada: bip_tornado_8.py::WebSocketProtocol13.accept_connection
+  [165/277] Retomada: bip_tqdm_1.py::tenumerate
+  [166/277] Retomada: bip_youtube_dl_10.py::js_to_json
+  [166/277] Retomada: bip_youtube_dl_10.py::js_to_json.fix_kv
+  [167/277] Retomada: bip_youtube_dl_13.py::urljoin
+  [168/277] Retomada: bip_youtube_dl_15.py::js_to_json
+  [168/277] Retomada: bip_youtube_dl_15.py::js_to_json.fix_kv
+  [169/277] Retomada: bip_youtube_dl_20.py::get_elements_by_attribute
+  [170/277] Retomada: bip_youtube_dl_21.py::urljoin
+  [171/277] Retomada: bip_youtube_dl_23.py::js_to_json
+  [171/277] Retomada: bip_youtube_dl_23.py::js_to_json.fix_kv
+  [172/277] Retomada: bip_youtube_dl_24.py::_match_one
+  [173/277] Retomada: bip_youtube_dl_25.py::js_to_json
+  [173/277] Retomada: bip_youtube_dl_25.py::js_to_json.fix_kv
+  [174/277] Retomada: bip_youtube_dl_26.py::js_to_json
+  [174/277] Retomada: bip_youtube_dl_26.py::js_to_json.fix_kv
+  [175/277] Retomada: bip_youtube_dl_27.py::parse_dfxp_time_expr
+  [176/277] Retomada: bip_youtube_dl_3.py::unescapeHTML
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.syntax_error
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._parse_filter
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._parse_format_selection
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function._merge
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector._build_selector_function.final_selector
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__init__
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__iter__
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.__next__
+  [177/277] Retomada: bip_youtube_dl_30.py::YoutubeDL.build_format_selector.TokenIterator.restore_last_token
+  [178/277] Retomada: bip_youtube_dl_4.py::JSInterpreter.interpret_expression
+  [179/277] Retomada: bip_youtube_dl_41.py::unified_strdate
+  [180/277] Retomada: bip_youtube_dl_43.py::url_basename
+  [181/277] Retomada: bip_youtube_dl_5.py::unified_timestamp
+  [182/277] Retomada: bip_youtube_dl_7.py::js_to_json
+  [182/277] Retomada: bip_youtube_dl_7.py::js_to_json.fix_kv
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.syntax_error
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._parse_filter
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._parse_format_selection
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function._merge
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.selector_function
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector._build_selector_function.final_selector
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__init__
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__iter__
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.__next__
+  [183/277] Retomada: bip_youtube_dl_8.py::YoutubeDL.build_format_selector.TokenIterator.restore_last_token
+  [184/277] Retomada: dz_real_01.py::makeMappingArray
+  [185/277] Retomada: dz_real_02.py::ExactLanguageSearch.choose_best_split
+  [186/277] Retomada: dz_real_03.py::HashExpander.do
+  [187/277] Retomada: dz_real_04.py::interpolate_bilinear_2x_fwd
+  [188/277] Retomada: io_real_01.py::nonsingular
+  [189/277] Retomada: ip_real_01.py::Request._set_url
+  [190/277] Retomada: ip_real_03.py::Selector.__init__
+  [191/277] Retomada: ip_real_04.py::HTTP1Connection.write_headers
+  [192/277] Retomada: ip_real_05.py::_Alpha.__gt__
+  [192/277] Retomada: ip_real_05.py::_Alpha.__ge__
+  [192/277] Retomada: ip_real_05.py::_Numeric.__gt__
+  [192/277] Retomada: ip_real_05.py::_Numeric.__ge__
+  [193/277] Retomada: ip_real_06.py::_unstack_multiple
+  [194/277] Retomada: ip_real_07.py::_htmlentity_transform
+  [195/277] Retomada: ip_real_10.py::_get_spider_loader
+  [196/277] Retomada: ip_real_11.py::HTTPBearer.__call__
+  [197/277] Retomada: ip_real_13.py::StaticFileHandler.get
+  [198/277] Retomada: ip_real_14.py::TimeseriesGenerator.__len__
+  [199/277] Retomada: ip_real_15.py::EmptyLineTracker.maybe_empty_lines
+  [200/277] Retomada: ip_real_16.py::pivot
+  [201/277] Retomada: ip_real_17.py::response_status_message
+  [202/277] Retomada: ip_real_18.py::croniter._get_low_from_current_date_number
+  [203/277] Retomada: ip_real_19.py::VersionInfo.__getitem__
+  [204/277] Retomada: ip_real_20.py::generate_sub_moved_events
+  [205/277] Retomada: ip_real_21.py::SortedDict.__eq__
+  [205/277] Retomada: ip_real_21.py::SortedDict.__ne__
+  [206/277] Retomada: ip_real_22.py::match
+  [207/277] Retomada: ip_real_23.py::Task.to_str_params
+  [208/277] Retomada: ip_real_24.py::CentralPlannerScheduler.get_work
+  [209/277] Retomada: ip_real_25.py::SimpleTaskState.get_necessary_tasks
+  [210/277] Retomada: ip_real_26.py::Scheduler.add_task
+  [211/277] Retomada: ip_real_28.py::IOLoop.initialize
+  [212/277] Retomada: ip_real_32.py::date_convert
+  [213/277] Retomada: ip_real_33.py::send2trash
+  [214/277] Retomada: ip_real_34.py::find_hook
+  [214/277] Retomada: ip_real_34.py::run_hook
+  [215/277] Retomada: ir_real_01.py::gamma
+  [215/277] Retomada: ir_real_01.py::lgamma
+  [216/277] Retomada: ir_real_02.py::module-level
+  [217/277] Retomada: ir_real_03.py::try_match_char_class_range
+  [218/277] Retomada: ir_real_05.py::string_to_int
+  [219/277] Retomada: nm_real_01.py::Session.update_headers
+  [220/277] Retomada: nm_real_02.py::tqdm.format_meter
+  [221/277] Retomada: nm_real_03.py::FacebookIE._real_extract
+  [222/277] Retomada: nm_real_04.py::OffsiteMiddleware.get_host_regex
+  [223/277] Retomada: nm_real_05.py::Response.follow
+  [224/277] Retomada: nm_real_06.py::create_instance
+  [225/277] Retomada: nm_real_07.py::url_concat
+  [226/277] Retomada: nm_real_08.py::Request.url_for
+  [227/277] Retomada: nm_real_09.py::tqdm.__len__
+  [228/277] Retomada: nm_real_10.py::S3CopyToTable.copy
+  [229/277] Retomada: nm_real_11.py::LocalCache.__setitem__
+  [230/277] Retomada: nm_real_12.py::PamdService.remove
+  [231/277] Retomada: nm_real_13.py::AsyncHTTPClient.close
+  [232/277] Retomada: nm_real_14.py::request_httprepr
+  [233/277] Retomada: nm_real_15.py::APIRouter.include_router
+  [234/277] Retomada: nm_real_17.py::_type
+  [235/277] Retomada: nm_real_18.py::after_log
+  [235/277] Retomada: nm_real_18.py::after_log.log_it
+  [236/277] Retomada: nm_real_19.py::IsFile
+  [237/277] Retomada: nm_real_20.py::engine.numwords
+  [238/277] Retomada: nm_real_21.py::_Projection.get_index
+  [239/277] Retomada: nm_real_22.py::run
+  [240/277] Retomada: nm_real_23.py::Markdown._html_class_str_from_tag
+  [241/277] Retomada: nm_real_24.py::reformat_many
+  [242/277] Retomada: nm_real_25.py::HTTP1Connection._can_keep_alive
+  [243/277] Retomada: oob_real_01.py::get_new_command
+  [244/277] Retomada: oob_real_02.py::match
+  [245/277] Retomada: oob_real_03.py::get_new_command
+  [246/277] Retomada: oob_real_04.py::SortedCorrectedCommandsSequence._realise
+  [247/277] Retomada: oob_real_05.py::lib2to3_parse
+  [248/277] Retomada: oob_real_06.py::merge_configs
+  [249/277] Retomada: oob_real_09.py::parser._parse
+  [250/277] Retomada: oob_real_10.py::_wrap_text_to_colwidths
+  [251/277] Retomada: oob_real_11.py::wcswidth
+  [252/277] Retomada: oob_real_12.py::fast_float
+  [253/277] Retomada: oob_real_13.py::tokenize
+  [254/277] Retomada: oob_real_14.py::LinuxDistribution._parse_uname_content
+  [255/277] Retomada: oob_real_15.py::dfxp2srt
+  [255/277] Retomada: oob_real_15.py::dfxp2srt.parse_node
+  [256/277] Retomada: oob_real_16.py::IndexedSet._get_real_index
+  [256/277] Retomada: oob_real_16.py::IndexedSet.__getitem__
+  [257/277] Retomada: tm_real_01.py::read_conllx
+  [258/277] Retomada: tm_real_02.py::HiveCommandClient.table_exists
+  [259/277] Retomada: tm_real_03.py::_match_one
+  [260/277] Retomada: tm_real_04.py::str_to_int
+  [261/277] Retomada: tm_real_05.py::MailSender.send
+  [262/277] Retomada: tm_real_06.py::ContractsManager._clean_req
+  [262/277] Retomada: tm_real_06.py::ContractsManager._clean_req.eb_wrapper
+  [263/277] Retomada: tm_real_07.py::MarkerStyle._recache
+  [264/277] Retomada: tm_real_08.py::simple_separated_format
+  [265/277] Retomada: tm_real_09.py::_format
+  [266/277] Retomada: tm_real_10.py::MetricsHandler.get
+  [267/277] Retomada: tm_real_11.py::sitemap_urls_from_robots
+  [267/277] Retomada: tm_real_11.py::SitemapSpider._parse_sitemap
+  [268/277] Retomada: tm_real_12.py::S3CopyToTable.s3_load_path
+  [268/277] Retomada: tm_real_12.py::S3CopyToTable.run
+  [269/277] Retomada: tm_real_13.py::XmlItemExporter._export_xml_field
+  [269/277] Retomada: tm_real_13.py::XmlItemExporter._xg_characters
+  [270/277] Retomada: vm_real_01.py::tqdm.format_meter
+  [271/277] Retomada: vm_real_02.py::Schema.validate
+  [272/277] Retomada: vm_real_03.py::_pipe
+  [272/277] Retomada: vm_real_03.py::Language.pipe
+  [273/277] Retomada: vm_real_04.py::YoutubeDL._build_format_filter
+  [274/277] Retomada: vm_real_05.py::LocalFileSystem.mkdir
+  [274/277] Retomada: vm_real_05.py::LocalFileSystem.move
+  [275/277] Retomada: vm_real_06.py::CrawlerRunner.__init__
+  [275/277] Retomada: vm_real_06.py::CrawlerProcess.__init__
+  [276/277] Retomada: vm_real_07.py::fit_generator
+  [277/277] Retomada: vm_real_08.py::get_write_function
+  [277/277] Retomada: vm_real_08.py::get_write_function.write
+  [277/277] Retomada: vm_real_08.py::get_write_function.write
+
+Modo V2 (motor verify): 232 hipótese(s) → especificação de entrada com claude-sonnet-5-5
+[215/232] tm_real_04.py::str_to_int
+    -> UNVALIDATED unwinding assertion loop 37; invalid literal for int() with empty string; invalid literal for int() - no digits; invalid
+
+Vereditos: {'CONFIRMED': 5, 'ESBMC_MISSED': 1, 'UNVALIDATED': 3, 'OTHER_FAILURE': 5, 'NOT_CONFIRMED': 8, 'GROUNDING_FAILED': 44, 'MISSING_DEPENDENCY': 52, 'UNSUPPORTED': 98, 'SPEC_FAILED': 2, 'ESBMC_TIMEOUT': 5, 'ESBMC_ERROR': 9}
+Níveis: {'esbmc_engine': 22, 'llm_only': 207}; veredito do ESBMC em 22/229, 5 confirmado(s); só LLM por motivo: {'harness_context': 114, 'esbmc_language': 27, 'esbmc_crash': 13, 'esbmc_timeout': 5, 'llm_spec': 2, 'locate_function': 42, 'other': 4}
+Relatório JSON: artifacts/v2/full-2026-10-04-sonnet/v2_verify_report.json
+exit=0

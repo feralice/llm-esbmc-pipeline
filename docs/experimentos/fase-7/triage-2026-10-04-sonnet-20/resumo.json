@@ -1,0 +1,19 @@
+{
+  "pasta": "triage-2026-10-04-sonnet-20",
+  "modificado_em": "2026-10-04T18:13",
+  "arquivos": [
+    "llm_telemetry.json",
+    "triage-2026-10-04-sonnet-20.log",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 1,
+    "GROUNDING_FAILED": 1,
+    "ESBMC_ERROR": 1,
+    "MISSING_DEPENDENCY": 2
+  }
+}

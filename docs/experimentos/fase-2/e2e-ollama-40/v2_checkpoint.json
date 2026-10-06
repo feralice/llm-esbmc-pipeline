@@ -1,0 +1,1919 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "qwen2.5-coder:7b",
+      "backend": "ollama",
+      "synth_backend": "ollama",
+      "synth_model": "qwen2.5-coder:7b",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 6,
+      "timeout": 180,
+      "llm_timeout": 300,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py": "c57f0dc1d72c4398bc403eb137c464ab5a587706e8661d311fdf444ae88722dd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py": "be6a0b38a60c273f386b7cd1fa9744955dd4c0b0b122c779fafdb158759ee8a8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py": "7e36068737982a63582fe69a48d95c336d8379d9c67535ba68eccc5d669293c0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py": "f7dc9ea5b44d0c63565b79716730450d2893918b3606a2a71ad5a1b606f366c9",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py": "b61fc9487d1817b46e687b390b62f9bd3b641182d9e78583517adb852a3c3ceb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py": "a6c50b83b74691a2249694062697998827db8a7f89faa1f68559245e11b28dd4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py": "50147a90d550d480938f5fda4a466584a908c0cb182f95c46e89446a131cb13e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py": "1325c182ad4b87c622665bf33f0787da3a8390b97961f4bad04da078f8655dbd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py": "a6598be5faf74259c2d8bae63359684a8ddc4332b82a0e76fa68f53bd8cf9077",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py": "3cb4f26700f69189a820fb36aad0c538a6fa71d5b174d148d17033d3ccb4b163",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py": "550cd6c7992213ded207576291c802d1ae19432c4f4ee3d2c6a8f8cd0a983c0a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py": "c14c2fb2aa199d7e1b763dfe159ea77e73ea4536999f86088f8c0146da44bd41",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py": "a096002df689dadbede065fe4a291808f9b99badb2ad0e1b1c68d1d12c992961",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py": "829e951d80fff1ebdcbb61928d186bffd107a5f06ad13ecceea4010fbcb8ff1b",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py": "c620ddb7274fde09659d1bf3f5de56bf9ceb427326fe5e0aa901352553091baa",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py": "9179e371ae65a68371897037b744b7a7c2c0d6534733c70c80ad4dc024503f32",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py": "d005158c47ec687865c3dcb6710f81dde58ad52adc4ae72a4654f391a2a6a2ca",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py": "d5fde0b64e1df50d414955a84e5f36bd254052d696b95960b77dcdd3714226da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py": "6212a401a602e38b13f68afbabb416a755d654354065ef686579b05bd82706cd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py": "835d4b0ca17a8269a6ea65eb2f507e1a331c0504ec9156bf1e62bb9d3b3fc0b4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py": "92dfc8884c14525a1448520bad5d7fca17bf981ff0d688bd94a3ee8e9c05ea06",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py": "b2e57d33c8942c3e6e9f6b87dc1296065caaae26b0609b24dcf646870a9620a4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py": "923ead12a818662d862556d719d90b8889d4c835ce2529790041f0fd547da21f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py": "a819501e567a8615c0a586aa55754944106efa6fb630af42e4942370d8436bfe",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py": "55a1f3eddce44d810a46d47a7bec955729d9bff608718c7baf2d1233dbd77893",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py": "6ee86eae76e21a7ea2e2adbe69164f35191ee07944c24a7dbed987a150fd8da1",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py": "9f441697f54570affd4c07cb69b8ce06035994571d9ea4548451a13ceb71b48f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py": "41c054941311b864c168282de9ff02d29999e209d4154b39295b3385f5176fe5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py": "586c433d7ce4ac5da6224d5f89f695e4660b5e1b8c9747879ea6cafe52a2ad2e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py": "5e1c03cb58eb47d6c43a2bc8a675bbec6ffb037c05121d0f855ced31e37f82ad",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py": "f2a5d06289fd888683f313d35f019d12d029d980cfa2b7cd31e630aa45f5401f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py": "bbc35add60a11ced8de11b5312e24f486094413aa09f538819abe4ef72c1d9ae",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py": "46c5f9a590938942c6234e27ad100240fce97e2bd2e5066b73937240c47fee9a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py": "bbf9711f78b6758acc8bc8375a6712d14673421ea3605ccf6f3680f80ebb98c2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py": "16d28467c86c623c96e908ed5f82f135339fb5288e4ae7bf2c88cc9765a1c068",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py": "a74e14dc842cd00d78d962a8bc82992973cbe240ed931537a6e77b670d9cda66",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py": "e2957543875409a8143a6e5c7fcb674bb0a2b9fc39001bd4a7bd01cd6d191413",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py": "31a00628365f82429594246ff08441d1c65036ad5cac16415a6173298ea11357",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py": "35f5963985a66b936aff03ef041a498821ffcb1f21cf6de5a5319ddf47358800"
+    },
+    "detector_prompt": "b23342598b84cf75ce35d6e83b94fc38cda1160209d1fcbad519beb983c4dddf",
+    "synth_prompt": "fcda291038d65ba8db233029300fc98f57368aa2e6d739ccf0c9054a88635714"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py::cli_bool_option": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+          "function": "cli_bool_option",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(param, bool)",
+          "note": "A assertion verifica se param é bool, mas não garante que params.get(param) seja sempre um valor booleano. Se params.get(param) for null ou outro tipo incompatível, a assertion falhará."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+          "function": "cli_bool_option",
+          "category": "variable_misuse",
+          "expression": "param = params.get(param)",
+          "note": "A variável param é usada antes de ser atualizada com params.get(param). Se params.get(param) retornar null, a assertion falhará."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py::WebSocketHandler.set_nodelay": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+          "function": "WebSocketHandler.set_nodelay",
+          "category": "none_misuse",
+          "expression": "self.stream.set_nodelay(value)",
+          "note": "Se 'self.stream' for null, a chamada de método causará um AttributeError porque null não tem o atributo 'set_nodelay'."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+          "function": "WebSocketHandler.set_nodelay",
+          "category": "assertion_violation",
+          "finding_type": "llm_false_positive",
+          "expression": "assert self.stream is not null",
+          "reason": "expression_not_found"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py::Series.to_timestamp": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+          "function": "Series.to_timestamp",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(self.index, PeriodIndex)",
+          "note": "A assertion verifica se self.index é uma instância de PeriodIndex, mas não garante que isso seja verdade em todos os caminhos. Se freq ou how forem inválidos, a conversão para timestamp pode falhar e levantar um AssertionError."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+          "function": "Series.to_timestamp",
+          "category": "out_of_bounds",
+          "expression": "new_index = self.index.to_timestamp(freq=freq, how=how)",
+          "note": "A conversão para timestamp pode resultar em um novo índice com índices fora dos limites do índice original, levando a um IndexError ao acessar new_index[i] posteriormente."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+          "function": "Series.to_timestamp",
+          "category": "variable_misuse",
+          "expression": "return self._constructor(new_values, index=new_index).__finalize__(self, method='to_timestamp')",
+          "note": "A função retorna self._constructor(new_values, index=new_index).__finalize__(self, method='to_timestamp'), mas não garante que new_values e new_index sejam compatíveis em todos os caminhos. Se copy=false, new_values pode ser uma referência ao índice original, o que pode levar a problemas de modificação indesejada."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+          "function": "get_new_command",
+          "category": "none_misuse",
+          "expression": "command.script",
+          "note": "O parâmetro 'command' pode ser null, o que levará a um AttributeError ao acessar 'script'."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py::match": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+          "function": "match",
+          "category": "assertion_violation",
+          "expression": "'ls' in command.script and (not 'ls -' in command.script)",
+          "note": "A expressão 'command.script' pode ser null, o que causará uma AssertionError ao tentar verificar a condição."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py::Settings.update": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+          "function": "Settings.update",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "conf.update(kwargs)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "if oldmin < oldmax:",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "if oldmin < oldmax:",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "setter(self, min(vmin, vmax, oldmin), max(vmin, vmax, oldmax), ignore=true)",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "setter(self, min(vmin, vmax, oldmax), max(vmin, vmax, oldmax), ignore=true)",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin), ignore=true)",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin), ignore=true)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval.getter": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.getter",
+          "category": "none_misuse",
+          "expression": "getattr(self.axes, lim_name)",
+          "note": "O valor de 'lim_name' pode ser null, o que causará um AttributeError ao tentar acessar um atributo em null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.getter",
+          "category": "none_misuse",
+          "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+          "note": "O valor de 'attr_name' pode ser null, o que causará um AttributeError ao tentar acessar um atributo em null."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval.setter": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "variable_misuse",
+          "expression": "setattr(getattr(self.axes, lim_name), attr_name, (vmin, vmax))",
+          "note": "A variável 'lim_name' e 'attr_name' não são definidas no escopo local da função. Isso pode levar a um AttributeError se essas variáveis não forem definidas em algum lugar fora desta função."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "variable_misuse",
+          "expression": "oldmin, oldmax = getter(self)",
+          "note": "A variável 'getter' não é definida no escopo local da função. Isso pode levar a um NameError se essa variável não for definida em algum lugar fora desta função."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "target_function(self, min(vmin, vmax, oldmin), max(vmin, vmax, oldmax), ignore=true)",
+          "reason": "expression_not_found"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "target_function(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin), ignore=true)",
+          "reason": "expression_not_found"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.setter",
+          "category": "variable_misuse",
+          "finding_type": "llm_false_positive",
+          "expression": "self.stale = true",
+          "reason": "expression_not_found"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py::match": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+          "function": "match",
+          "category": "none_misuse",
+          "expression": "command.script",
+          "note": "O parâmetro 'command' pode ser null, o que levará a um AttributeError ao acessar 'script'"
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py::match": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+          "function": "match",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "command.script_parts and command.output",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+          "function": "get_new_command",
+          "category": "type_mismatch",
+          "expression": "command.script[5:]",
+          "note": "O parâmetro 'command' pode ser null, o que causará um TypeError ao acessar 'command.script'."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+          "function": "get_new_command",
+          "category": "out_of_bounds",
+          "expression": "command.script[5:]",
+          "note": "O acesso a 'command.script[5:]' pode causar um IndexError se 'script' for uma string vazia ou muito curta."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py::gunzip": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+          "function": "gunzip",
+          "category": "none_misuse",
+          "expression": "return output",
+          "note": "A variável 'output' é inicializada como um valor concreto (b''), mas a função pode retornar null se nenhum dado for lido e não houver extrabuf. Isso ocorre porque a exceção AssertionError é levantada quando f.extrabuf é null, o que implica que output também seria null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+          "function": "gunzip",
+          "category": "assertion_violation",
+          "expression": "raise",
+          "note": "A função pode levantar AssertionError se getattr(f, 'extrabuf', null) for null e output também for null. Isso ocorre porque a guarda if output or getattr(f, 'extrabuf', null): não protege contra ambos os casos sendo null."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py::unified_strdate": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+          "function": "unified_strdate",
+          "category": "type_mismatch",
+          "expression": "upload_date = datetime.datetime.strptime(date_str, expression).strftime('%Y%m%d')",
+          "note": "O valor de tipo incompatível alcança uma operação ou chamada e causa falha ou resultado semanticamente errado. A função `datetime.datetime.strptime(date_str, expression)` espera um objeto str como argumento, mas se `date_str` não for uma string válida, isso causará um TypeError."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+          "function": "unified_strdate",
+          "category": "type_mismatch",
+          "expression": "upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')",
+          "note": "O valor de tipo incompatível alcança uma operação ou chamada e causa falha ou resultado semanticamente errado. A função `datetime.datetime(*timetuple[:6])` espera um objeto tuple como argumento, mas se `timetuple` não for um tuple válido, isso causará um TypeError."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+          "function": "unified_strdate",
+          "category": "variable_misuse",
+          "expression": "return compat_str(upload_date)",
+          "note": "Variável errada, obsoleta ou de outra iteração é lida no lugar da variável correta. A variável `upload_date` é usada antes de ser inicializada em todas as condições, o que leva a um valor null sendo retornado."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+          "function": "unified_strdate",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if date_str is null:",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py::YoutubeDL.process_ie_result.iter_playlistitems": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+          "category": "type_mismatch",
+          "expression": "start, end = string_segment.split('-')",
+          "note": "O operando 'string_segment.split('-')' é controlado por parâmetro livre e pode causar TypeError se 'string_segment' não for uma string."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+          "category": "out_of_bounds",
+          "finding_type": "llm_false_positive",
+          "expression": "for item in range(int(start), int(end) + 1):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "for string_segment in format.split(','):",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py::YoutubeDL.process_ie_result._fixup": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result._fixup",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "ie_result['extractor']",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result._fixup",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "url_basename(ie_result['webpage_url'])",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+          "function": "YoutubeDL.process_ie_result._fixup",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "ie_result['extractor_key']",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py::makeMappingArray": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "division_by_zero",
+          "expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+          "note": "A divisão por zero pode ocorrer se (x[ind] - x[ind - 1]) for zero."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "x[ind - 1]",
+          "note": "O acesso a `x[ind - 1]` pode causar IndexError se ind for zero."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "x[ind]",
+          "note": "O acesso a `x[ind]` pode causar IndexError se ind for igual a len(x)."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "y0[ind]",
+          "note": "O acesso a `y0[ind]` pode causar IndexError se ind for igual a len(x)."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "y1[ind - 1]",
+          "note": "O acesso a `y1[ind - 1]` pode causar IndexError se ind for zero."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "y0[-1]",
+          "note": "O acesso a `y0[-1]` pode causar IndexError se len(y0) for zero."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "y1[0]",
+          "note": "O acesso a `y1[0]` pode causar IndexError se len(y1) for zero."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "variable_misuse",
+          "expression": "ind = np.searchsorted(x, xind)[1:-1]",
+          "note": "A variável `ind` é usada antes de ser inicializada."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "variable_misuse",
+          "expression": "distance = (xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+          "note": "A variável `distance` é usada antes de ser inicializada."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "variable_misuse",
+          "expression": "return np.clip(lut, 0.0, 1.0)",
+          "note": "A variável `lut` é usada antes de ser inicializada."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "finding_type": "llm_false_positive",
+          "expression": "y1[ind]",
+          "reason": "expression_not_found"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if x[0] != 0.0 or x[-1] != 1.0:",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if (np.diff(x) < 0).any():",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py::ExactLanguageSearch.choose_best_split": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "division_by_zero",
+          "expression": "float(not_parsed) / float(num_substrings)",
+          "note": "O denominador `num_substrings` pode ser zero, o que causará um ZeroDivisionError na divisão."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "division_by_zero",
+          "expression": "float(num_substrings_without_digits) / float(num_substrings)",
+          "note": "O denominador `num_substrings` pode ser zero, o que causará um ZeroDivisionError na divisão."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "out_of_bounds",
+          "finding_type": "llm_false_positive",
+          "expression": "for i in range(len(possible_parsed_splits))",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+          "function": "ExactLanguageSearch.choose_best_split",
+          "category": "out_of_bounds",
+          "finding_type": "llm_false_positive",
+          "expression": "for j, item in enumerate(possible_parsed_splits[i])",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py::HashExpander.do": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "out_of_bounds",
+          "expression": "self.cron.RANGES[idx][1]",
+          "note": "O parâmetro livre 'idx' pode causar IndexError se for maior ou igual ao comprimento de self.cron.RANGES."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "out_of_bounds",
+          "expression": "self.cron.RANGES[idx][0]",
+          "note": "O parâmetro livre 'idx' pode causar IndexError se for maior ou igual ao comprimento de self.cron.RANGES."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "division_by_zero",
+          "expression": "(crc >> idx) % (range_end - range_begin + 1)",
+          "note": "O parâmetro livre 'range_end' pode ser zero, causando ZeroDivisionError na operação (crc >> idx) % (range_end - range_begin + 1)."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "invalid_precondition",
+          "expression": "binascii.crc32(hash_id) & 4294967295",
+          "note": "A função aceita 'hash_id' como null, o que pode causar ValueError na chamada binascii.crc32(hash_id)."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+          "function": "HashExpander.do",
+          "category": "variable_misuse",
+          "expression": "range_end - range_begin + 1",
+          "note": "A variável 'range_begin' é usada antes de ser inicializada, o que pode causar NameError se range_begin for null."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py::nonsingular": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "division_by_zero",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "out_of_bounds",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "assertion_violation",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "type_mismatch",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+          "function": "nonsingular",
+          "category": "integer_overflow",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py::integer_squareroot": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+          "function": "integer_squareroot",
+          "category": "division_by_zero",
+          "expression": "y = (x + n // x) // 2",
+          "note": "O operando 'x' pode ser zero, o que levaria a uma divisão por zero no cálculo de 'y'. A guarda 'y < x' não protege contra isso."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py::Request._set_url": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+          "function": "Request._set_url",
+          "category": "assertion_violation",
+          "finding_type": "suspected_bug",
+          "expression": "if ':' not in self._url:",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+          "function": "Request._set_url",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if not isinstance(url, six.string_types):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+          "function": "Request._set_url",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if ':' not in self._url:",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py::Selector.__init__": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+          "function": "Selector.__init__",
+          "category": "invalid_precondition",
+          "expression": "text = response.text",
+          "note": "O parâmetro livre `response` pode ser null, o que causa uma falha ao tentar acessar `response.text`."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+          "function": "Selector.__init__",
+          "category": "variable_misuse",
+          "expression": "self.response = response",
+          "note": "A variável `text` é usada antes de ser definida, o que pode levar a um uso de null em operações que exigem um valor concreto."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+          "function": "Selector.__init__",
+          "category": "variable_misuse",
+          "expression": "super(Selector, self).__init__(text=text, type=st, root=root, **kwargs)",
+          "note": "A variável `text` é usada antes de ser definida, o que pode levar a um uso de null em operações que exigem um valor concreto."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+          "function": "Selector.__init__",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "text = response.text",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py::HTTP1Connection.write_headers": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+          "function": "HTTP1Connection.write_headers",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "self._chunking_output",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+          "function": "HTTP1Connection.write_headers",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "'Content-Length' not in headers and ('Transfer-Encoding' not in headers)",
+          "reason": "expression_not_found"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py::_Alpha.__gt__": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+          "function": "_Alpha.__gt__",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "self.__lt__(other)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py::_Numeric.__gt__": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+          "function": "_Numeric.__gt__",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "self.__lt__(other)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py::_unstack_multiple": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "data.index",
+          "note": "A expressão `data.index` pode causar IndexError se `data` for vazio, pois `index` não estará definido."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "index.names",
+          "note": "A expressão `index.names` pode causar IndexError se `data.index` for vazio, pois `names` não estará definido."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "index._get_level_number(i)",
+          "note": "A expressão `index._get_level_number(i)` pode causar IndexError se `i` for maior ou igual a `len(index.levels)`, pois `_get_level_number` não verifica os limites."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "index.levels[i]",
+          "note": "A expressão `index.levels[i]` pode causar IndexError se `i` for maior ou igual a `len(index.levels)`, pois `levels` não verifica os limites."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "index.codes[i]",
+          "note": "A expressão `index.codes[i]` pode causar IndexError se `i` for maior ou igual a `len(index.levels)`, pois `codes` não verifica os limites."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "index.names[i]",
+          "note": "A expressão `index.names[i]` pode causar IndexError se `i` for maior ou igual a `len(index.levels)`, pois `names` não verifica os limites."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "unstacked.columns",
+          "note": "A expressão `unstacked.columns` pode causar IndexError se `unstacked` for uma Series, pois `columns` não estará definido."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "unstcols.levels[0]",
+          "note": "A expressão `unstcols.levels[0]` pode causar IndexError se `unstcols` for uma Series, pois `levels` não estará definido."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "unstcols.codes[-1]",
+          "note": "A expressão `unstcols.codes[-1]` pode causar IndexError se `unstcols` for uma Series, pois `codes` não estará definido."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+          "function": "_unstack_multiple",
+          "category": "out_of_bounds",
+          "expression": "rec.take(unstcols.codes[-1])",
+          "note": "A expressão `rec.take(unstcols.codes[-1])` pode causar IndexError se `unstcols.codes[-1]` for maior ou igual a `len(rec)`, pois `take` não verifica os limites."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py::_htmlentity_transform": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "type_mismatch",
+          "expression": "mobj.group(1)",
+          "note": "A função pode lançar um TypeError se `entity` for uma string vazia, pois `re.match` retornará null e a linha 10 tentará acessar o atributo `group(1)` de null."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "division_by_zero",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "out_of_bounds",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "assertion_violation",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "",
+          "reason": "missing_expression"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "integer_overflow",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py::Sanic.url_for": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "division_by_zero",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "out_of_bounds",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "assertion_violation",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "none_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "type_mismatch",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+          "function": "Sanic.url_for",
+          "category": "integer_overflow",
+          "finding_type": "suspected_bug",
+          "expression": "",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py::generate_commands": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+          "function": "generate_commands",
+          "category": "type_mismatch",
+          "expression": "'vlan {0}'.format(vlan_id)",
+          "note": "O valor de 'vlan_id' pode ser null, o que causará um TypeError ao tentar formatá-lo em uma string."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+          "function": "generate_commands",
+          "category": "invalid_precondition",
+          "expression": "'vlan {0}'.format(vlan_id)",
+          "note": "A função aceita 'vlan_id' como null, o que pode levar a um comportamento incorreto ou uma exceção."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+          "function": "generate_commands",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "commands.insert(0, 'vlan {0}'.format(vlan_id))",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py::_get_spider_loader": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "invalid_precondition",
+          "expression": "cls_path = settings.get('SPIDER_LOADER_CLASS', settings.get('SPIDER_MANAGER_CLASS'))",
+          "note": "A função aceita um valor de 'settings' que pode não conter a chave 'SPIDER_LOADER_CLASS', o que leva à falha na chamada de load_object(cls_path) se cls_path for null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "invalid_precondition",
+          "expression": "cls_path = settings.get('SPIDER_LOADER_CLASS', settings.get('SPIDER_MANAGER_CLASS'))",
+          "note": "A função aceita um valor de 'settings' que pode não conter a chave 'SPIDER_MANAGER_CLASS', o que leva à falha na chamada de load_object(cls_path) se cls_path for null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "type_mismatch",
+          "expression": "loader_cls = load_object(cls_path)",
+          "note": "A função chama load_object(cls_path) sem garantir que cls_path seja uma string, o que pode levar a um TypeError se cls_path for de outro tipo."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "invalid_precondition",
+          "expression": "verifyClass(ISpiderLoader, loader_cls)",
+          "note": "A função aceita um valor de 'settings' que pode não conter a chave 'SPIDER_LOADER_CLASS', o que leva à falha na chamada de verifyClass(ISpiderLoader, loader_cls) se loader_cls for null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "invalid_precondition",
+          "expression": "verifyClass(ISpiderLoader, loader_cls)",
+          "note": "A função aceita um valor de 'settings' que pode não conter a chave 'SPIDER_MANAGER_CLASS', o que leva à falha na chamada de verifyClass(ISpiderLoader, loader_cls) se loader_cls for null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "invalid_precondition",
+          "expression": "return loader_cls.from_settings(settings.frozencopy())",
+          "note": "A função aceita um valor de 'settings' que pode não conter a chave 'SPIDER_LOADER_CLASS', o que leva à falha na chamada de loader_cls.from_settings(settings.frozencopy()) se loader_cls for null."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+          "function": "_get_spider_loader",
+          "category": "invalid_precondition",
+          "expression": "return loader_cls.from_settings(settings.frozencopy())",
+          "note": "A função aceita um valor de 'settings' que pode não conter a chave 'SPIDER_MANAGER_CLASS', o que leva à falha na chamada de loader_cls.from_settings(settings.frozencopy()) se loader_cls for null."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py::HTTPBearer.__call__": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+          "function": "HTTPBearer.__call__",
+          "category": "none_misuse",
+          "expression": "scheme, credentials = get_authorization_scheme_param(authorization)",
+          "note": "A variável 'authorization' pode ser null, o que leva a um AttributeError ao acessar 'scheme' e 'credentials'. A guarda `if not (authorization and scheme and credentials):` não protege contra isso."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+          "function": "HTTPBearer.__call__",
+          "category": "assertion_violation",
+          "expression": "raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Invalid authentication credentials')",
+          "note": "A condição `scheme.lower() != 'bearer'` pode ser falsa, levando a um AssertionError ao chamar `raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Invalid authentication credentials')`. A guarda `if scheme.lower() != 'bearer':` não protege contra isso."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py::map_obj_to_commands": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "none_misuse",
+          "expression": "warnings.append('protocol http is not enabled, not configuring http port value')",
+          "note": "A variável 'warnings' é usada como uma lista, mas não há garantia de que ela seja inicializada como tal. Se 'warnings' for null ou outro tipo incompatível, ocorrerá um TypeError ao tentar adicionar elementos a ele."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "none_misuse",
+          "expression": "warnings.append('protocol https is not enabled, not configuring https port value')",
+          "note": "A variável 'warnings' é usada como uma lista, mas não há garantia de que ela seja inicializada como tal. Se 'warnings' for null ou outro tipo incompatível, ocorrerá um TypeError ao tentar adicionar elementos a ele."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "none_misuse",
+          "expression": "warnings.append('protocol local_http is not enabled, not configuring local_http port value')",
+          "note": "A variável 'warnings' é usada como uma lista, mas não há garantia de que ela seja inicializada como tal. Se 'warnings' for null ou outro tipo incompatível, ocorrerá um TypeError ao tentar adicionar elementos a ele."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if any((needs_update('http'), needs_update('http_port'))):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if any((needs_update('https'), needs_update('https_port'))):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if any((needs_update('local_http'), needs_update('local_http_port'))):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if any((needs_update('socket'), needs_update('socket'))):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if needs_update('state') and (not needs_update('vrf')):",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands",
+          "category": "invalid_precondition",
+          "finding_type": "llm_false_positive",
+          "expression": "if needs_update('vrf'):",
+          "reason": "invalid_expression_syntax"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py::map_obj_to_commands.needs_update": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands.needs_update",
+          "category": "none_misuse",
+          "expression": "want.get(x) != have.get(x)",
+          "note": "O valor null alcança a operação '!=', que exige um valor concreto."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands.needs_update",
+          "category": "none_misuse",
+          "finding_type": "llm_false_positive",
+          "expression": "want.get(x) is not null",
+          "reason": "expression_not_found"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py::map_obj_to_commands.add": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands.add",
+          "category": "invalid_precondition",
+          "finding_type": "suspected_bug",
+          "expression": "if 'management api http-commands' not in commands:",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+          "function": "map_obj_to_commands.add",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "commands.append(cmd)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py::StaticFileHandler.get": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "out_of_bounds",
+          "expression": "content = self.get_content(self.absolute_path, start, end)",
+          "note": "A variável 'end' pode ser maior que 'size', o que levaria a um acesso fora dos limites em 'content = self.get_content(self.absolute_path, start, end)'. A guarda 'if end is not null and end > size: end = size' não protege completamente esse caso."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "assertion_violation",
+          "expression": "assert self.request.method == 'HEAD'",
+          "note": "A variável 'self.request.method' pode ser diferente de 'HEAD', o que levaria a uma violação de assertion em 'assert self.request.method == 'HEAD''. A guarda 'if include_body: assert self.request.method == 'HEAD'' não protege completamente esse caso."
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "division_by_zero",
+          "finding_type": "suspected_bug",
+          "expression": "content_length = end - start",
+          "reason": ""
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "variable_misuse",
+          "finding_type": "llm_false_positive",
+          "expression": "for chunk in content",
+          "reason": "invalid_expression_syntax"
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+          "function": "StaticFileHandler.get",
+          "category": "integer_overflow",
+          "finding_type": "suspected_bug",
+          "expression": "content_length = end - start",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py::TimeseriesGenerator.__len__": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+          "function": "TimeseriesGenerator.__len__",
+          "category": "division_by_zero",
+          "expression": "(self.end_index - self.start_index) / (self.batch_size * self.stride)",
+          "note": "O denominador de / pode ser zero, causando ZeroDivisionError."
+        }
+      ],
+      "rejected_findings": []
+    }
+  },
+  "synthesis_results": {},
+  "status": "running",
+  "telemetry_events": [
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 99.497023,
+      "prompt_tokens": 1552,
+      "completion_tokens": 283,
+      "total_tokens": 1835,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 49.016204,
+      "prompt_tokens": 1508,
+      "completion_tokens": 275,
+      "total_tokens": 1783,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 106.09686,
+      "prompt_tokens": 1565,
+      "completion_tokens": 527,
+      "total_tokens": 2092,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.29799,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.172359,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.283509,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 64.310425,
+      "prompt_tokens": 1479,
+      "completion_tokens": 130,
+      "total_tokens": 1609,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 32.880571,
+      "prompt_tokens": 1487,
+      "completion_tokens": 145,
+      "total_tokens": 1632,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 38.695057,
+      "prompt_tokens": 1485,
+      "completion_tokens": 171,
+      "total_tokens": 1656,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 176.101423,
+      "prompt_tokens": 1654,
+      "completion_tokens": 929,
+      "total_tokens": 2583,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 51.958609,
+      "prompt_tokens": 1476,
+      "completion_tokens": 282,
+      "total_tokens": 1758,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 139.528293,
+      "prompt_tokens": 1592,
+      "completion_tokens": 779,
+      "total_tokens": 2371,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.303005,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.242218,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 27.118508,
+      "prompt_tokens": 1473,
+      "completion_tokens": 129,
+      "total_tokens": 1602,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 32.717027,
+      "prompt_tokens": 1481,
+      "completion_tokens": 165,
+      "total_tokens": 1646,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 48.059318,
+      "prompt_tokens": 1480,
+      "completion_tokens": 258,
+      "total_tokens": 1738,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 65.015658,
+      "prompt_tokens": 1567,
+      "completion_tokens": 344,
+      "total_tokens": 1911,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 132.924742,
+      "prompt_tokens": 2026,
+      "completion_tokens": 656,
+      "total_tokens": 2682,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.256627,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 371.703932,
+      "prompt_tokens": 1519,
+      "completion_tokens": 427,
+      "total_tokens": 1946,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 73.729276,
+      "prompt_tokens": 1529,
+      "completion_tokens": 405,
+      "total_tokens": 1934,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 292.433662,
+      "prompt_tokens": 1824,
+      "completion_tokens": 1609,
+      "total_tokens": 3433,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 109.313792,
+      "prompt_tokens": 1696,
+      "completion_tokens": 584,
+      "total_tokens": 2280,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 127.099027,
+      "prompt_tokens": 1625,
+      "completion_tokens": 697,
+      "total_tokens": 2322,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": null,
+      "status": "timeout",
+      "duration_seconds": 903.287018,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Timeout (300s) ao chamar http://localhost:11434/v1/chat/completions. Aumente --llm-timeout ou verifique se Ollama está respondendo.",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 150.928862,
+      "prompt_tokens": 1700,
+      "completion_tokens": 827,
+      "total_tokens": 2527,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 33.355586,
+      "prompt_tokens": 1540,
+      "completion_tokens": 157,
+      "total_tokens": 1697,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 74.898155,
+      "prompt_tokens": 1548,
+      "completion_tokens": 406,
+      "total_tokens": 1954,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 99.905505,
+      "prompt_tokens": 1659,
+      "completion_tokens": 536,
+      "total_tokens": 2195,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 54.917141,
+      "prompt_tokens": 1551,
+      "completion_tokens": 288,
+      "total_tokens": 1839,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 30.522668,
+      "prompt_tokens": 1477,
+      "completion_tokens": 152,
+      "total_tokens": 1629,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 29.750458,
+      "prompt_tokens": 1477,
+      "completion_tokens": 152,
+      "total_tokens": 1629,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 558.79015,
+      "prompt_tokens": 2101,
+      "completion_tokens": 1312,
+      "total_tokens": 3413,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 166.228535,
+      "prompt_tokens": 1591,
+      "completion_tokens": 901,
+      "total_tokens": 2492,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 459.983906,
+      "prompt_tokens": 2131,
+      "completion_tokens": 841,
+      "total_tokens": 2972,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 374.413338,
+      "prompt_tokens": 1592,
+      "completion_tokens": 436,
+      "total_tokens": 2028,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 205.980791,
+      "prompt_tokens": 1561,
+      "completion_tokens": 1110,
+      "total_tokens": 2671,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 66.437726,
+      "prompt_tokens": 1613,
+      "completion_tokens": 345,
+      "total_tokens": 1958,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 583.145453,
+      "prompt_tokens": 1996,
+      "completion_tokens": 1389,
+      "total_tokens": 3385,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 51.480651,
+      "prompt_tokens": 1481,
+      "completion_tokens": 253,
+      "total_tokens": 1734,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 66.709371,
+      "prompt_tokens": 1494,
+      "completion_tokens": 307,
+      "total_tokens": 1801,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 162.146546,
+      "prompt_tokens": 1949,
+      "completion_tokens": 805,
+      "total_tokens": 2754,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "qwen2.5-coder:7b",
+      "returned_model": "qwen2.5-coder:7b",
+      "status": "success",
+      "duration_seconds": 33.999932,
+      "prompt_tokens": 1485,
+      "completion_tokens": 152,
+      "total_tokens": 1637,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    }
+  ]
+}

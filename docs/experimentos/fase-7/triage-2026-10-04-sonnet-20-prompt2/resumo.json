@@ -1,0 +1,19 @@
+{
+  "pasta": "triage-2026-10-04-sonnet-20-prompt2",
+  "modificado_em": "2026-10-04T18:29",
+  "arquivos": [
+    "llm_telemetry.json",
+    "triage-2026-10-04-sonnet-20-prompt2.log",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 2,
+    "NOT_CONFIRMED": 1,
+    "ESBMC_ERROR": 5,
+    "MISSING_DEPENDENCY": 3
+  }
+}

@@ -1,0 +1,6 @@
+[1/2] nm_real_12.py::PamdService.remove (engine: UNSUPPORTED)
+    -> NOT_CONFIRMED preserved=True dereference failure: Access to object out of bounds: heap object; dereference failure: NULL pointer
+[2/2] ip_real_14.py::TimeseriesGenerator.__len__ (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True uncaught exception: ZeroDivisionError
+
+ {'NOT_CONFIRMED': 1, 'UNVALIDATED': 1}

@@ -1,0 +1,578 @@
+{
+  "config": {
+    "model": "",
+    "backend": "claude_cli",
+    "synth_backend": "claude_cli",
+    "synth_model": "",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "compat": true,
+    "guards": true,
+    "ablation": true,
+    "driver": true,
+    "real_driver": true,
+    "synth_retries": 1,
+    "bound": 6,
+    "timeout": 120,
+    "llm_timeout": 300,
+    "include_smells": false,
+    "esbmc_command": [
+      "esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "partial",
+    "stage": "detection"
+  },
+  "detection": {
+    "analyzed_units": 48,
+    "hypotheses": 39,
+    "failed_units": 8,
+    "errors": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands.needs_update",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands.add",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "function": "StaticFileHandler.get",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "function": "TimeseriesGenerator.__len__",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "function": "EmptyLineTracker._maybe_empty_lines",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "function": "pivot",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "function": "response_status_message",
+        "error": "claude -p saiu com código 1: "
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+        "function": "croniter._get_low_from_current_date_number",
+        "error": "claude -p saiu com código 1: "
+      }
+    ],
+    "candidates": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(param, bool)",
+        "note": "param vira params.get(param), livre via params e param. dict.get retorna None se chave ausente, ou qualquer valor não-bool armazenado. Nenhuma guarda antes do assert bloqueia esses casos, e não há try/except em volta. Com params={} e param='x', params.get('x') é None, e assert isinstance(None, bool) falha, levantando AssertionError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(self.index, PeriodIndex)",
+        "note": "self.index vem do estado do objeto (self), livre e sem validação anterior no método. O assert isinstance(self.index, PeriodIndex) não tem guarda prévia que restrinja o tipo de self.index; qualquer Series/objeto cujo index não seja PeriodIndex (DatetimeIndex, RangeIndex, etc.) alcança esse assert com cond falso, disparando AssertionError. Não há try/except em volta."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "none_misuse",
+        "expression": "worker._add_task_history",
+        "note": "worker livre, sem guarda contra None. Se worker=None, worker._add_task_history dispara AttributeError. Nenhum try/except cobre. Valor concreto worker=None passa e falha."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "invalid_precondition",
+        "expression": "num_all_tasks = sum([len(set_tasks['already_done']), len(set_tasks['completed']), len(set_tasks['failed']), len(set_tasks['scheduling_error']), len(set_tasks['still_pending_ext']), len(set_tasks['still_pending_not_ext'])])",
+        "note": "set_tasks is a free dict parameter with no validation anywhere in the function that it contains the specific keys the code assumes ('already_done', 'completed', 'failed', 'scheduling_error', 'still_pending_ext', 'still_pending_not_ext', 'not_run'). No try/except wraps these accesses. Any caller passing a dict missing one of these keys (e.g. only 'failed' and 'completed' present) reaches direct subscript access and raises KeyError, both in the num_all_tasks sum and in the smiley/reason branch using set_tasks['not_run']. No guard anywhere restricts set_tasks to have this exact key set before it is indexed."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "function": "get_new_command",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "command livre, sem guarda. Se command=None, command.script dispara AttributeError. Nenhum try/except no trecho. Valor concreto command=None passa (não há checagem) e causa falha."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "command eh parametro livre, sem guarda, sem try/except. Se command for None, command.script lanca AttributeError; contrato exato da classe command nao esta disponivel no contexto."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "invalid_precondition",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "note": "lim_name and attr_name are free string parameters of target_function, used unvalidated in getattr(getattr(self.axes, lim_name), attr_name) and the matching setattr call. No guard checks that self.axes actually has an attribute named lim_name or that the resulting object has attr_name; any lim_name/attr_name not matching self.axes's real attribute names reaches getattr with no default, raising AttributeError. Concrete failure: target_function('m','bogus_lim','bogus_attr') then calling getter(instance) where instance.axes lacks 'bogus_lim'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "function": "Driver._partially_consume_prefix",
+        "category": "none_misuse",
+        "expression": "current_column < column",
+        "note": "column é parâmetro livre, sem type hint e sem guarda (isinstance/None check) em nenhum caminho antes de current_column < column. Esse ramo é alcançável com prefix = \"a\\n\" (char não-espaço seta wait_for_nl=True, '\\n' seguinte entra no if e avalia a comparação). Se column=None chega até essa comparação, current_column (int) < None dispara TypeError não capturado (sem try/except na função), satisfazendo o item 4 do teste de evidência."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "command é parâmetro livre sem validação de tipo. Se command for None ou objeto sem atributo script, command.script lança AttributeError. Não há guarda nem try/except protegendo o acesso."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "none_misuse",
+        "expression": "command.script[5:]",
+        "note": "command.script alcança slicing e concatenação sem checagem prévia. Se command.script for None (valor livre, sem restrição), command.script[5:] lança TypeError 'NoneType' object is not subscriptable. Nenhum guard bloqueia esse valor e não há try/except cobrindo a linha."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "category": "invalid_precondition",
+        "expression": "upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')",
+        "note": "date_str is a free string parameter. email.utils.parsedate_tz performs lenient regex-based parsing without range-checking the numeric fields it extracts, so it can return a tuple with an out-of-range day/month (e.g. day=32) for a string that still matches its loose pattern. The only guard is 'if timetuple:', which checks truthiness (not None/empty), not value validity, so it does not block an invalid day/month. There is no try/except around the datetime.datetime(*timetuple[:6]) call, so a concrete input like 'Mon, 32 Jan 2020 00:00:00 +0000' (fails all strptime formats, then reaches parsedate_tz) yields a tuple whose day exceeds days-in-month and datetime.datetime raises an uncaught ValueError, propagating out of the function."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "out_of_bounds",
+        "expression": "entries = [entry_list[i - 1] for i in playlistitems]",
+        "note": "playlistitems values (from self.params.get('playlist_items'), fully free) index entry_list with no range check in this branch, unlike the sibling list-branch at line 53 which filters with '-n_all_entries <= i - 1 < n_all_entries'. Any i beyond len(entry_list) (e.g. playlist_items='999') reaches lst[i-1] and raises IndexError; no try/except wraps this call."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "start, end = string_segment.split('-')",
+        "note": "playlistitems_str comes from self.params.get('playlist_items'), an unconstrained string. iter_playlistitems only checks '-' is present before unpacking into exactly two names; a segment with two dashes (e.g. '1-2-3') or a leading dash (e.g. '-5', which splits to ['','5']) produces a different element count or empty numeric string, raising ValueError on the unpack or the subsequent int() call. No try/except surrounds this generator's consumption."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+        "category": "invalid_precondition",
+        "expression": "start, end = string_segment.split('-')",
+        "note": "string_segment vem de format.split(','), parâmetro livre sem restrição. A guarda 'if '-' in string_segment' só verifica presença de um hífen, não que existam exatamente duas partes não vazias. Valor concreto format='1-2-3' produz string_segment='1-2-3', cujo split('-') retorna 3 elementos, causando ValueError ('too many values to unpack') não capturado por try/except."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+        "category": "invalid_precondition",
+        "expression": "yield int(string_segment)",
+        "note": "No ramo else, string_segment (derivado de parâmetro livre format) é passado direto a int() sem validação de que é numérico. Valor concreto format='abc' faz string_segment='abc', e int('abc') lança ValueError, não capturado por try/except."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+        "category": "none_misuse",
+        "expression": "format.split(',')",
+        "note": "format é parâmetro livre sem type hint nem checagem. Se format=None, format.split(',') lança AttributeError ('NoneType' object has no attribute 'split'), não capturado. Nenhuma guarda impede None chegar à chamada de método."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "out_of_bounds",
+        "expression": "x[0] != 0.0 or x[-1] != 1.0",
+        "note": "data is a free parameter; nothing prevents shape[0]==0 (e.g. data=np.zeros((0,3))). The precondition check only tests len(shape)!=2 or shape[1]!=3, never shape[0]>0, so an empty-row array passes and x=adata[:,0] becomes a length-0 array. x[0] then raises IndexError, which is not caught anywhere in the function."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "out_of_bounds",
+        "expression": "x[ind] - x[ind - 1]",
+        "note": "gamma is a free parameter with no sign/range restriction. For gamma<0, np.linspace(0,1,N)**gamma inverts values in (0,1) to be >1, so xind=(N-1)*linspace**gamma can exceed x[-1]=N-1 for interior points. np.searchsorted(x, xind) then returns len(x) (one past the last valid index) for those entries, and x[ind]/y0[ind] index out of bounds. Concretely N=4, gamma=-1 with any valid monotone x in [0,1] reproduces IndexError on x[ind]."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "invalid_precondition",
+        "expression": "np.linspace(0, 1, N)",
+        "note": "N is a free parameter passed directly to np.linspace(0, 1, N) with no validation that it is a non-negative integer. N<0 (e.g. N=-1) makes numpy itself raise ValueError('Number of samples, -1, must be non-negative.'), which propagates uncaught since the only try/except in the function wraps just the np.array(data) conversion."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "out_of_bounds",
+        "expression": "possible_substrings_splits[i][j]",
+        "note": "j vem de enumerate(possible_parsed_splits[i]), mas indexa possible_substrings_splits[i][j]. Nenhuma guarda compara len(possible_parsed_splits[i]) com len(possible_substrings_splits[i]); se a segunda lista for mais curta (parâmetro livre, sem restrição de forma), j alcança um índice fora de [0, len(possible_substrings_splits[i])-1] e lança IndexError. Caso concreto: possible_parsed_splits=[[{'date_obj':None}]], possible_substrings_splits=[[]] dispara o erro na primeira iteração (j=0)."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "category": "invalid_precondition",
+        "expression": "return (possible_parsed_splits[best_index], possible_substrings_splits[best_index])",
+        "note": "best_index e best_rating só são atribuídos dentro do for externo (linha do min()). Se possible_parsed_splits for lista vazia (parâmetro livre, sem validação de não-vazio), o loop nunca executa e o return referencia best_index não definido, causando UnboundLocalError. Não há try/except nem checagem de len(possible_parsed_splits) > 0."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "none_misuse",
+        "expression": "crc = binascii.crc32(hash_id) & 4294967295",
+        "note": "hash_id defaults to None and hash_type defaults to 'h'. When hash_type != 'r' (the default path), binascii.crc32(hash_id) is called directly with no guard checking hash_id is not None. Calling target_function(self, idx) with all defaults reaches binascii.crc32(None), which raises TypeError since crc32 requires bytes-like data."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "division_by_zero",
+        "expression": "(crc >> idx) % (range_end - range_begin + 1) + range_begin",
+        "note": "range_end and range_begin are free parameters (or derived from RANGES[idx] without validation) with no constraint that range_end >= range_begin. If a caller passes range_begin = range_end + 1 (e.g. range_end=5, range_begin=6), the modulus (range_end - range_begin + 1) evaluates to 0, and % 0 raises ZeroDivisionError. No guard exists on either path (explicit args or RANGES lookup) preventing this relation."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "out_of_bounds",
+        "expression": "self.cron.RANGES[idx][1]",
+        "note": "idx is a free parameter used directly to index self.cron.RANGES twice with no bounds check. If idx >= len(self.cron.RANGES) or idx too negative in magnitude, RANGES[idx] raises IndexError. This only fires when range_end/range_begin are left as None (default), which is the common call pattern."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "category": "invalid_precondition",
+        "expression": "crc >> idx",
+        "note": "idx is used as a right-shift count with no validation that it is non-negative. Python raises ValueError ('negative shift count') for a negative shift amount. Calling target_function(self, idx=-1, hash_type='r') (avoiding the hash_id issue and keeping RANGES[-1] valid) reaches crc >> -1 and fails; no guard anywhere restricts idx's sign before the shift."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "function": "interpolate_bilinear_2x_fwd",
+        "category": "division_by_zero",
+        "expression": "math.ceil((h_src - wdw_size) / step_size)",
+        "note": "chunk_size is a free int parameter (default 10, caller can pass any value). wdw_size = chunk_size, step_size = wdw_size - 1. If chunk_size == 1, step_size == 0, and step_size is then used as divisor in math.ceil((h_src - wdw_size) / step_size). No assert or guard checks chunk_size > 1 anywhere in the function, so ZeroDivisionError is reachable with e.g. target_function(src_arr, chunk_size=1)."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "function": "nonsingular",
+        "category": "none_misuse",
+        "expression": "not np.isfinite(vmin) or not np.isfinite(vmax)",
+        "note": "vmin/vmax are free parameters with no type or null guard before use. If either is None, np.isfinite(vmin) raises TypeError since numpy ufuncs reject object-dtype None input, and no try/except surrounds the call. Concrete failing input: vmin=None, vmax=1.0 (or vice versa) reaches line 2 directly."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "function": "nonsingular",
+        "category": "division_by_zero",
+        "expression": "1000000.0 / tiny * np.finfo(float).tiny",
+        "note": "tiny is a free parameter (default 1e-15) with no guard preventing zero. When tiny=0.0 and vmin/vmax are finite, execution reaches 1000000.0 / tiny, causing ZeroDivisionError (float division by zero). No try/except wraps this expression."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "function": "integer_squareroot",
+        "category": "integer_overflow",
+        "expression": "x + 1",
+        "note": "n é uint64 livre, x=n na linha 2. Se n = UINT64_MAX (2**64-1), x+1 estoura a largura fixa de 64 bits e sofre wraparound para 0, dando y=0//2=0. Não há guarda que limite n abaixo do valor máximo representável antes dessa soma. Nenhum try/except captura o resultado."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "function": "integer_squareroot",
+        "category": "division_by_zero",
+        "expression": "n // x",
+        "note": "x é reatribuído a y dentro do loop (linha 5) e usado como denominador em n // x na linha 6. A guarda do while (y < x) não impede x=0: com n = UINT64_MAX, o wraparound da linha 3 produz y=0, o while entra pois 0 < UINT64_MAX, x vira 0 na linha 5, e n // x na linha 6 divide por zero. Não há checagem explícita de x != 0 e nenhum try/except protege a chamada."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "function": "Selector.__init__",
+        "category": "type_mismatch",
+        "expression": "text = response.text",
+        "note": "response is a free parameter with no type contract enforced; the only guard is `if response is not None`, which blocks None but not any other type. If the caller passes a value lacking `.text`/`.url` (e.g. response=\"foo\" or response=42), `response.text` and `response.url` raise AttributeError, uncaught by any try/except. A concrete failing call exists: target_function(response=\"foo\")."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "function": "HTTP1Connection.write_headers",
+        "category": "none_misuse",
+        "expression": "'Content-Length' not in headers",
+        "note": "headers free param, tipado dict mas type hint não é validação runtime. Se caller passa headers=None, 'Content-Length' not in headers dispara TypeError: argument of type 'NoneType' is not iterable. Sem guard nenhum antes do uso, sem try/except cobrindo."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "function": "_unstack_multiple",
+        "category": "invalid_precondition",
+        "expression": "clevels = [index.levels[i] for i in clocs]",
+        "note": "index vem de data.index (parâmetro livre data) e nada no código garante que seja um MultiIndex antes de acessar index.levels/index.codes. Um data.index simples (Index comum) passa por len(clocs)!=0, pelo teste 'clocs in index.names' (falso, sem efeito) e por index._get_level_number(i) sem erro, mas Index comum não tem atributo .levels, então a linha 'clevels = [index.levels[i] for i in clocs]' lança AttributeError. Não há try/except cobrindo esse trecho, então a falha é alcançável com data=DataFrame(index=Index simples) e clocs=[0]."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "invalid_precondition",
+        "expression": "return compat_chr(int(numstr, base))",
+        "note": "numstr comes from unconstrained regex group matching arbitrary digit sequences ('[0-9]+' or 'x[0-9a-fA-F]+'), no upper bound on magnitude. int(numstr, base) can yield a codepoint far outside Unicode's valid range (0 to 0x10FFFF), and compat_chr (chr) raises ValueError for such values. No try/except wraps this call, so e.g. entity='#99999999' reaches compat_chr(99999999) and raises unhandled ValueError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "function": "Sanic.url_for",
+        "category": "none_misuse",
+        "expression": "filename.startswith('/')",
+        "note": "filename = kwargs.pop('filename', None) defaults to None when caller omits 'filename'. When uri contains '<file_uri:' (true for the standard static route), filename.startswith('/') is called unconditionally with no None-check. Caller need only invoke url_for('static', ...) without a filename kwarg to reach None.startswith('/') and raise AttributeError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "function": "Sanic.url_for",
+        "category": "type_mismatch",
+        "expression": "netloc[:8]",
+        "note": "netloc = kwargs.pop('_server', None) is a fully free kwarg; only the None case is normalized (line 31-32) via config default. If a caller passes _external=True and _server=123 (or any non-str/non-slice-safe object), netloc keeps that type and reaches netloc[:8] unguarded, raising TypeError: 'int' object is not subscriptable. The guard 'netloc is None and external' blocks only None, not other free-param types."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "function": "Sanic.url_for",
+        "category": "invalid_precondition",
+        "expression": "out = re.sub(replacement_regex, supplied_param, out)",
+        "note": "supplied_param is caller-controlled (via **kwargs), stringified, and only checked against specific_pattern -- a domain regex that does not exclude backslashes. It is then passed as the repl argument to re.sub, where backslash sequences are interpreted specially (backreferences/escapes). A value such as name='9' (a digit-only backreference to a non-existent group, since replacement_regex has only one capturing group) triggers re.error 'invalid group reference' at runtime, uncaught by any try/except in the function."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "function": "_get_spider_loader",
+        "category": "none_misuse",
+        "expression": "loader_cls = load_object(cls_path)",
+        "note": "cls_path vem de settings.get('SPIDER_LOADER_CLASS', settings.get('SPIDER_MANAGER_CLASS')): se nenhuma das duas chaves existir em settings (parametro livre, sem restricao), ambos os get retornam None e cls_path fica None. Nao ha guarda que bloqueie esse valor antes de load_object(cls_path); load_object espera string de path (import_module/getattr), entao None causa falha (AttributeError/TypeError) ou comportamento indefinido. Nao ha try/except cobrindo a chamada."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "category": "none_misuse",
+        "expression": "return want.get(x) is not None and want.get(x) != have.get(x)",
+        "note": "want e have vêm de 'want, have = updates' sem checagem de tipo. Se want ou have for None (ou não suportar .get), a primeira chamada de needs_update já falha em want.get(x)/have.get(x) com AttributeError. Não há try/except nem validação de updates antes disso, e nenhuma guarda impede None. Valor concreto: updates=(None, {}) faz needs_update('http') explodir na primeira chamada em any(...)."
+      }
+    ],
+    "rejected_findings": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "function": "WebSocketHandler.set_nodelay",
+        "category": "assertion_violation",
+        "finding_type": "suspected_bug",
+        "expression": "assert self.stream is not None",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "invalid_precondition",
+        "finding_type": "suspected_bug",
+        "expression": "for task, status, ext in task_history",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "function": "tqdm.__init__",
+        "category": "invalid_precondition",
+        "finding_type": "suspected_bug",
+        "expression": "self._instances.remove(self)",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "none_misuse",
+        "finding_type": "suspected_bug",
+        "expression": "if oldmin < oldmax:",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "invalid_precondition",
+        "finding_type": "suspected_bug",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "category": "none_misuse",
+        "finding_type": "suspected_bug",
+        "expression": "oldmin, oldmax = getter(self)",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "category": "invalid_precondition",
+        "finding_type": "suspected_bug",
+        "expression": "setattr(getattr(self.axes, lim_name), attr_name, (vmin, vmax))",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "none_misuse",
+        "finding_type": "suspected_bug",
+        "expression": "command.script_parts",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "invalid_precondition",
+        "finding_type": "suspected_bug",
+        "expression": "output += f.extrabuf",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "category": "type_mismatch",
+        "finding_type": "suspected_bug",
+        "expression": "return compat_str(upload_date)",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result._fixup",
+        "category": "none_misuse",
+        "finding_type": "suspected_bug",
+        "expression": "ie_result['extractor']",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "function": "Request._set_url",
+        "category": "none_misuse",
+        "finding_type": "suspected_bug",
+        "expression": "if ':' not in self._url:",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "function": "_Alpha.__gt__",
+        "category": "type_mismatch",
+        "finding_type": "suspected_bug",
+        "expression": "not self.__lt__(other)",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "function": "_Numeric.__gt__",
+        "category": "none_misuse",
+        "finding_type": "suspected_bug",
+        "expression": "not self.__lt__(other)",
+        "reason": ""
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "function": "generate_commands",
+        "category": "none_misuse",
+        "finding_type": "llm_false_positive",
+        "expression": "if 'vlan_id' in to_remove:",
+        "reason": "invalid_expression_syntax"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "function": "generate_commands",
+        "category": "none_misuse",
+        "finding_type": "llm_false_positive",
+        "expression": "for key, value in to_set.items():",
+        "reason": "invalid_expression_syntax"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "category": "invalid_precondition",
+        "finding_type": "llm_false_positive",
+        "expression": "if want['http'] is False:",
+        "reason": "invalid_expression_syntax"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "category": "invalid_precondition",
+        "finding_type": "llm_false_positive",
+        "expression": "if want['https'] is False:",
+        "reason": "invalid_expression_syntax"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "category": "invalid_precondition",
+        "finding_type": "llm_false_positive",
+        "expression": "if want['local_http'] is False:",
+        "reason": "invalid_expression_syntax"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "category": "invalid_precondition",
+        "finding_type": "llm_false_positive",
+        "expression": "if want['state'] == 'stopped':",
+        "reason": "invalid_expression_syntax"
+      }
+    ]
+  },
+  "summary": {
+    "n": 0,
+    "by_classification": {},
+    "by_category": {},
+    "driver_notes": {},
+    "verification_targets": {},
+    "abstraction_levels": {},
+    "total_synth_tokens": 0,
+    "total_synth_seconds": 0,
+    "total_esbmc_seconds": 0,
+    "mean_attempts": 0.0
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 48,
+      "failed_calls": 8,
+      "tokens": 145036,
+      "prompt_tokens": 136,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 0,
+      "seconds": 1671.997,
+      "cache_hit_rate": null
+    }
+  },
+  "results": []
+}

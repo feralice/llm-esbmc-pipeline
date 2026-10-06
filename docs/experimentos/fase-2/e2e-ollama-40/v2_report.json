@@ -1,0 +1,343 @@
+{
+  "config": {
+    "model": "qwen3-coder:30b",
+    "backend": "ollama",
+    "synth_backend": "ollama",
+    "synth_model": "qwen3-coder:30b",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "compat": true,
+    "guards": true,
+    "ablation": true,
+    "driver": true,
+    "real_driver": true,
+    "synth_retries": 1,
+    "bound": 6,
+    "timeout": 180,
+    "llm_timeout": 300,
+    "include_smells": false,
+    "esbmc_command": [
+      "esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "partial",
+    "stage": "detection"
+  },
+  "detection": {
+    "analyzed_units": 48,
+    "hypotheses": 0,
+    "failed_units": 48,
+    "errors": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "error": "Remote end closed connection without response"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "function": "WebSocketHandler.set_nodelay",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "function": "tqdm.__init__",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "function": "get_new_command",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+        "function": "Settings.update",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "function": "Driver._partially_consume_prefix",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+        "function": "match",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result._fixup",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "function": "interpolate_bilinear_2x_fwd",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "function": "nonsingular",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "function": "integer_squareroot",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "function": "Request._set_url",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "function": "Selector.__init__",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "function": "HTTP1Connection.write_headers",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "function": "_Alpha.__gt__",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "function": "_Numeric.__gt__",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "function": "_unstack_multiple",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "function": "Sanic.url_for",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "function": "generate_commands",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "function": "_get_spider_loader",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+        "function": "HTTPBearer.__call__",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands.needs_update",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands.add",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "function": "StaticFileHandler.get",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "function": "TimeseriesGenerator.__len__",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "function": "EmptyLineTracker._maybe_empty_lines",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "function": "pivot",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "function": "response_status_message",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+        "function": "croniter._get_low_from_current_date_number",
+        "error": "Falha de rede ao chamar http://localhost:11434/v1/chat/completions: [Errno 111] Connection refused\nVerifique se o Ollama está rodando com: ollama serve"
+      }
+    ],
+    "candidates": [],
+    "rejected_findings": []
+  },
+  "summary": {
+    "n": 0,
+    "by_classification": {},
+    "by_category": {},
+    "driver_notes": {},
+    "verification_targets": {},
+    "abstraction_levels": {},
+    "total_synth_tokens": 0,
+    "total_synth_seconds": 0,
+    "total_esbmc_seconds": 0,
+    "mean_attempts": 0.0
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 48,
+      "failed_calls": 48,
+      "tokens": 0,
+      "prompt_tokens": 0,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 0,
+      "seconds": 55.681,
+      "cache_hit_rate": null
+    }
+  },
+  "results": []
+}

@@ -1,0 +1,10 @@
+{
+  "pasta": "e2e-2026-09-28-gpt-4o-mini-two-stage",
+  "modificado_em": "2026-09-28T13:59",
+  "arquivos": [
+    "v2_checkpoint.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "interrupted"
+}

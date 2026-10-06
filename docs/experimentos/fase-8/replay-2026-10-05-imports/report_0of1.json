@@ -1,0 +1,860 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "inbound_layer = created_layers[inbound_layer_name]",
+        "line": 0,
+        "trigger_condition": "inbound_layer_name comes from input_data[0], taken from the free config. A node referencing a layer name absent from config['layers'] passes every check and the dict lookup raises. No try/except exists.",
+        "category": "",
+        "hypothesis_id": "eb6f3966024f"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 101.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"None\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"None\", \"unpack_singleton\": \"list[int]\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/42072402bc06_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 101.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"None\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"None\", \"unpack_singleton\": \"list[int]\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 101.\n(program line 101, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/42072402bc06_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 101.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"None\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"None\", \"unpack_singleton\": \"list[int]\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 101.\n(program line 101, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/42072402bc06_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 101.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/42072402bc06_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 10.231
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "inbound_tensor_index = input_data[2]",
+        "line": 0,
+        "trigger_condition": "input_data[0], [1], [2] are read before the length check. An inbound entry with fewer than 3 elements, e.g. ['a', 0], raises IndexError. The ValueError branch is never reached for these inputs.",
+        "category": "",
+        "hypothesis_id": "20254912af1b"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[dict[str, str]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"int\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"int\", \"unpack_singleton\": \"int\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/5ba30b7d44ee_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[dict[str, str]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"int\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"int\", \"unpack_singleton\": \"int\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 98.\n(program line 98, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/5ba30b7d44ee_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[dict[str, str]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"int\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"int\", \"unpack_singleton\": \"int\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 98.\n(program line 98, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/5ba30b7d44ee_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/5ba30b7d44ee_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 10.49
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "raise ValueError('Improperly formatted model config.')",
+        "line": 0,
+        "trigger_condition": "An inbound entry with 5 or more elements passes the 3-element indexing and falls into the else branch. The explicit raise is reached on malformed config data, so the function breaks instead of reporting the error through the documented path.",
+        "category": "",
+        "hypothesis_id": "8e58760d102e"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 100.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"object\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/d2e4a1173d45_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 100.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"object\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 100.\n(program line 100, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/d2e4a1173d45_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 100.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"object\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 100.\n(program line 100, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/d2e4a1173d45_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 100.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/d2e4a1173d45_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 10.897
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "input_tensors.append(inbound_node.output_tensors[inbound_tensor_index])",
+        "line": 0,
+        "trigger_condition": "The node index is guarded, but the tensor index is not. A config with inbound_tensor_index >= the number of output tensors of the inbound node raises IndexError. The index is a free config value.",
+        "category": "",
+        "hypothesis_id": "73d4d7ccf1f0"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/68ec677b9595_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 102.\n(program line 102, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/68ec677b9595_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 102.\n(program line 102, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/68ec677b9595_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/68ec677b9595_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 11.207
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "layer_name, node_index, tensor_index = layer_data",
+        "line": 0,
+        "trigger_condition": "layer_data comes from config['input_layers'] or config['output_layers']. An entry that does not have exactly 3 elements raises ValueError on unpacking. The same pattern at line 65 is the same root cause.",
+        "category": "",
+        "hypothesis_id": "ed2d523cf3cf"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[list[int]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/eb89cfafb511_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[list[int]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 102.\n(program line 102, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/eb89cfafb511_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[list[int]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 102.\n(program line 102, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/eb89cfafb511_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/eb89cfafb511_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 10.935
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "assert layer_name in created_layers",
+        "line": 0,
+        "trigger_condition": "layer_name from config['input_layers'] or config['output_layers'] is free. A name not defined in config['layers'] makes the assert condition false, so an AssertionError is raised.",
+        "category": "",
+        "hypothesis_id": "b01ed1f4eaee"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[dict[str, str]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"int\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"int\", \"unpack_singleton\": \"int\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/c2db870e726a_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[dict[str, str]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"int\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"int\", \"unpack_singleton\": \"int\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 98.\n(program line 98, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/c2db870e726a_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, list[dict[str, str]]]\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"int\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"int\", \"unpack_singleton\": \"int\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 98.\n(program line 98, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/c2db870e726a_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/c2db870e726a_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 11.281
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "layer_output_tensors = layer._inbound_nodes[node_index].output_tensors",
+        "line": 0,
+        "trigger_condition": "node_index from config['input_layers'] or config['output_layers'] is not bounded. A layer with no inbound nodes, e.g. an input layer without a created node, or an index too large makes the list lookup raise IndexError. The same pattern appears at line 68.",
+        "category": "",
+        "hypothesis_id": "8ab4b9b00799"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a1be8bae3295_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 102.\n(program line 102, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a1be8bae3295_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"dict[str, object]\", \"custom_objects\": \"Optional[dict[str, object]]\"}, \"attributes\": {}, \"stubs\": {\"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 102.\n(program line 102, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a1be8bae3295_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a1be8bae3295_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 10.729
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_8.py",
+        "function": "Network.from_config",
+        "suspect_expression": "input_tensors.append(layer_output_tensors[tensor_index])",
+        "line": 0,
+        "trigger_condition": "tensor_index from the config entry is used to index the output tensors without a bound check. An index at or above the length raises IndexError. The same pattern appears at line 69 for output_tensors.",
+        "category": "",
+        "hypothesis_id": "bc61b5187dfb"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 113.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"config\": \"object\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"config.get\": \"Optional[str]\", \"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/9aea5e421195_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 113.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"config\": \"object\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"config.get\": \"Optional[str]\", \"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 113.\n(program line 113, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/9aea5e421195_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 113.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"config\": \"object\", \"custom_objects\": \"Optional[dict[str, str]]\"}, \"attributes\": {}, \"stubs\": {\"config.get\": \"Optional[str]\", \"interfaces.legacy_model_constructor_support\": \"object\", \"saving.pickle_model\": \"bytes\", \"saving.unpickle_model\": \"object\", \"unpack_singleton\": \"object\", \"deserialize_layer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Variable 'args' is not defined in function 'Network' at line 113.\n(program line 113, original code: if (len(args) == 2 or)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/9aea5e421195_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Variable 'args' is not defined in function 'Network' at line 113.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/9aea5e421195_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 12.018
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_matplotlib_25.py",
+        "function": "EventCollection.__init__",
+        "suspect_expression": "positions.sort()",
+        "line": 0,
+        "trigger_condition": "positions is a free parameter. A non-empty tuple (e.g. (1, 2, 3)) passes the None/len check and has no 'ndim', so it skips the ValueError branch. With orientation None or 'horizontal' it reaches positions.sort(), and tuple has no sort method. The same call appears in the 'vertical' branch. Even for lists, the caller's data is silently reordered.",
+        "category": "",
+        "hypothesis_id": "d830fcc35916"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 1294. Variable add_positions not found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"positions\": \"tuple[int, int, int]\", \"orientation\": \"Optional[str]\", \"lineoffset\": \"float\", \"linelength\": \"float\", \"linewidth\": \"Optional[float]\", \"color\": \"Optional[str]\", \"linestyle\": \"str\", \"antialiased\": \"Optional[bool]\"}, \"attributes\": {}, \"stubs\": {\"_path.point_in_path_collection\": \"list[int]\", \"artist.allow_rasterization\": \"None\", \"artist_Artist.__init__\": \"None\", \"artist_Artist.set_alpha\": \"None\", \"artist_Artist.update_from\": \"None\", \"cbook._check_in_list\": \"None\", \"cbook._define_aliases\": \"None\", \"cbook._str_equal\": \"bool\", \"cbook.warn_deprecated\": \"None\", \"cbook_ls_mapper.get\": \"str\", \"cm_ScalarMappable.__init__\": \"None\", \"mcolors.to_rgba\": \"tuple[float, float, float, float]\", \"mcolors.to_rgba_array\": \"list[float]\", \"mlines._get_dash_pattern\": \"tuple[float, float]\", \"mlines._scale_dashes\": \"tuple[float, float]\", \"mpath.Path\": \"object\", \"mpath.get_path_collection_extents\": \"object\", \"mpl.rcParams\": \"dict[str, float]\", \"np.asanyarray\": \"list[float]\", \"np.asarray\": \"list[float]\", \"np.atleast_1d\": \"list[float]\", \"np.column_stack\": \"list[float]\", \"np.empty\": \"list[float]\", \"np.hstack\": \"list[float]\", \"np.nan\": \"float\", \"np.zeros\": \"list[float]\", \"transforms.Affine2D\": \"object\", \"transforms.IdentityTransform\": \"object\", \"transforms_Bbox.null\": \"object\", \"PathEffectRenderer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/13e7fab08be4_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Type inference failed at line 1294. Variable add_positions not found",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"positions\": \"tuple[int, int, int]\", \"orientation\": \"Optional[str]\", \"lineoffset\": \"float\", \"linelength\": \"float\", \"linewidth\": \"Optional[float]\", \"color\": \"Optional[str]\", \"linestyle\": \"str\", \"antialiased\": \"Optional[bool]\"}, \"attributes\": {}, \"stubs\": {\"_path.point_in_path_collection\": \"list[int]\", \"artist.allow_rasterization\": \"None\", \"artist_Artist.__init__\": \"None\", \"artist_Artist.set_alpha\": \"None\", \"artist_Artist.update_from\": \"None\", \"cbook._check_in_list\": \"None\", \"cbook._define_aliases\": \"None\", \"cbook._str_equal\": \"bool\", \"cbook.warn_deprecated\": \"None\", \"cbook_ls_mapper.get\": \"str\", \"cm_ScalarMappable.__init__\": \"None\", \"mcolors.to_rgba\": \"tuple[float, float, float, float]\", \"mcolors.to_rgba_array\": \"list[float]\", \"mlines._get_dash_pattern\": \"tuple[float, float]\", \"mlines._scale_dashes\": \"tuple[float, float]\", \"mpath.Path\": \"object\", \"mpath.get_path_collection_extents\": \"object\", \"mpl.rcParams\": \"dict[str, float]\", \"np.asanyarray\": \"list[float]\", \"np.asarray\": \"list[float]\", \"np.atleast_1d\": \"list[float]\", \"np.column_stack\": \"list[float]\", \"np.empty\": \"list[float]\", \"np.hstack\": \"list[float]\", \"np.nan\": \"float\", \"np.zeros\": \"list[float]\", \"transforms.Affine2D\": \"object\", \"transforms.IdentityTransform\": \"object\", \"transforms_Bbox.null\": \"object\", \"PathEffectRenderer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 1294. Variable add_positions not found\n(program line 1294, original code: extend_positions = append_positions = add_positions)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/13e7fab08be4_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Type inference failed at line 1294. Variable add_positions not found",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"positions\": \"tuple[int, int, int]\", \"orientation\": \"Optional[str]\", \"lineoffset\": \"float\", \"linelength\": \"float\", \"linewidth\": \"Optional[float]\", \"color\": \"Optional[str]\", \"linestyle\": \"str\", \"antialiased\": \"Optional[bool]\"}, \"attributes\": {}, \"stubs\": {\"_path.point_in_path_collection\": \"list[int]\", \"artist.allow_rasterization\": \"None\", \"artist_Artist.__init__\": \"None\", \"artist_Artist.set_alpha\": \"None\", \"artist_Artist.update_from\": \"None\", \"cbook._check_in_list\": \"None\", \"cbook._define_aliases\": \"None\", \"cbook._str_equal\": \"bool\", \"cbook.warn_deprecated\": \"None\", \"cbook_ls_mapper.get\": \"str\", \"cm_ScalarMappable.__init__\": \"None\", \"mcolors.to_rgba\": \"tuple[float, float, float, float]\", \"mcolors.to_rgba_array\": \"list[float]\", \"mlines._get_dash_pattern\": \"tuple[float, float]\", \"mlines._scale_dashes\": \"tuple[float, float]\", \"mpath.Path\": \"object\", \"mpath.get_path_collection_extents\": \"object\", \"mpl.rcParams\": \"dict[str, float]\", \"np.asanyarray\": \"list[float]\", \"np.asarray\": \"list[float]\", \"np.atleast_1d\": \"list[float]\", \"np.column_stack\": \"list[float]\", \"np.empty\": \"list[float]\", \"np.hstack\": \"list[float]\", \"np.nan\": \"float\", \"np.zeros\": \"list[float]\", \"transforms.Affine2D\": \"object\", \"transforms.IdentityTransform\": \"object\", \"transforms_Bbox.null\": \"object\", \"PathEffectRenderer\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 1294. Variable add_positions not found\n(program line 1294, original code: extend_positions = append_positions = add_positions)",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/13e7fab08be4_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Type inference failed at line 1294. Variable add_positions not found",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "unreachable_methods_removed:get_color,get_linewidth,get_linewidths,get_orientation,set_linelength,set_lineoffset,set_orientation,switch_orientation",
+        "stubbed_imports:Number,PathEffectRenderer,_path,artist,cbook,cm,docstring,mcolors,mlines,mpath,mpl,np,transforms",
+        "external_chains_flattened:artist_Artist,cbook_ls_mapper,cm_ScalarMappable,np_ma_MaskedArray,transforms_Bbox,transforms_Transform",
+        "opaque_values",
+        "typing_import_added",
+        "compat_method_alias:3"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/13e7fab08be4_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 11.827
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_145.py",
+        "function": "dispatch_to_series",
+        "suspect_expression": "raise NotImplementedError(right)",
+        "line": 0,
+        "trigger_condition": "right is a free parameter. A list such as [1, 2] has np.ndim 1, is not scalar, not a DataFrame, not a Series. It falls through all branches to the explicit raise. No try/except catches it.",
+        "category": "",
+        "hypothesis_id": "1a9d4c8919b8"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"left\": \"object\", \"right\": \"list[int]\", \"func\": \"object\", \"str_rep\": \"Optional[str]\", \"axis\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"lib.is_scalar\": \"bool\", \"lib.item_from_zerodim\": \"list[int]\", \"np.ndim\": \"int\", \"left.columns\": \"list[int]\", \"left.index\": \"list[int]\", \"expressions.evaluate\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/089094575713_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"left\": \"object\", \"right\": \"list[int]\", \"func\": \"object\", \"str_rep\": \"Optional[str]\", \"axis\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"lib.is_scalar\": \"bool\", \"lib.item_from_zerodim\": \"list[int]\", \"np.ndim\": \"int\", \"left.columns\": \"list[int]\", \"left.index\": \"list[int]\", \"expressions.evaluate\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/089094575713_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"left\": \"object\", \"right\": \"list[int]\", \"func\": \"object\", \"str_rep\": \"Optional[str]\", \"axis\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"lib.is_scalar\": \"bool\", \"lib.item_from_zerodim\": \"list[int]\", \"np.ndim\": \"int\", \"left.columns\": \"list[int]\", \"left.index\": \"list[int]\", \"expressions.evaluate\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/089094575713_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeArray,ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCSeries,ABCTimedeltaArray,ABCTimedeltaIndex,Timedelta,Timestamp,expressions,lib,libops,np",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/089094575713_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 9.857
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_145.py",
+        "function": "dispatch_to_series",
+        "suspect_expression": "assert right._indexed_same(left)",
+        "line": 0,
+        "trigger_condition": "right is a DataFrame (or Series) whose index differs from left. The branch is taken and the assert condition is false, so AssertionError is raised. The function itself does not align operands, so the precondition is a free-input violation.",
+        "category": "",
+        "hypothesis_id": "52de49470967"
+      },
+      "verdict": "OTHER_FAILURE",
+      "reason": "assertion (signed int)py:artifacts/v2/replay-2026-10-05-imports/programs/5025d1d9292a_a0.py@F@dispatch_to_series@__assert_temp == 1",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"left\": \"object\", \"right\": \"object\", \"func\": \"object\", \"str_rep\": \"Optional[str]\", \"axis\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"lib.is_scalar\": \"bool\", \"lib.item_from_zerodim\": \"object\", \"np.ndim\": \"int\", \"left.columns\": \"list[str]\", \"left.index\": \"list[int]\", \"right._indexed_same\": \"bool\", \"right.index\": \"list[int]\", \"expressions.evaluate\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/5025d1d9292a_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "violation",
+          "message": "assertion (signed int)py:artifacts/v2/replay-2026-10-05-imports/programs/5025d1d9292a_a0.py@F@dispatch_to_series@__assert_temp == 1",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeArray,ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCSeries,ABCTimedeltaArray,ABCTimedeltaIndex,Timedelta,Timestamp,expressions,lib,libops,np",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/5025d1d9292a_a0.py",
+      "replay": {
+        "status": "other_failure",
+        "exception_type": "NotImplementedError",
+        "line": 128,
+        "runs": 400,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 8.132
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py",
+        "function": "IntervalArray.__setitem__",
+        "suspect_expression": "left.values[key] = value_left",
+        "line": 0,
+        "trigger_condition": "For an integer-subtype IntervalArray, a list-like NA value such as [np.nan] is not scalar, so it goes to the else branch and needs_float_conversion stays False. IntervalArray([np.nan]) yields float left/right, which are then assigned into the integer-typed left.values. NumPy raises ValueError: cannot convert float NaN to integer.",
+        "category": "",
+        "hypothesis_id": "fd97310999a3"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"key\": \"int\", \"value\": \"list[float]\"}, \"attributes\": {\"_check_closed_matches\": \"object\", \"dtype\": \"object\", \"left\": \"object\", \"right\": \"object\"}, \"stubs\": {\"Appender\": \"object\", \"array\": \"object\", \"array.left\": \"list[float]\", \"array.right\": \"list[float]\", \"check_array_indexer\": \"int\", \"is_categorical_dtype\": \"bool\", \"is_datetime64_any_dtype\": \"bool\", \"is_integer_dtype\": \"bool\", \"is_interval_dtype\": \"bool\", \"is_list_like\": \"bool\", \"is_object_dtype\": \"bool\", \"is_scalar\": \"bool\", \"is_timedelta64_dtype\": \"bool\", \"isna\": \"bool\", \"np.asarray\": \"list[float]\", \"np.datetime64\": \"object\", \"np.empty\": \"list[object]\", \"np.nan\": \"float\", \"np.ndim\": \"int\", \"np.timedelta64\": \"object\", \"np.zeros\": \"list[bool]\", \"textwrap.dedent\": \"str\", \"self.dtype.subtype\": \"object\", \"self.left.copy\": \"list[int]\", \"self.left.dtype\": \"object\", \"self.right.copy\": \"list[int]\", \"pyarrow.array\": \"int\", \"pyarrow.from_numpy_dtype\": \"int\", \"pyarrow_ExtensionArray.from_storage\": \"int\", \"pyarrow_StructArray.from_arrays\": \"int\", \"pyarrow_StructArray.from_buffers\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a7f1b5cf9151_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "TypeError: __init__() takes 1 positional argument but 2 were given",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"key\": \"int\", \"value\": \"list[float]\"}, \"attributes\": {\"_check_closed_matches\": \"object\", \"dtype\": \"object\", \"left\": \"object\", \"right\": \"object\"}, \"stubs\": {\"Appender\": \"object\", \"array\": \"object\", \"array.left\": \"list[float]\", \"array.right\": \"list[float]\", \"check_array_indexer\": \"int\", \"is_categorical_dtype\": \"bool\", \"is_datetime64_any_dtype\": \"bool\", \"is_integer_dtype\": \"bool\", \"is_interval_dtype\": \"bool\", \"is_list_like\": \"bool\", \"is_object_dtype\": \"bool\", \"is_scalar\": \"bool\", \"is_timedelta64_dtype\": \"bool\", \"isna\": \"bool\", \"np.asarray\": \"list[float]\", \"np.datetime64\": \"object\", \"np.empty\": \"list[object]\", \"np.nan\": \"float\", \"np.ndim\": \"int\", \"np.timedelta64\": \"object\", \"np.zeros\": \"list[bool]\", \"textwrap.dedent\": \"str\", \"self.dtype.subtype\": \"object\", \"self.left.copy\": \"list[int]\", \"self.left.dtype\": \"object\", \"self.right.copy\": \"list[int]\", \"pyarrow.array\": \"int\", \"pyarrow.from_numpy_dtype\": \"int\", \"pyarrow_ExtensionArray.from_storage\": \"int\", \"pyarrow_StructArray.from_arrays\": \"int\", \"pyarrow_StructArray.from_buffers\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: TypeError: __init__() takes 1 positional argument but 2 were given",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a7f1b5cf9151_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "TypeError: __init__() takes 1 positional argument but 2 were given",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"key\": \"int\", \"value\": \"list[float]\"}, \"attributes\": {\"_check_closed_matches\": \"object\", \"dtype\": \"object\", \"left\": \"object\", \"right\": \"object\"}, \"stubs\": {\"Appender\": \"object\", \"array\": \"object\", \"array.left\": \"list[float]\", \"array.right\": \"list[float]\", \"check_array_indexer\": \"int\", \"is_categorical_dtype\": \"bool\", \"is_datetime64_any_dtype\": \"bool\", \"is_integer_dtype\": \"bool\", \"is_interval_dtype\": \"bool\", \"is_list_like\": \"bool\", \"is_object_dtype\": \"bool\", \"is_scalar\": \"bool\", \"is_timedelta64_dtype\": \"bool\", \"isna\": \"bool\", \"np.asarray\": \"list[float]\", \"np.datetime64\": \"object\", \"np.empty\": \"list[object]\", \"np.nan\": \"float\", \"np.ndim\": \"int\", \"np.timedelta64\": \"object\", \"np.zeros\": \"list[bool]\", \"textwrap.dedent\": \"str\", \"self.dtype.subtype\": \"object\", \"self.left.copy\": \"list[int]\", \"self.left.dtype\": \"object\", \"self.right.copy\": \"list[int]\", \"pyarrow.array\": \"int\", \"pyarrow.from_numpy_dtype\": \"int\", \"pyarrow_ExtensionArray.from_storage\": \"int\", \"pyarrow_StructArray.from_arrays\": \"int\", \"pyarrow_StructArray.from_buffers\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: TypeError: __init__() takes 1 positional argument but 2 were given",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a7f1b5cf9151_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "TypeError: __init__() takes 1 positional argument but 2 were given",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_added",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_concat_same_type,_format_data,_format_space,_from_factorized,_from_sequence,_shallow_copy,_simple_new,_validate,astype,contains,copy,fillna,from_arrays,from_breaks,from_tuples,isna,overlaps,repeat,set_closed,shift,take,to_tuples,value_counts",
+        "properties_as_attributes:closed,dtype,is_non_overlapping_monotonic,left,length,mid,nbytes,right,size",
+        "stubbed_imports:ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCIntervalIndex,ABCPeriodIndex,ABCSeries,Appender,ArrowIntervalType,ExtensionArray,Interval,IntervalMixin,_extension_array_shared_docs,array,check_array_indexer,intervals_to_interval_bounds,is_categorical_dtype,is_datetime64_any_dtype,is_float_dtype,is_integer_dtype,is_interval,is_interval_dtype,is_list_like,is_object_dtype,is_scalar,is_string_dtype,is_timedelta64_dtype,isna,notna,np,pandas_dtype,pyarrow,textwrap",
+        "external_chains_flattened:np_ndarray,pyarrow_ExtensionArray,pyarrow_StructArray",
+        "opaque_values"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/a7f1b5cf9151_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 9.493
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_87.py",
+        "function": "crosstab",
+        "suspect_expression": "pass_objs = [x for x in index + columns if isinstance(x, (ABCSeries, ABCDataFrame))]",
+        "line": 0,
+        "trigger_condition": "index and columns are free parameters. If one is a tuple and the other a scalar (wrapped into a list) or a list, `index + columns` mixes tuple and list. Example: index=(s1, s2), columns=s3 gives tuple + list, which raises TypeError. No guard or try/except covers it.",
+        "category": "",
+        "hypothesis_id": "0e891f89a342"
+      },
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"f\" not found (artifacts/v2/replay-2026-10-05-imports/programs/3a3559d6f4ed_a1.py line 235)",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"index\": \"Union[list[str], tuple[str, ...], str]\", \"columns\": \"Union[list[str], tuple[str, ...], str]\", \"values\": \"None\", \"rownames\": \"None\", \"colnames\": \"None\", \"aggfunc\": \"None\", \"margins\": \"bool\", \"normalize\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"com.maybe_make_list\": \"list[str]\", \"get_objs_combined_axis\": \"list[str]\", \"DataFrame\": \"object\", \"concat\": \"object\"}, \"assumptions\": []}\n\nWait, that violates the allowed types: Union is not allowed. Corrected reply:\n\n{\"params\": {\"index\": \"tuple[str, str]\", \"columns\": \"list[str]\", \"values\": \"None\", \"rownames\": \"None\", \"colnames\": \"None\", \"aggfunc\": \"None\", \"margins\": \"bool\", \"normalize\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"com.maybe_make_list\": \"list[str]\", \"get_objs_combined_axis\": \"list[str]\", \"DataFrame\": \"object\", \"concat\": \"object\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "problems": [
+            "not JSON: Extra data"
+          ]
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"index\": \"tuple[str, str]\", \"columns\": \"list[str]\", \"values\": \"None\", \"rownames\": \"None\", \"colnames\": \"None\", \"aggfunc\": \"None\", \"margins\": \"bool\", \"normalize\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"com.maybe_make_list\": \"list[str]\", \"get_objs_combined_axis\": \"list[str]\", \"DataFrame\": \"object\", \"concat\": \"object\"}, \"assumptions\": []}",
+          "feedback_given": "The JSON was rejected: not JSON: Extra data",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/3a3559d6f4ed_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "missing_dependency",
+          "message": "ERROR: Function \"f\" not found (artifacts/v2/replay-2026-10-05-imports/programs/3a3559d6f4ed_a1.py line 235)",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 2,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Index,MultiIndex,com,concat,get_objs_combined_axis",
+        "opaque_values"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/3a3559d6f4ed_a1.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 4.858
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_88.py",
+        "function": "pivot_table",
+        "suspect_expression": "return concat(pieces, keys=keys, axis=1)",
+        "line": 0,
+        "trigger_condition": "aggfunc is a free parameter. With aggfunc=[] the loop does not run, so pieces and keys stay empty. concat([], keys=[], axis=1) then raises ValueError 'No objects to concatenate'. The isinstance guard does not block the empty list, and no try/except covers the call.",
+        "category": "",
+        "hypothesis_id": "5429c3b33bc9"
+      },
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"aggfunc\" not found (artifacts/v2/replay-2026-10-05-imports/programs/efa0df5526fe_a0.py line 404)",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"data\": \"object\", \"values\": \"Optional[list[str]]\", \"index\": \"Optional[list[str]]\", \"columns\": \"Optional[list[str]]\", \"aggfunc\": \"list[str]\", \"fill_value\": \"Optional[int]\", \"margins\": \"bool\", \"dropna\": \"bool\", \"margins_name\": \"str\", \"observed\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"data.columns\": \"list[str]\", \"data.groupby\": \"object\", \"data.notna\": \"object\", \"DataFrame\": \"object\", \"MultiIndex.from_arrays\": \"object\", \"Series\": \"object\", \"cartesian_product\": \"list[list[int]]\", \"concat\": \"object\", \"is_integer_dtype\": \"bool\", \"is_list_like\": \"bool\", \"is_scalar\": \"bool\", \"maybe_downcast_to_dtype\": \"object\", \"np.nan\": \"float\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/efa0df5526fe_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "missing_dependency",
+          "message": "ERROR: Function \"aggfunc\" not found (artifacts/v2/replay-2026-10-05-imports/programs/efa0df5526fe_a0.py line 404)",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot_table'], indents=1)",
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Grouper,Index,MultiIndex,Series,cartesian_product,concat,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar,maybe_downcast_to_dtype,np",
+        "external_chains_flattened:np_ndarray",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/efa0df5526fe_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 4.635
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/tm_real_09.py",
+        "function": "_format",
+        "suspect_expression": "formatted_val = format(float(raw_val), floatfmt)",
+        "line": 0,
+        "trigger_condition": "valtype is float, has_invisible defaults to True and val is a str such as '1,000'. is_a_colored_number is true, so the branch that removes commas is skipped. float('1,000') then raises ValueError. The else branch handles the same input correctly, so the two branches are inconsistent.",
+        "category": "",
+        "hypothesis_id": "af2f5e755263"
+      },
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"val\": \"str\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_compile\": \"object\", \"_esbmc_re_VERBOSE\": \"int\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/replay-2026-10-05-imports/programs/c31a60a63760_a0_replay.py",
+          "esbmc_status": "no_violation_found",
+          "reading": "safe",
+          "message": "no_violation_found",
+          "unwind": 20
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "esbmc_refused_members_stubbed:_esbmc_re_VERBOSE,_esbmc_re_compile",
+        "opaque_values",
+        "builtin_exceptions_stubbed:UnicodeError,UnicodeDecodeError"
+      ],
+      "program_path": "artifacts/v2/replay-2026-10-05-imports/programs/c31a60a63760_a0.py",
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 128,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 19.283
+    }
+  ]
+}

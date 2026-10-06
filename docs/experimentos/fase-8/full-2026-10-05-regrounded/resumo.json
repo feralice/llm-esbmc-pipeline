@@ -1,0 +1,26 @@
+{
+  "pasta": "full-2026-10-05-regrounded",
+  "modificado_em": "2026-10-06T02:33",
+  "arquivos": [
+    "full-2026-10-05-regrounded.log",
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "CONFIRMED": 6,
+    "UNSUPPORTED": 115,
+    "NOT_CONFIRMED": 8,
+    "MISSING_DEPENDENCY": 57,
+    "ESBMC_ERROR": 9,
+    "GROUNDING_FAILED": 19,
+    "UNVALIDATED": 3,
+    "OTHER_FAILURE": 5,
+    "SPEC_FAILED": 4,
+    "ESBMC_MISSED": 1,
+    "ESBMC_TIMEOUT": 5
+  }
+}

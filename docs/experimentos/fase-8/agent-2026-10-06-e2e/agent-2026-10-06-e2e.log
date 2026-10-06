@@ -1,0 +1,117 @@
+[1/156] av_real_09.py::_make_getset_interval.setter (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None suspect expression missing from the harness target
+[2/156] bip_ansible_1.py::verify_collections (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+[3/156] bip_ansible_16.py::LinuxHardware.get_cpu_facts (engine: UNSUPPORTED)
+    -> ESBMC_TIMEOUT preserved=False ESBMC direto excedeu o tempo limite de 180s.
+[4/156] bip_ansible_16.py::LinuxHardware.get_cpu_facts (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: List variable not found:
+[5/156] bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=False unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 134; unwinding a
+[6/156] bip_ansible_3.py::DistributionFiles.parse_distribution_file_Debian (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=False unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 134; unwinding a
+[7/156] bip_ansible_5.py::check_required_arguments (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+[8/156] bip_black_13.py::generate_tokens (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[9/156] bip_fastapi_10.py::serialize_response (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True uncaught exception: ValidationError
+[10/156] bip_fastapi_16.py::jsonable_encoder (engine: UNSUPPORTED)
+    -> ESBMC_ERROR preserved=True ESBMC direto: resultado inconclusivo.
+[11/156] bip_keras_10.py::standardize_weights (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[12/156] bip_keras_24.py::TensorBoard.set_model (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: Cannot resolve attribute '__name__' on Call result
+[13/156] bip_keras_24.py::TensorBoard.set_model (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=False no_violation_found
+[14/156] bip_keras_25.py::_preprocess_numpy_input (engine: ESBMC_ERROR)
+    -> NOT_CONFIRMED preserved=True unwinding assertion loop 130
+[15/156] bip_keras_26.py::rnn (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: Variable new_states in function rnn@F@_step is uninitialized.
+[16/156] bip_keras_3.py::_clone_functional_model (engine: ESBMC_ERROR)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[17/156] bip_keras_3.py::_clone_functional_model (engine: ESBMC_ERROR)
+    -> UNSUPPORTED preserved=True ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+[18/156] bip_keras_36.py::separable_conv1d (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True no_violation_found
+[19/156] bip_keras_36.py::separable_conv1d (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True unwinding assertion loop 131; uncaught exception: ValueError
+[20/156] bip_keras_40.py::RNN.compute_output_shape (engine: ESBMC_ERROR)
+    -> UNVALIDATED preserved=True uncaught exception: IndexError
+[21/156] bip_keras_40.py::RNN.compute_output_shape (engine: ESBMC_ERROR)
+    -> UNVALIDATED preserved=True unwinding assertion loop 29; uncaught exception: IndexError
+[22/156] bip_keras_43.py::to_categorical (engine: SPEC_FAILED)
+    -> UNVALIDATED preserved=True unwinding assertion loop 131; unwinding assertion loop 29; dereference failure: array bounds violate
+[23/156] bip_keras_45.py::LSTMCell.call (engine: UNSUPPORTED)
+    -> ESBMC_ERROR preserved=True ESBMC direto: resultado inconclusivo.
+[24/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[25/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: [json.exception.type_error.302] type must be string, but is null
+[26/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: List variable not found:
+[27/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> MISSING_DEPENDENCY preserved=True ERROR: Module 'layers' not found.
+[28/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: TypeError at artifacts/v2/agent-2026-10-06-e2e/cases/ed2d523cf3cf/harness.py 96: list indices
+[29/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: Select operation applied to tuple
+[30/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: TypeError: 'float' object is not subscriptable at artifacts/v2/agent-2026-10-06-e2e/cases/8ab
+[31/156] bip_keras_8.py::Network.from_config (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: TypeError at artifacts/v2/agent-2026-10-06-e2e/cases/bc61b5187dfb/harness.py 106: list indice
+[32/156] bip_keras_8.py::Network.from_config.process_node (engine: UNSUPPORTED)
+    -> ESBMC_TIMEOUT preserved=True ESBMC direto excedeu o tempo limite de 180s.
+[33/156] bip_keras_8.py::Network.from_config.process_layer (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[34/156] bip_luigi_18.py::SimpleTaskState.set_status (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[35/156] bip_luigi_19.py::SimpleTaskState.set_status (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[36/156] bip_luigi_26.py::HadoopJarJobRunner.run_job (engine: UNSUPPORTED)
+    -> ESBMC_ERROR preserved=True ESBMC direto: resultado inconclusivo.
+[37/156] bip_matplotlib_13.py::Path.make_compound_path (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[38/156] bip_matplotlib_16.py::nonsingular (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True uncaught exception: ZeroDivisionError
+[39/156] bip_matplotlib_17.py::nonsingular (engine: UNSUPPORTED)
+    -> ESBMC_ERROR preserved=True ESBMC direto: resultado inconclusivo.
+[40/156] bip_matplotlib_23.py::_AxesBase.apply_aspect (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+[41/156] bip_matplotlib_23.py::_AxesBase.apply_aspect (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+[42/156] bip_matplotlib_23.py::_AxesBase.apply_aspect (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+[43/156] bip_matplotlib_25.py::EventCollection.__init__ (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=False dereference failure: invalid pointer; dereference failure: Incorrect alignment when accessing data o
+[44/156] bip_matplotlib_28.py::_AxesBase.set_xlim (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: function call: argument "py:artifacts/v2/agent-2026-10-06-e2e/cases/717929d4e0c9/harness.py@C
+[45/156] bip_matplotlib_6.py::Axes._parse_scatter_color_args (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True uncaught exception: TypeError
+[46/156] bip_matplotlib_6.py::Axes._parse_scatter_color_args (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False unwinding assertion loop 28; dereference failure: array bounds violated
+[47/156] bip_pandas_10.py::ExtensionBlock.putmask (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True dereference failure: Access to object out of bounds: heap object; out-of-bounds read in list; derefe
+[48/156] bip_pandas_104.py::GroupBy.quantile (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=False ERROR: TypeError: astype() is only supported on numpy arrays
+[49/156] bip_pandas_104.py::GroupBy.quantile.pre_processor (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: TypeError: astype() is only supported on numpy arrays
+[50/156] bip_pandas_107.py::DataFrame.append (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=False ERROR: List variable not found: self.columns
+[51/156] bip_pandas_139.py::Grouping.__init__ (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=False ERROR: uncaught exception [N6type2t18symbolic_type_excpE]
+[52/156] bip_pandas_139.py::Grouping.__init__ (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False assertion (signed int)artifacts/v2/agent-2026-10-06-e2e/cases/cf5ee0f14e03/harness.py:184contains_tm
+[53/156] bip_pandas_142.py::diff (engine: ESBMC_ERROR)
+    -> ESBMC_MISSED preserved=True unwinding assertion loop 29
+[54/156] bip_pandas_145.py::dispatch_to_series (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=False uncaught exception: NotImplementedError
+[55/156] bip_pandas_145.py::dispatch_to_series (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=False assertion (signed int)py:artifacts/v2/agent-2026-10-06-e2e/cases/52de49470967/harness.py@F@dispatch_
+[56/156] bip_pandas_154.py::GroupBy._get_cythonized_result (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False uncaught exception: ValueError
+[57/156] bip_pandas_162.py::_normalize (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[58/156] bip_pandas_166.py::DataFrame._join_compat (engine: UNSUPPORTED)
+    -> ESBMC_TIMEOUT preserved=True ESBMC direto excedeu o tempo limite de 180s.
+[59/156] bip_pandas_168.py::_get_grouper (engine: UNSUPPORTED)

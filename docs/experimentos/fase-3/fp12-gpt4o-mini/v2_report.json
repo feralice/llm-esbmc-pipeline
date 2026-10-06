@@ -1,0 +1,454 @@
+{
+  "config": {
+    "model": "gpt-4o-mini",
+    "backend": "openai",
+    "detection_strategy": "single",
+    "synth_backend": "openai",
+    "synth_model": "gpt-4o-mini",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/tmp/llm_esbmc_fp12_detection/av_real_11.py",
+      "/tmp/llm_esbmc_fp12_detection/av_real_12.py",
+      "/tmp/llm_esbmc_fp12_detection/av_real_13.py",
+      "/tmp/llm_esbmc_fp12_detection/av_real_15.py",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_04.py",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_07.py",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_20.py",
+      "/tmp/llm_esbmc_fp12_detection/ip_real_22.py",
+      "/tmp/llm_esbmc_fp12_detection/ir_real_01.py",
+      "/tmp/llm_esbmc_fp12_detection/oob_real_03.py",
+      "/tmp/llm_esbmc_fp12_detection/tm_real_01.py",
+      "/tmp/llm_esbmc_fp12_detection/tm_real_02.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "compat": true,
+    "guards": true,
+    "ablation": true,
+    "driver": true,
+    "real_driver": true,
+    "synth_retries": 1,
+    "bound": 20,
+    "timeout": 60,
+    "llm_timeout": 300,
+    "include_smells": false,
+    "esbmc_command": [
+      "esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "complete",
+    "stage": "complete",
+    "planned_hypotheses": 0,
+    "evaluated_hypotheses": 0
+  },
+  "detection": {
+    "evaluated": true,
+    "oracle_seeded": false,
+    "analyzed_units": 13,
+    "hypotheses": 0,
+    "failed_units": 0,
+    "errors": [],
+    "candidates": [],
+    "rejected_findings": [
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "content_length = int(headers['Content-Length'])",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "if content_length > self._max_body_size:",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "differential_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "if 'Transfer-Encoding' in headers or content_length not in (None, 0):",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/av_real_12.py",
+        "function": "match",
+        "category": "unsupported",
+        "finding_type": "out_of_scope_finding",
+        "expression": "'php -s' in command.script",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/av_real_13.py",
+        "function": "match",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "'push' in command.script_parts and 'set-upstream' in command.output",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "output += chunk",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ip_real_04.py",
+        "function": "HTTP1Connection.write_headers",
+        "category": "unsupported",
+        "finding_type": "out_of_scope_finding",
+        "expression": "self._chunking_output = is_post_put_patch and 'Content-Length' not in headers and ('Transfer-Encoding' not in headers)",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "compat_chr(int(numstr, base))",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ip_real_20.py",
+        "function": "generate_sub_moved_events",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "renamed_path = full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else ''",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ip_real_20.py",
+        "function": "generate_sub_moved_events",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "yield DirMovedEvent(renamed_path, full_path, is_synthetic=True)",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ip_real_20.py",
+        "function": "generate_sub_moved_events",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "yield FileMovedEvent(renamed_path, full_path, is_synthetic=True)",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ip_real_22.py",
+        "function": "match",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "if pattern.lower() in command.stderr.lower() or pattern.lower() in command.stdout.lower()",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ir_real_01.py",
+        "function": "gamma",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "factorial_x_minus_1 = factorial_x_minus_1 * i",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ir_real_01.py",
+        "function": "gamma",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "return sqrt(2.0 * pi_const) * pow(t, z + 0.5) * exp(0.0 - t) * a",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ir_real_01.py",
+        "function": "lgamma",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "result = result + log(i * 1.0)",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/ir_real_01.py",
+        "function": "lgamma",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "raise ValueError('math domain error')",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "command.script_parts.index('--set-upstream')",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "explicit_assertion",
+        "finding_type": "out_of_scope_finding",
+        "expression": "command.script_parts.index('-u')",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/oob_real_03.py",
+        "function": "get_new_command",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "command.stderr.split('\\n')[-3].strip().partition('git ')[2]",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "id_ = int(id_) - 1",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/tm_real_01.py",
+        "function": "read_conllx",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "head = int(head) - 1 if head != '0' else id_",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "table in stdout",
+        "reason": ""
+      },
+      {
+        "file": "/tmp/llm_esbmc_fp12_detection/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "category": "native_runtime",
+        "finding_type": "out_of_scope_finding",
+        "expression": "return True",
+        "reason": ""
+      }
+    ],
+    "trace": [
+      {
+        "function": "HTTP1Connection._read_body",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 3
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "gunzip",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "HTTP1Connection.write_headers",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "_htmlentity_transform",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "generate_sub_moved_events",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 3
+      },
+      {
+        "function": "match",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      },
+      {
+        "function": "gamma",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 2
+      },
+      {
+        "function": "lgamma",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 2
+      },
+      {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 3
+      },
+      {
+        "function": "read_conllx",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 2
+      },
+      {
+        "function": "HiveCommandClient.table_exists",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 2
+      }
+    ],
+    "trace_summary": {
+      "units": 13,
+      "located_candidates": 23,
+      "classified_candidates": 23,
+      "rejected_candidates": 23,
+      "localization_failures": 0,
+      "classification_failures": 0
+    }
+  },
+  "summary": {
+    "n": 0,
+    "by_classification": {},
+    "by_category": {},
+    "driver_notes": {},
+    "verification_targets": {},
+    "abstraction_levels": {},
+    "harness_tiers": {},
+    "total_synth_tokens": 0,
+    "total_synth_seconds": 0,
+    "total_esbmc_seconds": 0,
+    "mean_attempts": 0.0
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 13,
+      "failed_calls": 0,
+      "tokens": 26982,
+      "prompt_tokens": 22864,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 13,
+      "seconds": 55.182,
+      "localization_calls": 0,
+      "classification_calls": 0,
+      "cache_hit_rate": 0.0
+    }
+  },
+  "evaluation": {
+    "unit": "category label on a detection source",
+    "detection_scope": "items without patch context",
+    "excluded_patch_context_items": 26,
+    "expected_labels": 0,
+    "detection": {
+      "tp": 0,
+      "fp": 23,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": null,
+      "f1": null
+    },
+    "bug_detection": {
+      "detection": {
+        "tp": 0,
+        "fp": 23,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": null,
+        "f1": null
+      },
+      "file": {
+        "tp": 0,
+        "fp": 23,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": null,
+        "f1": null
+      },
+      "location": {
+        "tp": 0,
+        "fp": 23,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": null,
+        "f1": null
+      },
+      "expression": {
+        "tp": 0,
+        "fp": 23,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": null,
+        "f1": null
+      },
+      "category_given_location": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      }
+    },
+    "synthesis_given_correct_detection": {
+      "n": 0,
+      "compatible": 0,
+      "compatibility_rate": null,
+      "confirmed_on_real_body": 0,
+      "confirmed_on_abstraction": 0,
+      "unknown_evidence": 0,
+      "confirmation_rate": null,
+      "abstraction_only_rate": null,
+      "confirmed_native": 0,
+      "confirmed_driver": 0,
+      "repaired_then_confirmed": 0,
+      "over_restricted": 0,
+      "unverified": 0,
+      "category_evidence": {}
+    },
+    "pipeline_stage_losses": {
+      "correct_detection_labels": 0,
+      "confirmed_end_to_end": 0,
+      "total_losses": 0,
+      "by_stage": {}
+    },
+    "end_to_end": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    }
+  },
+  "results": []
+}

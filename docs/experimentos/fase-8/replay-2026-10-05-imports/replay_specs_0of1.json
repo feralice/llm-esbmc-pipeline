@@ -1,0 +1,248 @@
+{
+  "counts": {
+    "UNSUPPORTED": 11,
+    "OTHER_FAILURE": 1,
+    "MISSING_DEPENDENCY": 2,
+    "NOT_CONFIRMED": 1
+  },
+  "rows": [
+    {
+      "id": "eb6f3966024f",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 101.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "20254912af1b",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "8e58760d102e",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 100.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "73d4d7ccf1f0",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "ed2d523cf3cf",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "b01ed1f4eaee",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "8ab4b9b00799",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "bc61b5187dfb",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 113.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "d830fcc35916",
+      "file": "bip_matplotlib_25.py",
+      "function": "EventCollection.__init__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 1294. Variable add_positions not found",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:get_color,get_linewidth,get_linewidths,get_orientation,set_linelength,set_lineoffset,set_orientation,switch_orientation",
+        "stubbed_imports:Number,PathEffectRenderer,_path,artist,cbook,cm,docstring,mcolors,mlines,mpath,mpl,np,transforms",
+        "external_chains_flattened:artist_Artist,cbook_ls_mapper,cm_ScalarMappable,np_ma_MaskedArray,transforms_Bbox,transforms_Transform",
+        "opaque_values",
+        "typing_import_added",
+        "compat_method_alias:3"
+      ]
+    },
+    {
+      "id": "1a9d4c8919b8",
+      "file": "bip_pandas_145.py",
+      "function": "dispatch_to_series",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeArray,ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCSeries,ABCTimedeltaArray,ABCTimedeltaIndex,Timedelta,Timestamp,expressions,lib,libops,np",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "52de49470967",
+      "file": "bip_pandas_145.py",
+      "function": "dispatch_to_series",
+      "before": "MISSING_DEPENDENCY",
+      "after": "OTHER_FAILURE",
+      "reason": "assertion (signed int)py:artifacts/v2/replay-2026-10-05-imports/programs/5025d1d9292a_a0.py@F@dispatch_to_series@__assert_temp == 1",
+      "recorded_specs": 1,
+      "filled": 1,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeArray,ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCSeries,ABCTimedeltaArray,ABCTimedeltaIndex,Timedelta,Timestamp,expressions,lib,libops,np",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "fd97310999a3",
+      "file": "bip_pandas_29.py",
+      "function": "IntervalArray.__setitem__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "recorded_specs": 1,
+      "filled": 15,
+      "transforms": [
+        "receiver_init_added",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_concat_same_type,_format_data,_format_space,_from_factorized,_from_sequence,_shallow_copy,_simple_new,_validate,astype,contains,copy,fillna,from_arrays,from_breaks,from_tuples,isna,overlaps,repeat,set_closed,shift,take,to_tuples,value_counts",
+        "properties_as_attributes:closed,dtype,is_non_overlapping_monotonic,left,length,mid,nbytes,right,size",
+        "stubbed_imports:ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCIntervalIndex,ABCPeriodIndex,ABCSeries,Appender,ArrowIntervalType,ExtensionArray,Interval,IntervalMixin,_extension_array_shared_docs,array,check_array_indexer,intervals_to_interval_bounds,is_categorical_dtype,is_datetime64_any_dtype,is_float_dtype,is_integer_dtype,is_interval,is_interval_dtype,is_list_like,is_object_dtype,is_scalar,is_string_dtype,is_timedelta64_dtype,isna,notna,np,pandas_dtype,pyarrow,textwrap",
+        "external_chains_flattened:np_ndarray,pyarrow_ExtensionArray,pyarrow_StructArray",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "0e891f89a342",
+      "file": "bip_pandas_87.py",
+      "function": "crosstab",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"f\" not found (artifacts/v2/replay-2026-10-05-imports/programs/3a3559d6f4ed_a1.py line 235)",
+      "recorded_specs": 2,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Index,MultiIndex,com,concat,get_objs_combined_axis",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "5429c3b33bc9",
+      "file": "bip_pandas_88.py",
+      "function": "pivot_table",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"aggfunc\" not found (artifacts/v2/replay-2026-10-05-imports/programs/efa0df5526fe_a0.py line 404)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot_table'], indents=1)",
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Grouper,Index,MultiIndex,Series,cartesian_product,concat,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar,maybe_downcast_to_dtype,np",
+        "external_chains_flattened:np_ndarray",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "af2f5e755263",
+      "file": "tm_real_09.py",
+      "function": "_format",
+      "before": "UNSUPPORTED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 3,
+      "filled": 1,
+      "transforms": [
+        "esbmc_refused_members_stubbed:_esbmc_re_VERBOSE,_esbmc_re_compile",
+        "opaque_values",
+        "builtin_exceptions_stubbed:UnicodeError,UnicodeDecodeError"
+      ]
+    }
+  ]
+}

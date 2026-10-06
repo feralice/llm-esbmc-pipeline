@@ -1,0 +1,24 @@
+{
+  "pasta": "exp-oracle-resample-rep3",
+  "modificado_em": "2026-09-29T18:13",
+  "arquivos": [
+    "exp-oracle-resample-rep3.log",
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 59,
+    "SPEC_FAILED": 39,
+    "ESBMC_TIMEOUT": 5,
+    "CONFIRMED": 1,
+    "GROUNDING_FAILED": 2,
+    "MISSING_DEPENDENCY": 15,
+    "NOT_CONFIRMED": 2,
+    "PIPELINE_ERROR": 1,
+    "UNVALIDATED": 1
+  }
+}

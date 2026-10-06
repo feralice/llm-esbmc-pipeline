@@ -1,0 +1,636 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "gemini-3.6-flash",
+      "backend": "google",
+      "synth_backend": "google",
+      "synth_model": "gemini-3.6-flash",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 6,
+      "timeout": 120,
+      "llm_timeout": 120,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py": "c57f0dc1d72c4398bc403eb137c464ab5a587706e8661d311fdf444ae88722dd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py": "be6a0b38a60c273f386b7cd1fa9744955dd4c0b0b122c779fafdb158759ee8a8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py": "7e36068737982a63582fe69a48d95c336d8379d9c67535ba68eccc5d669293c0",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py": "f7dc9ea5b44d0c63565b79716730450d2893918b3606a2a71ad5a1b606f366c9",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py": "b61fc9487d1817b46e687b390b62f9bd3b641182d9e78583517adb852a3c3ceb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py": "a6c50b83b74691a2249694062697998827db8a7f89faa1f68559245e11b28dd4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py": "50147a90d550d480938f5fda4a466584a908c0cb182f95c46e89446a131cb13e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py": "1325c182ad4b87c622665bf33f0787da3a8390b97961f4bad04da078f8655dbd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py": "a6598be5faf74259c2d8bae63359684a8ddc4332b82a0e76fa68f53bd8cf9077",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py": "3cb4f26700f69189a820fb36aad0c538a6fa71d5b174d148d17033d3ccb4b163",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py": "550cd6c7992213ded207576291c802d1ae19432c4f4ee3d2c6a8f8cd0a983c0a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py": "c14c2fb2aa199d7e1b763dfe159ea77e73ea4536999f86088f8c0146da44bd41",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py": "a096002df689dadbede065fe4a291808f9b99badb2ad0e1b1c68d1d12c992961",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py": "829e951d80fff1ebdcbb61928d186bffd107a5f06ad13ecceea4010fbcb8ff1b",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py": "c620ddb7274fde09659d1bf3f5de56bf9ceb427326fe5e0aa901352553091baa",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py": "9179e371ae65a68371897037b744b7a7c2c0d6534733c70c80ad4dc024503f32",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py": "d005158c47ec687865c3dcb6710f81dde58ad52adc4ae72a4654f391a2a6a2ca",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py": "d5fde0b64e1df50d414955a84e5f36bd254052d696b95960b77dcdd3714226da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py": "6212a401a602e38b13f68afbabb416a755d654354065ef686579b05bd82706cd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py": "835d4b0ca17a8269a6ea65eb2f507e1a331c0504ec9156bf1e62bb9d3b3fc0b4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py": "92dfc8884c14525a1448520bad5d7fca17bf981ff0d688bd94a3ee8e9c05ea06",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py": "b2e57d33c8942c3e6e9f6b87dc1296065caaae26b0609b24dcf646870a9620a4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py": "923ead12a818662d862556d719d90b8889d4c835ce2529790041f0fd547da21f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py": "a819501e567a8615c0a586aa55754944106efa6fb630af42e4942370d8436bfe",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py": "55a1f3eddce44d810a46d47a7bec955729d9bff608718c7baf2d1233dbd77893",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py": "6ee86eae76e21a7ea2e2adbe69164f35191ee07944c24a7dbed987a150fd8da1",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py": "9f441697f54570affd4c07cb69b8ce06035994571d9ea4548451a13ceb71b48f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py": "41c054941311b864c168282de9ff02d29999e209d4154b39295b3385f5176fe5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py": "586c433d7ce4ac5da6224d5f89f695e4660b5e1b8c9747879ea6cafe52a2ad2e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py": "5e1c03cb58eb47d6c43a2bc8a675bbec6ffb037c05121d0f855ced31e37f82ad",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py": "f2a5d06289fd888683f313d35f019d12d029d980cfa2b7cd31e630aa45f5401f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py": "bbc35add60a11ced8de11b5312e24f486094413aa09f538819abe4ef72c1d9ae",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py": "46c5f9a590938942c6234e27ad100240fce97e2bd2e5066b73937240c47fee9a",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py": "bbf9711f78b6758acc8bc8375a6712d14673421ea3605ccf6f3680f80ebb98c2",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py": "16d28467c86c623c96e908ed5f82f135339fb5288e4ae7bf2c88cc9765a1c068",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py": "a74e14dc842cd00d78d962a8bc82992973cbe240ed931537a6e77b670d9cda66",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py": "e2957543875409a8143a6e5c7fcb674bb0a2b9fc39001bd4a7bd01cd6d191413",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py": "31a00628365f82429594246ff08441d1c65036ad5cac16415a6173298ea11357",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py": "35f5963985a66b936aff03ef041a498821ffcb1f21cf6de5a5319ddf47358800"
+    },
+    "detector_prompt": "b23342598b84cf75ce35d6e83b94fc38cda1160209d1fcbad519beb983c4dddf",
+    "synth_prompt": "fcda291038d65ba8db233029300fc98f57368aa2e6d739ccf0c9054a88635714"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py::cli_bool_option": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+          "function": "cli_bool_option",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(param, bool)",
+          "note": "A instrução assert verifica se 'param' é uma instância de bool. Se a chave informada não existir no dicionário 'params' (retornando null) ou se o valor associado tiver qualquer outro tipo, a instrução assert falha e lança AssertionError."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py::WebSocketHandler.set_nodelay": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+          "function": "WebSocketHandler.set_nodelay",
+          "category": "assertion_violation",
+          "finding_type": "llm_false_positive",
+          "expression": "assert self.stream is not null",
+          "reason": "expression_not_found"
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py::Series.to_timestamp": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+          "function": "Series.to_timestamp",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(self.index, PeriodIndex)",
+          "note": "A instrução `assert isinstance(self.index, PeriodIndex)` causa uma exceção `AssertionError` caso `self.index` não seja uma instância de `PeriodIndex`. Como o parâmetro `self` é livre e não há guarda prévia verificando o tipo do atributo `index`, qualquer objeto com `index` de outro tipo provocará a falha. Além disso, asserções podem ser desativadas em execução otimizada Python (-O), deixando o tipo desprotegido."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py::_partition_tasks": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+          "function": "_partition_tasks",
+          "category": "none_misuse",
+          "expression": "worker._add_task_history",
+          "note": "O parâmetro livre 'worker' é dereferenciado diretamente ao acessar '_add_task_history'. Caso 'worker' receba null de quem o chama, uma exceção AttributeError ocorrerá no runtime devido à ausência de verificação."
+        },
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+          "function": "_partition_tasks",
+          "category": "variable_misuse",
+          "expression": "set_tasks['still_pending_ext'] = {task for task, status, ext in task_history if status == 'PENDING' and task not in set_tasks['failed'] and (task not in set_tasks['completed']) and (not ext)}",
+          "note": "A condição booleana sobre a variável 'ext' foi invertida na construção do dicionário 'set_tasks'. A chave 'still_pending_ext' utiliza a expressão 'not ext', enquanto 'still_pending_not_ext' utiliza 'ext', resultando na classificação oposta e semanticamente errada das tarefas."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py::_summary_format": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+          "function": "_summary_format",
+          "category": "invalid_precondition",
+          "expression": "set_tasks['already_done']",
+          "note": "A função acessa diretamente chaves específicas no dicionário 'set_tasks' (como 'already_done', 'completed', 'failed', 'not_run', etc.) sem validação de existência nem uso de .get(). Se o parâmetro 'set_tasks' não contiver alguma dessas chaves obrigatórias, a execução falhará com KeyError."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py::tqdm.__init__": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+          "function": "get_new_command",
+          "category": "none_misuse",
+          "expression": "command.script",
+          "note": "O parâmetro 'command' tem o atributo 'script' acessado diretamente na linha 3 sem nenhuma verificação prévia de nulidade. Se um valor null for fornecido para 'command', a avaliação de 'command.script' causará um AttributeError em tempo de execução. Não existe estrutura try/except ou guarda de proteção contra esse valor."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py::match": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+          "function": "match",
+          "category": "none_misuse",
+          "expression": "'ls' in command.script",
+          "note": "O parâmetro livre command pode ser passado como null ou conter um atributo script com valor null. A tentativa de acessar command.script ou de executar a operação de pertencimento 'ls' in command.script resultará em AttributeError ou TypeError por uso indevido de null. Não há bloco try/except nem validações prévias para garantir que command e command.script sejam valores válidos e iteráveis."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py::Settings.update": {
+      "candidates": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+          "function": "Settings.update",
+          "category": "none_misuse",
+          "expression": "dict(self)",
+          "note": "O parâmetro `self` é passado diretamente para a chamada `dict(self)` sem nenhuma validação prévia. Se `self` receber o valor `null`, a conversão falha com `TypeError: 'NoneType' object is not iterable` por tentar iterar sobre um valor nulo."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval": {
+      "candidates": [],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval.getter": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+          "function": "_make_getset_interval.getter",
+          "category": "variable_misuse",
+          "finding_type": "suspected_bug",
+          "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+          "reason": ""
+        }
+      ]
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py::_make_getset_interval.setter": {
+      "candidates": [],
+      "rejected_findings": []
+    }
+  },
+  "synthesis_results": {},
+  "status": "running",
+  "telemetry_events": [
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 58.355699,
+      "prompt_tokens": 1494,
+      "completion_tokens": 201,
+      "total_tokens": 3236,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 14.737139,
+      "prompt_tokens": 1434,
+      "completion_tokens": 206,
+      "total_tokens": 2585,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 30.805703,
+      "prompt_tokens": 1509,
+      "completion_tokens": 268,
+      "total_tokens": 3268,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 39.74086,
+      "prompt_tokens": 1777,
+      "completion_tokens": 443,
+      "total_tokens": 4975,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 16.968843,
+      "prompt_tokens": 2187,
+      "completion_tokens": 279,
+      "total_tokens": 4801,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 45.849582,
+      "prompt_tokens": 3818,
+      "completion_tokens": 5,
+      "total_tokens": 7553,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 19.206569,
+      "prompt_tokens": 1399,
+      "completion_tokens": 201,
+      "total_tokens": 2818,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 14.693187,
+      "prompt_tokens": 1407,
+      "completion_tokens": 253,
+      "total_tokens": 2754,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 13.636565,
+      "prompt_tokens": 1409,
+      "completion_tokens": 198,
+      "total_tokens": 2957,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 19.896297,
+      "prompt_tokens": 1612,
+      "completion_tokens": 9,
+      "total_tokens": 3954,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 23.9992,
+      "prompt_tokens": 1397,
+      "completion_tokens": 228,
+      "total_tokens": 3333,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 28.914044,
+      "prompt_tokens": 1532,
+      "completion_tokens": 5,
+      "total_tokens": 4396,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 93.907428,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 503 [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 53.307434,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 503 [{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 124.071918,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 2.705143284s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"2s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 112.414926,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 1.215314775s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"1s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 79.635756,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 32.883197316s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"32s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 11.520957,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar https://generativelanguage.googleapis.com/v1beta/openai/chat/completions: EOF occurred in violation of protocol (_ssl.c:2417)",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 120.926431,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 7.793036724s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"7s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 121.921548,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 48.91659232s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"48s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 110.884398,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 46.791743548s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"46s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 107.45116,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 50.929690977s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-3.6-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"50s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 117.982763,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 53.155465956s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"53s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 113.813717,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 44.202732875s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"44s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 107.740486,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 49.071214957s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-3.6-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"49s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 108.663877,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 52.946212969s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-3.6-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"52s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 121.663838,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 51.351762283s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"51s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 11.506798,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha de rede ao chamar https://generativelanguage.googleapis.com/v1beta/openai/chat/completions: EOF occurred in violation of protocol (_ssl.c:2417)",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 110.547812,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 34.548163574s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-3.6-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"34s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": null,
+      "status": "error",
+      "duration_seconds": 127.494341,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cached_tokens": null,
+      "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 23.708072247s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-3.6-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"23s\"\n      }\n    ]\n  }\n}\n]",
+      "stage": "detection"
+    }
+  ]
+}

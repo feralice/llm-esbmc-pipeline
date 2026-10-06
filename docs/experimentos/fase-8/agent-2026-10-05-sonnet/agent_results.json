@@ -1,0 +1,991 @@
+[
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/av_real_03.py",
+      "function": "Series.to_timestamp",
+      "suspect_expression": "assert isinstance(self.index, PeriodIndex)",
+      "line": 0,
+      "trigger_condition": "self.index is object state not constrained by the function. A Series with a non-Period index (e.g. a default RangeIndex or a DatetimeIndex) passes through the copy branch and reaches the assert with a false condition. The failure is an AssertionError with no message instead of a descriptive TypeError. No try/except surrounds it.",
+      "category": "",
+      "hypothesis_id": "528ca8730d1f"
+    },
+    "verdict": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AssertionError",
+      "line": 37,
+      "runs": 3,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/528ca8730d1f/harness.py",
+    "agent_output": "I didn't find out why. The plain-`Index` case also passed in a small scratch test, so ESBMC's `isinstance` handling may be unsound for these stubs, and the harness may not be exercising the hypothesis as intended.\n\nThe body of `Series.to_timestamp` is copied unchanged, apart from the added signature annotations. There are no added asserts and no guard on the suspect expression. Everything is in `harness.py`.\n\nThe stub layout looks odd because ESBMC 8.5.0 needed workarounds:\n- **Name clash:** a class defined before `Series` with a method also named `to_timestamp` made ESBMC fail with \"Object new_values not found\". The `Index.to_timestamp` stub therefore declares a throwaway local `new_values`.\n- **Forward references:** `_constructor` has to return a type defined earlier in the file. A `\"Series\"` forward reference gave a null type, so I added a `SeriesBase` class.\n- **Annotated attributes:** forward-referenced attribute annotations crash conversion, so index types are defined before use.",
+    "unwind": 5,
+    "seconds": 375.112,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_black_16.py",
+      "function": "gen_python_files_in_dir",
+      "suspect_expression": "normalized_path = '/' + child.resolve().relative_to(root).as_posix()",
+      "line": 0,
+      "trigger_condition": "child.resolve() follows symlinks, so a symlink inside path that points outside root yields a resolved path not under root. Path.relative_to then raises ValueError. Also reachable when path is not under root. The assert only checks that root is absolute, and nothing catches the exception.",
+      "category": "",
+      "hypothesis_id": "edce49fc532d"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "unwinding assertion loop 29",
+    "target_preserved": false,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "NameError",
+      "line": 72,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/edce49fc532d/harness.py",
+    "agent_output": "BMC's generator preprocessing rejects `yield from` (`NotImplementedError: yield from is not supported for generator inlining`). In `gen_python_files_in_dir` I replaced `yield from gen_python_files_in_dir(...)` with `for sub in gen_python_files_in_dir(...): yield sub`. That is the one change to the body, so it is not byte-identical to `original.py`. The suspect expression `\"/\" + child.resolve().relative_to(root).as_posix()` and the original `assert root.is_absolute()` are unchanged, and I added no asserts or guards.\n- **Signature:** I changed the `Pattern[str]` annotations to the stub `Pattern`.\n- **Stubs in `harness.py`:**\n  - `Path` is a small model. `iterdir()` returns 0 to 2 children. `resolve()` returns a nondet target. `relative_to()` raises `ValueError` when the path isn't under `root`.\n  - `Match`, `Pattern` (nondet `search`) and `Report` are minimal stand-ins.\n- **Driver:** it runs at module level. It calls `gen_python_files_in_dir` with a nondet `root` and iterates the result.",
+    "unwind": 10,
+    "replayed_original_body": true,
+    "seconds": 148.499,
+    "engine_verdict": "ESBMC_ERROR",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_33.py",
+      "function": "text_to_word_sequence",
+      "suspect_expression": "translate_map = maketrans(filters, split * len(filters))",
+      "line": 0,
+      "trigger_condition": "`split` is a free parameter. `maketrans` requires both arguments to have the same length, but the second has len(split)*len(filters). With a split of 2 or more characters, e.g. '--' with the default filters, the lengths differ and ValueError is raised. With split='' the second argument is empty and ValueError is also raised. With split=None, `None * len(filters)` raises TypeError. No try/except covers the call, and the default ' ' passes the guard, so only non-default inputs trigger the failure.",
+      "category": "",
+      "hypothesis_id": "a408047609c9"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: split() only supports constant sep in minimal support",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/a408047609c9/harness.py",
+    "agent_output": "rything before that line now converts. To get there I added these stubs:\n- A `sys` stub with `version_info`.\n- A `unicode` class.\n- A `Filters` class with `__len__`. The `split * len(filters)` line failed when `len(filters)` was applied to a plain `str`, and this was the workaround that worked.\n- A `maketrans` stub that raises `ValueError` when the lengths differ.\n- A `Text` stub class with `lower`, `translate` and `split` methods.\n\nThe driver calls it with nondet `text` and `split`. The suspect expression `maketrans(filters, split * len(filters))` is unguarded and has no assert.\n\n**Options:**\n1. Allow a minimal edit to the `seq = text.split(split)` line, for example replacing `split` with a constant there. The suspect line stays untouched, and the ValueError/TypeError paths on `split` are still exercised before it. This is my recommendation.\n2. Drop the `.split(` call from the harness body entirely, which is a larger deviation.\n\nWhich do you want? Both break the \"body unchanged\" rule.",
+    "unwind": 5,
+    "seconds": 179.455,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_21.py",
+      "function": "run",
+      "suspect_expression": "cmdline_args.insert(0, main_task_cls.task_family)",
+      "line": 0,
+      "trigger_condition": "cmdline_args defaults to None and is never normalized to a list. With main_task_cls truthy and cmdline_args omitted, line 7 calls .insert on None. With local_scheduler=True and cmdline_args omitted, line 9 `cmdline_args.insert(0, '--local-scheduler')` fails the same way. Both come from the same missing default handling.",
+      "category": "",
+      "hypothesis_id": "a5a1121afa6c"
+    },
+    "verdict": "ESBMC_MISSED",
+    "reason": "dereference failure: NULL pointer; dereference failure: invalid pointer; dereference failure: Incorrect alignment when accessing data object; unwinding assertion loop 11",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 28,
+      "runs": 3,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/a5a1121afa6c/harness.py",
+    "agent_output": ": `VERIFICATION FAILED`, so there is no conversion error.\n\nTwo of the reported violations are NULL-pointer and invalidated-object dereference failures at `harness.py` line 28, inside `run`. Line 28 is the `cmdline_args.insert(0, '--local-scheduler')` call, so the `local_scheduler` path of your hypothesis is hit. I didn't confirm the line 27 `main_task_cls` insert separately, and many other violations come from ESBMC's internal list library code.\n\nThe first run ended in \"Unexpected type in int/ptr typecast\". I fixed it by making `task_family` an instance attribute set in `__init__` instead of a class attribute.\n\nThe harness copies `run` unchanged, with annotations added to its signature. It stubs `ArgParseInterface`, `DynamicArgParseInterface` and `Task`, and everything stays inside the file. The module-level driver uses nondet booleans for `use_dynamic_argparse`, `local_scheduler`, whether `main_task_cls` is set, and whether `cmdline_args` is passed as a list or omitted (`None`).\n\nDONE",
+    "unwind": 5,
+    "seconds": 57.877,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_133.py",
+      "function": "NDFrame.interpolate",
+      "suspect_expression": "ax = _maybe_transposed_self._get_axis_number(ax)",
+      "line": 0,
+      "trigger_condition": "axis is a free parameter. For any value other than 0 or 1 (e.g. axis=2), the else branch sets only _maybe_transposed_self and never binds ax. Line 13 then reads ax before assignment, so Python raises UnboundLocalError instead of a clear ValueError about the invalid axis.",
+      "category": "",
+      "hypothesis_id": "07db106b0cd6"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Object \"_maybe_transposed_self\" not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/07db106b0cd6/harness.py",
+    "agent_output": "osed_self` not-found error in `harness.py`.\n- `/tmp/min5.py` and `/tmp/min7.py` show it without the rest of the function.\n- `np.ndarray` annotations also failed: `NameError: name 'ndarray' is not defined`.\n\n**Second issue.** Without `.T`, the else-branch pattern converts but crashes in the solver with `irep2_cast_error: struct_union_members() called on incompatible type` (`/tmp/min3.py`). I haven't traced it, so I don't know whether it comes from the unbound `ax` or from the way `_m` is typed.\n\n**What would unblock it.** Each of these changes the \"body unchanged\" constraint, so I didn't try them without your say-so:\n- Rewrite `.T` in the body to something ESBMC accepts, such as `.transposed`. The unbound-`ax` path under test is untouched, but the body is no longer verbatim.\n- Cut the `.T` uses (the `axis == 1` branch and the `len(..T)` check). That also changes the body.\n\nWhich do you prefer? Or I can keep looking for a way to get a numpy-typed receiver to work with the unchanged body.",
+    "unwind": 5,
+    "seconds": 192.844,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_152.py",
+      "function": "Series.append",
+      "suspect_expression": "to_concat = [self] + to_append",
+      "line": 0,
+      "trigger_condition": "The guard accepts both list and tuple, but `[self] + to_append` only works for a list. Any tuple passed as `to_append` passes the guard and reaches the concatenation of list + tuple. No try/except catches the error. Example: to_append=(s1, s2) raises TypeError: can only concatenate list (not \"tuple\") to list.",
+      "category": "",
+      "hypothesis_id": "5c232e903238"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: append() takes exactly one argument",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/5c232e903238/harness.py",
+    "agent_output": "e error, except the one marked:\n- `s1.append(arg)`\n- `Series.append(s1, arg)`\n- `run = Series.append; run(s1, arg)`\n- `s1.append(to_append=arg)`\n- `Series().append(arg)` fails differently, with `List variable not found`.\n- A wrapper function `drive(s: Series, a)` that calls `s.append(a)`.\n- A class-level alias `run = append` fails with `Variable append not found`.\n\n**Current state.** `harness.py` has:\n- the `Series.append` body copied unchanged, with annotations added to the signature;\n- a stub `concat`;\n- a driver that picks a tuple or list with `nondet_bool()` and calls `drive(s1, arg)`.\n\nIt doesn't convert.\n\n**Decision for you.** The only route I can see is to rename the method in the harness, for example to `appendx`. That breaks \"copy `Series.append` with its body unchanged\" in letter, though not in body. The CPython replay would still raise the same `TypeError` on a tuple, since only the name changes. Should I do the rename, or do you want to try a different approach to the call?",
+    "unwind": 5,
+    "seconds": 164.244,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_33.py",
+      "function": "IntegerArray._values_for_argsort",
+      "suspect_expression": "data[self._mask] = data.min() - 1",
+      "line": 0,
+      "trigger_condition": "self._data is object state with no visible constraint on size. If it is a zero-size array, data.min() raises ValueError (zero-size array to reduction operation minimum which has no identity). No guard or try/except covers it, and the mask is irrelevant because the min is computed over the whole array.",
+      "category": "",
+      "hypothesis_id": "af346e18f12b"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/af346e18f12b/harness.py",
+    "seconds": 900.098,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_18.py",
+      "function": "ResponseTypes.from_content_disposition",
+      "suspect_expression": "to_native_str(content_disposition).split(';')[1].split('=')[1]",
+      "line": 0,
+      "trigger_condition": "If content_disposition is not str or bytes (e.g. None), to_native_str raises TypeError. The try only catches IndexError, so TypeError propagates. The parameter is free and nothing guards it. Exact behavior depends on to_native_str, which is not shown.",
+      "category": "",
+      "hypothesis_id": "5bf91d52630c"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: function call: argument \"c:string.c@21403@F@__python_str_split@str\" type mismatch: got empty, expected pointer",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/5bf91d52630c/harness.py",
+    "agent_output": "`, and a `class to_native_str(str)` subclass. The subclass gave a slightly different error: `got struct`.\n- **Wrapper class:** a stub returning a `NativeStr` whose own `split` method forwards to `str.split` didn't help. Inside the wrapper the forwarding works. The outer `.split(';')` on the call result still fails. That wrapper version, plus a plain `nondet_str()` driver, is what `harness.py` contains now.\n\nThe usual way around this is to assign the call to a variable first (`x = to_native_str(c); x.split(';')`). That works in ESBMC, but it changes the body, which you said not to do.\n\nI haven't tried the TypeError side (`None` input) in the final form. In earlier versions the `nondet_bool()` branch calling with `None` hit the same conversion error.\n\nDecision for you: if I may split the first line into two statements, I expect it to reach a verdict. That deviates from \"body unchanged\", so I haven't done it. Otherwise this needs an ESBMC fix or a different stub mechanism I haven't found.",
+    "unwind": 5,
+    "seconds": 496.984,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/bip_thefuck_4.py",
+      "function": "_get_aliases",
+      "suspect_expression": "name, value = alias.replace('alias ', '', 1).split(' ', 1)",
+      "line": 0,
+      "trigger_condition": "`alias_out` comes from the stdout of `fish -ic alias`. With no aliases defined, stdout is empty, `.strip().split('\\n')` gives `['']`, and the loop reaches `alias == ''`. `''.split(' ', 1)` returns `['']`, a single element, so unpacking into `name, value` fails. The same happens for any line with no space, such as an alias with an empty value or a stray warning line from the interactive shell. Nothing in the code guards against this, and `overridden` has no effect on the unpacking.",
+      "category": "",
+      "hypothesis_id": "58774b0a0374"
+    },
+    "verdict": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ValueError",
+      "line": 25,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/58774b0a0374/harness.py",
+    "agent_output": "gnature.\n- **Stubs:** `Popen` is stubbed so that `stdout.read()` returns `bytes`. The text comes from `nondet_str()` and goes through `.encode('utf-8')`, so the `.decode('utf-8')` in the body works on real bytes. A stub that returned `str` or a custom class with a `decode` method gave ESBMC a type error at `.strip()`.\n- **Driver:** a module-level call with an empty `set[str]` for `overridden`.\n- **Unpacking is not checked:** ESBMC generated no property for the `name, value = ...split(' ', 1)` line. The check below suggests it doesn't model a wrong-length unpack, but I didn't confirm that.\n- **The function does run:** with `nondet_str()` replaced by `\"\"`, the result was still SUCCESSFUL. A throwaway copy with `assert False` after the call produced VERIFICATION FAILED, so execution gets past the call. I didn't check which property failed, so this is only weak evidence.\n- **Replay not run:** I haven't run `harness.py` under CPython, so I don't know whether the `ValueError` shows up there.",
+    "unwind": 5,
+    "seconds": 159.814,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/dz_real_02.py",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "suspect_expression": "float(not_parsed) / float(num_substrings)",
+      "line": 0,
+      "trigger_condition": "num_substrings = len(possible_substrings_splits[i]) comes from a free parameter and nothing guards against an empty split. With possible_parsed_splits=[[]] and possible_substrings_splits=[[]], the inner loop is skipped and float(0)/float(0) is evaluated, raising ZeroDivisionError. The same applies to the division by num_substrings in the third rating element.",
+      "category": "",
+      "hypothesis_id": "b5652fda143e"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Variable 'p' is not defined in function 'lam1' at line 37.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/b5652fda143e/harness.py",
+    "agent_output": "e unsupported part is subscripting inside a `min` key lambda.\n- **Own `min` stubs:** a module-level `min` with `key` as a normal parameter hits \"Multiple values for argument 'key'\". A keyword-only `key` gets past that but still reaches the `lam1` error.\n\n**Current files:**\n- `harness.py` is a work in progress. It has the copied function body, a `min` stub, an `ESBMC_mmkey_0` stub, an `enumerate` stub, and a driver passing `[[]]` for both lists.\n- `t1.py` is a scratch test I added; you can delete it.\n\nI couldn't read ESBMC's preprocessor source because it sits outside this session's allowed directories. Reading it would show what shape `ESBMC_mmkey_0` and the lambda hoist expect, which is the quickest route to a working stub.\n\n**Decision for you:** the only other route I see is rewriting that one line, for example replacing the `min` call with an explicit loop. That breaks the \"body unchanged\" rule, so I haven't done it. Do you want me to try it, or look at the ESBMC preprocessor first?",
+    "unwind": 5,
+    "seconds": 239.902,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/dz_real_03.py",
+      "function": "HashExpander.do",
+      "suspect_expression": "(crc >> idx) % (range_end - range_begin + 1) + range_begin",
+      "line": 0,
+      "trigger_condition": "range_end and range_begin are free parameters or come from cron.RANGES, with no check on their relation. If range_end == range_begin - 1 (e.g. range_end=4, range_begin=5), the modulus is 0. The % operator then raises ZeroDivisionError.",
+      "category": "",
+      "hypothesis_id": "bb4c66bf77ba"
+    },
+    "verdict": "OTHER_FAILURE",
+    "reason": "uncaught exception: AttributeError; uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "NameError",
+      "line": 38,
+      "runs": 485,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/bb4c66bf77ba/harness.py",
+    "agent_output": "al.py` with its body unchanged. I only added type annotations to the signature and gave `hash_id`, `range_end` and `range_begin` int/bytes defaults.\n- **Stubs:** `random.randint`, `binascii.crc32` and a `_Cron` with a `RANGES` list are all defined in `harness.py`. The two library stubs return nondet values constrained with `__ESBMC_assume`.\n- **Driver:** it runs at module level with a nondet `idx` limited to 0\u20135 (the length of the stubbed `RANGES`). `range_end` and `range_begin` are free ints, and `hash_type` is a nondet string.\n- **ESBMC fixes:** the first run failed with \"Unsupported function 'assume'\", so I switched to `__ESBMC_assume`.\n- **Second failure:** an `uncaught exception: AttributeError` also shows up in the results. I didn't trace it. It may come from the nondet `hash_type` string or the stubs.\n- **Not covered:** `range_end` and `range_begin` are typed as plain ints, so the `is None` branches that read `RANGES` are never reached.\n\nI did not run `harness.py` under CPython.",
+    "unwind": 5,
+    "seconds": 34.121,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_07.py",
+      "function": "_htmlentity_transform",
+      "suspect_expression": "return compat_chr(int(numstr, base))",
+      "line": 0,
+      "trigger_condition": "entity is a free parameter. Regex '#(x[0-9a-fA-F]+|[0-9]+)' accepts digit strings of any length and value, e.g. '#99999999' or '#x110000'. These pass the match guard, int() succeeds, and chr() gets a value outside range(0x110000). Nothing catches the exception.",
+      "category": "",
+      "hypothesis_id": "9715ff1783d8"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; chr() arg not in range(0x110000); chr() arg is a surrogate code point; uncaught exception: KeyError",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "no counterexample values to replay"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/9715ff1783d8/harness.py",
+    "agent_output": "Waiting on the background run; I'll pick this up when it reports.",
+    "unwind": 5,
+    "solver": "--boolector",
+    "replayed_original_body": true,
+    "seconds": 477.101,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_11.py",
+      "function": "HTTPBearer.__call__",
+      "suspect_expression": "raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Invalid authentication credentials')",
+      "line": 0,
+      "trigger_condition": "The first branch respects self.auto_error and returns None when it is False. The non-bearer branch always raises. With auto_error=False and header 'Basic abc', scheme='Basic' and credentials='abc' pass the first check, scheme.lower() != 'bearer' is true, and HTTPException is raised. The signature Optional[...] and the auto_error flag imply None should be returned so another auth scheme can handle the request.",
+      "category": "",
+      "hypothesis_id": "bcaf6d92d59f"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; dereference failure: Incorrect alignment when accessing data object; dereference failure: invalid pointer; unwinding assertion loop 68; uncaught exception: HTTPException",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "original function not found"
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/bcaf6d92d59f/harness.py",
+    "agent_output": "`harness.py` is written, and ESBMC reaches a verdict: VERIFICATION FAILED (6 of 51 properties failed).\n\n- **Suspect path:** the failing property is `global.assertion.2`, \"uncaught exception: HTTPException\". That means a run ended in an `HTTPException`. I did not confirm which `raise` it came from, so I can't say it is the non-bearer branch.\n- **Other failures:** the other five failing properties are dereference failures on the `HTTPException` stub (lines 8 and 9).\n- **`async` removed:** I changed `__call__` from `async def` to a plain `def`. The body is unchanged, but it is a signature change, and I did it because the driver calls it directly. I didn't try the `async` form under ESBMC.\n- **Nondet header:** `get_authorization_scheme_param` is a stub that returns nondet strings, so it does not parse a real header.\n\nDONE",
+    "unwind": 5,
+    "replayed_original_body": true,
+    "seconds": 30.871,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_14.py",
+      "function": "TimeseriesGenerator.__len__",
+      "suspect_expression": "int(np.ceil((self.end_index - self.start_index) / (self.batch_size * self.stride)))",
+      "line": 0,
+      "trigger_condition": "batch_size and stride are object state with no guard in this function. If either is 0 (e.g. batch_size=0 or stride=0), the divisor batch_size * stride is 0 and the true division raises ZeroDivisionError for Python ints. Nothing catches it.",
+      "category": "",
+      "hypothesis_id": "d06a2222218e"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ZeroDivisionError",
+      "line": 21,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/d06a2222218e/harness.py",
+    "agent_output": "DONE\n\n`harness.py` is written. ESBMC reached **VERIFICATION FAILED**, with no conversion error. Of the 23 properties, 1 failed and 22 passed. The failed property is `uncaught exception: ZeroDivisionError`, which is the hypothesis.\n\n- **Stubs:** I replaced numpy with a small local `np` object whose `ceil` wraps `math.ceil`. `TimeseriesGenerator` is cut down to an `__init__` that stores `start_index`, `end_index`, `batch_size` and `stride`.\n- **`__len__`:** the body is copied unchanged from `original.py`. I only added the `-> int` annotation.\n- **Driver:** at module level it builds the generator with four `nondet_int()` values and calls `__len__()`. It has no asserts and no guard on the division.\n\nI did not run the CPython replay.",
+    "unwind": 5,
+    "seconds": 21.196,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+      "function": "response_status_message",
+      "suspect_expression": "int(status)",
+      "line": 0,
+      "trigger_condition": "`status` is a free parameter and nothing checks it before `int(status)`. A non-numeric string such as 'abc' makes `int` raise ValueError. None or a list makes it raise TypeError. No try/except surrounds the call.",
+      "category": "",
+      "hypothesis_id": "5f44bbc94b3c"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/5f44bbc94b3c/harness.py",
+    "agent_output": "ejected, so no stub or driver can get around it while the body stays as it is.\n\n**What I got past before reaching that line:**\n- `http.RESPONSES.get(...)` failed with \"Could not resolve type of receiver in member call `.__python_dict__.get()`\". Replacing `RESPONSES` with a small typed stub class that has a `get(self, code: int) -> str` method fixed it.\n- `to_native_str` is stubbed as an identity function on `str`.\n\n**Current state:** `harness.py` has those stubs and a driver, `s: int = nondet_int()` followed by `response_status_message(s)`. The parameter type is `int` only from my last test. The hypothesis needs a `str` (or `None`/list) input for `int(status)` to raise, so it would go back to `str` once this is resolved.\n\n**Options:**\n1. Allow a change to the body that avoids `%`, for example `str(status) + ' ' + ...`. `int(status)` stays unchanged, but it is no longer a verbatim copy.\n2. Keep the body and treat this function as not verifiable with this ESBMC build.\n\nWhich do you want?",
+    "unwind": 5,
+    "seconds": 83.152,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "suspect_expression": "all((self[key] == that[key] for key in self))",
+      "line": 0,
+      "trigger_condition": "`that` is a free parameter. If `that` has the same length as `self._dict` but different keys (self={'a':1}, that={'b':1}), the length check passes. `that[key]` then raises KeyError for a key missing from `that`. Nothing catches it. An equality comparison should return False.",
+      "category": "",
+      "hypothesis_id": "4aa3e5e38a90"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "unwinding assertion loop 131; unwinding assertion loop 29; uncaught exception: KeyError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 15,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/4aa3e5e38a90/harness.py",
+    "agent_output": "`VERIFICATION FAILED`, with 3 of 109 properties failing. I didn't look at which 3 failed or why, so I can't say whether they are the `KeyError` from `that[key]`. I only read the tail of the output.\n\n- **Copied code:** `SortedDict.__eq__` is copied unchanged from `original.py`. Its signature has type annotations (`that: dict[str, int]`, `-> bool`).\n- **Stubs:** The class is a stub with `_dict` and `_list`, plus `__getitem__` and `__iter__`.\n- **`__iter__` change:** `__iter__` returns `self._list` directly. ESBMC doesn't model `iter()` and stopped with a conversion error when the stub used it.\n- **Driver:** At module level, one key goes into `sd` and another into `that`, both with nondet strings and ints. It then calls `sd.__eq__(that)`. There are no asserts, and the suspect expression is not guarded.\n- **mypy warnings:** mypy isn't installed, so it printed type-check warnings (missing annotation on `__iter__`, `__eq__` argument type). I didn't fix them because they didn't block the run.",
+    "unwind": 5,
+    "seconds": 91.725,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+      "function": "date_convert",
+      "suspect_expression": "H += 12",
+      "line": 0,
+      "trigger_condition": "For a 12-hour time such as '12:00 PM', H is int 12 and am is 'PM', so H becomes 24. time(24, ...) or datetime(..., 24, ...) then raises ValueError (hour must be in 0..23). The guard only tests for 'PM' and does not protect H == 12.",
+      "category": "",
+      "hypothesis_id": "528c0187a852"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "timeout",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/528c0187a852/harness.py",
+    "agent_output": "ESBMC is still solving in the background. The harness converts now, but I don't have a verdict yet. I'll pick it up when the run finishes.",
+    "unwind": 5,
+    "seconds": 1010.584,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_01.py",
+      "function": "Session.update_headers",
+      "suspect_expression": "value = value.decode('utf8')",
+      "line": 0,
+      "trigger_condition": "request_headers is a free parameter and value comes straight from its items. Nothing checks the type of value. A header whose value is a str, for example {'Accept': 'text/html'}, has no .decode method. The loop raises on the first such header, and no try/except covers it.",
+      "category": "",
+      "hypothesis_id": "942d61a91efc"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: TypeError at artifacts/v2/agent-2026-10-05-sonnet/cases/942d61a91efc/harness.py 24: list indices must be integers or slices, not str",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/942d61a91efc/harness.py",
+    "agent_output": ". Nesses casos o ESBMC chegou a `VERIFICATION SUCCESSFUL`.\n- **Falha:** qualquer subscri\u00e7\u00e3o direta `self[...]`. Falhou com `class Session(dict)`, com `Dict[str, Any]` e com `__getitem__`/`__setitem__` (inclusive devolvendo uma classe auxiliar). Falhou tamb\u00e9m com `@staticmethod`, com fun\u00e7\u00e3o livre e com `self` anotado como `Dict[...]`. S\u00f3 passou quando troquei o nome do par\u00e2metro de `self` para `d`.\n\nO frontend Python do ESBMC parece n\u00e3o resolver `self[...]`. Os \u00fanicos jeitos que vi de contornar isso mudam o corpo ou a assinatura do m\u00e9todo, e voc\u00ea pediu o corpo inalterado. Os dois contornos poss\u00edveis:\n\n1. Renomear `self` para outro nome no harness. Provavelmente roda e confirma o `str.decode`, mas muda o corpo.\n2. Deixar o corpo como est\u00e1 e aceitar que esse alvo n\u00e3o \u00e9 execut\u00e1vel no ESBMC atual.\n\nQual dos dois voc\u00ea prefere? O `harness.py` atual usa `class Session(Dict[str, Any])` e um driver com `nondet_str()` como valor do header `Accept`. Tamb\u00e9m apaguei o `probe.py` que usei nos testes.",
+    "unwind": 5,
+    "seconds": 386.319,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_02.py",
+      "function": "tqdm.format_meter",
+      "suspect_expression": "total *= unit_scale",
+      "line": 0,
+      "trigger_condition": "total is free and may be None, or the earlier `if total and n > total: total = None` sets it to None when n exceeds total. With unit_scale=1000 the guard passes and `None *= 1000` runs with no try/except. Concrete input: n=5, total=None, elapsed=1, unit_scale=1000.",
+      "category": "",
+      "hypothesis_id": "31409e1ca2c6"
+    },
+    "verdict": "MISSING_DEPENDENCY",
+    "reason": "ERROR: Object \"l_bar_user\" not found.",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/31409e1ca2c6/harness.py",
+    "agent_output": "only passed to `len`.\n- **Partly works:** annotating an intermediate variable (`t: tuple[str, str] = obj.split(...)`) converts, but the solver then fails on the call.\n\nNo stub, type annotation or default value in the signature works around it, because the failing line is inside the body.\n\n**What `harness.py` has now:**\n- A verbatim `format_meter` body, minus the docstring.\n- Signature annotations.\n- Stubs for `RE_ANSI`, `_unich`, `format_sizeof`, `format_interval` and a `_BarFmt` helper class.\n- A module-level driver with nondet `n`, `total` (an int or `None`) and `unit_scale`.\n\n**Decision for you:** the only fix I see is to rewrite those unpack lines in the body, for example `parts = bar_format.split('{bar}')` followed by `parts[0]` and `parts[1]`. That branch is unreachable for your hypothesis (`bar_format=None`) and doesn't touch `total *= unit_scale`. It breaks your \"body unchanged\" rule, so tell me if you want it. Otherwise, tell me if the harness may drop the `bar_format` branch.",
+    "unwind": 5,
+    "seconds": 215.874,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_08.py",
+      "function": "Request.url_for",
+      "suspect_expression": "'//' in self.app.config.SERVER_NAME",
+      "line": 0,
+      "trigger_condition": "SERVER_NAME comes from the app config, which is object state. In Flask the default is None. When it is None, the `'//' in None` test on line 3 runs before any other code and raises TypeError. No guard or try/except protects it.",
+      "category": "",
+      "hypothesis_id": "09be948e3172"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: [json.exception.type_error.302] type must be string, but is null",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/09be948e3172/harness.py",
+    "agent_output": "em testes pequenos:\n  - Sem a expans\u00e3o `**kwargs` na chamada, o ESBMC converte e chega a `VERIFICATION FAILED`.\n  - Com a expans\u00e3o, o erro volta, mesmo quando o `url_for` chamado tamb\u00e9m declara `**kwargs`.\n- O erro de convers\u00e3o acontece na etapa de convers\u00e3o do ESBMC, antes de qualquer verifica\u00e7\u00e3o.\n- Uma vers\u00e3o m\u00ednima de `'//' in app.config.SERVER_NAME` com `SERVER_NAME = None` tamb\u00e9m chega a `VERIFICATION FAILED`. Isso n\u00e3o confirma o `TypeError`: `Config.__init__` n\u00e3o tinha anota\u00e7\u00e3o de retorno, o mypy n\u00e3o est\u00e1 instalado e n\u00e3o olhei os tr\u00eas itens reprovados.\n\n**Decis\u00e3o sua**\nComo voc\u00ea pediu o corpo sem altera\u00e7\u00e3o, n\u00e3o removi o `**kwargs` da chamada. Para destravar, posso:\n1. Remover o `**kwargs` dessa \u00fanica chamada no harness. \u00c9 uma altera\u00e7\u00e3o no corpo, mas s\u00f3 ela permite o ESBMC chegar ao veredito. O resultado seria registrado como harness modificado.\n2. Deixar o harness como est\u00e1 e registrar o caso como limite de convers\u00e3o do ESBMC-Python com `**kwargs` em chamadas.\n\nQual voc\u00ea prefere?",
+    "unwind": 5,
+    "seconds": 116.604,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_12.py",
+      "function": "PamdService.remove",
+      "suspect_expression": "current_line.next.prev = current_line.prev",
+      "line": 0,
+      "trigger_condition": "Rule matches a node that has a predecessor but is the tail of the list, so next is None. The line current_line.next.prev = ... then accesses .prev on None. The guard only checks prev, so tail node removal is not protected. A list with two nodes where the last one matches triggers it.",
+      "category": "",
+      "hypothesis_id": "6e33562fdd8f"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "target PamdService.remove missing from the harness",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/6e33562fdd8f/harness.py",
+    "agent_output": "all that doesn't have exactly one argument, with \"remove() takes exactly one argument\", so I could not keep the original name. This applies to calls by instance, by class, through `super()` and with keyword arguments. A class-body alias didn't work either.\n- **Stub rename:** my `append` stub is named `add_rule`. When it was `append`, ESBMC seemed to treat the calls as `list.append`. The run then failed in a string `memcpy` and no `remove_rule` properties appeared.\n- **Simplified classes:** `PamdRule` has int fields instead of strings, `matches` is the original logic, and there is no `PamdLine` base class. With the base class, the links typed as `Optional[PamdLine]` seemed to use the base `matches`, which always returns False. So the removal code was never reached.\n- **Driver:** it builds a two-node list from nondet ints and calls `remove_rule` with nondet ints. Annotations are added only where ESBMC needed them.\n\nThere are no `assert` statements and the suspect expression is unguarded.",
+    "seconds": 235.061,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/nm_real_14.py",
+      "function": "request_httprepr",
+      "suspect_expression": "s += b'Host: ' + to_bytes(parsed.hostname) + b'\\r\\n'",
+      "line": 0,
+      "trigger_condition": "request is a free parameter. urlparse(...).hostname returns None when the URL has no netloc, e.g. 'file:///etc/passwd' or 'data:text/plain,x'. No guard exists on any path, so to_bytes(None) is called. Scrapy's to_bytes raises TypeError for values that are neither str nor bytes.",
+      "category": "",
+      "hypothesis_id": "52e8c7dc508a"
+    },
+    "verdict": "CONFIRMED",
+    "reason": "uncaught exception: TypeError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 66,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/52e8c7dc508a/harness.py",
+    "agent_output": "om the type annotations on its signature (`request: Request` and `-> Blob`).\n- **Not nondet:** the hostname is fixed to `None`, with a literal `Request(\"file:///etc/passwd\", ...)`. Returning a nondet-chosen `Optional[str]` hostname crashes ESBMC with an internal `irep2_cast_error`. So the driver exercises only the no-netloc path, not both hostname cases.\n- **Stub shortcuts:** `urlunparse(parts: Any)` returns a constant, because passing a tuple built from class attributes to a `tuple[str, ...]` parameter gives a \"type mismatch: got struct, expected struct\" error. `to_bytes` returns `Blob(1)` instead of using the text length, because `len()` there also triggered the crash.\n\nI added no asserts and no guard on the suspect expression. `harness.py` is self-contained, so the CPython replay can run it alone. It declares no `nondet_bool`, so it will not run under plain CPython, but nothing in it calls `nondet_bool` now.\n\nThe scratch probe files are in `/tmp/t`, outside the case directory.\n\nDONE",
+    "unwind": 5,
+    "seconds": 534.406,
+    "engine_verdict": "ESBMC_ERROR",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "suspect_expression": "numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)",
+      "line": 0,
+      "trigger_condition": "list_of_lists is a free parameter. Empty list reaches list_of_lists[0] with no guard on any path. The IndexError is not caught.",
+      "category": "",
+      "hypothesis_id": "554b072a0396"
+    },
+    "verdict": "AGENT_FAILED",
+    "reason": "agent did not finish: TimeoutExpired",
+    "target_preserved": null,
+    "replay": {},
+    "esbmc_status": "",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/554b072a0396/harness.py",
+    "seconds": 900.192,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_11.py",
+      "function": "wcswidth",
+      "suspect_expression": "char = pwcs[idx]",
+      "line": 0,
+      "trigger_condition": "n is a free parameter. When n is not None, end = n with no clamp to len(pwcs). The loop guard idx < end only bounds idx by n. With pwcs='ab' and n=5, idx reaches 2 and pwcs[2] raises IndexError. Nothing catches it. The early return on line 3 applies only when n is None.",
+      "category": "",
+      "hypothesis_id": "2ed3d4fce93b"
+    },
+    "verdict": "ESBMC_TIMEOUT",
+    "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+    "target_preserved": false,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "timeout",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/2ed3d4fce93b/harness.py",
+    "agent_output": "O ESBMC passou da fase de convers\u00e3o e ainda est\u00e1 resolvendo. Ele roda em segundo plano, e a sa\u00edda s\u00f3 aparece quando termina, porque passa por `tail`. Continuo quando ele avisar que terminou.",
+    "unwind": 5,
+    "seconds": 729.054,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_14.py",
+      "function": "LinuxDistribution._parse_uname_content",
+      "suspect_expression": "lines[0].strip()",
+      "line": 0,
+      "trigger_condition": "`lines` \u00e9 par\u00e2metro livre do tipo Sequence[str] e nada impede uma sequ\u00eancia vazia. N\u00e3o h\u00e1 guarda nem try/except antes de `lines[0]`. Com `lines=[]` a fun\u00e7\u00e3o levanta IndexError em vez de devolver `{}`, como faz quando nada casa com a regex.",
+      "category": "",
+      "hypothesis_id": "148424345a89"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/148424345a89/harness.py",
+    "agent_output": "taticmethod`;\n  - classe com `classmethod`;\n  - inst\u00e2ncia de uma classe de stub;\n  - inst\u00e2ncia sem anota\u00e7\u00e3o;\n  - vari\u00e1vel global `match` anotada;\n  - m\u00e9todo `search` na pr\u00f3pria classe `Match`.\n\n  Nenhuma passou: os erros foram `Cannot unpack empty` ou `Cannot unpack symbol`. O mesmo desempacotamento funciona quando o receptor \u00e9 um par\u00e2metro anotado, ou quando a chamada \u00e9 a uma fun\u00e7\u00e3o de m\u00f3dulo (nesse caso a execu\u00e7\u00e3o chegou ao solver). Mas a\u00ed o corpo teria que chamar `search(...)` sem o `re.`, e voc\u00ea pediu o corpo inalterado.\n\nO `harness.py` atual tem o corpo copiado sem mudan\u00e7as, os globais `name` e `version` e o stub de `re` como inst\u00e2ncia. \u00c9 a vers\u00e3o que chega mais longe na convers\u00e3o. Apaguei os arquivos de rascunho que criei.\n\nH\u00e1 duas sa\u00eddas, e as duas alteram a regra do corpo inalterado:\n- trocar `re.search(...)` por uma fun\u00e7\u00e3o de m\u00f3dulo no corpo, o que j\u00e1 passou da convers\u00e3o num teste;\n- trocar o desempacotamento por `groups = match.groups()` com \u00edndices.\n\nQual delas voc\u00ea prefere?",
+    "unwind": 5,
+    "seconds": 492.325,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/oob_real_15.py",
+      "function": "dfxp2srt",
+      "suspect_expression": "begin_time = parse_dfxp_time_expr(para.attrib['begin'])",
+      "line": 0,
+      "trigger_condition": "para comes from findall on the parsed XML, so attributes are controlled by dfxp_data. A <p> element without a begin attribute passes the 'if not paras' guard and reaches the subscript. No try/except, so KeyError escapes.",
+      "category": "",
+      "hypothesis_id": "42ade76be585"
+    },
+    "verdict": "UNSUPPORTED",
+    "reason": "ERROR: TypeError: 'int' object is not subscriptable at artifacts/v2/agent-2026-10-05-sonnet/cases/42ade76be585/harness.py:137",
+    "target_preserved": true,
+    "replay": {
+      "status": "unavailable",
+      "exception_type": "",
+      "line": null,
+      "runs": 0,
+      "reason": "ESBMC produced no verdict to validate"
+    },
+    "esbmc_status": "tool_error",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/42ade76be585/harness.py",
+    "agent_output": "ent` stub builds 0 to 2 `<p>` elements, each with a nondet `begin`, `end` and `dur`.\n- The driver `dfxp2srt(nondet_str())` runs at module level.\n- The stubs got past `functools.partial`, the local `str_or_empty` and `_x`, `xml.etree.ElementTree.tostring` and `.attrib.get`. The `zip`/`count` line is the only error left.\n- The `itertools` and `zip` stubs there are not a working fix, because ESBMC ignores them for that line.\n\n**Ways forward (your call)**\n1. Allow me to change `for para, index in zip(paras, itertools.count(1))` to something ESBMC can convert, such as `enumerate(paras, 1)`. This breaks the \"body unchanged\" rule but keeps the suspect expression and the guard exactly as they are.\n2. Run the loop body in a harness that unrolls the `zip` by hand. This also changes the body.\n3. Check whether a newer ESBMC build fixes the `.count` inference.\n\nThe shell also blocked my attempts to inspect the ESBMC binary and its Python models, so I couldn't look for a supported alternative there.",
+    "unwind": 5,
+    "seconds": 244.699,
+    "engine_verdict": "MISSING_DEPENDENCY",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/tm_real_09.py",
+      "function": "_format",
+      "suspect_expression": "formatted_val = format(float(raw_val), floatfmt)",
+      "line": 0,
+      "trigger_condition": "valtype is float, has_invisible defaults to True and val is a str such as '1,000'. is_a_colored_number is true, so the branch that removes commas is skipped. float('1,000') then raises ValueError. The else branch handles the same input correctly, so the two branches are inconsistent.",
+      "category": "",
+      "hypothesis_id": "af2f5e755263"
+    },
+    "verdict": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "ValueError",
+      "line": 44,
+      "runs": 2,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/af2f5e755263/harness.py",
+    "agent_output": "exercise the suspect expression.\n\n`harness.py` contains `_format` copied unchanged from `original.py`, apart from type annotations on its signature. It also has a stub `_strip_ansi` that returns its input, and a module-level driver:\n\n```python\nval: str = nondet_str()\n__ESBMC_assume(len(val) < 4)\nresult = _format(val, float, \".2f\", \"d\")\n```\n\n`/usr/local/bin/esbmc harness.py --unwind 5 --multi-property` ends with VERIFICATION FAILED and no conversion error. The only failing property is `unwinding assertion loop 131` in the `strlen` library code, which comes from the unbounded `nondet_str()`. It is not a finding about the `format(float(raw_val), floatfmt)` line.\n\nI added the `len(val) < 4` assume to try to bound the string, and it didn't clear the failure. I didn't iterate further, so I haven't confirmed that the `float(raw_val)` line is reached. `--unwind 5` is too small for `strlen` on a nondet string, so an `--unwind` large enough for `strlen` may be needed before that line is checked.",
+    "unwind": 20,
+    "seconds": 53.71,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/bugs_reais/funcao_com_bug/tm_real_10.py",
+      "function": "MetricsHandler.get",
+      "suspect_expression": "metrics.configure_http_handler(self)",
+      "line": 0,
+      "trigger_condition": "`metrics` recebe o retorno de generate_latest(). Em coletores no estilo prometheus_client, esse retorno \u00e9 bytes ou str com a sa\u00edda de texto. A guarda `if metrics:` s\u00f3 testa se o valor \u00e9 truthy, e um bytes n\u00e3o vazio passa. Nesse caso a linha 4 chama `.configure_http_handler` sobre um objeto sem esse atributo. Em seguida, `self.write(metrics)` escreveria o payload, o que indica que `metrics` \u00e9 dado e n\u00e3o o coletor. Se o retorno for de fato um bytes/str n\u00e3o vazio, a fun\u00e7\u00e3o levanta AttributeError em toda requisi\u00e7\u00e3o com m\u00e9tricas.",
+      "category": "",
+      "hypothesis_id": "6e9d7c84fc8b"
+    },
+    "verdict": "ESBMC_MISSED",
+    "reason": "no_violation_found",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "AttributeError",
+      "line": 32,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "no_violation_found",
+    "harness_path": "artifacts/v2/agent-2026-10-05-sonnet/cases/6e9d7c84fc8b/harness.py",
+    "agent_output": "UCCESSFUL, 0 of 6 properties failed), but I don't think it exercised the hypothesis.\n\n- **What I changed:** `generate_latest` in the stub is typed `-> Any`. With a `bytes` or `str` return type, ESBMC stops with a conversion error because it can't find `configure_http_handler` on that type. `MetricsHandler.get` is copied unchanged.\n- **Why the verdict is probably empty:** with `Any`, ESBMC seems to skip the `.configure_http_handler` call instead of modelling the missing attribute. It reports no `AttributeError` even though the stub returns a non-empty `bytes`. Treat SUCCESSFUL here as \"not exercised\", not as \"bug refuted\".\n- **Driver:** it takes no nondet inputs. It builds `Scheduler`, calls `initialize`, then calls `get` at module level. The stub returns a fixed `b\"metric 1\\n\"`, so the only input that matters (the collector's return value) is not nondet.\n\nThe CPython replay of this harness should raise `AttributeError` on that line. Do you want me to try making the return value nondet?",
+    "unwind": 5,
+    "seconds": 51.5,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": "claude-sonnet-5-5",
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  }
+]

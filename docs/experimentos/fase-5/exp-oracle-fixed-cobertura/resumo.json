@@ -1,0 +1,24 @@
+{
+  "pasta": "exp-oracle-fixed-cobertura",
+  "modificado_em": "2026-09-29T20:56",
+  "arquivos": [
+    "exp-oracle-fixed-cobertura.log",
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 34,
+    "MISSING_DEPENDENCY": 8,
+    "GROUNDING_FAILED": 51,
+    "SPEC_FAILED": 8,
+    "UNVALIDATED": 1,
+    "NO_SOURCE": 18,
+    "OTHER_FAILURE": 1,
+    "ESBMC_TIMEOUT": 3,
+    "ESBMC_ERROR": 1
+  }
+}

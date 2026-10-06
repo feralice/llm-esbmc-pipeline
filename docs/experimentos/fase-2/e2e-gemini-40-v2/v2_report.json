@@ -1,0 +1,766 @@
+{
+  "config": {
+    "model": "gemini-2.5-flash",
+    "backend": "google",
+    "synth_backend": "google",
+    "synth_model": "gemini-2.5-flash",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "compat": true,
+    "guards": true,
+    "ablation": true,
+    "driver": true,
+    "real_driver": true,
+    "synth_retries": 1,
+    "bound": 6,
+    "timeout": 120,
+    "llm_timeout": 300,
+    "include_smells": false,
+    "esbmc_command": [
+      "esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "partial",
+    "stage": "detection"
+  },
+  "detection": {
+    "analyzed_units": 48,
+    "hypotheses": 71,
+    "failed_units": 28,
+    "errors": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result.iter_playlistitems",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 29.04998929s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"29s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result._fixup",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 24.540548269s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"24s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 9.222288193s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"9s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_02.py",
+        "function": "ExactLanguageSearch.choose_best_split",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 4.69586065s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"4s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_03.py",
+        "function": "HashExpander.do",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 145.081858ms.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"0s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_04.py",
+        "function": "interpolate_bilinear_2x_fwd",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 55.574911892s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"55s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_01.py",
+        "function": "nonsingular",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 51.054582118s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"51s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/io_real_02.py",
+        "function": "integer_squareroot",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 40.939884505s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"40s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_01.py",
+        "function": "Request._set_url",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 36.420372792s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"36s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_03.py",
+        "function": "Selector.__init__",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 31.907153715s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"31s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_04.py",
+        "function": "HTTP1Connection.write_headers",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 27.406933037s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"27s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "function": "_Alpha.__gt__",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 22.272458131s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"22s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_05.py",
+        "function": "_Numeric.__gt__",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 17.752979934s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"17s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_06.py",
+        "function": "_unstack_multiple",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 13.221687364s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"13s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_07.py",
+        "function": "_htmlentity_transform",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 8.699734134s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"8s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_08.py",
+        "function": "Sanic.url_for",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 4.169348236s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"4s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_09.py",
+        "function": "generate_commands",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 59.042711552s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"59s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_10.py",
+        "function": "_get_spider_loader",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 54.549634375s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"54s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_11.py",
+        "function": "HTTPBearer.__call__",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 50.063512059s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"50s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 44.91557127s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"44s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands.needs_update",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 40.429625322s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"40s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_12.py",
+        "function": "map_obj_to_commands.add",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 35.864677792s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"35s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_13.py",
+        "function": "StaticFileHandler.get",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 31.357135419s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"31s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_14.py",
+        "function": "TimeseriesGenerator.__len__",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 26.201535907s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"26s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_15.py",
+        "function": "EmptyLineTracker._maybe_empty_lines",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 21.660619639s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"21s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_16.py",
+        "function": "pivot",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 17.140733167s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"17s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_17.py",
+        "function": "response_status_message",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 12.624467439s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"location\": \"global\",\n              \"model\": \"gemini-2.5-flash\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"12s\"\n      }\n    ]\n  }\n}\n]"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/ip_real_18.py",
+        "function": "croniter._get_low_from_current_date_number",
+        "error": "Falha ao chamar API Chat Completions: 429 [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 8.120553651s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n          {\n            \"description\": \"Learn more about Gemini API quotas\",\n            \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\",\n        \"violations\": [\n          {\n            \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\n            \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\n            \"quotaDimensions\": {\n              \"model\": \"gemini-2.5-flash\",\n              \"location\": \"global\"\n            },\n            \"quotaValue\": \"20\"\n          }\n        ]\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\",\n        \"retryDelay\": \"8s\"\n      }\n    ]\n  }\n}\n]"
+      }
+    ],
+    "candidates": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(param, bool)",
+        "note": "A asserção `assert isinstance(param, bool)` pode falhar se o valor retornado por `params.get(param)` não for um booleano. Os parâmetros `params` e `param` são livres e podem fornecer um valor de qualquer tipo, levando a um `AssertionError`."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "type_mismatch",
+        "expression": "command_option + separator + (true_value if param else false_value)",
+        "note": "A operação de concatenação de strings `command_option + separator + ...` pode falhar com um `TypeError` se `command_option` ou `separator` não forem strings ou tipos compatíveis com concatenação de strings. O `if separator:` apenas verifica a veracidade, não o tipo."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(self.index, PeriodIndex)",
+        "note": "The function explicitly asserts that 'self.index' must be an instance of 'PeriodIndex'. If 'self' is provided such that 'self.index' is of a different type, this assertion will fail, leading to an AssertionError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "category": "invalid_precondition",
+        "expression": "self.index.to_timestamp(freq=freq, how=how)",
+        "note": "The 'freq' parameter is passed directly to 'self.index.to_timestamp' without validation. If 'freq' is an invalid frequency string or object, 'to_timestamp' may raise an error (e.g., ValueError), violating its precondition."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_03.py",
+        "function": "Series.to_timestamp",
+        "category": "invalid_precondition",
+        "expression": "self.index.to_timestamp(freq=freq, how=how)",
+        "note": "The 'how' parameter is passed directly to 'self.index.to_timestamp' without validation. If 'how' is an unrecognized string (e.g., not 'start' or 'end'), 'to_timestamp' may raise an error (e.g., ValueError), violating its precondition."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "none_misuse",
+        "expression": "worker._add_task_history",
+        "note": "O parâmetro 'worker' é usado diretamente para acessar o atributo '_add_task_history'. Se 'worker' for 'null', isso resultará em um AttributeError, pois não há guarda para verificar se 'worker' é nulo."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "invalid_precondition",
+        "expression": "worker._add_task_history",
+        "note": "A função assume que o objeto 'worker' possui o atributo '_add_task_history'. Se 'worker' for um objeto que não tem esse atributo, um AttributeError será levantado, violando uma pré-condição implícita sobre a interface do objeto 'worker'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "type_mismatch",
+        "expression": "{task for task, status, ext in task_history if status == 'PENDING'}",
+        "note": "A variável 'task_history' (derivada de 'worker._add_task_history') é iterada em várias compreensões de conjunto. Se 'task_history' não for um tipo iterável (por exemplo, um inteiro ou 'null'), um TypeError ocorrerá durante a iteração."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "invalid_precondition",
+        "expression": "{task for task, status, ext in task_history if status == 'PENDING'}",
+        "note": "As compreensões de conjunto tentam desempacotar cada item de 'task_history' em três variáveis ('task', 'status', 'ext'). Se qualquer item não for uma sequência de exatamente três elementos, um ValueError será levantado durante o desempacotamento, violando uma pré-condição implícita sobre a estrutura dos elementos de 'task_history'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_partition_tasks",
+        "category": "type_mismatch",
+        "expression": "(not ext)",
+        "note": "A variável 'ext', desempacotada dos itens de 'task_history', é usada em contextos booleanos ('not ext' e 'ext'). Se 'ext' for um objeto que não suporta conversão booleana (por exemplo, uma classe personalizada sem '__bool__' ou '__len__'), um TypeError será levantado."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "none_misuse",
+        "expression": "set_tasks.items()",
+        "note": "The 'set_tasks' parameter, if null, will cause an AttributeError when calling its 'items()' method, as there is no guard to check for nullability or type compatibility."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "invalid_precondition",
+        "expression": "set_tasks['already_done']",
+        "note": "The function assumes the 'set_tasks' dictionary contains specific keys like 'already_done', 'completed', 'failed', etc. If any of these keys are missing, a KeyError will be raised during access, as there is no prior validation."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "invalid_precondition",
+        "expression": "group_tasks[status]",
+        "note": "The 'group_tasks' dictionary is populated based on 'set_tasks'. If a 'status' from '_ORDERED_STATUSES' is present in 'comments' (returned by '_get_comments') but was not originally a key in 'set_tasks', accessing 'group_tasks[status]' will result in a KeyError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "none_misuse",
+        "expression": "ext_workers.items()",
+        "note": "If the helper function '_get_external_workers(worker)' returns null, calling 'items()' on 'ext_workers' will cause an AttributeError, as there is no check for a null return value."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "none_misuse",
+        "expression": "len(task_dict)",
+        "note": "If 'task_dict' (obtained from 'ext_workers.items()') is null, attempting to call 'len(task_dict)' will raise a TypeError, as there is no check for nullability."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "invalid_precondition",
+        "expression": "set_tasks['already_done']",
+        "note": "Similar to an earlier finding, this line accesses specific keys in 'set_tasks' ('already_done', 'scheduling_error', 'still_pending_ext', 'still_pending_not_ext'). If any are missing, a KeyError will occur due to lack of validation."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_04.py",
+        "function": "_summary_format",
+        "category": "invalid_precondition",
+        "expression": "set_tasks['failed']",
+        "note": "The conditional logic relies on the presence of specific keys in 'set_tasks' ('failed', 'scheduling_error', 'not_run', 'still_pending_ext'). If any of these keys are missing, a KeyError will be raised when attempting to access them."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_05.py",
+        "function": "tqdm.__init__",
+        "category": "type_mismatch",
+        "expression": "self.pos = -position",
+        "note": "O parâmetro 'position' é esperado como um inteiro opcional, mas não há validação de tipo se não for null. Se 'position' for um tipo não numérico (ex: string), a operação de negação unária `-position` resultará em um TypeError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_06.py",
+        "function": "get_new_command",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "The 'command' parameter is dereferenced to access its 'script' attribute without checking if 'command' is null. If 'command' is null, an AttributeError will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "The 'command' parameter is used to access its 'script' attribute without checking if 'command' itself is null. If 'command' is null, an AttributeError will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_07.py",
+        "function": "match",
+        "category": "type_mismatch",
+        "expression": "'ls' in command.script",
+        "note": "The 'script' attribute of the 'command' object is expected to be a string for the 'in' operator. If 'command.script' is of an incompatible type (e.g., an integer), a TypeError will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_08.py",
+        "function": "Settings.update",
+        "category": "type_mismatch",
+        "expression": "dict(self)",
+        "note": "The `dict(self)` constructor expects `self` to be an iterable object (e.g., a mapping or an iterable of key-value pairs). If `self` is a non-iterable type (like an integer, string, or a custom object without `__iter__`), a `TypeError` will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "invalid_precondition",
+        "expression": "getattr(self.axes, lim_name)",
+        "note": "The `lim_name` parameter, which is free, can refer to a non-existent attribute on `self.axes`, or `self` might not have an `axes` attribute, leading to an `AttributeError`. This violates an implicit precondition about the structure of `self` and `self.axes`."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "type_mismatch",
+        "expression": "oldmin, oldmax = getter(self)",
+        "note": "The return value of `getter(self)` is unpacked into `oldmin` and `oldmax`. If `getattr(getattr(self.axes, lim_name), attr_name)` returns a value that is not an iterable of exactly two elements, a `ValueError` or `TypeError` will occur."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "type_mismatch",
+        "expression": "oldmin < oldmax",
+        "note": "The comparison `oldmin < oldmax` assumes that `oldmin` and `oldmax` are of comparable types. If the values retrieved by `getter(self)` are not comparable (e.g., a string and an integer), a `TypeError` will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval",
+        "category": "type_mismatch",
+        "expression": "min(vmin, vmax, oldmin)",
+        "note": "The `min` function call assumes that all its arguments (`vmin`, `vmax`, `oldmin`) are comparable. If `vmin` or `vmax` (free parameters to `setter`) are of types incompatible with `oldmin` (derived from `getter`), a `TypeError` will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "invalid_precondition",
+        "expression": "self.axes",
+        "note": "The 'self' object is a free parameter. If 'self' does not possess an 'axes' attribute, accessing 'self.axes' will raise an AttributeError. There is no guard to ensure 'self.axes' exists."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "invalid_precondition",
+        "expression": "getattr(self.axes, lim_name)",
+        "note": "The 'lim_name' variable is a free operand. If the object 'self.axes' does not possess an attribute corresponding to the value of 'lim_name', the 'getattr' call will raise an AttributeError. There is no guard to ensure the attribute exists."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "invalid_precondition",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "note": "The 'attr_name' variable is a free operand. If the object returned by 'getattr(self.axes, lim_name)' does not possess an attribute corresponding to the value of 'attr_name', the outer 'getattr' call will raise an AttributeError. There is no guard to ensure the attribute exists."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "type_mismatch",
+        "expression": "getattr(self.axes, lim_name)",
+        "note": "The 'lim_name' variable is a free operand. If 'lim_name' is not a string, the 'getattr' call will raise a TypeError. There is no guard to ensure 'lim_name' is a string."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.getter",
+        "category": "type_mismatch",
+        "expression": "getattr(getattr(self.axes, lim_name), attr_name)",
+        "note": "The 'attr_name' variable is a free operand. If 'attr_name' is not a string, the outer 'getattr' call will raise a TypeError. There is no guard to ensure 'attr_name' is a string."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "category": "invalid_precondition",
+        "expression": "getattr(self.axes, lim_name)",
+        "note": "The variable 'lim_name' is used in the 'getattr' call but is not defined as a parameter or local variable. If it is not accessible from the global scope or as an attribute of 'self', a NameError will occur when 'ignore' is true."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "category": "invalid_precondition",
+        "expression": "setattr(getattr(self.axes, lim_name), attr_name, (vmin, vmax))",
+        "note": "The variable 'attr_name' is used in the 'setattr' call but is not defined as a parameter or local variable. If it is not accessible from the global scope or as an attribute of 'self', a NameError will occur when 'ignore' is true."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "category": "invalid_precondition",
+        "expression": "getter(self)",
+        "note": "The function 'getter' is called but is not defined as a parameter or local variable. If it is not accessible from the global scope or as an attribute of 'self', a NameError will occur when 'ignore' is false."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_09.py",
+        "function": "_make_getset_interval.setter",
+        "category": "none_misuse",
+        "expression": "getattr(self.axes, lim_name)",
+        "note": "If 'self.axes' is null when 'ignore' is true, 'getattr(self.axes, lim_name)' will raise an AttributeError because 'null' has no attributes. This constitutes a none_misuse."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "function": "Driver._partially_consume_prefix",
+        "category": "type_mismatch",
+        "expression": "current_column < column",
+        "note": "The 'column' parameter is used in a numerical comparison. If 'column' is not a numeric type (e.g., string, list), a TypeError will be raised during the comparison 'current_column < column'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "'Content-Length' in headers",
+        "note": "The 'headers' parameter is expected to be a dictionary or dict-like object. If 'headers' is 'null', the 'in' operator will raise a TypeError because 'NoneType' is not iterable."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "headers['Content-Length']",
+        "note": "The 'headers' parameter is expected to be a dictionary or dict-like object. If 'headers' is an iterable (e.g., a list) but not a mapping, accessing 'headers['Content-Length']' will raise a TypeError because list indices must be integers."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "self._max_body_size",
+        "note": "The 'self' object is expected to have a '_max_body_size' attribute for comparison. If 'self' is an object without this attribute, an AttributeError will be raised."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "self._read_fixed_body",
+        "note": "The 'self' object is expected to have a '_read_fixed_body' method. If 'self' is an object without this method, an AttributeError will be raised when attempting to call it."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "self._read_chunked_body",
+        "note": "The 'self' object is expected to have a '_read_chunked_body' method. If 'self' is an object without this method, an AttributeError will be raised when attempting to call it."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "self.is_client",
+        "note": "The 'self' object is expected to have an 'is_client' attribute. If 'self' is an object without this attribute, an AttributeError will be raised when accessing it."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_11.py",
+        "function": "HTTP1Connection._read_body",
+        "category": "invalid_precondition",
+        "expression": "self._read_body_until_close",
+        "note": "The 'self' object is expected to have a '_read_body_until_close' method. If 'self' is an object without this method, an AttributeError will be raised when attempting to call it."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_12.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "The 'command' parameter is dereferenced to access its 'script' attribute without prior validation. If 'command' is 'null', an AttributeError will be raised when attempting to access 'command.script'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "command.script_parts",
+        "note": "O parâmetro 'command' é acessado para seu atributo 'script_parts' sem uma verificação de nulidade. Se 'command' for 'null', uma 'AttributeError' será levantada."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "'push' in command.script_parts",
+        "note": "O atributo 'script_parts' de 'command' é usado com o operador 'in'. Se 'command' não for 'null', mas 'command.script_parts' for 'null', uma 'TypeError' será levantada porque 'null' não é iterável."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "type_mismatch",
+        "expression": "'push' in command.script_parts",
+        "note": "O atributo 'script_parts' de 'command' é usado com o operador 'in', que espera um tipo de sequência. Se 'command.script_parts' não for 'null' e não for uma sequência (por exemplo, um inteiro), uma 'TypeError' será levantada."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "none_misuse",
+        "expression": "'set-upstream' in command.output",
+        "note": "O atributo 'output' de 'command' é usado com o operador 'in'. Se 'command' não for 'null' e 'command.script_parts' for válido, mas 'command.output' for 'null', uma 'TypeError' será levantada porque 'null' não é iterável."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_13.py",
+        "function": "match",
+        "category": "type_mismatch",
+        "expression": "'set-upstream' in command.output",
+        "note": "O atributo 'output' de 'command' é usado com o operador 'in', que espera um tipo de sequência. Se 'command.output' não for 'null' e não for uma sequência (por exemplo, um inteiro), uma 'TypeError' será levantada."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "none_misuse",
+        "expression": "command.script",
+        "note": "O parâmetro 'command' pode ser 'null', o que causaria um 'AttributeError' ao tentar acessar seu atributo 'script'. Não há validação para garantir que 'command' não seja 'null'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "type_mismatch",
+        "expression": "command.script",
+        "note": "O parâmetro 'command' pode ser um objeto que não possui o atributo 'script', resultando em um 'AttributeError' ao tentar acessá-lo. Não há validação de tipo ou atributo para 'command'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "none_misuse",
+        "expression": "command.script[5:]",
+        "note": "O atributo 'script' do objeto 'command' pode ser 'null', o que causaria um 'TypeError' ('NoneType' object is not subscriptable) ao tentar fatiá-lo. Não há validação para garantir que 'command.script' não seja 'null'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_14.py",
+        "function": "get_new_command",
+        "category": "type_mismatch",
+        "expression": "command.script[5:]",
+        "note": "O atributo 'script' do objeto 'command' pode ser de um tipo que não suporta fatiamento (por exemplo, um inteiro), levando a um 'TypeError'. Não há validação de tipo para 'command.script' antes da operação de fatiamento."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "invalid_precondition",
+        "expression": "BytesIO(data)",
+        "note": "The `BytesIO` constructor expects a bytes-like object for its input. If the `data` parameter, which is a free parameter, is provided as a string or another non-bytes type, it will raise a `TypeError`, violating the expected precondition for `BytesIO`."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "invalid_precondition",
+        "expression": "read1(f, 8196)",
+        "note": "The code attempts to call a global function `read1`. `GzipFile` objects typically have a `read1` method, suggesting a likely typo. If `read1` is not defined in the global scope, it will result in a `NameError`. If it is defined but not a callable function with the expected signature, it will raise a `TypeError`, violating the implicit precondition for its call."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_15.py",
+        "function": "gunzip",
+        "category": "type_mismatch",
+        "expression": "output += f.extrabuf",
+        "note": "The `output` variable is initialized as `bytes`. The expression attempts to concatenate `output` with `f.extrabuf`. If `f.extrabuf` exists (as checked by `getattr`) but is not a bytes-like object, this operation will raise a `TypeError`, indicating a type mismatch during concatenation."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_17.py",
+        "function": "unified_strdate",
+        "category": "type_mismatch",
+        "expression": "date_str.replace(',', ' ')",
+        "note": "The 'date_str' parameter is expected to be a string, but no type validation is performed beyond checking for null. If 'date_str' is a non-string type (e.g., an integer or a list), the call to 'date_str.replace' will raise an AttributeError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "none_misuse",
+        "expression": "ie_result.get('_type', 'video')",
+        "note": "O parâmetro 'ie_result' pode ser null, o que causaria um AttributeError ao tentar chamar o método '.get()' ou '.items()' em um objeto null. Não há guarda para verificar se 'ie_result' é null antes dessas operações."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "ie_result['url']",
+        "note": "Se 'ie_result' for um dicionário, mas não contiver a chave 'url' quando 'result_type' for 'url' ou 'url_transparent', a tentativa de acesso direto 'ie_result['url']' resultará em um KeyError. Não há validação para a presença da chave."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "type_mismatch",
+        "expression": "'playlist' in extra_info",
+        "note": "O parâmetro 'extra_info' pode ser de um tipo incompatível (ex: null) com a operação 'in', resultando em um TypeError. Embora o valor padrão seja um dicionário, ele pode ser sobrescrito com um tipo inválido."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "type_mismatch",
+        "expression": "format.split(',')",
+        "note": "A variável 'playlistitems_str' é obtida de 'self.params.get()', que pode retornar um valor não-string (ex: int) que não é null. A guarda 'if playlistitems_str is not null' não impede que um tipo incompatível chame '.split()', resultando em AttributeError."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "start, end = string_segment.split('-')",
+        "note": "Se um segmento de 'playlistitems_str' for malformado (ex: string vazia ou '1-'), 'string_segment.split('-')' pode retornar uma lista com menos de dois elementos, causando um ValueError ao tentar desempacotar em 'start, end'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "int(start)",
+        "note": "Se 'start', 'end' ou 'string_segment' contiverem valores que não podem ser convertidos para inteiros (ex: 'abc'), a chamada 'int()' resultará em um ValueError. Não há validação para o formato numérico das strings."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "ie_result['entries']",
+        "note": "Se 'ie_result' for um dicionário, mas não contiver a chave 'entries' quando 'result_type' for 'playlist', 'multi_video' ou 'compat_list', a tentativa de acesso direto 'ie_result['entries']' resultará em um KeyError. Não há validação para a presença da chave."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "ie_result['extractor']",
+        "note": "Se 'ie_result' for um dicionário, mas não contiver a chave 'extractor', a tentativa de acesso direto 'ie_result['extractor']' resultará em um KeyError. Não há validação para a presença da chave."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "out_of_bounds",
+        "expression": "ie_entries.getslice(item - 1, item)",
+        "note": "Se 'ie_entries' for uma instância de 'PagedList' e 'item - 1' resultar em um índice fora dos limites válidos para 'ie_entries', a chamada 'ie_entries.getslice()' pode falhar com um IndexError ou similar, dependendo da implementação de 'PagedList'. Não há guarda para validar o índice."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "out_of_bounds",
+        "expression": "entry_list[i - 1]",
+        "note": "Se 'ie_entries' for um iterável genérico e 'i - 1' resultar em um índice fora dos limites válidos para 'entry_list' (a lista convertida), o acesso 'entry_list[i - 1]' resultará em um IndexError. Não há guarda para validar o índice."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "type_mismatch",
+        "expression": "entry['__x_forwarded_for_ip'] = x_forwarded_for",
+        "note": "Se um 'entry' dentro de 'ie_result['entries']' não for um dicionário (ex: um inteiro), a tentativa de atribuir um valor a 'entry['__x_forwarded_for_ip']' resultará em um TypeError. Não há validação para o tipo de 'entry'."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "ie_result['webpage_url']",
+        "note": "Se 'ie_result' for um dicionário, mas não contiver a chave 'webpage_url', a tentativa de acesso direto 'ie_result['webpage_url']' resultará em um KeyError. Não há validação para a presença da chave."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "invalid_precondition",
+        "expression": "ie_result['extractor_key']",
+        "note": "Se 'ie_result' for um dicionário, mas não contiver a chave 'extractor_key', a tentativa de acesso direto 'ie_result['extractor_key']' resultará em um KeyError. Não há validação para a presença da chave."
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "type_mismatch",
+        "expression": "url_basename(ie_result['webpage_url'])",
+        "note": "Se 'ie_result['webpage_url']' estiver presente, mas não for uma string (ex: um inteiro), a chamada para 'url_basename()' pode falhar com um TypeError, dependendo da implementação de 'url_basename'. Não há validação para o tipo da URL."
+      }
+    ],
+    "rejected_findings": [
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_02.py",
+        "function": "WebSocketHandler.set_nodelay",
+        "category": "assertion_violation",
+        "finding_type": "llm_false_positive",
+        "expression": "assert self.stream is not null",
+        "reason": "expression_not_found"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_10.py",
+        "function": "Driver._partially_consume_prefix",
+        "category": "type_mismatch",
+        "finding_type": "llm_false_positive",
+        "expression": "for char in prefix:",
+        "reason": "invalid_expression_syntax"
+      },
+      {
+        "file": "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_21.py",
+        "function": "YoutubeDL.process_ie_result",
+        "category": "none_misuse",
+        "finding_type": "llm_false_positive",
+        "expression": "self.params.get('extract_flat', false)",
+        "reason": "expression_not_found"
+      }
+    ]
+  },
+  "summary": {
+    "n": 0,
+    "by_classification": {},
+    "by_category": {},
+    "driver_notes": {},
+    "verification_targets": {},
+    "abstraction_levels": {},
+    "total_synth_tokens": 0,
+    "total_synth_seconds": 0,
+    "total_esbmc_seconds": 0,
+    "mean_attempts": 0.0
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 48,
+      "failed_calls": 28,
+      "tokens": 120089,
+      "prompt_tokens": 35085,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 0,
+      "seconds": 589.516,
+      "cache_hit_rate": null
+    }
+  },
+  "results": []
+}

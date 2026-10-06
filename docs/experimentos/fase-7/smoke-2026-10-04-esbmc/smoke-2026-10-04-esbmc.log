@@ -1,0 +1,481 @@
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1750: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1750: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+av_real_01     arquivo_com_bug UNSUPPORTED          ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called 
+av_real_02     arquivo_com_bug CONFIRMED            assertion !(ISNONE(stream, 0))
+av_real_03     arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+av_real_04     arquivo_com_bug OTHER_FAILURE        uncaught exception: AttributeError
+av_real_05     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "tqdm" not found.
+av_real_06     arquivo_com_bug ESBMC_MISSED         no_vcc_generated
+av_real_07     arquivo_com_bug ESBMC_MISSED         no_vcc_generated
+av_real_08     arquivo_com_bug UNSUPPORTED          TypeError: __init__() takes 1 positional argument but 2 were given
+av_real_09     arquivo_com_bug UNSUPPORTED          ERROR: Cannot unpack signedbv - only tuples and arrays can be unpacked
+av_real_10     arquivo_com_bug UNSUPPORTED          ERROR: Bitwuzla error encountered
+av_real_11     arquivo_com_bug UNSUPPORTED          ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+av_real_12     arquivo_com_bug CONFIRMED            uncaught exception: AttributeError
+av_real_13     arquivo_com_bug NOT_CONFIRMED        no_vcc_generated
+av_real_14     arquivo_com_bug CONFIRMED            uncaught exception: AttributeError
+av_real_15     arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): read1
+av_real_17     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+av_real_21     arquivo_com_bug UNSUPPORTED          external call traceback.format_exception(...) cannot be stubbed
+dz_real_01     arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+dz_real_02     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "ESBMC_mmkey_0" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc
+dz_real_03     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: RANGES
+ip_real_01     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve attribute '__name__' on Call result
+ip_real_03     arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 68. Variable XmlResponse not found
+ip_real_04     funcao_com_bug  UNSUPPORTED          ERROR: function call: argument "py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifac
+ip_real_05     arquivo_com_bug UNSUPPORTED          ERROR: Could not find symbol for type: _Numeric
+ip_real_06     arquivo_com_bug UNSUPPORTED          stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[.
+ip_real_07     arquivo_com_bug UNSUPPORTED          ERROR: Unsupported expression for 'in' operation
+ip_real_08     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "kwargs" not found.
+ip_real_09     arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+ip_real_10     arquivo_com_bug UNSUPPORTED          ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called 
+ip_real_11     arquivo_com_bug GROUNDING_FAILED     async entry point is not supported
+ip_real_12     arquivo_com_bug UNSUPPORTED          input 'updates': the code unpacks it into 2 names, so it needs tuple[...] with 2 items, no
+ip_real_13     arquivo_com_bug GROUNDING_FAILED     async entry point is not supported
+ip_real_14     arquivo_com_bug UNSUPPORTED          ERROR: TypeError: arithmetic on numeric arrays is not supported (numpy broadcasting is not
+ip_real_15     arquivo_com_bug UNSUPPORTED          external name 'dataclass' is used as a decorator
+ip_real_16     arquivo_com_bug UNSUPPORTED          ERROR: NameError: name 'DataFrame' is not defined
+ip_real_17     arquivo_com_bug UNSUPPORTED          ERROR: Dictionary variable not found: http_RESPONSES
+ip_real_18     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "localize" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/arti
+ip_real_19     arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 50. Variable DeprecationWarning not found
+ip_real_20     arquivo_com_bug UNSUPPORTED          ERROR: Variable 'TYPE_CHECKING' is not defined at line 10.
+ip_real_21     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Base class not found: MutableMapping
+ip_real_22     arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+ip_real_23     arquivo_com_bug UNSUPPORTED          ERROR: NameError: name 'Parameter' is not defined
+ip_real_24     arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 60. Variable NotImplemented not found
+ip_real_25     arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+ip_real_26     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_collections_namedtuple': missing return type
+ip_real_28     arquivo_com_bug UNSUPPORTED          ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 111.
+ip_real_32     arquivo_com_bug UNSUPPORTED          input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 
+ip_real_33     arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+nm_real_01     arquivo_com_bug UNSUPPORTED          ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+nm_real_02     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "tqdm" not found.
+nm_real_03     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_escape': missing return type
+nm_real_04     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_compile': missing return type
+nm_real_05     arquivo_com_bug UNSUPPORTED          ERROR: unsupported: non-constant argument in str % formatting
+nm_real_06     arquivo_com_bug UNSUPPORTED          ERROR: Unsupported expression Starred at line 23
+nm_real_07     arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+nm_real_08     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: __dict__
+nm_real_09     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: __name__
+nm_real_10     arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): _credentials
+nm_real_11     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Base class not found: OrderedDict
+nm_real_12     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: next
+nm_real_13     arquivo_com_bug UNSUPPORTED          ERROR: del on subscript requires a dictionary (struct) type
+nm_real_14     arquivo_com_bug UNSUPPORTED          ERROR: TypeError: arithmetic on numeric arrays is not supported (numpy broadcasting is not
+nm_real_15     arquivo_com_bug UNSUPPORTED          external call run_in_threadpool(...) uses *args/**kwargs
+nm_real_16     arquivo_com_bug UNSUPPORTED          external call mtext.Annotation(...) cannot be stubbed
+nm_real_17     arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 11. Variable unicode not found
+nm_real_18     arquivo_com_bug UNSUPPORTED          ERROR: [json.exception.type_error.302] type must be string, but is number
+nm_real_19     arquivo_com_bug UNSUPPORTED          artifacts/v2/smoke-2026-10-04-esbmc/programs/00b188678c41_a0.py:4: error: Function is miss
+nm_real_20     arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed for Assign at line 548
+nm_real_21     arquivo_com_bug UNSUPPORTED          ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+nm_real_22     arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.environ.copy()'. Add a type ann
+oob_real_01    arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_findall': missing return type
+oob_real_02    arquivo_com_bug UNSUPPORTED          ERROR: function call: argument "c:string.c@21403@F@__python_str_split@str" type mismatch: 
+oob_real_03    arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.script_parts.pop()'. Add a type<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+
+oob_real_04    arquivo_com_bug UNSUPPORTED          ERROR: sorted() with key= is only supported over a constant iterable; here the key functio
+oob_real_05    arquivo_com_bug UNSUPPORTED          ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked
+oob_real_09    arquivo_com_bug UNSUPPORTED          ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please 
+oob_real_10    arquivo_com_bug UNSUPPORTED          external call textwrap_TextWrapper.__init__(...) cannot be stubbed
+oob_real_11    arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed for Assign at line 103
+oob_real_12    arquivo_com_bug UNSUPPORTED          ERROR: Unsupported iterable type in set(): signedbv
+oob_real_13    arquivo_com_bug UNSUPPORTED          ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+oob_real_14    arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "name" not found.
+oob_real_15    arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "str_or_empty" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/
+oob_real_16    arquivo_com_bug UNSUPPORTED          external call chain(...) uses *args/**kwargs
+tm_real_01     arquivo_com_bug UNSUPPORTED          ERROR: Unsupported expression Starred at line 26
+tm_real_02     arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): partition_spec
+tm_real_03     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "m" not found.
+tm_real_04     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+tm_real_05     arquivo_com_bug UNSUPPORTED          external call MIMENonMultipart(...) uses *args/**kwargs
+tm_real_06     arquivo_com_bug GROUNDING_FAILED     entry point is nested inside a function; the harness cannot call it
+tm_real_07     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: vertices
+tm_real_08     arquivo_com_bug UNSUPPORTED          ERROR: NameError: name 'namedtuple' is not defined
+tm_real_09     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_compile': missing return type
+tm_real_10     arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_lat
+vm_real_01     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "tqdm" not found.
+vm_real_02     arquivo_com_bug UNSUPPORTED          TypeError: __init__() takes 1 positional argument but 2 were given
+io_real_01     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve attribute 'tiny' on Call result
+ir_real_01     arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt
+ir_real_02     funcao_com_bug  GROUNDING_FAILED     function 'module-level' not found (or ambiguous)
+ir_real_03     arquivo_com_bug ESBMC_TIMEOUT        ESBMC direto excedeu o tempo limite de 60s.
+ir_real_05     arquivo_com_bug UNSUPPORTED          ERROR: DictComp tuple target requires a named list of tuples
+nm_real_23     arquivo_com_bug UNSUPPORTED          ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Pleas
+dz_real_04     arquivo_com_bug UNSUPPORTED          ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked
+nm_real_24     arquivo_com_bug UNSUPPORTED          external name 'contextmanager' is used as a decorator
+vm_real_03     funcao_com_bug  MISSING_DEPENDENCY   ERROR: Function "proc" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifact
+nm_real_25     arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: no_keep_alive
+tm_real_11     funcao_com_bug  MISSING_DEPENDENCY   undefined name(s): Request
+vm_real_04     funcao_com_bug  MISSING_DEPENDENCY   undefined name(s): operator, re
+vm_real_05     arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_os_rename': missing return type
+vm_real_06     arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "property" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/arti
+tm_real_12     funcao_com_bug  UNSUPPORTED          ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+vm_real_07     funcao_com_bug  MISSING_DEPENDENCY   undefined name(s): OrderedEnqueuer, Sequence, do_validation, iter_sequence_infinite, max_q
+tm_real_13     arquivo_com_bug UNSUPPORTED          ERROR: Variable 'kwargs' is not defined in function 'BaseItemExporter' at line 32.
+vm_real_08     funcao_com_bug  MISSING_DEPENDENCY   undefined name(s): output_path, pycompat, sys, utils
+ip_real_34     funcao_com_bug  MISSING_DEPENDENCY   undefined name(s): logger, os, valid_hook
+oob_real_06    arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_ansible_1  arquivo_com_bug UNSUPPORTED          external name 'contextmanager' is used as a decorator
+bip_ansible_3  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "out" not found.
+bip_ansible_5  arquivo_com_bug UNSUPPORTED          ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called 
+bip_ansible_16 arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 1. Variable OSError not found
+bip_black_2    arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+bip_black_7    arquivo_com_bug UNSUPPORTED          external name 'dataclass' is used as a decorator
+bip_black_8    arquivo_com_bug UNSUPPORTED          external name 'dataclass' is used as a decorator
+bip_black_9    arquivo_com_bug UNSUPPORTED          ERROR: Variable 'C@TargetVersion' is not defined in function 'is_python2' at line 49.
+bip_black_13   arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): ASYNC, AWAIT, COMMENT, DEDENT, ENDMARKER, ERRORTOKEN, INDENT, NAME, NEW
+bip_black_16   arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+bip_black_19   arquivo_com_bug UNSUPPORTED          external name 'dataclass' is used as a decorator
+bip_black_20   arquivo_com_bug UNSUPPORTED          external name 'dataclass' is used as a decorator
+bip_black_21   arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "tempfile" not found.
+bip_cookiecutter_1 arquivo_com_bug UNSUPPORTED          TypeError: OrderedDict() takes 0 positional arguments but 1 was given
+bip_cookiecutter_3 arquivo_com_bug UNSUPPORTED          TypeError: OrderedDict() takes 0 positional arguments but 1 was given
+bip_fastapi_2  arquivo_com_bug UNSUPPORTED          stub 'compile_path': the code unpacks its result into 3 names, so it needs tuple[...] with
+bip_fastapi_4  arquivo_com_bug UNSUPPORTED          stub 'field_schema': the code unpacks its result into 3 names, so it needs tuple[...] with
+bip_fastapi_5  arquivo_com_bug UNSUPPORTED          ERROR: NameError: name 'cast' is not defined
+bip_fastapi_9  arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 158. Variable params_Form not found
+bip_fastapi_10 arquivo_com_bug UNSUPPORTED          ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+bip_fastapi_11 arquivo_com_bug UNSUPPORTED          ERROR: vector::_M_range_check: __n (which is 0) >= this->size() (which is 0)
+bip_fastapi_16 arquivo_com_bug UNSUPPORTED          stub 'obj.Config': missing return type; stub 'obj.dict': missing return type; stub 'obj.it
+bip_httpie_4   arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "headers" not found.
+bip_keras_3    arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+bip_keras_4    arquivo_com_bug UNSUPPORTED          ERROR: Variable 'kwargs' is not defined in function 'Optimizer' at line 159.
+bip_keras_5    arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): urlretrieve
+bip_keras_6    arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "fn" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/
+bip_keras_7    arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): filter_sk_params
+bip_keras_8    arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'layers' not found.
+bip_keras_9    arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra<unknown>:479: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:483: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:489: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:479: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:483: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:489: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:479: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:483: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:489: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:479: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:483: SyntaxWarning: invalid escape sequence '\w'
+<unknown>:489: SyntaxWarning: invalid escape sequence '\w'
+
+bip_keras_10   arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_keras_14   arquivo_com_bug NOT_CONFIRMED        no_vcc_generated
+bip_keras_17   arquivo_com_bug NOT_CONFIRMED        no_vcc_generated
+bip_keras_23   arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "layer" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifac
+bip_keras_24   arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): projector, tf
+bip_keras_25   arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_keras_26   arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): uses_learning_phase
+bip_keras_31   arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve attribute '_dims' on Call result
+bip_keras_33   arquivo_com_bug MISSING_DEPENDENCY   undefined name(s): unicode
+bip_keras_36   arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type anno
+bip_keras_38   arquivo_com_bug UNVALIDATED          uncaught exception: AttributeError
+bip_keras_40   arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+bip_keras_43   arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_keras_45   arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_luigi_8    arquivo_com_bug UNSUPPORTED          ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+bip_luigi_10   arquivo_com_bug UNSUPPORTED          ERROR: Variable 'task' is not defined in function 'lam1' at line 39.
+bip_luigi_16   arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 19. Variable NotImplemented not found
+bip_luigi_17   arquivo_com_bug NOT_CONFIRMED        no_vcc_generated
+bip_luigi_18   arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type a
+bip_luigi_19   arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type a
+bip_luigi_21   arquivo_com_bug UNSUPPORTED          ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logg
+bip_luigi_24   arquivo_com_bug UNSUPPORTED          ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+bip_luigi_26   arquivo_com_bug UNSUPPORTED          ERROR: unsupported: non-constant argument in str % formatting
+bip_luigi_29   arquivo_com_bug UNSUPPORTED          ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+bip_luigi_33   arquivo_com_bug UNSUPPORTED          ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+bip_matplotlib_2 arquivo_com_bug UNSUPPORTED          external call mtext.Annotation(...) cannot be stubbed
+bip_matplotlib_6 arquivo_com_bug UNSUPPORTED          external call mtext.Annotation(...) cannot be stubbed
+bip_matplotlib_7 arquivo_com_bug UNSUPPORTED          stub 'np.gradient': the code unpacks its result into 2 names, so it needs tuple[...] with 
+bip_matplotlib_9 arquivo_com_bug UNSUPPORTED          external call Axes.draw(...) cannot be stubbed
+bip_matplotlib_10 arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.aliasd.values()'. Add a type an
+bip_matplotlib_11 arquivo_com_bug UNSUPPORTED          ERROR: unsupported: non-constant argument in str % formatting
+bip_matplotlib_13 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "np" not found.
+bip_matplotlib_14 arquivo_com_bug UNSUPPORTED          external call FancyBboxPatch(...) uses *args/**kwargs
+bip_matplotlib_16 arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve attribute 'tiny' on Call result
+bip_matplotlib_17 arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve attribute 'tiny' on Call result
+bip_matplotlib_23 arquivo_com_bug UNSUPPORTED          external call mtransforms_Bbox.from_bounds(...) cannot be stubbed
+bip_matplotlib_25 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'setuptools_scm' not found.
+bip_matplotlib_26 arquivo_com_bug UNSUPPORTED          ERROR: Cannot unpack signedbv - only tuples and arrays can be unpacked
+bip_matplotlib_27 arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 127. Variable kw not found
+bip_matplotlib_28 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "convert" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artif
+bip_pandas_1   arquivo_com_bug UNSUPPORTED          ERROR: 'is' between a pointer and a non-pointer: one operand lost its object type, which E
+bip_pandas_4   arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_7   arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_8   arquivo_com_bug UNSUPPORTED          stub 'maybe_promote': the code unpacks its result into 2 names, so it needs tuple[...] wit
+bip_pandas_10  arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): make_block
+bip_pandas_14  arquivo_com_bug UNSUPPORTED          ERROR: Cannot resolve nested attribute: iloc
+bip_pandas_19  arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): _getbool_axis, _validate_key
+bip_pandas_21  arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_23  arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): equals
+bip_pandas_24  arquivo_com_bug UNSUPPORTED          ERROR: Cannot infer type for class attribute 'year' in class 'DatetimeArray'. Please add e
+bip_pandas_25  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas' not found.
+bip_pandas_28  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas.arrays' not found.
+bip_pandas_29  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pyarrow' not found.
+bip_pandas_33  arquivo_com_bug UNSUPPORTED          external name 'register_extension_dtype' is used as a decorator
+bip_pandas_34  arquivo_com_bug UNSUPPORTED          ERROR: Variable 'C@Grouper' is not defined at line 90.
+bip_pandas_35  arquivo_com_bug UNSUPPORTED          ERROR: Cannot infer type for class attribute '_engine_type' in class 'PeriodIndex'. Please
+bip_pandas_42  arquivo_com_bug ESBMC_ERROR          ESBMC direto: resultado inconclusivo.
+bip_pandas_50  arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_52  arquivo_com_bug UNSUPPORTED          stub 'algorithms.factorize': the code unpacks its result into 2 names, so it needs tuple[.
+bip_pandas_58  arquivo_com_bug UNSUPPORTED          external call ops.maybe_dispatch_ufunc_to_dunder_op(...) cannot be stubbed
+bip_pandas_59  arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_61  arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_63  arquivo_com_bug UNSUPPORTED          external call np.ix_(...) cannot be stubbed
+bip_pandas_64  arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.__python_dict__.get()'. Add a t
+bip_pandas_69  arquivo_com_bug UNSUPPORTED          external call np.ix_(...) cannot be stubbed
+bip_pandas_78  arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_84  arquivo_com_bug UNSUPPORTED          stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[.
+bip_pandas_87  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas' not found.
+bip_pandas_88  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas' not found.
+bip_pandas_89  arquivo_com_bug UNSUPPORTED          stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[.
+bip_pandas_91  arquivo_com_bug UNSUPPORTED          ERROR: Cannot infer type for class attribute '_engine_type' in class 'TimedeltaIndex'. Ple<unknown>:23: SyntaxWarning: invalid escape sequence '\('
+<unknown>:23: SyntaxWarning: invalid escape sequence '\('
+<unknown>:26: SyntaxWarning: invalid escape sequence '\('
+<unknown>:26: SyntaxWarning: invalid escape sequence '\('
+<unknown>:26: SyntaxWarning: invalid escape sequence '\('
+<unknown>:23: SyntaxWarning: invalid escape sequence '\('
+<unknown>:23: SyntaxWarning: invalid escape sequence '\('
+<unknown>:26: SyntaxWarning: invalid escape sequence '\('
+<unknown>:26: SyntaxWarning: invalid escape sequence '\('
+<unknown>:26: SyntaxWarning: invalid escape sequence '\('
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:485: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1147: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:359: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:925: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:359: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:925: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:359: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:925: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:359: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:925: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:359: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:925: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:359: SyntaxWarning: invalid escape sequence '\.'
+<unknown>:925: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:785: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:785: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:785: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:785: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:785: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:785: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:499: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1181: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1149: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1149: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1149: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1149: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1149: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1149: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:434: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1105: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:434: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1105: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:434: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1105: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:434: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1105: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:434: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1105: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:434: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:1105: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+
+bip_pandas_95  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "ordinal_op" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/ar
+bip_pandas_98  arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_102 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas.core.internals.blocks' not found.
+bip_pandas_104 arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): _iterate_slices, _wrap_aggregated_output, _wrap_transf
+bip_pandas_106 arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_107 arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_115 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'scipy' not found.
+bip_pandas_116 arquivo_com_bug UNSUPPORTED          external call com.any_not_none(...) cannot be stubbed
+bip_pandas_117 arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed for Assign at line 167
+bip_pandas_119 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas' not found.
+bip_pandas_127 arquivo_com_bug UNSUPPORTED          stub 'validate_fillna_kwargs': the code unpacks its result into 2 names, so it needs tuple
+bip_pandas_133 arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a typ
+bip_pandas_139 arquivo_com_bug UNSUPPORTED          stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...
+bip_pandas_141 arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_142 arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_pandas_143 arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_144 arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_145 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas.core.computation.expressions' not found.
+bip_pandas_148 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas' not found.
+bip_pandas_152 arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_154 arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): _iterate_slices
+bip_pandas_155 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'pandas' not found.
+bip_pandas_158 arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_160 arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.index.astype()'. Add a type ann
+bip_pandas_161 arquivo_com_bug UNSUPPORTED          external call ops.maybe_dispatch_ufunc_to_dunder_op(...) cannot be stubbed
+bip_pandas_162 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "f" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v
+bip_pandas_163 arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_pandas_166 arquivo_com_bug UNSUPPORTED          external call Substitution(...) uses *args/**kwargs
+bip_pandas_168 arquivo_com_bug UNSUPPORTED          external name 'cache_readonly' is used as a decorator
+bip_sanic_1    arquivo_com_bug UNSUPPORTED          ERROR: List variable not found:
+bip_scrapy_6   arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'scrapy.exceptions' not found.
+bip_scrapy_8   arquivo_com_bug UNSUPPORTED          ERROR: NameError: name 'super' is not defined
+bip_scrapy_15  arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.netloc.encode()'. Add a type an
+bip_scrapy_18  arquivo_com_bug UNSUPPORTED          ERROR: unsupported: non-constant argument in str % formatting
+bip_scrapy_21  arquivo_com_bug ESBMC_MISSED         no_violation_found
+bip_scrapy_28  arquivo_com_bug UNSUPPORTED          ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-202
+bip_scrapy_38  arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_scrapy_39  arquivo_com_bug UNSUPPORTED          ERROR: Variable 'C@Spider' is not defined in function 'start_requests' at line 43.
+bip_scrapy_40  arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): _get_serialized_fields, export_item
+bip_spacy_1    arquivo_com_bug UNSUPPORTED          artifacts/v2/smoke-2026-10-04-esbmc/programs/a8853acb4036_a0.py:1: error: Function is miss
+bip_spacy_2    arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed at line 1. Variable OSError not found
+bip_spacy_6    arquivo_com_bug UNSUPPORTED          ERROR: Type inference failed for Assign at line 215
+bip_thefuck_2  arquivo_com_bug MISSING_DEPENDENCY   ERROR: Module 'thefuck.shells' not found.
+bip_thefuck_3  arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type anno
+bip_thefuck_4  arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type anno
+bip_thefuck_10 arquivo_com_bug UNSUPPORTED          ERROR: Couldn't convert expression in unrecognised format
+bip_thefuck_11 arquivo_com_bug UNSUPPORTED          ERROR: function call: argument "c:string.c@21403@F@__python_str_split@str" type mismatch: 
+bip_thefuck_14 arquivo_com_bug UNSUPPORTED          ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type anno
+bip_thefuck_19 arquivo_com_bug ESBMC_MISSED         no_vcc_generated
+bip_thefuck_25 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_thefuck_26 arquivo_com_bug UNSUPPORTED          ERROR: function call: argument "c:string.c@21403@F@__python_str_split@str" type mismatch: 
+bip_thefuck_30 arquivo_com_bug UNSUPPORTED          external name 'memoize' is used as a decorator
+bip_tornado_5  arquivo_com_bug UNSUPPORTED          ERROR: Bitwuzla error encountered
+bip_tornado_8  arquivo_com_bug UNSUPPORTED          receiver reads inherited member(s): _abort, _run_callback
+bip_tqdm_1     arquivo_com_bug UNSUPPORTED          ERROR: the result of the 'enumerate' builtin is not modelled (no 'enumerate' type)
+bip_youtube_dl_3 arquivo_com_bug UNSUPPORTED          ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestra
+bip_youtube_dl_4 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Function "opfunc" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifa
+bip_youtube_dl_5 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_datetime_timedelta': missing return type
+bip_youtube_dl_7 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_8 arquivo_com_bug UNSUPPORTED          external call traceback.format_exception(...) cannot be stubbed
+bip_youtube_dl_10 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_13 arquivo_com_bug UNVALIDATED          uncaught exception: AttributeError
+bip_youtube_dl_15 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_20 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_escape': missing return type; stub '_esbmc_re_findi
+bip_youtube_dl_21 arquivo_com_bug NOT_CONFIRMED        no_vcc_generated
+bip_youtube_dl_23 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_24 arquivo_com_bug MISSING_DEPENDENCY   ERROR: Object "m" not found.
+bip_youtube_dl_25 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_26 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_27 arquivo_com_bug OTHER_FAILURE        uncaught exception: TypeError
+bip_youtube_dl_30 arquivo_com_bug UNSUPPORTED          external call traceback.format_exception(...) cannot be stubbed<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:789: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:789: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:789: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:789: SyntaxWarning: invalid escape sequence '\d'
+
+bip_youtube_dl_41 arquivo_com_bug SPEC_FAILED          The JSON was rejected: stub '_esbmc_re_sub': missing return type
+bip_youtube_dl_43 arquivo_com_bug CONFIRMED            uncaught exception: TypeError
+
+ {'UNSUPPORTED': 191, 'MISSING_DEPENDENCY': 51, 'SPEC_FAILED': 18, 'ESBMC_ERROR': 7, 'NOT_CONFIRMED': 5, 'CONFIRMED': 4, 'ESBMC_MISSED': 4, 'GROUNDING_FAILED': 4, 'OTHER_FAILURE': 2, 'UNVALIDATED': 2, 'ESBMC_TIMEOUT': 1}

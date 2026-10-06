@@ -1,0 +1,14 @@
+{
+  "pasta": "replay-2026-10-05-imports",
+  "modificado_em": "2026-10-05T23:33",
+  "arquivos": [
+    "replay_specs_0of1.json",
+    "report_0of1.json"
+  ],
+  "vereditos (report_0of1.json)": {
+    "UNSUPPORTED": 11,
+    "OTHER_FAILURE": 1,
+    "MISSING_DEPENDENCY": 2,
+    "NOT_CONFIRMED": 1
+  }
+}

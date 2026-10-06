@@ -1,0 +1,73 @@
+[1/28] av_real_03.py::Series.to_timestamp (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True no_violation_found
+[2/28] bip_black_16.py::gen_python_files_in_dir (engine: ESBMC_ERROR)
+    -> NOT_CONFIRMED preserved=False unwinding assertion loop 29
+[3/28] bip_keras_33.py::text_to_word_sequence (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: split() only supports constant sep in minimal support
+[4/28] bip_luigi_21.py::run (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True dereference failure: NULL pointer; dereference failure: invalid pointer; dereference failure: Incorr
+[5/28] bip_pandas_133.py::NDFrame.interpolate (engine: UNSUPPORTED)
+    -> MISSING_DEPENDENCY preserved=True ERROR: Object "_maybe_transposed_self" not found.
+[6/28] bip_pandas_152.py::Series.append (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=False ERROR: append() takes exactly one argument
+[7/28] bip_pandas_33.py::IntegerArray._values_for_argsort (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[8/28] bip_scrapy_18.py::ResponseTypes.from_content_disposition (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: function call: argument "c:string.c@21403@F@__python_str_split@str" type mismatch: got empty,
+[9/28] bip_thefuck_4.py::_get_aliases (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True no_violation_found
+[10/28] dz_real_02.py::ExactLanguageSearch.choose_best_split (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: Variable 'p' is not defined in function 'lam1' at line 37.
+[11/28] dz_real_03.py::HashExpander.do (engine: UNSUPPORTED)
+    -> OTHER_FAILURE preserved=True uncaught exception: AttributeError; uncaught exception: ZeroDivisionError
+[12/28] ip_real_07.py::_htmlentity_transform (engine: UNSUPPORTED)
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+    -> UNVALIDATED preserved=False unwinding assertion loop 131; chr() arg not in range(0x110000); chr() arg is a surrogate code point;
+[13/28] ip_real_11.py::HTTPBearer.__call__ (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False unwinding assertion loop 131; dereference failure: Incorrect alignment when accessing data object; d
+[14/28] ip_real_14.py::TimeseriesGenerator.__len__ (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True uncaught exception: ZeroDivisionError
+[15/28] ip_real_17.py::response_status_message (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+[16/28] ip_real_21.py::SortedDict.__eq__ (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=True unwinding assertion loop 131; unwinding assertion loop 29; uncaught exception: KeyError
+[17/28] ip_real_32.py::date_convert (engine: UNSUPPORTED)
+<unknown>:80: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:82: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:84: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:336: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:456: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:458: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:460: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:534: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:809: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:931: SyntaxWarning: invalid escape sequence '\+'
+    -> ESBMC_TIMEOUT preserved=True ESBMC direto excedeu o tempo limite de 180s.
+[18/28] nm_real_01.py::Session.update_headers (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: TypeError at artifacts/v2/agent-2026-10-05-sonnet/cases/942d61a91efc/harness.py 24: list indi
+[19/28] nm_real_02.py::tqdm.format_meter (engine: MISSING_DEPENDENCY)
+    -> MISSING_DEPENDENCY preserved=True ERROR: Object "l_bar_user" not found.
+[20/28] nm_real_08.py::Request.url_for (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: [json.exception.type_error.302] type must be string, but is null
+[21/28] nm_real_12.py::PamdService.remove (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None target PamdService.remove missing from the harness
+[22/28] nm_real_14.py::request_httprepr (engine: ESBMC_ERROR)
+    -> CONFIRMED preserved=True uncaught exception: TypeError
+[23/28] oob_real_10.py::_wrap_text_to_colwidths (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[24/28] oob_real_11.py::wcswidth (engine: UNSUPPORTED)
+    -> ESBMC_TIMEOUT preserved=False ESBMC direto excedeu o tempo limite de 180s.
+[25/28] oob_real_14.py::LinuxDistribution._parse_uname_content (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked
+[26/28] oob_real_15.py::dfxp2srt (engine: MISSING_DEPENDENCY)
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED preserved=True ERROR: TypeError: 'int' object is not subscriptable at artifacts/v2/agent-2026-10-05-sonnet/cases/42
+[27/28] tm_real_09.py::_format (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True no_violation_found
+[28/28] tm_real_10.py::MetricsHandler.get (engine: UNSUPPORTED)
+    -> ESBMC_MISSED preserved=True no_violation_found
+
+ {'ESBMC_MISSED': 5, 'NOT_CONFIRMED': 1, 'UNSUPPORTED': 9, 'MISSING_DEPENDENCY': 2, 'AGENT_FAILED': 3, 'OTHER_FAILURE': 1, 'UNVALIDATED': 3, 'CONFIRMED': 2, 'ESBMC_TIMEOUT': 2}
+exit=0

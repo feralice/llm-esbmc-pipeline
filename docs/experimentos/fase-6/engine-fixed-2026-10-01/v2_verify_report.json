@@ -1,0 +1,3779 @@
+{
+ "config": {
+  "source": "scripts/v2_replay_specs.py, specs of exp-oracle-*-cobertura (30/09)",
+  "esbmc": "/usr/local/bin/esbmc",
+  "timeout": 180,
+  "bound": 5
+ },
+ "results": [
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_01.py",
+    "function": "makeMappingArray",
+    "suspect_expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "division_by_zero",
+    "hypothesis_id": "d413552720dd"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a2.py:69",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"N\": \"int\", \"data\": \"object\", \"gamma\": \"float\"}, \"attributes\": {}, \"stubs\": {\"np.array\": \"np.ndarray\", \"np.clip\": \"np.ndarray\", \"np.concatenate\": \"np.ndarray\", \"np.diff\": \"np.ndarray\", \"np.linspace\": \"np.ndarray\", \"np.searchsorted\": \"list[int]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'np.array': unsupported type 'np.ndarray'",
+      "stub 'np.clip': unsupported type 'np.ndarray'",
+      "stub 'np.concatenate': unsupported type 'np.ndarray'",
+      "stub 'np.diff': unsupported type 'np.ndarray'",
+      "stub 'np.linspace': unsupported type 'np.ndarray'"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"N\": \"int\", \"data\": \"object\", \"gamma\": \"float\"}, \"attributes\": {}, \"stubs\": {\"np.array\": \"list[float]\", \"np.clip\": \"list[float]\", \"np.concatenate\": \"list[float]\", \"np.diff\": \"list[float]\", \"np.linspace\": \"list[float]\", \"np.searchsorted\": \"list[int]\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'np.array': unsupported type 'np.ndarray'; stub 'np.clip': unsupported type 'np.ndarray'; stub 'np.concatenate': unsupported type 'np.ndarray'; stub 'np.diff': unsupported type 'np.ndarray'; stub 'np.linspace': unsupported type 'np.ndarray'",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a1.py:69",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"N\": \"int\", \"data\": \"object\", \"gamma\": \"float\"}, \"attributes\": {}, \"stubs\": {\"np.array\": \"list[float]\", \"np.clip\": \"list[float]\", \"np.concatenate\": \"list[float]\", \"np.diff\": \"list[float]\", \"np.linspace\": \"list[float]\", \"np.searchsorted\": \"list[int]\"}, \"assumptions\": [\"len(data) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a1.py:69",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a2.py:69",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:np"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/243e84ea8b57_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 12.012
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_01.py",
+    "function": "get_new_command",
+    "suspect_expression": "re.findall(r'ERROR: unknown command \\\"([a-z]+)\\\"',\n                            command.output)[0]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "e9693f9d6bd8"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in get_new_command",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_01.py",
+    "function": "cli_bool_option",
+    "suspect_expression": "assert isinstance(param, bool)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "907f4443dc8a"
+   },
+   "verdict": "UNVALIDATED",
+   "reason": "assertion ISINSTANCE(param, 0); dereference failure: NULL pointer; unwinding assertion loop 131; unwinding assertion loop 53; unwinding assertion loop 54; unwinding assertion loop 29",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"params\": \"object\", \"command_option\": \"str\", \"param\": \"str\", \"true_value\": \"str\", \"false_value\": \"str\", \"separator\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"params.get\": \"Optional[bool]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/5a781778f16b_a0_replay.py",
+     "esbmc_status": "violation_found",
+     "reading": "violation",
+     "message": "assertion ISINSTANCE(param, 0); dereference failure: NULL pointer; unwinding assertion loop 131; unwinding assertion loop 53; unwinding assertion loop 54; unwinding assertion loop 29",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/5a781778f16b_a0.py",
+   "replay": {
+    "status": "not_reproduced",
+    "exception_type": "",
+    "line": null,
+    "runs": 144,
+    "reason": ""
+   },
+   "tokens": 0,
+   "seconds": 28.122
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_08.py",
+    "function": "Settings.update",
+    "suspect_expression": "conf.update(kwargs)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "be35c187658a"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Settings.update",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_08.py",
+    "function": "simple_separated_format",
+    "suspect_expression": "TableFormat(None, None, None, None, headerrow=None, datarow=DataRow('', separator, ''), padding=0, with_header_hide=None)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "a25d8874bca4"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in simple_separated_format",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.007
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/io_real_01.py",
+    "function": "nonsingular",
+    "suspect_expression": "maxabsvalue = max(abs(vmin), abs(vmax))",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "integer_overflow",
+    "hypothesis_id": "7e9831a3258f"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"vmin\": \"float\", \"vmax\": \"float\", \"expander\": \"float\", \"tiny\": \"float\", \"increasing\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"np.finfo\": \"object\", \"np.isfinite\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6d0f8b91edc0_a0_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"vmin\": \"float\", \"vmax\": \"float\", \"expander\": \"float\", \"tiny\": \"float\", \"increasing\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"np.finfo\": \"object\", \"np.isfinite\": \"bool\"}, \"assumptions\": [\"len([vmin, vmax]) == 2\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "problems": [
+      "assumption 'len([vmin, vmax]) == 2' uses List"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"vmin\": \"float\", \"vmax\": \"float\", \"expander\": \"float\", \"tiny\": \"float\", \"increasing\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"np.finfo\": \"object\", \"np.isfinite\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: assumption 'len([vmin, vmax]) == 2' uses List",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6d0f8b91edc0_a2_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:np",
+    "opaque_values"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6d0f8b91edc0_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 11.926
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_05.py",
+    "function": "Response.follow",
+    "suspect_expression": "url = self.urljoin(url)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "aac22c8e47d8"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"url\": \"Optional[str]\", \"callback\": \"Optional[object]\", \"method\": \"str\", \"headers\": \"Optional[dict[str, str]]\", \"body\": \"Optional[bytes]\", \"cookies\": \"Optional[dict[str, str]]\", \"meta\": \"Optional[dict[str, object]]\", \"encoding\": \"str\", \"priority\": \"int\", \"dont_filter\": \"bool\", \"errback\": \"Optional[object]\"}, \"attributes\": {\"status\": \"int\", \"url\": \"str\"}, \"stubs\": {\"Request\": \"object\", \"urljoin\": \"str\"}, \"assumptions\": [\"url is not None\"]}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/80deaa913a7a_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"url\": \"Optional[str]\", \"callback\": \"Optional[object]\", \"method\": \"str\", \"headers\": \"Optional[dict[str, str]]\", \"body\": \"Optional[bytes]\", \"cookies\": \"Optional[dict[str, str]]\", \"meta\": \"Optional[dict[str, object]]\", \"encoding\": \"str\", \"priority\": \"int\", \"dont_filter\": \"bool\", \"errback\": \"Optional[object]\"}, \"attributes\": {\"status\": \"Optional[int]\", \"url\": \"str\"}, \"stubs\": {\"Request\": \"object\", \"urljoin\": \"str\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/80deaa913a7a_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"url\": \"Optional[str]\", \"callback\": \"Optional[object]\", \"method\": \"str\", \"headers\": \"Optional[dict[str, str]]\", \"body\": \"Optional[bytes]\", \"cookies\": \"Optional[dict[str, str]]\", \"meta\": \"Optional[dict[str, object]]\", \"encoding\": \"str\", \"priority\": \"int\", \"dont_filter\": \"bool\", \"errback\": \"Optional[object]\"}, \"attributes\": {\"status\": \"int\", \"url\": \"str\"}, \"stubs\": {\"Request\": \"object\", \"urljoin\": \"str\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/80deaa913a7a_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_get_body,_get_url,_set_body,_set_url,copy,css,replace,xpath",
+    "properties_as_attributes:body,meta,text,url",
+    "stubbed_imports:Link,Request,object_ref,urljoin",
+    "opaque_values",
+    "typing_import_added",
+    "compat_method_alias:1"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/80deaa913a7a_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 16.792
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_10.py",
+    "function": "S3CopyToTable.copy",
+    "suspect_expression": "len(self.columns)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "b09a76048037"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "receiver reads inherited member(s): _credentials",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.012
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_14.py",
+    "function": "request_httprepr",
+    "suspect_expression": "to_bytes(parsed.hostname)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "750f35f494d9"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in request_httprepr",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_20.py",
+    "function": "engine.numwords",
+    "suspect_expression": "first = not num.endswith(decimal)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "9cb6175ab030"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Type inference failed for Assign at line 578",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"num\": \"str\", \"wantlist\": \"bool\", \"group\": \"int\", \"comma\": \"str\", \"andword\": \"str\", \"zero\": \"str\", \"one\": \"str\", \"decimal\": \"str\", \"threshold\": \"Optional[float]\"}, \"attributes\": {\"A_a_user_defined\": \"object\", \"classical_dict\": \"dict[str, Optional[str]]\", \"mill_count\": \"int\", \"number_args\": \"dict[str, str]\", \"persistent_count\": \"Optional[int]\"}, \"stubs\": {}, \"assumptions\": [\"len(num) > 0\"]}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/3f801d5d5880_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 578",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"num\": \"str\", \"wantlist\": \"bool\", \"group\": \"int\", \"comma\": \"str\", \"andword\": \"str\", \"zero\": \"str\", \"one\": \"str\", \"decimal\": \"Optional[str]\", \"threshold\": \"Optional[float]\"}, \"attributes\": {\"A_a_user_defined\": \"object\", \"classical_dict\": \"dict[str, Optional[str]]\", \"mill_count\": \"int\", \"number_args\": \"dict[str, str]\", \"persistent_count\": \"Optional[int]\"}, \"stubs\": {}, \"assumptions\": [\"len(num) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed for Assign at line 578\n(program line 578, original code: first = not num.endswith(decimal))",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/3f801d5d5880_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 578",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"num\": \"str\", \"wantlist\": \"bool\", \"group\": \"int\", \"comma\": \"str\", \"andword\": \"str\", \"zero\": \"str\", \"one\": \"str\", \"decimal\": \"Optional[str]\", \"threshold\": \"Optional[float]\"}, \"attributes\": {\"A_a_user_defined\": \"object\", \"classical_dict\": \"dict[str, Optional[str]]\", \"mill_count\": \"int\", \"number_args\": \"dict[str, str]\", \"persistent_count\": \"Optional[int]\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed for Assign at line 578\n(program line 578, original code: first = not num.endswith(decimal))",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/3f801d5d5880_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 578",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_pl_check_plurals_N,_pl_check_plurals_adj,_pl_general_verb,_pl_reg_plurals,_pl_special_adjective,_pl_special_verb,_plequal,_plnoun,amo,checkpat,checkpatplural,classical,defa,defadj,defan,defnoun,defverb,inflect,no,nomo,num,nummo,numwordsmo,ordinal,ordinalmo,partition_word,pl,pladj,pladjequal,pladjmo,plequal,plmo,plnoun,plnounequal,plnounmo,plverb,plverbequal,plverbmo,postprocess,prespart,prespartmo,wordlist",
+    "typing_import_added",
+    "compat_percent_format:10",
+    "compat_method_alias:1"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/3f801d5d5880_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 15.608
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_09.py",
+    "function": "_make_getset_interval",
+    "suspect_expression": "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "4729c08b6696"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in _make_getset_interval",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.019
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_14.py",
+    "function": "get_new_command",
+    "suspect_expression": "'open http://' + command.script[5:]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "2bcbe5709276"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in get_new_command",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.0
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_09.py",
+    "function": "parser._parse",
+    "suspect_expression": "l[i + 4]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "b24cb919e9da"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/901f5da7a110_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"object\", \"self._split_decimal\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+     "ignored": [
+      "stub self._split_decimal"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/901f5da7a110_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"object\", \"self._split_decimal\": \"Optional[re.Pattern]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+     "ignored": [
+      "stub self._split_decimal"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/901f5da7a110_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:parse",
+    "stubbed_imports:StringIO,binary_type,integer_types,text_type",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/901f5da7a110_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 15.945
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_14.py",
+    "function": "LinuxDistribution._parse_uname_content",
+    "suspect_expression": "lines[0]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "e970792fa2b1"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Object \"name\" not found.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"lines\": \"Sequence[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "parameter 'lines': unsupported type 'Sequence[str]'"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"lines\": \"list[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: parameter 'lines': unsupported type 'Sequence[str]'",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/834328b9ad12_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Object \"name\" not found.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "unreachable_methods_removed:_distro_release_info,_lsb_release_info,_os_release_info,_parse_distro_release_content,_parse_distro_release_file,_parse_lsb_release_content,_parse_os_release_content,_to_str,_uname_info,build_number,codename,distro_release_attr,distro_release_info,id,info,like,linux_distribution,lsb_release_attr,lsb_release_info,major_version,minor_version,name,os_release_attr,os_release_info,uname_attr,uname_info,version,version_parts"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/834328b9ad12_a1.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 6.559
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_18.py",
+    "function": "croniter._get_low_from_current_date_number",
+    "suspect_expression": "return dt.month % step",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "21c1902506d9"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in croniter._get_low_from_current_date_number",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.012
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_06.py",
+    "function": "_unstack_multiple",
+    "suspect_expression": "clocs",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "2ee211addf58"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.035
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_11.py",
+    "function": "HTTPBearer.__call__",
+    "suspect_expression": "scheme.lower() != \"bearer\"",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "879f538b054c"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "async entry point is not supported",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_16.py",
+    "function": "pivot",
+    "suspect_expression": "columns",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "4b0ac089ad35"
+   },
+   "verdict": "SPEC_FAILED",
+   "reason": "The JSON was rejected: stub 'data._constructor': missing return type; stub 'data._constructor_sliced': missing return type; stub 'data.index': missing return type; stub 'data.set_index': missing return type",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"data\": \"object\", \"index\": \"Optional[object]\", \"columns\": \"object\", \"values\": \"Optional[object]\"}, \"attributes\": {}, \"stubs\": {\"MultiIndex.from_arrays\": \"object\", \"is_list_like\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'data._constructor': missing return type",
+      "stub 'data._constructor_sliced': missing return type",
+      "stub 'data.index': missing return type",
+      "stub 'data.set_index': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"data\": \"object\", \"index\": \"Optional[object]\", \"columns\": \"object\", \"values\": \"Optional[object]\"}, \"attributes\": {\"data._constructor\": \"object\", \"data._constructor_sliced\": \"object\", \"data.index\": \"object\", \"data.set_index\": \"object\"}, \"stubs\": {\"MultiIndex.from_arrays\": \"object\", \"is_list_like\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'data._constructor': missing return type; stub 'data._constructor_sliced': missing return type; stub 'data.index': missing return type; stub 'data.set_index': missing return type",
+     "problems": [
+      "stub 'data._constructor': missing return type",
+      "stub 'data._constructor_sliced': missing return type",
+      "stub 'data.index': missing return type",
+      "stub 'data.set_index': missing return type"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"data\": \"object\", \"index\": \"Optional[object]\", \"columns\": \"object\", \"values\": \"Optional[object]\"}, \"attributes\": {\"data._constructor\": \"object\", \"data._constructor_sliced\": \"object\", \"data.index\": \"list[object]\", \"data.set_index\": \"object\"}, \"stubs\": {\"MultiIndex.from_arrays\": \"object\", \"is_list_like\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'data._constructor': missing return type; stub 'data._constructor_sliced': missing return type; stub 'data.index': missing return type; stub 'data.set_index': missing return type",
+     "problems": [
+      "stub 'data._constructor': missing return type",
+      "stub 'data._constructor_sliced': missing return type",
+      "stub 'data.index': missing return type",
+      "stub 'data.set_index': missing return type"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 4.11
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_20.py",
+    "function": "generate_sub_moved_events",
+    "suspect_expression": "full_path.replace(dest_dir_path, src_dir_path) if src_dir_path else \"\"",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "05385df4b019"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in generate_sub_moved_events",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_26.py",
+    "function": "Scheduler.add_task",
+    "suspect_expression": "worker is not None",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "9de0b7b7692f"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: update() argument must be a dict in ESBMC model",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"task_id\": \"Optional[str]\", \"status\": \"str\", \"runnable\": \"bool\", \"deps\": \"Optional[list[str]]\", \"new_deps\": \"Optional[list[str]]\", \"expl\": \"Optional[str]\", \"resources\": \"Optional[object]\", \"priority\": \"int\", \"family\": \"str\", \"module\": \"Optional[object]\", \"params\": \"Optional[dict[str, object]]\", \"assistant\": \"bool\", \"tracking_url\": \"Optional[str]\", \"worker\": \"Optional[object]\", \"batchable\": \"Optional[bool]\", \"batch_id\": \"Optional[str]\", \"retry_policy_dict\": \"dict[str, Optional[object]]\", \"owners\": \"Optional[list[str]]\"}, \"attributes\": {\"_config\": \"object\", \"_email_batcher\": \"object\", \"_make_task\": \"object\", \"_state\": \"object\", \"_task_history\": \"object\"}, \"stubs\": {\"BATCH_RUNNING\": \"str\", \"DISABLED\": \"str\", \"DONE\": \"str\", \"FAILED\": \"str\", \"PENDING\": \"str\", \"RUNNING\": \"str\", \"SUSPENDED\": \"str\", \"UNKNOWN\": \"str\", \"json.loads\": \"object\", \"logging.getLogger\": \"object\", \"six.iteritems\": \"Any\", \"_esbmc_collections_namedtuple\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'worker.enabled': missing return type",
+      "stub 'self._config._get_retry_policy': missing return type",
+      "stub 'self._config.batch_emails': missing return type",
+      "stub 'self._email_batcher.add_disable': missing return type",
+      "stub 'self._email_batcher.add_failure': missing return type",
+      "stub 'self._state.get_batch_running_tasks': missing return type",
+      "stub 'self._state.get_batcher': missing return type",
+      "stub 'self._state.get_task': missing return type",
+      "stub 'self._state.get_worker': missing return type",
+      "stub 'self._state.set_status': missing return type",
+      "stub 'self._task_history.task_finished': missing return type",
+      "stub 'self._task_history.task_scheduled': missing return type",
+      "stub 'self._task_history.task_started': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"task_id\": \"Optional[str]\", \"status\": \"str\", \"runnable\": \"bool\", \"deps\": \"Optional[list[str]]\", \"new_deps\": \"Optional[list[str]]\", \"expl\": \"Optional[str]\", \"resources\": \"Optional[object]\", \"priority\": \"int\", \"family\": \"str\", \"module\": \"Optional[object]\", \"params\": \"Optional[dict[str, object]]\", \"assistant\": \"bool\", \"tracking_url\": \"Optional[str]\", \"worker\": \"Optional[object]\", \"batchable\": \"Optional[bool]\", \"batch_id\": \"Optional[str]\", \"retry_policy_dict\": \"dict[str, Optional[object]]\", \"owners\": \"Optional[list[str]]\"}, \"attributes\": {\"_config\": \"object\", \"_email_batcher\": \"object\", \"_make_task\": \"object\", \"_state\": \"object\", \"_task_history\": \"object\"}, \"stubs\": {\"BATCH_RUNNING\": \"str\", \"DISABLED\": \"str\", \"DONE\": \"str\", \"FAILED\": \"str\", \"PENDING\": \"str\", \"RUNNING\": \"str\", \"SUSPENDED\": \"str\", \"UNKNOWN\": \"str\", \"json.loads\": \"object\", \"logging.getLogger\": \"object\", \"six.iteritems\": \"Any\", \"worker.enabled\": \"bool\", \"self._config._get_retry_policy\": \"object\", \"self._config.batch_emails\": \"bool\", \"self._email_batcher.add_disable\": \"None\", \"self._email_batcher.add_failure\": \"None\", \"self._state.get_batch_running_tasks\": \"list[object]\", \"self._state.get_batcher\": \"tuple[Optional[dict[str, object]], Optional[object]]\", \"self._state.get_task\": \"Optional[object]\", \"self._state.get_worker\": \"Optional[object]\", \"self._state.set_status\": \"None\", \"self._task_history.task_finished\": \"None\", \"self._task_history.task_scheduled\": \"None\", \"self._task_history.task_started\": \"None\", \"_esbmc_collections_namedtuple\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'worker.enabled': missing return type; stub 'self._config._get_retry_policy': missing return type; stub 'self._config.batch_emails': missing return type; stub 'self._email_batcher.add_disable': missing return type; stub 'self._email_batcher.add_failure': missing return type; stub 'self._state.get_batch_running_tasks': missing return type; stub 'self._state.get_batcher': missing return type; stub 'self._state.get_task': missing return type; stub 'self._state.get_worker': missing return type; stub 'self._state.set_status': missing return type; stub 'self._task_history.task_finished': missing return type; stub 'self._task_history.task_scheduled': missing return type; stub 'self._task_history.task_started': missing return type",
+     "problems": [
+      "stub 'self._state.get_batcher': unsupported type 'tuple[Optional[dict[str, object]], Optional[object]]'"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"task_id\": \"Optional[str]\", \"status\": \"str\", \"runnable\": \"bool\", \"deps\": \"Optional[list[str]]\", \"new_deps\": \"Optional[list[str]]\", \"expl\": \"Optional[str]\", \"resources\": \"Optional[object]\", \"priority\": \"int\", \"family\": \"str\", \"module\": \"Optional[object]\", \"params\": \"Optional[dict[str, object]]\", \"assistant\": \"bool\", \"tracking_url\": \"Optional[str]\", \"worker\": \"Optional[object]\", \"batchable\": \"Optional[bool]\", \"batch_id\": \"Optional[str]\", \"retry_policy_dict\": \"dict[str, Optional[object]]\", \"owners\": \"Optional[list[str]]\"}, \"attributes\": {\"_config\": \"object\", \"_email_batcher\": \"object\", \"_make_task\": \"object\", \"_state\": \"object\", \"_task_history\": \"object\"}, \"stubs\": {\"BATCH_RUNNING\": \"str\", \"DISABLED\": \"str\", \"DONE\": \"str\", \"FAILED\": \"str\", \"PENDING\": \"str\", \"RUNNING\": \"str\", \"SUSPENDED\": \"str\", \"UNKNOWN\": \"str\", \"json.loads\": \"object\", \"logging.getLogger\": \"object\", \"six.iteritems\": \"Any\", \"worker.enabled\": \"bool\", \"self._config._get_retry_policy\": \"object\", \"self._config.batch_emails\": \"bool\", \"self._email_batcher.add_disable\": \"None\", \"self._email_batcher.add_failure\": \"None\", \"self._state.get_batch_running_tasks\": \"list[object]\", \"self._state.get_batcher\": \"dict[str, object]\", \"self._state.get_task\": \"Optional[object]\", \"self._state.get_worker\": \"Optional[object]\", \"self._state.set_status\": \"None\", \"self._task_history.task_finished\": \"None\", \"self._task_history.task_scheduled\": \"None\", \"self._task_history.task_started\": \"None\", \"_esbmc_collections_namedtuple\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'self._state.get_batcher': unsupported type 'tuple[Optional[dict[str, object]], Optional[object]]'",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/793b721e925f_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: update() argument must be a dict in ESBMC model",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "decorators_removed:rpc_method()",
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_filter_done,_first_task_display_name,_has_resources,_prune_emails,_prune_tasks,_prune_workers,_rank,_reset_orphaned_batch_running_tasks,_schedulable,_serialize_task,_traverse_graph,_upstream_status,_used_resources,add_task_batcher,add_worker,announce_scheduling_failure,count_pending,dep_graph,disable_worker,dump,fetch_error,forgive_failures,get_task_status_message,get_work,graph,inverse_dep_graph,is_paused,load,pause,ping,prune,re_enable_task,resource_list,resources,set_task_status_message,set_worker_processes,task_list,task_search,unpause,update_resource,update_resources,worker_list",
+    "properties_as_attributes:task_history",
+    "stubbed_imports:BATCH_RUNNING,DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,json,logging,six",
+    "esbmc_refused_members_stubbed:_esbmc_collections_namedtuple",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/793b721e925f_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 14.231
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_04.py",
+    "function": "interpolate_bilinear_2x_fwd",
+    "suspect_expression": "(h_src - wdw_size) / step_size",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "64db4833b7e4"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"src_arr\": \"object\", \"chunk_size\": \"int\"}, \"attributes\": {}, \"stubs\": {\"nl.ndarray\": \"object\", \"nl.shared_hbm\": \"object\", \"nl.load\": \"object\", \"nl.store\": \"None\", \"nl.affine_range\": \"None\", \"nl.static_range\": \"None\", \"nl.mgrid\": \"object\", \"nl.tile_size.pmax\": \"int\", \"nl.sbuf\": \"int\", \"nl_tile_size.pmax\": \"int\"}, \"assumptions\": [\"len(src_arr.shape) == 4\", \"chunk_size >= 2\"]}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'src_arr.dtype': missing return type",
+      "stub 'src_arr.reshape': missing return type",
+      "stub 'src_arr.shape': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"src_arr\": \"object\", \"chunk_size\": \"int\"}, \"attributes\": {\"src_arr\": \"object\"}, \"stubs\": {\"nl.ndarray\": \"object\", \"nl.shared_hbm\": \"object\", \"nl.load\": \"object\", \"nl.store\": \"None\", \"nl.affine_range\": \"None\", \"nl.static_range\": \"None\", \"nl.mgrid\": \"object\", \"nl.tile_size.pmax\": \"int\", \"src_arr.dtype\": \"object\", \"src_arr.reshape\": \"object\", \"src_arr.shape\": \"tuple[int, int, int, int]\", \"nl.sbuf\": \"int\", \"nl_tile_size.pmax\": \"int\"}, \"assumptions\": [\"chunk_size >= 2\"]}",
+     "feedback_given": "The JSON was rejected: stub 'src_arr.dtype': missing return type; stub 'src_arr.reshape': missing return type; stub 'src_arr.shape': missing return type",
+     "ignored": [
+      "attribute src_arr",
+      "stub nl.tile_size.pmax"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/12b9cbb201a1_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"src_arr\": \"object\", \"chunk_size\": \"int\"}, \"attributes\": {\"src_arr\": \"object\"}, \"stubs\": {\"nl.ndarray\": \"object\", \"nl.shared_hbm\": \"object\", \"nl.load\": \"object\", \"nl.store\": \"None\", \"nl.affine_range\": \"None\", \"nl.static_range\": \"None\", \"nl.mgrid\": \"object\", \"nl.sbuf\": \"object\", \"nl.tile_size.pmax\": \"int\", \"src_arr.dtype\": \"object\", \"src_arr.reshape\": \"object\", \"src_arr.shape\": \"tuple[int, int, int, int]\", \"nl_tile_size.pmax\": \"int\"}, \"assumptions\": [\"chunk_size >= 2\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+     "ignored": [
+      "attribute src_arr",
+      "stub nl.tile_size.pmax"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/12b9cbb201a1_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "decorators_removed:nki.jit",
+    "stubbed_imports:nl,nt",
+    "external_chains_flattened:nl_tile_size,nt_tensor",
+    "opaque_values"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/12b9cbb201a1_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 16.918
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_02.py",
+    "function": "ExactLanguageSearch.choose_best_split",
+    "suspect_expression": "float(not_parsed)/float(num_substrings)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "division_by_zero",
+    "hypothesis_id": "71a7594df7ea"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Function \"ESBMC_mmkey_0\" not found (/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a1.py line 28)",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"possible_parsed_splits\": \"list[list[dict[str, Optional[object]]]\", \"possible_substrings_splits\": \"list[list[str]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(possible_parsed_splits) > 0\", \"len(possible_substrings_splits) > 0\", \"len(possible_substrings_splits[i]) > 0\"]}",
+     "feedback_given": "",
+     "problems": [
+      "parameter 'possible_parsed_splits': unsupported type 'list[list[dict[str, Optional[object]]]'",
+      "assumption 'len(possible_substrings_splits[i]) > 0' uses Subscript"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"possible_parsed_splits\": \"list[list[dict[str, Optional[object]]]]\", \"possible_substrings_splits\": \"list[list[str]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(possible_parsed_splits) > 0\", \"len(possible_substrings_splits) > 0\"]}",
+     "feedback_given": "The JSON was rejected: parameter 'possible_parsed_splits': unsupported type 'list[list[dict[str, Optional[object]]]'; assumption 'len(possible_substrings_splits[i]) > 0' uses Subscript",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Function \"ESBMC_mmkey_0\" not found (/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a1.py line 28)",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:get_current_language,parse_found_objects,parse_item,search,search_parse,set_relative_base,split_by,split_if_not_parsed",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a1.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 6.73
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_02.py",
+    "function": "match",
+    "suspect_expression": "command.script.split()[1]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "0d42c76ad9fc"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in match",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.0
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_02.py",
+    "function": "WebSocketHandler.set_nodelay",
+    "suspect_expression": "assert self.stream is not None",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "9791fef294e6"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in WebSocketHandler.set_nodelay",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.009
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_15.py",
+    "function": "APIRouter.include_router",
+    "suspect_expression": "responses = {**responses, **route.responses}",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "eb4f8aa25d79"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in APIRouter.include_router",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.004
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_05.py",
+    "function": "MailSender.send",
+    "suspect_expression": "msg['To'] = COMMASPACE.join(to)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "b64dba9619ad"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call MIMENonMultipart(...) uses *args/**kwargs",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.016
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_09.py",
+    "function": "_format",
+    "suspect_expression": "formatted_val = format(float(raw_val), floatfmt)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "0cf48a78f40e"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Module member 'VERBOSE' not found in module 're'",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"val\": \"object\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_compile\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'val.encode': missing return type",
+      "stub 'val.replace': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"val\": \"object\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"val.encode\": \"bytes\", \"val.replace\": \"str\", \"_esbmc_re_compile\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'val.encode': missing return type; stub 'val.replace': missing return type",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/46f64b85699a_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Module member 'VERBOSE' not found in module 're'",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"val\": \"object\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"val.encode\": \"bytes\", \"val.replace\": \"str\", \"_esbmc_re_compile\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Module member 'VERBOSE' not found in module 're'",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/46f64b85699a_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Module member 'VERBOSE' not found in module 're'",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "esbmc_refused_members_stubbed:_esbmc_re_compile",
+    "builtin_exceptions_stubbed:UnicodeError,UnicodeDecodeError"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/46f64b85699a_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 19.884
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_01.py",
+    "function": "Session.update_headers",
+    "suspect_expression": "value = value.decode('utf8')",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "dc708f1fca89"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a2.py 40: list indices must be integers or slices, not str",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"request_headers\": \"dict[str, bytes]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a0.py 39: list indices must be integers or slices, not str",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"request_headers\": \"dict[str, Optional[bytes]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a0.py 39: list indices must be integers or slices, not str",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a1.py 40: list indices must be integers or slices, not str",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"request_headers\": \"dict[str, Optional[bytes]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(request_headers) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a1.py 40: list indices must be integers or slices, not str",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a2.py 40: list indices must be integers or slices, not str",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_get_path",
+    "properties_as_attributes:auth,cookies,headers",
+    "stubbed_imports:BaseConfigDict,DEFAULT_CONFIG_DIR",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/15f3fe204a22_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 16.714
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_06.py",
+    "function": "create_instance",
+    "suspect_expression": "return objcls.from_crawler(crawler, *args, **kwargs)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "0810e8f2097e"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in create_instance",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_11.py",
+    "function": "LocalCache.__setitem__",
+    "suspect_expression": "len(self) >= self.limit",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "167f3c429110"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Base class not found: OrderedDict",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"key\": \"object\", \"value\": \"object\"}, \"attributes\": {\"limit\": \"Optional[int]\", \"popitem\": \"object\"}, \"stubs\": {}, \"assumptions\": [\"self.limit is None or self.limit >= 0\"]}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/02b61d0b36c2_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Base class not found: OrderedDict",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "receiver_init_replaced",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/02b61d0b36c2_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 8.043
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_16.py",
+    "function": "Axes.scatter",
+    "suspect_expression": "linewidths = rcParams['lines.linewidth']",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "05e8c850b9a5"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call mtext.Annotation(...) cannot be stubbed",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.428
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_21.py",
+    "function": "_Projection.get_index",
+    "suspect_expression": "if matches:\n            return self.__class__(matches)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "d4465741be10"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in _Projection.get_index",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_10.py",
+    "function": "Driver._partially_consume_prefix",
+    "suspect_expression": "current_column += 4",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "d1f24c87a80f"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Driver._partially_consume_prefix",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_15.py",
+    "function": "gunzip",
+    "suspect_expression": "output += f.extrabuf",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "c95da1adb307"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in gunzip",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_10.py",
+    "function": "_wrap_text_to_colwidths",
+    "suspect_expression": "list_of_lists[0]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "a7bb12c94401"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call textwrap_TextWrapper.__init__(...) cannot be stubbed",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.081
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_15.py",
+    "function": "dfxp2srt",
+    "suspect_expression": "para.attrib['begin']",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "63796330961e"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in dfxp2srt",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.021
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_01.py",
+    "function": "Request._set_url",
+    "suspect_expression": "':' not in self._url",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "bd6fec9e8ff0"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Request._set_url",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_07.py",
+    "function": "_htmlentity_transform",
+    "suspect_expression": "compat_chr(int(numstr, base))",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "85f9daddd16a"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"entity\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_chr\": \"str\", \"compat_html_entities.name2codepoint\": \"Optional[int]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/a0ee05616019_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"entity\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_chr\": \"str\", \"compat_html_entities.name2codepoint\": \"Optional[int]\"}, \"assumptions\": [\"len(entity) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/a0ee05616019_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"entity\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_chr\": \"str\", \"compat_html_entities.name2codepoint\": \"Optional[int]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/a0ee05616019_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,shlex_quote",
+    "typing_import_added",
+    "compat_percent_format:1"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/a0ee05616019_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 20.359
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_12.py",
+    "function": "map_obj_to_commands",
+    "suspect_expression": "needs_update('state') and not needs_update('vrf')",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "c4c975ed3d9e"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in map_obj_to_commands",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.005
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_16.py",
+    "function": "pivot",
+    "suspect_expression": "columns",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "4b0ac089ad35"
+   },
+   "verdict": "ESBMC_ERROR",
+   "reason": "ESBMC direto: resultado inconclusivo.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"data\": \"object\", \"index\": \"Optional[object]\", \"columns\": \"Optional[object]\", \"values\": \"Optional[object]\"}, \"attributes\": {}, \"stubs\": {\"MultiIndex.from_arrays\": \"object\", \"is_list_like\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'data._constructor': missing return type",
+      "stub 'data._constructor_sliced': missing return type",
+      "stub 'data.index': missing return type",
+      "stub 'data.set_index': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"data\": \"object\", \"index\": \"Optional[object]\", \"columns\": \"Optional[object]\", \"values\": \"Optional[object]\"}, \"attributes\": {\"index\": \"object\", \"set_index\": \"object\", \"_constructor\": \"object\", \"_constructor_sliced\": \"object\"}, \"stubs\": {\"MultiIndex.from_arrays\": \"object\", \"is_list_like\": \"bool\", \"data._constructor\": \"object\", \"data._constructor_sliced\": \"object\", \"data.index\": \"object\", \"data.set_index\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'data._constructor': missing return type; stub 'data._constructor_sliced': missing return type; stub 'data.index': missing return type; stub 'data.set_index': missing return type",
+     "ignored": [
+      "attribute index",
+      "attribute set_index",
+      "attribute _constructor",
+      "attribute _constructor_sliced"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6e4f61097aaa_a1_replay.py",
+     "esbmc_status": "inconclusive",
+     "reading": "error",
+     "message": "ESBMC direto: resultado inconclusivo.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot'], indents=1)",
+    "stubbed_imports:Index,MultiIndex,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6e4f61097aaa_a1.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 10.818
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_28.py",
+    "function": "IOLoop.initialize",
+    "suspect_expression": "IOLoop.current(instance=False) is None",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "125693aa88b7"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"make_current\": \"Optional[bool]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0a62ee270b85_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"make_current\": \"Optional[bool]\"}, \"attributes\": {}, \"stubs\": {\"IOLoop.current\": \"Optional[object]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.\n(program line 112, original code: IOLoop._current.instance = self)",
+     "ignored": [
+      "stub IOLoop.current"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0a62ee270b85_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"make_current\": \"Optional[bool]\"}, \"attributes\": {}, \"stubs\": {\"IOLoop.current\": \"Optional[object]\", \"threading.Lock\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.\n(program line 112, original code: IOLoop._current.instance = self)",
+     "ignored": [
+      "stub IOLoop.current",
+      "stub threading.Lock"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0a62ee270b85_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 112.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_added",
+    "unreachable_methods_removed:_run_callback,_setup_logging,add_callback,add_callback_from_signal,add_future,add_handler,add_timeout,call_at,call_later,clear_current,clear_instance,close,close_fd,configurable_base,configurable_default,current,handle_callback_exception,initialized,install,instance,log_stack,remove_handler,remove_timeout,run_sync,set_blocking_log_threshold,set_blocking_signal_threshold,spawn_callback,split_fd,start,stop,time,update_handler",
+    "stubbed_imports:Configurable,errno_from_exception,timedelta_to_seconds",
+    "esbmc_refused_members_stubbed:_esbmc_threading_local",
+    "member_models:threading.local",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0a62ee270b85_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 20.037
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ir_real_03.py",
+    "function": "try_match_char_class_range",
+    "suspect_expression": "pattern_len != 7",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "95ca70b631ff"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in try_match_char_class_range",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/vm_real_05.py",
+    "function": "LocalFileSystem.move",
+    "suspect_expression": "self.fs.mkdir(d)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "variable_misuse",
+    "hypothesis_id": "9294074a31a9"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in LocalFileSystem.move",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_13.py",
+    "function": "XmlItemExporter._export_xml_field",
+    "suspect_expression": "self._xg_characters(serialized_value)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "7314d0f1d640"
+   },
+   "verdict": "SPEC_FAILED",
+   "reason": "The JSON was rejected: assumption 'len(kwargs) > 0' uses unknown name(s) kwargs",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"name\": \"str\", \"serialized_value\": \"object\"}, \"attributes\": {\"_xg_characters\": \"object\", \"xg\": \"object\"}, \"stubs\": {\"is_listlike\": \"bool\", \"six.iterkeys\": \"list[str]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'serialized_value.items': missing return type",
+      "stub 'self.xg.endElement': missing return type",
+      "stub 'self.xg.startElement': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"name\": \"str\", \"serialized_value\": \"object\"}, \"attributes\": {\"_xg_characters\": \"object\", \"xg\": \"object\"}, \"stubs\": {\"is_listlike\": \"bool\", \"six.iterkeys\": \"list[str]\", \"serialized_value.items\": \"dict[str, object]\", \"self.xg.endElement\": \"None\", \"self.xg.startElement\": \"None\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'serialized_value.items': missing return type; stub 'self.xg.endElement': missing return type; stub 'self.xg.startElement': missing return type",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/62eb0d4e8733_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'kwargs' is not defined in function 'BaseItemExporter' at line 69.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"name\": \"str\", \"serialized_value\": \"object\"}, \"attributes\": {\"_xg_characters\": \"object\", \"xg\": \"object\"}, \"stubs\": {\"is_listlike\": \"bool\", \"six.iterkeys\": \"list[str]\", \"serialized_value.items\": \"dict[str, object]\", \"self.xg.endElement\": \"None\", \"self.xg.startElement\": \"None\"}, \"assumptions\": [\"len(kwargs) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Variable 'kwargs' is not defined in function 'BaseItemExporter' at line 69.\n(program line 69, original code: self._configure(kwargs))",
+     "problems": [
+      "assumption 'len(kwargs) > 0' uses unknown name(s) kwargs"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:export_item,finish_exporting,start_exporting",
+    "stubbed_imports:is_listlike,six,sys,to_bytes,to_native_str,to_unicode",
+    "external_chains_flattened:six_text_type",
+    "opaque_values",
+    "compat_percent_format:1"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/62eb0d4e8733_a1.py",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 8.522
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_02.py",
+    "function": "ExactLanguageSearch.choose_best_split",
+    "suspect_expression": "float(not_parsed)/float(num_substrings)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "71a7594df7ea"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Function \"ESBMC_mmkey_0\" not found (/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a0.py line 28)",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"possible_parsed_splits\": \"list[list[dict[str, Optional[object]]]]\", \"possible_substrings_splits\": \"list[list[str]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Function \"ESBMC_mmkey_0\" not found (/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a0.py line 28)",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:get_current_language,parse_found_objects,parse_item,search,search_parse,set_relative_base,split_by,split_if_not_parsed",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af488342185b_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 6.764
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_03.py",
+    "function": "get_new_command",
+    "suspect_expression": "command.script_parts.pop(upstream_option_index)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "2558239033d5"
+   },
+   "verdict": "SPEC_FAILED",
+   "reason": "The JSON was rejected: assumption \"len(command.stderr.split('\\\\n')) >= 3\" may only call len()",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"replace_argument\": \"str\", \"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\"}, \"assumptions\": [\"len(command.script_parts) > 0\", \"len(command.stderr.split('\\\\n')) >= 3\"]}",
+     "feedback_given": "",
+     "problems": [
+      "assumption \"len(command.stderr.split('\\\\n')) >= 3\" may only call len()"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"replace_argument\": \"str\", \"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\"}, \"assumptions\": [\"len(command.script_parts) >= 0\", \"len(command.stderr.split('\\\\n')) >= 3\"]}",
+     "feedback_given": "The JSON was rejected: assumption \"len(command.stderr.split('\\\\n')) >= 3\" may only call len()",
+     "problems": [
+      "assumption \"len(command.stderr.split('\\\\n')) >= 3\" may only call len()"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"replace_argument\": \"str\", \"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\"}, \"assumptions\": [\"len(command.stderr.split('\\\\n')) >= 3\"]}",
+     "feedback_given": "The JSON was rejected: assumption \"len(command.stderr.split('\\\\n')) >= 3\" may only call len()",
+     "problems": [
+      "assumption \"len(command.stderr.split('\\\\n')) >= 3\" may only call len()"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 3.815
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_03.py",
+    "function": "Series.to_timestamp",
+    "suspect_expression": "assert isinstance(self.index, PeriodIndex)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "7fa63f4b93e4"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Series.to_timestamp",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.016
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_01.py",
+    "function": "read_conllx",
+    "suspect_expression": "head = (int(head) - 1) if head != \"0\" else id_",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "ca3ec10aecb9"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in read_conllx",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.004
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_10.py",
+    "function": "MetricsHandler.get",
+    "suspect_expression": "metrics.configure_http_handler(self)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "variable_misuse",
+    "hypothesis_id": "9e2b1f73b2c7"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in MetricsHandler.get",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_02.py",
+    "function": "tqdm.format_meter",
+    "suspect_expression": "total *= unit_scale",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "713fa6ad9533"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Object \"tqdm\" not found.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"n\": \"int\", \"total\": \"Optional[int]\", \"elapsed\": \"float\", \"ncols\": \"Optional[int]\", \"prefix\": \"str\", \"ascii\": \"bool\", \"unit\": \"str\", \"unit_scale\": \"Optional[bool]\", \"rate\": \"Optional[float]\", \"bar_format\": \"Optional[str]\", \"postfix\": \"Optional[object]\", \"unit_divisor\": \"float\"}, \"attributes\": {}, \"stubs\": {\"RE_ANSI.sub\": \"str\", \"TMonitor\": \"object\", \"WeakSet\": \"object\", \"_environ_cols_wrapper\": \"Optional[int]\", \"_supports_unicode\": \"bool\", \"_unich\": \"str\", \"_unicode\": \"str\", \"sys.stderr\": \"object\", \"sys.stdout\": \"object\", \"sys_stderr.write\": \"None\", \"warn\": \"None\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/960af2e9e762_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Object \"tqdm\" not found.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "unreachable_methods_removed:_comparable,_decr_instances,_get_free_pos,clear,close,display,ema,external_write_mode,format_dict,format_interval,format_num,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+    "stubbed_imports:Comparable,RE_ANSI,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,sys,warn",
+    "external_chains_flattened:sys_stderr",
+    "opaque_values",
+    "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/960af2e9e762_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 6.774
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_07.py",
+    "function": "url_concat",
+    "suspect_expression": "isinstance(args, dict)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "ee8a69760c32"
+   },
+   "verdict": "OTHER_FAILURE",
+   "reason": "uncaught exception: TypeError",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"url\": \"str\", \"args\": \"object\"}, \"attributes\": {}, \"stubs\": {\"PY3\": \"bool\", \"parse_qsl\": \"list[tuple[str, Optional[str]]]\", \"urlencode\": \"str\", \"urlparse\": \"object\", \"urlunparse\": \"str\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'args.items': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"url\": \"str\", \"args\": \"object\"}, \"attributes\": {}, \"stubs\": {\"PY3\": \"bool\", \"parse_qsl\": \"list[tuple[str, Optional[str]]]\", \"urlencode\": \"str\", \"urlparse\": \"object\", \"urlunparse\": \"str\", \"args.items\": \"list[tuple[str, Optional[str]]]\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'args.items': missing return type",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/74d547588077_a1_replay.py",
+     "esbmc_status": "violation_found",
+     "reading": "violation",
+     "message": "uncaught exception: TypeError",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "stubbed_imports:Cookie,ObjectDict,PY3,parse_qsl,responses,urlencode,urlparse,urlunparse",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/74d547588077_a1.py",
+   "replay": {
+    "status": "other_failure",
+    "exception_type": "TypeError",
+    "line": 89,
+    "runs": 4,
+    "reason": ""
+   },
+   "tokens": 0,
+   "seconds": 8.885
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_12.py",
+    "function": "PamdService.remove",
+    "suspect_expression": "current_line.next.prev = current_line.prev",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "7f57559b6887"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot resolve nested attribute: next",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"rule_type\": \"object\", \"rule_control\": \"object\", \"rule_path\": \"object\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"rule_type\": \"object\", \"rule_control\": \"object\", \"rule_path\": \"object\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"current_line.next\": \"object\", \"current_line.prev\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: next",
+     "ignored": [
+      "stub current_line.next",
+      "stub current_line.prev"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"rule_type\": \"object\", \"rule_control\": \"object\", \"rule_path\": \"object\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"current_line.next\": \"Optional[object]\", \"current_line.prev\": \"Optional[object]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: next",
+     "ignored": [
+      "stub current_line.next",
+      "stub current_line.prev"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:add_module_arguments,append,get,has_rule,insert_after,insert_before,remove_module_arguments,update_rule,validate"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/af02ed44e10d_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 16.584
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_17.py",
+    "function": "_type",
+    "suspect_expression": "_isint(string)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "d9f75a24158d"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Type inference failed at line 12. Variable unicode not found",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"string\": \"str\"}, \"attributes\": {}, \"stubs\": {\"python_version_tuple\": \"tuple[str]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/92b525f6ef5d_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 11. Variable unicode not found",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"string\": \"str\"}, \"attributes\": {}, \"stubs\": {\"python_version_tuple\": \"tuple[str]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 11. Variable unicode not found\n(program line 11, original code: _text_type = unicode)",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/92b525f6ef5d_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 11. Variable unicode not found",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"string\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"python_version_tuple\": \"tuple[str]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 11. Variable unicode not found\n(program line 11, original code: _text_type = unicode)",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/92b525f6ef5d_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 12. Variable unicode not found",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:python_version_tuple,reduce",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/92b525f6ef5d_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 12.256
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_22.py",
+    "function": "run",
+    "suspect_expression": "dotenv_as_dict = dotenv_values(file)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "9f76a9c05d5a"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in run",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_11.py",
+    "function": "HTTP1Connection._read_body",
+    "suspect_expression": "headers.get(\"Transfer-Encoding\") == \"chunked\"",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "27a63e30b4bc"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in HTTP1Connection._read_body",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.006
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_17.py",
+    "function": "unified_strdate",
+    "suspect_expression": "return compat_str(upload_date)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "f94730440977"
+   },
+   "verdict": "NOT_CONFIRMED",
+   "reason": "dereference failure: array bounds violated; dereference failure: NULL pointer; unwinding assertion loop 108; unwinding assertion loop 131",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"date_str\": \"Optional[str]\", \"day_first\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"compat_str\": \"str\", \"email_utils.parsedate_tz\": \"Optional[tuple[int, ...]]\", \"_esbmc_re_sub\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'email_utils.parsedate_tz': unsupported type 'Optional[tuple[int, ...]]'"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"date_str\": \"Optional[str]\", \"day_first\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"compat_str\": \"str\", \"email_utils.parsedate_tz\": \"Optional[tuple[int, int, int, int, int, int]]\", \"_esbmc_re_sub\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'email_utils.parsedate_tz': unsupported type 'Optional[tuple[int, ...]]'",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/ecac33d5242f_a1_replay.py",
+     "esbmc_status": "violation_found",
+     "reading": "artifact",
+     "message": "dereference failure: array bounds violated; dereference failure: NULL pointer; unwinding assertion loop 108; unwinding assertion loop 131",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,email,shlex_quote",
+    "esbmc_refused_members_stubbed:_esbmc_re_sub",
+    "external_chains_flattened:email_utils",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/ecac33d5242f_a1.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "not executed on host: imports datetime"
+   },
+   "tokens": 0,
+   "seconds": 28.842
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_11.py",
+    "function": "wcswidth",
+    "suspect_expression": "pwcs[idx]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "adbab526559e"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Type inference failed for Assign at line 119",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"pwcs\": \"str\", \"n\": \"Optional[int]\", \"unicode_version\": \"str\", \"ambiguous_width\": \"int\"}, \"attributes\": {}, \"stubs\": {\"_CATEGORY_MC_TABLE\": \"dict[str, bool]\", \"_EMOJI_ZWJ_SET\": \"set[int]\", \"_ISC_VIRAMA_SET\": \"set[int]\", \"_REGIONAL_INDICATOR_SET\": \"set[int]\", \"bisearch\": \"int\", \"wcwidth\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/7dd312cf9714_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 129",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"pwcs\": \"str\", \"n\": \"Optional[int]\", \"unicode_version\": \"str\", \"ambiguous_width\": \"int\"}, \"attributes\": {}, \"stubs\": {\"_CATEGORY_MC_TABLE\": \"dict[str, bool]\", \"_EMOJI_ZWJ_SET\": \"list[int]\", \"_ISC_VIRAMA_SET\": \"list[int]\", \"_REGIONAL_INDICATOR_SET\": \"list[int]\", \"bisearch\": \"int\", \"wcwidth\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed for Assign at line 129\n(program line 129, original code: _wcwidth = wcwidth if ambiguous_width == 1 else lambda c: wcwidth(c, 'auto', ambiguous_width))",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/7dd312cf9714_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 111",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"pwcs\": \"str\", \"n\": \"Optional[int]\", \"unicode_version\": \"str\", \"ambiguous_width\": \"int\"}, \"attributes\": {}, \"stubs\": {\"_CATEGORY_MC_TABLE\": \"dict[str, bool]\", \"_EMOJI_ZWJ_SET\": \"list[int]\", \"_ISC_VIRAMA_SET\": \"list[int]\", \"_REGIONAL_INDICATOR_SET\": \"list[int]\", \"bisearch\": \"Optional[int]\", \"wcwidth\": \"Optional[int]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed for Assign at line 111\n(program line 111, original code: _wcwidth = wcwidth if ambiguous_width == 1 else lambda c: wcwidth(c, 'auto', ambiguous_width))",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/7dd312cf9714_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 119",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:VS15_WIDE_TO_NARROW,VS16_NARROW_TO_WIDE,_CATEGORY_MC_TABLE,_EMOJI_ZWJ_SET,_FITZPATRICK_RANGE,_ISC_VIRAMA_SET,_REGIONAL_INDICATOR_SET,bisearch,get_term_overrides,resolve_terminal,wcwidth"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/7dd312cf9714_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 12.848
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_16.py",
+    "function": "IndexedSet.__getitem__",
+    "suspect_expression": "self.item_list[real_index]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "49bdcf695655"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call chain(...) uses *args/**kwargs",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.047
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_03.py",
+    "function": "Selector.__init__",
+    "suspect_expression": "text = response.text",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "371f1e63c54d"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Type inference failed at line 95. Variable XmlResponse not found",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"response\": \"object\", \"text\": \"Optional[str]\", \"type\": \"Optional[str]\", \"root\": \"Optional[object]\", \"_root\": \"Optional[object]\"}, \"attributes\": {}, \"stubs\": {\"HtmlResponse\": \"object\", \"deprecated\": \"None\", \"to_bytes\": \"bytes\", \"warnings.warn\": \"None\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'response.text': missing return type",
+      "stub 'response.url': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"response\": \"object\", \"text\": \"Optional[str]\", \"type\": \"Optional[str]\", \"root\": \"Optional[object]\", \"_root\": \"Optional[object]\"}, \"attributes\": {}, \"stubs\": {\"HtmlResponse\": \"object\", \"deprecated\": \"None\", \"to_bytes\": \"bytes\", \"warnings.warn\": \"None\", \"response.text\": \"Optional[str]\", \"response.url\": \"Optional[str]\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'response.text': missing return type; stub 'response.url': missing return type",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0d9b7669ccd3_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 95. Variable XmlResponse not found",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"response\": \"object\", \"text\": \"Optional[str]\", \"type\": \"Optional[str]\", \"root\": \"Optional[object]\", \"_root\": \"Optional[object]\"}, \"attributes\": {}, \"stubs\": {\"HtmlResponse\": \"object\", \"XmlResponse\": \"object\", \"deprecated\": \"None\", \"to_bytes\": \"bytes\", \"warnings.warn\": \"None\", \"response.text\": \"Optional[str]\", \"response.url\": \"Optional[str]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 95. Variable XmlResponse not found\n(program line 95, original code: rt = XmlResponse if st == 'xml' else HtmlResponse)",
+     "ignored": [
+      "stub XmlResponse"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0d9b7669ccd3_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 95. Variable XmlResponse not found",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "unreachable_methods_removed:_root,extract_unquoted,select",
+    "stubbed_imports:HtmlResponse,ScrapyDeprecationWarning,XmlResponse,_ParselSelector,deprecated,object_ref,to_bytes,warnings",
+    "external_chains_flattened:_ParselSelector_selectorlist_cls",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0d9b7669ccd3_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 9.603
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_08.py",
+    "function": "Sanic.url_for",
+    "suspect_expression": "netloc = self.config.get(\"SERVER_NAME\", \"\")",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "619690b76b01"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Sanic.url_for",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.011
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_13.py",
+    "function": "StaticFileHandler.get",
+    "suspect_expression": "(start is not None and start >= size) or end == 0",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "cfbc6501b31e"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "async entry point is not supported",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.019
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_17.py",
+    "function": "response_status_message",
+    "suspect_expression": "http.RESPONSES.get(int(status))",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "04d5bdded633"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in response_status_message",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_22.py",
+    "function": "match",
+    "suspect_expression": "pattern.lower() in command.stderr.lower()",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "45e332beeca0"
+   },
+   "verdict": "ESBMC_TIMEOUT",
+   "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(command.script_parts) > 0\"]}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'command.script_parts': missing return type",
+      "stub 'command.stderr': missing return type",
+      "stub 'command.stdout': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {\"script_parts\": \"list[str]\", \"stderr\": \"str\", \"stdout\": \"str\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'command.script_parts': missing return type; stub 'command.stderr': missing return type; stub 'command.stdout': missing return type",
+     "problems": [
+      "stub 'command.script_parts': missing return type",
+      "stub 'command.stderr': missing return type",
+      "stub 'command.stdout': missing return type"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {\"script_parts\": \"list[str]\", \"stderr\": \"str\", \"stdout\": \"str\"}, \"stubs\": {\"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\", \"command.stdout\": \"str\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'command.script_parts': missing return type; stub 'command.stderr': missing return type; stub 'command.stdout': missing return type",
+     "ignored": [
+      "attribute script_parts",
+      "attribute stderr",
+      "attribute stdout"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/4d222a1e94c9_a2_replay.py",
+     "esbmc_status": "timeout",
+     "reading": "timeout",
+     "message": "ESBMC direto excedeu o tempo limite de 180s.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/4d222a1e94c9_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 545.02
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_32.py",
+    "function": "date_convert",
+    "suspect_expression": "H += 12",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "a085752415f5"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.02
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/vm_real_06.py",
+    "function": "CrawlerProcess.__init__",
+    "suspect_expression": "configure_logging(settings)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "variable_misuse",
+    "hypothesis_id": "203a38091db1"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in CrawlerProcess.__init__",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_03.py",
+    "function": "HashExpander.do",
+    "suspect_expression": "(crc >> idx) % (range_end - range_begin + 1)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "division_by_zero",
+    "hypothesis_id": "06c42bbae3e3"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in HashExpander.do",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.007
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_04.py",
+    "function": "SortedCorrectedCommandsSequence._realise",
+    "suspect_expression": "self._cached[0]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "3da1a1c2759c"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Function \"ESBMC_srckey_0\" not found (/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/8897edf81125_a0.py line 66)",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {\"_cached\": \"list[object]\", \"_commands\": \"list[object]\", \"_settings\": \"object\"}, \"stubs\": {\"debug\": \"None\", \"format_stack\": \"list[str]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/8897edf81125_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Function \"ESBMC_srckey_0\" not found (/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/8897edf81125_a0.py line 66)",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_realise_first",
+    "stubbed_imports:debug,format_stack",
+    "opaque_values"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/8897edf81125_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 6.018
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_06.py",
+    "function": "get_new_command",
+    "suspect_expression": "return '{} --staged'.format(command.script)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "5178c88dca74"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in get_new_command",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_02.py",
+    "function": "HiveCommandClient.table_exists",
+    "suspect_expression": "return stdout and table in stdout",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "8cdf978b3304"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in HiveCommandClient.table_exists",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_07.py",
+    "function": "MarkerStyle._recache",
+    "suspect_expression": "self._filled = True",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "9f32a45807a7"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in MarkerStyle._recache",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.009
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/vm_real_01.py",
+    "function": "tqdm.format_meter",
+    "suspect_expression": "l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "variable_misuse",
+    "hypothesis_id": "9556cf6ca179"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in tqdm.format_meter",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.006
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_03.py",
+    "function": "FacebookIE._real_extract",
+    "suspect_expression": "len(video_title) > 80 + 3",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "c9329b0e0c54"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in FacebookIE._real_extract",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_08.py",
+    "function": "Request.url_for",
+    "suspect_expression": "\"//\" in self.app.config.SERVER_NAME",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "0afd57277b98"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot resolve nested attribute: __dict__",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"view_name\": \"str\"}, \"attributes\": {\"app\": \"object\", \"scheme\": \"str\", \"server_name\": \"str\", \"server_port\": \"int\"}, \"stubs\": {\"self.app.url_for\": \"str\", \"self.app.config.SERVER_NAME\": \"str\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'self.app.config': missing return type",
+      "stub 'self.app.websocket_enabled': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"view_name\": \"str\"}, \"attributes\": {\"app\": \"object\", \"scheme\": \"str\", \"server_name\": \"str\", \"server_port\": \"int\"}, \"stubs\": {\"self.app.url_for\": \"str\", \"self.app.config\": \"object\", \"self.app.config.SERVER_NAME\": \"str\", \"self.app.websocket_enabled\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'self.app.config': missing return type; stub 'self.app.websocket_enabled': missing return type",
+     "ignored": [
+      "stub self.app.config.SERVER_NAME"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6ec35fc0fd55_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: __dict__",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"view_name\": \"str\"}, \"attributes\": {\"app\": \"object\", \"scheme\": \"str\", \"server_name\": \"str\", \"server_port\": \"int\"}, \"stubs\": {\"self.app.url_for\": \"str\", \"self.app.config\": \"object\", \"self.app.config.SERVER_NAME\": \"str\", \"self.app.websocket_enabled\": \"bool\", \"self.app.config.__dict__\": \"dict[str, object]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: __dict__",
+     "ignored": [
+      "stub self.app.config.SERVER_NAME",
+      "stub self.app.config.__dict__"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6ec35fc0fd55_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: __dict__",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_get_address,body_finish,body_init,body_push,get,get_args,get_query_args,load_json",
+    "properties_as_attributes:args,content_type,cookies,files,form,forwarded,host,ip,json,match_info,path,port,query_args,query_string,raw_args,remote_addr,scheme,server_name,server_port,socket,token,url",
+    "opaque_values"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6ec35fc0fd55_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 11.635
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_13.py",
+    "function": "AsyncHTTPClient.close",
+    "suspect_expression": "self._instance_cache.get(self.io_loop) is not self",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "de21015dac10"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in AsyncHTTPClient.close",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_18.py",
+    "function": "after_log",
+    "suspect_expression": "sec_format % retry_state.seconds_since_start",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "4b58f0029fce"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in after_log",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_12.py",
+    "function": "match",
+    "suspect_expression": "\"php -s\" in command.script",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "481590e7d21b"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in match",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.0
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_17.py",
+    "function": "unified_strdate",
+    "suspect_expression": "return compat_str(upload_date)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "f94730440977"
+   },
+   "verdict": "NOT_CONFIRMED",
+   "reason": "dereference failure: NULL pointer; unwinding assertion loop 131; dereference failure: array bounds violated; unwinding assertion loop 108",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"date_str\": \"Optional[str]\", \"day_first\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"compat_str\": \"str\", \"email_utils.parsedate_tz\": \"Optional[tuple[int, int, int, int, int, int, int]]\", \"_esbmc_re_sub\": \"int\"}, \"assumptions\": [\"date_str is None or len(date_str) > 0\"]}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/ecac33d5242f_a0_replay.py",
+     "esbmc_status": "violation_found",
+     "reading": "artifact",
+     "message": "dereference failure: NULL pointer; unwinding assertion loop 131; dereference failure: array bounds violated; unwinding assertion loop 108",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,email,shlex_quote",
+    "esbmc_refused_members_stubbed:_esbmc_re_sub",
+    "external_chains_flattened:email_utils",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/ecac33d5242f_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "not executed on host: imports datetime"
+   },
+   "tokens": 0,
+   "seconds": 28.094
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_12.py",
+    "function": "fast_float",
+    "suspect_expression": "x[0]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "68ab0c8f9e6c"
+   },
+   "verdict": "ESBMC_TIMEOUT",
+   "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"key\": \"Callable[[str], str]\", \"_uni\": \"Callable[[str, StrOrFloat], StrOrFloat]\", \"_nan_inf\": \"frozenset[str]\", \"_first_char\": \"frozenset[str]\"}, \"attributes\": {}, \"stubs\": {\"decimal_chars\": \"list[str]\", \"unicodedata.numeric\": \"StrOrFloat\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "parameter 'key': unsupported type 'Callable[[str], str]'",
+      "parameter '_uni': unsupported type 'Callable[[str, StrOrFloat], StrOrFloat]'",
+      "stub 'unicodedata.numeric': unsupported type 'StrOrFloat'"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"key\": \"object\", \"_uni\": \"object\", \"_nan_inf\": \"frozenset[str]\", \"_first_char\": \"frozenset[str]\"}, \"attributes\": {}, \"stubs\": {\"decimal_chars\": \"list[str]\", \"unicodedata.numeric\": \"float\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: parameter 'key': unsupported type 'Callable[[str], str]'; parameter '_uni': unsupported type 'Callable[[str, StrOrFloat], StrOrFloat]'; stub 'unicodedata.numeric': unsupported type 'StrOrFloat'",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/597cc2e63892_a1_replay.py",
+     "esbmc_status": "timeout",
+     "reading": "timeout",
+     "message": "ESBMC direto excedeu o tempo limite de 180s.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "stubbed_imports:decimal_chars,unicodedata"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/597cc2e63892_a1.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 544.378
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_16.py",
+    "function": "IndexedSet.__getitem__",
+    "suspect_expression": "self.item_list[real_index]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "49bdcf695655"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call chain(...) uses *args/**kwargs",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.047
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_09.py",
+    "function": "generate_commands",
+    "suspect_expression": "commands.append(\"no {0}\".format(key))",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "incorrect_result",
+    "hypothesis_id": "82af3cf28752"
+   },
+   "verdict": "ESBMC_TIMEOUT",
+   "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"vlan_id\": \"str\", \"to_set\": \"dict[str, Optional[str]]\", \"to_remove\": \"list[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/1a5b885ccc38_a0_replay.py",
+     "esbmc_status": "timeout",
+     "reading": "timeout",
+     "message": "ESBMC direto excedeu o tempo limite de 180s.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/1a5b885ccc38_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 543.77
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_14.py",
+    "function": "TimeseriesGenerator.__len__",
+    "suspect_expression": "self.end_index - self.start_index",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "6a68dc0d3c17"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"list[int]\", \"range\": \"list[int]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"int\", \"range\": \"list[int]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"int\", \"range\": \"list[int]\"}, \"assumptions\": [\"self.end_index >= self.start_index\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_empty_batch",
+    "stubbed_imports:Sequence,np,range",
+    "external_chains_flattened:np_random"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/2feda05492db_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 9.207
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_17.py",
+    "function": "response_status_message",
+    "suspect_expression": "http.RESPONSES.get(int(status))",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "04d5bdded633"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in response_status_message",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_23.py",
+    "function": "Task.to_str_params",
+    "suspect_expression": "params[param_name].significant",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "6e466a4800ff"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in Task.to_str_params",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_33.py",
+    "function": "send2trash",
+    "suspect_expression": "SHFileOperationW(byref(fileop))",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "6fcf2dea1784"
+   },
+   "verdict": "ESBMC_ERROR",
+   "reason": "ESBMC direto: resultado inconclusivo.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"paths\": \"int\"}, \"attributes\": {}, \"stubs\": {\"BOOL\": \"int\", \"HWND\": \"int\", \"LPCWSTR\": \"int\", \"UINT\": \"int\", \"addressof\": \"int\", \"byref\": \"int\", \"c_uint\": \"int\", \"create_unicode_buffer\": \"int\", \"preprocess_paths\": \"int\", \"windll.kernel32\": \"int\", \"windll.shell32\": \"int\"}}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/da66b70142ee_a0_replay.py",
+     "esbmc_status": "inconclusive",
+     "reading": "error",
+     "message": "ESBMC direto: resultado inconclusivo.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "stubbed_imports:BOOL,FormatError,GetLastError,HWND,LPCWSTR,Structure,UINT,addressof,byref,c_uint,create_unicode_buffer,preprocess_paths,text_type,windll",
+    "builtin_exceptions_stubbed:WindowsError"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/da66b70142ee_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 8.406
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_23.py",
+    "function": "Markdown._html_class_str_from_tag",
+    "suspect_expression": "tag in html_classes_from_tag",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "30915ef1d767"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"tag\": \"str\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/5f4007534cd8_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"tag\": \"str\"}, \"attributes\": {\"extras\": \"Optional[dict[str, Optional[object]]]\", \"urls\": \"Optional[object]\", \"titles\": \"Optional[object]\", \"html_blocks\": \"Optional[object]\", \"html_spans\": \"Optional[object]\", \"html_removed_text\": \"str\", \"html_removed_text_compat\": \"str\", \"_toc\": \"Optional[object]\", \"list_level\": \"int\", \"_ws_only_line_re\": \"object\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+     "ignored": [
+      "attribute extras",
+      "attribute urls",
+      "attribute titles",
+      "attribute html_blocks",
+      "attribute html_spans",
+      "attribute html_removed_text",
+      "attribute html_removed_text_compat",
+      "attribute _toc",
+      "attribute list_level",
+      "attribute _ws_only_line_re"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/5f4007534cd8_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"tag\": \"str\"}, \"attributes\": {\"extras\": \"Optional[dict[str, Optional[object]]]\", \"urls\": \"Optional[object]\", \"titles\": \"Optional[object]\", \"html_blocks\": \"Optional[object]\", \"html_spans\": \"Optional[object]\", \"html_removed_text\": \"str\", \"html_removed_text_compat\": \"str\", \"_toc\": \"Optional[object]\", \"list_level\": \"int\", \"_ws_only_line_re\": \"object\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+     "ignored": [
+      "attribute extras",
+      "attribute urls",
+      "attribute titles",
+      "attribute html_blocks",
+      "attribute html_spans",
+      "attribute html_removed_text",
+      "attribute html_removed_text_compat",
+      "attribute _toc",
+      "attribute list_level",
+      "attribute _ws_only_line_re"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/5f4007534cd8_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_add_footnotes,_auto_email_link_sub,_auto_link_sub,_block_quote_sub,_code_block_sub,_code_span_sub,_color_with_pygments,_dedent_two_spaces_sub,_detab,_detab_line,_do_admonitions,_do_admonitions_sub,_do_auto_links,_do_block_quotes,_do_code_blocks,_do_code_spans,_do_fenced_code_blocks,_do_headers,_do_italics_and_bold,_do_link_patterns,_do_links,_do_lists,_do_numbering,_do_smart_contractions,_do_smart_punctuation,_do_strike,_do_tables,_do_underline,_do_wiki_tables,_encode_amps_and_angles,_encode_backslash_escapes,_encode_code,_encode_email_address,_encode_incomplete_tags,_escape_special_chars,_extract_footnote_def_sub,_extract_link_def_sub,_extract_metadata,_extract_url_and_title,_fenced_code_block_sub,_find_balanced,_find_non_whitespace,_form_paragraphs,_get_emacs_vars,_get_pygments_lexer,_h_sub,_hash_html_block_sub,_hash_html_blocks,_hash_html_spans,_list_item_sub,_list_sub,_outdent,_prepare_pyshell_blocks,_process_list_items,_pyshell_block_sub,_run_block_gamut,_run_span_gamut,_sanitize_html,_strip_footnote_definitions,_strip_link_definitions,_table_sub,_task_list_item_sub,_toc_add_entry,_unescape_special_chars,_unhash_html_spans,_uniform_indent,_uniform_outdent,_wiki_table_sub,convert,header_id_from_text,postprocess,preprocess,reset",
+    "compat_percent_format:1"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/5f4007534cd8_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 6.147
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_25.py",
+    "function": "HTTP1Connection._can_keep_alive",
+    "suspect_expression": "start_line.method in (\"HEAD\", \"GET\")",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "b00753ad9c92"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in HTTP1Connection._can_keep_alive",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_03.py",
+    "function": "HashExpander.do",
+    "suspect_expression": "(crc >> idx) % (range_end - range_begin + 1)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "06c42bbae3e3"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in HashExpander.do",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.005
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_05.py",
+    "function": "lib2to3_parse",
+    "suspect_expression": "src_txt[-1]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "98817400561e"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in lib2to3_parse",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.018
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_07.py",
+    "function": "match",
+    "suspect_expression": "'ls' in command.script and not ('ls -' in command.script)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "5f48dad7da51"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in match",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.0
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_03.py",
+    "function": "_match_one",
+    "suspect_expression": "UNARY_OPERATORS = {'': lambda v: v is not None, '!': lambda v: v is None}",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "76de2cb5ab24"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in _match_one",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.021
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/tm_real_08.py",
+    "function": "simple_separated_format",
+    "suspect_expression": "TableFormat(None, None, None, None, headerrow=None, datarow=DataRow('', separator, ''), padding=0, with_header_hide=None)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "type_mismatch",
+    "hypothesis_id": "a25d8874bca4"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in simple_separated_format",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.004
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/vm_real_02.py",
+    "function": "Schema.validate",
+    "suspect_expression": "type(skey) is not Optional",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "variable_misuse",
+    "hypothesis_id": "accea9723dcc"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "input type outside the supported subset: stub 'data.items': unsupported type 'list[tuple[object, object]]'",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"data\": \"object\"}, \"attributes\": {\"_error\": \"str\", \"_schema\": \"object\"}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'data.items': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"data\": \"object\"}, \"attributes\": {\"_error\": \"str\", \"_schema\": \"object\"}, \"stubs\": {\"data.items\": \"list[tuple[Optional[object], object]]\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'data.items': missing return type",
+     "problems": [
+      "stub 'data.items': unsupported type 'list[tuple[Optional[object], object]]'"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"data\": \"object\"}, \"attributes\": {\"_error\": \"str\", \"_schema\": \"object\"}, \"stubs\": {\"data.items\": \"list[tuple[object, object]]\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub 'data.items': unsupported type 'list[tuple[Optional[object], object]]'",
+     "problems": [
+      "stub 'data.items': unsupported type 'list[tuple[object, object]]'"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 3.531
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_04.py",
+    "function": "OffsiteMiddleware.get_host_regex",
+    "suspect_expression": "url_pattern.match(domain)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "1eeaa7e3fa74"
+   },
+   "verdict": "SPEC_FAILED",
+   "reason": "The JSON was rejected: assumption 'len(spider.allowed_domains) > 0' reads an attribute that is not an input",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"spider\": \"object\"}, \"attributes\": {}, \"stubs\": {\"warnings.warn\": \"None\", \"_esbmc_re_compile\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/dd91d821c383_a0_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"spider\": \"object\"}, \"attributes\": {}, \"stubs\": {\"warnings.warn\": \"None\", \"re.escape\": \"str\", \"_esbmc_re_compile\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "ignored": [
+      "stub re.escape"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/dd91d821c383_a1_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"spider\": \"object\"}, \"attributes\": {}, \"stubs\": {\"warnings.warn\": \"None\", \"re.escape\": \"str\", \"_esbmc_re_compile\": \"int\"}, \"assumptions\": [\"len(spider.allowed_domains) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "problems": [
+      "assumption 'len(spider.allowed_domains) > 0' reads an attribute that is not an input"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:from_crawler,process_spider_output,should_follow,spider_opened",
+    "stubbed_imports:warnings",
+    "esbmc_refused_members_stubbed:_esbmc_re_compile",
+    "builtin_exceptions_stubbed:Warning",
+    "compat_percent_format:1"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/dd91d821c383_a1.py",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 18.332
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_09.py",
+    "function": "tqdm.__len__",
+    "suspect_expression": "self.total if self.iterable is None else self.iterable.shape[0] if hasattr(self.iterable, \"shape\") else len(self.iterable) if hasattr(self.iterable, \"__len__\") else self.total",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "7fc202fe9e3e"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in tqdm.__len__",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.007
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_13.py",
+    "function": "AsyncHTTPClient.close",
+    "suspect_expression": "self._instance_cache.get(self.io_loop) is not self",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "de21015dac10"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in AsyncHTTPClient.close",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.003
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/nm_real_19.py",
+    "function": "IsFile",
+    "suspect_expression": "return os.path.isfile(v)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "9b1cc42c4a8c"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a2.py:22: error: Function is missing a type annotation  [no-untyped-def]",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"v\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a0_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a0.py:22: error: Function is missing a type annotation  [no-untyped-def]",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"v\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [], \"function_type\": \"Optional[bool]\"}",
+     "feedback_given": "ESBMC rejected the program: /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a0.py:22: error: Function is missing a type annotation  [no-untyped-def]",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a1_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a1.py:22: error: Function is missing a type annotation  [no-untyped-def]",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"v\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [], \"function_type\": \"Optional[bool]\", \"function_type_annotation\": \"def IsFile(v: Optional[str]) -> Optional[bool]:\"}",
+     "feedback_given": "ESBMC rejected the program: /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a1.py:22: error: Function is missing a type annotation  [no-untyped-def]",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a2_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a2.py:22: error: Function is missing a type annotation  [no-untyped-def]",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "decorators_removed:message('not a file', cls=FileInvalid),truth",
+    "stubbed_imports:AllInvalid,AnyInvalid,BooleanInvalid,CoerceInvalid,DatetimeInvalid,DirInvalid,EmailInvalid,ExactSequenceInvalid,FalseInvalid,FileInvalid,InInvalid,Invalid,LengthInvalid,MatchInvalid,MultipleInvalid,NotInInvalid,PathInvalid,RangeInvalid,Schema,TrueInvalid,TypeInvalid,UrlInvalid,message,raises",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/fb104132db97_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 18.649
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_05.py",
+    "function": "tqdm.__init__",
+    "suspect_expression": "self.iterable = iterable",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "none_misuse",
+    "hypothesis_id": "9d5416ae6c86"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Object \"tqdm\" not found.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"iterable\": \"Optional[object]\", \"desc\": \"Optional[str]\", \"total\": \"Optional[int]\", \"leave\": \"bool\", \"file\": \"Optional[object]\", \"ncols\": \"Optional[int]\", \"mininterval\": \"float\", \"maxinterval\": \"float\", \"miniters\": \"Optional[int]\", \"ascii\": \"Optional[bool]\", \"disable\": \"Optional[bool]\", \"unit\": \"str\", \"unit_scale\": \"Optional[bool]\", \"dynamic_ncols\": \"bool\", \"smoothing\": \"float\", \"bar_format\": \"Optional[str]\", \"initial\": \"int\", \"position\": \"Optional[int]\", \"postfix\": \"Optional[object]\", \"unit_divisor\": \"float\", \"gui\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"TMonitor\": \"object\", \"WeakSet\": \"object\", \"_OrderedDict\": \"object\", \"_environ_cols_wrapper\": \"Optional[callable]\", \"_supports_unicode\": \"bool\", \"_term_move_up\": \"str\", \"_unich\": \"str\", \"_unicode\": \"str\", \"mp.RLock\": \"object\", \"sys.stderr\": \"object\", \"sys.stdout\": \"object\", \"sys_stderr.write\": \"None\", \"warn\": \"None\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "problems": [
+      "stub '_environ_cols_wrapper': unsupported type 'Optional[callable]'",
+      "stub 'file.isatty': missing return type"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"iterable\": \"Optional[object]\", \"desc\": \"Optional[str]\", \"total\": \"Optional[int]\", \"leave\": \"bool\", \"file\": \"Optional[object]\", \"ncols\": \"Optional[int]\", \"mininterval\": \"float\", \"maxinterval\": \"float\", \"miniters\": \"Optional[int]\", \"ascii\": \"Optional[bool]\", \"disable\": \"Optional[bool]\", \"unit\": \"str\", \"unit_scale\": \"Optional[bool]\", \"dynamic_ncols\": \"bool\", \"smoothing\": \"float\", \"bar_format\": \"Optional[str]\", \"initial\": \"int\", \"position\": \"Optional[int]\", \"postfix\": \"Optional[object]\", \"unit_divisor\": \"float\", \"gui\": \"bool\"}, \"attributes\": {\"file\": \"object\"}, \"stubs\": {\"TMonitor\": \"object\", \"WeakSet\": \"object\", \"_OrderedDict\": \"object\", \"_environ_cols_wrapper\": \"Optional[object]\", \"_supports_unicode\": \"bool\", \"_term_move_up\": \"str\", \"_unich\": \"str\", \"_unicode\": \"str\", \"mp.RLock\": \"object\", \"sys.stderr\": \"object\", \"sys.stdout\": \"object\", \"sys_stderr.write\": \"None\", \"warn\": \"None\", \"file.isatty\": \"bool\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: stub '_environ_cols_wrapper': unsupported type 'Optional[callable]'; stub 'file.isatty': missing return type",
+     "ignored": [
+      "attribute file"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/1f4a4add989a_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Object \"tqdm\" not found.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 2,
+   "transforms": [
+    "unreachable_methods_removed:_comparable,_decr_instances,clear,close,external_write_mode,format_interval,format_sizeof,get_lock,pandas,set_description,set_description_str,set_lock,set_postfix_str,unpause,update,write",
+    "stubbed_imports:Comparable,Number,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,mp,sys,warn",
+    "esbmc_refused_members_stubbed:_esbmc_threading_RLock",
+    "external_chains_flattened:sys_stderr",
+    "member_models:threading.RLock",
+    "opaque_values",
+    "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/1f4a4add989a_a1.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 10.981
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_13.py",
+    "function": "match",
+    "suspect_expression": "'set-upstream' in command.output",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "57261a62dfa0"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in match",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/av_real_21.py",
+    "function": "YoutubeDL.process_ie_result",
+    "suspect_expression": "del force_properties[f]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "assertion_violation",
+    "hypothesis_id": "a74ce89b17e1"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call traceback.format_exception(...) cannot be stubbed",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.512
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_13.py",
+    "function": "tokenize",
+    "suspect_expression": "result[-1]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "4c1b926de1d5"
+   },
+   "verdict": "SPEC_FAILED",
+   "reason": "The JSON was rejected: assumption 'len(result) > 0' uses unknown name(s) result",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"string\": \"str\", \"keep_zwj\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"unicode_codes.EMOJI_DATA\": \"dict[str, dict[str, Any]]\", \"unicode_codes.STATUS\": \"dict[str, int]\", \"unicode_codes_EMOJI_DATA.get\": \"Optional[dict[str, Any]]\"}, \"assumptions\": [\"len(result) > 0\"]}",
+     "feedback_given": "",
+     "problems": [
+      "assumption 'len(result) > 0' uses unknown name(s) result"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"string\": \"str\", \"keep_zwj\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"unicode_codes.EMOJI_DATA\": \"dict[str, dict[str, Any]]\", \"unicode_codes.STATUS\": \"dict[str, int]\", \"unicode_codes_EMOJI_DATA.get\": \"Optional[dict[str, Any]]\"}, \"assumptions\": []}",
+     "feedback_given": "The JSON was rejected: assumption 'len(result) > 0' uses unknown name(s) result",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/c21548373960_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/c21548373960_a1.py 102: list indices must be integers or slices, not str",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"string\": \"str\", \"keep_zwj\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"unicode_codes.EMOJI_DATA\": \"dict[str, dict[str, Any]]\", \"unicode_codes.STATUS\": \"dict[str, int]\", \"unicode_codes_EMOJI_DATA.get\": \"Optional[dict[str, Any]]\"}, \"assumptions\": [\"len(result) > 0\"]}",
+     "feedback_given": "ESBMC rejected the program: ERROR: TypeError at /tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/c21548373960_a1.py 102: list indices must be integers or slices, not str",
+     "problems": [
+      "assumption 'len(result) > 0' uses unknown name(s) result"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:unicode_codes",
+    "external_chains_flattened:unicode_codes_EMOJI_DATA",
+    "opaque_values",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/c21548373960_a1.py",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 9.085
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_24.py",
+    "function": "CentralPlannerScheduler.get_work",
+    "suspect_expression": "in_workers = assistant or worker in task.workers",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "2ccbf9239bb5"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in CentralPlannerScheduler.get_work",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.013
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_10.py",
+    "function": "_get_spider_loader",
+    "suspect_expression": "settings.get('SPIDER_MANAGER_CLASS')",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "1c924c23c1b3"
+   },
+   "verdict": "ESBMC_TIMEOUT",
+   "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"settings\": \"dict[str, object]\"}, \"attributes\": {}, \"stubs\": {\"load_object\": \"object\", \"verifyClass\": \"None\", \"warnings.warn\": \"None\", \"ISpiderLoader\": \"int\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6fed5fc6fa20_a0_replay.py",
+     "esbmc_status": "timeout",
+     "reading": "timeout",
+     "message": "ESBMC direto excedeu o tempo limite de 180s.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "stubbed_imports:ISpiderLoader,ScrapyDeprecationWarning,load_object,verifyClass,warnings",
+    "opaque_values"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/6fed5fc6fa20_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 545.115
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_15.py",
+    "function": "EmptyLineTracker.maybe_empty_lines",
+    "suspect_expression": "before -= self.previous_after",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "ace80ef46799"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in EmptyLineTracker.maybe_empty_lines",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.042
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_19.py",
+    "function": "VersionInfo.__getitem__",
+    "suspect_expression": "self.to_tuple()[index]",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "3750f666466d"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Type inference failed at line 66. Variable DeprecationWarning not found",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"index\": \"object\"}, \"attributes\": {\"build\": \"Optional[str]\", \"major\": \"int\", \"minor\": \"int\", \"patch\": \"int\", \"prerelease\": \"Optional[str]\"}, \"stubs\": {\"inspect.currentframe\": \"object\", \"inspect.getfile\": \"str\", \"partial\": \"object\", \"warnings.warn_explicit\": \"None\", \"wraps\": \"object\", \"index.start\": \"Optional[int]\", \"index.stop\": \"Optional[int]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0dd63d991352_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 66. Variable DeprecationWarning not found",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"index\": \"object\"}, \"attributes\": {\"build\": \"Optional[str]\", \"major\": \"int\", \"minor\": \"int\", \"patch\": \"int\", \"prerelease\": \"Optional[str]\"}, \"stubs\": {\"inspect.currentframe\": \"object\", \"inspect.getfile\": \"str\", \"partial\": \"object\", \"warnings.warn_explicit\": \"None\", \"wraps\": \"object\", \"index.start\": \"Optional[int]\", \"index.stop\": \"Optional[int]\", \"DeprecationWarning\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 66. Variable DeprecationWarning not found\n(program line 66, original code: def deprecated(func=None, replace=None, version=None, category=DeprecationWarning):)",
+     "ignored": [
+      "stub DeprecationWarning"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0dd63d991352_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 66. Variable DeprecationWarning not found",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"index\": \"object\"}, \"attributes\": {\"build\": \"Optional[str]\", \"major\": \"int\", \"minor\": \"int\", \"patch\": \"int\", \"prerelease\": \"Optional[str]\"}, \"stubs\": {\"inspect.currentframe\": \"object\", \"inspect.getfile\": \"str\", \"partial\": \"object\", \"warnings.warn_explicit\": \"None\", \"wraps\": \"object\", \"index.start\": \"Optional[int]\", \"index.stop\": \"Optional[int]\", \"DeprecationWarning\": \"object\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed at line 66. Variable DeprecationWarning not found\n(program line 66, original code: def deprecated(func=None, replace=None, version=None, category=DeprecationWarning):)",
+     "ignored": [
+      "stub DeprecationWarning"
+     ],
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0dd63d991352_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed at line 66. Variable DeprecationWarning not found",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_increment_string,bump_build,bump_major,bump_minor,bump_patch,bump_prerelease,compare,finalize_version,isvalid,match,next_version,parse,replace",
+    "properties_as_attributes:build,major,minor,patch,prerelease",
+    "stubbed_imports:inspect,partial,warnings,wraps",
+    "opaque_values",
+    "builtin_exceptions_stubbed:Warning,DeprecationWarning",
+    "typing_import_added"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/0dd63d991352_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 10.852
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/ip_real_25.py",
+    "function": "SimpleTaskState.get_necessary_tasks",
+    "suspect_expression": "necessary_tasks",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "invalid_precondition",
+    "hypothesis_id": "c686db4ab5e9"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Can't generate zero for type empty",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {\"_status_tasks\": \"dict[str, list[object]]\", \"_tasks\": \"dict[str, object]\"}, \"stubs\": {\"DISABLED\": \"object\", \"DONE\": \"object\", \"UNKNOWN\": \"object\", \"six.itervalues\": \"list[object]\"}, \"assumptions\": []}",
+     "feedback_given": "",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/35937d90d4f7_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Can't generate zero for type empty",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {}, \"attributes\": {\"_status_tasks\": \"dict[str, list[object]]\", \"_tasks\": \"dict[str, object]\"}, \"stubs\": {\"DISABLED\": \"Optional[object]\", \"DONE\": \"Optional[object]\", \"UNKNOWN\": \"Optional[object]\", \"six.itervalues\": \"list[object]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Can't generate zero for type empty",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/35937d90d4f7_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Can't generate zero for type empty",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {}, \"attributes\": {\"_status_tasks\": \"dict[str, list[object]]\", \"_tasks\": \"dict[str, object]\"}, \"stubs\": {\"DISABLED\": \"object\", \"DONE\": \"object\", \"UNKNOWN\": \"object\", \"six.itervalues\": \"list[object]\"}, \"assumptions\": []}",
+     "feedback_given": "ESBMC rejected the program: ERROR: Can't generate zero for type empty",
+     "replay_program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/35937d90d4f7_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Can't generate zero for type empty",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_remove_workers_from_tasks,disable_workers,dump,fail_dead_worker_task,get_active_workers,get_assistants,get_pending_tasks,get_running_tasks,get_state,get_task,get_worker,get_worker_ids,has_task,inactivate_tasks,inactivate_workers,load,may_prune,num_pending_tasks,re_enable,set_state,set_status,update_status",
+    "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,six",
+    "opaque_values"
+   ],
+   "program_path": "/tmp/claude-1000/-mnt-c-Users-ferna-esbmc/d5dc9873-2395-4ca5-8347-633e0d69b0b2/scratchpad/fin_fix/programs/35937d90d4f7_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 0,
+   "seconds": 25.78
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/dz_real_04.py",
+    "function": "interpolate_bilinear_2x_fwd",
+    "suspect_expression": "(h_src - wdw_size) / step_size",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "division_by_zero",
+    "hypothesis_id": "64db4833b7e4"
+   },
+   "verdict": "SPEC_FAILED",
+   "reason": "The JSON was rejected: assumption 'src_arr.shape[2] >= chunk_size' uses Subscript",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"src_arr\": \"object\", \"chunk_size\": \"int\"}, \"attributes\": {}, \"stubs\": {\"nl.affine_range\": \"object\", \"nl.load\": \"object\", \"nl.mgrid\": \"object\", \"nl.ndarray\": \"object\", \"nl.sbuf\": \"object\", \"nl.shared_hbm\": \"object\", \"nl.static_range\": \"object\", \"nl.store\": \"None\", \"nl_tile_size.pmax\": \"int\"}, \"assumptions\": [\"len(src_arr.shape) == 4\", \"src_arr.shape[2] >= chunk_size\"]}",
+     "feedback_given": "",
+     "problems": [
+      "stub 'src_arr.dtype': missing return type",
+      "stub 'src_arr.reshape': missing return type",
+      "stub 'src_arr.shape': missing return type",
+      "assumption 'src_arr.shape[2] >= chunk_size' uses Subscript"
+     ]
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"src_arr\": \"object\", \"chunk_size\": \"int\"}, \"attributes\": {\"src_arr\": \"object\"}, \"stubs\": {\"nl.affine_range\": \"object\", \"nl.load\": \"object\", \"nl.mgrid\": \"object\", \"nl.ndarray\": \"object\", \"nl.sbuf\": \"object\", \"nl.shared_hbm\": \"object\", \"nl.static_range\": \"object\", \"nl.store\": \"None\", \"nl_tile_size.pmax\": \"int\", \"src_arr.dtype\": \"object\", \"src_arr.reshape\": \"object\", \"src_arr.shape\": \"tuple[int, int, int, int]\"}, \"assumptions\": [\"src_arr.shape[0] > 0\", \"src_arr.shape[1] > 0\", \"src_arr.shape[2] >= chunk_size\"]}",
+     "feedback_given": "The JSON was rejected: stub 'src_arr.dtype': missing return type; stub 'src_arr.reshape': missing return type; stub 'src_arr.shape': missing return type; assumption 'src_arr.shape[2] >= chunk_size' uses Subscript",
+     "problems": [
+      "assumption 'src_arr.shape[0] > 0' uses Subscript",
+      "assumption 'src_arr.shape[1] > 0' uses Subscript",
+      "assumption 'src_arr.shape[2] >= chunk_size' uses Subscript"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"src_arr\": \"object\", \"chunk_size\": \"int\"}, \"attributes\": {\"src_arr\": \"object\"}, \"stubs\": {\"nl.affine_range\": \"object\", \"nl.load\": \"object\", \"nl.mgrid\": \"object\", \"nl.ndarray\": \"object\", \"nl.sbuf\": \"object\", \"nl.shared_hbm\": \"object\", \"nl.static_range\": \"object\", \"nl.store\": \"None\", \"nl_tile_size.pmax\": \"int\", \"src_arr.dtype\": \"object\", \"src_arr.reshape\": \"object\", \"src_arr.shape\": \"tuple[int, int, int, int]\"}, \"assumptions\": [\"len(src_arr.shape) == 4\", \"src_arr.shape[2] >= chunk_size\"]}",
+     "feedback_given": "The JSON was rejected: assumption 'src_arr.shape[0] > 0' uses Subscript; assumption 'src_arr.shape[1] > 0' uses Subscript; assumption 'src_arr.shape[2] >= chunk_size' uses Subscript",
+     "problems": [
+      "assumption 'src_arr.shape[2] >= chunk_size' uses Subscript"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 4.645
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/v2_real_world/detection/oob_real_06.py",
+    "function": "merge_configs",
+    "suspect_expression": "merge_configs(default[k], v)",
+    "line": 0,
+    "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+    "category": "out_of_bounds",
+    "hypothesis_id": "a262b717dd6d"
+   },
+   "verdict": "GROUNDING_FAILED",
+   "reason": "suspect expression not found in merge_configs",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.001
+  }
+ ]
+}

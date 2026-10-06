@@ -1,0 +1,20 @@
+{
+  "pasta": "agent-2026-10-06-e2e",
+  "modificado_em": "2026-10-06T10:41",
+  "arquivos": [
+    "agent-2026-10-06-e2e.log",
+    "agent_results.json",
+    "input_report.json"
+  ],
+  "vereditos (agent_results.json)": {
+    "AGENT_FAILED": 10,
+    "UNSUPPORTED": 20,
+    "ESBMC_TIMEOUT": 3,
+    "NOT_CONFIRMED": 4,
+    "CONFIRMED": 3,
+    "ESBMC_ERROR": 4,
+    "ESBMC_MISSED": 2,
+    "UNVALIDATED": 11,
+    "MISSING_DEPENDENCY": 1
+  }
+}

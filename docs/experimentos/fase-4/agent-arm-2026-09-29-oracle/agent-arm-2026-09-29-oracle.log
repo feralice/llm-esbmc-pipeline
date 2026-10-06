@@ -1,0 +1,130 @@
+[1/49] dz_real_01.py::makeMappingArray (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[2/49] oob_real_05.py::lib2to3_parse (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True unwinding assertion loop 131; unwinding assertion loop 108; unwinding assertion loop 53; uncaught ex
+[3/49] av_real_02.py::WebSocketHandler.set_nodelay (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True assertion !(ISNONE(self->stream, 0)); dereference failure: NULL pointer
+[4/49] av_real_03.py::Series.to_timestamp (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True assertion ISINSTANCE(self->index, PeriodIndex)
+[5/49] nm_real_15.py::APIRouter.include_router (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: dict unpacking ({**d}) is not supported
+[6/49] tm_real_01.py::read_conllx (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Unsupported expression Starred at line 26
+[7/49] tm_real_05.py::MailSender.send (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Unsupported expression Starred at line 100
+[8/49] tm_real_07.py::MarkerStyle._recache (engine: UNSUPPORTED)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[9/49] tm_real_08.py::simple_separated_format (engine: UNSUPPORTED)
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[10/49] tm_real_10.py::MetricsHandler.get (engine: UNSUPPORTED)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[11/49] io_real_01.py::nonsingular (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True uncaught exception: ZeroDivisionError
+[12/49] nm_real_04.py::OffsiteMiddleware.get_host_regex (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+[13/49] nm_real_06.py::create_instance (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Unsupported expression Starred at line 42
+[14/49] nm_real_09.py::tqdm.__len__ (engine: UNSUPPORTED)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[15/49] nm_real_12.py::PamdService.remove (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True dereference failure: NULL pointer
+[16/49] nm_real_13.py::AsyncHTTPClient.close (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: del on subscript requires a dictionary (struct) type
+[17/49] nm_real_16.py::Axes.scatter (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[18/49] nm_real_20.py::engine.numwords (engine: UNSUPPORTED)
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+    -> UNSUPPORTED preserved=True ERROR: Type inference failed for Assign at line 154
+[19/49] av_real_05.py::tqdm.__init__ (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Type inference failed for Assign at line 258
+[20/49] av_real_09.py::_make_getset_interval (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[21/49] av_real_15.py::gunzip (engine: MISSING_DEPENDENCY)
+[21/49] av_real_15.py::gunzip (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[22/49] av_real_17.py::unified_strdate (engine: UNSUPPORTED)
+[22/49] av_real_17.py::unified_strdate (engine: UNSUPPORTED)
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+    -> ESBMC_TIMEOUT preserved=True ESBMC direto excedeu o tempo limite de 180s.
+[23/49] oob_real_09.py::parser._parse (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: Tuple unpacking only supports simple names, not Attribute
+[24/49] oob_real_10.py::_wrap_text_to_colwidths (engine: MISSING_DEPENDENCY)
+    -> ESBMC_TIMEOUT preserved=True ESBMC direto excedeu o tempo limite de 180s.
+[25/49] oob_real_11.py::wcswidth (engine: MISSING_DEPENDENCY)
+[25/27] oob_real_11.py::wcswidth (engine: MISSING_DEPENDENCY)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[26/27] oob_real_13.py::tokenize (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: TypeError at artifacts/v2/agent-arm-2026-09-29-oracle/cases/4c1b926de1d5/harness.py 94: list 
+[27/27] oob_real_14.py::LinuxDistribution._parse_uname_content (engine: MISSING_DEPENDENCY)
+    -> MISSING_DEPENDENCY preserved=True ERROR: Object "name" not found.
+
+ {'AGENT_FAILED': 5, 'CONFIRMED': 3, 'UNVALIDATED': 2, 'UNSUPPORTED': 10, 'NOT_CONFIRMED': 4, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1}
+[28/30] oob_real_15.py::dfxp2srt (engine: UNSUPPORTED)
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED preserved=True ERROR: TypeError: 'int' object is not subscriptable at artifacts/v2/agent-arm-2026-09-29-oracle/case
+[29/30] oob_real_16.py::IndexedSet.__getitem__ (engine: MISSING_DEPENDENCY)
+[29/30] oob_real_16.py::IndexedSet.__getitem__ (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=True dereference failure: Incorrect alignment when accessing data object; dereference failure: invalid po
+[30/30] ip_real_07.py::_htmlentity_transform (engine: UNSUPPORTED)
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+    -> UNVALIDATED preserved=True uncaught exception: TypeError
+
+ {'AGENT_FAILED': 5, 'CONFIRMED': 3, 'UNVALIDATED': 4, 'UNSUPPORTED': 11, 'NOT_CONFIRMED': 4, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1}
+[31/32] ip_real_11.py::HTTPBearer.__call__ (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=False unwinding assertion loop 131; unwinding assertion loop 68; dereference failure: invalid pointer; unc
+[32/32] ip_real_13.py::StaticFileHandler.get (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=False ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+
+ {'AGENT_FAILED': 5, 'CONFIRMED': 3, 'UNVALIDATED': 5, 'UNSUPPORTED': 12, 'NOT_CONFIRMED': 4, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1}
+[33/35] ip_real_14.py::TimeseriesGenerator.__len__ (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True uncaught exception: ZeroDivisionError
+[34/35] ip_real_15.py::EmptyLineTracker.maybe_empty_lines (engine: UNSUPPORTED)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[35/35] ip_real_17.py::response_status_message (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+
+ {'AGENT_FAILED': 5, 'CONFIRMED': 3, 'UNVALIDATED': 6, 'UNSUPPORTED': 13, 'NOT_CONFIRMED': 5, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1}
+[36/38] ip_real_21.py::SortedDict.__eq__ (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True unwinding assertion loop 131; dereference failure: Access to object out of bounds: heap object; out-
+[37/38] ip_real_32.py::date_convert (engine: UNSUPPORTED)
+    -> AGENT_FAILED preserved=None agent did not finish: TimeoutExpired
+[38/38] ip_real_33.py::send2trash (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=True ERROR: Unexpected type in int/ptr typecast
+
+ {'AGENT_FAILED': 6, 'CONFIRMED': 3, 'UNVALIDATED': 7, 'UNSUPPORTED': 14, 'NOT_CONFIRMED': 5, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1}
+[39/41] ir_real_01.py::gamma (engine: MISSING_DEPENDENCY)
+    -> OTHER_FAILURE preserved=True unwinding assertion loop 155; unwinding assertion loop 124; uncaught exception: ValueError
+[40/41] nm_real_23.py::Markdown._html_class_str_from_tag (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: unsupported: non-constant argument in str % formatting
+[41/41] dz_real_04.py::interpolate_bilinear_2x_fwd (engine: UNSUPPORTED)
+    -> UNSUPPORTED preserved=True ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+
+ {'AGENT_FAILED': 6, 'CONFIRMED': 3, 'UNVALIDATED': 7, 'UNSUPPORTED': 16, 'NOT_CONFIRMED': 5, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1, 'OTHER_FAILURE': 1}
+[42/44] nm_real_24.py::reformat_many (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[43/44] tm_real_11.py::SitemapSpider._parse_sitemap (engine: MISSING_DEPENDENCY)
+    -> UNVALIDATED preserved=True unwinding assertion loop 131; dereference failure: Incorrect alignment when accessing data object; d
+[44/44] vm_real_04.py::YoutubeDL._build_format_filter (engine: MISSING_DEPENDENCY)
+    -> UNSUPPORTED preserved=False ERROR: Unsupported expression for 'in' operation
+
+ {'AGENT_FAILED': 6, 'CONFIRMED': 3, 'UNVALIDATED': 8, 'UNSUPPORTED': 17, 'NOT_CONFIRMED': 6, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1, 'OTHER_FAILURE': 1}
+[45/47] vm_real_05.py::LocalFileSystem.move (engine: UNSUPPORTED)
+    -> UNVALIDATED preserved=True uncaught exception: RuntimeError
+[46/47] vm_real_06.py::CrawlerProcess.__init__ (engine: UNSUPPORTED)
+    -> CONFIRMED preserved=True uncaught exception: AttributeError
+[47/47] vm_real_07.py::fit_generator (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+
+ {'AGENT_FAILED': 6, 'CONFIRMED': 4, 'UNVALIDATED': 9, 'UNSUPPORTED': 17, 'NOT_CONFIRMED': 7, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1, 'OTHER_FAILURE': 1}
+[48/49] vm_real_08.py::get_write_function (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=True no_violation_found
+[49/49] ip_real_34.py::find_hook (engine: MISSING_DEPENDENCY)
+    -> NOT_CONFIRMED preserved=True unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 130; unwinding a
+
+ {'AGENT_FAILED': 6, 'CONFIRMED': 4, 'UNVALIDATED': 9, 'UNSUPPORTED': 17, 'NOT_CONFIRMED': 9, 'ESBMC_TIMEOUT': 2, 'MISSING_DEPENDENCY': 1, 'OTHER_FAILURE': 1}

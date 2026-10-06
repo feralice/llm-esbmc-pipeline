@@ -1,0 +1,74 @@
+[
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/nm_real_12.py",
+      "function": "PamdService.remove",
+      "suspect_expression": "current_line.next.prev = current_line.prev",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "none_misuse",
+      "hypothesis_id": "7f57559b6887"
+    },
+    "verdict": "NOT_CONFIRMED",
+    "reason": "dereference failure: Access to object out of bounds: heap object; dereference failure: NULL pointer",
+    "target_preserved": true,
+    "replay": {
+      "status": "other_failure",
+      "exception_type": "AttributeError",
+      "line": 53,
+      "runs": 30,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-control-fixed-2026-10-04/cases/7f57559b6887/harness.py",
+    "agent_output": "dService, ...)`, not a method inside the class. Its body is unchanged; only type annotations were added. This version of ESBMC rejects any `.remove(...)` call with more than one argument (\"remove() takes exactly one argument\"), apparently treating it as `list.remove`. I tested `obj.remove`, `PamdService.remove(obj, ...)`, a bound alias, keyword arguments, `self.remove` from another method and a class-level alias, and all failed. `getattr` got past the check, but ESBMC could only report \"unsupported function\", which says nothing about the code. So the driver calls `remove(service, ...)`.\n\n**What the rest of harness.py does:**\n- **Stubs:** `PamdRule` keeps its fields and the original `matches` logic, but the control/args property setters are dropped. `PamdService` keeps the original `append` logic and no longer parses content in `__init__`.\n- **Driver:** builds a list of 1 to 3 rules with nondet controls and calls `remove` once with a nondet control.\n\nThe CPython replay has not been run.",
+    "unwind": 5,
+    "seconds": 168.186,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": null,
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  },
+  {
+    "hypothesis": {
+      "file": "dataset/v2_real_world/detection/ip_real_14.py",
+      "function": "TimeseriesGenerator.__len__",
+      "suspect_expression": "self.end_index - self.start_index",
+      "line": 0,
+      "trigger_condition": "Oracle-seeded hypothesis for synthesis-only evaluation.",
+      "category": "invalid_precondition",
+      "hypothesis_id": "6a68dc0d3c17"
+    },
+    "verdict": "UNVALIDATED",
+    "reason": "uncaught exception: ZeroDivisionError",
+    "target_preserved": true,
+    "replay": {
+      "status": "reproduced",
+      "exception_type": "TypeError",
+      "line": 26,
+      "runs": 1,
+      "reason": ""
+    },
+    "esbmc_status": "violation_found",
+    "harness_path": "artifacts/v2/agent-control-fixed-2026-10-04/cases/6a68dc0d3c17/harness.py",
+    "agent_output": "tor.__len__` is copied from `original.py` with its body unchanged. I only added `-> int` to the signature.\n- **The class:** a smaller `__init__` that just sets the four fields `__len__` reads (`start_index`, `end_index`, `batch_size`, `stride`). I dropped the original constructor's `start_index + length` step and its `ValueError` check, so the start and end indexes are fully unconstrained.\n- **The numpy stub:** ESBMC doesn't support `np.ceil` (\"Unsupported Numpy call: ceil\"). I replaced `numpy` with a small `_NumpyStub` object whose `ceil` calls `math.ceil`.\n- **The driver:** runs at module level and passes four `nondet_int()` values into the class, then calls `gen.__len__()`. There are no asserts and no guards on the suspect expression.\n\nI defined `nondet_int()` in the harness with an empty body so the CPython replay can find it. mypy isn't installed, so ESBMC skipped type checking. The \"Missing return statement\" message about that empty body is only a warning and didn't stop the run.",
+    "unwind": 5,
+    "seconds": 53.565,
+    "engine_verdict": "UNSUPPORTED",
+    "variant": {
+      "backend": "claude",
+      "plugin": true,
+      "isolated": true,
+      "notes": "",
+      "model": null,
+      "plugin_command": "",
+      "allow_simplify": false
+    }
+  }
+]

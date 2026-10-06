@@ -1,0 +1,313 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "gemini-3.6-flash",
+      "backend": "google",
+      "synth_backend": "google",
+      "synth_model": "gemini-3.6-flash",
+      "v2_stage": "end-to-end",
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "compat": true,
+      "guards": true,
+      "ablation": true,
+      "driver": true,
+      "real_driver": true,
+      "synth_retries": 1,
+      "bound": 6,
+      "timeout": 120,
+      "llm_timeout": 120,
+      "include_smells": false,
+      "esbmc_command": [
+        "esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py": "c57f0dc1d72c4398bc403eb137c464ab5a587706e8661d311fdf444ae88722dd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py": "d5fde0b64e1df50d414955a84e5f36bd254052d696b95960b77dcdd3714226da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py": "7d8e73cc17f1e38be7d1434f418721ad2b35f747b3ac207409c8f7bb754c0f30"
+    },
+    "detector_prompt": "b23342598b84cf75ce35d6e83b94fc38cda1160209d1fcbad519beb983c4dddf",
+    "synth_prompt": "17eedee9f59930b7f1e555d63d3cfea37594ca2dd0264fe82c5ac011d37119bf"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/av_real_01.py::cli_bool_option": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/av_real_01.py",
+          "function": "cli_bool_option",
+          "category": "assertion_violation",
+          "expression": "assert isinstance(param, bool)",
+          "note": "If the key represented by 'param' is not present in 'params' (or maps to a non-boolean value), 'params.get(param)' returns null. Passing null to 'isinstance(null, bool)' returns false, causing 'assert isinstance(param, bool)' to fail and raise an AssertionError."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py::makeMappingArray": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "out_of_bounds",
+          "expression": "x[0]",
+          "note": "If data is an empty 2D array of shape (0, 3), the shape check passes because shape[1] is 3. Accessing x[0] on line 16 then raises an IndexError because x has size 0."
+        },
+        {
+          "file": "dataset/v2_real_world/detection/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "division_by_zero",
+          "expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+          "note": "The validation check `(np.diff(x) < 0).any()` only rejects strictly decreasing values, allowing duplicate adjacent x values where x[i] == x[i-1]. When duplicate x values exist in data, `x[ind] - x[ind - 1]` evaluates to zero on line 23, causing a division by zero."
+        }
+      ],
+      "rejected_findings": []
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py::merge_nested_config": {
+      "candidates": [
+        {
+          "file": "dataset/v2_real_world/detection/oob_real_06.py",
+          "function": "merge_nested_config",
+          "category": "invalid_precondition",
+          "expression": "default[key]",
+          "note": "A função realiza o acesso direto `default[key]` sem validar se a chave `key` pertence ao dicionário `default`. Quando `value` é um dicionário e `key` não está presente em `default`, o código lança a exceção `KeyError`. A instrução condicional existente verifica apenas o tipo do parâmetro `value`, deixando o parâmetro `default` desprotegido."
+        }
+      ],
+      "rejected_findings": []
+    }
+  },
+  "synthesis_results": {
+    "0": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/av_real_01.py",
+        "function": "cli_bool_option",
+        "category": "assertion_violation",
+        "expression": "assert isinstance(param, bool)",
+        "note": "If the key represented by 'param' is not present in 'params' (or maps to a non-boolean value), 'params.get(param)' returns null. Passing null to 'isinstance(null, bool)' returns false, causing 'assert isinstance(param, bool)' to fail and raise an AssertionError."
+      },
+      "classification": "confirmed_unverified",
+      "failure_stage": "",
+      "harness": "# Real function: cli_bool_option\n# Category: assertion_violation\n# __ESBMC_assume: kind tag is between 0 and 2 (0=bool, 1=None, 2=other type)\n# assert: checks that the value obtained from params.get(param) is a boolean (kind == 0)\n# Nondet operands: params.get(param) replaced by kind tag parameter\n\n\ndef slice_model(kind: int) -> bool:\n    # real: param = params.get(param)\n    # real: assert isinstance(param, bool)\n    is_bool: bool = kind == 0\n    return is_bool\n\n\ndef main() -> None:\n    kind: int = nondet_int()\n    __ESBMC_assume(0 <= kind)\n    __ESBMC_assume(kind <= 2)\n\n    result: bool = slice_model(kind)\n    assert result\n\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-gemini-smoke/harnesses/scan_000_cli_bool_option_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [
+        "outcome-category confirmation has no differential assertion (compare the buggy result with a separately computed expected value)"
+      ],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion result. Local: main, linha 21.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gemini-3.6-flash",
+      "synth_total_tokens": 6251,
+      "synth_seconds": 26.677,
+      "esbmc_seconds": 2.315,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 31.82,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    "1": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "out_of_bounds",
+        "expression": "x[0]",
+        "note": "If data is an empty 2D array of shape (0, 3), the shape check passes because shape[1] is 3. Accessing x[0] on line 16 then raises an IndexError because x has size 0."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "# Function: makeMappingArray\n# Category: out_of_bounds\n# __ESBMC_assume: 0 <= x_len <= 1000 bounds search space for length of x\n# Assert: checks that index 0 is within bounds of x (0 <= 0 < len(x))\n# Nondet operands: x_len replaces len(x) (length of array x = adata[:, 0])\n\n\ndef slice_model(x_len: int) -> bool:\n    idx: int = 0\n    # real: x[0]\n    ok: bool = 0 <= idx < x_len\n    return ok\n\n\ndef main() -> None:\n    x_len: int = nondet_int()\n    __ESBMC_assume(0 <= x_len)\n    __ESBMC_assume(x_len <= 1000)\n\n    result: bool = slice_model(x_len)\n    assert result\n\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-gemini-smoke/harnesses/scan_001_makeMappingArray_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion result. Local: main, linha 21.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gemini-3.6-flash",
+      "synth_total_tokens": 9575,
+      "synth_seconds": 26.88,
+      "esbmc_seconds": 2.307,
+      "attempts": 2,
+      "attempt_history": [],
+      "seconds": 30.8,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    "2": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "division_by_zero",
+        "expression": "(xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])",
+        "note": "The validation check `(np.diff(x) < 0).any()` only rejects strictly decreasing values, allowing duplicate adjacent x values where x[i] == x[i-1]. When duplicate x values exist in data, `x[ind] - x[ind - 1]` evaluates to zero on line 23, causing a division by zero."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "# Real function: makeMappingArray\n# Category: division_by_zero\n# Preconditions: float non-NaN checks (x == x) and loose magnitude bounds (-1000.0 <= x <= 1000.0)\n# Assert checks: divisor (x[ind] - x[ind - 1]) != 0 before division, and slice result is valid float\n# Operands turned into nondet: xind[1:-1] -> xind_val, x[ind - 1] -> x_ind_minus_1, x[ind] -> x_ind\n\ndef slice_model(xind_val: float, x_ind_minus_1: float, x_ind: float) -> float:\n    divisor: float = x_ind - x_ind_minus_1  # real: x[ind] - x[ind - 1]\n    assert divisor != 0.0\n    distance: float = (xind_val - x_ind_minus_1) / (x_ind - x_ind_minus_1)  # real: (xind[1:-1] - x[ind - 1]) / (x[ind] - x[ind - 1])\n    return distance\n\ndef main() -> None:\n    xind_val: float = nondet_float()\n    x_ind_minus_1: float = nondet_float()\n    x_ind: float = nondet_float()\n\n    __ESBMC_assume(xind_val == xind_val)\n    __ESBMC_assume(x_ind_minus_1 == x_ind_minus_1)\n    __ESBMC_assume(x_ind == x_ind)\n\n    __ESBMC_assume(-1000.0 <= xind_val)\n    __ESBMC_assume(xind_val <= 1000.0)\n    __ESBMC_assume(-1000.0 <= x_ind_minus_1)\n    __ESBMC_assume(x_ind_minus_1 <= 1000.0)\n    __ESBMC_assume(-1000.0 <= x_ind)\n    __ESBMC_assume(x_ind <= 1000.0)\n\n    result: float = slice_model(xind_val, x_ind_minus_1, x_ind)\n    assert result == result\n\nmain()\n",
+      "harness_path": "artifacts/v2/e2e-gemini-smoke/harnesses/scan_002_makeMappingArray_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: assertion divisor != 0.000000. Local: slice_model, linha 9.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gemini-3.6-flash",
+      "synth_total_tokens": 12029,
+      "synth_seconds": 40.676,
+      "esbmc_seconds": 2.321,
+      "attempts": 2,
+      "attempt_history": [],
+      "seconds": 44.73,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    "3": {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/oob_real_06.py",
+        "function": "merge_nested_config",
+        "category": "invalid_precondition",
+        "expression": "default[key]",
+        "note": "A função realiza o acesso direto `default[key]` sem validar se a chave `key` pertence ao dicionário `default`. Quando `value` é um dicionário e `key` não está presente em `default`, o código lança a exceção `KeyError`. A instrução condicional existente verifica apenas o tipo do parâmetro `value`, deixando o parâmetro `default` desprotegido."
+      },
+      "classification": "confirmed_native",
+      "failure_stage": "",
+      "harness": "",
+      "harness_path": "",
+      "compat_verdict": "native_function",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC encontrou violação: uncaught exception: KeyError (!(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 15)). Local: linha 1.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gemini-3.6-flash",
+      "synth_total_tokens": null,
+      "synth_seconds": 0.0,
+      "esbmc_seconds": 2.059,
+      "attempts": 0,
+      "attempt_history": [],
+      "seconds": 2.09,
+      "error": "",
+      "driver_note": "",
+      "verification_target": "original_function",
+      "abstraction_level": "none"
+    }
+  },
+  "status": "complete",
+  "telemetry_events": [
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 11.240845,
+      "prompt_tokens": 1494,
+      "completion_tokens": 213,
+      "total_tokens": 3063,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 29.757743,
+      "prompt_tokens": 1782,
+      "completion_tokens": 457,
+      "total_tokens": 6642,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "chat_completions",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 40.497548,
+      "prompt_tokens": 1467,
+      "completion_tokens": 223,
+      "total_tokens": 3381,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "google",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 26.677153,
+      "prompt_tokens": 2081,
+      "completion_tokens": 216,
+      "total_tokens": 6251,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "google",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 13.080693,
+      "prompt_tokens": 2659,
+      "completion_tokens": 223,
+      "total_tokens": 4612,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "google",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 13.799296,
+      "prompt_tokens": 2981,
+      "completion_tokens": 220,
+      "total_tokens": 4963,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "google",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 21.672805,
+      "prompt_tokens": 2685,
+      "completion_tokens": 524,
+      "total_tokens": 5554,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    },
+    {
+      "provider": "google",
+      "requested_model": "gemini-3.6-flash",
+      "returned_model": "gemini-3.6-flash",
+      "status": "success",
+      "duration_seconds": 19.003076,
+      "prompt_tokens": 3308,
+      "completion_tokens": 553,
+      "total_tokens": 6475,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "synthesis"
+    }
+  ]
+}

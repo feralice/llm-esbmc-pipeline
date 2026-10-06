@@ -1,0 +1,227 @@
+{
+  "config": {
+    "model": "gpt-4o-mini",
+    "backend": "openai",
+    "synth_backend": "openai",
+    "synth_model": "gpt-4o-mini",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/dz_real_01.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/oob_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/v2_real_world/detection/tm_real_14.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "compat": true,
+    "guards": true,
+    "ablation": true,
+    "driver": true,
+    "real_driver": true,
+    "synth_retries": 1,
+    "bound": 6,
+    "timeout": 120,
+    "llm_timeout": 120,
+    "esbmc_command": [
+      "esbmc"
+    ]
+  },
+  "coverage": {
+    "status": "complete",
+    "stage": "complete",
+    "planned_hypotheses": 2,
+    "evaluated_hypotheses": 2
+  },
+  "detection": {
+    "evaluated": true,
+    "oracle_seeded": false,
+    "analyzed_units": 3,
+    "hypotheses": 2,
+    "failed_units": 0,
+    "errors": [],
+    "candidates": [
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "none_misuse",
+        "expression": "shape = adata.shape"
+      },
+      {
+        "file": "dataset/v2_real_world/detection/oob_real_06.py",
+        "function": "merge_nested_config",
+        "category": "invalid_precondition",
+        "expression": "result[key] = default[key]"
+      }
+    ],
+    "rejected_findings": [
+      {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "invalid_precondition",
+        "finding_type": "llm_false_positive",
+        "expression": "if len(shape) != 2 or shape[1] != 3:",
+        "reason": "invalid_expression_syntax"
+      }
+    ]
+  },
+  "summary": {
+    "n": 2,
+    "by_classification": {
+      "confirmed_driver": 1,
+      "confirmed_native": 1
+    },
+    "by_category": {
+      "none_misuse": {
+        "total": 1,
+        "confirmed": 1,
+        "native": 0,
+        "driver": 1,
+        "unverified": 0
+      },
+      "invalid_precondition": {
+        "total": 1,
+        "confirmed": 1,
+        "native": 1,
+        "driver": 0,
+        "unverified": 0
+      }
+    },
+    "driver_notes": {
+      "conclusive": 1
+    },
+    "verification_targets": {
+      "verbatim_slice": 1,
+      "original_function": 1
+    },
+    "abstraction_levels": {
+      "slice": 1,
+      "none": 1
+    },
+    "total_synth_tokens": 2771,
+    "total_synth_seconds": 4.516,
+    "total_esbmc_seconds": 5.101,
+    "mean_attempts": 0.5
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 6,
+      "failed_calls": 3,
+      "tokens": 6837,
+      "prompt_tokens": 5453,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 3,
+      "seconds": 20.76,
+      "cache_hit_rate": 0.0
+    },
+    "synthesis": {
+      "calls": 1,
+      "failed_calls": 0,
+      "tokens": 2771,
+      "prompt_tokens": 2536,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 1,
+      "seconds": 4.516,
+      "cache_hit_rate": 0.0
+    }
+  },
+  "evaluation": {
+    "unit": "category label on a detection source",
+    "detection_scope": "items without patch context",
+    "excluded_patch_context_items": 26,
+    "expected_labels": 3,
+    "detection": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": null
+    },
+    "synthesis_given_correct_detection": {
+      "n": 0,
+      "compatible": 0,
+      "compatibility_rate": null,
+      "confirmed_on_abstraction": 0,
+      "confirmation_rate": null,
+      "confirmed_native": 0,
+      "confirmed_driver": 0,
+      "repaired_then_confirmed": 0,
+      "over_restricted": 0,
+      "unverified": 0
+    },
+    "pipeline_stage_losses": {
+      "correct_detection_labels": 0,
+      "confirmed_end_to_end": 0,
+      "total_losses": 0,
+      "by_stage": {}
+    },
+    "end_to_end": {
+      "tp": 0,
+      "fp": 2,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": null
+    }
+  },
+  "results": [
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/dz_real_01.py",
+        "function": "makeMappingArray",
+        "category": "none_misuse",
+        "expression": "shape = adata.shape",
+        "note": "A variável 'adata' é convertida a partir de 'data', mas não há garantia de que 'data' tenha um valor concreto definido antes do uso em operações subsequentes. Se 'data' for None em algum contexto, ele causará falha na linha 'shape = adata.shape'."
+      },
+      "classification": "confirmed_driver",
+      "failure_stage": "",
+      "harness": "def slice_model(N: int, data: object, gamma: float) -> tuple:\n    # real: adata = np.array(data)\n    adata = nondet_str()  # Placeholder for data that should be convertible to an array\n    shape = adata.shape  # real: shape = adata.shape\n    \n    return shape\n\ndef main():\n    N = nondet_int()\n    data = nondet_str()  # Placeholder for data that should be convertible to an array\n    gamma = nondet_float()\n\n    # Loose magnitude bounds for termination\n    __ESBMC_assume(0 <= N <= 1073741824)\n    __ESBMC_assume(gamma == gamma)  # Excludes NaN for float\n    __ESBMC_assume(0 <= len(data) <= 1073741824)  # Assuming data is a string representation\n\n    result = slice_model(N, data, gamma)\n\n    # The assert checks the shape should be a tuple with 2 elements\n    assert len(result) == 2\n\nif __name__ == \"__main__\":\n    main()\n",
+      "harness_path": "artifacts/v2/e2e-smoke-gpt4o-mini/harnesses/scan_000_makeMappingArray_driver.py",
+      "compat_verdict": "driver",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC direto encontrou violação: uncaught exception: AttributeError. Local: main, linha 11.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": 2771,
+      "synth_seconds": 4.516,
+      "esbmc_seconds": 2.712,
+      "attempts": 1,
+      "attempt_history": [],
+      "seconds": 9.44,
+      "error": "",
+      "driver_note": "conclusive",
+      "verification_target": "verbatim_slice",
+      "abstraction_level": "slice"
+    },
+    {
+      "candidate": {
+        "file": "dataset/v2_real_world/detection/oob_real_06.py",
+        "function": "merge_nested_config",
+        "category": "invalid_precondition",
+        "expression": "result[key] = default[key]",
+        "note": "A expressão 'result[key] = default[key]' pode causar um KeyError se 'key' não existir em 'default', o que não está sendo verificado antes da atribuição."
+      },
+      "classification": "confirmed_native",
+      "failure_stage": "",
+      "harness": "",
+      "harness_path": "",
+      "compat_verdict": "native_function",
+      "compat_reasons": [],
+      "esbmc_status": "violation_found",
+      "esbmc_summary": "ESBMC encontrou violação: uncaught exception: KeyError (!(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 15)). Local: linha 1.",
+      "masking_assumptions": [],
+      "ablation_per_assumption": {},
+      "synth_model": "gpt-4o-mini",
+      "synth_total_tokens": null,
+      "synth_seconds": 0.0,
+      "esbmc_seconds": 2.389,
+      "attempts": 0,
+      "attempt_history": [],
+      "seconds": 2.41,
+      "error": "",
+      "driver_note": "",
+      "verification_target": "original_function",
+      "abstraction_level": "none"
+    }
+  ]
+}

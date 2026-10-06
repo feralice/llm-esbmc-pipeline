@@ -1,0 +1,11 @@
+{
+  "pasta": "exp-oracle-repair-cobertura.pre-review",
+  "modificado_em": "2026-09-29T19:11",
+  "arquivos": [
+    "exp-oracle-repair-cobertura.pre-review.log",
+    "v2_checkpoint.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "running"
+}

@@ -1,0 +1,4623 @@
+{
+  "counts": {
+    "UNSUPPORTED": 191,
+    "CONFIRMED": 4,
+    "OTHER_FAILURE": 2,
+    "MISSING_DEPENDENCY": 51,
+    "ESBMC_MISSED": 4,
+    "NOT_CONFIRMED": 5,
+    "SPEC_FAILED": 18,
+    "GROUNDING_FAILED": 4,
+    "ESBMC_ERROR": 7,
+    "ESBMC_TIMEOUT": 1,
+    "UNVALIDATED": 2
+  },
+  "rows": [
+    {
+      "id": "av_real_01",
+      "source": "arquivo_com_bug",
+      "function": "cli_bool_option",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = signedbv)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "av_real_02",
+      "source": "arquivo_com_bug",
+      "function": "WebSocketHandler.set_nodelay",
+      "verdict": "CONFIRMED",
+      "reason": "assertion !(ISNONE(stream, 0))",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AssertionError",
+        "line": 127,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_break_cycles,_detach_stream,check_origin,close,get,get_compression_options,get_websocket_protocol,on_close,on_connection_close,on_message,on_ping,on_pong,on_ws_connection_close,open,ping,select_subprotocol,send_error,write_message",
+        "properties_as_attributes:max_message_size,ping_interval,ping_timeout,selected_subprotocol",
+        "stubbed_imports:tornado",
+        "external_chains_flattened:tornado_web_RequestHandler"
+      ]
+    },
+    {
+      "id": "av_real_03",
+      "source": "arquivo_com_bug",
+      "function": "Series.to_timestamp",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "av_real_04",
+      "source": "arquivo_com_bug",
+      "function": "_partition_tasks",
+      "verdict": "OTHER_FAILURE",
+      "reason": "uncaught exception: AttributeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "other_failure",
+        "exception_type": "AttributeError",
+        "line": 6,
+        "runs": 4,
+        "reason": ""
+      },
+      "transforms": []
+    },
+    {
+      "id": "av_real_05",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.__init__",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_comparable,_decr_instances,clear,close,external_write_mode,format_interval,format_sizeof,get_lock,pandas,set_description,set_description_str,set_lock,set_postfix_str,unpause,update,write",
+        "stubbed_imports:Comparable,Number,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,mp,sys,warn",
+        "esbmc_refused_members_stubbed:_esbmc_threading_RLock",
+        "external_chains_flattened:sys_stderr",
+        "member_models:threading.RLock",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning"
+      ]
+    },
+    {
+      "id": "av_real_06",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "ESBMC_MISSED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 2,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": [
+        "decorators_removed:utils.git_support"
+      ]
+    },
+    {
+      "id": "av_real_07",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "ESBMC_MISSED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 2,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": []
+    },
+    {
+      "id": "av_real_08",
+      "source": "arquivo_com_bug",
+      "function": "Settings.update",
+      "verdict": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added"
+      ]
+    },
+    {
+      "id": "av_real_09",
+      "source": "arquivo_com_bug",
+      "function": "_make_getset_interval",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack signedbv - only tuples and arrays can be unpacked",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "av_real_10",
+      "source": "arquivo_com_bug",
+      "function": "Driver._partially_consume_prefix",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Bitwuzla error encountered",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:parse_file,parse_stream,parse_stream_raw,parse_string,parse_tokens"
+      ]
+    },
+    {
+      "id": "av_real_11",
+      "source": "arquivo_com_bug",
+      "function": "HTTP1Connection._read_body",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/422d58c5fe43_a0.py 95: list indices must be integers or slices, not str",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_can_keep_alive,_clear_callbacks,_finish_request,_format_chunk,_on_connection_close,_on_write_complete,_parse_headers,_read_message,close,detach,finish,read_response,set_body_timeout,set_close_callback,set_max_body_size,write,write_headers",
+        "stubbed_imports:app_log,gen,gen_log,httputil",
+        "external_chains_flattened:httputil_HTTPConnection",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "av_real_12",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "CONFIRMED",
+      "reason": "uncaught exception: AttributeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 2,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": [
+        "decorators_removed:for_app('php')"
+      ]
+    },
+    {
+      "id": "av_real_13",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "other_failure",
+        "exception_type": "AttributeError",
+        "line": 2,
+        "runs": 4,
+        "reason": ""
+      },
+      "transforms": [
+        "decorators_removed:git_support"
+      ]
+    },
+    {
+      "id": "av_real_14",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "CONFIRMED",
+      "reason": "uncaught exception: AttributeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 2,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": []
+    },
+    {
+      "id": "av_real_15",
+      "source": "arquivo_com_bug",
+      "function": "gunzip",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): read1",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "av_real_17",
+      "source": "arquivo_com_bug",
+      "function": "unified_strdate",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "av_real_21",
+      "source": "arquivo_com_bug",
+      "function": "YoutubeDL.process_ie_result",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "dz_real_01",
+      "source": "arquivo_com_bug",
+      "function": "makeMappingArray",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/2503d462001d_a0.py:64",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "dz_real_02",
+      "source": "arquivo_com_bug",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"ESBMC_mmkey_0\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/78c01005ba21_a0.py line 21)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:get_current_language,parse_found_objects,parse_item,search,search_parse,set_relative_base,split_by,split_if_not_parsed"
+      ]
+    },
+    {
+      "id": "dz_real_03",
+      "source": "arquivo_com_bug",
+      "function": "HashExpander.do",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: RANGES",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:expand,match",
+        "stubbed_imports:binascii"
+      ]
+    },
+    {
+      "id": "ip_real_01",
+      "source": "arquivo_com_bug",
+      "function": "Request._set_url",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve attribute '__name__' on Call result",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_body,_get_url,_set_body,copy,from_curl,replace",
+        "properties_as_attributes:body,cb_kwargs,encoding,meta,url",
+        "stubbed_imports:escape_ajax,object_ref,safe_url_string,six",
+        "external_chains_flattened:six_string_types",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "ip_real_03",
+      "source": "arquivo_com_bug",
+      "function": "Selector.__init__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 68. Variable XmlResponse not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_root,extract_unquoted,select",
+        "stubbed_imports:HtmlResponse,ScrapyDeprecationWarning,XmlResponse,_ParselSelector,deprecated,object_ref,to_bytes,warnings",
+        "external_chains_flattened:_ParselSelector_selectorlist_cls"
+      ]
+    },
+    {
+      "id": "ip_real_04",
+      "source": "funcao_com_bug",
+      "function": "HTTP1Connection.write_headers",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: function call: argument \"py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/378f34b3e3ce_a0.py@C@HTTP1Connection@F@write_headers@headers\" type misma",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added"
+      ]
+    },
+    {
+      "id": "ip_real_05",
+      "source": "arquivo_com_bug",
+      "function": "_Alpha.__gt__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not find symbol for type: _Numeric",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced"
+      ]
+    },
+    {
+      "id": "ip_real_06",
+      "source": "arquivo_com_bug",
+      "function": "_unstack_multiple",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ip_real_07",
+      "source": "arquivo_com_bug",
+      "function": "_htmlentity_transform",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported expression for 'in' operation",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,shlex_quote",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "ip_real_08",
+      "source": "arquivo_com_bug",
+      "function": "Sanic.url_for",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"kwargs\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_build_endpoint_name,_helper,_run_request_middleware,_run_response_middleware,add_route,add_task,add_websocket_route,blueprint,converted_response_type,create_server,delete,enable_websocket,exception,get,handle_request,head,listener,middleware,options,patch,post,put,register_blueprint,register_listener,register_middleware,register_named_middleware,remove_route,route,run,static,stop,trigger_events,websocket",
+        "properties_as_attributes:asgi_client,loop,test_client",
+        "stubbed_imports:ASGIApp,SanicException,ServerError,URLBuildError,urlencode,urlunparse"
+      ]
+    },
+    {
+      "id": "ip_real_09",
+      "source": "arquivo_com_bug",
+      "function": "generate_commands",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/1f10e567ced9_a0.py:12",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "ip_real_10",
+      "source": "arquivo_com_bug",
+      "function": "_get_spider_loader",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = signedbv)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ISpiderLoader,ScrapyDeprecationWarning,load_object,verifyClass,warnings"
+      ]
+    },
+    {
+      "id": "ip_real_11",
+      "source": "arquivo_com_bug",
+      "function": "HTTPBearer.__call__",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "async entry point is not supported"
+    },
+    {
+      "id": "ip_real_12",
+      "source": "arquivo_com_bug",
+      "function": "map_obj_to_commands",
+      "verdict": "UNSUPPORTED",
+      "reason": "input 'updates': the code unpacks it into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ip_real_13",
+      "source": "arquivo_com_bug",
+      "function": "StaticFileHandler.get",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "async entry point is not supported"
+    },
+    {
+      "id": "ip_real_14",
+      "source": "arquivo_com_bug",
+      "function": "TimeseriesGenerator.__len__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: arithmetic on numeric arrays is not supported (numpy broadcasting is not modelled) at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/55c",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_empty_batch",
+        "stubbed_imports:Sequence,np,range",
+        "external_chains_flattened:np_random"
+      ]
+    },
+    {
+      "id": "ip_real_15",
+      "source": "arquivo_com_bug",
+      "function": "EmptyLineTracker.maybe_empty_lines",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ip_real_16",
+      "source": "arquivo_com_bug",
+      "function": "pivot",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: NameError: name 'DataFrame' is not defined",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot'], indents=1)",
+        "stubbed_imports:Index,MultiIndex,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar"
+      ]
+    },
+    {
+      "id": "ip_real_17",
+      "source": "arquivo_com_bug",
+      "function": "response_status_message",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Dictionary variable not found: http_RESPONSES",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:http,to_bytes,to_native_str",
+        "external_chains_flattened:http_RESPONSES"
+      ]
+    },
+    {
+      "id": "ip_real_18",
+      "source": "arquivo_com_bug",
+      "function": "croniter._get_low_from_current_date_number",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"localize\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/c1939ce8321e_a0.py line 282)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_alphaconv,_expand,all_next,all_prev,expand,get_current,get_next,get_prev,is_valid,iter,match,match_range,value_alias",
+        "stubbed_imports:calendar,copy,datetime_exists,platform,relativedelta,struct,sys,tzutc",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "ip_real_19",
+      "source": "arquivo_com_bug",
+      "function": "VersionInfo.__getitem__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 50. Variable DeprecationWarning not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_increment_string,bump_build,bump_major,bump_minor,bump_patch,bump_prerelease,compare,finalize_version,isvalid,match,next_version,parse,replace",
+        "properties_as_attributes:build,major,minor,patch,prerelease",
+        "stubbed_imports:inspect,partial,warnings,wraps",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning"
+      ]
+    },
+    {
+      "id": "ip_real_20",
+      "source": "arquivo_com_bug",
+      "function": "generate_sub_moved_events",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'TYPE_CHECKING' is not defined at line 10.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "ip_real_21",
+      "source": "arquivo_com_bug",
+      "function": "SortedDict.__eq__",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Base class not found: MutableMapping",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues"
+      ]
+    },
+    {
+      "id": "ip_real_22",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "ip_real_23",
+      "source": "arquivo_com_bug",
+      "function": "Task.to_str_params",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: NameError: name 'Parameter' is not defined",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_requires,bulk_complete,clone,complete,deps,event_handler,from_str_params,get_param_values,initialized,input,on_failure,on_success,output,process_resources,requires,run,trigger_event",
+        "properties_as_attributes:task_family,task_module,use_cmdline_section",
+        "stubbed_imports:Register,TaskClassException,parameter,six"
+      ]
+    },
+    {
+      "id": "ip_real_24",
+      "source": "arquivo_com_bug",
+      "function": "CentralPlannerScheduler.get_work",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 60. Variable NotImplemented not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_recurse_deps,_serialize_task,_traverse_inverse_deps,_update_priority,_upstream_status,add_task,dep_graph,dump,fetch_error,graph,inverse_dep_graph,load,ping,prune,re_enable_task,task_list,task_search,update_resources,worker_list",
+        "properties_as_attributes:task_history",
+        "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,itertools,logging,six"
+      ]
+    },
+    {
+      "id": "ip_real_25",
+      "source": "arquivo_com_bug",
+      "function": "SimpleTaskState.get_necessary_tasks",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/74165957f788_a0.py:41",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_remove_workers_from_tasks,disable_workers,dump,fail_dead_worker_task,get_active_workers,get_assistants,get_pending_tasks,get_running_tasks,get_state,get_task,get_worker,get_worker_ids,has_task,inactivate_tasks,inactivate_workers,load,may_prune,num_pending_tasks,re_enable,set_state,set_status,update_status",
+        "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,six"
+      ]
+    },
+    {
+      "id": "ip_real_26",
+      "source": "arquivo_com_bug",
+      "function": "Scheduler.add_task",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_collections_namedtuple': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ip_real_28",
+      "source": "arquivo_com_bug",
+      "function": "IOLoop.initialize",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'C@IOLoop' is not defined in function 'make_current' at line 111.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_run_callback,_setup_logging,add_callback,add_callback_from_signal,add_future,add_handler,add_timeout,call_at,call_later,clear_current,clear_instance,close,close_fd,configurable_base,configurable_default,current,handle_callback_exception,initialized,install,instance,log_stack,remove_handler,remove_timeout,run_sync,set_blocking_log_threshold,set_blocking_signal_threshold,spawn_callback,split_fd,start,stop,time,update_handler",
+        "stubbed_imports:Configurable,errno_from_exception,timedelta_to_seconds",
+        "esbmc_refused_members_stubbed:_esbmc_threading_local",
+        "member_models:threading.local"
+      ]
+    },
+    {
+      "id": "ip_real_32",
+      "source": "arquivo_com_bug",
+      "function": "date_convert",
+      "verdict": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ip_real_33",
+      "source": "arquivo_com_bug",
+      "function": "send2trash",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:BOOL,FormatError,GetLastError,HWND,LPCWSTR,Structure,UINT,addressof,byref,c_uint,create_unicode_buffer,preprocess_paths,text_type,windll",
+        "builtin_exceptions_stubbed:WindowsError"
+      ]
+    },
+    {
+      "id": "nm_real_01",
+      "source": "arquivo_com_bug",
+      "function": "Session.update_headers",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/4c8f07cc2ff5_a0.py 35: list indices must be integers or slices, not str",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_path",
+        "properties_as_attributes:auth,cookies,headers",
+        "stubbed_imports:BaseConfigDict,DEFAULT_CONFIG_DIR"
+      ]
+    },
+    {
+      "id": "nm_real_02",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.format_meter",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_comparable,_decr_instances,_get_free_pos,clear,close,display,ema,external_write_mode,format_dict,format_interval,format_num,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+        "stubbed_imports:Comparable,RE_ANSI,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,sys,warn",
+        "external_chains_flattened:sys_stderr",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning"
+      ]
+    },
+    {
+      "id": "nm_real_03",
+      "source": "arquivo_com_bug",
+      "function": "FacebookIE._real_extract",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_escape': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "nm_real_04",
+      "source": "arquivo_com_bug",
+      "function": "OffsiteMiddleware.get_host_regex",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_compile': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "nm_real_05",
+      "source": "arquivo_com_bug",
+      "function": "Response.follow",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_body,_get_url,_set_body,_set_url,copy,css,replace,xpath",
+        "properties_as_attributes:body,meta,text,url",
+        "stubbed_imports:Link,Request,object_ref,urljoin",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "nm_real_06",
+      "source": "arquivo_com_bug",
+      "function": "create_instance",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported expression Starred at line 23",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "nm_real_07",
+      "source": "arquivo_com_bug",
+      "function": "url_concat",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/f2414cf33b98_a0.py:64",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Cookie,ObjectDict,PY3,parse_qsl,responses,urlencode,urlparse,urlunparse"
+      ]
+    },
+    {
+      "id": "nm_real_08",
+      "source": "arquivo_com_bug",
+      "function": "Request.url_for",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: __dict__",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_address,body_finish,body_init,body_push,get,get_args,get_query_args,load_json",
+        "properties_as_attributes:args,content_type,cookies,files,form,forwarded,host,ip,json,match_info,path,port,query_args,query_string,raw_args,remote_addr,scheme,server_name,server_port,socket,token,url"
+      ]
+    },
+    {
+      "id": "nm_real_09",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.__len__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: __name__",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_decr_instances,_get_free_pos,clear,close,external_write_mode,format_interval,format_meter,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+        "stubbed_imports:mp,sys",
+        "esbmc_refused_members_stubbed:_esbmc_threading_RLock",
+        "external_chains_flattened:sys_stderr",
+        "member_models:threading.RLock",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning"
+      ]
+    },
+    {
+      "id": "nm_real_10",
+      "source": "arquivo_com_bug",
+      "function": "S3CopyToTable.copy",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _credentials",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "nm_real_11",
+      "source": "arquivo_com_bug",
+      "function": "LocalCache.__setitem__",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Base class not found: OrderedDict",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced"
+      ]
+    },
+    {
+      "id": "nm_real_12",
+      "source": "arquivo_com_bug",
+      "function": "PamdService.remove",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: next",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:add_module_arguments,append,get,has_rule,insert_after,insert_before,remove_module_arguments,update_rule,validate"
+      ]
+    },
+    {
+      "id": "nm_real_13",
+      "source": "arquivo_com_bug",
+      "function": "AsyncHTTPClient.close",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: del on subscript requires a dictionary (struct) type",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_async_clients,configurable_base,configurable_default,configure,fetch,fetch_impl,initialize",
+        "stubbed_imports:Configurable"
+      ]
+    },
+    {
+      "id": "nm_real_14",
+      "source": "arquivo_com_bug",
+      "function": "request_httprepr",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: arithmetic on numeric arrays is not supported (numpy broadcasting is not modelled) at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/403",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:to_bytes,to_native_str,urlparse_cached,urlunparse"
+      ]
+    },
+    {
+      "id": "nm_real_15",
+      "source": "arquivo_com_bug",
+      "function": "APIRouter.include_router",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call run_in_threadpool(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "nm_real_16",
+      "source": "arquivo_com_bug",
+      "function": "Axes.scatter",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "nm_real_17",
+      "source": "arquivo_com_bug",
+      "function": "_type",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 11. Variable unicode not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:python_version_tuple,reduce"
+      ]
+    },
+    {
+      "id": "nm_real_18",
+      "source": "arquivo_com_bug",
+      "function": "after_log",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: [json.exception.type_error.302] type must be string, but is number",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:_utils",
+        "external_chains_flattened:_utils_LoggerProtocol"
+      ]
+    },
+    {
+      "id": "nm_real_19",
+      "source": "arquivo_com_bug",
+      "function": "IsFile",
+      "verdict": "UNSUPPORTED",
+      "reason": "artifacts/v2/smoke-2026-10-04-esbmc/programs/00b188678c41_a0.py:4: error: Function is missing a type annotation  [no-untyped-def]",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:message('not a file', cls=FileInvalid),truth"
+      ]
+    },
+    {
+      "id": "nm_real_20",
+      "source": "arquivo_com_bug",
+      "function": "engine.numwords",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 548",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_pl_check_plurals_N,_pl_check_plurals_adj,_pl_general_verb,_pl_reg_plurals,_pl_special_adjective,_pl_special_verb,_plequal,_plnoun,amo,checkpat,checkpatplural,classical,defa,defadj,defan,defnoun,defverb,inflect,no,nomo,num,nummo,numwordsmo,ordinal,ordinalmo,partition_word,pl,pladj,pladjequal,pladjmo,plequal,plmo,plnoun,plnounequal,plnounmo,plverb,plverbequal,plverbmo,postprocess,prespart,prespartmo,wordlist",
+        "compat_percent_format:10",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "nm_real_21",
+      "source": "arquivo_com_bug",
+      "function": "_Projection.get_index",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/11934c5bf8a7_a0.py@C@_Projection@F@__class__' not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:get,multi_get,multi_get_list"
+      ]
+    },
+    {
+      "id": "nm_real_22",
+      "source": "arquivo_com_bug",
+      "function": "run",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.environ.copy()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:cli.command(context_settings={'ignore_unknown_options': True}),click.pass_context,click.argument('commandline', nargs=-1, type=click.UNPROCESSED)",
+        "stubbed_imports:Popen,click,dotenv_values,get_key,set_key,sys,unset_key",
+        "external_chains_flattened:sys_stderr"
+      ]
+    },
+    {
+      "id": "oob_real_01",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_findall': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "oob_real_02",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: function call: argument \"c:string.c@21403@F@__python_str_split@str\" type mismatch: got empty, expected pointer",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:git_support"
+      ]
+    },
+    {
+      "id": "oob_real_03",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.script_parts.pop()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ]
+    },
+    {
+      "id": "oob_real_04",
+      "source": "arquivo_com_bug",
+      "function": "SortedCorrectedCommandsSequence._realise",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: sorted() with key= is only supported over a constant iterable; here the key function cannot be applied and would be ignored",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_realise_first",
+        "stubbed_imports:debug,format_stack"
+      ]
+    },
+    {
+      "id": "oob_real_05",
+      "source": "arquivo_com_bug",
+      "function": "lib2to3_parse",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Leaf,Node,ParseError,driver,pygram,pytree,token,type_repr"
+      ]
+    },
+    {
+      "id": "oob_real_09",
+      "source": "arquivo_com_bug",
+      "function": "parser._parse",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:parse",
+        "stubbed_imports:StringIO,binary_type,integer_types,text_type"
+      ]
+    },
+    {
+      "id": "oob_real_10",
+      "source": "arquivo_com_bug",
+      "function": "_wrap_text_to_colwidths",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call textwrap_TextWrapper.__init__(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "oob_real_11",
+      "source": "arquivo_com_bug",
+      "function": "wcswidth",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 103",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:VS15_WIDE_TO_NARROW,VS16_NARROW_TO_WIDE,_CATEGORY_MC_TABLE,_EMOJI_ZWJ_SET,_FITZPATRICK_RANGE,_ISC_VIRAMA_SET,_REGIONAL_INDICATOR_SET,bisearch,get_term_overrides,resolve_terminal,wcwidth"
+      ]
+    },
+    {
+      "id": "oob_real_12",
+      "source": "arquivo_com_bug",
+      "function": "fast_float",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported iterable type in set(): signedbv",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:decimal_chars,unicodedata"
+      ]
+    },
+    {
+      "id": "oob_real_13",
+      "source": "arquivo_com_bug",
+      "function": "tokenize",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/1282ff1cb208_a0.py 54: list indices must be integers or slices, not str",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:unicode_codes",
+        "external_chains_flattened:unicode_codes_EMOJI_DATA"
+      ]
+    },
+    {
+      "id": "oob_real_14",
+      "source": "arquivo_com_bug",
+      "function": "LinuxDistribution._parse_uname_content",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"name\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_distro_release_info,_lsb_release_info,_os_release_info,_parse_distro_release_content,_parse_distro_release_file,_parse_lsb_release_content,_parse_os_release_content,_to_str,_uname_info,build_number,codename,distro_release_attr,distro_release_info,id,info,like,linux_distribution,lsb_release_attr,lsb_release_info,major_version,minor_version,name,os_release_attr,os_release_info,uname_attr,uname_info,version,version_parts"
+      ]
+    },
+    {
+      "id": "oob_real_15",
+      "source": "arquivo_com_bug",
+      "function": "dfxp2srt",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"str_or_empty\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/4c6f9eaec742_a0.py line 104)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,functools,itertools,shlex_quote,xml",
+        "external_chains_flattened:xml_etree_ElementTree"
+      ]
+    },
+    {
+      "id": "oob_real_16",
+      "source": "arquivo_com_bug",
+      "function": "IndexedSet.__getitem__",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call chain(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "tm_real_01",
+      "source": "arquivo_com_bug",
+      "function": "read_conllx",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported expression Starred at line 26",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "tm_real_02",
+      "source": "arquivo_com_bug",
+      "function": "HiveCommandClient.table_exists",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): partition_spec",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "tm_real_03",
+      "source": "arquivo_com_bug",
+      "function": "_match_one",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"m\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath,operator",
+        "compat_percent_format:4"
+      ]
+    },
+    {
+      "id": "tm_real_04",
+      "source": "arquivo_com_bug",
+      "function": "str_to_int",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "tm_real_05",
+      "source": "arquivo_com_bug",
+      "function": "MailSender.send",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call MIMENonMultipart(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "tm_real_06",
+      "source": "arquivo_com_bug",
+      "function": "ContractsManager._clean_req.eb_wrapper",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "entry point is nested inside a function; the harness cannot call it"
+    },
+    {
+      "id": "tm_real_07",
+      "source": "arquivo_com_bug",
+      "function": "MarkerStyle._recache",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: vertices",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_half_fill,_set_caretdown,_set_caretdownbase,_set_caretleft,_set_caretleftbase,_set_caretright,_set_caretrightbase,_set_caretup,_set_caretupbase,_set_circle,_set_custom_marker,_set_diamond,_set_hexagon1,_set_hexagon2,_set_hline,_set_mathtext_path,_set_nothing,_set_octagon,_set_path_marker,_set_pentagon,_set_pixel,_set_plus,_set_plus_filled,_set_point,_set_square,_set_star,_set_thin_diamond,_set_tickdown,_set_tickleft,_set_tickright,_set_tickup,_set_tri_down,_set_tri_left,_set_tri_right,_set_tri_up,_set_triangle,_set_triangle_down,_set_triangle_left,_set_triangle_right,_set_triangle_up,_set_tuple_marker,_set_vertices,_set_vline,_set_x,_set_x_filled,get_alt_path,get_alt_transform,get_capstyle,get_fillstyle,get_joinstyle,get_marker,get_path,get_snap_threshold,get_transform,is_filled,set_fillstyle,set_marker",
+        "stubbed_imports:Affine2D,IdentityTransform,Path,np"
+      ]
+    },
+    {
+      "id": "tm_real_08",
+      "source": "arquivo_com_bug",
+      "function": "simple_separated_format",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: NameError: name 'namedtuple' is not defined",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "tm_real_09",
+      "source": "arquivo_com_bug",
+      "function": "_format",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_compile': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "tm_real_10",
+      "source": "arquivo_com_bug",
+      "function": "MetricsHandler.get",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:initialize",
+        "stubbed_imports:tornado",
+        "external_chains_flattened:tornado_web_RequestHandler"
+      ]
+    },
+    {
+      "id": "vm_real_01",
+      "source": "arquivo_com_bug",
+      "function": "tqdm.format_meter",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_decr_instances,_get_free_pos,clear,close,format_interval,format_sizeof,moveto,refresh,set_description,status_printer,unpause,update,write",
+        "stubbed_imports:WeakSet,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,sys",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning"
+      ]
+    },
+    {
+      "id": "vm_real_02",
+      "source": "arquivo_com_bug",
+      "function": "Schema.validate",
+      "verdict": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced"
+      ]
+    },
+    {
+      "id": "io_real_01",
+      "source": "arquivo_com_bug",
+      "function": "nonsingular",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve attribute 'tiny' on Call result",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "ir_real_01",
+      "source": "arquivo_com_bug",
+      "function": "gamma",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ir_real_02",
+      "source": "funcao_com_bug",
+      "function": "module-level",
+      "verdict": "GROUNDING_FAILED",
+      "reason": "function 'module-level' not found (or ambiguous)"
+    },
+    {
+      "id": "ir_real_03",
+      "source": "arquivo_com_bug",
+      "function": "try_match_char_class_range",
+      "verdict": "ESBMC_TIMEOUT",
+      "reason": "ESBMC direto excedeu o tempo limite de 60s.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "ir_real_05",
+      "source": "arquivo_com_bug",
+      "function": "string_to_int",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: DictComp tuple target requires a named list of tuples",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "nm_real_23",
+      "source": "arquivo_com_bug",
+      "function": "Markdown._html_class_str_from_tag",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_footnotes,_auto_email_link_sub,_auto_link_sub,_block_quote_sub,_code_block_sub,_code_span_sub,_color_with_pygments,_dedent_two_spaces_sub,_detab,_detab_line,_do_admonitions,_do_admonitions_sub,_do_auto_links,_do_block_quotes,_do_code_blocks,_do_code_spans,_do_fenced_code_blocks,_do_headers,_do_italics_and_bold,_do_link_patterns,_do_links,_do_lists,_do_numbering,_do_smart_contractions,_do_smart_punctuation,_do_strike,_do_tables,_do_underline,_do_wiki_tables,_encode_amps_and_angles,_encode_backslash_escapes,_encode_code,_encode_email_address,_encode_incomplete_tags,_escape_special_chars,_extract_footnote_def_sub,_extract_link_def_sub,_extract_metadata,_extract_url_and_title,_fenced_code_block_sub,_find_balanced,_find_non_whitespace,_form_paragraphs,_get_emacs_vars,_get_pygments_lexer,_h_sub,_hash_html_block_sub,_hash_html_blocks,_hash_html_spans,_list_item_sub,_list_sub,_outdent,_prepare_pyshell_blocks,_process_list_items,_pyshell_block_sub,_run_block_gamut,_run_span_gamut,_sanitize_html,_strip_footnote_definitions,_strip_link_definitions,_table_sub,_task_list_item_sub,_toc_add_entry,_unescape_special_chars,_unhash_html_spans,_uniform_indent,_uniform_outdent,_wiki_table_sub,convert,header_id_from_text,postprocess,preprocess,reset",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "dz_real_04",
+      "source": "arquivo_com_bug",
+      "function": "interpolate_bilinear_2x_fwd",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack symbol - only tuples and arrays can be unpacked",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:nki.jit",
+        "stubbed_imports:nl,nt",
+        "external_chains_flattened:nl_tile_size,nt_tensor"
+      ]
+    },
+    {
+      "id": "nm_real_24",
+      "source": "arquivo_com_bug",
+      "function": "reformat_many",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'contextmanager' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "vm_real_03",
+      "source": "funcao_com_bug",
+      "function": "Language.pipe",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"proc\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/12432b0198f0_a0.py line 7)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added"
+      ]
+    },
+    {
+      "id": "nm_real_25",
+      "source": "arquivo_com_bug",
+      "function": "HTTP1Connection._can_keep_alive",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: no_keep_alive",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_clear_callbacks,_finish_request,_format_chunk,_on_connection_close,_on_write_complete,_parse_headers,_read_body,_read_body_until_close,_read_chunked_body,_read_fixed_body,_read_message,close,detach,finish,read_response,set_body_timeout,set_close_callback,set_max_body_size,write,write_headers",
+        "stubbed_imports:httputil",
+        "external_chains_flattened:httputil_HTTPConnection"
+      ]
+    },
+    {
+      "id": "tm_real_11",
+      "source": "funcao_com_bug",
+      "function": "SitemapSpider._parse_sitemap",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): Request",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "vm_real_04",
+      "source": "funcao_com_bug",
+      "function": "YoutubeDL._build_format_filter",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): operator, re",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "vm_real_05",
+      "source": "arquivo_com_bug",
+      "function": "LocalFileSystem.move",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_os_rename': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "vm_real_06",
+      "source": "arquivo_com_bug",
+      "function": "CrawlerProcess.__init__",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"property\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/6f81e563de88_a0.py line 244)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:start",
+        "stubbed_imports:DoesNotImplement,ExecutionEngine,ExtensionManager,ISpiderLoader,LogCounterHandler,ScrapyDeprecationWarning,Settings,SignalManager,configure_logging,defer,install_shutdown_handlers,load_object,log_scrapy_info,logging,reactor,signal,signal_names,signals,six,verifyClass,warnings",
+        "external_chains_flattened:logging_root,six_string_types"
+      ]
+    },
+    {
+      "id": "tm_real_12",
+      "source": "funcao_com_bug",
+      "function": "S3CopyToTable.run",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/575b611dac3d_a0.py@C@S3CopyToTable@F@s3_load_path' not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "properties_as_attributes:s3_load_path"
+      ]
+    },
+    {
+      "id": "vm_real_07",
+      "source": "funcao_com_bug",
+      "function": "fit_generator",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): OrderedEnqueuer, Sequence, do_validation, iter_sequence_infinite, max_queue_size, use_multiprocessing, workers",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "tm_real_13",
+      "source": "arquivo_com_bug",
+      "function": "XmlItemExporter._export_xml_field",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'kwargs' is not defined in function 'BaseItemExporter' at line 32.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:export_item,finish_exporting,start_exporting",
+        "stubbed_imports:is_listlike,six,sys,to_bytes,to_native_str,to_unicode",
+        "external_chains_flattened:six_text_type",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "vm_real_08",
+      "source": "funcao_com_bug",
+      "function": "get_write_function",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): output_path, pycompat, sys, utils",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "ip_real_34",
+      "source": "funcao_com_bug",
+      "function": "find_hook",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): logger, os, valid_hook",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "oob_real_06",
+      "source": "arquivo_com_bug",
+      "function": "merge_configs",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/12810a718d7f_a0.py:22",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:copy"
+      ]
+    },
+    {
+      "id": "bip_ansible_1",
+      "source": "arquivo_com_bug",
+      "function": "verify_collections",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'contextmanager' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_ansible_3",
+      "source": "arquivo_com_bug",
+      "function": "DistributionFiles.parse_distribution_file_Debian",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files"
+      ]
+    },
+    {
+      "id": "bip_ansible_5",
+      "source": "arquivo_com_bug",
+      "function": "check_required_arguments",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:to_native,to_text",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "bip_ansible_16",
+      "source": "arquivo_com_bug",
+      "function": "LinuxHardware.get_cpu_facts",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 1. Variable OSError not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_find_bind_mounts,_find_mapper_device_name,_lsblk_uuid,_mtab_entries,_replace_octal_escapes,_replace_octal_escapes_helper,_run_findmnt,_run_lsblk,_udevadm_uuid,get_all_device_links,get_all_device_owners,get_device_facts,get_device_links,get_dmi_facts,get_holders,get_lvm_facts,get_memory_facts,get_mount_facts,get_mount_info,get_uptime_facts,populate",
+        "stubbed_imports:Hardware,HardwareCollector,get_file_content,get_file_lines,get_mount_size",
+        "builtin_exceptions_stubbed:IOError"
+      ]
+    },
+    {
+      "id": "bip_black_2",
+      "source": "arquivo_com_bug",
+      "function": "generate_ignored_nodes",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Final,Leaf,Node,driver,lru_cache,partial,pygram,pytree,token,type_repr,wraps"
+      ]
+    },
+    {
+      "id": "bip_black_7",
+      "source": "arquivo_com_bug",
+      "function": "normalize_invisible_parens",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_black_8",
+      "source": "arquivo_com_bug",
+      "function": "bracket_split_build_line",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_black_9",
+      "source": "arquivo_com_bug",
+      "function": "get_grammars",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'C@TargetVersion' is not defined in function 'is_python2' at line 49.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Grammar,pygram,pytree"
+      ]
+    },
+    {
+      "id": "bip_black_13",
+      "source": "arquivo_com_bug",
+      "function": "generate_tokens",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): ASYNC, AWAIT, COMMENT, DEDENT, ENDMARKER, ERRORTOKEN, INDENT, NAME, NEWLINE, NL, NUMBER, OP, STRING",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_black_16",
+      "source": "arquivo_com_bug",
+      "function": "gen_python_files_in_dir",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Path"
+      ]
+    },
+    {
+      "id": "bip_black_19",
+      "source": "arquivo_com_bug",
+      "function": "EmptyLineTracker._maybe_empty_lines",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_black_20",
+      "source": "arquivo_com_bug",
+      "function": "format_file_in_place",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'dataclass' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_black_21",
+      "source": "arquivo_com_bug",
+      "function": "dump_to_file",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tempfile\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_cookiecutter_1",
+      "source": "arquivo_com_bug",
+      "function": "generate_context",
+      "verdict": "UNSUPPORTED",
+      "reason": "TypeError: OrderedDict() takes 0 positional arguments but 1 was given",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ContextDecodingException,FailedHookException,NonTemplatedInputDirException,OutputDirExistsException,UndefinedVariableInTemplate,json,logging"
+      ]
+    },
+    {
+      "id": "bip_cookiecutter_3",
+      "source": "arquivo_com_bug",
+      "function": "read_user_choice",
+      "verdict": "UNSUPPORTED",
+      "reason": "TypeError: OrderedDict() takes 0 positional arguments but 1 was given",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:click"
+      ]
+    },
+    {
+      "id": "bip_fastapi_2",
+      "source": "arquivo_com_bug",
+      "function": "APIRouter.add_api_websocket_route",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compile_path': the code unpacks its result into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_fastapi_4",
+      "source": "arquivo_com_bug",
+      "function": "get_openapi_path",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'field_schema': the code unpacks its result into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_fastapi_5",
+      "source": "arquivo_com_bug",
+      "function": "create_cloned_field",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: NameError: name 'cast' is not defined",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:BaseConfig,BaseModel,FieldInfo,ModelField,create_model,lenient_issubclass,logger"
+      ]
+    },
+    {
+      "id": "bip_fastapi_9",
+      "source": "arquivo_com_bug",
+      "function": "get_body_field",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 158. Variable params_Form not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:BaseConfig,BaseModel,Dependant,Field,FormData,Headers,QueryParams,Required,Schema,SecurityRequirement,Shape,UploadFile,create_model,lenient_issubclass,params",
+        "external_chains_flattened:params_File,params_Form"
+      ]
+    },
+    {
+      "id": "bip_fastapi_10",
+      "source": "arquivo_com_bug",
+      "function": "serialize_response",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ErrorWrapper,Field,JSONResponse,Response,ValidationError,jsonable_encoder"
+      ]
+    },
+    {
+      "id": "bip_fastapi_11",
+      "source": "arquivo_com_bug",
+      "function": "is_scalar_field",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: vector::_M_range_check: __n (which is 0) >= this->size() (which is 0)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:BaseConfig,BaseModel,Field,Required,Schema,Shape,create_model,lenient_issubclass,params",
+        "external_chains_flattened:params_Body"
+      ]
+    },
+    {
+      "id": "bip_fastapi_16",
+      "source": "arquivo_com_bug",
+      "function": "jsonable_encoder",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'obj.Config': missing return type; stub 'obj.dict': missing return type; stub 'obj.items': missing return type; stub 'obj.value': missing return type",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_httpie_4",
+      "source": "arquivo_com_bug",
+      "function": "HTTPRequest.headers",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"headers\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:property",
+        "receiver_init_added",
+        "unreachable_methods_removed:iter_body,iter_lines",
+        "properties_as_attributes:body,encoding",
+        "stubbed_imports:str,urlsplit"
+      ]
+    },
+    {
+      "id": "bip_keras_3",
+      "source": "arquivo_com_bug",
+      "function": "_clone_functional_model",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Input,InputLayer,K,Model,Sequential,has_arg,to_list"
+      ]
+    },
+    {
+      "id": "bip_keras_4",
+      "source": "arquivo_com_bug",
+      "function": "TFOptimizer.get_updates",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'kwargs' is not defined in function 'Optimizer' at line 159.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:interfaces.legacy_get_updates_support",
+        "receiver_init_replaced",
+        "unreachable_methods_removed:from_config,get_config",
+        "properties_as_attributes:weights",
+        "stubbed_imports:K,copy,interfaces,tf,zip",
+        "external_chains_flattened:tf_IndexedSlices,tf_Tensor"
+      ]
+    },
+    {
+      "id": "bip_keras_5",
+      "source": "arquivo_com_bug",
+      "function": "get_file",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): urlretrieve",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_6",
+      "source": "arquivo_com_bug",
+      "function": "weighted_masked_objective",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"fn\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/95e9600ad0b5_a0.py line 56)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:K"
+      ]
+    },
+    {
+      "id": "bip_keras_7",
+      "source": "arquivo_com_bug",
+      "function": "KerasRegressor.predict",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): filter_sk_params",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_8",
+      "source": "arquivo_com_bug",
+      "function": "Network.from_config",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'layers' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,interfaces,saving,unpack_singleton"
+      ]
+    },
+    {
+      "id": "bip_keras_9",
+      "source": "arquivo_com_bug",
+      "function": "process_list_block",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/8ef4c6b418b2_a0.py:7",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_10",
+      "source": "arquivo_com_bug",
+      "function": "standardize_weights",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/9fb3143d806c_a0.py:124",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:K,np,warnings"
+      ]
+    },
+    {
+      "id": "bip_keras_14",
+      "source": "arquivo_com_bug",
+      "function": "sparse_top_k_categorical_accuracy",
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 400,
+        "reason": ""
+      },
+      "transforms": [
+        "stubbed_imports:K"
+      ]
+    },
+    {
+      "id": "bip_keras_17",
+      "source": "arquivo_com_bug",
+      "function": "sparse_categorical_accuracy",
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 400,
+        "reason": ""
+      },
+      "transforms": [
+        "stubbed_imports:K"
+      ]
+    },
+    {
+      "id": "bip_keras_23",
+      "source": "arquivo_com_bug",
+      "function": "Sequential.add",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"layer\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/8dd6e4a71556_a0.py line 198)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:from_config,get_config,pop,predict_classes,predict_proba",
+        "properties_as_attributes:layers,model",
+        "stubbed_imports:Input,InputLayer,K,Layer,Model,network"
+      ]
+    },
+    {
+      "id": "bip_keras_24",
+      "source": "arquivo_com_bug",
+      "function": "TensorBoard.set_model",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): projector, tf",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_25",
+      "source": "arquivo_com_bug",
+      "function": "_preprocess_numpy_input",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/f511f145a6e6_a0.py:39",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_26",
+      "source": "arquivo_com_bug",
+      "function": "rnn",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): uses_learning_phase",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_31",
+      "source": "arquivo_com_bug",
+      "function": "ctc_batch_cost",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve attribute '_dims' on Call result",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ctc,epsilon,floatx,functional_ops,tf",
+        "external_chains_flattened:tf_SparseTensor"
+      ]
+    },
+    {
+      "id": "bip_keras_33",
+      "source": "arquivo_com_bug",
+      "function": "text_to_word_sequence",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): unicode",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_keras_36",
+      "source": "arquivo_com_bug",
+      "function": "separable_conv1d",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:device_lib,image_data_format,tf",
+        "external_chains_flattened:tf_nn"
+      ]
+    },
+    {
+      "id": "bip_keras_38",
+      "source": "arquivo_com_bug",
+      "function": "StackedRNNCells.build",
+      "verdict": "UNVALIDATED",
+      "reason": "uncaught exception: AttributeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "not executed on host: uses hasattr without a literal attribute name"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call,from_config,get_config,get_losses_for,get_weights,set_weights",
+        "properties_as_attributes:losses,non_trainable_weights,state_size,trainable_weights",
+        "stubbed_imports:Layer"
+      ]
+    },
+    {
+      "id": "bip_keras_40",
+      "source": "arquivo_com_bug",
+      "function": "RNN.compute_output_shape",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_standardize_args,build,call,compute_mask,from_config,get_config,get_initial_state,get_losses_for,reset_states",
+        "properties_as_attributes:losses,non_trainable_weights,trainable_weights",
+        "stubbed_imports:InputSpec,K,Layer"
+      ]
+    },
+    {
+      "id": "bip_keras_43",
+      "source": "arquivo_com_bug",
+      "function": "to_categorical",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/9ac0cf95fdea_a0.py:46",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "bip_keras_45",
+      "source": "arquivo_com_bug",
+      "function": "LSTMCell.call",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/2aa20a18f319_a0.py:181",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_generate_dropout_mask,_generate_recurrent_dropout_mask,build",
+        "stubbed_imports:K,Layer"
+      ]
+    },
+    {
+      "id": "bip_luigi_8",
+      "source": "arquivo_com_bug",
+      "function": "S3CopyToTable.does_table_exist",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/58b6d209c7cd_a0.py@C@S3CopyToTable@F@does_table_exist@cursor' type mismatch: expected c",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:copy,copy_options,create_table,do_prune,init_copy,output,post_copy,prune,run,s3_load_path,truncate_table",
+        "properties_as_attributes:aws_access_key_id,aws_account_id,aws_arn_role_name,aws_secret_access_key,aws_session_token,do_truncate_table,prune_column,prune_date,prune_table,queries,table_attributes,table_type",
+        "stubbed_imports:rdbms",
+        "external_chains_flattened:rdbms_CopyToTable"
+      ]
+    },
+    {
+      "id": "bip_luigi_10",
+      "source": "arquivo_com_bug",
+      "function": "Worker.get_pending_tasks",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'task' is not defined in function 'lam1' at line 39.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:add_info,is_trivial_worker,prune,update",
+        "properties_as_attributes:assistant",
+        "stubbed_imports:BATCH_RUNNING,DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,six",
+        "external_chains_flattened:six_moves"
+      ]
+    },
+    {
+      "id": "bip_luigi_16",
+      "source": "arquivo_com_bug",
+      "function": "CentralPlannerScheduler.prune",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 19. Variable NotImplemented not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_has_resources,_rank,_retry_time,_schedulable,_serialize_task,_traverse_graph,_update_priority,_update_task_history,_upstream_status,_used_resources,add_task,add_worker,dep_graph,dump,fetch_error,get_work,graph,inverse_dep_graph,load,ping,re_enable_task,task_list,task_search,update,update_resources,worker_list",
+        "properties_as_attributes:task_history",
+        "stubbed_imports:logging"
+      ]
+    },
+    {
+      "id": "bip_luigi_17",
+      "source": "arquivo_com_bug",
+      "function": "_WorkerSchedulerFactory.create_local_scheduler",
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 4,
+        "reason": ""
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:create_remote_scheduler,create_worker",
+        "stubbed_imports:scheduler"
+      ]
+    },
+    {
+      "id": "bip_luigi_18",
+      "source": "arquivo_com_bug",
+      "function": "SimpleTaskState.set_status",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:dump,fail_dead_worker_task,get_active_tasks,get_active_workers,get_assistants,get_necessary_tasks,get_pending_tasks,get_running_tasks,get_state,get_task,get_worker,get_worker_ids,has_task,inactivate_tasks,inactivate_workers,load,num_pending_tasks,prune,set_state",
+        "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,notifications"
+      ]
+    },
+    {
+      "id": "bip_luigi_19",
+      "source": "arquivo_com_bug",
+      "function": "SimpleTaskState.set_status",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:dump,fail_dead_worker_task,get_active_tasks,get_active_workers,get_assistants,get_necessary_tasks,get_pending_tasks,get_running_tasks,get_state,get_task,get_worker,get_worker_ids,has_task,inactivate_tasks,inactivate_workers,load,num_pending_tasks,prune,set_state",
+        "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,notifications"
+      ]
+    },
+    {
+      "id": "bip_luigi_21",
+      "source": "arquivo_com_bug",
+      "function": "run",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 187.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Register,argparse,configuration,lock,logging,parameter,rpc,scheduler,sys,task,tempfile,worker",
+        "external_chains_flattened:logging_config,task_Config",
+        "builtin_exceptions_stubbed:SystemExit"
+      ]
+    },
+    {
+      "id": "bip_luigi_24",
+      "source": "arquivo_com_bug",
+      "function": "SparkSubmitTask._dict_arg",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/9c87f116e999_a0.py@C@SparkSubmitTask@F@keys' not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_dict_config,_flag_arg,_list_arg,_list_config,_text_arg,app_command,app_options,get_environment,run,spark_command",
+        "properties_as_attributes:archives,conf,deploy_mode,driver_class_path,driver_cores,driver_java_options,driver_library_path,driver_memory,executor_cores,executor_memory,files,hadoop_conf_dir,jars,master,num_executors,properties_file,py_files,queue,spark_submit,supervise,total_executor_cores",
+        "stubbed_imports:luigi",
+        "external_chains_flattened:luigi_Task"
+      ]
+    },
+    {
+      "id": "bip_luigi_26",
+      "source": "arquivo_com_bug",
+      "function": "HadoopJarJobRunner.run_job",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "stubbed_imports:logging,luigi",
+        "external_chains_flattened:luigi_contrib_hadoop,luigi_contrib_hadoop_JobRunner,luigi_contrib_hdfs,luigi_contrib_hdfs_HdfsTarget"
+      ]
+    },
+    {
+      "id": "bip_luigi_29",
+      "source": "arquivo_com_bug",
+      "function": "Register.__get_reg",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/ff134bdf9524_a0.py 58: list indices must be integers or slices, not str",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:clear_instance_cache,disable_instance_cache,get_all_params,get_task_cls,task_family,task_names,tasks_str",
+        "stubbed_imports:OrderedDict,abc,logging",
+        "external_chains_flattened:abc_ABCMeta"
+      ]
+    },
+    {
+      "id": "bip_luigi_33",
+      "source": "arquivo_com_bug",
+      "function": "Task.get_param_values",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/65d6818f8b24_a0.py 79: list indices must be integers or slices, not str",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_requires,bulk_complete,clone,complete,deps,event_handler,from_str_params,get_params,initialized,input,on_failure,on_success,output,process_resources,requires,run,task_family,task_module,to_str_params,trigger_event",
+        "stubbed_imports:abc,logging,parameter,six",
+        "external_chains_flattened:abc_ABCMeta",
+        "compat_percent_format:4"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_2",
+      "source": "arquivo_com_bug",
+      "function": "Axes.scatter",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_6",
+      "source": "arquivo_com_bug",
+      "function": "Axes._parse_scatter_color_args",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_7",
+      "source": "arquivo_com_bug",
+      "function": "LightSource.shade_rgb",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'np.gradient': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'; stub 'np.moveaxis': the code unpacks its result into 3 names, so it needs tuple[...] with ",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_9",
+      "source": "arquivo_com_bug",
+      "function": "PolarAxes.draw",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Axes.draw(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_10",
+      "source": "arquivo_com_bug",
+      "function": "Axis.set_tick_params",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.aliasd.values()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_copy_tick_props,_get_tick,_get_tick_bboxes,_get_tick_boxes_siblings,_get_ticks_position,_set_artist_props,_set_scale,_update_axisinfo,_update_label_position,_update_offset_text_position,_update_ticks,axis_date,cla,convert_units,draw,get_children,get_data_interval,get_gridlines,get_inverted,get_label,get_label_position,get_label_text,get_major_formatter,get_major_locator,get_major_ticks,get_majorticklabels,get_majorticklines,get_majorticklocs,get_minor_formatter,get_minor_locator,get_minor_ticks,get_minorticklabels,get_minorticklines,get_minorticklocs,get_minpos,get_offset_text,get_pickradius,get_remove_overlapping_locs,get_scale,get_smart_bounds,get_tick_padding,get_tick_space,get_ticklabel_extents,get_ticklabels,get_ticklines,get_ticklocs,get_ticks_direction,get_tightbbox,get_transform,get_units,get_view_interval,grid,have_units,limit_range_for_scale,pan,set_data_interval,set_default_intervals,set_inverted,set_label_coords,set_label_position,set_label_text,set_major_formatter,set_major_locator,set_minor_formatter,set_minor_locator,set_pickradius,set_remove_overlapping_locs,set_smart_bounds,set_ticklabels,set_ticks,set_units,set_view_interval,update_units,zoom",
+        "properties_as_attributes:remove_overlapping_locs",
+        "stubbed_imports:cbook,martist,mlines",
+        "external_chains_flattened:martist_Artist",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_11",
+      "source": "arquivo_com_bug",
+      "function": "Text.get_window_extent",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_draw_bbox,_get_dist_to_box,_get_rendered_text_width,_get_wrap_line_width,_get_wrapped_text,_update_clip_properties,contains,draw,get_bbox_patch,get_color,get_fontfamily,get_fontname,get_fontproperties,get_fontsize,get_fontstyle,get_fontvariant,get_fontweight,get_horizontalalignment,get_position,get_stretch,get_verticalalignment,get_wrap,set_backgroundcolor,set_bbox,set_clip_box,set_clip_on,set_clip_path,set_color,set_fontfamily,set_fontname,set_fontproperties,set_fontsize,set_fontstretch,set_fontstyle,set_fontvariant,set_fontweight,set_horizontalalignment,set_linespacing,set_multialignment,set_position,set_rotation,set_rotation_mode,set_text,set_usetex,set_verticalalignment,set_wrap,set_x,set_y,update,update_bbox_position_size,update_from",
+        "stubbed_imports:Affine2D,Artist,Bbox,BboxBase,BboxTransformTo,IdentityTransform,Transform,artist,cbook,docstring,np,rcParams,weakref"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_13",
+      "source": "arquivo_com_bug",
+      "function": "Path.make_compound_path",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"np\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_fast_from_codes_and_verts,arc,circle,cleaned,clip_to_bbox,contains_path,contains_point,contains_points,get_extents,has_nonfinite,hatch,interpolated,intersects_bbox,intersects_path,iter_segments,make_compound_path_from_polys,readonly,should_simplify,should_simplify,simplify_threshold,simplify_threshold,to_polygons,transformed,unit_circle,unit_circle_righthalf,unit_rectangle,unit_regular_asterisk,unit_regular_polygon,unit_regular_star,wedge",
+        "stubbed_imports:WeakValueDictionary,_to_unmasked_float_array,mpl,np,simple_linear_interpolation",
+        "compat_method_alias:2"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_14",
+      "source": "arquivo_com_bug",
+      "function": "Text.update",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call FancyBboxPatch(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_16",
+      "source": "arquivo_com_bug",
+      "function": "nonsingular",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve attribute 'tiny' on Call result",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_17",
+      "source": "arquivo_com_bug",
+      "function": "nonsingular",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve attribute 'tiny' on Call result",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_23",
+      "source": "arquivo_com_bug",
+      "function": "_AxesBase.apply_aspect",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call mtransforms_Bbox.from_bounds(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_25",
+      "source": "arquivo_com_bug",
+      "function": "EventCollection.__init__",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'setuptools_scm' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:get_color,get_linewidth,get_linewidths,get_orientation,set_linelength,set_lineoffset,set_orientation,switch_orientation",
+        "stubbed_imports:Number,_path,artist,cbook,cm,docstring,mcolors,mlines,mpath,mpl,np,transforms",
+        "external_chains_flattened:artist_Artist,cbook_ls_mapper,cm_ScalarMappable,np_ma_MaskedArray,transforms_Bbox,transforms_Transform",
+        "compat_method_alias:3"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_26",
+      "source": "arquivo_com_bug",
+      "function": "_make_getset_interval",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack signedbv - only tuples and arrays can be unpacked",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_matplotlib_27",
+      "source": "arquivo_com_bug",
+      "function": "ColorbarBase.set_label",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 127. Variable kw not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_solids,_central_N,_config_axes,_edges,_extend_lower,_extend_upper,_extended_N,_find_range,_get_extension_lengths,_get_ticker_locator_formatter,_locate,_mesh,_outline,_patch_ax,_process_values,_proportional_y,_reset_locator_formatter_scale,_ticker,_uniform_y,_use_auto_colorbar_locator,add_lines,config_axis,draw_all,get_ticks,minorticks_off,minorticks_on,remove,set_alpha,set_ticklabels,set_ticks,update_ticks",
+        "stubbed_imports:cbook"
+      ]
+    },
+    {
+      "id": "bip_matplotlib_28",
+      "source": "arquivo_com_bug",
+      "function": "_AxesBase.set_xlim",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"convert\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/ebe03b678088_a0.py line 290)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_text,_gci,_gen_axes_patch,_gen_axes_spines,_get_axis_list,_get_view,_init_axis,_make_twin_axes,_on_units_changed,_request_autoscale_view,_sci,_set_artist_props,_set_lim_and_transforms,_set_position,_set_title_offset_trans,_set_view,_set_view_from_bbox,_unstale_viewLim,_update_image_limits,_update_line_limits,_update_patch_limits,_update_title_position,_update_transScale,add_artist,add_child_axes,add_collection,add_container,add_image,add_line,add_patch,add_table,apply_aspect,autoscale,autoscale_view,axis,can_pan,can_zoom,cla,clear,contains,contains_point,drag_pan,draw,draw_artist,end_pan,format_coord,format_xdata,format_ydata,get_adjustable,get_anchor,get_aspect,get_autoscale_on,get_autoscalex_on,get_autoscaley_on,get_axes_locator,get_axisbelow,get_children,get_data_ratio,get_data_ratio_log,get_default_bbox_extra_artists,get_frame_on,get_images,get_legend,get_lines,get_navigate,get_navigate_mode,get_position,get_rasterization_zorder,get_renderer_cache,get_shared_x_axes,get_shared_y_axes,get_tightbbox,get_window_extent,get_xaxis,get_xaxis_text1_transform,get_xaxis_text2_transform,get_xaxis_transform,get_xbound,get_xgridlines,get_xmajorticklabels,get_xminorticklabels,get_xticklabels,get_xticklines,get_xticks,get_yaxis,get_yaxis_text1_transform,get_yaxis_text2_transform,get_yaxis_transform,get_ybound,get_ygridlines,get_ylim,get_ymajorticklabels,get_yminorticklabels,get_yscale,get_yticklabels,get_yticklines,get_yticks,grid,has_data,in_axes,invert_xaxis,invert_yaxis,locator_params,margins,minorticks_off,minorticks_on,redraw_in_frame,relim,reset_position,set_adjustable,set_anchor,set_aspect,set_autoscale_on,set_autoscalex_on,set_autoscaley_on,set_axes_locator,set_axis_off,set_axis_on,set_axisbelow,set_figure,set_frame_on,set_navigate,set_navigate_mode,set_position,set_prop_cycle,set_rasterization_zorder,set_xbound,set_xmargin,set_xscale,set_xticklabels,set_xticks,set_ybound,set_ylim,set_ymargin,set_yscale,set_yticklabels,set_yticks,start_pan,tick_params,ticklabel_format,twinx,twiny,update_datalim,update_datalim_bounds,xaxis_date,xaxis_inverted,yaxis_date,yaxis_inverted",
+        "properties_as_attributes:use_sticky_edges,viewLim",
+        "stubbed_imports:Real,cbook,martist,np,rcParams",
+        "external_chains_flattened:martist_Artist",
+        "compat_method_alias:2"
+      ]
+    },
+    {
+      "id": "bip_pandas_1",
+      "source": "arquivo_com_bug",
+      "function": "is_string_dtype",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: 'is' between a pointer and a non-pointer: one operand lost its object type, which ESBMC cannot compare by identity",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ArrayLike,CategoricalDtype,DatetimeTZDtype,DtypeObj,ExtensionDtype,Interval,IntervalDtype,Period,PeriodDtype,algos,is_array_like,is_bool,is_complex,is_dataclass,is_decimal,is_dict_like,is_file_like,is_float,is_hashable,is_integer,is_interval,is_iterator,is_list_like,is_named_tuple,is_nested_list_like,is_number,is_re,is_re_compilable,is_scalar,is_sequence,np,registry",
+        "external_chains_flattened:np_dtype,np_ndarray",
+        "builtin_exceptions_stubbed:SyntaxError,UnicodeError,UnicodeEncodeError"
+      ]
+    },
+    {
+      "id": "bip_pandas_4",
+      "source": "arquivo_com_bug",
+      "function": "Index._join_multi",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_7",
+      "source": "arquivo_com_bug",
+      "function": "Index._get_nearest_indexer",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_8",
+      "source": "arquivo_com_bug",
+      "function": "Block.replace",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'maybe_promote': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_10",
+      "source": "arquivo_com_bug",
+      "function": "ExtensionBlock.putmask",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): make_block",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_14",
+      "source": "arquivo_com_bug",
+      "function": "should_series_dispatch",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: iloc",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:is_datetime64_dtype,is_integer_dtype,is_object_dtype,is_timedelta64_dtype"
+      ]
+    },
+    {
+      "id": "bip_pandas_19",
+      "source": "arquivo_com_bug",
+      "function": "_LocIndexer._getitem_axis",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _getbool_axis, _validate_key",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_21",
+      "source": "arquivo_com_bug",
+      "function": "Series._get_with",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_23",
+      "source": "arquivo_com_bug",
+      "function": "DatetimeTimedeltaMixin.intersection",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): equals",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_24",
+      "source": "arquivo_com_bug",
+      "function": "DatetimeArray.tz_localize",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute 'year' in class 'DatetimeArray'. Please add explicit type annotation.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_offset,_assert_tzawareness_compat,_check_compatible_with,_format_native_types,_from_sequence,_generate_range,_has_same_tz,_local_timestamps,_maybe_clear_freq,_scalar_from_string,_sub_datetime_arraylike,_sub_datetimelike_scalar,_unbox_scalar,astype,day_name,isocalendar,month_name,normalize,to_julian_date,to_period,to_perioddelta,to_pydatetime,tz_convert",
+        "properties_as_attributes:_box_func,_resolution,_timezone,date,dtype,is_normalized,time,timetz,tz,tzinfo",
+        "stubbed_imports:DT64NS_DTYPE,DatetimeTZDtype,NaT,Timestamp,_INT64_DTYPE,ccalendar,conversion,dtl,fields,iNaT,is_bool_dtype,is_categorical_dtype,is_datetime64_any_dtype,is_datetime64_dtype,is_datetime64_ns_dtype,is_datetime64tz_dtype,is_dtype_equal,is_extension_array_dtype,is_float_dtype,is_object_dtype,is_period_dtype,is_string_dtype,is_timedelta64_dtype,lib,libresolution,normalize_date,np,pandas_dtype,timezones,tslib,tzconversion",
+        "external_chains_flattened:dtl_DatelikeOps,dtl_DatetimeLikeArrayMixin,dtl_TimelikeOps,np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_25",
+      "source": "arquivo_com_bug",
+      "function": "DatetimeArray.isocalendar",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_offset,_assert_tzawareness_compat,_check_compatible_with,_format_native_types,_from_sequence,_generate_range,_has_same_tz,_local_timestamps,_maybe_clear_freq,_scalar_from_string,_simple_new,_sub_datetime_arraylike,_sub_datetimelike_scalar,_unbox_scalar,astype,day_name,month_name,normalize,to_julian_date,to_period,to_perioddelta,to_pydatetime,tz_convert,tz_localize",
+        "properties_as_attributes:_box_func,_resolution,_timezone,date,dtype,is_normalized,time,timetz,tz,tzinfo",
+        "stubbed_imports:DT64NS_DTYPE,DatetimeTZDtype,NaT,Timestamp,_INT64_DTYPE,ccalendar,conversion,dtl,fields,iNaT,is_bool_dtype,is_categorical_dtype,is_datetime64_any_dtype,is_datetime64_dtype,is_datetime64_ns_dtype,is_datetime64tz_dtype,is_dtype_equal,is_extension_array_dtype,is_float_dtype,is_object_dtype,is_period_dtype,is_string_dtype,is_timedelta64_dtype,lib,libresolution,normalize_date,np,pandas_dtype,timezones,tslib,tzconversion",
+        "external_chains_flattened:dtl_DatelikeOps,dtl_DatetimeLikeArrayMixin,dtl_TimelikeOps,np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_28",
+      "source": "arquivo_com_bug",
+      "function": "StringMethods._get_series_list",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas.arrays' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_make_accessor,_validate,_wrap_result,cat,center,contains,decode,encode,extract,extractall,find,fullmatch,get,get_dummies,index,join,ljust,lstrip,match,normalize,pad,partition,repeat,replace,rfind,rindex,rjust,rpartition,rsplit,rstrip,slice,slice_replace,split,strip,translate,wrap,zfill",
+        "stubbed_imports:ABCDataFrame,ABCIndexClass,ABCMultiIndex,ABCSeries,ArrayLike,Dtype,NoNewAttributesMixin,Scalar,StringArray,ensure_object,extract_array,is_bool_dtype,is_categorical_dtype,is_extension_array_dtype,is_integer,is_integer_dtype,is_list_like,is_object_dtype,is_re,is_scalar,is_string_dtype,isna,lib,libmissing,np,warnings,wraps",
+        "external_chains_flattened:np_ndarray",
+        "builtin_exceptions_stubbed:Warning,FutureWarning"
+      ]
+    },
+    {
+      "id": "bip_pandas_29",
+      "source": "arquivo_com_bug",
+      "function": "IntervalArray.__setitem__",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pyarrow' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_concat_same_type,_format_data,_format_space,_from_factorized,_from_sequence,_shallow_copy,_simple_new,_validate,astype,contains,copy,fillna,from_arrays,from_breaks,from_tuples,isna,overlaps,repeat,set_closed,shift,take,to_tuples,value_counts",
+        "properties_as_attributes:closed,dtype,is_non_overlapping_monotonic,left,length,mid,nbytes,right,size",
+        "stubbed_imports:ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCIntervalIndex,ABCPeriodIndex,ABCSeries,Appender,ExtensionArray,Interval,IntervalMixin,_extension_array_shared_docs,array,check_array_indexer,intervals_to_interval_bounds,is_categorical_dtype,is_datetime64_any_dtype,is_float_dtype,is_integer_dtype,is_interval,is_interval_dtype,is_list_like,is_object_dtype,is_scalar,is_string_dtype,is_timedelta64_dtype,isna,notna,np,pandas_dtype,textwrap",
+        "external_chains_flattened:np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_33",
+      "source": "arquivo_com_bug",
+      "function": "IntegerArray._values_for_argsort",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'register_extension_dtype' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_34",
+      "source": "arquivo_com_bug",
+      "function": "TimeGrouper._get_time_bins",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'C@Grouper' is not defined at line 90.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_grouper,_get_period_bins,_get_resampler,_get_time_delta_bins,_get_time_period_bins",
+        "stubbed_imports:DateOffset,DatetimeIndex,Day,Grouper,NaT,Nano,Period,Tick,Timestamp,date_range,is_subperiod,is_superperiod,lib"
+      ]
+    },
+    {
+      "id": "bip_pandas_35",
+      "source": "arquivo_com_bug",
+      "function": "PeriodIndex._engine",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_engine_type' in class 'PeriodIndex'. Please add explicit type annotation.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:cache_readonly",
+        "receiver_init_added",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_apply_meta,_assert_can_do_setop,_get_string_slice,_int64index,_is_comparable_dtype,_maybe_cast_slice_bound,_maybe_convert_timedelta,_mpl_repr,_parsed_string_to_bounds,_setop,_shallow_copy,_simple_new,_union,_validate_partial_date_slice,asof_locs,astype,difference,get_indexer,get_indexer_non_unique,get_loc,insert,intersection,join,memory_usage",
+        "properties_as_attributes:_formatter_func,_has_complex_internals,inferred_type,is_full,values",
+        "stubbed_imports:Appender,DateOffset,DatetimeIndex,DatetimeIndexOpsMixin,Index,Int64Index,Period,PeriodArray,Tick,cache_readonly,doc,ensure_platform_int,inherit_names,is_bool_dtype,is_datetime64_any_dtype,is_dtype_equal,is_float,is_integer,is_object_dtype,is_scalar,libindex,np,pandas_dtype,period_array,raise_on_incompatible,validate_dtype_freq,weakref",
+        "external_chains_flattened:np_ufunc"
+      ]
+    },
+    {
+      "id": "bip_pandas_42",
+      "source": "arquivo_com_bug",
+      "function": "assert_series_equal",
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:Categorical,CategoricalIndex,DataFrame,DatetimeArray,DatetimeIndex,ExtensionArray,Index,IntervalArray,IntervalIndex,MultiIndex,PeriodArray,RangeIndex,Series,TimedeltaArray,_testing,array_equivalent,bdate_range,is_bool,is_categorical_dtype,is_datetime64_dtype,is_datetime64tz_dtype,is_extension_array_dtype,is_interval_dtype,is_number,is_numeric_dtype,is_period_dtype,is_sequence,is_timedelta64_dtype,needs_i8_conversion,np,pd,period_array,pprint_thing,take_1d",
+        "external_chains_flattened:np_ndarray,pd_IntervalIndex,pd_PeriodIndex"
+      ]
+    },
+    {
+      "id": "bip_pandas_50",
+      "source": "arquivo_com_bug",
+      "function": "_cat_compare_op",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_52",
+      "source": "arquivo_com_bug",
+      "function": "SeriesGroupBy.nunique",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'algorithms.factorize': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_58",
+      "source": "arquivo_com_bug",
+      "function": "Categorical.from_codes",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call ops.maybe_dispatch_ufunc_to_dunder_op(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_59",
+      "source": "arquivo_com_bug",
+      "function": "_Rolling_and_Expanding.corr",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_61",
+      "source": "arquivo_com_bug",
+      "function": "Series._get_with",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_63",
+      "source": "arquivo_com_bug",
+      "function": "_AtIndexer._convert_key",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call np.ix_(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_64",
+      "source": "arquivo_com_bug",
+      "function": "ExcelFormatter.__init__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.__python_dict__.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:_format_body,_format_header,_format_header_mi,_format_header_regular,_format_hierarchical_rows,_format_regular_rows,_format_value,_generate_body,get_formatted_cells,header_style,write",
+        "stubbed_imports:CSSResolver,CSSWarning,Index,Label,warnings"
+      ]
+    },
+    {
+      "id": "bip_pandas_69",
+      "source": "arquivo_com_bug",
+      "function": "_AtIndexer._convert_key",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call np.ix_(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_78",
+      "source": "arquivo_com_bug",
+      "function": "DataFrame._reduce",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_84",
+      "source": "arquivo_com_bug",
+      "function": "_unstack_multiple",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_87",
+      "source": "arquivo_com_bug",
+      "function": "crosstab",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Index,MultiIndex,com,concat,get_objs_combined_axis"
+      ]
+    },
+    {
+      "id": "bip_pandas_88",
+      "source": "arquivo_com_bug",
+      "function": "pivot_table",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot_table'], indents=1)",
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Grouper,Index,MultiIndex,Series,cartesian_product,concat,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar,maybe_downcast_to_dtype,np",
+        "external_chains_flattened:np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_89",
+      "source": "arquivo_com_bug",
+      "function": "_unstack_multiple",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'compress_group_index': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_91",
+      "source": "arquivo_com_bug",
+      "function": "TimedeltaIndex.searchsorted",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_engine_type' in class 'TimedeltaIndex'. Please add explicit type annotation.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:Substitution(klass='TimedeltaIndex'),Appender(_shared_docs['searchsorted'])",
+        "receiver_init_added",
+        "receiver_new_removed",
+        "unreachable_methods_removed:_get_string_slice,_maybe_cast_slice_bound,_maybe_promote,_partial_td_slice,_simple_new,astype,get_loc,get_value,get_value_maybe_box,insert,is_type_compatible",
+        "properties_as_attributes:_formatter_func,inferred_type",
+        "stubbed_imports:DatetimeIndexOpsMixin,DatetimeTimedeltaMixin,DatetimelikeDelegateMixin,Index,NaT,Timedelta,TimedeltaArray,_TD_DTYPE,_index_shared_docs,_is_convertible_to_td,delegate_names,dtl,inherit_names,is_float,is_integer,is_list_like,is_scalar,is_timedelta64_dtype,is_timedelta64_ns_dtype,libindex,maybe_extract_name,np,pandas_dtype",
+        "external_chains_flattened:dtl_TimelikeOps,np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_95",
+      "source": "arquivo_com_bug",
+      "function": "_period_array_cmp",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"ordinal_op\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/1f03b6b07a2c_a0.py line 131)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:DIFFERENT_FREQ,IncompatibleFrequency,NaT,NaTType,Period,_TD_DTYPE,compat,ensure_object,get_period_field_arr,iNaT,invalid_comparison,is_datetime64_dtype,is_float_dtype,is_list_like,is_object_dtype,is_period_dtype,isna,libfrequencies,libperiod,notna,np,ops,pandas_dtype,period_asfreq_arr,unpack_zerodim_and_defer",
+        "external_chains_flattened:np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_98",
+      "source": "arquivo_com_bug",
+      "function": "Index.__new__",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_102",
+      "source": "arquivo_com_bug",
+      "function": "init_ndarray",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas.core.internals.blocks' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeIndex,ABCIndexClass,ABCPeriodIndex,ABCSeries,ABCTimedeltaIndex,Index,algorithms,com,construct_1d_arraylike_from_scalar,create_block_manager_from_arrays,create_block_manager_from_blocks,ensure_index,get_objs_combined_axis,ibase,is_categorical_dtype,is_datetime64tz_dtype,is_dtype_equal,is_extension_array_dtype,is_integer_dtype,is_list_like,is_object_dtype,lib,maybe_cast_to_datetime,maybe_convert_platform,maybe_infer_to_datetimelike,maybe_upcast,np,sanitize_array,union_indexes",
+        "external_chains_flattened:np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_104",
+      "source": "arquivo_com_bug",
+      "function": "GroupBy.quantile",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _iterate_slices, _wrap_aggregated_output, _wrap_transformed_output, ngroups",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_106",
+      "source": "arquivo_com_bug",
+      "function": "Index.get_indexer_non_unique",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_107",
+      "source": "arquivo_com_bug",
+      "function": "DataFrame.append",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_115",
+      "source": "arquivo_com_bug",
+      "function": "interpolate_1d",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'scipy' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:algos,ensure_float64,import_optional_dependency,is_datetime64_dtype,is_datetime64tz_dtype,is_integer_dtype,is_numeric_v_string_like,is_scalar,is_timedelta64_dtype,isna,lib,needs_i8_conversion,np",
+        "external_chains_flattened:np_datetime64,np_lib_stride_tricks"
+      ]
+    },
+    {
+      "id": "bip_pandas_116",
+      "source": "arquivo_com_bug",
+      "function": "_MergeOperation._get_merge_keys",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call com.any_not_none(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_117",
+      "source": "arquivo_com_bug",
+      "function": "_isna_old",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 167",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ABCDatetimeArray,ABCExtensionArray,ABCGeneric,ABCIndexClass,ABCMultiIndex,ABCSeries,ABCTimedeltaArray,NaT,_NS_DTYPE,_TD_DTYPE,ensure_object,iNaT,is_bool_dtype,is_complex_dtype,is_datetime64_dtype,is_datetime64tz_dtype,is_datetimelike_v_numeric,is_dtype_equal,is_extension_array_dtype,is_float_dtype,is_integer_dtype,is_object_dtype,is_period_dtype,is_scalar,is_string_dtype,is_string_like_dtype,is_timedelta64_dtype,libmissing,needs_i8_conversion,np,pandas_dtype",
+        "external_chains_flattened:np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_119",
+      "source": "arquivo_com_bug",
+      "function": "_add_margins",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Series,concat,np"
+      ]
+    },
+    {
+      "id": "bip_pandas_127",
+      "source": "arquivo_com_bug",
+      "function": "NDFrame.pct_change",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'validate_fillna_kwargs': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_133",
+      "source": "arquivo_com_bug",
+      "function": "NDFrame.interpolate",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:Appender(_shared_docs['interpolate'] % _shared_doc_kwargs)",
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_numeric_operations,_add_series_only_operations,_add_series_or_dataframe_operations,_agg_by_level,_align_frame,_align_series,_box_item_values,_check_inplace_setting,_check_is_chained_assignment_possible,_check_label_or_level_ambiguity,_clip_with_one_bound,_clip_with_scalar,_consolidate,_construct_axes_dict,_construct_axes_dict_from,_construct_axes_from_arguments,_convert,_create_indexer,_dir_additions,_drop_axis,_drop_labels_or_levels,_find_valid_index,_from_axes,_get_axis_resolvers,_get_bool_data,_get_cacher,_get_index_resolvers,_get_item_cache,_get_label_or_level_values,_get_numeric_data,_get_space_character_free_column_resolvers,_iget_item_cache,_indexed_same,_init_mgr,_internal_get_values,_is_label_or_level_reference,_is_label_reference,_is_level_reference,_maybe_cache_changed,_needs_reindex_multi,_reindex_axes,_reindex_multi,_reindex_with_indexers,_repr_data_resource_,_repr_latex_,_reset_cacher,_set_as_cached,_set_axis,_set_axis_name,_set_is_copy,_set_item,_setup_axes,_slice,_to_dict_of_blocks,_validate_dtype,_where,abs,add_prefix,add_suffix,align,as_blocks,as_matrix,asfreq,asof,astype,at_time,between_time,bfill,bool,clip,clip_lower,clip_upper,copy,describe,drop,droplevel,equals,ffill,fillna,filter,first,first_valid_index,get,get_dtype_counts,get_ftype_counts,get_values,groupby,head,infer_objects,isna,isnull,items,iteritems,keys,last,last_valid_index,mask,notna,notnull,pct_change,pipe,pop,rank,reindex,reindex_like,rename,rename_axis,replace,resample,sample,set_axis,shift,slice_shift,sort_index,sort_values,squeeze,swapaxes,swaplevel,tail,to_clipboard,to_csv,to_dense,to_excel,to_hdf,to_json,to_latex,to_msgpack,to_pickle,to_sql,to_xarray,transform,transpose,truncate,tshift,tz_convert,tz_localize,where",
+        "properties_as_attributes:_constructor,_constructor_expanddim,_constructor_sliced,_get_values,_info_axis,_is_cached,_is_datelike_mixed_type,_is_mixed_type,_is_numeric_mixed_type,_is_view,_obj_with_exclusions,_selected_obj,_stat_axis,_values,attrs,axes,blocks,dtypes,empty,ftypes,is_copy,ndim,shape,size,values",
+        "stubbed_imports:ABCDataFrame,ABCSeries,AbstractMethodError,BlockManager,Index,InvalidIndexError,MultiIndex,PandasObject,RangeIndex,SelectionMixin,com,config,dedent,ensure_index,ensure_int64,ensure_object,ensure_str,gc,indexing,is_bool,is_bool_dtype,is_datetime64_any_dtype,is_datetime64tz_dtype,is_dict_like,is_extension_array_dtype,is_float,is_integer,is_list_like,is_number,is_numeric_dtype,is_object_dtype,is_period_arraylike,is_re_compilable,is_scalar,is_timedelta64_dtype,isna,notna,np,nv,operator,pandas_dtype,pprint_thing,validate_bool_kwarg,validate_fillna_kwargs,validate_percentile,warnings",
+        "external_chains_flattened:np_ndarray",
+        "compat_percent_format:1",
+        "compat_method_alias:2"
+      ]
+    },
+    {
+      "id": "bip_pandas_139",
+      "source": "arquivo_com_bug",
+      "function": "Grouping.__init__",
+      "verdict": "UNSUPPORTED",
+      "reason": "stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_141",
+      "source": "arquivo_com_bug",
+      "function": "RangeIndex.get_indexer",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_142",
+      "source": "arquivo_com_bug",
+      "function": "diff",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/edc15aea0c52_a0.py:129",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:algos,ensure_float64,ensure_int64,ensure_object,ensure_platform_int,ensure_uint64,htable,iNaT,is_array_like,is_bool_dtype,is_categorical_dtype,is_complex_dtype,is_datetime64_any_dtype,is_datetime64_ns_dtype,is_datetimelike,is_extension_array_dtype,is_float_dtype,is_integer,is_integer_dtype,is_list_like,is_numeric_dtype,is_object_dtype,is_period_dtype,is_scalar,is_signed_integer_dtype,is_timedelta64_dtype,is_unsigned_integer_dtype,lib,needs_i8_conversion,np"
+      ]
+    },
+    {
+      "id": "bip_pandas_143",
+      "source": "arquivo_com_bug",
+      "function": "RangeIndex.get_indexer",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_144",
+      "source": "arquivo_com_bug",
+      "function": "BarPlot._decorate_ticks",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_145",
+      "source": "arquivo_com_bug",
+      "function": "dispatch_to_series",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas.core.computation.expressions' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeArray,ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCSeries,ABCTimedeltaArray,ABCTimedeltaIndex,Timedelta,Timestamp,lib,libops,np"
+      ]
+    },
+    {
+      "id": "bip_pandas_148",
+      "source": "arquivo_com_bug",
+      "function": "FrameApply.apply_empty_result",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:apply_broadcast,apply_raw,apply_series_generator,apply_standard,dtypes,get_result,values,wrap_results",
+        "properties_as_attributes:agg_axis,columns,index",
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "bip_pandas_152",
+      "source": "arquivo_com_bug",
+      "function": "Series.append",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_154",
+      "source": "arquivo_com_bug",
+      "function": "GroupBy._get_cythonized_result",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _iterate_slices",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_155",
+      "source": "arquivo_com_bug",
+      "function": "Rolling._on",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'pandas' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:cache_readonly",
+        "receiver_init_added",
+        "unreachable_methods_removed:_validate_freq,_validate_monotonic,apply,corr,count,cov,is_datetimelike,kurt,max,mean,median,min,quantile,skew,std,sum,validate,var",
+        "stubbed_imports:ABCDataFrame,ABCDateOffset,ABCDatetimeIndex,ABCPeriodIndex,ABCSeries,ABCTimedeltaIndex,Appender,Axis,DataError,FrameOrSeries,Index,PandasObject,Scalar,SelectionMixin,Substitution,_GroupByMixin,_doc_template,_flex_binary_moment,_offset,_require_min_periods,_shared_docs,_use_window,_zsqrt,cache_readonly,com,dedent,ensure_float64,ensure_index,import_optional_dependency,is_bool,is_float_dtype,is_integer,is_integer_dtype,is_list_like,is_scalar,is_timedelta64_dtype,libwindow,needs_i8_conversion,np,nv,warnings",
+        "external_chains_flattened:np_ndarray",
+        "builtin_exceptions_stubbed:Warning,FutureWarning"
+      ]
+    },
+    {
+      "id": "bip_pandas_158",
+      "source": "arquivo_com_bug",
+      "function": "Series.rename",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_160",
+      "source": "arquivo_com_bug",
+      "function": "_can_use_numexpr",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.index.astype()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:np",
+        "external_chains_flattened:np_ndarray"
+      ]
+    },
+    {
+      "id": "bip_pandas_161",
+      "source": "arquivo_com_bug",
+      "function": "Categorical.fillna",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call ops.maybe_dispatch_ufunc_to_dunder_op(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_162",
+      "source": "arquivo_com_bug",
+      "function": "_normalize",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"f\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/84b511d42fb6_a0.py line 33)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:concat"
+      ]
+    },
+    {
+      "id": "bip_pandas_163",
+      "source": "arquivo_com_bug",
+      "function": "_Window._prep_values",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_166",
+      "source": "arquivo_com_bug",
+      "function": "DataFrame._join_compat",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_pandas_168",
+      "source": "arquivo_com_bug",
+      "function": "_get_grouper",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_sanic_1",
+      "source": "arquivo_com_bug",
+      "function": "Sanic.register_named_middleware",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: List variable not found:",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_build_endpoint_name,_helper,_run_request_middleware,_run_response_middleware,add_route,add_task,add_websocket_route,blueprint,converted_response_type,create_server,delete,enable_websocket,exception,get,handle_request,head,listener,middleware,options,patch,post,put,register_blueprint,register_listener,register_middleware,route,run,static,stop,trigger_events,url_for,websocket",
+        "properties_as_attributes:asgi_client,loop,test_client",
+        "stubbed_imports:ASGIApp"
+      ]
+    },
+    {
+      "id": "bip_scrapy_6",
+      "source": "arquivo_com_bug",
+      "function": "ImagesPipeline.convert_image",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'scrapy.exceptions' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:file_downloaded,from_settings,get_images,get_media_requests,image_downloaded,item_completed",
+        "stubbed_imports:BytesIO,FileException,FilesPipeline,Image,Request,hashlib,to_bytes",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "bip_scrapy_8",
+      "source": "arquivo_com_bug",
+      "function": "ItemMeta.__new__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: NameError: name 'super' is not defined",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "stubbed_imports:ABCMeta"
+      ]
+    },
+    {
+      "id": "bip_scrapy_15",
+      "source": "arquivo_com_bug",
+      "function": "_safe_ParseResult",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.netloc.encode()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:ParseResult,_safe_chars,parse_qsl,quote,to_bytes,to_native_str,to_unicode,unquote,urldefrag,urlencode,urlparse,urlunparse"
+      ]
+    },
+    {
+      "id": "bip_scrapy_18",
+      "source": "arquivo_com_bug",
+      "function": "ResponseTypes.from_content_disposition",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:from_args,from_body,from_content_type,from_headers",
+        "stubbed_imports:Response,isbinarytext,to_bytes,to_native_str"
+      ]
+    },
+    {
+      "id": "bip_scrapy_21",
+      "source": "arquivo_com_bug",
+      "function": "RobotsTxtMiddleware._robots_error",
+      "verdict": "ESBMC_MISSED",
+      "reason": "no_violation_found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "IndexError",
+        "line": 15,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_logerror,_parse_robots,from_crawler,process_request,process_request_2,robot_parser"
+      ]
+    },
+    {
+      "id": "bip_scrapy_28",
+      "source": "arquivo_com_bug",
+      "function": "RFPDupeFilter.__init__",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Function `py:/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/f5544ded0215_a0.py@F@open' not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "unreachable_methods_removed:close,from_settings,log,request_fingerprint,request_seen",
+        "stubbed_imports:logging"
+      ]
+    },
+    {
+      "id": "bip_scrapy_38",
+      "source": "arquivo_com_bug",
+      "function": "_get_clickable",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/a915b95ad108_a0.py:46",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:six",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "bip_scrapy_39",
+      "source": "arquivo_com_bug",
+      "function": "Spider.start_requests",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'C@Spider' is not defined in function 'start_requests' at line 43.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_set_crawler,close,from_crawler,handles_request,log,parse,set_crawler,update_settings",
+        "properties_as_attributes:logger",
+        "stubbed_imports:Request,object_ref,warnings",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "bip_scrapy_40",
+      "source": "arquivo_com_bug",
+      "function": "PythonItemExporter._serialize_value",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _get_serialized_fields, export_item",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_spacy_1",
+      "source": "arquivo_com_bug",
+      "function": "add_codes",
+      "verdict": "UNSUPPORTED",
+      "reason": "artifacts/v2/smoke-2026-10-04-esbmc/programs/a8853acb4036_a0.py:1: error: Function is missing a type annotation  [no-untyped-def]",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_spacy_2",
+      "source": "arquivo_com_bug",
+      "function": "load_model_from_path",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 1. Variable OSError not found",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:CudaStream,Errors,Path,Warnings,basestring_,catalogue,cupy,importlib,path2str,srsly,unicode_",
+        "external_chains_flattened:Errors_E048,Errors_E052,Errors_E053,Errors_E054",
+        "builtin_exceptions_stubbed:IOError"
+      ]
+    },
+    {
+      "id": "bip_spacy_6",
+      "source": "arquivo_com_bug",
+      "function": "Language.remove_pipe",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 215",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_format_docs_and_golds,_multiprocessing_pipe,add_pipe,begin_training,create_pipe,disable_pipes,evaluate,from_bytes,from_disk,get_pipe,has_pipe,make_doc,pipe,preprocess_gold,rehearse,rename_pipe,replace_pipe,resume_training,to_bytes,to_disk,update,use_params",
+        "properties_as_attributes:entity,linker,matcher,meta,parser,path,pipe_factories,pipe_labels,pipe_names,tagger,tensorizer",
+        "stubbed_imports:Errors,IS_STOP,LANG,LEX_ATTRS,Lemmatizer,Lookups,TAG_MAP,TOKENIZER_INFIXES,TOKENIZER_PREFIXES,TOKENIZER_SUFFIXES,TOKEN_MATCH,Tokenizer,Vocab,Warnings,analyze_all_pipes,analyze_pipes,deprecation_warning,functools,is_stop,user_warning,util,validate_attrs",
+        "external_chains_flattened:Errors_E001,Errors_E003,Errors_E005,Errors_E088,util_ENTRY_POINTS"
+      ]
+    },
+    {
+      "id": "bip_thefuck_2",
+      "source": "arquivo_com_bug",
+      "function": "get_all_executables",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Module 'thefuck.shells' not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:memoize",
+        "stubbed_imports:Path,six"
+      ]
+    },
+    {
+      "id": "bip_thefuck_3",
+      "source": "arquivo_com_bug",
+      "function": "Fish.info",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_expand_aliases,_get_history_file_name,_get_history_line,_get_overridden_aliases,_put_to_history,_script_from_history,and_,app_alias,get_aliases,how_to_configure,or_,put_to_history",
+        "stubbed_imports:DEVNULL,Generic,PIPE,Popen,cache"
+      ]
+    },
+    {
+      "id": "bip_thefuck_4",
+      "source": "arquivo_com_bug",
+      "function": "_get_aliases",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:cache('~/.config/fish/config.fish')",
+        "stubbed_imports:DEVNULL,PIPE,Popen,cache"
+      ]
+    },
+    {
+      "id": "bip_thefuck_10",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Couldn't convert expression in unrecognised format",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_thefuck_11",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: function call: argument \"c:string.c@21403@F@__python_str_split@str\" type mismatch: got empty, expected pointer",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ]
+    },
+    {
+      "id": "bip_thefuck_14",
+      "source": "arquivo_com_bug",
+      "function": "Fish._get_overridden_aliases",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_expand_aliases,_get_history_file_name,_get_history_line,_script_from_history,and_,app_alias,from_shell,get_aliases,how_to_configure",
+        "stubbed_imports:Generic"
+      ]
+    },
+    {
+      "id": "bip_thefuck_19",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "ESBMC_MISSED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 9,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ]
+    },
+    {
+      "id": "bip_thefuck_25",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_thefuck_26",
+      "source": "arquivo_com_bug",
+      "function": "get_new_command",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: function call: argument \"c:string.c@21403@F@__python_str_split@str\" type mismatch: got empty, expected pointer",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:shells"
+      ]
+    },
+    {
+      "id": "bip_thefuck_30",
+      "source": "arquivo_com_bug",
+      "function": "match",
+      "verdict": "UNSUPPORTED",
+      "reason": "external name 'memoize' is used as a decorator",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_tornado_5",
+      "source": "arquivo_com_bug",
+      "function": "PeriodicCallback._update_next",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Bitwuzla error encountered",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_run,_schedule_next,is_running,start,stop"
+      ]
+    },
+    {
+      "id": "bip_tornado_8",
+      "source": "arquivo_com_bug",
+      "function": "WebSocketProtocol13.accept_connection",
+      "verdict": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _abort, _run_callback",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_tqdm_1",
+      "source": "arquivo_com_bug",
+      "function": "tenumerate",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: the result of the 'enumerate' builtin is not modelled (no 'enumerate' type)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:tqdm_auto"
+      ]
+    },
+    {
+      "id": "bip_youtube_dl_3",
+      "source": "arquivo_com_bug",
+      "function": "unescapeHTML",
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'int' object is not subscriptable at /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/be6071167380_a0.py:58",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "bip_youtube_dl_4",
+      "source": "arquivo_com_bug",
+      "function": "JSInterpreter.interpret_expression",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/artifacts/v2/smoke-2026-10-04-esbmc/programs/e51be893a56c_a0.py line 137)",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "bip_youtube_dl_5",
+      "source": "arquivo_com_bug",
+      "function": "unified_timestamp",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_datetime_timedelta': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_7",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_8",
+      "source": "arquivo_com_bug",
+      "function": "YoutubeDL.build_format_selector",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_10",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_13",
+      "source": "arquivo_com_bug",
+      "function": "urljoin",
+      "verdict": "UNVALIDATED",
+      "reason": "uncaught exception: AttributeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 16,
+        "reason": ""
+      },
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "bip_youtube_dl_15",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_20",
+      "source": "arquivo_com_bug",
+      "function": "get_elements_by_attribute",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_escape': missing return type; stub '_esbmc_re_finditer': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_21",
+      "source": "arquivo_com_bug",
+      "function": "urljoin",
+      "verdict": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "llm_calls": 1,
+      "replay": {
+        "status": "not_reproduced",
+        "exception_type": "",
+        "line": null,
+        "runs": 16,
+        "reason": ""
+      },
+      "transforms": [
+        "stubbed_imports:compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "bip_youtube_dl_23",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_24",
+      "source": "arquivo_com_bug",
+      "function": "_match_one",
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"m\" not found.",
+      "llm_calls": 1,
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "transforms": [
+        "stubbed_imports:operator",
+        "compat_percent_format:4"
+      ]
+    },
+    {
+      "id": "bip_youtube_dl_25",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_26",
+      "source": "arquivo_com_bug",
+      "function": "js_to_json",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_27",
+      "source": "arquivo_com_bug",
+      "function": "parse_dfxp_time_expr",
+      "verdict": "OTHER_FAILURE",
+      "reason": "uncaught exception: TypeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "other_failure",
+        "exception_type": "TypeError",
+        "line": 8,
+        "runs": 5,
+        "reason": ""
+      },
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_30",
+      "source": "arquivo_com_bug",
+      "function": "YoutubeDL.build_format_selector",
+      "verdict": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "llm_calls": 0,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_41",
+      "source": "arquivo_com_bug",
+      "function": "unified_strdate",
+      "verdict": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub '_esbmc_re_sub': missing return type",
+      "llm_calls": 1,
+      "replay": {},
+      "transforms": []
+    },
+    {
+      "id": "bip_youtube_dl_43",
+      "source": "arquivo_com_bug",
+      "function": "url_basename",
+      "verdict": "CONFIRMED",
+      "reason": "uncaught exception: TypeError",
+      "llm_calls": 1,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "TypeError",
+        "line": 5,
+        "runs": 1,
+        "reason": ""
+      },
+      "transforms": []
+    }
+  ]
+}

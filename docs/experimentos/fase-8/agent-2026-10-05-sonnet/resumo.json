@@ -1,0 +1,20 @@
+{
+  "pasta": "agent-2026-10-05-sonnet",
+  "modificado_em": "2026-10-05T23:57",
+  "arquivos": [
+    "agent-2026-10-05-sonnet.log",
+    "agent_results.json",
+    "input_report.json"
+  ],
+  "vereditos (agent_results.json)": {
+    "ESBMC_MISSED": 5,
+    "NOT_CONFIRMED": 1,
+    "UNSUPPORTED": 9,
+    "MISSING_DEPENDENCY": 2,
+    "AGENT_FAILED": 3,
+    "OTHER_FAILURE": 1,
+    "UNVALIDATED": 3,
+    "CONFIRMED": 2,
+    "ESBMC_TIMEOUT": 2
+  }
+}

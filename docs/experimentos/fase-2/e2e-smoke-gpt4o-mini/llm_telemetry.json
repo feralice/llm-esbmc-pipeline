@@ -1,0 +1,93 @@
+[
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": null,
+    "status": "error",
+    "duration_seconds": 1.830259,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "cached_tokens": null,
+    "error": "Falha ao chamar OpenAI Responses API: 400 {\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'pipeline_findings': In context=('properties', 'findings', 'items', 'properties', 'metadata'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'line'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"text.format.schema\",\n    \"code\": \"invalid_json_schema\"\n  }\n}",
+    "stage": "detection"
+  },
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": null,
+    "status": "error",
+    "duration_seconds": 0.633354,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "cached_tokens": null,
+    "error": "Falha ao chamar OpenAI Responses API: 400 {\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'pipeline_findings': In context=('properties', 'findings', 'items', 'properties', 'metadata'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'line'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"text.format.schema\",\n    \"code\": \"invalid_json_schema\"\n  }\n}",
+    "stage": "detection"
+  },
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": null,
+    "status": "error",
+    "duration_seconds": 0.458768,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "cached_tokens": null,
+    "error": "Falha ao chamar OpenAI Responses API: 400 {\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'pipeline_findings': In context=('properties', 'findings', 'items', 'properties', 'metadata'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'line'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"text.format.schema\",\n    \"code\": \"invalid_json_schema\"\n  }\n}",
+    "stage": "detection"
+  },
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": "gpt-4o-mini-2024-07-18",
+    "status": "success",
+    "duration_seconds": 7.301229,
+    "prompt_tokens": 2016,
+    "completion_tokens": 770,
+    "total_tokens": 2786,
+    "cached_tokens": 0,
+    "error": null,
+    "stage": "detection"
+  },
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": "gpt-4o-mini-2024-07-18",
+    "status": "success",
+    "duration_seconds": 6.22243,
+    "prompt_tokens": 1728,
+    "completion_tokens": 340,
+    "total_tokens": 2068,
+    "cached_tokens": 0,
+    "error": null,
+    "stage": "detection"
+  },
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": "gpt-4o-mini-2024-07-18",
+    "status": "success",
+    "duration_seconds": 4.313643,
+    "prompt_tokens": 1709,
+    "completion_tokens": 274,
+    "total_tokens": 1983,
+    "cached_tokens": 0,
+    "error": null,
+    "stage": "detection"
+  },
+  {
+    "provider": "openai",
+    "requested_model": "gpt-4o-mini",
+    "returned_model": "gpt-4o-mini-2024-07-18",
+    "status": "success",
+    "duration_seconds": 4.516208,
+    "prompt_tokens": 2536,
+    "completion_tokens": 235,
+    "total_tokens": 2771,
+    "cached_tokens": 0,
+    "error": null,
+    "stage": "synthesis"
+  }
+]

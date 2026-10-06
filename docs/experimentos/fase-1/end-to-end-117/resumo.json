@@ -1,0 +1,12 @@
+{
+  "pasta": "end-to-end-117",
+  "modificado_em": "2026-09-08T21:01",
+  "arquivos": [
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "partial_synthesis"
+}

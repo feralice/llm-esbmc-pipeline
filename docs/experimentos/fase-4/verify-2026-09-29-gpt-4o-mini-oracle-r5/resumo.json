@@ -1,0 +1,23 @@
+{
+  "pasta": "verify-2026-09-29-gpt-4o-mini-oracle-r5",
+  "modificado_em": "2026-09-29T14:37",
+  "arquivos": [
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "running",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 65,
+    "MISSING_DEPENDENCY": 26,
+    "SPEC_FAILED": 14,
+    "ESBMC_TIMEOUT": 5,
+    "UNVALIDATED": 2,
+    "NOT_CONFIRMED": 7,
+    "GROUNDING_FAILED": 2,
+    "ESBMC_ERROR": 3,
+    "OTHER_FAILURE": 1
+  }
+}

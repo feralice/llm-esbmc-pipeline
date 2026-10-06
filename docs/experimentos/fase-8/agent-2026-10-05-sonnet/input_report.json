@@ -1,0 +1,1337 @@
+{
+ "results": [
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/av_real_03.py",
+    "function": "Series.to_timestamp",
+    "suspect_expression": "assert isinstance(self.index, PeriodIndex)",
+    "line": 0,
+    "trigger_condition": "self.index is object state not constrained by the function. A Series with a non-Period index (e.g. a default RangeIndex or a DatetimeIndex) passes through the copy branch and reaches the assert with a false condition. The failure is an AssertionError with no message instead of a descriptive TypeError. No try/except surrounds it.",
+    "category": "",
+    "hypothesis_id": "528ca8730d1f"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call Substitution(...) uses *args/**kwargs",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.113
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_black_16.py",
+    "function": "gen_python_files_in_dir",
+    "suspect_expression": "normalized_path = '/' + child.resolve().relative_to(root).as_posix()",
+    "line": 0,
+    "trigger_condition": "child.resolve() follows symlinks, so a symlink inside path that points outside root yields a resolved path not under root. Path.relative_to then raises ValueError. Also reachable when path is not under root. The assert only checks that root is absolute, and nothing catches the exception.",
+    "category": "",
+    "hypothesis_id": "edce49fc532d"
+   },
+   "verdict": "ESBMC_ERROR",
+   "reason": "ESBMC direto: resultado inconclusivo.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"path\": \"object\", \"root\": \"object\", \"include\": \"object\", \"exclude\": \"object\", \"report\": \"object\"}, \"attributes\": {}, \"stubs\": {\"path.iterdir\": \"list[str]\", \"root.is_absolute\": \"bool\", \"include.search\": \"Optional[str]\", \"exclude.search\": \"Optional[str]\", \"report.path_ignored\": \"None\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/edce49fc532d_a0_replay.py",
+     "esbmc_status": "inconclusive",
+     "reading": "error",
+     "message": "ESBMC direto: resultado inconclusivo.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "stubbed_imports:Path"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/edce49fc532d_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 577,
+   "seconds": 22.48
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_33.py",
+    "function": "text_to_word_sequence",
+    "suspect_expression": "translate_map = maketrans(filters, split * len(filters))",
+    "line": 0,
+    "trigger_condition": "`split` is a free parameter. `maketrans` requires both arguments to have the same length, but the second has len(split)*len(filters). With a split of 2 or more characters, e.g. '--' with the default filters, the lengths differ and ValueError is raised. With split='' the second argument is empty and ValueError is also raised. With split=None, `None * len(filters)` raises TypeError. No try/except covers the call, and the default ' ' passes the guard, so only non-default inputs trigger the failure.",
+    "category": "",
+    "hypothesis_id": "a408047609c9"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "undefined name(s): unicode",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 1.983
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_21.py",
+    "function": "run",
+    "suspect_expression": "cmdline_args.insert(0, main_task_cls.task_family)",
+    "line": 0,
+    "trigger_condition": "cmdline_args defaults to None and is never normalized to a list. With main_task_cls truthy and cmdline_args omitted, line 7 calls .insert on None. With local_scheduler=True and cmdline_args omitted, line 9 `cmdline_args.insert(0, '--local-scheduler')` fails the same way. Both come from the same missing default handling.",
+    "category": "",
+    "hypothesis_id": "a5a1121afa6c"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"cmdline_args\": \"Optional[list[str]]\", \"main_task_cls\": \"object\", \"worker_scheduler_factory\": \"None\", \"use_dynamic_argparse\": \"bool\", \"local_scheduler\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"main_task_cls.task_family\": \"str\", \"Register.get_all_params\": \"list[str]\", \"Register.get_task_cls\": \"object\", \"Register.task_names\": \"list[str]\", \"argparse.ArgumentParser\": \"object\", \"configuration.get_config\": \"object\", \"lock.acquire_for\": \"bool\", \"logging.DEBUG\": \"int\", \"logging.Formatter\": \"object\", \"logging.StreamHandler\": \"object\", \"logging.getLogger\": \"object\", \"logging_config.fileConfig\": \"None\", \"parameter.BoolParameter\": \"object\", \"parameter.IntParameter\": \"object\", \"parameter.Parameter\": \"object\", \"rpc.RemoteScheduler\": \"object\", \"scheduler\": \"object\", \"scheduler.CentralPlannerScheduler\": \"object\", \"sys.argv\": \"list[str]\", \"task\": \"object\", \"tempfile.gettempdir\": \"str\", \"worker.Worker\": \"object\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/a5a1121afa6c_a0_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"cmdline_args\": \"Optional[list[str]]\", \"main_task_cls\": \"object\", \"worker_scheduler_factory\": \"None\", \"use_dynamic_argparse\": \"bool\", \"local_scheduler\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"main_task_cls.task_family\": \"str\", \"Register.get_all_params\": \"list[str]\", \"Register.get_task_cls\": \"object\", \"Register.task_names\": \"list[str]\", \"argparse.ArgumentParser\": \"object\", \"configuration.get_config\": \"object\", \"lock.acquire_for\": \"bool\", \"logging.DEBUG\": \"int\", \"logging.Formatter\": \"object\", \"logging.StreamHandler\": \"object\", \"logging.getLogger\": \"object\", \"logging_config.fileConfig\": \"None\", \"parameter.BoolParameter\": \"object\", \"parameter.IntParameter\": \"object\", \"parameter.Parameter\": \"object\", \"rpc.RemoteScheduler\": \"object\", \"scheduler\": \"object\", \"scheduler.CentralPlannerScheduler\": \"object\", \"sys.argv\": \"list[str]\", \"task\": \"object\", \"tempfile.gettempdir\": \"str\", \"worker.Worker\": \"object\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.\n(program line 197, original code: setup_interface_logging.has_run = True)",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/a5a1121afa6c_a1_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"cmdline_args\": \"Optional[list[str]]\", \"main_task_cls\": \"object\", \"worker_scheduler_factory\": \"None\", \"use_dynamic_argparse\": \"bool\", \"local_scheduler\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"main_task_cls.task_family\": \"str\", \"setup_interface_logging\": \"None\", \"Register.get_all_params\": \"list[str]\", \"Register.get_task_cls\": \"object\", \"Register.task_names\": \"list[str]\", \"argparse.ArgumentParser\": \"object\", \"configuration.get_config\": \"object\", \"lock.acquire_for\": \"bool\", \"logging.DEBUG\": \"int\", \"logging.Formatter\": \"object\", \"logging.StreamHandler\": \"object\", \"logging.getLogger\": \"object\", \"logging_config.fileConfig\": \"None\", \"parameter.BoolParameter\": \"object\", \"parameter.IntParameter\": \"object\", \"parameter.Parameter\": \"object\", \"rpc.RemoteScheduler\": \"object\", \"scheduler\": \"object\", \"scheduler.CentralPlannerScheduler\": \"object\", \"sys.argv\": \"list[str]\", \"task\": \"object\", \"tempfile.gettempdir\": \"str\", \"worker.Worker\": \"object\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.\n(program line 197, original code: setup_interface_logging.has_run = True)",
+     "ignored": [
+      "stub setup_interface_logging"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/a5a1121afa6c_a2_replay.py",
+     "esbmc_status": "unsupported_case",
+     "reading": "repairable",
+     "message": "ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:Register,argparse,configuration,lock,logging,parameter,rpc,scheduler,sys,task,tempfile,worker",
+    "external_chains_flattened:logging_config,task_Config",
+    "opaque_values",
+    "builtin_exceptions_stubbed:SystemExit",
+    "typing_import_added"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/a5a1121afa6c_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 2134,
+   "seconds": 48.089
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_133.py",
+    "function": "NDFrame.interpolate",
+    "suspect_expression": "ax = _maybe_transposed_self._get_axis_number(ax)",
+    "line": 0,
+    "trigger_condition": "axis is a free parameter. For any value other than 0 or 1 (e.g. axis=2), the else branch sets only _maybe_transposed_self and never binds ax. Line 13 then reads ax before assignment, so Python raises UnboundLocalError instead of a clear ValueError about the invalid axis.",
+    "category": "",
+    "hypothesis_id": "07db106b0cd6"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"method\": \"str\", \"axis\": \"int\", \"limit\": \"Optional[int]\", \"inplace\": \"bool\", \"limit_direction\": \"str\", \"limit_area\": \"Optional[str]\", \"downcast\": \"Optional[str]\"}, \"attributes\": {\"T\": \"object\", \"__class__\": \"object\", \"_constructor\": \"object\", \"_constructor_sliced\": \"object\", \"_info_axis_name\": \"str\", \"_item_cache\": \"object\", \"_reset_cache\": \"object\", \"columns\": \"list[str]\", \"iloc\": \"object\", \"index\": \"object\", \"ndim\": \"int\", \"shape\": \"tuple[int, int]\"}, \"stubs\": {\"self.__class__.__name__\": \"str\", \"self._item_cache.clear\": \"None\", \"self.index.get_loc\": \"int\", \"self.index.get_loc_level\": \"tuple[int, int]\", \"com.SettingWithCopyError\": \"str\", \"com.SettingWithCopyWarning\": \"str\", \"com.maybe_box_datetimelike\": \"float\", \"com.values_from_object\": \"list[float]\", \"config.get_option\": \"Optional[str]\", \"dedent\": \"str\", \"gc.get_referents\": \"list[int]\", \"indexing.get_indexers_list\": \"list[int]\", \"is_bool_dtype\": \"bool\", \"is_datetime64_any_dtype\": \"bool\", \"is_integer\": \"bool\", \"is_list_like\": \"bool\", \"is_numeric_dtype\": \"bool\", \"is_object_dtype\": \"bool\", \"is_period_arraylike\": \"bool\", \"is_scalar\": \"bool\", \"is_timedelta64_dtype\": \"bool\", \"isna\": \"bool\", \"np.arange\": \"list[int]\", \"np.bool_\": \"bool\", \"nv.validate_take\": \"None\", \"operator.inv\": \"list[float]\", \"operator.neg\": \"list[float]\", \"operator.pos\": \"list[float]\", \"pprint_thing\": \"str\", \"validate_bool_kwarg\": \"bool\", \"warnings.warn\": \"None\"}, \"assumptions\": [\"self.ndim in (1, 2)\"]}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/07db106b0cd6_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"method\": \"str\", \"axis\": \"int\", \"limit\": \"Optional[int]\", \"inplace\": \"bool\", \"limit_direction\": \"str\", \"limit_area\": \"Optional[str]\", \"downcast\": \"Optional[str]\"}, \"attributes\": {\"T\": \"object\", \"__class__\": \"object\", \"_constructor\": \"object\", \"_constructor_sliced\": \"object\", \"_info_axis_name\": \"str\", \"_item_cache\": \"object\", \"_reset_cache\": \"object\", \"columns\": \"list[str]\", \"iloc\": \"object\", \"index\": \"object\", \"ndim\": \"int\", \"shape\": \"tuple[int, int]\", \"_AXIS_ALIASES\": \"dict[str, str]\", \"_AXIS_NUMBERS\": \"dict[str, int]\", \"_AXIS_NAMES\": \"dict[int, str]\"}, \"stubs\": {\"self.__class__.__name__\": \"str\", \"self._item_cache.clear\": \"None\", \"self.index.get_loc\": \"int\", \"self.index.get_loc_level\": \"tuple[int, int]\", \"com.SettingWithCopyError\": \"str\", \"com.SettingWithCopyWarning\": \"str\", \"com.maybe_box_datetimelike\": \"float\", \"com.values_from_object\": \"list[float]\", \"config.get_option\": \"Optional[str]\", \"dedent\": \"str\", \"gc.get_referents\": \"list[int]\", \"indexing.get_indexers_list\": \"list[int]\", \"is_bool_dtype\": \"bool\", \"is_datetime64_any_dtype\": \"bool\", \"is_integer\": \"bool\", \"is_list_like\": \"bool\", \"is_numeric_dtype\": \"bool\", \"is_object_dtype\": \"bool\", \"is_period_arraylike\": \"bool\", \"is_scalar\": \"bool\", \"is_timedelta64_dtype\": \"bool\", \"isna\": \"bool\", \"np.arange\": \"list[int]\", \"np.bool_\": \"bool\", \"nv.validate_take\": \"None\", \"operator.inv\": \"list[float]\", \"operator.neg\": \"list[float]\", \"operator.pos\": \"list[float]\", \"pprint_thing\": \"str\", \"validate_bool_kwarg\": \"bool\", \"warnings.warn\": \"None\"}, \"assumptions\": [\"self.ndim in (1, 2)\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "ignored": [
+      "attribute _AXIS_ALIASES",
+      "attribute _AXIS_NUMBERS",
+      "attribute _AXIS_NAMES"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/07db106b0cd6_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"method\": \"str\", \"axis\": \"int\", \"limit\": \"Optional[int]\", \"inplace\": \"bool\", \"limit_direction\": \"str\", \"limit_area\": \"Optional[str]\", \"downcast\": \"Optional[str]\"}, \"attributes\": {\"T\": \"object\", \"__class__\": \"object\", \"_constructor\": \"object\", \"_constructor_sliced\": \"object\", \"_info_axis_name\": \"str\", \"_item_cache\": \"object\", \"_reset_cache\": \"object\", \"columns\": \"list[str]\", \"iloc\": \"object\", \"index\": \"object\", \"ndim\": \"int\", \"shape\": \"tuple[int, int]\", \"_AXIS_ALIASES\": \"object\", \"_AXIS_NUMBERS\": \"dict[str, int]\", \"_AXIS_NAMES\": \"dict[int, str]\"}, \"stubs\": {\"self.__class__.__name__\": \"str\", \"self._item_cache.clear\": \"None\", \"self.index.get_loc\": \"int\", \"self.index.get_loc_level\": \"tuple[int, int]\", \"self._AXIS_ALIASES.get\": \"int\", \"com.SettingWithCopyError\": \"str\", \"com.SettingWithCopyWarning\": \"str\", \"com.maybe_box_datetimelike\": \"float\", \"com.values_from_object\": \"list[float]\", \"config.get_option\": \"Optional[str]\", \"dedent\": \"str\", \"gc.get_referents\": \"list[int]\", \"indexing.get_indexers_list\": \"list[int]\", \"is_bool_dtype\": \"bool\", \"is_datetime64_any_dtype\": \"bool\", \"is_integer\": \"bool\", \"is_list_like\": \"bool\", \"is_numeric_dtype\": \"bool\", \"is_object_dtype\": \"bool\", \"is_period_arraylike\": \"bool\", \"is_scalar\": \"bool\", \"is_timedelta64_dtype\": \"bool\", \"isna\": \"bool\", \"np.arange\": \"list[int]\", \"np.bool_\": \"bool\", \"nv.validate_take\": \"None\", \"operator.inv\": \"list[float]\", \"operator.neg\": \"list[float]\", \"operator.pos\": \"list[float]\", \"pprint_thing\": \"str\", \"validate_bool_kwarg\": \"bool\", \"warnings.warn\": \"None\"}, \"assumptions\": [\"self.ndim in (1, 2)\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "ignored": [
+      "attribute _AXIS_ALIASES",
+      "attribute _AXIS_NUMBERS",
+      "attribute _AXIS_NAMES",
+      "stub self._AXIS_ALIASES.get"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/07db106b0cd6_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "decorators_removed:Appender(_shared_docs['interpolate'] % _shared_doc_kwargs)",
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_add_numeric_operations,_add_series_only_operations,_add_series_or_dataframe_operations,_agg_by_level,_align_frame,_align_series,_box_item_values,_check_inplace_setting,_check_is_chained_assignment_possible,_check_label_or_level_ambiguity,_clip_with_one_bound,_clip_with_scalar,_consolidate,_construct_axes_dict,_construct_axes_dict_from,_construct_axes_from_arguments,_convert,_create_indexer,_dir_additions,_drop_axis,_drop_labels_or_levels,_find_valid_index,_from_axes,_get_axis_resolvers,_get_bool_data,_get_cacher,_get_index_resolvers,_get_item_cache,_get_label_or_level_values,_get_numeric_data,_get_space_character_free_column_resolvers,_iget_item_cache,_indexed_same,_init_mgr,_internal_get_values,_is_label_or_level_reference,_is_label_reference,_is_level_reference,_maybe_cache_changed,_needs_reindex_multi,_reindex_axes,_reindex_multi,_reindex_with_indexers,_repr_data_resource_,_repr_latex_,_reset_cacher,_set_as_cached,_set_axis,_set_axis_name,_set_is_copy,_set_item,_setup_axes,_slice,_to_dict_of_blocks,_validate_dtype,_where,abs,add_prefix,add_suffix,align,as_blocks,as_matrix,asfreq,asof,astype,at_time,between_time,bfill,bool,clip,clip_lower,clip_upper,copy,describe,drop,droplevel,equals,ffill,fillna,filter,first,first_valid_index,get,get_dtype_counts,get_ftype_counts,get_values,groupby,head,infer_objects,isna,isnull,items,iteritems,keys,last,last_valid_index,mask,notna,notnull,pct_change,pipe,pop,rank,reindex,reindex_like,rename,rename_axis,replace,resample,sample,set_axis,shift,slice_shift,sort_index,sort_values,squeeze,swapaxes,swaplevel,tail,to_clipboard,to_csv,to_dense,to_excel,to_hdf,to_json,to_latex,to_msgpack,to_pickle,to_sql,to_xarray,transform,transpose,truncate,tshift,tz_convert,tz_localize,where",
+    "properties_as_attributes:_constructor,_constructor_expanddim,_constructor_sliced,_get_values,_info_axis,_is_cached,_is_datelike_mixed_type,_is_mixed_type,_is_numeric_mixed_type,_is_view,_obj_with_exclusions,_selected_obj,_stat_axis,_values,attrs,axes,blocks,dtypes,empty,ftypes,is_copy,ndim,shape,size,values",
+    "stubbed_imports:ABCDataFrame,ABCSeries,AbstractMethodError,BlockManager,Index,InvalidIndexError,MultiIndex,PandasObject,RangeIndex,SelectionMixin,com,config,dedent,ensure_index,ensure_int64,ensure_object,ensure_str,gc,indexing,is_bool,is_bool_dtype,is_datetime64_any_dtype,is_datetime64tz_dtype,is_dict_like,is_extension_array_dtype,is_float,is_integer,is_list_like,is_number,is_numeric_dtype,is_object_dtype,is_period_arraylike,is_re_compilable,is_scalar,is_timedelta64_dtype,isna,notna,np,nv,operator,pandas_dtype,pprint_thing,validate_bool_kwarg,validate_fillna_kwargs,validate_percentile,warnings",
+    "external_chains_flattened:np_ndarray",
+    "compat_percent_format:1",
+    "compat_method_alias:2"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/07db106b0cd6_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 3846,
+   "seconds": 59.15
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_152.py",
+    "function": "Series.append",
+    "suspect_expression": "to_concat = [self] + to_append",
+    "line": 0,
+    "trigger_condition": "The guard accepts both list and tuple, but `[self] + to_append` only works for a list. Any tuple passed as `to_append` passes the guard and reaches the concatenation of list + tuple. No try/except catches the error. Example: to_append=(s1, s2) raises TypeError: can only concatenate list (not \"tuple\") to list.",
+    "category": "",
+    "hypothesis_id": "5c232e903238"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call Substitution(...) uses *args/**kwargs",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.101
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_33.py",
+    "function": "IntegerArray._values_for_argsort",
+    "suspect_expression": "data[self._mask] = data.min() - 1",
+    "line": 0,
+    "trigger_condition": "self._data is object state with no visible constraint on size. If it is a zero-size array, data.min() raises ValueError (zero-size array to reduction operation minimum which has no identity). No guard or try/except covers it, and the mask is irrelevant because the min is computed over the whole array.",
+    "category": "",
+    "hypothesis_id": "af346e18f12b"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external name 'register_extension_dtype' is used as a decorator",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.048
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_18.py",
+    "function": "ResponseTypes.from_content_disposition",
+    "suspect_expression": "to_native_str(content_disposition).split(';')[1].split('=')[1]",
+    "line": 0,
+    "trigger_condition": "If content_disposition is not str or bytes (e.g. None), to_native_str raises TypeError. The try only catches IndexError, so TypeError propagates. The parameter is free and nothing guards it. Exact behavior depends on to_native_str, which is not shown.",
+    "category": "",
+    "hypothesis_id": "5bf91d52630c"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "input type outside the supported subset: stub 'self.mimetypes.guess_type': unsupported type 'tuple[None, None]'",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"content_disposition\": \"Optional[str]\"}, \"attributes\": {\"classes\": \"dict[str, str]\", \"mimetypes\": \"object\"}, \"stubs\": {\"Response\": \"str\", \"to_native_str\": \"str\", \"self.mimetypes.guess_type\": \"tuple[str, str]\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/5bf91d52630c_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "Error comes from `from_mimetype`: `\"%s/*\" % mimetype.split('/')[0]` has a non-constant argument. `guess_type` returned `tuple[str, str]`, so the checker reached it. The fix is to make that path unreachable. `guess_type` returns `(None, None)` when no type is guessed, which sends `from_filename` to `Response`. The `to_native_str(None)` trigger is untouched.\n\n```json\n{\"params\": {\"content_disposition\": \"Optional[str]\"}, \"attributes\": {\"classes\": \"dict[str, str]\", \"mimetypes\": \"object\"}, \"stubs\": {\"Response\": \"str\", \"to_native_str\": \"str\", \"self.mimetypes.guess_type\": \"tuple[None, None]\"}, \"assumptions\": []}\n```\n\n`tuple[None, None]` is outside the stated allowed tuple element types (int/float/bool/str). If ESBMC rejects it, the unpack path has no other type that avoids the `%` formatting without an assumption on a stub return, which is not allowed.\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "problems": [
+      "not JSON: Expecting value"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"content_disposition\": \"Optional[str]\"}, \"attributes\": {\"classes\": \"dict[str, str]\", \"mimetypes\": \"object\"}, \"stubs\": {\"Response\": \"str\", \"to_native_str\": \"str\", \"self.mimetypes.guess_type\": \"tuple[None, None]\"}, \"assumptions\": []}\n",
+     "feedback_given": "The JSON was rejected: not JSON: Expecting value",
+     "problems": [
+      "stub 'self.mimetypes.guess_type': unsupported type 'tuple[None, None]'"
+     ]
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:from_args,from_body,from_content_type,from_headers",
+    "stubbed_imports:Response,isbinarytext,to_bytes,to_native_str",
+    "typing_import_added"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/5bf91d52630c_a0.py",
+   "replay": {},
+   "tokens": 3082,
+   "seconds": 55.799
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/bip_thefuck_4.py",
+    "function": "_get_aliases",
+    "suspect_expression": "name, value = alias.replace('alias ', '', 1).split(' ', 1)",
+    "line": 0,
+    "trigger_condition": "`alias_out` comes from the stdout of `fish -ic alias`. With no aliases defined, stdout is empty, `.strip().split('\\n')` gives `['']`, and the loop reaches `alias == ''`. `''.split(' ', 1)` returns `['']`, a single element, so unpacking into `name, value` fails. The same happens for any line with no space, such as an alias with an empty value or a stray warning line from the interactive shell. Nothing in the code guards against this, and `overridden` has no effect on the unpacking.",
+    "category": "",
+    "hypothesis_id": "58774b0a0374"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"overridden\": \"list[str]\"}, \"attributes\": {}, \"stubs\": {\"Popen\": \"object\", \"PIPE\": \"int\", \"DEVNULL\": \"int\", \"Popen.stdout.read\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "ignored": [
+      "stub Popen.stdout.read"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/58774b0a0374_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "Error is on the `.stdout.read()` chain. Previous attempt typed only the leaf, so the middle link `Popen.stdout` stays untyped. I add it as `object` and leave everything else unchanged.\n\n{\"params\": {\"overridden\": \"list[str]\"}, \"attributes\": {}, \"stubs\": {\"Popen\": \"object\", \"PIPE\": \"int\", \"DEVNULL\": \"int\", \"Popen.stdout\": \"object\", \"Popen.stdout.read\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "problems": [
+      "not JSON: Expecting value"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"overridden\": \"list[str]\"}, \"attributes\": {}, \"stubs\": {\"Popen\": \"object\", \"PIPE\": \"int\", \"DEVNULL\": \"int\", \"Popen.stdout\": \"object\", \"Popen.stdout.read\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "The JSON was rejected: not JSON: Expecting value",
+     "ignored": [
+      "stub Popen.stdout",
+      "stub Popen.stdout.read"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/58774b0a0374_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '.stdout.read()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "decorators_removed:cache('~/.config/fish/config.fish')",
+    "stubbed_imports:DEVNULL,PIPE,Popen,cache",
+    "opaque_values"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/58774b0a0374_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 871,
+   "seconds": 36.953
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/dz_real_02.py",
+    "function": "ExactLanguageSearch.choose_best_split",
+    "suspect_expression": "float(not_parsed) / float(num_substrings)",
+    "line": 0,
+    "trigger_condition": "num_substrings = len(possible_substrings_splits[i]) comes from a free parameter and nothing guards against an empty split. With possible_parsed_splits=[[]] and possible_substrings_splits=[[]], the inner loop is skipped and float(0)/float(0) is evaluated, raising ZeroDivisionError. The same applies to the division by num_substrings in the third rating element.",
+    "category": "",
+    "hypothesis_id": "b5652fda143e"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Function \"ESBMC_mmkey_0\" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b5652fda143e_a0.py line 22)",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"possible_parsed_splits\": \"list[list[dict[str, Optional[str]]]]\", \"possible_substrings_splits\": \"list[list[str]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(possible_parsed_splits) == len(possible_substrings_splits)\"]}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/b5652fda143e_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Function \"ESBMC_mmkey_0\" not found (artifacts/v2/full-2026-10-04-sonnet/programs/b5652fda143e_a0.py line 22)",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:get_current_language,parse_found_objects,parse_item,search,search_parse,set_relative_base,split_by,split_if_not_parsed",
+    "typing_import_added"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/b5652fda143e_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 114,
+   "seconds": 14.147
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/dz_real_03.py",
+    "function": "HashExpander.do",
+    "suspect_expression": "(crc >> idx) % (range_end - range_begin + 1) + range_begin",
+    "line": 0,
+    "trigger_condition": "range_end and range_begin are free parameters or come from cron.RANGES, with no check on their relation. If range_end == range_begin - 1 (e.g. range_end=4, range_begin=5), the modulus is 0. The % operator then raises ZeroDivisionError.",
+    "category": "",
+    "hypothesis_id": "bb4c66bf77ba"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: uncaught exception [N6type2t18symbolic_type_excpE]",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"idx\": \"int\", \"hash_type\": \"str\", \"hash_id\": \"bytes\", \"range_end\": \"Optional[int]\", \"range_begin\": \"Optional[int]\"}, \"attributes\": {\"cron\": \"object\"}, \"stubs\": {\"binascii.crc32\": \"int\", \"self.cron.RANGES\": \"list[list[int]]\"}, \"assumptions\": [\"idx >= 0\", \"idx < 32\", \"len(self.cron.RANGES) > 0\", \"idx < len(self.cron.RANGES)\"]}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/bb4c66bf77ba_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: uncaught exception [N6type2t18symbolic_type_excpE]",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"idx\": \"int\", \"hash_type\": \"str\", \"hash_id\": \"bytes\", \"range_end\": \"Optional[int]\", \"range_begin\": \"Optional[int]\"}, \"attributes\": {\"cron\": \"object\"}, \"stubs\": {\"binascii.crc32\": \"int\", \"self.cron.RANGES\": \"list[list[int]]\"}, \"assumptions\": [\"idx >= 0\", \"idx < 32\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: uncaught exception [N6type2t18symbolic_type_excpE]",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/bb4c66bf77ba_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: uncaught exception [N6type2t18symbolic_type_excpE]",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"idx\": \"int\", \"hash_type\": \"str\", \"hash_id\": \"bytes\", \"range_end\": \"Optional[int]\", \"range_begin\": \"Optional[int]\"}, \"attributes\": {\"cron\": \"object\"}, \"stubs\": {\"binascii.crc32\": \"int\", \"self.cron.RANGES\": \"list[tuple[int, int]]\"}, \"assumptions\": [\"idx >= 0\", \"idx < 32\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: uncaught exception [N6type2t18symbolic_type_excpE]",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/bb4c66bf77ba_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: uncaught exception [N6type2t18symbolic_type_excpE]",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:expand,match",
+    "stubbed_imports:binascii",
+    "typing_import_added"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/bb4c66bf77ba_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1525,
+   "seconds": 45.484
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/ip_real_07.py",
+    "function": "_htmlentity_transform",
+    "suspect_expression": "return compat_chr(int(numstr, base))",
+    "line": 0,
+    "trigger_condition": "entity is a free parameter. Regex '#(x[0-9a-fA-F]+|[0-9]+)' accepts digit strings of any length and value, e.g. '#99999999' or '#x110000'. These pass the match guard, int() succeeds, and chr() gets a value outside range(0x110000). Nothing catches the exception.",
+    "category": "",
+    "hypothesis_id": "9715ff1783d8"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"entity\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_chr\": \"str\", \"compat_html_entities.name2codepoint\": \"dict[str, int]\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/9715ff1783d8_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"entity\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_chr\": \"str\", \"compat_html_entities.name2codepoint\": \"dict[str, int]\"}, \"assumptions\": [\"entity in ('#99999999', '#x110000', '#65', '#x41', 'amp')\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/9715ff1783d8_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"entity\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_chr\": \"str\", \"compat_html_entities.name2codepoint\": \"dict[str, int]\"}, \"assumptions\": [\"entity in ('#99999999',)\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: unsupported: non-constant argument in str % formatting",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/9715ff1783d8_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: unsupported: non-constant argument in str % formatting",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,shlex_quote",
+    "compat_percent_format:1"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/9715ff1783d8_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1371,
+   "seconds": 38.255
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/ip_real_11.py",
+    "function": "HTTPBearer.__call__",
+    "suspect_expression": "raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Invalid authentication credentials')",
+    "line": 0,
+    "trigger_condition": "The first branch respects self.auto_error and returns None when it is False. The non-bearer branch always raises. With auto_error=False and header 'Basic abc', scheme='Basic' and credentials='abc' pass the first check, scheme.lower() != 'bearer' is true, and HTTPException is raised. The signature Optional[...] and the auto_error flag imply None should be returned so another auth scheme can handle the request.",
+    "category": "",
+    "hypothesis_id": "bcaf6d92d59f"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "async entry point is not supported",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.002
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/ip_real_14.py",
+    "function": "TimeseriesGenerator.__len__",
+    "suspect_expression": "int(np.ceil((self.end_index - self.start_index) / (self.batch_size * self.stride)))",
+    "line": 0,
+    "trigger_condition": "batch_size and stride are object state with no guard in this function. If either is 0 (e.g. batch_size=0 or stride=0), the divisor batch_size * stride is 0 and the true division raises ZeroDivisionError for Python ints. Nothing catches it.",
+    "category": "",
+    "hypothesis_id": "d06a2222218e"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"list[int]\", \"range\": \"list[int]\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/d06a2222218e_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"list[int]\", \"range\": \"list[int]\"}, \"assumptions\": [\"self.end_index >= self.start_index\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/d06a2222218e_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {}, \"attributes\": {\"batch_size\": \"int\", \"end_index\": \"int\", \"start_index\": \"int\", \"stride\": \"int\"}, \"stubs\": {\"np.arange\": \"list[int]\", \"np.ceil\": \"float\", \"np_random.randint\": \"list[int]\", \"range\": \"list[int]\", \"self._empty_batch\": \"tuple[int, int]\"}, \"assumptions\": [\"self.end_index >= self.start_index\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "ignored": [
+      "stub self._empty_batch"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/d06a2222218e_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_empty_batch",
+    "stubbed_imports:Sequence,np,range",
+    "external_chains_flattened:np_random"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/d06a2222218e_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1500,
+   "seconds": 37.352
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+    "function": "response_status_message",
+    "suspect_expression": "int(status)",
+    "line": 0,
+    "trigger_condition": "`status` is a free parameter and nothing checks it before `int(status)`. A non-numeric string such as 'abc' makes `int` raise ValueError. None or a list makes it raise TypeError. No try/except surrounds the call.",
+    "category": "",
+    "hypothesis_id": "5f44bbc94b3c"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Dictionary variable not found: http_RESPONSES",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"status\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"http_RESPONSES.get\": \"Optional[str]\", \"to_native_str\": \"str\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/5f44bbc94b3c_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Dictionary variable not found: http_RESPONSES",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"status\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"http_RESPONSES\": \"dict[int, str]\", \"http_RESPONSES.get\": \"Optional[str]\", \"to_native_str\": \"str\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Dictionary variable not found: http_RESPONSES",
+     "ignored": [
+      "stub http_RESPONSES"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/5f44bbc94b3c_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Dictionary variable not found: http_RESPONSES",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"status\": \"Optional[str]\"}, \"attributes\": {}, \"stubs\": {\"http_RESPONSES.get\": \"Optional[str]\", \"to_native_str\": \"str\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Dictionary variable not found: http_RESPONSES",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/5f44bbc94b3c_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Dictionary variable not found: http_RESPONSES",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:http,to_bytes,to_native_str",
+    "external_chains_flattened:http_RESPONSES",
+    "typing_import_added"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/5f44bbc94b3c_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 820,
+   "seconds": 32.226
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/ip_real_21.py",
+    "function": "SortedDict.__eq__",
+    "suspect_expression": "all((self[key] == that[key] for key in self))",
+    "line": 0,
+    "trigger_condition": "`that` is a free parameter. If `that` has the same length as `self._dict` but different keys (self={'a':1}, that={'b':1}), the length check passes. `that[key]` then raises KeyError for a key missing from `that`. Nothing catches it. An equality comparison should return False.",
+    "category": "",
+    "hypothesis_id": "4aa3e5e38a90"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Base class not found: MutableMapping",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"that\": \"dict[str, int]\"}, \"attributes\": {\"_dict\": \"dict[str, int]\"}, \"stubs\": {}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/4aa3e5e38a90_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Base class not found: MutableMapping",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/4aa3e5e38a90_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 246,
+   "seconds": 11.652
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+    "function": "date_convert",
+    "suspect_expression": "H += 12",
+    "line": 0,
+    "trigger_condition": "For a 12-hour time such as '12:00 PM', H is int 12 and am is 'PM', so H becomes 24. time(24, ...) or datetime(..., 24, ...) then raises ValueError (hour must be in 0..23). The guard only tests for 'PM' and does not protect H == 12.",
+    "category": "",
+    "hypothesis_id": "528c0187a852"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.035
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/nm_real_01.py",
+    "function": "Session.update_headers",
+    "suspect_expression": "value = value.decode('utf8')",
+    "line": 0,
+    "trigger_condition": "request_headers is a free parameter and value comes straight from its items. Nothing checks the type of value. A header whose value is a str, for example {'Accept': 'text/html'}, has no .decode method. The loop raises on the first such header, and no try/except covers it.",
+    "category": "",
+    "hypothesis_id": "942d61a91efc"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a2.py 35: list indices must be integers or slices, not str",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"request_headers\": \"dict[str, Optional[bytes]]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a0.py 36: list indices must be integers or slices, not str",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "Error is at line 36, `self['headers'][name] = value`. The harness's `self` can't be indexed by a string, and I can't type `self` here. With `bytes` values, `.decode` succeeds and execution reaches that line. With `str` values, the loop fails at `.decode` on the first header and never reaches line 36. That is the hypothesis trigger, so I'm switching to `str`.\n\n{\"params\": {\"request_headers\": \"dict[str, str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(request_headers) > 0\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a0.py 36: list indices must be integers or slices, not str",
+     "problems": [
+      "not JSON: Expecting value"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"request_headers\": \"dict[str, str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": [\"len(request_headers) > 0\"]}\n",
+     "feedback_given": "The JSON was rejected: not JSON: Expecting value",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: TypeError at artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a2.py 35: list indices must be integers or slices, not str",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_get_path",
+    "properties_as_attributes:auth,cookies,headers",
+    "stubbed_imports:BaseConfigDict,DEFAULT_CONFIG_DIR"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/942d61a91efc_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 868,
+   "seconds": 28.255
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/nm_real_02.py",
+    "function": "tqdm.format_meter",
+    "suspect_expression": "total *= unit_scale",
+    "line": 0,
+    "trigger_condition": "total is free and may be None, or the earlier `if total and n > total: total = None` sets it to None when n exceeds total. With unit_scale=1000 the guard passes and `None *= 1000` runs with no try/except. Concrete input: n=5, total=None, elapsed=1, unit_scale=1000.",
+    "category": "",
+    "hypothesis_id": "31409e1ca2c6"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Object \"tqdm\" not found.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"n\": \"int\", \"total\": \"Optional[int]\", \"elapsed\": \"float\", \"ncols\": \"Optional[int]\", \"prefix\": \"str\", \"ascii\": \"bool\", \"unit\": \"str\", \"unit_scale\": \"float\", \"rate\": \"Optional[float]\", \"bar_format\": \"Optional[str]\", \"postfix\": \"Optional[str]\", \"unit_divisor\": \"int\"}, \"attributes\": {}, \"stubs\": {\"RE_ANSI.sub\": \"str\", \"TMonitor\": \"object\", \"WeakSet\": \"object\", \"_environ_cols_wrapper\": \"object\", \"_supports_unicode\": \"bool\", \"_unich\": \"str\", \"_unicode\": \"str\", \"sys.stderr\": \"object\", \"sys.stdout\": \"object\", \"sys_stderr.write\": \"None\", \"warn\": \"None\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/31409e1ca2c6_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Object \"tqdm\" not found.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "unreachable_methods_removed:_comparable,_decr_instances,_get_free_pos,clear,close,display,ema,external_write_mode,format_dict,format_interval,format_num,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+    "stubbed_imports:Comparable,RE_ANSI,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,sys,warn",
+    "external_chains_flattened:sys_stderr",
+    "opaque_values",
+    "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning",
+    "typing_import_added"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/31409e1ca2c6_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 721,
+   "seconds": 15.311
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/nm_real_08.py",
+    "function": "Request.url_for",
+    "suspect_expression": "'//' in self.app.config.SERVER_NAME",
+    "line": 0,
+    "trigger_condition": "SERVER_NAME comes from the app config, which is object state. In Flask the default is None. When it is None, the `'//' in None` test on line 3 runs before any other code and raises TypeError. No guard or try/except protects it.",
+    "category": "",
+    "hypothesis_id": "09be948e3172"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot resolve nested attribute: __dict__",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"view_name\": \"str\"}, \"attributes\": {\"app\": \"object\", \"scheme\": \"str\", \"server_name\": \"str\", \"server_port\": \"int\"}, \"stubs\": {\"self.app.config\": \"object\", \"self.app.config.SERVER_NAME\": \"Optional[str]\", \"self.app.url_for\": \"str\", \"self.app.websocket_enabled\": \"bool\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "ignored": [
+      "stub self.app.config.SERVER_NAME"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/09be948e3172_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: __dict__",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"view_name\": \"str\"}, \"attributes\": {\"app\": \"object\", \"scheme\": \"str\", \"server_name\": \"str\", \"server_port\": \"int\"}, \"stubs\": {\"self.app.config.SERVER_NAME\": \"Optional[str]\", \"self.app.url_for\": \"str\", \"self.app.websocket_enabled\": \"bool\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: __dict__",
+     "problems": [
+      "stub 'self.app.config': missing return type"
+     ]
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"view_name\": \"str\"}, \"attributes\": {\"app\": \"object\", \"scheme\": \"str\", \"server_name\": \"str\", \"server_port\": \"int\"}, \"stubs\": {\"self.app.config\": \"object\", \"self.app.config.SERVER_NAME\": \"Optional[str]\", \"self.app.url_for\": \"str\", \"self.app.websocket_enabled\": \"bool\"}, \"assumptions\": []}\n",
+     "feedback_given": "The JSON was rejected: stub 'self.app.config': missing return type",
+     "ignored": [
+      "stub self.app.config.SERVER_NAME"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/09be948e3172_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: __dict__",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:_get_address,body_finish,body_init,body_push,get,get_args,get_query_args,load_json",
+    "properties_as_attributes:args,content_type,cookies,files,form,forwarded,host,ip,json,match_info,path,port,query_args,query_string,raw_args,remote_addr,scheme,server_name,server_port,socket,token,url",
+    "opaque_values"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/09be948e3172_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1302,
+   "seconds": 33.834
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/nm_real_12.py",
+    "function": "PamdService.remove",
+    "suspect_expression": "current_line.next.prev = current_line.prev",
+    "line": 0,
+    "trigger_condition": "Rule matches a node that has a predecessor but is the tail of the list, so next is None. The line current_line.next.prev = ... then accesses .prev on None. The guard only checks prev, so tail node removal is not protected. A list with two nodes where the last one matches triggers it.",
+    "category": "",
+    "hypothesis_id": "6e33562fdd8f"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Cannot resolve nested attribute: next",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"rule_type\": \"str\", \"rule_control\": \"str\", \"rule_path\": \"str\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"self._head.matches\": \"bool\", \"self._head.prev\": \"Optional[object]\", \"self._head.next\": \"Optional[object]\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "ignored": [
+      "stub self._head.matches",
+      "stub self._head.prev",
+      "stub self._head.next"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e33562fdd8f_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"rule_type\": \"str\", \"rule_control\": \"str\", \"rule_path\": \"str\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"self._head.matches\": \"bool\", \"self._head.prev\": \"Optional[object]\", \"self._head.next\": \"Optional[object]\", \"self._head.next.matches\": \"bool\", \"self._head.next.prev\": \"Optional[object]\", \"self._head.next.next\": \"Optional[object]\", \"self._head.prev.next\": \"Optional[object]\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: next",
+     "ignored": [
+      "stub self._head.matches",
+      "stub self._head.prev",
+      "stub self._head.next",
+      "stub self._head.next.matches",
+      "stub self._head.next.prev",
+      "stub self._head.next.next",
+      "stub self._head.prev.next"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e33562fdd8f_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"rule_type\": \"str\", \"rule_control\": \"str\", \"rule_path\": \"str\"}, \"attributes\": {\"_head\": \"object\"}, \"stubs\": {\"self._head.matches\": \"bool\", \"self._head.prev\": \"Optional[object]\", \"self._head.next\": \"Optional[object]\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Cannot resolve nested attribute: next",
+     "ignored": [
+      "stub self._head.matches",
+      "stub self._head.prev",
+      "stub self._head.next"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e33562fdd8f_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Cannot resolve nested attribute: next",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_replaced",
+    "unreachable_methods_removed:add_module_arguments,append,get,has_rule,insert_after,insert_before,remove_module_arguments,update_rule,validate"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e33562fdd8f_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1357,
+   "seconds": 37.085
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/nm_real_14.py",
+    "function": "request_httprepr",
+    "suspect_expression": "s += b'Host: ' + to_bytes(parsed.hostname) + b'\\r\\n'",
+    "line": 0,
+    "trigger_condition": "request is a free parameter. urlparse(...).hostname returns None when the URL has no netloc, e.g. 'file:///etc/passwd' or 'data:text/plain,x'. No guard exists on any path, so to_bytes(None) is called. Scrapy's to_bytes raises TypeError for values that are neither str nor bytes.",
+    "category": "",
+    "hypothesis_id": "52e8c7dc508a"
+   },
+   "verdict": "ESBMC_ERROR",
+   "reason": "ESBMC direto: resultado inconclusivo.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"request\": \"object\"}, \"attributes\": {}, \"stubs\": {\"to_bytes\": \"bytes\", \"urlparse_cached\": \"object\", \"urlunparse\": \"str\", \"request.method\": \"str\", \"request.headers\": \"object\", \"request.body\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/52e8c7dc508a_a0_replay.py",
+     "esbmc_status": "inconclusive",
+     "reading": "error",
+     "message": "ESBMC direto: resultado inconclusivo.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "stubbed_imports:to_bytes,to_native_str,urlparse_cached,urlunparse",
+    "opaque_values"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/52e8c7dc508a_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 102,
+   "seconds": 11.1
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/oob_real_10.py",
+    "function": "_wrap_text_to_colwidths",
+    "suspect_expression": "numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)",
+    "line": 0,
+    "trigger_condition": "list_of_lists is a free parameter. Empty list reaches list_of_lists[0] with no guard on any path. The IndexError is not caught.",
+    "category": "",
+    "hypothesis_id": "554b072a0396"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "external call textwrap_TextWrapper.__init__(...) cannot be stubbed",
+   "attempts": [],
+   "llm_calls": 0,
+   "transforms": [],
+   "program_path": "",
+   "replay": {},
+   "tokens": 0,
+   "seconds": 0.053
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/oob_real_11.py",
+    "function": "wcswidth",
+    "suspect_expression": "char = pwcs[idx]",
+    "line": 0,
+    "trigger_condition": "n is a free parameter. When n is not None, end = n with no clamp to len(pwcs). The loop guard idx < end only bounds idx by n. With pwcs='ab' and n=5, idx reaches 2 and pwcs[2] raises IndexError. Nothing catches it. The early return on line 3 applies only when n is None.",
+    "category": "",
+    "hypothesis_id": "2ed3d4fce93b"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Type inference failed for Assign at line 121",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {}, \"stubs\": {\"_CATEGORY_MC_TABLE\": \"list[int]\", \"_EMOJI_ZWJ_SET\": \"set[int]\", \"_ISC_VIRAMA_SET\": \"set[int]\", \"_REGIONAL_INDICATOR_SET\": \"set[int]\", \"bisearch\": \"int\", \"wcwidth\": \"int\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/2ed3d4fce93b_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 121",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {}, \"attributes\": {}, \"stubs\": {\"_CATEGORY_MC_TABLE\": \"list[int]\", \"_EMOJI_ZWJ_SET\": \"set[int]\", \"_ISC_VIRAMA_SET\": \"set[int]\", \"_REGIONAL_INDICATOR_SET\": \"set[int]\", \"bisearch\": \"bool\", \"wcwidth\": \"int\"}, \"assumptions\": [\"ambiguous_width == 1\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed for Assign at line 121\n(program line 121, original code: _wcwidth = wcwidth if ambiguous_width == 1 else lambda c: wcwidth(c, 'auto', ambiguous_width))",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/2ed3d4fce93b_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 121",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {}, \"attributes\": {}, \"stubs\": {\"_CATEGORY_MC_TABLE\": \"list[int]\", \"_EMOJI_ZWJ_SET\": \"set[int]\", \"_ISC_VIRAMA_SET\": \"set[int]\", \"_REGIONAL_INDICATOR_SET\": \"set[int]\", \"bisearch\": \"bool\", \"wcwidth\": \"int\"}, \"assumptions\": [\"ambiguous_width == 1\"]}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Type inference failed for Assign at line 121\n(program line 121, original code: _wcwidth = wcwidth if ambiguous_width == 1 else lambda c: wcwidth(c, 'auto', ambiguous_width))",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/2ed3d4fce93b_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Type inference failed for Assign at line 121",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "stubbed_imports:VS15_WIDE_TO_NARROW,VS16_NARROW_TO_WIDE,_CATEGORY_MC_TABLE,_EMOJI_ZWJ_SET,_FITZPATRICK_RANGE,_ISC_VIRAMA_SET,_REGIONAL_INDICATOR_SET,bisearch,get_term_overrides,resolve_terminal,wcwidth"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/2ed3d4fce93b_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1786,
+   "seconds": 44.685
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/oob_real_14.py",
+    "function": "LinuxDistribution._parse_uname_content",
+    "suspect_expression": "lines[0].strip()",
+    "line": 0,
+    "trigger_condition": "`lines` \u00e9 par\u00e2metro livre do tipo Sequence[str] e nada impede uma sequ\u00eancia vazia. N\u00e3o h\u00e1 guarda nem try/except antes de `lines[0]`. Com `lines=[]` a fun\u00e7\u00e3o levanta IndexError em vez de devolver `{}`, como faz quando nada casa com a regex.",
+    "category": "",
+    "hypothesis_id": "148424345a89"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Object \"name\" not found.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"lines\": \"list[str]\"}, \"attributes\": {}, \"stubs\": {}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/148424345a89_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Object \"name\" not found.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "unreachable_methods_removed:_distro_release_info,_lsb_release_info,_os_release_info,_parse_distro_release_content,_parse_distro_release_file,_parse_lsb_release_content,_parse_os_release_content,_to_str,_uname_info,build_number,codename,distro_release_attr,distro_release_info,id,info,like,linux_distribution,lsb_release_attr,lsb_release_info,major_version,minor_version,name,os_release_attr,os_release_info,uname_attr,uname_info,version,version_parts"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/148424345a89_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 45,
+   "seconds": 15.29
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/oob_real_15.py",
+    "function": "dfxp2srt",
+    "suspect_expression": "begin_time = parse_dfxp_time_expr(para.attrib['begin'])",
+    "line": 0,
+    "trigger_condition": "para comes from findall on the parsed XML, so attributes are controlled by dfxp_data. A <p> element without a begin attribute passes the 'if not paras' guard and reaches the subscript. No try/except, so KeyError escapes.",
+    "category": "",
+    "hypothesis_id": "42ade76be585"
+   },
+   "verdict": "MISSING_DEPENDENCY",
+   "reason": "ERROR: Function \"str_or_empty\" not found (artifacts/v2/full-2026-10-04-sonnet/programs/42ade76be585_a0.py line 110)",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"dfxp_data\": \"str\"}, \"attributes\": {}, \"stubs\": {\"compat_etree_fromstring\": \"object\", \"compat_str\": \"str\", \"functools.partial\": \"object\", \"itertools.count\": \"object\", \"xml_etree_ElementTree.tostring\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/42ade76be585_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "missing_dependency",
+     "message": "ERROR: Function \"str_or_empty\" not found (artifacts/v2/full-2026-10-04-sonnet/programs/42ade76be585_a0.py line 110)",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 1,
+   "transforms": [
+    "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,functools,itertools,shlex_quote,xml",
+    "external_chains_flattened:xml_etree_ElementTree",
+    "opaque_values"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/42ade76be585_a0.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 413,
+   "seconds": 15.802
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/tm_real_09.py",
+    "function": "_format",
+    "suspect_expression": "formatted_val = format(float(raw_val), floatfmt)",
+    "line": 0,
+    "trigger_condition": "valtype is float, has_invisible defaults to True and val is a str such as '1,000'. is_a_colored_number is true, so the branch that removes commas is skipped. float('1,000') then raises ValueError. The else branch handles the same input correctly, so the two branches are inconsistent.",
+    "category": "",
+    "hypothesis_id": "af2f5e755263"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Module member 'VERBOSE' not found in module 're'",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {\"val\": \"str\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_compile\": \"object\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/af2f5e755263_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Module member 'VERBOSE' not found in module 're'",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {\"val\": \"str\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_compile\": \"object\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Module member 'VERBOSE' not found in module 're'",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/af2f5e755263_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Module member 'VERBOSE' not found in module 're'",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {\"val\": \"str\", \"valtype\": \"object\", \"floatfmt\": \"str\", \"intfmt\": \"str\", \"missingval\": \"str\", \"has_invisible\": \"bool\"}, \"attributes\": {}, \"stubs\": {\"_esbmc_re_compile\": \"str\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Module member 'VERBOSE' not found in module 're'",
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/af2f5e755263_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Module member 'VERBOSE' not found in module 're'",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "esbmc_refused_members_stubbed:_esbmc_re_compile",
+    "builtin_exceptions_stubbed:UnicodeError,UnicodeDecodeError"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/af2f5e755263_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1709,
+   "seconds": 92.311
+  },
+  {
+   "hypothesis": {
+    "file": "dataset/bugs_reais/funcao_com_bug/tm_real_10.py",
+    "function": "MetricsHandler.get",
+    "suspect_expression": "metrics.configure_http_handler(self)",
+    "line": 0,
+    "trigger_condition": "`metrics` recebe o retorno de generate_latest(). Em coletores no estilo prometheus_client, esse retorno \u00e9 bytes ou str com a sa\u00edda de texto. A guarda `if metrics:` s\u00f3 testa se o valor \u00e9 truthy, e um bytes n\u00e3o vazio passa. Nesse caso a linha 4 chama `.configure_http_handler` sobre um objeto sem esse atributo. Em seguida, `self.write(metrics)` escreveria o payload, o que indica que `metrics` \u00e9 dado e n\u00e3o o coletor. Se o retorno for de fato um bytes/str n\u00e3o vazio, a fun\u00e7\u00e3o levanta AttributeError em toda requisi\u00e7\u00e3o com m\u00e9tricas.",
+    "category": "",
+    "hypothesis_id": "6e9d7c84fc8b"
+   },
+   "verdict": "UNSUPPORTED",
+   "reason": "ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+   "attempts": [
+    {
+     "attempt": 0,
+     "spec": "{\"params\": {}, \"attributes\": {\"_scheduler\": \"object\", \"write\": \"object\"}, \"stubs\": {\"self._scheduler._state\": \"object\", \"self._scheduler._state._metrics_collector.generate_latest\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "",
+     "ignored": [
+      "stub self._scheduler._state._metrics_collector.generate_latest"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e9d7c84fc8b_a0_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    },
+    {
+     "attempt": 1,
+     "spec": "{\"params\": {}, \"attributes\": {\"_scheduler\": \"object\", \"write\": \"object\"}, \"stubs\": {\"self._scheduler._state\": \"object\", \"self._scheduler._state._metrics_collector\": \"object\", \"self._scheduler._state._metrics_collector.generate_latest\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "ignored": [
+      "stub self._scheduler._state._metrics_collector",
+      "stub self._scheduler._state._metrics_collector.generate_latest"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e9d7c84fc8b_a1_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    },
+    {
+     "attempt": 2,
+     "spec": "{\"params\": {}, \"attributes\": {\"_scheduler\": \"object\", \"write\": \"object\"}, \"stubs\": {\"self._scheduler._state\": \"object\", \"self._scheduler._state._metrics_collector.generate_latest\": \"bytes\"}, \"assumptions\": []}\n",
+     "feedback_given": "ESBMC rejected the program: ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "ignored": [
+      "stub self._scheduler._state._metrics_collector.generate_latest"
+     ],
+     "replay_program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e9d7c84fc8b_a2_replay.py",
+     "esbmc_status": "tool_error",
+     "reading": "repairable",
+     "message": "ERROR: Could not resolve type of receiver in member call '._metrics_collector.generate_latest()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+     "unwind": 5
+    }
+   ],
+   "llm_calls": 3,
+   "transforms": [
+    "receiver_init_added",
+    "unreachable_methods_removed:initialize",
+    "stubbed_imports:tornado",
+    "external_chains_flattened:tornado_web_RequestHandler",
+    "opaque_values"
+   ],
+   "program_path": "artifacts/v2/full-2026-10-04-sonnet/programs/6e9d7c84fc8b_a2.py",
+   "replay": {
+    "status": "unavailable",
+    "exception_type": "",
+    "line": null,
+    "runs": 0,
+    "reason": "ESBMC produced no verdict to validate"
+   },
+   "tokens": 1795,
+   "seconds": 43.711
+  }
+ ]
+}

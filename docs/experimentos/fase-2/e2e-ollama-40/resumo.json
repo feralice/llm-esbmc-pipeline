@@ -1,0 +1,13 @@
+{
+  "pasta": "e2e-ollama-40",
+  "modificado_em": "2026-09-22T00:24",
+  "arquivos": [
+    "llm_telemetry.json",
+    "run.log",
+    "v2_checkpoint.json",
+    "v2_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "running"
+}

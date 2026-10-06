@@ -1,0 +1,3025 @@
+{
+  "counts": {
+    "UNVALIDATED": 2,
+    "UNSUPPORTED": 106,
+    "NOT_CONFIRMED": 10,
+    "GROUNDING_FAILED": 53,
+    "MISSING_DEPENDENCY": 33,
+    "ESBMC_ERROR": 7,
+    "SPEC_FAILED": 9,
+    "OTHER_FAILURE": 4,
+    "CONFIRMED": 1,
+    "ESBMC_TIMEOUT": 4
+  },
+  "rows": [
+    {
+      "id": "91c7494248a2",
+      "file": "av_real_01.py",
+      "function": "cli_bool_option",
+      "before": "CONFIRMED",
+      "after": "UNVALIDATED",
+      "reason": "assertion ISINSTANCE(param, 0); dereference failure: NULL pointer; unwinding assertion loop 131; unwinding assertion loop 53; unwinding assertion loop 54; unwinding assertion loop 29",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "528ca8730d1f",
+      "file": "av_real_03.py",
+      "function": "Series.to_timestamp",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "dc5c7138c437",
+      "file": "av_real_09.py",
+      "function": "_make_getset_interval.setter",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "61b022bf446a",
+      "file": "av_real_17.py",
+      "function": "unified_strdate",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108; unwinding assertion loop 131",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,email,shlex_quote",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "77722d203749",
+      "file": "bip_ansible_1.py",
+      "function": "verify_collections",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external name 'contextmanager' is used as a decorator",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "dc76a7e3d21a",
+      "file": "bip_ansible_16.py",
+      "function": "LinuxHardware.get_cpu_facts",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 2. Variable OSError not found",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_find_bind_mounts,_find_mapper_device_name,_lsblk_uuid,_mtab_entries,_replace_octal_escapes,_replace_octal_escapes_helper,_run_findmnt,_run_lsblk,_udevadm_uuid,get_all_device_links,get_all_device_owners,get_device_facts,get_device_links,get_dmi_facts,get_holders,get_lvm_facts,get_memory_facts,get_mount_facts,get_mount_info,get_uptime_facts,populate",
+        "stubbed_imports:Hardware,HardwareCollector,get_file_content,get_file_lines,get_mount_size",
+        "builtin_exceptions_stubbed:IOError",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "7f4509a77e6f",
+      "file": "bip_ansible_16.py",
+      "function": "LinuxHardware.get_cpu_facts",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in LinuxHardware.get_cpu_facts",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "9a0fef3a0dc0",
+      "file": "bip_ansible_3.py",
+      "function": "DistributionFiles.parse_distribution_file_Debian",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "3dadbe9389f2",
+      "file": "bip_ansible_3.py",
+      "function": "DistributionFiles.parse_distribution_file_Debian",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "b369b96f8616",
+      "file": "bip_ansible_5.py",
+      "function": "check_required_arguments",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:to_native,to_text",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "4c46f82a78ef",
+      "file": "bip_black_13.py",
+      "function": "generate_tokens",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): ASYNC, AWAIT, COMMENT, DEDENT, ENDMARKER, ERRORTOKEN, INDENT, NAME, NEWLINE, NL, NUMBER, OP, STRING",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "edce49fc532d",
+      "file": "bip_black_16.py",
+      "function": "gen_python_files_in_dir",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:Path"
+      ]
+    },
+    {
+      "id": "6d3629526656",
+      "file": "bip_fastapi_10.py",
+      "function": "serialize_response",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:BaseConfig,BaseModel,ErrorWrapper,Field,JSONResponse,Response,Schema,ValidationError,jsonable_encoder"
+      ]
+    },
+    {
+      "id": "f5af57cc8886",
+      "file": "bip_fastapi_16.py",
+      "function": "jsonable_encoder",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "stub 'obj.Config': missing return type; stub 'obj.dict': missing return type; stub 'obj.items': missing return type; stub 'obj.value': missing return type",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "38a8ba2b22da",
+      "file": "bip_keras_10.py",
+      "function": "standardize_weights",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:K,np"
+      ]
+    },
+    {
+      "id": "a549d0489154",
+      "file": "bip_keras_24.py",
+      "function": "TensorBoard.set_model",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): projector, tf",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "dca090eb15dc",
+      "file": "bip_keras_24.py",
+      "function": "TensorBoard.set_model",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): projector, tf",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "ce1f281c3706",
+      "file": "bip_keras_25.py",
+      "function": "_preprocess_numpy_input",
+      "before": "ESBMC_ERROR",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub 'x.astype': missing return type",
+      "recorded_specs": 2,
+      "filled": 3,
+      "transforms": [
+        "stubbed_imports:K",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "3d6f97ad6ab6",
+      "file": "bip_keras_26.py",
+      "function": "rnn",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): uses_learning_phase",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "90ba797cbb92",
+      "file": "bip_keras_26.py",
+      "function": "rnn._step",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'rnn._step' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "90ba797cbb92",
+      "file": "bip_keras_26.py",
+      "function": "rnn._step",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'rnn._step' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "df4db19deb29",
+      "file": "bip_keras_3.py",
+      "function": "_clone_functional_model",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:Input,InputLayer,K,Model,Sequential,has_arg,to_list",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "84b7d050dd85",
+      "file": "bip_keras_3.py",
+      "function": "_clone_functional_model",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:Input,InputLayer,K,Model,Sequential,has_arg,to_list",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "a408047609c9",
+      "file": "bip_keras_33.py",
+      "function": "text_to_word_sequence",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): unicode",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "6bf23aa2df8f",
+      "file": "bip_keras_36.py",
+      "function": "separable_conv1d",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in separable_conv1d",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "1786ae607919",
+      "file": "bip_keras_36.py",
+      "function": "separable_conv1d",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.environ.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:device_lib,image_data_format,tf",
+        "external_chains_flattened:tf_nn",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "8fa98b8997cb",
+      "file": "bip_keras_38.py",
+      "function": "StackedRNNCells.build",
+      "before": "UNVALIDATED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in StackedRNNCells.build",
+      "recorded_specs": 2,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "5e3e86af152a",
+      "file": "bip_keras_40.py",
+      "function": "RNN.compute_output_shape",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_standardize_args,build,call,compute_mask,from_config,get_config,get_initial_state,get_losses_for,reset_states,states,states",
+        "properties_as_attributes:losses,non_trainable_weights,trainable_weights",
+        "stubbed_imports:InputSpec,K,Layer",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "56197c3e9e9d",
+      "file": "bip_keras_40.py",
+      "function": "RNN.compute_output_shape",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_standardize_args,build,call,compute_mask,from_config,get_config,get_initial_state,get_losses_for,reset_states,states,states",
+        "properties_as_attributes:losses,non_trainable_weights,trainable_weights",
+        "stubbed_imports:InputSpec,K,Layer",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "d130987953bb",
+      "file": "bip_keras_43.py",
+      "function": "to_categorical",
+      "before": "OTHER_FAILURE",
+      "after": "OTHER_FAILURE",
+      "reason": "uncaught exception: AttributeError",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "b34727391d6c",
+      "file": "bip_keras_43.py",
+      "function": "to_categorical",
+      "before": "OTHER_FAILURE",
+      "after": "OTHER_FAILURE",
+      "reason": "uncaught exception: AttributeError",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "352c7194d84d",
+      "file": "bip_keras_43.py",
+      "function": "to_categorical",
+      "before": "OTHER_FAILURE",
+      "after": "OTHER_FAILURE",
+      "reason": "uncaught exception: AttributeError",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "e85675e61039",
+      "file": "bip_keras_43.py",
+      "function": "to_categorical",
+      "before": "SPEC_FAILED",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: not JSON: Expecting value",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "0b85bd7768ba",
+      "file": "bip_keras_45.py",
+      "function": "LSTMCell.call",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: strided column slicing (a[:, ::step]) requires a fixed-shape 2-D array at artifacts/v2/control-fixed-2026-10-06/programs/34967d65f7a5_a2.py:243",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_generate_dropout_mask,_generate_recurrent_dropout_mask,build",
+        "stubbed_imports:K,Layer",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "eb6f3966024f",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 101.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "20254912af1b",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "8e58760d102e",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 100.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "73d4d7ccf1f0",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "ed2d523cf3cf",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "b01ed1f4eaee",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 98.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "8ab4b9b00799",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 102.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "bc61b5187dfb",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'args' is not defined in function 'Network' at line 113.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_base_init,_init_graph_network,_init_subclassed_network,_updated_config,call,compute_mask,compute_output_shape,get_config,get_layer,get_weights,input_spec,layers,load_weights,losses,non_trainable_weights,reset_states,run_internal_graph,save,save_weights,set_weights,state_updates,stateful,summary,to_json,to_yaml,trainable_weights,updates,uses_learning_phase",
+        "stubbed_imports:Layer,deserialize_layer,interfaces,saving,unpack_singleton",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "d84bd3579a97",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config.process_node",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "a72d907ba6aa",
+      "file": "bip_keras_8.py",
+      "function": "Network.from_config.process_layer",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "f44daeb0df07",
+      "file": "bip_luigi_18.py",
+      "function": "SimpleTaskState.set_status",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:dump,fail_dead_worker_task,get_active_tasks,get_active_workers,get_assistants,get_necessary_tasks,get_pending_tasks,get_running_tasks,get_state,get_task,get_worker,get_worker_ids,has_task,inactivate_tasks,inactivate_workers,load,num_pending_tasks,prune,set_state",
+        "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,notifications",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "901a738f9d2a",
+      "file": "bip_luigi_19.py",
+      "function": "SimpleTaskState.set_status",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.failures.clear()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:dump,fail_dead_worker_task,get_active_tasks,get_active_workers,get_assistants,get_necessary_tasks,get_pending_tasks,get_running_tasks,get_state,get_task,get_worker,get_worker_ids,has_task,inactivate_tasks,inactivate_workers,load,num_pending_tasks,prune,set_state",
+        "stubbed_imports:DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,notifications",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "a5a1121afa6c",
+      "file": "bip_luigi_21.py",
+      "function": "run",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'setup_interface_logging' is not defined in function 'setup_interface_logging' at line 197.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:Register,argparse,configuration,lock,logging,parameter,rpc,scheduler,sys,task,tempfile,worker",
+        "external_chains_flattened:logging_config,task_Config",
+        "opaque_values",
+        "builtin_exceptions_stubbed:SystemExit",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "06c134af4916",
+      "file": "bip_luigi_26.py",
+      "function": "HadoopJarJobRunner.run_job",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "stubbed_imports:logging,luigi",
+        "external_chains_flattened:luigi_contrib_hadoop,luigi_contrib_hadoop_JobRunner,luigi_contrib_hdfs,luigi_contrib_hdfs_HdfsTarget",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "bdabc3f59c16",
+      "file": "bip_matplotlib_13.py",
+      "function": "Path.make_compound_path",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"np\" not found.",
+      "recorded_specs": 1,
+      "filled": 3,
+      "transforms": [
+        "unreachable_methods_removed:_fast_from_codes_and_verts,arc,circle,cleaned,clip_to_bbox,contains_path,contains_point,contains_points,get_extents,has_nonfinite,hatch,interpolated,intersects_bbox,intersects_path,iter_segments,make_compound_path_from_polys,readonly,should_simplify,should_simplify,simplify_threshold,simplify_threshold,to_polygons,transformed,unit_circle,unit_circle_righthalf,unit_rectangle,unit_regular_asterisk,unit_regular_polygon,unit_regular_star,wedge",
+        "stubbed_imports:WeakValueDictionary,_to_unmasked_float_array,copy,mpl,np,simple_linear_interpolation",
+        "compat_method_alias:2"
+      ]
+    },
+    {
+      "id": "efecbb438b06",
+      "file": "bip_matplotlib_16.py",
+      "function": "nonsingular",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "f5211ff2e230",
+      "file": "bip_matplotlib_17.py",
+      "function": "nonsingular",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "78941642a5a8",
+      "file": "bip_matplotlib_23.py",
+      "function": "_AxesBase.apply_aspect",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call mtransforms_Bbox.from_bounds(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "b4df79b205e6",
+      "file": "bip_matplotlib_23.py",
+      "function": "_AxesBase.apply_aspect",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call mtransforms_Bbox.from_bounds(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "296bd67f023a",
+      "file": "bip_matplotlib_23.py",
+      "function": "_AxesBase.apply_aspect",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call mtransforms_Bbox.from_bounds(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "d830fcc35916",
+      "file": "bip_matplotlib_25.py",
+      "function": "EventCollection.__init__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 1301. Variable add_positions not found",
+      "recorded_specs": 1,
+      "filled": 6,
+      "transforms": [
+        "unreachable_methods_removed:get_color,get_linewidth,get_linewidths,get_orientation,set_linelength,set_lineoffset,set_orientation,switch_orientation",
+        "stubbed_imports:Number,PathEffectRenderer,_path,artist,cbook,cm,docstring,mcolors,mlines,mpath,mpl,np,transforms",
+        "external_chains_flattened:artist_Artist,cbook_ls_mapper,cm_ScalarMappable,np_ma_MaskedArray,transforms_Bbox,transforms_Transform",
+        "opaque_values",
+        "typing_import_added",
+        "compat_method_alias:3"
+      ]
+    },
+    {
+      "id": "717929d4e0c9",
+      "file": "bip_matplotlib_28.py",
+      "function": "_AxesBase.set_xlim",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"convert\" not found (artifacts/v2/control-fixed-2026-10-06/programs/2ddafd73dc43_a0.py line 382)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_text,_gci,_gen_axes_patch,_gen_axes_spines,_get_axis_list,_get_view,_init_axis,_make_twin_axes,_on_units_changed,_request_autoscale_view,_sci,_set_artist_props,_set_lim_and_transforms,_set_position,_set_title_offset_trans,_set_view,_set_view_from_bbox,_unstale_viewLim,_update_image_limits,_update_line_limits,_update_patch_limits,_update_title_position,_update_transScale,add_artist,add_child_axes,add_collection,add_container,add_image,add_line,add_patch,add_table,apply_aspect,autoscale,autoscale_view,axis,can_pan,can_zoom,cla,clear,contains,contains_point,drag_pan,draw,draw_artist,end_pan,format_coord,format_xdata,format_ydata,get_adjustable,get_anchor,get_aspect,get_autoscale_on,get_autoscalex_on,get_autoscaley_on,get_axes_locator,get_axisbelow,get_children,get_data_ratio,get_data_ratio_log,get_default_bbox_extra_artists,get_frame_on,get_images,get_legend,get_lines,get_navigate,get_navigate_mode,get_position,get_rasterization_zorder,get_renderer_cache,get_shared_x_axes,get_shared_y_axes,get_tightbbox,get_window_extent,get_xaxis,get_xaxis_text1_transform,get_xaxis_text2_transform,get_xaxis_transform,get_xbound,get_xgridlines,get_xmajorticklabels,get_xminorticklabels,get_xticklabels,get_xticklines,get_xticks,get_yaxis,get_yaxis_text1_transform,get_yaxis_text2_transform,get_yaxis_transform,get_ybound,get_ygridlines,get_ylim,get_ymajorticklabels,get_yminorticklabels,get_yscale,get_yticklabels,get_yticklines,get_yticks,grid,has_data,in_axes,invert_xaxis,invert_yaxis,locator_params,margins,minorticks_off,minorticks_on,redraw_in_frame,relim,reset_position,set_adjustable,set_anchor,set_aspect,set_autoscale_on,set_autoscalex_on,set_autoscaley_on,set_axes_locator,set_axis_off,set_axis_on,set_axisbelow,set_figure,set_frame_on,set_navigate,set_navigate_mode,set_position,set_prop_cycle,set_rasterization_zorder,set_xbound,set_xmargin,set_xscale,set_xticklabels,set_xticks,set_ybound,set_ylim,set_ymargin,set_yscale,set_yticklabels,set_yticks,start_pan,tick_params,ticklabel_format,twinx,twiny,update_datalim,update_datalim_bounds,xaxis_date,xaxis_inverted,yaxis_date,yaxis_inverted",
+        "properties_as_attributes:use_sticky_edges,viewLim",
+        "stubbed_imports:Real,cbook,martist,np,rcParams",
+        "external_chains_flattened:martist_Artist",
+        "opaque_values",
+        "typing_import_added",
+        "compat_method_alias:2"
+      ]
+    },
+    {
+      "id": "58f74ca56ca8",
+      "file": "bip_matplotlib_6.py",
+      "function": "Axes._parse_scatter_color_args",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "01a7293d34fa",
+      "file": "bip_matplotlib_6.py",
+      "function": "Axes._parse_scatter_color_args",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call mtext.Annotation(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "ca2e9cd0f5a9",
+      "file": "bip_matplotlib_6.py",
+      "function": "Axes._parse_scatter_color_args",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in Axes._parse_scatter_color_args",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "2f90e86be25f",
+      "file": "bip_pandas_10.py",
+      "function": "ExtensionBlock.putmask",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in ExtensionBlock.putmask",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "855708dbb1d3",
+      "file": "bip_pandas_104.py",
+      "function": "GroupBy.quantile",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _iterate_slices, _wrap_aggregated_output, _wrap_transformed_output, ngroups",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "adc35f3bbc5f",
+      "file": "bip_pandas_104.py",
+      "function": "GroupBy.quantile.pre_processor",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "823bc31d2173",
+      "file": "bip_pandas_107.py",
+      "function": "DataFrame.append",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "07db106b0cd6",
+      "file": "bip_pandas_133.py",
+      "function": "NDFrame.interpolate",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._AXIS_ALIASES.get()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:Appender(_shared_docs['interpolate'] % _shared_doc_kwargs)",
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_numeric_operations,_add_series_only_operations,_add_series_or_dataframe_operations,_agg_by_level,_align_frame,_align_series,_box_item_values,_check_inplace_setting,_check_is_chained_assignment_possible,_check_label_or_level_ambiguity,_clip_with_one_bound,_clip_with_scalar,_consolidate,_construct_axes_dict,_construct_axes_dict_from,_construct_axes_from_arguments,_convert,_create_indexer,_dir_additions,_drop_axis,_drop_labels_or_levels,_find_valid_index,_from_axes,_get_axis_resolvers,_get_bool_data,_get_cacher,_get_index_resolvers,_get_item_cache,_get_label_or_level_values,_get_numeric_data,_get_space_character_free_column_resolvers,_iget_item_cache,_indexed_same,_init_mgr,_internal_get_values,_is_label_or_level_reference,_is_label_reference,_is_level_reference,_maybe_cache_changed,_needs_reindex_multi,_reindex_axes,_reindex_multi,_reindex_with_indexers,_repr_data_resource_,_repr_latex_,_reset_cacher,_set_as_cached,_set_axis,_set_axis_name,_set_is_copy,_set_item,_setup_axes,_slice,_to_dict_of_blocks,_validate_dtype,_where,abs,add_prefix,add_suffix,align,as_blocks,as_matrix,asfreq,asof,astype,at_time,between_time,bfill,bool,clip,clip_lower,clip_upper,copy,describe,drop,droplevel,equals,ffill,fillna,filter,first,first_valid_index,get,get_dtype_counts,get_ftype_counts,get_values,groupby,head,infer_objects,isna,isnull,items,iteritems,keys,last,last_valid_index,mask,notna,notnull,pct_change,pipe,pop,rank,reindex,reindex_like,rename,rename_axis,replace,resample,sample,set_axis,shift,slice_shift,sort_index,sort_values,squeeze,swapaxes,swaplevel,tail,to_clipboard,to_csv,to_dense,to_excel,to_hdf,to_json,to_latex,to_msgpack,to_pickle,to_sql,to_xarray,transform,transpose,truncate,tshift,tz_convert,tz_localize,where",
+        "properties_as_attributes:_constructor,_constructor_expanddim,_constructor_sliced,_get_values,_info_axis,_is_cached,_is_datelike_mixed_type,_is_mixed_type,_is_numeric_mixed_type,_is_view,_obj_with_exclusions,_selected_obj,_stat_axis,_values,attrs,axes,blocks,dtypes,empty,ftypes,is_copy,ndim,shape,size,values",
+        "stubbed_imports:ABCDataFrame,ABCSeries,AbstractMethodError,BlockManager,Index,InvalidIndexError,MultiIndex,PandasObject,RangeIndex,SelectionMixin,com,config,dedent,ensure_index,ensure_int64,ensure_object,ensure_str,gc,indexing,is_bool,is_bool_dtype,is_datetime64_any_dtype,is_datetime64tz_dtype,is_dict_like,is_extension_array_dtype,is_float,is_integer,is_list_like,is_number,is_numeric_dtype,is_object_dtype,is_period_arraylike,is_re_compilable,is_scalar,is_timedelta64_dtype,isna,notna,np,nv,operator,pandas_dtype,pprint_thing,validate_bool_kwarg,validate_fillna_kwargs,validate_percentile,warnings",
+        "external_chains_flattened:np_ndarray",
+        "compat_percent_format:1",
+        "compat_method_alias:2"
+      ]
+    },
+    {
+      "id": "01f895b57d5b",
+      "file": "bip_pandas_139.py",
+      "function": "Grouping.__init__",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "cf5ee0f14e03",
+      "file": "bip_pandas_139.py",
+      "function": "Grouping.__init__",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "stub 'recode_for_groupby': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "e7214f96429a",
+      "file": "bip_pandas_142.py",
+      "function": "diff",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:algos,ensure_float64,ensure_int64,ensure_object,ensure_platform_int,ensure_uint64,htable,iNaT,is_array_like,is_bool_dtype,is_categorical_dtype,is_complex_dtype,is_datetime64_any_dtype,is_datetime64_ns_dtype,is_datetimelike,is_extension_array_dtype,is_float_dtype,is_integer,is_integer_dtype,is_list_like,is_numeric_dtype,is_object_dtype,is_period_dtype,is_scalar,is_signed_integer_dtype,is_timedelta64_dtype,is_unsigned_integer_dtype,lib,needs_i8_conversion,np",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "1a9d4c8919b8",
+      "file": "bip_pandas_145.py",
+      "function": "dispatch_to_series",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '.index.equals()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 6,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCDatetimeArray,ABCDatetimeIndex,ABCExtensionArray,ABCIndexClass,ABCSeries,ABCTimedeltaArray,ABCTimedeltaIndex,Timedelta,Timestamp,expressions,lib,libops,np",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "52de49470967",
+      "file": "bip_pandas_145.py",
+      "function": "dispatch_to_series",
+      "before": "MISSING_DEPENDENCY",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub 'right.dtype': missing return type",
+      "recorded_specs": 1,
+      "filled": 6,
+      "transforms": []
+    },
+    {
+      "id": "5c232e903238",
+      "file": "bip_pandas_152.py",
+      "function": "Series.append",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in Series.append",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "d53b549d892f",
+      "file": "bip_pandas_154.py",
+      "function": "GroupBy._get_cythonized_result",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "receiver reads inherited member(s): _iterate_slices",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "dda668236e74",
+      "file": "bip_pandas_162.py",
+      "function": "_normalize",
+      "before": "MISSING_DEPENDENCY",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub 'table.iloc': missing return type",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "7af0a74a4332",
+      "file": "bip_pandas_166.py",
+      "function": "DataFrame._join_compat",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "09be9cbbe236",
+      "file": "bip_pandas_168.py",
+      "function": "_get_grouper",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "d5f357ea2365",
+      "file": "bip_pandas_19.py",
+      "function": "_LocIndexer._getitem_axis",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in _LocIndexer._getitem_axis",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "fd97310999a3",
+      "file": "bip_pandas_29.py",
+      "function": "IntervalArray.__setitem__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in IntervalArray.__setitem__",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "af346e18f12b",
+      "file": "bip_pandas_33.py",
+      "function": "IntegerArray._values_for_argsort",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external name 'register_extension_dtype' is used as a decorator",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "9ccf6f76f3c9",
+      "file": "bip_pandas_61.py",
+      "function": "Series._get_with",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "93f938743761",
+      "file": "bip_pandas_78.py",
+      "function": "DataFrame._reduce",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "a962893cafd8",
+      "file": "bip_pandas_8.py",
+      "function": "Block.replace",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "stub 'maybe_promote': the code unpacks its result into 2 names, so it needs tuple[...] with 2 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "0e891f89a342",
+      "file": "bip_pandas_87.py",
+      "function": "crosstab",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"f\" not found (artifacts/v2/control-fixed-2026-10-06/programs/3a3559d6f4ed_a1.py line 243)",
+      "recorded_specs": 2,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Index,MultiIndex,com,concat,get_objs_combined_axis",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "5429c3b33bc9",
+      "file": "bip_pandas_88.py",
+      "function": "pivot_table",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"aggfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/efa0df5526fe_a0.py line 406)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot_table'], indents=1)",
+        "stubbed_imports:ABCDataFrame,ABCSeries,DataFrame,Grouper,Index,MultiIndex,Series,cartesian_product,concat,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar,maybe_downcast_to_dtype,np",
+        "external_chains_flattened:np_ndarray",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "ef537d83a9be",
+      "file": "bip_pandas_91.py",
+      "function": "TimedeltaIndex.searchsorted",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in TimedeltaIndex.searchsorted",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "f203999ed223",
+      "file": "bip_pandas_95.py",
+      "function": "_period_array_cmp",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"op\" not found (artifacts/v2/control-fixed-2026-10-06/programs/b122b43e683e_a0.py line 138)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:NaT,NaTType,_TD_DTYPE,compat,ensure_object,iNaT,invalid_comparison,is_datetime64_dtype,is_float_dtype,is_list_like,is_object_dtype,is_period_dtype,isna,libfrequencies,libperiod,notna,np,ops,pandas_dtype,unpack_zerodim_and_defer",
+        "external_chains_flattened:np_ndarray",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "12c724899555",
+      "file": "bip_pandas_95.py",
+      "function": "_period_array_cmp.wrapper",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "9f6ab9860274",
+      "file": "bip_pandas_98.py",
+      "function": "Index.__new__",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external name 'cache_readonly' is used as a decorator",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "b8edde5a7e1e",
+      "file": "bip_scrapy_15.py",
+      "function": "_safe_ParseResult",
+      "before": "NOT_CONFIRMED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in _safe_ParseResult",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "ddcad8260108",
+      "file": "bip_scrapy_15.py",
+      "function": "_safe_ParseResult",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:ParseResult,_safe_chars,parse_qsl,quote,to_bytes,to_native_str,to_unicode,unquote,urldefrag,urlencode,urlparse,urlunparse",
+        "builtin_exceptions_stubbed:UnicodeError"
+      ]
+    },
+    {
+      "id": "5bf91d52630c",
+      "file": "bip_scrapy_18.py",
+      "function": "ResponseTypes.from_content_disposition",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in ResponseTypes.from_content_disposition",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "2abbc0787351",
+      "file": "bip_scrapy_21.py",
+      "function": "RobotsTxtMiddleware._robots_error",
+      "before": "ESBMC_MISSED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in RobotsTxtMiddleware._robots_error",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "82368e805ae8",
+      "file": "bip_scrapy_38.py",
+      "function": "_get_clickable",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:six",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "cd22a8de947d",
+      "file": "bip_scrapy_40.py",
+      "function": "PythonItemExporter._serialize_value",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in PythonItemExporter._serialize_value",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "6f4dfcdaf4b0",
+      "file": "bip_spacy_1.py",
+      "function": "add_codes.ErrorsWithCodes.__getattribute__",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "7325b8a9d42b",
+      "file": "bip_spacy_2.py",
+      "function": "load_model_from_path",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed at line 1. Variable OSError not found",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:CudaStream,Errors,Path,Warnings,basestring_,catalogue,cupy,importlib,path2str,srsly,unicode_",
+        "external_chains_flattened:Errors_E048,Errors_E052,Errors_E053,Errors_E054",
+        "opaque_values",
+        "builtin_exceptions_stubbed:IOError"
+      ]
+    },
+    {
+      "id": "9be9fc736043",
+      "file": "bip_thefuck_11.py",
+      "function": "get_new_command",
+      "before": "CONFIRMED",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub 'command.script_parts': missing return type",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "58774b0a0374",
+      "file": "bip_thefuck_4.py",
+      "function": "_get_aliases",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in _get_aliases",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "40ff07661432",
+      "file": "bip_tornado_5.py",
+      "function": "PeriodicCallback._update_next",
+      "before": "ESBMC_ERROR",
+      "after": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_run,_schedule_next,is_running,start,stop"
+      ]
+    },
+    {
+      "id": "6b18cc72ebc8",
+      "file": "bip_tqdm_1.py",
+      "function": "tenumerate",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in tenumerate",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "1e3ac60c43f9",
+      "file": "bip_youtube_dl_13.py",
+      "function": "urljoin",
+      "before": "UNVALIDATED",
+      "after": "UNVALIDATED",
+      "reason": "uncaught exception: AttributeError",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "1c2e21d2f6c6",
+      "file": "bip_youtube_dl_13.py",
+      "function": "urljoin",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "729a91d0a090",
+      "file": "bip_youtube_dl_13.py",
+      "function": "urljoin",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "0a27be725de8",
+      "file": "bip_youtube_dl_21.py",
+      "function": "urljoin",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "540e1e35b738",
+      "file": "bip_youtube_dl_24.py",
+      "function": "_match_one",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"m\" not found.",
+      "recorded_specs": 2,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath,operator",
+        "compat_percent_format:3"
+      ]
+    },
+    {
+      "id": "fd16cc220ab1",
+      "file": "bip_youtube_dl_3.py",
+      "function": "unescapeHTML",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "df8f702a5007",
+      "file": "bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "684f0101938e",
+      "file": "bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "77718a5d3945",
+      "file": "bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "355de68741b6",
+      "file": "bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function._merge",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "c927da095a44",
+      "file": "bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function._merge",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "1da3d71e3da6",
+      "file": "bip_youtube_dl_30.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function._merge",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "7606c705c474",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/ff990a86e4e7_a0.py line 153)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "a37941e5f655",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/b5d9ca572533_a0.py line 153)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "32e79148d095",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/95e4abbff1e7_a0.py line 156)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "b20008796d06",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/e093b6846908_a0.py line 153)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "47bae861f782",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/d0b319ea2ae4_a0.py line 153)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "b32e23009859",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in JSInterpreter.interpret_expression",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "95e45539c404",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/8e0f40ff9a74_a0.py line 169)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "ccee75639e21",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/c14b0ab7f24a_a0.py line 153)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "1bc209becb69",
+      "file": "bip_youtube_dl_4.py",
+      "function": "JSInterpreter.interpret_expression",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"opfunc\" not found (artifacts/v2/control-fixed-2026-10-06/programs/8a9ff3156960_a0.py line 169)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:call_function",
+        "stubbed_imports:ExtractorError,json,operator"
+      ]
+    },
+    {
+      "id": "ef639b3fabe3",
+      "file": "bip_youtube_dl_41.py",
+      "function": "unified_strdate",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:email",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "6d754f42710f",
+      "file": "bip_youtube_dl_41.py",
+      "function": "unified_strdate",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:email",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "7d3fa11c5394",
+      "file": "bip_youtube_dl_5.py",
+      "function": "unified_timestamp",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in unified_timestamp",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "eeeb7c8768d6",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "0f2bd147a752",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call traceback.format_exception(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "8df23b0cd437",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "57174d97e160",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "c13fac98c87a",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "entry point is nested inside a function; the harness cannot call it",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "8b1106446cc3",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function._merge",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "50ef3fca804a",
+      "file": "bip_youtube_dl_8.py",
+      "function": "YoutubeDL.build_format_selector._build_selector_function._merge",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'YoutubeDL.build_format_selector._build_selector_function._merge' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "c9f99e056a75",
+      "file": "dz_real_01.py",
+      "function": "makeMappingArray",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at artifacts/v2/control-fixed-2026-10-06/programs/44fa084ab632_a2.py:70",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "3532ba8be395",
+      "file": "dz_real_01.py",
+      "function": "makeMappingArray",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError: 'float' object is not subscriptable at artifacts/v2/control-fixed-2026-10-06/programs/a53dd08d4126_a2.py:86",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:np",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "b5652fda143e",
+      "file": "dz_real_02.py",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"ESBMC_mmkey_0\" not found (artifacts/v2/control-fixed-2026-10-06/programs/6d2ad6a35cc4_a0.py line 25)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:get_current_language,parse_found_objects,parse_item,search,search_parse,set_relative_base,split_by,split_if_not_parsed",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "c3c74f091418",
+      "file": "dz_real_02.py",
+      "function": "ExactLanguageSearch.choose_best_split",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"ESBMC_mmkey_0\" not found (artifacts/v2/control-fixed-2026-10-06/programs/b370255978e8_a0.py line 25)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:get_current_language,parse_found_objects,parse_item,search,search_parse,set_relative_base,split_by,split_if_not_parsed",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "bb4c66bf77ba",
+      "file": "dz_real_03.py",
+      "function": "HashExpander.do",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in HashExpander.do",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "694dbc9f0acd",
+      "file": "dz_real_03.py",
+      "function": "HashExpander.do",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: [json.exception.type_error.306] cannot use value() with null",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:expand,match",
+        "stubbed_imports:binascii",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "330ff664aa17",
+      "file": "dz_real_03.py",
+      "function": "HashExpander.do",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: [json.exception.type_error.306] cannot use value() with null",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:expand,match",
+        "stubbed_imports:binascii",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "97f127f11b88",
+      "file": "dz_real_03.py",
+      "function": "HashExpander.do",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: [json.exception.type_error.306] cannot use value() with null",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:expand,match",
+        "stubbed_imports:binascii",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "09c8208ce2b3",
+      "file": "dz_real_04.py",
+      "function": "interpolate_bilinear_2x_fwd",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in interpolate_bilinear_2x_fwd",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "ab91bbb03a54",
+      "file": "io_real_01.py",
+      "function": "nonsingular",
+      "before": "SPEC_FAILED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot unpack empty - only tuples and arrays can be unpacked",
+      "recorded_specs": 3,
+      "filled": 1,
+      "transforms": [
+        "stubbed_imports:np"
+      ]
+    },
+    {
+      "id": "9715ff1783d8",
+      "file": "ip_real_07.py",
+      "function": "_htmlentity_transform",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,shlex_quote",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "b454ed4849b1",
+      "file": "ip_real_10.py",
+      "function": "_get_spider_loader",
+      "before": "OTHER_FAILURE",
+      "after": "OTHER_FAILURE",
+      "reason": "dereference failure: NULL pointer; unwinding assertion loop 131; uncaught exception: AttributeError",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:ISpiderLoader,ScrapyDeprecationWarning,load_object,verifyClass,warnings",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "bcaf6d92d59f",
+      "file": "ip_real_11.py",
+      "function": "HTTPBearer.__call__",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "async entry point is not supported",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "d06a2222218e",
+      "file": "ip_real_14.py",
+      "function": "TimeseriesGenerator.__len__",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in TimeseriesGenerator.__len__",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "0c0dfe383329",
+      "file": "ip_real_16.py",
+      "function": "pivot",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: NameError: name 'DataFrame' is not defined",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:Substitution('\\ndata : DataFrame'),Appender(_shared_docs['pivot'], indents=1)",
+        "stubbed_imports:Index,MultiIndex,get_objs_combined_axis,is_integer_dtype,is_list_like,is_scalar",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "5f44bbc94b3c",
+      "file": "ip_real_17.py",
+      "function": "response_status_message",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Dictionary variable not found: http_RESPONSES",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:http,to_bytes,to_native_str",
+        "external_chains_flattened:http_RESPONSES",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "72c0702eb982",
+      "file": "ip_real_17.py",
+      "function": "response_status_message",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in response_status_message",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "b5f5de675cd1",
+      "file": "ip_real_18.py",
+      "function": "croniter._get_low_from_current_date_number",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"localize\" not found (artifacts/v2/control-fixed-2026-10-06/programs/2e0c5f88d52c_a0.py line 299)",
+      "recorded_specs": 1,
+      "filled": 2,
+      "transforms": [
+        "unreachable_methods_removed:_alphaconv,_expand,all_next,all_prev,expand,get_current,get_next,get_prev,is_valid,iter,match,match_range,value_alias",
+        "stubbed_imports:calendar,copy,datetime_exists,platform,pytz,relativedelta,struct,sys,tzutc",
+        "opaque_values",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "b1d66754bbd4",
+      "file": "ip_real_18.py",
+      "function": "croniter._get_low_from_current_date_number",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Function \"localize\" not found (artifacts/v2/control-fixed-2026-10-06/programs/40814d7e301f_a0.py line 299)",
+      "recorded_specs": 1,
+      "filled": 2,
+      "transforms": [
+        "unreachable_methods_removed:_alphaconv,_expand,all_next,all_prev,expand,get_current,get_next,get_prev,is_valid,iter,match,match_range,value_alias",
+        "stubbed_imports:calendar,copy,datetime_exists,platform,pytz,relativedelta,struct,sys,tzutc",
+        "opaque_values",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "ebae3e20a8d4",
+      "file": "ip_real_19.py",
+      "function": "VersionInfo.__getitem__",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in VersionInfo.__getitem__",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "471b342ee7fd",
+      "file": "ip_real_20.py",
+      "function": "generate_sub_moved_events",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in generate_sub_moved_events",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "4aa3e5e38a90",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in SortedDict.__eq__",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "2629816a29ef",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__eq__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "a1578927c83f",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__ne__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in SortedDict.__ne__",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "2ede9629917e",
+      "file": "ip_real_21.py",
+      "function": "SortedDict.__ne__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Could not resolve type of receiver in member call '._list.remove()'. Add a type annotation to the function parameter or local variable so the attribute chain can be typed.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_check,bisect,bisect_left,bisect_right,clear,copy,fromkeys,get,has_key,index,items,iteritems,iterkeys,itervalues,keys,pop,popitem,setdefault,update,values,viewitems,viewkeys,viewvalues",
+        "esbmc_refused_members_stubbed:_esbmc_collections_MutableMapping",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "91509f265939",
+      "file": "ip_real_22.py",
+      "function": "match",
+      "before": "ESBMC_TIMEOUT",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub 'command.script_parts': missing return type",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "b1452f1e2626",
+      "file": "ip_real_26.py",
+      "function": "Scheduler.add_task",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: update() argument must be a dict in ESBMC model",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:rpc_method()",
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_filter_done,_first_task_display_name,_has_resources,_prune_emails,_prune_tasks,_prune_workers,_rank,_reset_orphaned_batch_running_tasks,_schedulable,_serialize_task,_traverse_graph,_upstream_status,_used_resources,add_task_batcher,add_worker,announce_scheduling_failure,count_pending,dep_graph,disable_worker,dump,fetch_error,forgive_failures,get_task_status_message,get_work,graph,inverse_dep_graph,is_paused,load,pause,ping,prune,re_enable_task,resource_list,resources,set_task_status_message,set_worker_processes,task_list,task_search,unpause,update_resource,update_resources,worker_list",
+        "properties_as_attributes:task_history",
+        "stubbed_imports:BATCH_RUNNING,DISABLED,DONE,FAILED,PENDING,RUNNING,SUSPENDED,UNKNOWN,json,logging,six",
+        "esbmc_refused_members_stubbed:_esbmc_collections_namedtuple",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "ce4475528b8b",
+      "file": "ip_real_28.py",
+      "function": "IOLoop.initialize",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in IOLoop.initialize",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "528c0187a852",
+      "file": "ip_real_32.py",
+      "function": "date_convert",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "bfff4f0f8dc7",
+      "file": "ip_real_32.py",
+      "function": "date_convert",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "f1d2b1901467",
+      "file": "ip_real_32.py",
+      "function": "date_convert",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "c4fdf366fa49",
+      "file": "ip_real_32.py",
+      "function": "date_convert",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "7d9389af12fe",
+      "file": "ip_real_32.py",
+      "function": "date_convert",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "371ed77ee12b",
+      "file": "ip_real_32.py",
+      "function": "date_convert",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "input 'd_m_y': the code unpacks it into 3 names, so it needs tuple[...] with 3 items, not 'int'",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "ea4b5036a1a1",
+      "file": "ir_real_01.py",
+      "function": "gamma",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "bddded2ceb35",
+      "file": "ir_real_01.py",
+      "function": "gamma",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): __ESBMC_exp, __ESBMC_pow, __ESBMC_sqrt",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "e11cbce855f8",
+      "file": "ir_real_01.py",
+      "function": "gamma",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in gamma",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "fdac2a6bc7d1",
+      "file": "ir_real_01.py",
+      "function": "lgamma",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "undefined name(s): __ESBMC_log",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "209b1024c62b",
+      "file": "ir_real_03.py",
+      "function": "try_match_char_class_range",
+      "before": "CONFIRMED",
+      "after": "CONFIRMED",
+      "reason": "unwinding assertion loop 131; uncaught exception: IndexError",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "942d61a91efc",
+      "file": "nm_real_01.py",
+      "function": "Session.update_headers",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at artifacts/v2/control-fixed-2026-10-06/programs/4c8f07cc2ff5_a2.py 39: list indices must be integers or slices, not str",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_path",
+        "properties_as_attributes:auth,cookies,headers",
+        "stubbed_imports:BaseConfigDict,DEFAULT_CONFIG_DIR"
+      ]
+    },
+    {
+      "id": "942d61a91efc",
+      "file": "nm_real_01.py",
+      "function": "Session.update_headers",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at artifacts/v2/control-fixed-2026-10-06/programs/4c8f07cc2ff5_a2.py 39: list indices must be integers or slices, not str",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_path",
+        "properties_as_attributes:auth,cookies,headers",
+        "stubbed_imports:BaseConfigDict,DEFAULT_CONFIG_DIR"
+      ]
+    },
+    {
+      "id": "31409e1ca2c6",
+      "file": "nm_real_02.py",
+      "function": "tqdm.format_meter",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "recorded_specs": 1,
+      "filled": 1,
+      "transforms": [
+        "unreachable_methods_removed:_comparable,_decr_instances,_get_free_pos,clear,close,display,ema,external_write_mode,format_dict,format_interval,format_num,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+        "stubbed_imports:Comparable,RE_ANSI,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,dedent,sys,warn",
+        "external_chains_flattened:sys_stderr",
+        "opaque_values",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "85bfb4736f00",
+      "file": "nm_real_02.py",
+      "function": "tqdm.format_meter",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "recorded_specs": 1,
+      "filled": 1,
+      "transforms": [
+        "unreachable_methods_removed:_comparable,_decr_instances,_get_free_pos,clear,close,display,ema,external_write_mode,format_dict,format_interval,format_num,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+        "stubbed_imports:Comparable,RE_ANSI,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,dedent,sys,warn",
+        "external_chains_flattened:sys_stderr",
+        "opaque_values",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "3952b5af4f57",
+      "file": "nm_real_02.py",
+      "function": "tqdm.format_meter",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in tqdm.format_meter",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "8b674d08658c",
+      "file": "nm_real_02.py",
+      "function": "tqdm.format_meter",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "recorded_specs": 1,
+      "filled": 1,
+      "transforms": [
+        "unreachable_methods_removed:_comparable,_decr_instances,_get_free_pos,clear,close,display,ema,external_write_mode,format_dict,format_interval,format_num,format_sizeof,get_lock,moveto,pandas,refresh,set_description,set_description_str,set_lock,set_postfix,set_postfix_str,status_printer,unpause,update,write",
+        "stubbed_imports:Comparable,RE_ANSI,TMonitor,WeakSet,_OrderedDict,_basestring,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,dedent,sys,warn",
+        "external_chains_flattened:sys_stderr",
+        "opaque_values",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning,RuntimeWarning",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "f377cd5765de",
+      "file": "nm_real_03.py",
+      "function": "FacebookIE._real_extract",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at artifacts/v2/control-fixed-2026-10-06/programs/16e44326f467_a2.py 144: list indices must be integers or slices, not str",
+      "recorded_specs": 3,
+      "filled": 3,
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_login,_real_initialize",
+        "stubbed_imports:ExtractorError,InfoExtractor,compat_http_client,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_request,json,limit_length,urlencode_postdata",
+        "esbmc_refused_members_stubbed:_esbmc_re_escape",
+        "typing_import_added",
+        "compat_percent_format:3"
+      ]
+    },
+    {
+      "id": "3f0b0f247bf9",
+      "file": "nm_real_03.py",
+      "function": "FacebookIE._real_extract",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in FacebookIE._real_extract",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "7f8acd8673b9",
+      "file": "nm_real_03.py",
+      "function": "FacebookIE._real_extract",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at artifacts/v2/control-fixed-2026-10-06/programs/ed3cd5f8201e_a2.py 188: list indices must be integers or slices, not str",
+      "recorded_specs": 3,
+      "filled": 3,
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_login,_real_initialize",
+        "stubbed_imports:ExtractorError,InfoExtractor,compat_http_client,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_request,json,limit_length,urlencode_postdata",
+        "esbmc_refused_members_stubbed:_esbmc_re_escape",
+        "typing_import_added",
+        "compat_percent_format:3"
+      ]
+    },
+    {
+      "id": "5059713e6181",
+      "file": "nm_real_03.py",
+      "function": "FacebookIE._real_extract",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: TypeError at artifacts/v2/control-fixed-2026-10-06/programs/043d3f7769de_a2.py 128: list indices must be integers or slices, not str",
+      "recorded_specs": 3,
+      "filled": 2,
+      "transforms": [
+        "receiver_init_added",
+        "unreachable_methods_removed:_login,_real_initialize",
+        "stubbed_imports:ExtractorError,InfoExtractor,compat_http_client,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_request,json,limit_length,urlencode_postdata",
+        "esbmc_refused_members_stubbed:_esbmc_re_escape",
+        "typing_import_added",
+        "compat_percent_format:3"
+      ]
+    },
+    {
+      "id": "29344079f8f4",
+      "file": "nm_real_03.py",
+      "function": "FacebookIE._real_extract",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in FacebookIE._real_extract",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "c3491e72eff2",
+      "file": "nm_real_04.py",
+      "function": "OffsiteMiddleware.get_host_regex",
+      "before": "SPEC_FAILED",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: assumption 'len(spider.allowed_domains) == 2' reads an attribute that is not an input",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:from_crawler,process_spider_output,should_follow,spider_opened",
+        "stubbed_imports:warnings",
+        "esbmc_refused_members_stubbed:_esbmc_re_compile",
+        "opaque_values",
+        "builtin_exceptions_stubbed:Warning",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "b3ca08c5ae7a",
+      "file": "nm_real_06.py",
+      "function": "create_instance",
+      "before": "UNSUPPORTED",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: stub 'objcls.__qualname__': missing return type",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "51cf515f8948",
+      "file": "nm_real_07.py",
+      "function": "url_concat",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: function call: argument \"py:artifacts/v2/control-fixed-2026-10-06/programs/da00b194f5c4_a2.py@F@urlunparse@a0\" type mismatch: got struct, expected struct",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:Cookie,ObjectDict,PY3,parse_qsl,responses,urlencode,urlparse,urlunparse"
+      ]
+    },
+    {
+      "id": "0fbe05b10d1c",
+      "file": "nm_real_07.py",
+      "function": "url_concat",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: function call: argument \"py:artifacts/v2/control-fixed-2026-10-06/programs/6eb4f9ae7d79_a2.py@F@urlunparse@a0\" type mismatch: got struct, expected struct",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:Cookie,ObjectDict,PY3,parse_qsl,responses,urlencode,urlparse,urlunparse"
+      ]
+    },
+    {
+      "id": "09be948e3172",
+      "file": "nm_real_08.py",
+      "function": "Request.url_for",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: __dict__",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_address,body_finish,body_init,body_push,get,get_args,get_query_args,load_json",
+        "properties_as_attributes:args,content_type,cookies,files,form,forwarded,host,ip,json,match_info,path,port,query_args,query_string,raw_args,remote_addr,scheme,server_name,server_port,socket,token,url",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "e7b6853db8fa",
+      "file": "nm_real_11.py",
+      "function": "LocalCache.__setitem__",
+      "before": "MISSING_DEPENDENCY",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: uncaught exception [16irep2_cast_error]: irep2: struct_union_member_names() called on incompatible type (type_id = pointer)",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "esbmc_refused_members_stubbed:_esbmc_collections_OrderedDict"
+      ]
+    },
+    {
+      "id": "6e33562fdd8f",
+      "file": "nm_real_12.py",
+      "function": "PamdService.remove",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: next",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:add_module_arguments,append,get,has_rule,insert_after,insert_before,remove_module_arguments,update_rule,validate"
+      ]
+    },
+    {
+      "id": "2550587cb304",
+      "file": "nm_real_12.py",
+      "function": "PamdService.remove",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot resolve nested attribute: next",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:add_module_arguments,append,get,has_rule,insert_after,insert_before,remove_module_arguments,update_rule,validate"
+      ]
+    },
+    {
+      "id": "52e8c7dc508a",
+      "file": "nm_real_14.py",
+      "function": "request_httprepr",
+      "before": "ESBMC_ERROR",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in request_httprepr",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "fddc5afa85e4",
+      "file": "nm_real_15.py",
+      "function": "APIRouter.include_router",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call run_in_threadpool(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "21aedae077bc",
+      "file": "nm_real_20.py",
+      "function": "engine.numwords",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 570",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_pl_check_plurals_N,_pl_check_plurals_adj,_pl_general_verb,_pl_reg_plurals,_pl_special_adjective,_pl_special_verb,_plequal,_plnoun,amo,checkpat,checkpatplural,classical,defa,defadj,defan,defnoun,defverb,inflect,no,nomo,num,nummo,numwordsmo,ordinal,ordinalmo,partition_word,pl,pladj,pladjequal,pladjmo,plequal,plmo,plnoun,plnounequal,plnounmo,plverb,plverbequal,plverbmo,postprocess,prespart,prespartmo,wordlist",
+        "typing_import_added",
+        "compat_percent_format:10",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "d736e5311910",
+      "file": "nm_real_20.py",
+      "function": "engine.numwords",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 570",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_pl_check_plurals_N,_pl_check_plurals_adj,_pl_general_verb,_pl_reg_plurals,_pl_special_adjective,_pl_special_verb,_plequal,_plnoun,amo,checkpat,checkpatplural,classical,defa,defadj,defan,defnoun,defverb,inflect,no,nomo,num,nummo,numwordsmo,ordinal,ordinalmo,partition_word,pl,pladj,pladjequal,pladjmo,plequal,plmo,plnoun,plnounequal,plnounmo,plverb,plverbequal,plverbmo,postprocess,prespart,prespartmo,wordlist",
+        "typing_import_added",
+        "compat_percent_format:10",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "86a85e8251fc",
+      "file": "nm_real_20.py",
+      "function": "engine.numwords",
+      "before": "SPEC_FAILED",
+      "after": "SPEC_FAILED",
+      "reason": "The JSON was rejected: not JSON: Expecting value",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_pl_check_plurals_N,_pl_check_plurals_adj,_pl_general_verb,_pl_reg_plurals,_pl_special_adjective,_pl_special_verb,_plequal,_plnoun,amo,checkpat,checkpatplural,classical,defa,defadj,defan,defnoun,defverb,inflect,no,nomo,num,nummo,numwordsmo,ordinal,ordinalmo,partition_word,pl,pladj,pladjequal,pladjmo,plequal,plmo,plnoun,plnounequal,plnounmo,plverb,plverbequal,plverbmo,postprocess,prespart,prespartmo,wordlist",
+        "typing_import_added",
+        "compat_percent_format:10",
+        "compat_method_alias:1"
+      ]
+    },
+    {
+      "id": "e623aa991712",
+      "file": "nm_real_23.py",
+      "function": "Markdown._html_class_str_from_tag",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_add_footnotes,_auto_email_link_sub,_auto_link_sub,_block_quote_sub,_code_block_sub,_code_span_sub,_color_with_pygments,_dedent_two_spaces_sub,_detab,_detab_line,_do_admonitions,_do_admonitions_sub,_do_auto_links,_do_block_quotes,_do_code_blocks,_do_code_spans,_do_fenced_code_blocks,_do_headers,_do_italics_and_bold,_do_link_patterns,_do_links,_do_lists,_do_numbering,_do_smart_contractions,_do_smart_punctuation,_do_strike,_do_tables,_do_underline,_do_wiki_tables,_encode_amps_and_angles,_encode_backslash_escapes,_encode_code,_encode_email_address,_encode_incomplete_tags,_escape_special_chars,_extract_footnote_def_sub,_extract_link_def_sub,_extract_metadata,_extract_url_and_title,_fenced_code_block_sub,_find_balanced,_find_non_whitespace,_form_paragraphs,_get_emacs_vars,_get_pygments_lexer,_h_sub,_hash_html_block_sub,_hash_html_blocks,_hash_html_spans,_list_item_sub,_list_sub,_outdent,_prepare_pyshell_blocks,_process_list_items,_pyshell_block_sub,_run_block_gamut,_run_span_gamut,_sanitize_html,_strip_footnote_definitions,_strip_link_definitions,_table_sub,_task_list_item_sub,_toc_add_entry,_unescape_special_chars,_unhash_html_spans,_uniform_indent,_uniform_outdent,_wiki_table_sub,convert,header_id_from_text,postprocess,preprocess,reset",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "1f46911eff6b",
+      "file": "nm_real_25.py",
+      "function": "HTTP1Connection._can_keep_alive",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in HTTP1Connection._can_keep_alive",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "134eed05190b",
+      "file": "oob_real_01.py",
+      "function": "get_new_command",
+      "before": "CONFIRMED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in get_new_command",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "1bcb4b3c7823",
+      "file": "oob_real_01.py",
+      "function": "get_new_command",
+      "before": "CONFIRMED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in get_new_command",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "f5a460ae2fd2",
+      "file": "oob_real_02.py",
+      "function": "match",
+      "before": "CONFIRMED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in match",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "57916072238c",
+      "file": "oob_real_03.py",
+      "function": "get_new_command",
+      "before": "ESBMC_TIMEOUT",
+      "after": "ESBMC_TIMEOUT",
+      "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ]
+    },
+    {
+      "id": "f5cf2e5684ac",
+      "file": "oob_real_03.py",
+      "function": "get_new_command",
+      "before": "ESBMC_TIMEOUT",
+      "after": "ESBMC_TIMEOUT",
+      "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ]
+    },
+    {
+      "id": "6178dac8e931",
+      "file": "oob_real_05.py",
+      "function": "lib2to3_parse",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in lib2to3_parse",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "3abd6bd01427",
+      "file": "oob_real_06.py",
+      "function": "merge_configs",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in merge_configs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "0f293ef94a8e",
+      "file": "oob_real_06.py",
+      "function": "merge_configs",
+      "before": "ESBMC_TIMEOUT",
+      "after": "ESBMC_TIMEOUT",
+      "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:copy"
+      ]
+    },
+    {
+      "id": "9a9f08c097e7",
+      "file": "oob_real_09.py",
+      "function": "parser._parse",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:parse",
+        "stubbed_imports:StringIO,binary_type,integer_types,text_type",
+        "opaque_values",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "554b072a0396",
+      "file": "oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in _wrap_text_to_colwidths",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "81339744032f",
+      "file": "oob_real_10.py",
+      "function": "_wrap_text_to_colwidths",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call textwrap_TextWrapper.__init__(...) cannot be stubbed",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "2ed3d4fce93b",
+      "file": "oob_real_11.py",
+      "function": "wcswidth",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Type inference failed for Assign at line 121",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:VS15_WIDE_TO_NARROW,VS16_NARROW_TO_WIDE,_CATEGORY_MC_TABLE,_EMOJI_ZWJ_SET,_FITZPATRICK_RANGE,_ISC_VIRAMA_SET,_REGIONAL_INDICATOR_SET,bisearch,get_term_overrides,resolve_terminal,wcwidth"
+      ]
+    },
+    {
+      "id": "a9cdf5adabac",
+      "file": "oob_real_12.py",
+      "function": "fast_float",
+      "before": "ESBMC_TIMEOUT",
+      "after": "ESBMC_TIMEOUT",
+      "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+      "recorded_specs": 2,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:decimal_chars,unicodedata"
+      ]
+    },
+    {
+      "id": "57ee4246dd17",
+      "file": "oob_real_13.py",
+      "function": "tokenize",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in tokenize",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "148424345a89",
+      "file": "oob_real_14.py",
+      "function": "LinuxDistribution._parse_uname_content",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"name\" not found.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "unreachable_methods_removed:_distro_release_info,_lsb_release_info,_os_release_info,_parse_distro_release_content,_parse_distro_release_file,_parse_lsb_release_content,_parse_os_release_content,_to_str,_uname_info,build_number,codename,distro_release_attr,distro_release_info,id,info,like,linux_distribution,lsb_release_attr,lsb_release_info,major_version,minor_version,name,os_release_attr,os_release_info,uname_attr,uname_info,version,version_parts"
+      ]
+    },
+    {
+      "id": "42ade76be585",
+      "file": "oob_real_15.py",
+      "function": "dfxp2srt",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in dfxp2srt",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "02c86fdde9ac",
+      "file": "oob_real_15.py",
+      "function": "dfxp2srt",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in dfxp2srt",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "da926a653413",
+      "file": "tm_real_01.py",
+      "function": "read_conllx",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported expression Starred at line 26",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "19c35cde1120",
+      "file": "tm_real_01.py",
+      "function": "read_conllx",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported expression Starred at line 26",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "13cf84aa5aa4",
+      "file": "tm_real_01.py",
+      "function": "read_conllx",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Unsupported expression Starred at line 26",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "f219bd32e1ce",
+      "file": "tm_real_04.py",
+      "function": "str_to_int",
+      "before": "UNVALIDATED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "244a2dc788a7",
+      "file": "tm_real_04.py",
+      "function": "str_to_int",
+      "before": "OTHER_FAILURE",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_vcc_generated",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "cc5e00fdda52",
+      "file": "tm_real_05.py",
+      "function": "MailSender.send",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call MIMENonMultipart(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "2acec3d70fe8",
+      "file": "tm_real_05.py",
+      "function": "MailSender.send",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "external call MIMENonMultipart(...) uses *args/**kwargs",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "9ca694658262",
+      "file": "tm_real_05.py",
+      "function": "MailSender.send",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in MailSender.send",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "af2f5e755263",
+      "file": "tm_real_09.py",
+      "function": "_format",
+      "before": "UNSUPPORTED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 3,
+      "filled": 1,
+      "transforms": [
+        "esbmc_refused_members_stubbed:_esbmc_re_VERBOSE,_esbmc_re_compile",
+        "opaque_values",
+        "builtin_exceptions_stubbed:UnicodeError,UnicodeDecodeError"
+      ]
+    },
+    {
+      "id": "6e9d7c84fc8b",
+      "file": "tm_real_10.py",
+      "function": "MetricsHandler.get",
+      "before": "UNSUPPORTED",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in MetricsHandler.get",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "adc83d5ebee7",
+      "file": "tm_real_13.py",
+      "function": "XmlItemExporter._export_xml_field",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "ERROR: Variable 'kwargs' is not defined in function 'BaseItemExporter' at line 43.",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:export_item,finish_exporting,start_exporting",
+        "stubbed_imports:is_listlike,six,sys,to_bytes,to_native_str,to_unicode",
+        "external_chains_flattened:six_text_type",
+        "compat_percent_format:1"
+      ]
+    },
+    {
+      "id": "dc7d1261514c",
+      "file": "tm_real_13.py",
+      "function": "XmlItemExporter._xg_characters",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'XmlItemExporter._xg_characters' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "dc7d1261514c",
+      "file": "tm_real_13.py",
+      "function": "XmlItemExporter._xg_characters",
+      "before": "GROUNDING_FAILED",
+      "after": "GROUNDING_FAILED",
+      "reason": "function 'XmlItemExporter._xg_characters' not found (or ambiguous)",
+      "recorded_specs": 0,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "3607fd8e312d",
+      "file": "vm_real_01.py",
+      "function": "tqdm.format_meter",
+      "before": "MISSING_DEPENDENCY",
+      "after": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"tqdm\" not found.",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "unreachable_methods_removed:_decr_instances,_get_free_pos,clear,close,format_interval,format_sizeof,moveto,refresh,set_description,status_printer,unpause,update,write",
+        "stubbed_imports:WeakSet,_environ_cols_wrapper,_range,_supports_unicode,_term_move_up,_unich,_unicode,sys",
+        "builtin_exceptions_stubbed:Warning,DeprecationWarning",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "d7112dac9208",
+      "file": "vm_real_01.py",
+      "function": "tqdm.format_meter",
+      "before": "MISSING_DEPENDENCY",
+      "after": "GROUNDING_FAILED",
+      "reason": "suspect expression not found in tqdm.format_meter",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": []
+    },
+    {
+      "id": "89ddfa1d4f89",
+      "file": "vm_real_02.py",
+      "function": "Schema.validate",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced"
+      ]
+    },
+    {
+      "id": "7cd547144998",
+      "file": "vm_real_02.py",
+      "function": "Schema.validate",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "05ea9811d977",
+      "file": "vm_real_02.py",
+      "function": "Schema.validate",
+      "before": "UNSUPPORTED",
+      "after": "UNSUPPORTED",
+      "reason": "TypeError: __init__() takes 1 positional argument but 2 were given",
+      "recorded_specs": 3,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "typing_import_added"
+      ]
+    }
+  ]
+}

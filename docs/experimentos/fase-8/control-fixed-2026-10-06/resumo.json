@@ -1,0 +1,21 @@
+{
+  "pasta": "control-fixed-2026-10-06",
+  "modificado_em": "2026-10-06T04:53",
+  "arquivos": [
+    "control-fixed-2026-10-06.log",
+    "replay_specs_0of1.json",
+    "report_0of1.json"
+  ],
+  "vereditos (report_0of1.json)": {
+    "UNVALIDATED": 2,
+    "UNSUPPORTED": 106,
+    "NOT_CONFIRMED": 10,
+    "GROUNDING_FAILED": 53,
+    "MISSING_DEPENDENCY": 33,
+    "ESBMC_ERROR": 7,
+    "SPEC_FAILED": 9,
+    "OTHER_FAILURE": 4,
+    "CONFIRMED": 1,
+    "ESBMC_TIMEOUT": 4
+  }
+}

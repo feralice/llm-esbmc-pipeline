@@ -1,0 +1,24 @@
+{
+  "pasta": "exp-oracle-repair-rep2",
+  "modificado_em": "2026-09-29T16:43",
+  "arquivos": [
+    "exp-oracle-repair-rep2.log",
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 69,
+    "MISSING_DEPENDENCY": 23,
+    "SPEC_FAILED": 13,
+    "ESBMC_TIMEOUT": 8,
+    "CONFIRMED": 2,
+    "NOT_CONFIRMED": 6,
+    "GROUNDING_FAILED": 2,
+    "ESBMC_ERROR": 1,
+    "UNVALIDATED": 1
+  }
+}

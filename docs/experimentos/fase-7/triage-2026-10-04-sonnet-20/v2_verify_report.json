@@ -1,0 +1,631 @@
+{
+  "config": {
+    "model": "claude-sonnet-5-5",
+    "backend": "claude_cli",
+    "synth_backend": "claude_cli",
+    "synth_model": "claude-sonnet-5-5",
+    "v2_stage": "end-to-end",
+    "input_files": [
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/nm_real_25.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_142.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/vm_real_06.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/ip_real_24.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_fastapi_9.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/tm_real_02.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_tornado_5.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_5.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_httpie_4.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_102.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_106.py",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/dataset/bugs_reais/funcao_com_bug/bip_pandas_35.py"
+    ],
+    "excluded_patch_context_files": 0,
+    "verification_sources": "dataset/bugs_reais/arquivo_com_bug",
+    "verification_sources_strict": false,
+    "spec_strategy": "repair",
+    "bound": 5,
+    "timeout": 180,
+    "llm_timeout": 300,
+    "esbmc_command": [
+      "/usr/local/bin/esbmc"
+    ],
+    "esbmc_version": "ESBMC version 8.5.0 64-bit x86_64 linux"
+  },
+  "detection": {
+    "evaluated": true,
+    "oracle_seeded": false,
+    "analyzed_units": 23,
+    "hypotheses": 5,
+    "failed_units": 0,
+    "candidates": [
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+        "function": "parser._parse",
+        "category": "",
+        "expression": "hour = int(value)",
+        "note": "timestr is a free parameter. For timestr='inf pm' the tokens are ['inf',' ','pm']. float('inf') succeeds, so value=inf. The branches before the jump/ampm one are skipped, so it reaches `if i + 2 < len_l and info.ampm(l[i + 2]) is not None`, then `int(value)` raises OverflowError. No handler catches it, so parse crashes instead of returning (None, None).",
+        "violated_property": "OverflowError em int(value) com value=float('inf')"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+        "function": "add_codes.ErrorsWithCodes.__getattribute__",
+        "category": "",
+        "expression": "msg = getattr(err_cls, code)",
+        "note": "code is a free parameter and getattr is called without a default. Any string that is not an attribute of err_cls, for example 'UNKNOWN_CODE', raises AttributeError. No guard and no try/except protects the call. This assumes err_cls is a project class with a fixed set of error-code attributes, but its definition is not in the snippet.",
+        "violated_property": "AttributeError em getattr(err_cls, code) quando code não é atributo de err_cls"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+        "function": "_clone_functional_model",
+        "category": "",
+        "expression": "name = model._input_layers[i].name",
+        "note": "input_tensors is a free parameter and i comes from enumerate over it. If the caller passes more tensors than the model has input layers and one of the extra ones is not a Keras tensor, i >= len(model._input_layers). The index then raises IndexError before any guard.",
+        "violated_property": "IndexError em model._input_layers[i]"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "category": "",
+        "expression": "collected_facts['distribution_release'] == 'NA'",
+        "note": "collected_facts é parâmetro livre. Quando data contém 'Debian' ou 'Raspbian', a condição `'Debian' in data` já foi satisfeita e o acesso por chave é feito sem guarda. Se collected_facts for um dict sem a chave 'distribution_release' (por exemplo {}), levanta KeyError. Não há try/except.",
+        "violated_property": "KeyError em collected_facts['distribution_release']"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "category": "",
+        "expression": "major, _minor, _dummy_ver = version.group(1).split('.')",
+        "note": "data é livre. Com 'Cumulus' e 'VERSION_ID=3.7' em data, a regex casa e version.group(1) vale '3.7'. O split dá 2 elementos e o desempacotamento em 3 variáveis falha. O mesmo ocorre com 4 ou mais partes (ex.: '3.7.1.2') ou sem ponto. A guarda `if version` só verifica que a regex casou, não a quantidade de partes. Sem try/except.",
+        "violated_property": "ValueError: not enough values to unpack (ou too many) em major, _minor, _dummy_ver = version.group(1).split('.')"
+      }
+    ],
+    "rejected_findings": [
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/nm_real_25.py",
+        "function": "HTTP1Connection._can_keep_alive",
+        "finding_type": "suspected_bug",
+        "expression": "return connection_header != 'close'",
+        "violated_property": "resultado errado: header com múltiplos tokens ('x, close') mantém a conexão aberta; nenhuma exceção ou assert é violado"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_33.py",
+        "function": "Task.get_param_values",
+        "finding_type": "suspected_bug",
+        "expression": "positional_params = [(n, p) for n, p in params if p.significant]",
+        "violated_property": "resultado errado: positional args são mapeados por `significant` em vez de `positional`; nada quebra necessariamente, e o contrato de Parameter não está disponível ao ESBMC"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+        "function": "WebSocketHandler.set_nodelay",
+        "finding_type": "suspected_bug",
+        "expression": "assert self.stream is not None",
+        "violated_property": "none"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_21.py",
+        "function": "urljoin",
+        "finding_type": "suspected_bug",
+        "expression": "return compat_urlparse.urljoin(base, path)",
+        "violated_property": "não verificável pelo ESBMC: ValueError nasce do funcionamento interno de urllib.parse (urlsplit), biblioteca complexa sem modelo simples"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_142.py",
+        "function": "diff",
+        "finding_type": "suspected_bug",
+        "expression": "out_arr[res_indexer] = arr[res_indexer] - arr[lag_indexer]",
+        "violated_property": "TypeError in arr[res_indexer] - arr[lag_indexer] for a bool ndarray. Not verifiable: the failure comes from the internals of numpy, which ESBMC does not model."
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+        "function": "_clone_functional_model",
+        "finding_type": "suspected_bug",
+        "expression": "kwargs = node.arguments ... kwargs['mask'] = computed_mask",
+        "violated_property": "resultado errado: mutação do node.arguments do modelo original, sem exceção levantada"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+        "function": "_preprocess_numpy_input",
+        "finding_type": "suspected_bug",
+        "expression": "x[..., 2] -= mean[2]",
+        "violated_property": "não verificável: IndexError depende da semântica de indexação de ndarray do numpy, biblioteca complexa que o ESBMC não modela"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+        "function": "_preprocess_numpy_input",
+        "finding_type": "suspected_bug",
+        "expression": "x[..., 0] -= mean[0]",
+        "violated_property": "não verificável: TypeError vem do casting interno de ufuncs do numpy, não modelado pelo ESBMC"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+        "function": "_preprocess_numpy_input",
+        "finding_type": "suspected_bug",
+        "expression": "x /= 127.5",
+        "violated_property": "resultado errado: a entrada do chamador é alterada no lugar, nada levanta exceção"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/tm_real_02.py",
+        "function": "HiveCommandClient.table_exists",
+        "finding_type": "suspected_bug",
+        "expression": "return stdout and table in stdout",
+        "violated_property": "resultado errado: comparação case-sensitive contra saída lowercase do Hive devolve False para tabela existente; nada levanta exceção"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_httpie_4.py",
+        "function": "HTTPRequest.headers",
+        "finding_type": "suspected_bug",
+        "expression": "if 'Host' not in target_function:\n        target_function['Host'] = url.netloc.split('@')[-1]",
+        "violated_property": "resultado errado: header Host duplicado quando o nome vem em outra caixa; nenhuma exceção, então o ESBMC não detecta sozinho"
+      },
+      {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_106.py",
+        "function": "Index.get_indexer_non_unique",
+        "finding_type": "suspected_bug",
+        "expression": "tgt_values = target.asi8",
+        "violated_property": "não verificável: a falha depende do comportamento interno de Index.asi8 e do engine Cython do pandas"
+      }
+    ],
+    "trace_summary": {
+      "units": 23,
+      "located_candidates": 17,
+      "classified_candidates": 17,
+      "rejected_candidates": 12,
+      "localization_failures": 0,
+      "classification_failures": 0
+    }
+  },
+  "verification": {
+    "n": 5,
+    "by_verdict": {
+      "CONFIRMED": 0,
+      "ESBMC_MISSED": 0,
+      "UNVALIDATED": 0,
+      "OTHER_FAILURE": 0,
+      "NOT_CONFIRMED": 0,
+      "GROUNDING_FAILED": 1,
+      "MISSING_DEPENDENCY": 2,
+      "UNSUPPORTED": 1,
+      "SPEC_FAILED": 0,
+      "ESBMC_TIMEOUT": 0,
+      "ESBMC_ERROR": 1,
+      "PIPELINE_ERROR": 0,
+      "NO_SOURCE": 0
+    },
+    "reached_llm": 4,
+    "success_at_k": {
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0
+    }
+  },
+  "telemetry": {
+    "detection": {
+      "calls": 23,
+      "failed_calls": 0,
+      "tokens": 19973,
+      "prompt_tokens": 84,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 0,
+      "seconds": 278.812,
+      "localization_calls": 0,
+      "classification_calls": 0,
+      "cache_hit_rate": null
+    },
+    "synthesis": {
+      "calls": 6,
+      "failed_calls": 0,
+      "tokens": 2337,
+      "prompt_tokens": 12,
+      "cached_tokens": 0,
+      "calls_with_cache_data": 0,
+      "seconds": 49.081,
+      "localization_calls": 0,
+      "classification_calls": 0,
+      "cache_hit_rate": null
+    }
+  },
+  "evaluation": {
+    "triage": {
+      "should_send": {
+        "sent": 0,
+        "held": 2
+      },
+      "should_hold": {
+        "sent": 0,
+        "held": 1
+      },
+      "uncertain_label": 0,
+      "sent_when_should": 0.0,
+      "held_when_should": 1.0
+    },
+    "detection_by_location": {
+      "detection": {
+        "tp": 3,
+        "fp": 14,
+        "fn": 17,
+        "precision": 0.17647058823529413,
+        "recall": 0.15,
+        "f1": 0.16216216216216214
+      },
+      "file": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 7,
+        "precision": 1.0,
+        "recall": 0.65,
+        "f1": 0.787878787878788
+      },
+      "location": {
+        "tp": 12,
+        "fp": 1,
+        "fn": 8,
+        "precision": 0.9230769230769231,
+        "recall": 0.6,
+        "f1": 0.7272727272727274
+      },
+      "expression": {
+        "tp": 3,
+        "fp": 14,
+        "fn": 17,
+        "precision": 0.17647058823529413,
+        "recall": 0.15,
+        "f1": 0.16216216216216214
+      },
+      "expression_equivalent": {
+        "tp": 3,
+        "fp": 14,
+        "fn": 17,
+        "precision": 0.17647058823529413,
+        "recall": 0.15,
+        "f1": 0.16216216216216214
+      },
+      "triage": {
+        "should_send": {
+          "sent": 0,
+          "held": 2
+        },
+        "should_hold": {
+          "sent": 0,
+          "held": 1
+        },
+        "uncertain_label": 0,
+        "sent_when_should": 0.0,
+        "held_when_should": 1.0
+      }
+    },
+    "confirmed_by_location": {
+      "detection": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 20,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "file": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 20,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "location": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 20,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "expression": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 20,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "expression_equivalent": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 20,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      }
+    }
+  },
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+        "function": "parser._parse",
+        "suspect_expression": "hour = int(value)",
+        "line": 0,
+        "trigger_condition": "timestr is a free parameter. For timestr='inf pm' the tokens are ['inf',' ','pm']. float('inf') succeeds, so value=inf. The branches before the jump/ampm one are skipped, so it reaches `if i + 2 < len_l and info.ampm(l[i + 2]) is not None`, then `int(value)` raises OverflowError. No handler catches it, so parse crashes instead of returning (None, None).",
+        "category": "",
+        "hypothesis_id": "501b80e5bc1d"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"str\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"str\"}, \"assumptions\": []}\n",
+          "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"timestr\": \"str\", \"dayfirst\": \"Optional[bool]\", \"yearfirst\": \"Optional[bool]\", \"fuzzy\": \"bool\", \"fuzzy_with_tokens\": \"bool\"}, \"attributes\": {\"info\": \"object\"}, \"stubs\": {\"StringIO\": \"str\"}, \"assumptions\": []}\n",
+          "feedback_given": "ESBMC rejected the program: ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:parse",
+        "stubbed_imports:StringIO,binary_type,integer_types,text_type",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/501b80e5bc1d_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 1239,
+      "seconds": 35.732
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+        "function": "add_codes.ErrorsWithCodes.__getattribute__",
+        "suspect_expression": "msg = getattr(err_cls, code)",
+        "line": 0,
+        "trigger_condition": "code is a free parameter and getattr is called without a default. Any string that is not an attribute of err_cls, for example 'UNKNOWN_CODE', raises AttributeError. No guard and no try/except protects the call. This assumes err_cls is a project class with a fixed set of error-code attributes, but its definition is not in the snippet.",
+        "category": "",
+        "hypothesis_id": "6f4dfcdaf4b0"
+      },
+      "verdict": "GROUNDING_FAILED",
+      "reason": "function 'add_codes.ErrorsWithCodes.__getattribute__' not found (or ambiguous)",
+      "attempts": [],
+      "llm_calls": 0,
+      "transforms": [],
+      "program_path": "",
+      "replay": {},
+      "tokens": 0,
+      "seconds": 0.005
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+        "function": "_clone_functional_model",
+        "suspect_expression": "name = model._input_layers[i].name",
+        "line": 0,
+        "trigger_condition": "input_tensors is a free parameter and i comes from enumerate over it. If the caller passes more tensors than the model has input layers and one of the extra ones is not a Keras tensor, i >= len(model._input_layers). The index then raises IndexError before any guard.",
+        "category": "",
+        "hypothesis_id": "df4db19deb29"
+      },
+      "verdict": "ESBMC_ERROR",
+      "reason": "ESBMC direto: resultado inconclusivo.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"model\": \"object\", \"input_tensors\": \"Optional[list[int]]\"}, \"attributes\": {}, \"stubs\": {\"Input\": \"object\", \"K.is_keras_tensor\": \"bool\", \"has_arg\": \"bool\", \"to_list\": \"list[int]\", \"model._input_layers\": \"list[object]\", \"model._nodes_by_depth\": \"dict[int, list[object]]\", \"model.inputs\": \"list[int]\", \"model.name\": \"str\", \"model.outputs\": \"list[int]\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/df4db19deb29_a0_replay.py",
+          "esbmc_status": "inconclusive",
+          "reading": "error",
+          "message": "ESBMC direto: resultado inconclusivo.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "stubbed_imports:Input,InputLayer,K,Model,Sequential,has_arg,to_list",
+        "opaque_values",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/df4db19deb29_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 676,
+      "seconds": 14.439
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "suspect_expression": "collected_facts['distribution_release'] == 'NA'",
+        "line": 0,
+        "trigger_condition": "collected_facts é parâmetro livre. Quando data contém 'Debian' ou 'Raspbian', a condição `'Debian' in data` já foi satisfeita e o acesso por chave é feito sem guarda. Se collected_facts for um dict sem a chave 'distribution_release' (por exemplo {}), levanta KeyError. Não há try/except.",
+        "category": "",
+        "hypothesis_id": "9a0fef3a0dc0"
+      },
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"name\": \"str\", \"data\": \"str\", \"path\": \"str\", \"collected_facts\": \"dict[str, str]\"}, \"attributes\": {\"module\": \"object\"}, \"stubs\": {\"self.module.get_bin_path\": \"Optional[str]\", \"self.module.run_command\": \"tuple[int, str, str]\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/9a0fef3a0dc0_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "missing_dependency",
+          "message": "ERROR: Object \"out\" not found.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/9a0fef3a0dc0_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 116,
+      "seconds": 10.212
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "suspect_expression": "major, _minor, _dummy_ver = version.group(1).split('.')",
+        "line": 0,
+        "trigger_condition": "data é livre. Com 'Cumulus' e 'VERSION_ID=3.7' em data, a regex casa e version.group(1) vale '3.7'. O split dá 2 elementos e o desempacotamento em 3 variáveis falha. O mesmo ocorre com 4 ou mais partes (ex.: '3.7.1.2') ou sem ponto. A guarda `if version` só verifica que a regex casou, não a quantidade de partes. Sem try/except.",
+        "category": "",
+        "hypothesis_id": "3dadbe9389f2"
+      },
+      "verdict": "MISSING_DEPENDENCY",
+      "reason": "ERROR: Object \"out\" not found.",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"name\": \"str\", \"data\": \"str\", \"path\": \"str\", \"collected_facts\": \"dict[str, str]\"}, \"attributes\": {\"module\": \"object\"}, \"stubs\": {\"self.module.get_bin_path\": \"Optional[str]\", \"self.module.run_command\": \"tuple[int, str, str]\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/3dadbe9389f2_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "missing_dependency",
+          "message": "ERROR: Object \"out\" not found.",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_get_dist_file_content,_get_file_content,_guess_distribution,_parse_dist_file,parse_distribution_file_Alpine,parse_distribution_file_Amazon,parse_distribution_file_ClearLinux,parse_distribution_file_Coreos,parse_distribution_file_Mandriva,parse_distribution_file_NA,parse_distribution_file_OpenWrt,parse_distribution_file_SUSE,parse_distribution_file_Slackware,process_dist_files",
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/triage-2026-10-04-sonnet-20/programs/3dadbe9389f2_a0.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 306,
+      "seconds": 10.922
+    }
+  ],
+  "agent_results": [],
+  "levels": {
+    "summary": {
+      "hypotheses": 5,
+      "by_level": {
+        "llm_only": 5
+      },
+      "esbmc_verdict": 0,
+      "confirmed": 0,
+      "confirmed_by_level": {},
+      "confirmed_simplified": 0,
+      "llm_only_by_limit": {
+        "harness_context": 2,
+        "esbmc_language": 1,
+        "esbmc_crash": 1,
+        "esbmc_timeout": 0,
+        "llm_spec": 0,
+        "locate_function": 1,
+        "network": 0,
+        "pipeline_error": 0,
+        "agent_rewrote_function": 0,
+        "other": 0
+      }
+    },
+    "rows": [
+      {
+        "hypothesis_id": "501b80e5bc1d",
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_09.py",
+        "function": "parser._parse",
+        "engine_verdict": "UNSUPPORTED",
+        "level": "llm_only",
+        "verdict": "UNSUPPORTED",
+        "reason": "ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.",
+        "limit": "esbmc_language"
+      },
+      {
+        "hypothesis_id": "6f4dfcdaf4b0",
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+        "function": "add_codes.ErrorsWithCodes.__getattribute__",
+        "engine_verdict": "GROUNDING_FAILED",
+        "level": "llm_only",
+        "verdict": "GROUNDING_FAILED",
+        "reason": "function 'add_codes.ErrorsWithCodes.__getattribute__' not found (or ambiguous)",
+        "limit": "locate_function"
+      },
+      {
+        "hypothesis_id": "df4db19deb29",
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_3.py",
+        "function": "_clone_functional_model",
+        "engine_verdict": "ESBMC_ERROR",
+        "level": "llm_only",
+        "verdict": "ESBMC_ERROR",
+        "reason": "ESBMC direto: resultado inconclusivo.",
+        "limit": "esbmc_crash"
+      },
+      {
+        "hypothesis_id": "9a0fef3a0dc0",
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "engine_verdict": "MISSING_DEPENDENCY",
+        "level": "llm_only",
+        "verdict": "MISSING_DEPENDENCY",
+        "reason": "ERROR: Object \"out\" not found.",
+        "limit": "harness_context"
+      },
+      {
+        "hypothesis_id": "3dadbe9389f2",
+        "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_3.py",
+        "function": "DistributionFiles.parse_distribution_file_Debian",
+        "engine_verdict": "MISSING_DEPENDENCY",
+        "level": "llm_only",
+        "verdict": "MISSING_DEPENDENCY",
+        "reason": "ERROR: Object \"out\" not found.",
+        "limit": "harness_context"
+      }
+    ]
+  }
+}

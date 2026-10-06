@@ -1,0 +1,12 @@
+{
+  "pasta": "e2e-gpt-4o-mini",
+  "modificado_em": "2026-09-22T20:33",
+  "arquivos": [
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "partial_synthesis"
+}

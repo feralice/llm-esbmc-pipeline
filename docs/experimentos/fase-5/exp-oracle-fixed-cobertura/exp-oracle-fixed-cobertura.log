@@ -1,0 +1,284 @@
+
+Modo V2 — síntese isolada: 125 hipótese(s) conhecida(s)
+
+Modo V2 (motor verify): 125 hipótese(s) → especificação de entrada com gpt-4o-mini
+[1/125] dz_real_01.py::makeMappingArray
+    -> UNSUPPORTED ERROR: TypeError: 2-D column slicing (a[:, j]) requires a fixed-shape 2-D array at artifacts/v2/exp-oracle-fixed-cobertu
+[2/125] dz_real_02.py::ExactLanguageSearch.choose_best_split
+    -> MISSING_DEPENDENCY ERROR: Function "ESBMC_mmkey_0" not found (artifacts/v2/exp-oracle-fixed-cobertura/programs/71a7594df7ea_a1.py line 28)
+[3/125] dz_real_02.py::ExactLanguageSearch.choose_best_split
+    -> MISSING_DEPENDENCY ERROR: Function "ESBMC_mmkey_0" not found (artifacts/v2/exp-oracle-fixed-cobertura/programs/71a7594df7ea_a0.py line 28)
+[4/125] dz_real_03.py::HashExpander.do
+    -> GROUNDING_FAILED suspect expression not found in HashExpander.do
+[5/125] dz_real_03.py::HashExpander.do
+    -> GROUNDING_FAILED suspect expression not found in HashExpander.do
+[6/125] oob_real_01.py::get_new_command
+    -> GROUNDING_FAILED suspect expression not found in get_new_command
+[7/125] oob_real_02.py::match
+    -> GROUNDING_FAILED suspect expression not found in match
+[8/125] oob_real_03.py::get_new_command
+    -> SPEC_FAILED The JSON was rejected: assumption "len(command.stderr.split('\\n')) >= 3" may only call len()
+[9/125] oob_real_04.py::SortedCorrectedCommandsSequence._realise
+    -> MISSING_DEPENDENCY ERROR: Function "ESBMC_srckey_0" not found (artifacts/v2/exp-oracle-fixed-cobertura/programs/3da1a1c2759c_a0.py line 66)
+[10/125] oob_real_05.py::lib2to3_parse
+    -> GROUNDING_FAILED suspect expression not found in lib2to3_parse
+[11/125] av_real_01.py::cli_bool_option
+    -> UNVALIDATED assertion ISINSTANCE(param, 0); dereference failure: NULL pointer; unwinding assertion loop 131; unwinding assertion loo
+[12/125] av_real_02.py::WebSocketHandler.set_nodelay
+    -> GROUNDING_FAILED suspect expression not found in WebSocketHandler.set_nodelay
+[13/125] av_real_03.py::Series.to_timestamp
+    -> GROUNDING_FAILED suspect expression not found in Series.to_timestamp
+[14/125] av_real_06.py::get_new_command
+    -> GROUNDING_FAILED suspect expression not found in get_new_command
+[15/125] av_real_07.py::match
+    -> GROUNDING_FAILED suspect expression not found in match
+[16/125] av_real_08.py::Settings.update
+    -> GROUNDING_FAILED suspect expression not found in Settings.update
+[17/125] nm_real_15.py::APIRouter.include_router
+    -> GROUNDING_FAILED suspect expression not found in APIRouter.include_router
+[18/125] tm_real_01.py::read_conllx
+    -> GROUNDING_FAILED suspect expression not found in read_conllx
+[19/125] tm_real_02.py::HiveCommandClient.table_exists
+    -> GROUNDING_FAILED suspect expression not found in HiveCommandClient.table_exists
+[20/125] tm_real_03.py::_match_one
+    -> GROUNDING_FAILED suspect expression not found in _match_one
+[22/125] tm_real_05.py::MailSender.send
+    -> UNSUPPORTED external call MIMENonMultipart(...) uses *args/**kwargs
+[24/125] tm_real_07.py::MarkerStyle._recache
+    -> GROUNDING_FAILED suspect expression not found in MarkerStyle._recache
+[25/125] tm_real_08.py::simple_separated_format
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+    -> GROUNDING_FAILED suspect expression not found in simple_separated_format
+[26/125] tm_real_08.py::simple_separated_format
+<unknown>:114: SyntaxWarning: invalid escape sequence '\h'
+<unknown>:187: SyntaxWarning: invalid escape sequence '\['
+    -> GROUNDING_FAILED suspect expression not found in simple_separated_format
+[27/125] tm_real_09.py::_format
+    -> UNSUPPORTED artifacts/v2/exp-oracle-fixed-cobertura/programs/0cf48a78f40e_a2.py:5: error: Function is missing a type annotation for 
+[28/125] tm_real_10.py::MetricsHandler.get
+    -> GROUNDING_FAILED suspect expression not found in MetricsHandler.get
+[29/125] vm_real_01.py::tqdm.format_meter
+    -> GROUNDING_FAILED suspect expression not found in tqdm.format_meter
+[30/125] vm_real_02.py::Schema.validate
+    -> UNSUPPORTED input type outside the supported subset: stub 'data.items': unsupported type 'list[tuple[object, object]]'
+[31/125] io_real_01.py::nonsingular
+    -> UNSUPPORTED ERROR: Cannot unpack empty - only tuples and arrays can be unpacked
+[32/125] nm_real_01.py::Session.update_headers
+    -> UNSUPPORTED ERROR: TypeError at artifacts/v2/exp-oracle-fixed-cobertura/programs/dc708f1fca89_a2.py 40: list indices must be integer
+[33/125] nm_real_02.py::tqdm.format_meter
+    -> MISSING_DEPENDENCY ERROR: Object "tqdm" not found.
+[34/125] nm_real_03.py::FacebookIE._real_extract
+    -> GROUNDING_FAILED suspect expression not found in FacebookIE._real_extract
+[35/125] nm_real_04.py::OffsiteMiddleware.get_host_regex
+    -> SPEC_FAILED The JSON was rejected: assumption 'len(spider.allowed_domains) > 0' reads an attribute that is not an input
+[36/125] nm_real_05.py::Response.follow
+    -> UNSUPPORTED ERROR: unsupported: non-constant argument in str % formatting
+[37/125] nm_real_06.py::create_instance
+    -> GROUNDING_FAILED suspect expression not found in create_instance
+[38/125] nm_real_07.py::url_concat
+    -> OTHER_FAILURE uncaught exception: TypeError
+[39/125] nm_real_08.py::Request.url_for
+    -> UNSUPPORTED ERROR: Cannot resolve nested attribute: __dict__
+[40/125] nm_real_09.py::tqdm.__len__
+    -> GROUNDING_FAILED suspect expression not found in tqdm.__len__
+[41/125] nm_real_10.py::S3CopyToTable.copy
+    -> UNSUPPORTED receiver reads inherited member(s): _credentials
+[42/125] nm_real_11.py::LocalCache.__setitem__
+    -> MISSING_DEPENDENCY ERROR: Base class not found: OrderedDict
+[43/125] nm_real_12.py::PamdService.remove
+    -> UNSUPPORTED ERROR: Cannot resolve nested attribute: next
+[44/125] nm_real_13.py::AsyncHTTPClient.close
+    -> GROUNDING_FAILED suspect expression not found in AsyncHTTPClient.close
+[45/125] nm_real_13.py::AsyncHTTPClient.close
+    -> GROUNDING_FAILED suspect expression not found in AsyncHTTPClient.close
+[46/125] nm_real_14.py::request_httprepr
+    -> GROUNDING_FAILED suspect expression not found in request_httprepr
+[47/125] nm_real_16.py::Axes.scatter
+    -> UNSUPPORTED external call mtext.Annotation(...) cannot be stubbed
+[48/125] nm_real_17.py::_type
+    -> UNSUPPORTED ERROR: Type inference failed at line 12. Variable unicode not found
+[49/125] nm_real_18.py::after_log
+    -> GROUNDING_FAILED suspect expression not found in after_log
+[50/125] nm_real_19.py::IsFile
+    -> UNSUPPORTED artifacts/v2/exp-oracle-fixed-cobertura/programs/9b1cc42c4a8c_a2.py:22: error: Function is missing a type annotation  [n
+[51/125] nm_real_20.py::engine.numwords
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:487: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1813: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+<unknown>:1750: SyntaxWarning: invalid escape sequence '\g'
+<unknown>:430: SyntaxWarning: invalid escape sequence '\S'
+    -> UNSUPPORTED ERROR: Type inference failed for Assign at line 578
+[52/125] nm_real_21.py::_Projection.get_index
+    -> GROUNDING_FAILED suspect expression not found in _Projection.get_index
+[53/125] nm_real_22.py::run
+    -> GROUNDING_FAILED suspect expression not found in run
+[55/125] av_real_05.py::tqdm.__init__
+    -> UNSUPPORTED ERROR: artifacts/v2/exp-oracle-fixed-cobertura/programs/9d5416ae6c86_a2.py:160: threading.RLock is not yet supported by 
+[56/125] av_real_09.py::_make_getset_interval
+    -> GROUNDING_FAILED suspect expression not found in _make_getset_interval
+[57/125] av_real_10.py::Driver._partially_consume_prefix
+    -> GROUNDING_FAILED suspect expression not found in Driver._partially_consume_prefix
+[58/125] av_real_11.py::HTTP1Connection._read_body
+    -> GROUNDING_FAILED suspect expression not found in HTTP1Connection._read_body
+[59/125] av_real_12.py::match
+    -> GROUNDING_FAILED suspect expression not found in match
+[60/125] av_real_13.py::match
+    -> GROUNDING_FAILED suspect expression not found in match
+[61/125] av_real_14.py::get_new_command
+    -> GROUNDING_FAILED suspect expression not found in get_new_command
+[62/125] av_real_15.py::gunzip
+    -> GROUNDING_FAILED suspect expression not found in gunzip
+[63/125] av_real_17.py::unified_strdate
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED artifacts/v2/exp-oracle-fixed-cobertura/programs/f94730440977_a2.py:2: error: Function is missing a type annotation for 
+[64/125] av_real_17.py::unified_strdate
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:941: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED artifacts/v2/exp-oracle-fixed-cobertura/programs/f94730440977_a2.py:2: error: Function is missing a type annotation for 
+[65/125] av_real_21.py::YoutubeDL.process_ie_result
+    -> UNSUPPORTED external call traceback.format_exception(...) cannot be stubbed
+[66/125] oob_real_09.py::parser._parse
+    -> UNSUPPORTED ERROR: Cannot infer type for class attribute '_split_decimal' in class '_timelex'. Please add explicit type annotation.
+[67/125] oob_real_10.py::_wrap_text_to_colwidths
+    -> UNSUPPORTED external call textwrap_TextWrapper.__init__(...) cannot be stubbed
+[68/125] oob_real_11.py::wcswidth
+    -> UNSUPPORTED ERROR: Type inference failed for Assign at line 119
+[69/125] oob_real_12.py::fast_float
+    -> UNSUPPORTED input type outside the supported subset: parameter '_nan_inf': unsupported type 'set[str]'; parameter '_first_char': uns
+[70/125] oob_real_13.py::tokenize
+    -> SPEC_FAILED The JSON was rejected: assumption 'len(result) > 0' uses unknown name(s) result
+[71/125] oob_real_14.py::LinuxDistribution._parse_uname_content
+    -> MISSING_DEPENDENCY ERROR: Object "name" not found.
+[72/125] oob_real_15.py::dfxp2srt
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:975: SyntaxWarning: invalid escape sequence '\d'
+    -> GROUNDING_FAILED suspect expression not found in dfxp2srt
+[73/125] oob_real_16.py::IndexedSet.__getitem__
+    -> UNSUPPORTED external call chain(...) uses *args/**kwargs
+[74/125] oob_real_16.py::IndexedSet.__getitem__
+    -> UNSUPPORTED external call chain(...) uses *args/**kwargs
+[75/125] ip_real_24.py::CentralPlannerScheduler.get_work
+    -> GROUNDING_FAILED suspect expression not found in CentralPlannerScheduler.get_work
+[76/125] ip_real_18.py::croniter._get_low_from_current_date_number
+    -> GROUNDING_FAILED suspect expression not found in croniter._get_low_from_current_date_number
+[77/125] ip_real_01.py::Request._set_url
+    -> GROUNDING_FAILED suspect expression not found in Request._set_url
+[78/125] ip_real_03.py::Selector.__init__
+    -> UNSUPPORTED ERROR: Type inference failed at line 95. Variable XmlResponse not found
+[81/125] ip_real_06.py::_unstack_multiple
+    -> SPEC_FAILED The JSON was rejected: stub 'compress_group_index': unsupported type 'tuple[list[int], list[int]]'; stub 'data.columns':
+[82/125] ip_real_07.py::_htmlentity_transform
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:945: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:945: SyntaxWarning: invalid escape sequence '\d'
+    -> UNSUPPORTED ERROR: unsupported: non-constant argument in str % formatting
+[83/125] ip_real_08.py::Sanic.url_for
+    -> GROUNDING_FAILED suspect expression not found in Sanic.url_for
+[84/125] ip_real_09.py::generate_commands
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[85/125] ip_real_10.py::_get_spider_loader
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[86/125] ip_real_11.py::HTTPBearer.__call__
+    -> UNSUPPORTED async entry point is not supported
+[87/125] ip_real_12.py::map_obj_to_commands
+    -> GROUNDING_FAILED suspect expression not found in map_obj_to_commands
+[88/125] ip_real_13.py::StaticFileHandler.get
+    -> UNSUPPORTED async entry point is not supported
+[89/125] ip_real_14.py::TimeseriesGenerator.__len__
+    -> UNSUPPORTED ERROR: Cannot unpack empty - only tuples and arrays can be unpacked
+[90/125] ip_real_15.py::EmptyLineTracker.maybe_empty_lines
+    -> GROUNDING_FAILED suspect expression not found in EmptyLineTracker.maybe_empty_lines
+[91/125] ip_real_16.py::pivot
+    -> SPEC_FAILED The JSON was rejected: stub 'data._constructor': missing return type; stub 'data._constructor_sliced': missing return ty
+[92/125] ip_real_16.py::pivot
+    -> ESBMC_ERROR ESBMC direto: resultado inconclusivo.
+[93/125] ip_real_17.py::response_status_message
+    -> GROUNDING_FAILED suspect expression not found in response_status_message
+[94/125] ip_real_17.py::response_status_message
+    -> GROUNDING_FAILED suspect expression not found in response_status_message
+[95/125] ip_real_19.py::VersionInfo.__getitem__
+    -> UNSUPPORTED ERROR: Type inference failed at line 59. Variable DeprecationWarning not found
+[96/125] ip_real_20.py::generate_sub_moved_events
+    -> GROUNDING_FAILED suspect expression not found in generate_sub_moved_events
+[98/125] ip_real_22.py::match
+    -> ESBMC_TIMEOUT ESBMC direto excedeu o tempo limite de 180s.
+[99/125] ip_real_23.py::Task.to_str_params
+    -> GROUNDING_FAILED suspect expression not found in Task.to_str_params
+[100/125] ip_real_25.py::SimpleTaskState.get_necessary_tasks
+    -> UNSUPPORTED ERROR: Can't generate zero for type empty
+[101/125] ip_real_26.py::Scheduler.add_task
+    -> UNSUPPORTED ERROR: update() argument must be a dict in ESBMC model
+[102/125] ip_real_28.py::IOLoop.initialize
+    -> UNSUPPORTED ERROR: artifacts/v2/exp-oracle-fixed-cobertura/programs/125693aa88b7_a2.py:88: threading.local is not yet supported by E
+[103/125] ip_real_32.py::date_convert
+<unknown>:337: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:457: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:459: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:461: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:542: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:817: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:939: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:337: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:457: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:459: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:461: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:542: SyntaxWarning: invalid escape sequence '\]'
+<unknown>:817: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:939: SyntaxWarning: invalid escape sequence '\+'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:60: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:62: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:64: SyntaxWarning: invalid escape sequence '\s'
+program.py:60: SyntaxWarning: invalid escape sequence '\s'
+program.py:62: SyntaxWarning: invalid escape sequence '\s'
+program.py:64: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:68: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:70: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:72: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:69: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:71: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:73: SyntaxWarning: invalid escape sequence '\s'
+    -> MISSING_DEPENDENCY ERROR: Base class not found: tzinfo
+[104/125] ip_real_33.py::send2trash
+    -> MISSING_DEPENDENCY undefined name(s): WindowsError
+[107/125] ir_real_03.py::try_match_char_class_range
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+    -> GROUNDING_FAILED suspect expression not found in try_match_char_class_range
+[109/125] nm_real_23.py::Markdown._html_class_str_from_tag
+
+Modo V2 — síntese isolada: 125 hipótese(s) conhecida(s)
+
+Modo V2 (motor verify): 125 hipótese(s) → especificação de entrada com gpt-4o-mini
+[109/125] nm_real_23.py::Markdown._html_class_str_from_tag
+    -> UNSUPPORTED ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation
+[110/125] dz_real_04.py::interpolate_bilinear_2x_fwd
+    -> SPEC_FAILED The JSON was rejected: assumption 'len(src_arr.shape) == 4' reads an attribute that is not an input; assumption 'src_arr
+[111/125] dz_real_04.py::interpolate_bilinear_2x_fwd
+    -> SPEC_FAILED The JSON was rejected: stub 'nl_tile_size.pmax': missing return type
+[114/125] nm_real_25.py::HTTP1Connection._can_keep_alive
+    -> GROUNDING_FAILED suspect expression not found in HTTP1Connection._can_keep_alive
+[117/125] vm_real_05.py::LocalFileSystem.move
+    -> GROUNDING_FAILED suspect expression not found in LocalFileSystem.move
+[118/125] vm_real_06.py::CrawlerProcess.__init__
+    -> GROUNDING_FAILED suspect expression not found in CrawlerProcess.__init__
+[122/125] tm_real_13.py::XmlItemExporter._export_xml_field
+    -> SPEC_FAILED The JSON was rejected: assumption 'len(kwargs) > 0' uses unknown name(s) kwargs
+[125/125] oob_real_06.py::merge_configs
+    -> GROUNDING_FAILED suspect expression not found in merge_configs
+
+Vereditos: {'UNVALIDATED': 1, 'OTHER_FAILURE': 1, 'GROUNDING_FAILED': 51, 'MISSING_DEPENDENCY': 8, 'UNSUPPORTED': 34, 'SPEC_FAILED': 8, 'ESBMC_TIMEOUT': 3, 'ESBMC_ERROR': 1, 'NO_SOURCE': 18}
+Relatório JSON: artifacts/v2/exp-oracle-fixed-cobertura/v2_verify_report.json

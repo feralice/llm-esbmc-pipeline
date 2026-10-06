@@ -1,0 +1,136 @@
+{
+  "counts": {
+    "NOT_CONFIRMED": 8,
+    "ESBMC_MISSED": 1
+  },
+  "rows": [
+    {
+      "id": "61b022bf446a",
+      "file": "av_real_17.py",
+      "function": "unified_strdate",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108; unwinding assertion loop 131",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_http_client,compat_kwargs,compat_parse_qs,compat_socket_create_connection,compat_str,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,email,shlex_quote",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "b8edde5a7e1e",
+      "file": "bip_scrapy_15.py",
+      "function": "_safe_ParseResult",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:ParseResult,_safe_chars,parse_qsl,quote,to_bytes,to_native_str,to_unicode,unquote,urldefrag,urlencode,urlparse,urlunparse"
+      ]
+    },
+    {
+      "id": "ddcad8260108",
+      "file": "bip_scrapy_15.py",
+      "function": "_safe_ParseResult",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:ParseResult,_safe_chars,parse_qsl,quote,to_bytes,to_native_str,to_unicode,unquote,urldefrag,urlencode,urlparse,urlunparse"
+      ]
+    },
+    {
+      "id": "2abbc0787351",
+      "file": "bip_scrapy_21.py",
+      "function": "RobotsTxtMiddleware._robots_error",
+      "before": "ESBMC_MISSED",
+      "after": "ESBMC_MISSED",
+      "reason": "unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion loop 28",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "receiver_init_replaced",
+        "unreachable_methods_removed:_logerror,_parse_robots,from_crawler,process_request,process_request_2,robot_parser",
+        "opaque_values"
+      ]
+    },
+    {
+      "id": "1c2e21d2f6c6",
+      "file": "bip_youtube_dl_13.py",
+      "function": "urljoin",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "729a91d0a090",
+      "file": "bip_youtube_dl_13.py",
+      "function": "urljoin",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParseError,compat_HTMLParser,compat_basestring,compat_chr,compat_cookiejar,compat_ctypes_WINFUNCTYPE,compat_etree_fromstring,compat_expanduser,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "0a27be725de8",
+      "file": "bip_youtube_dl_21.py",
+      "function": "urljoin",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "no_violation_found",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:compat_HTMLParser,compat_basestring,compat_chr,compat_etree_fromstring,compat_html_entities,compat_html_entities_html5,compat_http_client,compat_kwargs,compat_os_name,compat_parse_qs,compat_shlex_quote,compat_socket_create_connection,compat_str,compat_struct_pack,compat_struct_unpack,compat_urllib_error,compat_urllib_parse,compat_urllib_parse_unquote_plus,compat_urllib_parse_urlencode,compat_urllib_parse_urlparse,compat_urllib_request,compat_urlparse,compat_xpath"
+      ]
+    },
+    {
+      "id": "ef639b3fabe3",
+      "file": "bip_youtube_dl_41.py",
+      "function": "unified_strdate",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:email",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ]
+    },
+    {
+      "id": "6d754f42710f",
+      "file": "bip_youtube_dl_41.py",
+      "function": "unified_strdate",
+      "before": "NOT_CONFIRMED",
+      "after": "NOT_CONFIRMED",
+      "reason": "unwinding assertion loop 108",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "stubbed_imports:email",
+        "esbmc_refused_members_stubbed:_esbmc_re_sub",
+        "external_chains_flattened:email_utils",
+        "typing_import_added"
+      ]
+    }
+  ]
+}

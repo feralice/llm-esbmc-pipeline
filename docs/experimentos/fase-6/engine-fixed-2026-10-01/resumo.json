@@ -1,0 +1,18 @@
+{
+  "pasta": "engine-fixed-2026-10-01",
+  "modificado_em": "2026-10-01T17:21",
+  "arquivos": [
+    "v2_verify_report.json"
+  ],
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 33,
+    "GROUNDING_FAILED": 51,
+    "UNVALIDATED": 1,
+    "MISSING_DEPENDENCY": 7,
+    "SPEC_FAILED": 6,
+    "ESBMC_ERROR": 2,
+    "OTHER_FAILURE": 1,
+    "NOT_CONFIRMED": 2,
+    "ESBMC_TIMEOUT": 4
+  }
+}

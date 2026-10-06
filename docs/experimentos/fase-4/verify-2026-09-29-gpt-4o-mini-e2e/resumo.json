@@ -1,0 +1,23 @@
+{
+  "pasta": "verify-2026-09-29-gpt-4o-mini-e2e",
+  "modificado_em": "2026-09-29T18:48",
+  "arquivos": [
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "complete",
+  "vereditos (v2_verify_report.json)": {
+    "UNSUPPORTED": 60,
+    "CONFIRMED": 1,
+    "ESBMC_MISSED": 1,
+    "GROUNDING_FAILED": 25,
+    "MISSING_DEPENDENCY": 21,
+    "SPEC_FAILED": 21,
+    "NOT_CONFIRMED": 4,
+    "ESBMC_ERROR": 2,
+    "ESBMC_TIMEOUT": 3
+  }
+}
