@@ -23,6 +23,7 @@ from .context import context_module
 from .hypothesis import BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output
 from .outcome import CONFIRMED, final_verdict
+from .procs import run_group
 from .render import Program
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 
@@ -76,8 +77,9 @@ def claude_agent(claude_command: str = "claude", model: str | None = None,
         # Same as the claude_cli backend: use the CLI's own login, not a leaked API key.
         env = {key: value for key, value in os.environ.items() if key != "ANTHROPIC_API_KEY"}
         env["PATH"] = os.pathsep.join([str(Path(esbmc).parent), env.get("PATH", "")])
-        completed = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False,
-                                   timeout=timeout_seconds, stdin=subprocess.DEVNULL, env=env)
+        completed = run_group(command, cwd=cwd, timeout_seconds=timeout_seconds, env=env)
+        if completed is None:
+            raise subprocess.TimeoutExpired(command, timeout_seconds)
         try:
             return str(json.loads(completed.stdout).get("result", ""))
         except json.JSONDecodeError:
