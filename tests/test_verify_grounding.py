@@ -194,3 +194,21 @@ def test_a_wrong_name_under_a_real_function_is_still_missing():
 
     assert isinstance(failure, GroundingFailure)
     assert not failure.unsupported
+
+
+HEADERS = """def check(required, k, params, y):
+    if required and k not in params:
+        return 1 // len(params)
+    cur = params.get(k); val = cur + 1
+    return y.shape[1]
+"""
+
+
+def test_a_suspect_copied_with_its_block_header_or_semicolon_still_grounds():
+    for copied in ("if required and k not in params:", "return 1 // len(params)",
+                   "cur = params.get(k); val = cur + 1"):
+        assert isinstance(ground(BugHypothesis("a.py", "check", copied), HEADERS), Grounded), copied
+
+
+def test_a_suspect_that_is_not_in_the_function_still_fails_after_the_rewrites():
+    assert isinstance(ground(BugHypothesis("a.py", "check", "if k in params:"), HEADERS), GroundingFailure)

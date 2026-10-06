@@ -28,8 +28,24 @@ def find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | No
     return matches[0] if len(matches) == 1 and isinstance(matches[0], ast.FunctionDef) else None
 
 
-def expression_nodes(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
-    """Nodes equal to the suspect; datasets give either an expression or one statement."""
+_HEADERS = ("if ", "elif ", "while ", "return ", "assert ")
+
+
+def _readings(expression: str) -> list[str]:
+    """The text as given, then without a block header's keyword and colon (``if x:`` -> ``x``), then
+    each ``;``-separated statement: LLMs often copy the whole source line."""
+    readings = [expression]
+    for piece in [expression, *expression.split(";")]:
+        text = textwrap.dedent(piece).strip().removesuffix(":").strip()
+        for header in _HEADERS:
+            if text.startswith(header):
+                text = text[len(header):]
+                break
+        readings.append(text)
+    return list(dict.fromkeys(r for r in readings if r.strip()))
+
+
+def _matching(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
     try:
         suspect: ast.AST = ast.parse(expression, mode="eval").body
         kind: type = ast.expr
@@ -44,6 +60,15 @@ def expression_nodes(function: ast.FunctionDef, expression: str) -> list[ast.AST
     wanted = ast.dump(suspect, include_attributes=False)
     return [node for node in ast.walk(function)
             if isinstance(node, kind) and ast.dump(node, include_attributes=False) == wanted]
+
+
+def expression_nodes(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
+    """Nodes equal to the suspect; datasets give either an expression or one statement."""
+    for reading in _readings(expression):
+        nodes = _matching(function, reading)
+        if nodes:
+            return nodes
+    return []
 
 
 def _defined_global_names(table: symtable.SymbolTable) -> set[str]:
