@@ -80,3 +80,30 @@ def test_natural_mutation_matrix_separates_real_bugs_from_false_alarms() -> None
     matrix = natural_mutation_matrix(buggy, fixed)
 
     assert matrix == {"only_buggy": ["a"], "both": ["b"], "only_fixed": ["c"], "neither": 1}
+
+
+from research_pipeline.verify.validation import mutants
+
+TARGET = (
+    "def f(xs, i, limit):\n"
+    "    if xs is None:\n"
+    "        return 0\n"
+    "    v = xs[i]\n"
+    "    total = limit\n"
+    "    return v if i < len(xs) else total\n"
+)
+
+
+def test_each_operator_yields_a_mutant_that_keeps_the_line_numbers() -> None:
+    found = {m.operator: m for m in mutants(TARGET, "f", near_line=4)}
+
+    assert set(found) == {"remove_guard", "assign_none", "index_plus_one", "lt_to_le"}
+    assert "if xs is None" not in found["remove_guard"].source
+    assert "total = None" in found["assign_none"].source
+    assert "xs[i + 1]" in found["index_plus_one"].source
+    assert "i <= len(xs)" in found["lt_to_le"].source
+    assert all(len(m.source.splitlines()) == len(TARGET.splitlines()) for m in found.values())
+
+
+def test_no_mutant_far_from_the_hypothesis() -> None:
+    assert mutants(TARGET, "f", near_line=40, window=2) == []

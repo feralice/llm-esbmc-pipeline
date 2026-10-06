@@ -4,7 +4,9 @@ verdict examined the hypothesis line (V2), and the harness catches faults inject
 from __future__ import annotations
 
 import ast
+import copy
 from pathlib import Path
+from typing import NamedTuple
 
 from .astutil import body_signature, expression_nodes, find_function
 from .outcome import CONFIRMED
@@ -94,3 +96,72 @@ def natural_mutation_matrix(buggy: list[dict], fixed: list[dict]) -> dict:
         else:
             matrix["neither"] += 1
     return matrix
+
+
+class Mutant(NamedTuple):
+    operator: str
+    line: int
+    source: str
+
+
+_SIMPLE = (ast.Assign, ast.AugAssign, ast.Expr, ast.Return)
+
+
+def _replace(source: str, statement: ast.stmt, text: str) -> str:
+    lines = source.splitlines()
+    first, last = statement.lineno, statement.end_lineno or statement.lineno
+    lines[first - 1:last] = [" " * statement.col_offset + text] + [""] * (last - first)
+    return "\n".join(lines) + "\n"
+
+
+def _mutated(statement: ast.stmt, change) -> str | None:
+    copied = copy.deepcopy(statement)
+    if not change(copied):
+        return None
+    return ast.unparse(copied).splitlines()[0] if isinstance(copied, _SIMPLE) else None
+
+
+def _plus_one(statement: ast.stmt) -> bool:
+    for node in ast.walk(statement):
+        if isinstance(node, ast.Subscript) and not isinstance(node.slice, ast.Slice):
+            node.slice = ast.BinOp(node.slice, ast.Add(), ast.Constant(1))
+            return True
+    return False
+
+
+def _lt_to_le(statement: ast.stmt) -> bool:
+    for node in ast.walk(statement):
+        if isinstance(node, ast.Compare) and any(isinstance(op, ast.Lt) for op in node.ops):
+            node.ops = [ast.LtE() if isinstance(op, ast.Lt) else op for op in node.ops]
+            return True
+    return False
+
+
+def mutants(source: str, function: str, near_line: int, *, window: int = 5, per_operator: int = 2) -> list[Mutant]:
+    """Faults that raise when reached, injected near the hypothesis: they show whether the harness
+    exercises that code. Line numbers do not move."""
+    target = find_function(ast.parse(source), function)
+    if target is None:
+        return []
+    found: list[Mutant] = []
+    counts: dict[str, int] = {}
+
+    def add(operator: str, statement: ast.stmt, text: str | None) -> None:
+        if text is None or counts.get(operator, 0) >= per_operator:
+            return
+        counts[operator] = counts.get(operator, 0) + 1
+        found.append(Mutant(operator, statement.lineno, _replace(source, statement, text)))
+
+    for statement in ast.walk(target):
+        if not isinstance(statement, ast.stmt) or statement is target or abs(statement.lineno - near_line) > window:
+            continue
+        if (isinstance(statement, ast.If) and not statement.orelse and len(statement.body) == 1
+                and isinstance(statement.body[0], (ast.Return, ast.Raise))):
+            add("remove_guard", statement, "pass")
+        if isinstance(statement, ast.Assign) and len(statement.targets) == 1 \
+                and isinstance(statement.targets[0], ast.Name):
+            add("assign_none", statement, f"{statement.targets[0].id} = None")
+        if isinstance(statement, _SIMPLE):
+            add("index_plus_one", statement, _mutated(statement, _plus_one))
+            add("lt_to_le", statement, _mutated(statement, _lt_to_le))
+    return found
