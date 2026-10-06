@@ -277,6 +277,28 @@ def test_detection_stage_stops_before_verification(tmp_path: Path, monkeypatch) 
     assert len(report["detection"]["candidates"]) == 1 and report["results"] == []
 
 
+def test_detection_stage_skips_patch_context_items_like_end_to_end(tmp_path: Path, monkeypatch) -> None:
+    (tmp_path / "det").mkdir()
+    for name in ("kept", "patch_only"):
+        (tmp_path / "det" / f"{name}.py").write_text("def divide(x: int, y: int) -> int:\n    return x // y\n")
+    items = [{"id": name, "detection_file": f"det/{name}.py", "function": "divide", "categories": ["x"]}
+             for name in ("kept", "patch_only")]
+    (tmp_path / "manifest.json").write_text(json.dumps(
+        {"evaluation_policy": {"patch_context_items": ["patch_only"]}, "items": items}))
+    (tmp_path / "ground_truths.json").write_text(json.dumps({"items": items}))
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", _Synthesizer)
+    out = tmp_path / "out"
+    args = main.build_parser().parse_args(["--mode", "hybrid", "--v2-stage", "detection", "--input",
+                                           str(tmp_path / "det"), "--ground-truth",
+                                           str(tmp_path / "ground_truths.json"), "--output-dir", str(out)])
+
+    assert main.mode_v2(args) == 0
+    files = json.loads((out / "v2_verify_report.json").read_text())["config"]["input_files"]
+    assert [Path(f).name for f in files] == ["kept.py"]
+
+
 def test_variants_enter_the_run_config(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "sample.py"
     source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
