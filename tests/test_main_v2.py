@@ -249,3 +249,10 @@ def test_summarize_detection_trace_keeps_failures_distinct():
     }
 
 
+
+
+def test_resume_retries_pipeline_errors_and_keeps_real_verdicts() -> None:
+    checkpoint = {"verify_results": {"0": {"verdict": "CONFIRMED"}, "1": {"verdict": "PIPELINE_ERROR"},
+                                     "2": {"verdict": "UNSUPPORTED"}}}
+
+    assert sorted(main._resumable_results(checkpoint)) == [0, 2]

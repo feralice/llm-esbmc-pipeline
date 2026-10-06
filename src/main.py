@@ -1035,6 +1035,11 @@ def _agent_fallback(args: argparse.Namespace, results: list[dict], output_path: 
                 "timeout": args.timeout, "esbmc": esbmc})
 
 
+def _resumable_results(checkpoint: dict) -> dict[int, dict]:
+    """Saved verdicts a resume keeps; PIPELINE_ERROR (network, usage limit) is retried instead."""
+    return {int(i): d for i, d in checkpoint.get("verify_results", {}).items() if d.get("verdict") != "PIPELINE_ERROR"}
+
+
 def _mode_v2_verify(
     args: argparse.Namespace, *, candidates, llm, output_path: Path, config: dict, checkpoint: dict,
     checkpoint_path: Path, capture_telemetry, input_paths, rejected_findings, detection: dict,
@@ -1053,7 +1058,7 @@ def _mode_v2_verify(
             llm=llm,
             output_dir=output_path,
             verification_sources=Path(args.verification_sources) if args.verification_sources else None,
-            completed={int(i): d for i, d in checkpoint.get("verify_results", {}).items()},
+            completed=_resumable_results(checkpoint),
             on_result=save,
             esbmc_command=args.esbmc_command,
             bound=args.bound,
