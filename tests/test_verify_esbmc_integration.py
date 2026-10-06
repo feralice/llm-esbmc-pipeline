@@ -188,3 +188,16 @@ def test_a_broken_generated_test_is_recorded_and_never_changes_the_verdict(tmp_p
     result = _verify(tmp_path, "ratio", "a // b", {}, source=source)
     assert result.verdict == CONFIRMED
     assert result.pytest["status"] in {"reproduces", "invalid"}
+
+
+from research_pipeline.verify.render import Program
+from research_pipeline.verify.validation import REACHABLE, UNREACHABLE, reachability
+
+REACH = ("def f(n: int) -> int:\n    if n > 10:\n        return 1 // (n - 11)\n    return 0\n\n\n"
+         "def driver() -> None:\n    n: int = nondet_int()\n    __ESBMC_assume(n < {limit})\n    f(n)\n\n\ndriver()\n")
+
+
+@pytest.mark.parametrize(("limit", "expected"), [(5, UNREACHABLE), (50, REACHABLE)])
+def test_reachability_of_the_hypothesis_line(tmp_path, limit, expected):
+    program = Program(REACH.format(limit=limit), 0, ((3, 3),), (), (1, 4))
+    assert reachability(program, esbmc=str(ESBMC), unwind=5, timeout_seconds=60, work_dir=tmp_path) == expected
