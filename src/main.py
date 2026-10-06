@@ -71,6 +71,7 @@ from research_pipeline.verify.llm_client import LLMClient
 from research_pipeline.verify.agent_arm import make_agent, run_agent_fallback
 from research_pipeline.verify.levels import consolidate, level_summary
 from research_pipeline.verify.loop import run_verify
+from research_pipeline.v2_evaluator import evaluate_detection
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.voting import aggregate_votes, write_vote_report
 
@@ -289,12 +290,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--v2-stage",
-        choices=["end-to-end", "synthesis"],
+        choices=["end-to-end", "synthesis", "detection"],
         default="end-to-end",
         help=(
             "Modo V2: 'end-to-end' detecta e sintetiza; 'synthesis' usa "
             "hipóteses conhecidas somente para avaliar a geração de harness "
-            "isoladamente (requer --ground-truth)."
+            "isoladamente (requer --ground-truth); 'detection' para depois da "
+            "detecção, para comparar prompts sem gastar verificação."
         ),
     )
     return parser
@@ -1358,6 +1360,37 @@ def mode_v2(args: argparse.Namespace) -> int:
         )
         print("Execução V2 parcial na detecção; retome com --resume.", file=sys.stderr)
         return 2
+
+    if args.v2_stage == "detection":
+        capture_telemetry()
+        checkpoint["status"] = "detection_complete"
+        _write_json_atomic(checkpoint_path, checkpoint)
+        _write_json_atomic(output_path / "llm_telemetry.json", checkpoint["telemetry_events"])
+        _write_json_atomic(
+            Path(args.report) if args.report else output_path / "v2_verify_report.json",
+            {
+                "config": config,
+                "coverage": {"status": "complete", "stage": "detection"},
+                "detection": {
+                    "analyzed_units": analyzed_units,
+                    "hypotheses": len(candidates),
+                    "failed_units": 0,
+                    "errors": [],
+                    "candidates": [_v2_candidate_dict(c) for c in candidates],
+                    "rejected_findings": rejected_findings,
+                    "trace": detection_trace,
+                    "trace_summary": _summarize_detection_trace(detection_trace),
+                },
+                "evaluation": evaluate_detection(candidates=candidates, ground_truth_path=args.ground_truth,
+                                                 evaluated_sources=input_paths, rejected_findings=rejected_findings)
+                if args.ground_truth else None,
+                "telemetry": _summarize_v2_telemetry(checkpoint["telemetry_events"]),
+                "results": [],
+            },
+        )
+        print(f"Detecção concluída: {len(candidates)} hipótese(s) enviada(s), "
+              f"{len(rejected_findings)} segurada(s).")
+        return 0
 
     return _mode_v2_verify(
         args,

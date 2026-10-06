@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 import main
 from research_pipeline.models import Finding
 
@@ -256,3 +258,20 @@ def test_resume_retries_pipeline_errors_and_keeps_real_verdicts() -> None:
                                      "2": {"verdict": "UNSUPPORTED"}}}
 
     assert sorted(main._resumable_results(checkpoint)) == [0, 2]
+
+
+def test_detection_stage_stops_before_verification(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", _Synthesizer)
+    monkeypatch.setattr(main, "run_verify", lambda *a, **k: pytest.fail("verification must not run"))
+    out = tmp_path / "out"
+    args = main.build_parser().parse_args(["--mode", "hybrid", "--v2-stage", "detection", "--input", str(source),
+                                           "--output-dir", str(out)])
+
+    assert main.mode_v2(args) == 0
+    report = json.loads((out / "v2_verify_report.json").read_text())
+    assert report["coverage"] == {"status": "complete", "stage": "detection"}
+    assert len(report["detection"]["candidates"]) == 1 and report["results"] == []
