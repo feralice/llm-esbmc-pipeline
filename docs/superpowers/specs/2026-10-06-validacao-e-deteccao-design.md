@@ -113,6 +113,7 @@ Tudo aqui roda **sem chamar a LLM**: reaproveita os programas e especificações
 | A3 | pedir até N hipóteses por função, ordenadas pela chance de serem bug | mais cobertura; o ESBMC filtra |
 | A4 | k execuções independentes (k = 3) e união dos achados | variação da LLM vira cobertura |
 | A5 | combinação das variantes que melhoraram | |
+| A6 | passos 2 e 3 do teste de evidência valem para qualquer comportamento errado, não só exceção (pedido em 06/10) | ataca os 178 bugs de resultado errado |
 
 Regras: exemplos do checklist são genéricos e nunca tirados do dataset; nenhuma variante vê o
 gabarito, o patch ou o arquivo corrigido.

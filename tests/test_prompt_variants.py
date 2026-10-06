@@ -24,6 +24,13 @@ def test_a3_asks_for_ranked_hypotheses() -> None:
     assert "da mais para a menos provável" in apply_variants(BASE, ("A3",))
 
 
+def test_a6_makes_the_evidence_test_cover_any_wrong_behaviour() -> None:
+    changed = apply_variants(BASE, ("A6",))
+    assert "bloqueia EXATAMENTE o valor problemático" not in changed
+    assert "3. A exceção é capturada" not in changed
+    assert "valor diferente do que o código" in changed and "4. Existe valor concreto" in changed
+
+
 def test_variants_compose() -> None:
     both = apply_variants(BASE, ("A1", "A2"))
     assert "## PARTIÇÃO DE ENTRADAS" in both and "prefira não reportar" not in both

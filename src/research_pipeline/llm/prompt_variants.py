@@ -35,7 +35,21 @@ def _ranked(prompt: str) -> str:
                  "real; zero é uma resposta válida.")
 
 
-VARIANTS: dict[str, Callable[[str], str]] = {"A1": _report_without_context, "A2": _input_checklist, "A3": _ranked}
+def _any_wrong_behaviour(prompt: str) -> str:
+    """Items 2 and 3 of the evidence test asked only about exceptions; the definition of a bug does not."""
+    prompt = _swap("A6", prompt,
+                   "2. Existe guarda que bloqueia EXATAMENTE o valor problemático em TODOS os caminhos?",
+                   "2. Existe guarda que impede EXATAMENTE o comportamento errado em TODOS os caminhos?\n"
+                   "   Comportamento errado é qualquer um: exceção, valor diferente do que o código, a\n"
+                   "   docstring ou os nomes indicam, efeito indevido sobre o estado.")
+    return _swap("A6", prompt,
+                 "3. A exceção é capturada por try/except? Se sim, não reporte como bug que quebra.",
+                 "3. O erro é tratado antes de sair da função (exceção capturada, valor corrigido)?\n"
+                 "   Se sim, não reporte.")
+
+
+VARIANTS: dict[str, Callable[[str], str]] = {"A1": _report_without_context, "A2": _input_checklist, "A3": _ranked,
+                                             "A6": _any_wrong_behaviour}
 
 
 def apply_variants(prompt: str, names: tuple[str, ...]) -> str:
