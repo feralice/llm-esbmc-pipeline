@@ -7,6 +7,7 @@ import ast
 from pathlib import Path
 
 from .astutil import body_signature, expression_nodes, find_function
+from .outcome import CONFIRMED
 from .procs import run_group
 from .render import Program
 

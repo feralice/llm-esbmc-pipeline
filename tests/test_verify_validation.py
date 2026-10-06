@@ -64,3 +64,19 @@ def test_a_marker_that_would_break_an_elif_gives_none() -> None:
 ])
 def test_read_reachability(output, expected) -> None:
     assert read_reachability(output) == expected
+
+
+from research_pipeline.verify.validation import natural_mutation_matrix
+
+
+def _r(hid: str, verdict: str) -> dict:
+    return {"hypothesis": {"hypothesis_id": hid}, "verdict": verdict}
+
+
+def test_natural_mutation_matrix_separates_real_bugs_from_false_alarms() -> None:
+    buggy = [_r("a", "CONFIRMED"), _r("b", "CONFIRMED"), _r("c", "NOT_CONFIRMED"), _r("d", "UNSUPPORTED")]
+    fixed = [_r("a", "NOT_CONFIRMED"), _r("b", "CONFIRMED"), _r("c", "CONFIRMED")]
+
+    matrix = natural_mutation_matrix(buggy, fixed)
+
+    assert matrix == {"only_buggy": ["a"], "both": ["b"], "only_fixed": ["c"], "neither": 1}
