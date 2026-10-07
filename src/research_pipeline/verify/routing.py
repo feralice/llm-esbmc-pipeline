@@ -14,11 +14,18 @@ _DONE = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
 _CONTEXT = re.compile(r"not found|undefined name", re.I)
 # The harness itself was wrong: rewriting it is enough.
 _HARNESS = re.compile(r"TypeError: .*(?:positional argument|unexpected keyword|missing \d+ required)", re.I)
+# ESBMC's own refusals; any other UNSUPPORTED reason is the code-built harness giving up, which an
+# agent writing the harness by hand can get past.
+_ESBMC = re.compile(r"^ERROR:|uncaught exception \[|^ESBMC direto")
 
 _ROUTES = {
     "done": (),
     "context": (CLAUDE_AGENT, DYNAMIC),
-    "harness": (API_AGENT, CLAUDE_AGENT, DYNAMIC),
+    # Replaying a harness already judged wrong would only rerun its mistake.
+    "harness": (API_AGENT, CLAUDE_AGENT),
+    "builder": (CLAUDE_AGENT, DYNAMIC),
+    # No program exists to replay.
+    "grounding": (CLAUDE_AGENT,),
     "esbmc_limit": (DYNAMIC,),
 }
 
@@ -31,6 +38,10 @@ def limit_class(result: dict) -> str:
         return "harness"
     if verdict == "MISSING_DEPENDENCY" or (verdict == "UNSUPPORTED" and _CONTEXT.search(reason)):
         return "context"
+    if verdict == "GROUNDING_FAILED":
+        return "grounding"
+    if verdict == "UNSUPPORTED" and not _ESBMC.search(reason):
+        return "builder"
     return "esbmc_limit"
 
 
