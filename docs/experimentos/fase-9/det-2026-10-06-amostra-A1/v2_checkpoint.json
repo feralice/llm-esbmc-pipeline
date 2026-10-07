@@ -1,0 +1,2565 @@
+{
+  "fingerprint": {
+    "config": {
+      "model": "claude-sonnet-5-5",
+      "backend": "claude_cli",
+      "synth_backend": "claude_cli",
+      "synth_model": "claude-sonnet-5-5",
+      "v2_stage": "detection",
+      "v2_variants": [
+        "A1"
+      ],
+      "input_files": [
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_09.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/oob_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/oob_real_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_12.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_scrapy_40.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_16.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_black_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_31.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_08.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_10.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_07.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_64.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_26.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_107.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_5.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_21.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_27.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/dz_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_03.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/io_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_2.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_18.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_01.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_34.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_163.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_19.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_tqdm_1.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_thefuck_11.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_26.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_7.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_17.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_thefuck_14.py",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/av_real_14.py"
+      ],
+      "excluded_patch_context_files": 0,
+      "verification_sources": null,
+      "verification_sources_strict": false,
+      "spec_strategy": "repair",
+      "bound": 20,
+      "timeout": 60,
+      "llm_timeout": 300,
+      "esbmc_command": [
+        "/usr/local/bin/esbmc"
+      ]
+    },
+    "sources": {
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_07.py": "f4b04cce6c2f69524866cfea5c3b68e0551719599851a2705b73d305bd573ccc",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_09.py": "2d87eaaf37baa5fa1f66fff1d198805685b39dc695542d4d20ea6efe2371cb43",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py": "d84bbd628ee3a637d337598e6f70d9d18ca31757bd88e6f401552cf5de2bf591",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_07.py": "22dda4bf841c56364bd5e4dded949241cd8a5a48aace85675c73033503dee1b6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/oob_real_05.py": "b520618753c4f369acc78d0dfa82b2375c6d2c95408dd531eb11abaa223c1c05",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/oob_real_14.py": "a08c5cd465e3b3905a03dc2aff09c160c349e5d6b5cf92cf942e284986d188ac",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_08.py": "2b8e3567ca6b7157d10c4bc4d2a4c5d78a929eb42e22ec57bc8e2b314e53e722",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py": "d0c3e951997ad426b95397804bc825ca683b3c3a2276e554a91f5e1e16a7204d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_12.py": "9c070aa8d47110a04c0cb8534b88287cb4bdb76cfa768e651ef1ec7c245c9561",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py": "af31b48447c144a4ad33875d8a2eaf7c91963461fa8fb49111b2b6b6761bb992",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/av_real_02.py": "be6a0b38a60c273f386b7cd1fa9744955dd4c0b0b122c779fafdb158759ee8a8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_32.py": "2e2d51770fe7b0ec83323394ec4c8eaa8ba0cb97afd3b2c9466580abc1b7690f",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py": "b88f84136c6ddf525cede34df8805be1e883f8b0ed9be6656585feef7905d9f3",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_scrapy_40.py": "04354c1d443b7b9ad42bddcfb007148c64182b772a58bc4f315d445d98ae46f8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_17.py": "31a00628365f82429594246ff08441d1c65036ad5cac16415a6173298ea11357",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_16.py": "e2957543875409a8143a6e5c7fcb674bb0a2b9fc39001bd4a7bd01cd6d191413",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_black_21.py": "f7585a66ac127607451e0a5dd499feb2c37094bc8eb7682251af37032fdce75e",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py": "e730908055cd6f61cd4cc1204b71335a3d4866f2009b85c734e5b9b6928e1493",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_31.py": "573505e86941c20d8582cee0cbb0ce304a2540804ac39a46981d9b7a3785c8ec",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_08.py": "4c721df2faa76e7f8c6a02dd304a16fe0d5ffca6280d1020c057b9ab19f10a86",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_10.py": "1b8299e73027a123b20b4d5d62b40b477702b8487a839f83d8f85c1726e7f7b5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_07.py": "cdf9f6bac09722814e5238d9fd6091904eead873139e49a40ae8df0b9c8f6c70",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_64.py": "4809e4e84fa0c7c92b2076a307ce6a13e7ba74c567054cce707a61a8c77f4143",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_26.py": "e70946aa0c332907a33a6d5a4bd0a864b6c11a8881776fdce578cbea9e90cfa5",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_107.py": "f2c7011a8dc5a4daee96d43e754a3349ff283dddd8309dd8a8c661883e2491ce",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py": "877491dccca10efb9fd4945a3520f3ccb7862b01e1bd144b18544cf8664ebcd9",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_5.py": "9a4709750a5edfd75bf922856f5e9fe94b6008c1770038fc8dad17326438ee01",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py": "5018afff35292fdb51de360ae2c34244fa1fb72a5d55e0d905b8a260cbf513b6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_21.py": "1e97beb31a8b75094613102b2252fcc50a014c572ce9bb1703d1e155a9bab274",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_27.py": "d09651acacb9716d9a92d11bf511623786db21366ec05a85dba6dee2414b1e58",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/dz_real_01.py": "d5fde0b64e1df50d414955a84e5f36bd254052d696b95960b77dcdd3714226da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py": "ef0d856fd6f623f4799ca1f7227b884f7b2b369d7f730e1f6c8c4588600886da",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_03.py": "3baed111a42071ca9ae83868ae82d4d5f057cffbd4669c727a51d22d2d9eee56",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/io_real_01.py": "b2e57d33c8942c3e6e9f6b87dc1296065caaae26b0609b24dcf646870a9620a4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_2.py": "0d9bb9dce1c6ecb8d65cc43ed5fd13b8a791838687956e698196f2f577a9c2c1",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_18.py": "2c0fa65d20e6fe3db064fb34cbc13546f07fe4545cf525e4eee328fd9a5520c6",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_01.py": "a819501e567a8615c0a586aa55754944106efa6fb630af42e4942370d8436bfe",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py": "4b6b8a954aab206eebbd952efed89185601ba21dc7e4813af7e15f69668cf9c8",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_34.py": "ad61ae3d81d3b63cb0bf86576a64262ae4feb687cff8a3b93576c84076450201",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_163.py": "57521ee432358181cfc62f94db6fa3ce826614106db725af08f1b0a225823006",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_19.py": "d668dfd308f70bc6012e9a6b9e37c84b099f080823759dc7d399ab7158822eeb",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_tqdm_1.py": "18a06ee78e029cb7c198dd9e7325e215c517ca74a73cda1e614de88eda7f1128",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_05.py": "d21b1957e7f0043a54dae15bbe35ade96f08c6b7e03e849bfebaa0305671b086",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_thefuck_11.py": "e564047a5f665ff7f7c00b8273d598b2c258fbb2fa1f48aead5171dc125156fd",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_26.py": "15c3fc138fc19fa430e240ae0d24893663e819ea9202f7ff1a5cc38c5f82d7fc",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py": "ab877ec4adabf6aaa69a70e3df52ae9166b63131920b14b6229bf37cc52b82b4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_7.py": "459162e82e452495ad74fa5ee20d5ad190cac9a780d8050c2849abf40a34f459",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_17.py": "752243df22aa5ee48c80e1729f244bd74032d493de85df3abf9be9d0687c82c4",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_thefuck_14.py": "5503e487b85ff5bcb919821612c687530db23b8d13a4a03cce1566079f0ac58d",
+      "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/av_real_14.py": "829e951d80fff1ebdcbb61928d186bffd107a5f06ad13ecceea4010fbcb8ff1b"
+    },
+    "detector_prompt": "d1e467199d8a7e45b6e67b91d419194da65a56e2fc4e4b75576e036dd10b9cf7",
+    "detector_schema": "cba60103465915c1990fe9a56a452e84f3a92912dea378eaa9bfddcf6d284dc6",
+    "spec_prompt": "89d7838d5cbedada6d55ebd6783667f0b3d2cc21c4dc8d2eb0bcca060fdb4990"
+  },
+  "detection_units": {
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_07.py::url_concat": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/nm_real_07.py",
+          "function": "url_concat",
+          "category": "",
+          "expression": "final_query = urlencode(parsed_query)",
+          "note": "args is a free parameter. For list/tuple, parsed_query.extend(args) appends its elements unchanged. If an element is not a 2-tuple (args=[1] or args=['abc']), urlencode raises TypeError ('not a valid non-string sequence or mapping object') when it is the first item, or fails on unpacking 'for k, v in query' (TypeError/ValueError) otherwise. No try/except and no guard blocks this.",
+          "violated_property": "TypeError/ValueError em urlencode(parsed_query) quando args contem elemento que nao e par (k, v)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/nm_real_07.py",
+          "function": "url_concat",
+          "category": "",
+          "expression": "parsed_url = urlparse(url)",
+          "note": "url is a free parameter with no type guard. A non-str, non-bytes value such as an int makes urlparse fail in its argument coercion (AttributeError: 'int' object has no attribute 'decode'). The call is outside any try/except and runs before the args type check.",
+          "violated_property": "AttributeError em urlparse(url) quando url nao e str/bytes (ex.: int)"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "url_concat",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_09.py::tqdm.__len__": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/nm_real_09.py",
+          "function": "tqdm.__len__",
+          "category": "",
+          "expression": "self.iterable.shape[0] if hasattr(self.iterable, 'shape') else len(self.iterable) if hasattr(self.iterable, '__len__') else self.total",
+          "note": "If self.iterable is not None and has a `shape` attribute that is an empty tuple (e.g. a 0-d numpy array or scalar tensor), hasattr passes and `shape[0]` is evaluated on `()`. This raises IndexError. The only guard is attribute existence, which does not block this value. A 0-d array object is a concrete input that passes the guard and breaks.",
+          "violated_property": "IndexError em self.iterable.shape[0] quando shape == ()"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "tqdm.__len__",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py::JSInterpreter.interpret_expression": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "return local_vars[var_m.group('name')]",
+          "note": "expr is a free string. Any identifier not in local_vars (e.g. 'x' with empty local_vars) matches the var regex and is looked up directly. KeyError is not caught.",
+          "violated_property": "KeyError em local_vars[name] para variável indefinida"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "cur = local_vars.get(m.group('out'))\n            val = opfunc(cur, right_val)",
+          "note": "For a compound assignment like 'a += 1' with 'a' not in local_vars, .get returns None. opfunc(None, 1) then raises TypeError for arithmetic operators. No try/except.",
+          "violated_property": "TypeError em opfunc(None, right_val) com variável não definida"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "lvar = local_vars[m.group('out')]",
+          "note": "For indexed assignment 'a[0]=1' with 'a' absent from local_vars, the lookup raises KeyError. The guard only checks that an index group exists.",
+          "violated_property": "KeyError em local_vars[out] na atribuição indexada"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "assert isinstance(idx, int)\n            cur = lvar[idx]",
+          "note": "idx comes from interpreting a free index expression. A string index like 'a[\"k\"]+=1' makes the assert fail. An int out of range makes lvar[idx] raise IndexError.",
+          "violated_property": "AssertionError em isinstance(idx, int) ou IndexError em lvar[idx]"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "val = local_vars[m.group('in')]\n        idx = ...\n        return val[idx]",
+          "note": "Expression 'a[5]' with 'a' undefined raises KeyError. With 'a' a short list it raises IndexError. Nothing catches either.",
+          "violated_property": "KeyError em local_vars[in] ou IndexError em val[idx]"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "return obj[member]",
+          "note": "For 'a.foo' with no parens, any member other than 'length' is indexed directly. A missing key raises KeyError, and a list obj raises TypeError.",
+          "violated_property": "KeyError/TypeError em obj[member]"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "assert argvals == ('',)\n            return list(obj)",
+          "note": "Valid JS like 'a.split(\",\")' reaches the assert with a different argvals, so the assert is false. The same pattern applies to the other asserts on len(argvals) in join, reverse and slice.",
+          "violated_property": "AssertionError em assert argvals == ('',)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "return argvals[0].join(obj)",
+          "note": "If argvals[0] is an int, as in 'a.join(1)', it has no .join and raises AttributeError. If obj holds non-strings it raises TypeError. The assert guards only the count.",
+          "violated_property": "AttributeError/TypeError em argvals[0].join(obj)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "index, howMany = argvals",
+          "note": "'a.splice(1)' gives a one-element tuple, so unpacking raises ValueError. Non-int arguments make range() raise TypeError.",
+          "violated_property": "ValueError ao desempacotar argvals em index, howMany"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "return obj[argvals[0]:]",
+          "note": "A non-int argument such as a string, or a non-sliceable obj such as a dict, raises TypeError. The guard only checks the argument count.",
+          "violated_property": "TypeError em obj[argvals[0]:]"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "return obj[member](argvals)",
+          "note": "Any method name other than split, join, reverse, slice or splice falls through to a dict lookup. A missing key raises KeyError, and a list obj raises TypeError.",
+          "violated_property": "KeyError/TypeError em obj[member](argvals)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "argvals = tuple([int(v) if v.isdigit() else local_vars[v] for v in m.group('args').split(',')])",
+          "note": "The args regex allows names like '$' or 'x_1'. A call 'f(y)' with y not in local_vars raises KeyError. The call target extract_function also may raise.",
+          "violated_property": "KeyError em local_vars[v] nos argumentos da chamada"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+          "function": "JSInterpreter.interpret_expression",
+          "category": "",
+          "expression": "return opfunc(x, y)",
+          "note": "Operands come from free expressions. Division or modulo with y == 0, as in '1/0', or mixed types such as '\"a\"-1' or None operands, make opfunc raise. The abort guard only covers the return signal.",
+          "violated_property": "ZeroDivisionError/TypeError em opfunc(x, y)"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "JSInterpreter.interpret_expression",
+        "strategy": "single",
+        "located_candidates": 13,
+        "classified_candidates": 13,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_07.py::_htmlentity_transform": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_07.py",
+          "function": "_htmlentity_transform",
+          "category": "",
+          "expression": "return compat_chr(int(numstr, base))",
+          "note": "entity is a free parameter. For entity='#1114112' (or '#x110000'), the regex matches and int() gives a value above 0x10FFFF. chr() then raises ValueError('chr() arg not in range(0x110000)'). Nothing catches it, and the name2codepoint guard does not apply to numeric entities. Very long digit strings can also raise OverflowError or ValueError.",
+          "violated_property": "ValueError em compat_chr(int(numstr, base)) para code point > 0x10FFFF"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_htmlentity_transform",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/oob_real_05.py::lib2to3_parse": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/oob_real_05.py",
+          "function": "lib2to3_parse",
+          "category": "",
+          "expression": "if src_txt[-1] != '\\n':",
+          "note": "src_txt is a free str parameter. No guard precedes the index at line 3. With src_txt == \"\", src_txt[-1] raises IndexError before any parsing; no try/except covers it.",
+          "violated_property": "IndexError em src_txt[-1] quando src_txt é string vazia"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "lib2to3_parse",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/oob_real_14.py::LinuxDistribution._parse_uname_content": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/oob_real_14.py",
+          "function": "LinuxDistribution._parse_uname_content",
+          "category": "",
+          "expression": "re.search('^([^\\\\s]+)\\\\s+([\\\\d\\\\.]+)', lines[0].strip())",
+          "note": "`lines` is a free parameter typed Sequence[str], so an empty sequence is a valid input. Nothing checks length before `lines[0]`, and there is no try/except. With `lines=[]` the indexing raises IndexError.",
+          "violated_property": "IndexError em lines[0] quando lines é vazio"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "LinuxDistribution._parse_uname_content",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_08.py::Request.url_for": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/nm_real_08.py",
+          "function": "Request.url_for",
+          "category": "",
+          "expression": "if '//' in self.app.config.SERVER_NAME:",
+          "note": "SERVER_NAME comes from app config, not from a constant, and nothing checks it before the `in` operator. When it is None (the Flask default when unset), `'//' in None` runs on the first line and no try/except catches it. So the function fails before reaching the scheme/host/port logic.",
+          "violated_property": "TypeError: argument of type 'NoneType' is not iterable in '//' in self.app.config.SERVER_NAME"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Request.url_for",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py::add_codes": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+          "function": "add_codes",
+          "category": "",
+          "expression": "msg = getattr(err_cls, code)",
+          "note": "`code` is the attribute name on the returned object, free from the caller. Any name not defined on err_cls, e.g. `obj.E999` or `obj.missing`, makes getattr raise AttributeError. Because __getattribute__ is overridden, it also intercepts internal attribute names such as `__dict__` or `__class__`, and these are looked up on err_cls instead of the instance. No guard or try/except exists.",
+          "violated_property": "AttributeError em getattr(err_cls, code) quando code não é atributo de err_cls"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "add_codes",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py::add_codes.ErrorsWithCodes.__getattribute__": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+          "function": "add_codes.ErrorsWithCodes.__getattribute__",
+          "category": "",
+          "expression": "msg = getattr(err_cls, code)",
+          "note": "`code` is a free parameter. `getattr` without a default raises AttributeError for any name that is not an attribute of err_cls, for example 'NOPE'. No guard or try/except covers it. If `code` is not a str, getattr raises TypeError instead.",
+          "violated_property": "AttributeError em getattr(err_cls, code) quando code não é atributo de err_cls (TypeError se code não for str)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+          "function": "add_codes.ErrorsWithCodes.__getattribute__",
+          "category": "",
+          "expression": "msg = getattr(err_cls, code)",
+          "note": "`err_cls` is neither a parameter nor a local. It is resolved as a global. If it is not defined in the module, every call raises NameError. The snippet has no context showing its definition, so the finding stays open until context confirms it.",
+          "violated_property": "NameError: err_cls não definido no escopo da função"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "add_codes.ErrorsWithCodes.__getattribute__",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_12.py::S3CopyToTable.s3_load_path": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "S3CopyToTable.s3_load_path",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_12.py::S3CopyToTable.run": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "S3CopyToTable.run",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py::Axes._parse_scatter_color_args": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py",
+          "function": "Axes._parse_scatter_color_args",
+          "category": "",
+          "expression": "c_is_string_or_strings = isinstance(c, str) or (np.iterable(c) and len(c) > 0 and isinstance(cbook.safe_first_element(c), str))",
+          "note": "c is a free parameter. If it is an iterable without __len__, such as a generator or a map object, np.iterable(c) is True and len(c) raises TypeError. No try/except covers this line and no earlier guard filters the value. The exception comes from a documented rule about the argument.",
+          "violated_property": "TypeError: object of type 'generator' has no len() in len(c)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py",
+          "function": "Axes._parse_scatter_color_args",
+          "category": "",
+          "expression": "c = facecolors if facecolors is not None else 'b' if rcParams['_internal.classic_mode'] else get_next_color_func()",
+          "note": "get_next_color_func is a free parameter. When c is None, no facecolors or color kwarg is given, and classic_mode is False, it is called unconditionally. Passing None raises TypeError: 'NoneType' object is not callable. Whether callers can ever pass None is not visible here.",
+          "violated_property": "TypeError: 'NoneType' object is not callable in get_next_color_func()"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Axes._parse_scatter_color_args",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py::Axes._parse_scatter_color_args.invalid_shape_exception": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Axes._parse_scatter_color_args.invalid_shape_exception",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/av_real_02.py::WebSocketHandler.set_nodelay": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+          "function": "WebSocketHandler.set_nodelay",
+          "category": "",
+          "expression": "assert self.stream is not None",
+          "note": "self.stream is object state, not a constant. The only guard is the assert itself, and it fails whenever self.stream is None. If the stream is None when set_nodelay(value) is called, for example after the connection closed, the assert raises AssertionError instead of a controlled error or a no-op. The line self.stream.set_nodelay(value) is unreachable in that state.",
+          "violated_property": "AssertionError: assert self.stream is not None fails when self.stream is None"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "WebSocketHandler.set_nodelay",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_32.py::date_convert": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+          "function": "date_convert",
+          "category": "",
+          "expression": "y, m, d = re.split('[-/\\\\s]', groups[ymd])",
+          "note": "ymd, mdy and dmy are free parameters. The guard only checks the index is not None, not the group content. A group value like '2020-01' or '2020 - 01 - 02' gives 2 or 5 parts, so the 3-way unpack raises ValueError. A None group (optional group that did not match) makes re.split raise TypeError. The same applies to the mdy and dmy branches.",
+          "violated_property": "ValueError: unpack de re.split com número de partes diferente de 3 (ou TypeError se groups[ymd] for None)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+          "function": "date_convert",
+          "category": "",
+          "expression": "H, M, S = t",
+          "note": "t = groups[hms].split(':') can have 1 or 4+ parts, e.g. '12' or '1:2:3:4'. len(t)==2 is handled, everything else falls to the 3-way unpack and raises ValueError. Also S.split('.') with more than one dot raises ValueError on unpack, and float('.' + u) with u == '' (e.g. '12:30:45.') raises ValueError.",
+          "violated_property": "ValueError: unpack de t com len(t) != 3 (também S.split('.') com 2+ pontos e float('.'))"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+          "function": "date_convert",
+          "category": "",
+          "expression": "H += 12",
+          "note": "For '12:00 PM', H=12 and H += 12 gives H=24. time(24, ...) or datetime(..., 24, ...) then raises ValueError('hour must be in 0..23'). The guard only compares the PM text, not H. Separately, 12 AM stays 12 and lowercase 'pm' is ignored, which are wrong values.",
+          "violated_property": "ValueError: hour must be in 0..23 em time()/datetime() com H=24"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+          "function": "date_convert",
+          "category": "",
+          "expression": "d = datetime(y, m, d, H, M, S, u, tzinfo=tz)",
+          "note": "When the tz group is an uppercase string other than 'Z' (e.g. 'EST', 'UTC'), the isupper() branch does `pass` and tz stays a str. It is then passed as tzinfo= to time() or datetime(), which raises TypeError because tzinfo must be a tzinfo subclass or None.",
+          "violated_property": "TypeError: tzinfo argument must be None or of a tzinfo subclass, not str"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+          "function": "date_convert",
+          "category": "",
+          "expression": "offset = int(tzm) + int(tzh) * 60",
+          "note": "For tz like '+5' or '+05' the else branch gives tzm == '' (slice beyond end), so int('') raises ValueError. A tz with two colons raises ValueError at the 2-way unpack of tz[1:].split(':'). A non-digit tz such as '+ab' also raises ValueError in int().",
+          "violated_property": "ValueError: int('') em int(tzm) (ou unpack de split(':') com 3+ partes)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+          "function": "date_convert",
+          "category": "",
+          "expression": "m = MONTHS_MAP[m]",
+          "note": "Any non-digit month string missing from MONTHS_MAP (e.g. 'sept', different case, an unexpected month name) raises KeyError. In the d_m_y branch groups[m] can be None for an optional group, so m.isdigit() raises AttributeError and int(y) raises TypeError.",
+          "violated_property": "KeyError em MONTHS_MAP[m] (ou AttributeError: None recebe .isdigit)"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "date_convert",
+        "strategy": "single",
+        "located_candidates": 6,
+        "classified_candidates": 6,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_25.py::_preprocess_numpy_input": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "category": "",
+          "expression": "x[2, :, :] -= mean[2]",
+          "note": "x is a free parameter. The code indexes channels 0, 1 and 2 without checking the channel axis size. With data_format='channels_first', a 3D x of shape (1,H,W) or (2,H,W) passes the ndim guard and x[2,:,:] raises IndexError. The same happens for channels_last with last dim < 3 (x[..., 2]) and for 4D channels_first with C < 3. Any rank other than 3 goes to the 4D branch, so a 2D x also fails at x[:, 0, :, :] with too many indices.",
+          "violated_property": "IndexError em x[2, :, :] (e x[..., 2], x[:, 2, :, :]) quando o eixo de canal tem tamanho < 3"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "category": "",
+          "expression": "x /= 127.5",
+          "note": "Augmented assignment divides in place. For an integer numpy array (typical uint8 image), x /= 127.5 and x /= 255.0 raise UFuncTypeError (a TypeError subclass) because true division cannot be cast to int in place. Subsequent `-=` with float means has the same problem in the caffe path. No guard or cast exists, and the input dtype is free.",
+          "violated_property": "TypeError (UFuncTypeError) em x /= 127.5 / x /= 255.0 / x[...] -= float para x de dtype inteiro"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "category": "",
+          "expression": "x.ndim",
+          "note": "x is used with .ndim, slicing with `...` and elementwise in-place ops, with no conversion. If x is a Python list (nested lists of pixels), `x /= 127.5` raises TypeError in tf and torch modes. In caffe mode x.ndim raises AttributeError (channels_first) and x[..., ::-1] raises TypeError (channels_last).",
+          "violated_property": "AttributeError: list não tem .ndim / TypeError em x /= 127.5 para x do tipo list"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+          "function": "_preprocess_numpy_input",
+          "finding_type": "suspected_bug",
+          "expression": "x[0, :, :] -= mean[0]",
+          "violated_property": "resultado errado: mutação in-place do array de entrada (efeito colateral), nada quebra"
+        }
+      ],
+      "trace": {
+        "function": "_preprocess_numpy_input",
+        "strategy": "single",
+        "located_candidates": 4,
+        "classified_candidates": 4,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_scrapy_40.py::PythonItemExporter._serialize_value": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_scrapy_40.py",
+          "function": "PythonItemExporter._serialize_value",
+          "category": "",
+          "expression": "return to_unicode(value, encoding=self.encoding)",
+          "note": "value is a free parameter. A scalar such as 5, 1.5 or None is not a BaseItem, dict or list-like, so it reaches the final branch. With self.binary False, to_unicode requires bytes or str and raises TypeError for any other type. With self.binary True, to_bytes has the same rule and raises TypeError. Nothing in the function catches it.",
+          "violated_property": "TypeError em to_unicode(value) / to_bytes(value) quando value é int, float ou None"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "PythonItemExporter._serialize_value",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_17.py::response_status_message": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+          "function": "response_status_message",
+          "category": "",
+          "expression": "int(status)",
+          "note": "`status` is a free parameter with no guard. Any non-numeric string such as 'abc' or '' makes int() raise ValueError. None or a list makes it raise TypeError. Nothing catches the exception, so it escapes the function.",
+          "violated_property": "ValueError em int(status) para string não numérica; TypeError para None"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+          "function": "response_status_message",
+          "category": "",
+          "expression": "to_native_str(http.RESPONSES.get(int(status)))",
+          "note": "`http.RESPONSES.get(int(status))` returns None when the code is not in the table, for example status=999 or status=0. The None goes straight into to_native_str. That helper normally accepts only str or bytes and raises TypeError for other types, such as None. The call is unguarded and not wrapped in try/except, so any unknown but numeric status reaches the TypeError path. This depends on the semantics of to_native_str, which is not shown, so it is listed under context_needed.",
+          "violated_property": "TypeError: to_native_str recebe None quando status não está em http.RESPONSES"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "response_status_message",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_16.py::pivot": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_16.py",
+          "function": "pivot",
+          "category": "",
+          "expression": "index = MultiIndex.from_arrays([index, data[columns]])",
+          "note": "columns defaults to None and is never validated. With values None, cols contains None and set_index raises KeyError. With values not None, data[columns] looks up the key None and raises KeyError. A call like target_function(df, index='a') reaches this with no guard.",
+          "violated_property": "KeyError em data[None] / data.set_index([None]) quando columns=None"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_16.py",
+          "function": "pivot",
+          "category": "",
+          "expression": "return indexed.unstack(columns)",
+          "note": "Rows whose (index, columns) pair repeats produce a non-unique MultiIndex. unstack raises ValueError ('Index contains duplicate entries, cannot reshape'). The rule depends only on the data, and nothing in the function prevents or catches it.",
+          "violated_property": "ValueError em indexed.unstack(columns) com pares (index, columns) duplicados"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "pivot",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_black_21.py::dump_to_file": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "dump_to_file",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py::Index._get_nearest_indexer": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py",
+          "function": "Index._get_nearest_indexer",
+          "category": "",
+          "expression": "left_distances = abs(self.values[left_indexer] - target)",
+          "note": "If self is empty, get_indexer returns all -1 for a non-empty target. self.values[left_indexer] then indexes an empty array with -1, raising IndexError. No guard and no try/except.",
+          "violated_property": "IndexError em self.values[left_indexer] com self vazio e indexer -1"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py",
+          "function": "Index._get_nearest_indexer",
+          "category": "",
+          "expression": "abs(self.values[left_indexer] - target)",
+          "note": "Subtraction assumes numeric dtype. For an object or string Index, self.values[...] - target raises TypeError (unsupported operand for subtract). No guard is visible and the parameters are unrestricted.",
+          "violated_property": "TypeError em subtracao de arrays de strings (self.values - target)"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py",
+          "function": "Index._get_nearest_indexer",
+          "finding_type": "suspected_bug",
+          "expression": "left_distances = abs(self.values[left_indexer] - target)",
+          "violated_property": "resultado errado: indexer -1 devolvido quando existe vizinho valido; nada levanta excecao"
+        }
+      ],
+      "trace": {
+        "function": "Index._get_nearest_indexer",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_31.py::ctc_batch_cost": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_31.py",
+          "function": "ctc_batch_cost",
+          "finding_type": "suspected_bug",
+          "expression": "label_length = tf.to_int32(tf.squeeze(label_length))",
+          "violated_property": "não verificável: falha depende de formato de tensor e comportamento interno do TensorFlow (rank 0 em vez de rank 1 com batch 1)"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_31.py",
+          "function": "ctc_batch_cost",
+          "finding_type": "suspected_bug",
+          "expression": "tf.to_int32(tf.squeeze(label_length))",
+          "violated_property": "não verificável: a falha depende do ambiente (versão do TensorFlow instalada), não dos argumentos"
+        }
+      ],
+      "trace": {
+        "function": "ctc_batch_cost",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 2
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_08.py::simple_separated_format": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "simple_separated_format",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_10.py::serialize_response": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_fastapi_10.py",
+          "function": "serialize_response",
+          "category": "",
+          "expression": "raise ValidationError(errors)",
+          "note": "`field` is a free parameter. When `field.validate` returns an ErrorWrapper or a non-empty list, `errors` is non-empty and the guard `if errors:` passes. The raise then calls `ValidationError(errors)` with one argument. Pydantic v1's ValidationError requires a second `model` argument, so the call fails with TypeError instead of raising the intended validation error.",
+          "violated_property": "TypeError: ValidationError.__init__() missing required argument 'model' em ValidationError(errors)"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "serialize_response",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_07.py::MarkerStyle._recache": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "MarkerStyle._recache",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_64.py::ExcelFormatter.__init__": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_64.py",
+          "function": "ExcelFormatter.__init__",
+          "finding_type": "suspected_bug",
+          "expression": "self.df = df",
+          "violated_property": "resultado errado: `cols` é validado mas não aplicado, então colunas fora de `cols` são exportadas e nada levanta exceção, o que o ESBMC não verifica sozinho"
+        }
+      ],
+      "trace": {
+        "function": "ExcelFormatter.__init__",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_26.py::Scheduler.add_task": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_26.py",
+          "function": "Scheduler.add_task",
+          "category": "",
+          "expression": "expl_raw = json.loads(expl)",
+          "note": "expl defaults to None and is a free parameter. With status == FAILED and batch_emails enabled, json.loads(None) raises TypeError. The try only catches ValueError (JSONDecodeError), so TypeError escapes and add_task aborts after set_status already ran. A caller sending FAILED without expl triggers it.",
+          "violated_property": "TypeError em json.loads(None): o except captura só ValueError"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_26.py",
+          "function": "Scheduler.add_task",
+          "category": "",
+          "expression": "task.resources_running = self._state.get_batch_running_tasks(batch_id)[0].resources_running",
+          "note": "batch_id is a free parameter. The guard only checks that it is truthy, not that any running task exists for that batch. With status == RUNNING, a task with no worker_running and an unknown or empty batch_id, an empty list is returned and [0] raises IndexError.",
+          "violated_property": "IndexError em get_batch_running_tasks(batch_id)[0] quando a lista é vazia"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Scheduler.add_task",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_107.py::DataFrame.append": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_107.py",
+          "function": "DataFrame.append",
+          "category": "",
+          "expression": "to_concat = [self] + other",
+          "note": "The branch accepts tuple, but the earlier conversion branch only handles list, so a tuple reaches `[self] + other` unchanged. Adding a list and a tuple raises TypeError. Any non-empty tuple of DataFrames passed as `other` reaches this line, and no try/except wraps it.",
+          "violated_property": "TypeError em [self] + other quando other é tuple (list + tuple)"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "DataFrame.append",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py::IntervalArray.__setitem__": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py",
+          "function": "IntervalArray.__setitem__",
+          "category": "",
+          "expression": "key = check_array_indexer(self, key)",
+          "note": "`key` is a free parameter. A boolean mask whose length differs from len(self), or an out-of-range integer, raises IndexError. The rule depends only on the arguments and len(self).",
+          "violated_property": "IndexError em check_array_indexer/left.values[key] para máscara booleana de tamanho errado ou inteiro fora do intervalo"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py",
+          "function": "IntervalArray.__setitem__",
+          "finding_type": "suspected_bug",
+          "expression": "array = IntervalArray(value)",
+          "violated_property": "resultado errado: a atribuição de lista de intervalos com `closed` diferente é aceita silenciosamente (nada quebra)"
+        }
+      ],
+      "trace": {
+        "function": "IntervalArray.__setitem__",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_5.py::create_cloned_field": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "create_cloned_field",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py::urljoin": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+          "function": "urljoin",
+          "category": "",
+          "expression": "path = path.decode('utf-8')",
+          "note": "path is a free parameter. Bytes that are not valid UTF-8 (e.g. b'\\xff') pass the isinstance guard, which only checks the type. Nothing catches the exception, so decode raises before the function returns None.",
+          "violated_property": "UnicodeDecodeError em path.decode('utf-8') com path=b'\\xff'"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+          "function": "urljoin",
+          "category": "",
+          "expression": "base = base.decode('utf-8')",
+          "note": "base is a free parameter. With a valid str path that does not start with http(s):// or //, execution reaches line 9. A base of b'\\xff' then raises UnicodeDecodeError instead of returning None. This is a separate site from the path decode on line 3.",
+          "violated_property": "UnicodeDecodeError em base.decode('utf-8') com base=b'\\xff' e path='a'"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+          "function": "urljoin",
+          "category": "",
+          "expression": "return compat_urlparse.urljoin(base, path)",
+          "note": "The regex only checks the prefix of base, so base='//[' (or 'http://[') passes and path='a' is a relative non-empty str. urljoin calls urlparse/urlsplit on base, and urlsplit raises ValueError('Invalid IPv6 URL') for an unbalanced bracket in the netloc. The exception is not caught and the function never returns None.",
+          "violated_property": "ValueError('Invalid IPv6 URL') em urljoin(base, path) com base='//[' e path='a'"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "urljoin",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_21.py::Series._get_with": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Series._get_with",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_27.py::parse_dfxp_time_expr": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "parse_dfxp_time_expr",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/dz_real_01.py::makeMappingArray": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/dz_real_01.py",
+          "function": "makeMappingArray",
+          "category": "",
+          "expression": "if x[0] != 0.0 or x[-1] != 1.0:",
+          "note": "data is a free parameter. An empty array with shape (0, 3) has len(shape)==2 and shape[1]==3, so it passes the shape guard. Then x = adata[:, 0] has length 0 and x[0] raises IndexError instead of the intended ValueError.",
+          "violated_property": "IndexError em x[0] com data de shape (0, 3)"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/dz_real_01.py",
+          "function": "makeMappingArray",
+          "finding_type": "suspected_bug",
+          "expression": "lut = np.concatenate([[y1[0]], distance * (y0[ind] - y1[ind - 1]) + y1[ind - 1], [y0[-1]]])",
+          "violated_property": "resultado errado: lut tem tamanho 2 para N=1, nada levanta exceção"
+        }
+      ],
+      "trace": {
+        "function": "makeMappingArray",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py::Index.__new__": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py",
+          "function": "Index.__new__",
+          "category": "",
+          "expression": "ea_cls = dtype.construct_array_type()",
+          "note": "dtype is a free parameter. A registered extension dtype name string (e.g. 'Int64') makes is_extension_array_dtype(dtype) true, and the guard only excludes None and object. The string is used directly, and str has no construct_array_type, so AttributeError is raised.",
+          "violated_property": "AttributeError: str has no attribute construct_array_type at dtype.construct_array_type()"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py",
+          "function": "Index.__new__",
+          "finding_type": "suspected_bug",
+          "expression": "issubclass(data.dtype.type, np.bool)",
+          "violated_property": "AttributeError: module 'numpy' has no attribute 'bool' (np.bool alias removed). Not verifiable: depends on installed numpy version (environment)"
+        }
+      ],
+      "trace": {
+        "function": "Index.__new__",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_03.py::_match_one": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_03.py",
+          "function": "_match_one",
+          "category": "",
+          "expression": "return op(actual_value, comparison_value)",
+          "note": "dct is a free parameter and actual_value comes straight from dct.get(key). With filter_part 'x>5' and dct {'x': [1]} (or a dict, tuple, or other non-numeric non-str, non-None value), intval is not None but actual_value is not compat_str, so the else branch sets comparison_value=5. Then operator.gt([1], 5) is evaluated with no guard or try/except, and Python 3 raises TypeError.",
+          "violated_property": "TypeError em op(actual_value, comparison_value): operator.gt(list, int)"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_03.py",
+          "function": "_match_one",
+          "finding_type": "suspected_bug",
+          "expression": "comparison_value = m.group('quotedstrval') or m.group('strval') or m.group('intval')",
+          "violated_property": "resultado errado: 'or' descarta strval vazio e compara com None; nada levanta exceção"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_03.py",
+          "function": "_match_one",
+          "finding_type": "suspected_bug",
+          "expression": "m = operator_rex.search(filter_part)",
+          "violated_property": "resultado errado: filtro com prefixo inválido é aceito com chave truncada, sem exceção"
+        }
+      ],
+      "trace": {
+        "function": "_match_one",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 2
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/io_real_01.py::nonsingular": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/io_real_01.py",
+          "function": "nonsingular",
+          "category": "",
+          "expression": "if maxabsvalue < 1000000.0 / tiny * np.finfo(float).tiny:",
+          "note": "`tiny` is a free parameter with no guard. The early return only checks `np.isfinite(vmin)` and `np.isfinite(vmax)`, so finite vmin and vmax with `tiny=0.0` reach the division `1000000.0 / tiny`. With a Python float 0.0 this raises ZeroDivisionError. No try/except wraps it.",
+          "violated_property": "ZeroDivisionError em 1000000.0 / tiny com tiny=0.0"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "nonsingular",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_fastapi_2.py::APIRouter.add_api_websocket_route": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "APIRouter.add_api_websocket_route",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_18.py::SimpleTaskState.set_status": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_18.py",
+          "function": "SimpleTaskState.set_status",
+          "category": "",
+          "expression": "assert config is not None",
+          "note": "config is a free parameter with default None. With new_status == FAILED and config omitted, the guard enters the branch and the assert condition is false. The failure is reachable from valid inputs, since the signature allows config=None.",
+          "violated_property": "AssertionError em assert config is not None quando new_status == FAILED e config=None"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_18.py",
+          "function": "SimpleTaskState.set_status",
+          "category": "",
+          "expression": "self._status_tasks[task.status].pop(task.id)",
+          "note": "dict.pop(task.id) without default raises KeyError if the task is not in the bucket for its current status, for example a task never registered or whose status bucket was changed elsewhere (re_enable at line 9 may also change task.status/bucket). No guard protects this on any path.",
+          "violated_property": "KeyError em self._status_tasks[task.status].pop(task.id) quando task.id ausente do bucket"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "SimpleTaskState.set_status",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_01.py::Request._set_url": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_01.py",
+          "function": "Request._set_url",
+          "finding_type": "suspected_bug",
+          "expression": "if ':' not in self._url:\n        raise ValueError('Missing scheme in request url: %s' % self._url)",
+          "violated_property": "resultado errado: URL sem esquema com ':' (ex: 'localhost:8000') é aceita em vez de levantar ValueError; nada quebra, então não há propriedade de falha para o ESBMC"
+        }
+      ],
+      "trace": {
+        "function": "Request._set_url",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py::TimedeltaIndex.searchsorted": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py",
+          "function": "TimedeltaIndex.searchsorted",
+          "category": "",
+          "expression": "value = Timedelta(value).asm8.view(_TD_DTYPE)",
+          "note": "For a scalar, value is a free parameter and goes straight to Timedelta(value). A non-parseable string such as 'abc' or an unsupported type such as None or a list makes the Timedelta constructor raise ValueError or TypeError. No guard or try/except blocks these inputs, so searchsorted(value) raises instead of returning an insertion index.",
+          "violated_property": "ValueError em Timedelta('abc') (TypeError para tipo não suportado)"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py",
+          "function": "TimedeltaIndex.searchsorted",
+          "finding_type": "suspected_bug",
+          "expression": "value = np.array(value, dtype=_TD_DTYPE, copy=False)",
+          "violated_property": "não verificável: o ValueError de copy=False depende da versão do NumPy instalada (ambiente)"
+        }
+      ],
+      "trace": {
+        "function": "TimedeltaIndex.searchsorted",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_34.py::find_hook": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/ip_real_34.py",
+          "function": "find_hook",
+          "finding_type": "suspected_bug",
+          "expression": "for hook_file in os.listdir(hooks_dir):\n        if valid_hook(hook_file, hook_name):\n            return os.path.abspath(os.path.join(hooks_dir, hook_file))",
+          "violated_property": "resultado não determinístico: a escolha entre vários arquivos que casam com hook_name depende da ordem de os.listdir, e nada levanta exceção, então não é verificável pelo ESBMC"
+        }
+      ],
+      "trace": {
+        "function": "find_hook",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/ip_real_34.py::run_hook": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "run_hook",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_pandas_163.py::_Window._prep_values": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_163.py",
+          "function": "_Window._prep_values",
+          "category": "",
+          "expression": "values[np.isinf(values)] = np.NaN",
+          "note": "np.NaN alias was removed in NumPy 2.0. Any input reaching the last statement raises AttributeError on NumPy >= 2.0, regardless of the values.",
+          "violated_property": "AttributeError: module 'numpy' não tem atributo 'NaN' (NumPy >= 2.0)"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_pandas_163.py",
+          "function": "_Window._prep_values",
+          "finding_type": "suspected_bug",
+          "expression": "values[np.isinf(values)] = np.NaN",
+          "violated_property": "resultado errado: efeito colateral, o array de entrada float64 é modificado in place (inf vira NaN); nada quebra"
+        }
+      ],
+      "trace": {
+        "function": "_Window._prep_values",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_19.py::SimpleTaskState.set_status": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_19.py",
+          "function": "SimpleTaskState.set_status",
+          "category": "",
+          "expression": "assert config is not None",
+          "note": "config defaults to None and is a free parameter. A call with new_status == FAILED and config omitted reaches the assert with a false condition. No try/except catches it. The default parameter makes the call valid, but the function then fails.",
+          "violated_property": "AssertionError: config is None when new_status == FAILED"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_19.py",
+          "function": "SimpleTaskState.set_status",
+          "category": "",
+          "expression": "self._status_tasks[task.status].pop(task.id)",
+          "note": "pop(task.id) has no default and no membership guard. If the task was never registered in the bucket for its current status, pop raises KeyError. This can happen when re_enable changes task.status without moving the task between buckets, or when the task was not added to _status_tasks. Nothing wraps the call in try/except.",
+          "violated_property": "KeyError in self._status_tasks[task.status].pop(task.id)"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "SimpleTaskState.set_status",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_tqdm_1.py::tenumerate": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_tqdm_1.py",
+          "function": "tenumerate",
+          "category": "",
+          "expression": "total=total or len(iterable)",
+          "note": "Para um np.ndarray 0-d (np.array(3)) com total=None, `total or len(iterable)` avalia len() de objeto sem tamanho. A guarda isinstance só checa o tipo, não a dimensão. Além disso, total=0 explícito é tratado como falsy e substituído por len(iterable).",
+          "violated_property": "TypeError: len() of unsized object em len(iterable) para ndarray 0-d"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_tqdm_1.py",
+          "function": "tenumerate",
+          "finding_type": "suspected_bug",
+          "expression": "return enumerate(tqdm_class(iterable, start, **tqdm_kwargs))",
+          "violated_property": "resultado errado: enumerate ignora `start` (índices começam em 0) e a barra recebe desc=start; nada quebra no caso comum"
+        }
+      ],
+      "trace": {
+        "function": "tenumerate",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/tm_real_05.py::MailSender.send": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+          "function": "MailSender.send",
+          "category": "",
+          "expression": "msg = MIMENonMultipart(*mimetype.split('/', 1))",
+          "note": "mimetype is a free parameter. With attachs empty and mimetype='text', split yields one element and MIMENonMultipart needs (maintype, subtype), so a TypeError for a missing positional argument is raised. No guard or try/except.",
+          "violated_property": "TypeError: MIMENonMultipart() missing argument subtype when mimetype has no '/'"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+          "function": "MailSender.send",
+          "category": "",
+          "expression": "part = MIMEBase(*mimetype.split('/'))",
+          "note": "The attachment tuple supplies mimetype freely. A value with no '/' gives one argument, and a value with two or more '/' (e.g. 'a/b/c') gives three or more. In both cases MIMEBase gets the wrong number of positional args and raises TypeError. The split has no maxsplit, unlike line 6.",
+          "violated_property": "TypeError: MIMEBase() wrong number of arguments for an attachment mimetype without exactly one '/'"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+          "function": "MailSender.send",
+          "category": "",
+          "expression": "rcpts.extend(cc)",
+          "note": "rcpts = to[:] keeps the type of to. If to is a tuple (join accepts it) and cc is non-empty, rcpts is a tuple and has no extend, so AttributeError is raised.",
+          "violated_property": "AttributeError: 'tuple' object has no attribute 'extend'"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+          "function": "MailSender.send",
+          "category": "",
+          "expression": "'mailattachs': len(attachs)",
+          "note": "attachs=None passes every 'if attachs' check as falsy and reaches the later len(attachs) call. With self.debug true, logger.debug evaluates len(None) and raises TypeError. In the non-debug path, callbackArgs=[..., len(attachs)] at line 33 raises the same error.",
+          "violated_property": "TypeError: object of type 'NoneType' has no len() when attachs=None"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+          "function": "MailSender.send",
+          "category": "",
+          "expression": "msg.attach(MIMEText(body, 'plain', charset or 'us-ascii'))",
+          "note": "With attachments and charset=None, the body is encoded as us-ascii. A non-ASCII body such as 'á' makes MIMEText raise UnicodeEncodeError. The no-attachment path does not fail the same way.",
+          "violated_property": "UnicodeEncodeError in MIMEText for a non-ASCII body with the us-ascii default charset"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "MailSender.send",
+        "strategy": "single",
+        "located_candidates": 5,
+        "classified_candidates": 5,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_thefuck_11.py::get_new_command": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_thefuck_11.py",
+          "function": "get_new_command",
+          "category": "",
+          "expression": "command.stderr.split('\\n')[-3]",
+          "note": "command.stderr comes from outside the function and nothing constrains it. When stderr has fewer than 3 lines, for example an empty string (split gives ['']) or a single line, index -3 is out of range. No try/except surrounds the expression.",
+          "violated_property": "IndexError em command.stderr.split('\\n')[-3]"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_thefuck_11.py",
+          "function": "get_new_command",
+          "finding_type": "suspected_bug",
+          "expression": "command.stderr.split('\\n')[-3].strip().partition('git ')[2]",
+          "violated_property": "resultado errado: partition('git ')[2] vira '' sem 'git ' na linha e o comando corrigido sai errado, sem exceção"
+        }
+      ],
+      "trace": {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 1
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_luigi_26.py::HadoopJarJobRunner.run_job": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_luigi_26.py",
+          "function": "HadoopJarJobRunner.run_job",
+          "category": "",
+          "expression": "logger.error(\"Can't find jar: %s, full path %s\", job.jar(), os.path.abspath(job.jar()))",
+          "note": "Local branch (ssh_config falsy). The guard `not job.jar()` is true when jar() returns None, entering the block. The error log arguments are evaluated eagerly, so os.path.abspath(None) raises TypeError before HadoopJarJobError is raised. The intended error is masked by a TypeError.",
+          "violated_property": "TypeError em os.path.abspath(None) quando job.jar() é None"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "HadoopJarJobRunner.run_job",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py::unescapeHTML": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py",
+          "function": "unescapeHTML",
+          "category": "",
+          "expression": "assert type(s) == compat_str",
+          "note": "s is a free parameter. The None guard only covers None. Any other non-str value (bytes, int, list) passes the guard and reaches the assert, whose condition is false. It is not inside a try/except.",
+          "violated_property": "AssertionError em assert type(s) == compat_str quando s não é str nem None"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py",
+          "function": "unescapeHTML",
+          "category": "",
+          "expression": "re.sub('&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)",
+          "note": "s is free and the regex matches any text between '&' and ';'. For a numeric entity with a code point above 0x10FFFF (e.g. '&#x110000;'), the transform probably calls chr(int(...)), which would raise ValueError or OverflowError. Nothing catches it. The helper body is not shown, so this depends on its implementation.",
+          "violated_property": "ValueError/OverflowError em chr() com code point > 0x10FFFF dentro de _htmlentity_transform"
+        }
+      ],
+      "rejected_findings": [],
+      "trace": {
+        "function": "unescapeHTML",
+        "strategy": "single",
+        "located_candidates": 2,
+        "classified_candidates": 2,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_keras_7.py::KerasRegressor.predict": {
+      "candidates": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_7.py",
+          "function": "KerasRegressor.predict",
+          "category": "",
+          "expression": "np.squeeze(self.model.predict(x, **kwargs))",
+          "note": "self.model pode não estar definido ou ser None se predict for chamado antes de fit/construção. Isso levanta AttributeError em self.model.predict. É estado do objeto, sem guarda na função.",
+          "violated_property": "AttributeError: self.model ausente ou None recebe .predict"
+        }
+      ],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_7.py",
+          "function": "KerasRegressor.predict",
+          "finding_type": "suspected_bug",
+          "expression": "kwargs = self.filter_sk_params(Sequential.predict, kwargs)",
+          "violated_property": "NameError: Sequential não definido, depende de import e ambiente do módulo, não de uma regra sobre os argumentos"
+        },
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_7.py",
+          "function": "KerasRegressor.predict",
+          "finding_type": "suspected_bug",
+          "expression": "np.squeeze(self.model.predict(x, **kwargs))",
+          "violated_property": "resultado errado: o squeeze descarta o eixo do batch com 1 amostra, nada levanta exceção"
+        }
+      ],
+      "trace": {
+        "function": "KerasRegressor.predict",
+        "strategy": "single",
+        "located_candidates": 3,
+        "classified_candidates": 3,
+        "rejected_candidates": 2
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/nm_real_17.py::_type": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "_type",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/bip_thefuck_14.py::Fish._get_overridden_aliases": {
+      "candidates": [],
+      "rejected_findings": [],
+      "trace": {
+        "function": "Fish._get_overridden_aliases",
+        "strategy": "single",
+        "located_candidates": 0,
+        "classified_candidates": 0,
+        "rejected_candidates": 0
+      }
+    },
+    "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/dataset/bugs_reais/funcao_com_bug/av_real_14.py::get_new_command": {
+      "candidates": [],
+      "rejected_findings": [
+        {
+          "file": "dataset/bugs_reais/funcao_com_bug/av_real_14.py",
+          "function": "get_new_command",
+          "finding_type": "suspected_bug",
+          "expression": "'open http://' + command.script[5:]",
+          "violated_property": "resultado errado: o slice fixo [5:] assume o prefixo 'open ' e gera URL malformada; nada quebra, então o ESBMC não detecta sozinho"
+        }
+      ],
+      "trace": {
+        "function": "get_new_command",
+        "strategy": "single",
+        "located_candidates": 1,
+        "classified_candidates": 1,
+        "rejected_candidates": 1
+      }
+    }
+  },
+  "detection_trace": [
+    {
+      "function": "url_concat",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "tqdm.__len__",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "JSInterpreter.interpret_expression",
+      "strategy": "single",
+      "located_candidates": 13,
+      "classified_candidates": 13,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_htmlentity_transform",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "lib2to3_parse",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "LinuxDistribution._parse_uname_content",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Request.url_for",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "add_codes",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "add_codes.ErrorsWithCodes.__getattribute__",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "S3CopyToTable.s3_load_path",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "S3CopyToTable.run",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Axes._parse_scatter_color_args",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Axes._parse_scatter_color_args.invalid_shape_exception",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "WebSocketHandler.set_nodelay",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "date_convert",
+      "strategy": "single",
+      "located_candidates": 6,
+      "classified_candidates": 6,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_preprocess_numpy_input",
+      "strategy": "single",
+      "located_candidates": 4,
+      "classified_candidates": 4,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "PythonItemExporter._serialize_value",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "response_status_message",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "pivot",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "dump_to_file",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Index._get_nearest_indexer",
+      "strategy": "single",
+      "located_candidates": 3,
+      "classified_candidates": 3,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "ctc_batch_cost",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 2
+    },
+    {
+      "function": "simple_separated_format",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "serialize_response",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "MarkerStyle._recache",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "ExcelFormatter.__init__",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "Scheduler.add_task",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "DataFrame.append",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "IntervalArray.__setitem__",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "create_cloned_field",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "urljoin",
+      "strategy": "single",
+      "located_candidates": 3,
+      "classified_candidates": 3,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Series._get_with",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "parse_dfxp_time_expr",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "makeMappingArray",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "Index.__new__",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "_match_one",
+      "strategy": "single",
+      "located_candidates": 3,
+      "classified_candidates": 3,
+      "rejected_candidates": 2
+    },
+    {
+      "function": "nonsingular",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "APIRouter.add_api_websocket_route",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "SimpleTaskState.set_status",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Request._set_url",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "TimedeltaIndex.searchsorted",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "find_hook",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "run_hook",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "_Window._prep_values",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "SimpleTaskState.set_status",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "tenumerate",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "MailSender.send",
+      "strategy": "single",
+      "located_candidates": 5,
+      "classified_candidates": 5,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "get_new_command",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 1
+    },
+    {
+      "function": "HadoopJarJobRunner.run_job",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "unescapeHTML",
+      "strategy": "single",
+      "located_candidates": 2,
+      "classified_candidates": 2,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "KerasRegressor.predict",
+      "strategy": "single",
+      "located_candidates": 3,
+      "classified_candidates": 3,
+      "rejected_candidates": 2
+    },
+    {
+      "function": "_type",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "Fish._get_overridden_aliases",
+      "strategy": "single",
+      "located_candidates": 0,
+      "classified_candidates": 0,
+      "rejected_candidates": 0
+    },
+    {
+      "function": "get_new_command",
+      "strategy": "single",
+      "located_candidates": 1,
+      "classified_candidates": 1,
+      "rejected_candidates": 1
+    }
+  ],
+  "status": "detection_complete",
+  "telemetry_events": [
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 27.109649,
+      "prompt_tokens": 2,
+      "completion_tokens": 1333,
+      "total_tokens": 1335,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 18.22771,
+      "prompt_tokens": 6,
+      "completion_tokens": 1181,
+      "total_tokens": 1187,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 38.861521,
+      "prompt_tokens": 2,
+      "completion_tokens": 4628,
+      "total_tokens": 4630,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 19.81416,
+      "prompt_tokens": 2,
+      "completion_tokens": 904,
+      "total_tokens": 906,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.665864,
+      "prompt_tokens": 2,
+      "completion_tokens": 524,
+      "total_tokens": 526,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.989251,
+      "prompt_tokens": 2,
+      "completion_tokens": 435,
+      "total_tokens": 437,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 19.189361,
+      "prompt_tokens": 2,
+      "completion_tokens": 700,
+      "total_tokens": 702,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 18.014979,
+      "prompt_tokens": 2,
+      "completion_tokens": 707,
+      "total_tokens": 709,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.502452,
+      "prompt_tokens": 2,
+      "completion_tokens": 548,
+      "total_tokens": 550,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.208481,
+      "prompt_tokens": 6,
+      "completion_tokens": 62,
+      "total_tokens": 68,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.888583,
+      "prompt_tokens": 2,
+      "completion_tokens": 343,
+      "total_tokens": 345,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 25.827372,
+      "prompt_tokens": 6,
+      "completion_tokens": 1837,
+      "total_tokens": 1843,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 16.337021,
+      "prompt_tokens": 6,
+      "completion_tokens": 62,
+      "total_tokens": 68,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 19.98218,
+      "prompt_tokens": 6,
+      "completion_tokens": 1058,
+      "total_tokens": 1064,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 31.061251,
+      "prompt_tokens": 2,
+      "completion_tokens": 3099,
+      "total_tokens": 3101,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 24.345095,
+      "prompt_tokens": 2,
+      "completion_tokens": 2002,
+      "total_tokens": 2004,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 14.387452,
+      "prompt_tokens": 2,
+      "completion_tokens": 738,
+      "total_tokens": 740,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 16.893079,
+      "prompt_tokens": 6,
+      "completion_tokens": 1249,
+      "total_tokens": 1255,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.12145,
+      "prompt_tokens": 2,
+      "completion_tokens": 1106,
+      "total_tokens": 1108,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 12.33266,
+      "prompt_tokens": 6,
+      "completion_tokens": 283,
+      "total_tokens": 289,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 20.679101,
+      "prompt_tokens": 6,
+      "completion_tokens": 2013,
+      "total_tokens": 2019,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 15.251659,
+      "prompt_tokens": 2,
+      "completion_tokens": 1045,
+      "total_tokens": 1047,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 10.883239,
+      "prompt_tokens": 6,
+      "completion_tokens": 142,
+      "total_tokens": 148,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 14.021849,
+      "prompt_tokens": 2,
+      "completion_tokens": 819,
+      "total_tokens": 821,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 10.27289,
+      "prompt_tokens": 6,
+      "completion_tokens": 171,
+      "total_tokens": 177,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 15.879277,
+      "prompt_tokens": 6,
+      "completion_tokens": 1095,
+      "total_tokens": 1101,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 19.215213,
+      "prompt_tokens": 2,
+      "completion_tokens": 1548,
+      "total_tokens": 1550,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 12.686945,
+      "prompt_tokens": 2,
+      "completion_tokens": 690,
+      "total_tokens": 692,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.120041,
+      "prompt_tokens": 2,
+      "completion_tokens": 1394,
+      "total_tokens": 1396,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 13.894866,
+      "prompt_tokens": 6,
+      "completion_tokens": 567,
+      "total_tokens": 573,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 20.903507,
+      "prompt_tokens": 6,
+      "completion_tokens": 2040,
+      "total_tokens": 2046,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 13.919817,
+      "prompt_tokens": 6,
+      "completion_tokens": 574,
+      "total_tokens": 580,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 11.23116,
+      "prompt_tokens": 2,
+      "completion_tokens": 455,
+      "total_tokens": 457,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 19.222878,
+      "prompt_tokens": 2,
+      "completion_tokens": 1533,
+      "total_tokens": 1535,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.753946,
+      "prompt_tokens": 2,
+      "completion_tokens": 1561,
+      "total_tokens": 1563,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 40.190206,
+      "prompt_tokens": 4,
+      "completion_tokens": 4441,
+      "total_tokens": 4445,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 16.213206,
+      "prompt_tokens": 6,
+      "completion_tokens": 1328,
+      "total_tokens": 1334,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 9.516109,
+      "prompt_tokens": 2,
+      "completion_tokens": 53,
+      "total_tokens": 55,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 16.47262,
+      "prompt_tokens": 2,
+      "completion_tokens": 1262,
+      "total_tokens": 1264,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.197863,
+      "prompt_tokens": 6,
+      "completion_tokens": 1453,
+      "total_tokens": 1459,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 21.082326,
+      "prompt_tokens": 6,
+      "completion_tokens": 1848,
+      "total_tokens": 1854,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 18.449131,
+      "prompt_tokens": 6,
+      "completion_tokens": 1503,
+      "total_tokens": 1509,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 12.034135,
+      "prompt_tokens": 6,
+      "completion_tokens": 360,
+      "total_tokens": 366,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 15.891109,
+      "prompt_tokens": 2,
+      "completion_tokens": 1062,
+      "total_tokens": 1064,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 20.004812,
+      "prompt_tokens": 6,
+      "completion_tokens": 1662,
+      "total_tokens": 1668,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 16.805326,
+      "prompt_tokens": 2,
+      "completion_tokens": 1335,
+      "total_tokens": 1337,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 22.811949,
+      "prompt_tokens": 2,
+      "completion_tokens": 2348,
+      "total_tokens": 2350,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.525761,
+      "prompt_tokens": 6,
+      "completion_tokens": 1369,
+      "total_tokens": 1375,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 14.29414,
+      "prompt_tokens": 2,
+      "completion_tokens": 957,
+      "total_tokens": 959,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 13.452125,
+      "prompt_tokens": 2,
+      "completion_tokens": 934,
+      "total_tokens": 936,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 19.031597,
+      "prompt_tokens": 6,
+      "completion_tokens": 1793,
+      "total_tokens": 1799,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 11.184779,
+      "prompt_tokens": 2,
+      "completion_tokens": 342,
+      "total_tokens": 344,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 14.24405,
+      "prompt_tokens": 6,
+      "completion_tokens": 204,
+      "total_tokens": 210,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    },
+    {
+      "provider": "claude_cli",
+      "requested_model": "claude-sonnet-5-5",
+      "returned_model": "claude-sonnet-5-5",
+      "status": "success",
+      "duration_seconds": 17.008224,
+      "prompt_tokens": 6,
+      "completion_tokens": 1192,
+      "total_tokens": 1198,
+      "cached_tokens": null,
+      "error": null,
+      "stage": "detection"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "pasta": "det-2026-10-06-amostra-A6",
+  "modificado_em": "2026-10-06T21:25",
+  "arquivos": [
+    "det-2026-10-06-amostra-A6.log",
+    "llm_telemetry.json",
+    "v2_checkpoint.json",
+    "v2_verify_report.json"
+  ],
+  "config": {},
+  "arquivos_de_entrada": 0,
+  "status": "detection_complete",
+  "vereditos (v2_verify_report.json)": {}
+}

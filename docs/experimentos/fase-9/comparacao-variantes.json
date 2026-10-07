@@ -1,0 +1,109 @@
+{
+  "A0 (base, rodada 1)": {
+    "function": 34,
+    "line": 15,
+    "findings": 60,
+    "noise": 44,
+    "line_by_kind": {
+      "excecao_modelavel": 4,
+      "excecao_nao_modelavel": 1,
+      "incerto": 1,
+      "resultado_errado": 5,
+      "excecao_local": 4
+    },
+    "evaluated": 50
+  },
+  "A0 (base, rodada 2)": {
+    "function": 34,
+    "line": 17,
+    "findings": 64,
+    "noise": 46,
+    "line_by_kind": {
+      "excecao_modelavel": 4,
+      "resultado_errado": 6,
+      "excecao_local": 5,
+      "excecao_nao_modelavel": 2
+    },
+    "evaluated": 50
+  },
+  "A1": {
+    "function": 40,
+    "line": 21,
+    "findings": 86,
+    "noise": 60,
+    "line_by_kind": {
+      "resultado_errado": 8,
+      "excecao_local": 7,
+      "excecao_nao_modelavel": 2,
+      "excecao_modelavel": 4
+    },
+    "evaluated": 50
+  },
+  "A2": {
+    "function": 40,
+    "line": 20,
+    "findings": 82,
+    "noise": 57,
+    "line_by_kind": {
+      "resultado_errado": 8,
+      "excecao_local": 6,
+      "excecao_nao_modelavel": 2,
+      "excecao_modelavel": 4
+    },
+    "evaluated": 50
+  },
+  "A3": {
+    "function": 35,
+    "line": 16,
+    "findings": 59,
+    "noise": 42,
+    "line_by_kind": {
+      "excecao_modelavel": 4,
+      "excecao_nao_modelavel": 2,
+      "incerto": 1,
+      "resultado_errado": 5,
+      "excecao_local": 4
+    },
+    "evaluated": 50
+  },
+  "A6": {
+    "function": 35,
+    "line": 16,
+    "findings": 55,
+    "noise": 37,
+    "line_by_kind": {
+      "excecao_modelavel": 4,
+      "resultado_errado": 7,
+      "excecao_local": 4,
+      "excecao_nao_modelavel": 1
+    },
+    "evaluated": 50
+  },
+  "A5 (A1+A2)": {
+    "function": 44,
+    "line": 24,
+    "findings": 101,
+    "noise": 72,
+    "line_by_kind": {
+      "excecao_local": 8,
+      "excecao_nao_modelavel": 3,
+      "resultado_errado": 9,
+      "excecao_modelavel": 4
+    },
+    "evaluated": 50
+  },
+  "A4 (uniao das 2 bases)": {
+    "function": 36,
+    "line": 19,
+    "findings": 76,
+    "noise": 55,
+    "line_by_kind": {
+      "excecao_local": 5,
+      "excecao_nao_modelavel": 2,
+      "excecao_modelavel": 4,
+      "resultado_errado": 7,
+      "incerto": 1
+    },
+    "evaluated": 50
+  }
+}

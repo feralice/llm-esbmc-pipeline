@@ -46,6 +46,8 @@ PHASES = {
     8: ["replay-2026-10-05-imports", "replay-2026-10-05-bases", "agent-2026-10-05-sonnet",
         "agent-2026-10-05-sonnet-reverify", "full-2026-10-05-regrounded", "control-fixed-2026-10-06",
         "replay-2026-10-06-nullrule", "agent-2026-10-06-e2e"],
+    9: ["det-2026-10-06-amostra-A0-r2", "det-2026-10-06-amostra-A1", "det-2026-10-06-amostra-A2",
+        "det-2026-10-06-amostra-A3", "det-2026-10-06-amostra-A6", "det-2026-10-06-amostra-A1,A2"],
 }
 
 

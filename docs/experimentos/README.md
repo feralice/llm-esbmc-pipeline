@@ -252,6 +252,53 @@ Detalhes: `docs/projeto/harness_oraculo_esbmc_2026-10-01.md`.
 - **Decisão:** parado porque não acrescentava à métrica principal. Daqui em diante as mudanças de
   harness são medidas num conjunto fixo de casos difíceis, não em rodadas completas.
 
+## Fase 9 (06/10): validação dos vereditos e variantes do prompt de detecção
+
+Mudança no pipeline: ferramentas de validação (`scripts/v2_validate.py`), modo só detecção
+(`--v2-stage detection`), variantes do prompt (`--v2-variants`), amostra fixa de 50 bugs para
+comparar prompts (`dataset/bugs_reais/amostra_deteccao.json`) e conjunto fixo de 20 casos difíceis
+para medir o harness (`dataset/bugs_reais/conjunto_dificil.json`). Branch `feat/validacao-deteccao`.
+
+### Validação de `full-2026-10-05-regrounded` (`validation.json` na pasta da fase 8)
+
+- **Comando:** `scripts/v2_validate.py artifacts/v2/full-2026-10-05-regrounded --control artifacts/v2/control-fixed-2026-10-06/report_0of1.json --mutants` (código 4a4d790).
+- **Função preservada (V1):** 0 alteradas em 23 vereditos com programa. A primeira passada acusou 7,
+  todos trocas do próprio recorte (`re.findall` virando o stub `_esbmc_re_findall`; `email.utils`
+  virando `email_utils`); a checagem passou a aceitar esses nomes de stub (commits dd8303d e 4a4d790).
+  A passada antiga ficou em `validation-v1-rigida.json`.
+- **Vacuidade (V2):** 3 `NOT_CONFIRMED` eram vazios (o ESBMC não alcança a linha): as 3 hipóteses de
+  `urljoin` (bip_youtube_dl_13 e 21), agora `NOT_CONFIRMED_VACUOUS`.
+- **Controle (V3 natural):** 5 confirmações só na versão com bug; 1 nas duas (ir_real_03, falso alarme
+  já conhecido); nenhuma só na corrigida.
+- **Mutantes (V3):** 13 gerados, 0 contados. Os perto de linhas inalcançáveis não podem ser pegos, e
+  nos outros a busca do CPython (4 entradas) não reproduz o que o ESBMC acha. Inconclusivo: é a
+  Tarefa 1 do plano do orquestrador (busca aleatória no CPython).
+
+### Variantes do prompt na amostra de 50 (`fase-9/comparacao-variantes.json`)
+
+- **Comando:** `scripts/run_detection_variants.sh 2026-10-06-amostra dataset/bugs_reais/amostra_deteccao.json <variante>` (Claude Sonnet via `claude_cli`, cerca de 15 min por rodada); avaliação por `scripts/v2_union_detection.py --sample`, regra "causa ou quebra".
+- A amostra: 30 resultado errado, 11 exceção local, 4 modeláveis, 4 não modeláveis, 1 incerto.
+
+| Variante | Pasta (`artifacts/v2/`) | Função | Linha | Achados | Fora do bug |
+|---|---|---|---|---|---|
+| A0 base, rodada 1 | `full-2026-10-04-sonnet` (filtrada) | 34 | 15 | 60 | 44 |
+| A0 base, rodada 2 | `det-2026-10-06-amostra-A0-r2` | 34 | 17 | 64 | 46 |
+| A1 reportar sem contexto | `det-2026-10-06-amostra-A1` | 40 | 21 | 86 | 60 |
+| A2 checklist de entradas | `det-2026-10-06-amostra-A2` | 40 | 20 | 82 | 57 |
+| A3 até 5 hipóteses | `det-2026-10-06-amostra-A3` | 35 | 16 | 59 | 42 |
+| A4 união das 2 bases | (as duas A0) | 36 | 19 | 76 | 55 |
+| **A5 = A1 + A2** | `det-2026-10-06-amostra-A1,A2` | **44** | **24** | 101 | 72 |
+| A6 qualquer comportamento errado | `det-2026-10-06-amostra-A6` | 35 | 16 | 55 | 37 |
+
+- A base varia de 15 a 17 entre rodadas; A1 e A2 passam disso, e juntas (A5) somam: linha de ~16 para
+  24 (+50%), função de 34 para 44, ao custo de mais achados fora do bug (de ~45 para 72), que a
+  triagem e o ESBMC filtram.
+- A3 não muda nada. A6 não acha mais, mas tem o menor ruído (37) e 7 de resultado errado contra 5 e 6
+  da base: diferença pequena demais para 50 casos.
+- Rodar a base duas vezes (A4) dá menos que A1 sozinho e custa o dobro.
+- **Decisão:** A5 (A1 + A2) é a candidata a prompt padrão; a rodada completa com ela fica para o fim
+  da etapa do harness, para medir detecção e confirmação juntas uma vez só.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
