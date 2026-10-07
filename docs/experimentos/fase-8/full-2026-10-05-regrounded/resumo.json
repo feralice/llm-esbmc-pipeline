@@ -1,11 +1,12 @@
 {
   "pasta": "full-2026-10-05-regrounded",
-  "modificado_em": "2026-10-06T02:33",
+  "modificado_em": "2026-10-06T20:34",
   "arquivos": [
     "full-2026-10-05-regrounded.log",
     "llm_telemetry.json",
     "v2_checkpoint.json",
-    "v2_verify_report.json"
+    "v2_verify_report.json",
+    "validation.json"
   ],
   "config": {},
   "arquivos_de_entrada": 0,
