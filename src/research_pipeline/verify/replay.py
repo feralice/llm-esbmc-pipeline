@@ -78,7 +78,7 @@ def _no_network_prefix() -> tuple[str, ...]:
 
 def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
                     timeout_seconds: int = 20, seeds: dict[str, list] | None = None,
-                    seeds_only: bool = False) -> ReplayVerdict:
+                    seeds_only: bool = False, random_runs: int = 0, seed: int = 0) -> ReplayVerdict:
     """``seeds_only`` runs ESBMC's counterexample values alone: a reproduction then shows those inputs,
     not a search of its own, break the program."""
     if seeds_only and not any((seeds or {}).values()):
@@ -95,7 +95,7 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
     target_range = program.target_range if program.replay_target_range is None else program.replay_target_range
     config = {"function": function, "spans": spans, "range": target_range,
               "max_runs": max_runs, "deadline_seconds": max(1, timeout_seconds - 3), "seeds": seeds or {},
-              "seeds_only": seeds_only}
+              "seeds_only": seeds_only, "random_runs": random_runs, "seed": seed}
     try:
         with tempfile.TemporaryDirectory(prefix="llm-esbmc-verify-") as temp_dir:
             directory = Path(temp_dir)

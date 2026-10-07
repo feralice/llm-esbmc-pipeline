@@ -6,6 +6,7 @@ Standalone script (run with ``python -I -S``): argv = program, config JSON, outp
 import __future__
 import io
 import json
+import random
 import signal
 import sys
 import time
@@ -18,6 +19,7 @@ DOMAINS = {
     str: ["", "a"],
 }
 MAX_LIST = 2
+RANDOM_MAX_LIST = 5
 RUN_SECONDS = 0.5
 
 
@@ -37,6 +39,31 @@ class _Chooser:
         return domain[choice]
 
 
+class _RandomChooser:
+    def __init__(self, rng):
+        self.rng = rng
+        self.sizes = []
+        self.values = []
+
+    def pick(self, domain):
+        self.sizes.append(len(domain))
+        value = self.rng.choice(domain)
+        self.values.append(value)
+        return value
+
+
+def _random_domains(rng):
+    """Wider values than DOMAINS: edges and sampled ints, strings with separators and non-ASCII."""
+    edges = [0, 1, -1, 2, -2, 3, 7, 10, 100, 127, 128, 255, 256, 1000, -1000, 2**31 - 1, -2**31, 2**63 - 1]
+    return {
+        int: edges + [rng.randint(-10**6, 10**6) for _ in range(30)],
+        float: [0.0, -0.0, 0.5, -1.5, 1.0, -1.0, 1e9, -1e-9, 3.14, float("inf"), float("-inf"), float("nan")],
+        bool: [False, True],
+        str: ["", "a", " ", "0", "-1", "1.5", "abc", "a b", "a.b", "a,b", "a/b", "a\\b", "\n", "\t", "\u00e9",
+              "%s", "{}", "'", '"', " x ", "A" * 40, "None", "true"],
+    }
+
+
 def _next_vector(vector, sizes):
     used = [vector[i] if i < len(vector) else 0 for i in range(len(sizes))]
     for j in range(len(sizes) - 1, -1, -1):
@@ -45,12 +72,12 @@ def _next_vector(vector, sizes):
     return None
 
 
-def _intrinsics(chooser, domains=None):
+def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
     domains = domains or DOMAINS
 
     def nondet_list(size=MAX_LIST, elem_type=0):
         kind = type(elem_type) if type(elem_type) in domains else int
-        length = chooser.pick(list(range(min(size, MAX_LIST) + 1)))
+        length = chooser.pick(list(range(min(size, max_list) + 1)))
         return [chooser.pick(domains[kind]) for _ in range(length)]
 
     def assume(condition):
@@ -110,15 +137,18 @@ def main(program_path, config_path, output_path):
     passes = ([(_seeded(config["seeds"]), SEED_RUNS)] if any(config.get("seeds", {}).values()) else [])
     if not config.get("seeds_only"):
         passes.append((DOMAINS, max_runs))
-    for domains, budget in passes:
+    if config.get("random_runs") and not config.get("seeds_only"):
+        rng = random.Random(config.get("seed", 0))
+        passes.append((_random_domains(rng), config["random_runs"], rng))
+    for domains, budget, *random_pass in passes:
         vector, used = [], 0
         while vector is not None and used < budget and time.monotonic() < deadline:
-            chooser = _Chooser(vector)
+            chooser = _RandomChooser(random_pass[0]) if random_pass else _Chooser(vector)
             runs, used = runs + 1, used + 1
             sys.stdout = io.StringIO()
             signal.setitimer(signal.ITIMER_REAL, RUN_SECONDS)
             try:
-                exec(code, {"__name__": "__main__", **_intrinsics(chooser, domains)})  # noqa: S102 - the replay is the point; host_replay_problem gates it
+                exec(code, {"__name__": "__main__", **_intrinsics(chooser, domains, RANDOM_MAX_LIST if random_pass else MAX_LIST)})  # noqa: S102 - the replay is the point; host_replay_problem gates it
             except _Discard:
                 pass
             except Exception as exc:  # noqa: BLE001 - every crash is evidence
@@ -126,7 +156,8 @@ def main(program_path, config_path, output_path):
                 # Name and line range together: another class's method may share the name.
                 in_target = [f for f in frames if f.name == function and (not last or first <= f.lineno <= last)]
                 line = in_target[-1].lineno if in_target else (frames[-1].lineno if frames else None)
-                record = {"exception_type": type(exc).__name__, "line": line, "inputs": vector}
+                record = {"exception_type": type(exc).__name__, "line": line,
+                          "inputs": chooser.values if random_pass else vector}
                 if in_target and any(start <= line <= end for start, end in spans):
                     result = {"status": "reproduced", **record}
                     break
@@ -134,7 +165,7 @@ def main(program_path, config_path, output_path):
             finally:
                 signal.setitimer(signal.ITIMER_REAL, 0)
                 sys.stdout = real_stdout
-            vector = _next_vector(vector, chooser.sizes)
+            vector = [] if random_pass else _next_vector(vector, chooser.sizes)
         if result:
             break
     if result is None:
