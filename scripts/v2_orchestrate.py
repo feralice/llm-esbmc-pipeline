@@ -28,7 +28,9 @@ from research_pipeline.verify.orchestrator import orchestrate  # noqa: E402
 _FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
 
 
-def summarize(rows: list[dict], results: list[dict], ground_truth: dict) -> dict:
+def summarize(rows: list[dict], results: list[dict], ground_truth: dict, control: list[dict] | None = None) -> dict:
+    """``control`` is the same run on the fixed versions: a crash the fixed code also has is the
+    harness's or a stub's, not the bug's."""
     by_id = {r["hypothesis"]["hypothesis_id"]: r["hypothesis"] for r in results}
 
     def at_bug(row: dict) -> bool:
@@ -36,9 +38,16 @@ def summarize(rows: list[dict], results: list[dict], ground_truth: dict) -> dict
         item = ground_truth.get(Path(h["file"]).stem)
         return item is not None and at_bug_line(h, item)
 
-    return {"final": dict(Counter(r["final"] for r in rows)),
-            "confirmed_at_bug": sum(r["final"] == "CONFIRMED" and at_bug(r) for r in rows),
-            "fuzz_found_at_bug": sum(r["final"] == FUZZ_FOUND and at_bug(r) for r in rows)}
+    found = [r for r in rows if r["final"] == FUZZ_FOUND and at_bug(r)]
+    summary = {"final": dict(Counter(r["final"] for r in rows)),
+               "confirmed_at_bug": sum(r["final"] == "CONFIRMED" and at_bug(r) for r in rows),
+               "fuzz_found_at_bug": len(found)}
+    if control is not None:
+        fixed = {r["hypothesis_id"]: r["final"] for r in control}
+        summary["fuzz_found_at_bug_not_on_fixed"] = sum(fixed.get(r["hypothesis_id"]) != FUZZ_FOUND for r in found)
+        summary["fuzz_found_at_bug_fixed_ran_clean"] = sum(
+            fixed.get(r["hypothesis_id"]) in {"FUZZ_NOTHING", "FUZZ_OTHER"} for r in found)
+    return summary
 
 
 def agent_outcome(data: dict) -> dict:
@@ -75,6 +84,7 @@ def main() -> int:
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--agent-timeout", type=int, default=900)
+    parser.add_argument("--control", default=None, help="orchestrated.json of the same run on the fixed versions")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     results = json.loads(Path(args.report).read_text(encoding="utf-8"))["results"]
@@ -100,7 +110,8 @@ def main() -> int:
 
     rows = orchestrate(results, arms=arms, state=state, save=save)
     items = {i["id"]: i for i in json.loads(Path(args.ground_truth).read_text(encoding="utf-8"))["items"]}
-    summary = summarize(rows, results, items)
+    control = json.loads(Path(args.control).read_text(encoding="utf-8"))["rows"] if args.control else None
+    summary = summarize(rows, results, items, control=control)
     (out / "orchestrated.json").write_text(json.dumps({"config": config, "rows": rows, "summary": summary},
                                                       indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))

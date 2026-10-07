@@ -23,6 +23,16 @@ def test_summary_counts_formal_and_dynamic_findings_at_the_bug_line_apart() -> N
     assert summary["final"] == {"CONFIRMED": 2, "FUZZ_FOUND": 1}
 
 
+def test_a_dynamic_finding_counts_only_when_the_fixed_version_does_not_crash_too() -> None:
+    results = [_result(h, "x[i]") for h in ("1", "2", "3")]
+    rows = [{"hypothesis_id": h, "final": "FUZZ_FOUND", "steps": []} for h in ("1", "2", "3")]
+    control = [{"hypothesis_id": "1", "final": "FUZZ_FOUND"}, {"hypothesis_id": "2", "final": "FUZZ_NOTHING"},
+               {"hypothesis_id": "3", "final": "FUZZ_UNAVAILABLE"}]
+    summary = v2_orchestrate.summarize(rows, results, GT, control=control)
+    assert summary["fuzz_found_at_bug"] == 3
+    assert summary["fuzz_found_at_bug_not_on_fixed"] == 2 and summary["fuzz_found_at_bug_fixed_ran_clean"] == 1
+
+
 def test_an_agent_verdict_on_a_rewritten_function_is_not_formal() -> None:
     assert v2_orchestrate.agent_outcome({"verdict": "NOT_CONFIRMED", "target_preserved": False})["verdict"] == \
         "TARGET_ALTERED"
