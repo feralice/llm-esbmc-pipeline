@@ -15,3 +15,8 @@ def test_union_keeps_each_finding_once_and_prefers_sent() -> None:
     sent, held = union_module.union([_report(["x[0]"], ["y.z"]), _report(["y.z", "x[0]"], ["w"])])
     assert sorted(c.expression for c in sent) == ["x[0]", "y.z"]
     assert [h["expression"] for h in held] == ["w"]
+
+
+def test_a_sample_restricts_the_evaluated_sources_to_files_every_run_saw() -> None:
+    reports = [{"config": {"input_files": ["a.py", "b.py", "c.py"]}}, {"config": {"input_files": ["a.py", "b.py"]}}]
+    assert union_module.evaluated_sources(reports, sample=["b.py", "c.py"]) == [str(Path("b.py").resolve())]

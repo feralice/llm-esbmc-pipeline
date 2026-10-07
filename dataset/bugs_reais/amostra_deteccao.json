@@ -1,0 +1,257 @@
+{
+  "rule": "Keeps the dataset's proportion of failure kinds (largest remainder), skips the patch-context items, and orders each kind by a hash of the id, so the sample is reproducible and nobody chooses a case.",
+  "files": [
+    "dataset/bugs_reais/funcao_com_bug/nm_real_07.py",
+    "dataset/bugs_reais/funcao_com_bug/nm_real_09.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_4.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_07.py",
+    "dataset/bugs_reais/funcao_com_bug/oob_real_05.py",
+    "dataset/bugs_reais/funcao_com_bug/oob_real_14.py",
+    "dataset/bugs_reais/funcao_com_bug/nm_real_08.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_spacy_1.py",
+    "dataset/bugs_reais/funcao_com_bug/tm_real_12.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_matplotlib_6.py",
+    "dataset/bugs_reais/funcao_com_bug/av_real_02.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_32.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_keras_25.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_scrapy_40.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_17.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_16.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_black_21.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_7.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_keras_31.py",
+    "dataset/bugs_reais/funcao_com_bug/tm_real_08.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_fastapi_10.py",
+    "dataset/bugs_reais/funcao_com_bug/tm_real_07.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_64.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_26.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_107.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_29.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_fastapi_5.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_13.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_21.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_27.py",
+    "dataset/bugs_reais/funcao_com_bug/dz_real_01.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_98.py",
+    "dataset/bugs_reais/funcao_com_bug/tm_real_03.py",
+    "dataset/bugs_reais/funcao_com_bug/io_real_01.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_fastapi_2.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_luigi_18.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_01.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_91.py",
+    "dataset/bugs_reais/funcao_com_bug/ip_real_34.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_pandas_163.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_luigi_19.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_tqdm_1.py",
+    "dataset/bugs_reais/funcao_com_bug/tm_real_05.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_thefuck_11.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_luigi_26.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_youtube_dl_3.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_keras_7.py",
+    "dataset/bugs_reais/funcao_com_bug/nm_real_17.py",
+    "dataset/bugs_reais/funcao_com_bug/bip_thefuck_14.py",
+    "dataset/bugs_reais/funcao_com_bug/av_real_14.py"
+  ],
+  "cases": [
+    {
+      "id": "nm_real_07",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "nm_real_09",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "bip_youtube_dl_4",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "ip_real_07",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "oob_real_05",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "oob_real_14",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "nm_real_08",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "bip_spacy_1",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "tm_real_12",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "bip_matplotlib_6",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "av_real_02",
+      "failure_kind": "excecao_local"
+    },
+    {
+      "id": "ip_real_32",
+      "failure_kind": "excecao_modelavel"
+    },
+    {
+      "id": "bip_keras_25",
+      "failure_kind": "excecao_modelavel"
+    },
+    {
+      "id": "bip_scrapy_40",
+      "failure_kind": "excecao_modelavel"
+    },
+    {
+      "id": "ip_real_17",
+      "failure_kind": "excecao_modelavel"
+    },
+    {
+      "id": "ip_real_16",
+      "failure_kind": "excecao_nao_modelavel"
+    },
+    {
+      "id": "bip_black_21",
+      "failure_kind": "excecao_nao_modelavel"
+    },
+    {
+      "id": "bip_pandas_7",
+      "failure_kind": "excecao_nao_modelavel"
+    },
+    {
+      "id": "bip_keras_31",
+      "failure_kind": "excecao_nao_modelavel"
+    },
+    {
+      "id": "tm_real_08",
+      "failure_kind": "incerto"
+    },
+    {
+      "id": "bip_fastapi_10",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "tm_real_07",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_64",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "ip_real_26",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_107",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_29",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_fastapi_5",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_youtube_dl_13",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_21",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_youtube_dl_27",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "dz_real_01",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_98",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "tm_real_03",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "io_real_01",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_fastapi_2",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_luigi_18",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "ip_real_01",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_91",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "ip_real_34",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_pandas_163",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_luigi_19",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_tqdm_1",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "tm_real_05",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_thefuck_11",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_luigi_26",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_youtube_dl_3",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_keras_7",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "nm_real_17",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "bip_thefuck_14",
+      "failure_kind": "resultado_errado"
+    },
+    {
+      "id": "av_real_14",
+      "failure_kind": "resultado_errado"
+    }
+  ]
+}
