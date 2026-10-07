@@ -216,7 +216,7 @@ def _original(hypothesis: dict, sources: Path) -> str:
     return (candidate if candidate.exists() else Path(hypothesis["file"])).read_text(encoding="utf-8")
 
 
-def _replay_program(result: dict) -> Path | None:
+def replay_program_path(result: dict) -> Path | None:
     """The pre-rewrite program of the attempt the verdict came from; None when a catalogue rewrite
     left no replay program (preservation is then unknown, not altered)."""
     program = Path(result["program_path"])
@@ -233,7 +233,7 @@ def _validate_row(result: dict, row: dict, *, sources: Path, esbmc: str, timeout
                   with_mutants: bool, reach, run) -> None:
     hypothesis = result["hypothesis"]
     row["checked"] = True
-    replay_path = _replay_program(result)
+    replay_path = replay_program_path(result)
     row["preserved"] = None if replay_path is None else target_preserved(
         _original(hypothesis, sources), replay_path.read_text(encoding="utf-8"), hypothesis["function"])
     program = program_for_result(Path(result["program_path"]), hypothesis)
