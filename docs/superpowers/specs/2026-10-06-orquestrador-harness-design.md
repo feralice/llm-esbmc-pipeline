@@ -7,7 +7,7 @@ Data: 2026-10-06. Parte do roteiro pós-validação (depois da Tarefa 12 do plan
 Tirar mais vereditos dos casos em que o nível 1 trava, gastando o braço caro só onde ele tem chance. Três peças:
 
 1. **Medir o agente via API** nos mesmos casos travados em que o agente Claude Code já rodou, para saber se ele serve como degrau intermediário.
-2. **Braço dinâmico (fuzzing com Hypothesis):** procura uma entrada que quebre a função original no CPython, sem prova formal. Barato, e a entrada achada vira semente para o ESBMC ou evidência à parte.
+2. **Braço dinâmico (busca no CPython):** procura uma entrada que quebre a função original no CPython, sem prova formal. Barato, e a entrada achada vira semente para o ESBMC ou evidência à parte.
 3. **Orquestrador por motivo:** lê por que o nível 1 travou e escolhe o próximo braço (ou nenhum).
 
 A tese que isso sustenta: cada ferramenta entra onde ajuda; LLM, verificação formal e teste dinâmico juntos confirmam mais do que qualquer uma sozinha.
@@ -32,17 +32,25 @@ O agente Claude Code rodou em 28 travados (05/10) e confirmou 4; a rodada `agent
 - Mesmas checagens finais dos outros braços: ESBMC de novo, CPython, função preservada (`target_preserved`), alcance da linha.
 - Saída: tabela por caso, braço × veredito, e o tempo gasto.
 
-## Peça 2: braço dinâmico
+## Peça 2: braço dinâmico (busca no CPython)
 
-- **Entrada:** o JSON de tipos que a LLM já devolve no nível 1 (`params`, `stubs`) e o recorte do arquivo original.
-- **O que faz:** gera entradas com Hypothesis a partir dos tipos (int, str, list, Optional, dict...), chama a função original no CPython com o mesmo ambiente do `concrete_replay`, e para na primeira exceção da classe esperada na linha da hipótese.
-- **Orçamento:** número fixo de exemplos e tempo máximo por caso (padrão 200 exemplos, 60 s).
-- **Saídas novas:**
-  - `FUZZ_FOUND`: o CPython quebrou na linha da hipótese, com a entrada registrada. **Não é CONFIRMED**: é evidência dinâmica, contada à parte na dissertação.
-  - Quando o ESBMC ainda puder rodar, a entrada vira semente (`counterexample_seeds`) e o caso volta ao ESBMC; se ele confirmar, o veredito é CONFIRMED normal.
-  - `FUZZ_NOTHING`: nada achado no orçamento (não prova ausência de bug).
-- **Controle:** rodar também nas versões corrigidas; um `FUZZ_FOUND` na linha do bug na versão corrigida é falso alarme e entra na tabela.
-- **Dependência nova:** `hypothesis` no `.venv` (não está instalado hoje).
+Revisão de 06/10: o pipeline já tem o executor que a peça precisa. `concrete_replay` roda o programa
+gerado no CPython, numa caixa sem rede, trocando cada `nondet_*` por valores de uma lista pequena
+(int 0, 1, -1, 2; str "" e "a"; listas de até 2 itens). Hoje ele só roda depois que o ESBMC dá um
+veredito: 141 travados da rodada `full-2026-10-05-regrounded` têm programa pronto e nunca passaram
+por ele. Por isso o braço dinâmico não usa Hypothesis (sem dependência nova):
+
+- **Busca aleatória:** depois da passada exaustiva atual, o executor faz uma passada aleatória com
+  semente fixa e valores mais variados (inteiros de borda e sorteados, strings com espaço, ponto,
+  sinal, acento e barra, listas de até 5 itens). Orçamento padrão: 300 execuções ou 60 s por caso.
+- **Entrada:** o programa pré-reescrita do veredito (o mesmo que a validação V1 lê), com as
+  restrições `assume` que a LLM pôs: só entradas que a especificação aceita.
+- **Saídas:** `FUZZ_FOUND` quando o CPython levanta exceção na linha da hipótese dentro da função;
+  `FUZZ_OTHER` quando quebra em outro lugar; `FUZZ_NOTHING` quando nada quebrou no orçamento;
+  `FUZZ_UNAVAILABLE` quando não há programa executável. `FUZZ_FOUND` não é CONFIRMED.
+- **Sem volta ao ESBMC por enquanto:** os travados são casos em que o ESBMC recusa o programa, e uma
+  semente não muda isso. Fica para quando houver caso de tempo esgotado que se beneficie.
+- **Controle:** a mesma busca nas versões corrigidas (`control-fixed-2026-10-06`).
 
 ## Peça 3: orquestrador por motivo
 
@@ -59,7 +67,8 @@ Uma função pura `route(result) -> list[braço]` que lê o veredito e o motivo 
 
 - A tabela fica num arquivo de dados (padrões de texto → classe), testada caso a caso com os motivos reais acima.
 - Um braço que chega a veredito encerra a sequência; FUZZ_FOUND não encerra se ainda há braço formal na lista.
-- Linha de comando: `--orchestrate` no modo `end-to-end`, substituindo `--agent-fallback` quando ligado.
+- Primeiro como script sobre um relatório pronto (`scripts/v2_orchestrate.py`), medido nos 20 casos
+  difíceis; a opção `--orchestrate` no `main.py` só entra se o script mostrar ganho.
 
 ## Como medir
 
@@ -73,9 +82,8 @@ Métrica principal: bugs do gabarito confirmados na linha (formal) e, separado, 
 
 - O grafo (parte 1 do roteiro) e o harness híbrido (parte 2) têm especificação própria; o orquestrador ganha uma rota nova quando eles existirem.
 - Trocar de solver como braço.
-- Fuzzing guiado por cobertura (Atheris): Hypothesis basta para a primeira medição.
+- Fuzzing guiado por cobertura (Atheris) ou Hypothesis: a busca aleatória do executor basta para a primeira medição.
 
 ## Decisões em aberto
 
 - Se o achado dinâmico entra na mesma tabela da dissertação ou num capítulo à parte.
-- Instalar `hypothesis` no `.venv` (pequeno, sem custo).
