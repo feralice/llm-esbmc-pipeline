@@ -330,8 +330,20 @@ sobre um relatório pronto. Código aff456c. `FUZZ_FOUND` é evidência dinâmic
 - **Agentes nos 5 casos que a rota manda para eles:** ESBMC estourou o tempo (ansible_16), recusou
   construções (keras_33, keras_38, nm_real_04) ou o agente perdeu a expressão (dz_real_02). Nesta
   amostra o agente não acrescentou; o ganho do orquestrador veio da busca.
-- **Mutantes (pendência da fase 9):** a busca aleatória é a peça que faltava; refazer a validação com
-  ela fica para a próxima rodada de validação.
+- **Correção da revisão (07/10):** os 6 achados na linha do bug vêm da busca exaustiva que já existia
+  (5 na primeira execução); rodando de novo sem a passada aleatória, todos se repetem. A passada
+  aleatória só acrescentou 2 achados fora da linha, que também aparecem nas versões corrigidas. O
+  ganho veio de rodar o CPython nos casos travados, o que antes não acontecia, e não da passada nova.
+  Na rodada, a passada aleatória ainda dividia o prazo com a exaustiva e quase não rodava (corrigido
+  depois).
+- **Correção da rota (07/10):** dos 140 casos que a rota mandava só para a busca, 62 eram recusa do
+  ESBMC; 51 eram o harness por código desistindo (função aninhada, `*args`, decorador, stub sem tipo)
+  e 17 falhas de aterramento, que um agente escrevendo o harness pode contornar. A rota passou a
+  mandar esses 68 ao agente; harness já julgado ruim deixou de ir à busca. Rota nova nos 229:
+  limite do ESBMC 72, falta de contexto 64, harness por código 51, aterramento 17, já com veredito 15,
+  harness ruim 10.
+- **Achado do CPython só conta contra o controle:** `--control` no `v2_orchestrate.py` conta os achados
+  na linha do bug que a versão corrigida não repete.
 
 ## Resultado consolidado (até 06/10)
 
