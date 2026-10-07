@@ -1,0 +1,4463 @@
+{
+  "config": {
+    "report": "artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json",
+    "only_file": null,
+    "arms": [
+      "dynamic"
+    ],
+    "api_backend": "claude_cli",
+    "agent_model": null,
+    "bound": 5,
+    "timeout": 180
+  },
+  "rows": [
+    {
+      "hypothesis_id": "91c7494248a2",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "528ca8730d1f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "dc5c7138c437",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "61b022bf446a",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "77722d203749",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "dc76a7e3d21a",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "7f4509a77e6f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "9a0fef3a0dc0",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 500,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "3dadbe9389f2",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 500,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "b369b96f8616",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "4c46f82a78ef",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "edce49fc532d",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "6d3629526656",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ValidationError",
+            "line": 68,
+            "runs": 19,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "f5af57cc8886",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "38a8ba2b22da",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 122,
+            "runs": 170,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "a549d0489154",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "dca090eb15dc",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ce1f281c3706",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 45,
+            "runs": 336,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "3d6f97ad6ab6",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "90ba797cbb92",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "df4db19deb29",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ValueError",
+            "line": 110,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "84b7d050dd85",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ValueError",
+            "line": 101,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "a408047609c9",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "6bf23aa2df8f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "1786ae607919",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8fa98b8997cb",
+      "engine_verdict": "UNVALIDATED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses hasattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses hasattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "5e3e86af152a",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses hasattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses hasattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "56197c3e9e9d",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses hasattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses hasattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d130987953bb",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 45,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "b34727391d6c",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 45,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "352c7194d84d",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 45,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "e85675e61039",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 53,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "0b85bd7768ba",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 220,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "eb6f3966024f",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "20254912af1b",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8e58760d102e",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "73d4d7ccf1f0",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ed2d523cf3cf",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b01ed1f4eaee",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8ab4b9b00799",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "bc61b5187dfb",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports layers",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports layers"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d84bd3579a97",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "a72d907ba6aa",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "f44daeb0df07",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "901a738f9d2a",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "a5a1121afa6c",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "06c134af4916",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "bdabc3f59c16",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 134,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "efecbb438b06",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 55,
+            "runs": 3,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "f5211ff2e230",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 55,
+            "runs": 3,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "78941642a5a8",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b4df79b205e6",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "296bd67f023a",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d830fcc35916",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports matplotlib.patheffects",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports matplotlib.patheffects"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "717929d4e0c9",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses introspection attribute __dict__",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses introspection attribute __dict__"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "58f74ca56ca8",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "01a7293d34fa",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ca2e9cd0f5a9",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "2f90e86be25f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "855708dbb1d3",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "adc35f3bbc5f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "823bc31d2173",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "07db106b0cd6",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses getattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses getattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "01f895b57d5b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "cf5ee0f14e03",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "e7214f96429a",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 146,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "1a9d4c8919b8",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports pandas.core.computation.expressions",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports pandas.core.computation.expressions"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "52de49470967",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports pandas.core.computation.expressions",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports pandas.core.computation.expressions"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "5c232e903238",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d53b549d892f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "dda668236e74",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "TypeError",
+            "line": 43,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "7af0a74a4332",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "09be9cbbe236",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d5f357ea2365",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "fd97310999a3",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports pyarrow",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports pyarrow"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "af346e18f12b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "9ccf6f76f3c9",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "93f938743761",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "a962893cafd8",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "0e891f89a342",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports pandas",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports pandas"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "5429c3b33bc9",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports pandas",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports pandas"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ef537d83a9be",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 140,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "f203999ed223",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses getattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses getattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "12c724899555",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "9f6ab9860274",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b8edde5a7e1e",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "ddcad8260108",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "5bf91d52630c",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 600,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "2abbc0787351",
+      "engine_verdict": "ESBMC_MISSED",
+      "route": [],
+      "steps": [],
+      "final": "ESBMC_MISSED"
+    },
+    {
+      "hypothesis_id": "82368e805ae8",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ValueError",
+            "line": 87,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "cd22a8de947d",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "6f4dfcdaf4b0",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "7325b8a9d42b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses getattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses getattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "9be9fc736043",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "58774b0a0374",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 24,
+            "runs": 524,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "40ff07661432",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 33,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "6b18cc72ebc8",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "1e3ac60c43f9",
+      "engine_verdict": "UNVALIDATED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 304,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "1c2e21d2f6c6",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "729a91d0a090",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "0a27be725de8",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "540e1e35b738",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ValueError",
+            "line": 153,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "fd16cc220ab1",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "AssertionError",
+            "line": 95,
+            "runs": 2,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "df8f702a5007",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "684f0101938e",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "77718a5d3945",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "355de68741b6",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "c927da095a44",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "1da3d71e3da6",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "7606c705c474",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "KeyError",
+            "line": 169,
+            "runs": 403,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "a37941e5f655",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 169,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "32e79148d095",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 172,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "b20008796d06",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 169,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "47bae861f782",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 169,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "b32e23009859",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 169,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "95e45539c404",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 185,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "ccee75639e21",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 169,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "1bc209becb69",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 185,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "ef639b3fabe3",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "6d754f42710f",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "7d3fa11c5394",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports datetime",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports datetime"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "eeeb7c8768d6",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "0f2bd147a752",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8df23b0cd437",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "57174d97e160",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "c13fac98c87a",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8b1106446cc3",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "50ef3fca804a",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "c9f99e056a75",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 66,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "3532ba8be395",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 64,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "b5652fda143e",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 20,
+            "runs": 227,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "c3c74f091418",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "UnboundLocalError",
+            "line": 23,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "bb4c66bf77ba",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports random",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports random"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "694dbc9f0acd",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports random",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports random"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "330ff664aa17",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports random",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports random"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "97f127f11b88",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports random",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports random"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "09c8208ce2b3",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ab91bbb03a54",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 55,
+            "runs": 3,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "9715ff1783d8",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 462,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "b454ed4849b1",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 77,
+            "runs": 327,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "bcaf6d92d59f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d06a2222218e",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 108,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "0c0dfe383329",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "TypeError",
+            "line": 51,
+            "runs": 2,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "5f44bbc94b3c",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "TypeError",
+            "line": 30,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "72c0702eb982",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "hypothesis not found in the pre-rewrite program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b5f5de675cd1",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports datetime",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports datetime"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b1d66754bbd4",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports datetime",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports datetime"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ebae3e20a8d4",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses introspection attribute f_back",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses introspection attribute f_back"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "471b342ee7fd",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os.path",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os.path"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "4aa3e5e38a90",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ImportError",
+            "line": 1,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "2629816a29ef",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ImportError",
+            "line": 2,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "a1578927c83f",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ImportError",
+            "line": 1,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "2ede9629917e",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "ImportError",
+            "line": 2,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "91509f265939",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "AttributeError",
+            "line": 37,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "b1452f1e2626",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ce4475528b8b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports threading",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports threading"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "528c0187a852",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "bfff4f0f8dc7",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "f1d2b1901467",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "c4fdf366fa49",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "7d9389af12fe",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "371ed77ee12b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ea4b5036a1a1",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "bddded2ceb35",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "e11cbce855f8",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "fdac2a6bc7d1",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "209b1024c62b",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "942d61a91efc",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 35,
+            "runs": 325,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "31409e1ca2c6",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "85bfb4736f00",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "3952b5af4f57",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8b674d08658c",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "f377cd5765de",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "AttributeError",
+            "line": 109,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "3f0b0f247bf9",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 137,
+            "runs": 312,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "7f8acd8673b9",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 153,
+            "runs": 312,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "5059713e6181",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 93,
+            "runs": 312,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "29344079f8f4",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "c3491e72eff2",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "b3ca08c5ae7a",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ValueError",
+            "line": 30,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "51cf515f8948",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 62,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "0fbe05b10d1c",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 59,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "09be948e3172",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses setattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses setattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "e7b6853db8fa",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "TypeError",
+            "line": 19,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "6e33562fdd8f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports datetime",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports datetime"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "2550587cb304",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports datetime",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports datetime"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "52e8c7dc508a",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 49,
+            "runs": 304,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "fddc5afa85e4",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "21aedae077bc",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 488,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "d736e5311910",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ValueError",
+            "line": 474,
+            "runs": 407,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "86a85e8251fc",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "e623aa991712",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 268,
+            "runs": 302,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "1f46911eff6b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 500,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "134eed05190b",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "1bcb4b3c7823",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "f5a460ae2fd2",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "57916072238c",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "IndexError",
+            "line": 33,
+            "runs": 328,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "f5cf2e5684ac",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 33,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "6178dac8e931",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 60,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "3abd6bd01427",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "0f293ef94a8e",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "KeyError",
+            "line": 30,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "9a9f08c097e7",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses hasattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses hasattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "554b072a0396",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "81339744032f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "2ed3d4fce93b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 132,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "a9cdf5adabac",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 79,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "57ee4246dd17",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "148424345a89",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "42ade76be585",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 124,
+            "runs": 302,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "02c86fdde9ac",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 122,
+            "runs": 302,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "da926a653413",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 316,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "19c35cde1120",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 316,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "13cf84aa5aa4",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 316,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "f219bd32e1ce",
+      "engine_verdict": "UNVALIDATED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ValueError",
+            "line": 14,
+            "runs": 2,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "244a2dc788a7",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "hypothesis not found in the pre-rewrite program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "cc5e00fdda52",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "2acec3d70fe8",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "9ca694658262",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "af2f5e755263",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 428,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "6e9d7c84fc8b",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 39,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "adc83d5ebee7",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 116,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "dc7d1261514c",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "3607fd8e312d",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "d7112dac9208",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports time",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports time"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "89ddfa1d4f89",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 76,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "7cd547144998",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 79,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "05ea9811d977",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "SchemaError",
+            "line": 132,
+            "runs": 312,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "631e1f7799d2",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "fc65741c58e1",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "85095cf81d39",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    }
+  ],
+  "summary": {
+    "final": {
+      "CONFIRMED": 6,
+      "FUZZ_UNAVAILABLE": 127,
+      "NOT_CONFIRMED": 8,
+      "FUZZ_NOTHING": 16,
+      "FUZZ_FOUND": 25,
+      "FUZZ_OTHER": 46,
+      "ESBMC_MISSED": 1
+    },
+    "confirmed_at_bug": 3,
+    "fuzz_found_at_bug": 6
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "config": {
+    "report": "artifacts/v2/control-fixed-2026-10-06/report_0of1.json",
+    "only_file": "dataset/bugs_reais/conjunto_dificil.json",
+    "arms": [
+      "dynamic"
+    ],
+    "api_backend": "claude_cli",
+    "agent_model": null,
+    "bound": 5,
+    "timeout": 180
+  },
+  "rows": [
+    {
+      "hypothesis_id": "91c7494248a2",
+      "engine_verdict": "UNVALIDATED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 444,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "528ca8730d1f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "7f4509a77e6f",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "edce49fc532d",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "a408047609c9",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8fa98b8997cb",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b8edde5a7e1e",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ddcad8260108",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "2abbc0787351",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "cd22a8de947d",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ef639b3fabe3",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "b5652fda143e",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "UnboundLocalError",
+            "line": 26,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "91509f265939",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "c3491e72eff2",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "52e8c7dc508a",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "134eed05190b",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "f5a460ae2fd2",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "57916072238c",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "IndexError",
+            "line": 37,
+            "runs": 328,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "a9cdf5adabac",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "TypeError",
+            "line": 80,
+            "runs": 700,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "244a2dc788a7",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    }
+  ],
+  "summary": {
+    "final": {
+      "FUZZ_NOTHING": 3,
+      "FUZZ_UNAVAILABLE": 11,
+      "NOT_CONFIRMED": 3,
+      "FUZZ_OTHER": 3
+    },
+    "confirmed_at_bug": 0,
+    "fuzz_found_at_bug": 0
+  }
+}

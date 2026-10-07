@@ -1,0 +1,523 @@
+{
+  "config": {
+    "report": "artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json",
+    "only_file": "dataset/bugs_reais/conjunto_dificil.json",
+    "arms": [
+      "api_agent",
+      "claude_agent",
+      "dynamic"
+    ],
+    "api_backend": "claude_cli",
+    "agent_model": "claude-sonnet-5-5",
+    "bound": 5,
+    "timeout": 180
+  },
+  "rows": [
+    {
+      "hypothesis_id": "91c7494248a2",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "528ca8730d1f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "7f4509a77e6f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "claude_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/bip_ansible_16.py",
+            "function": "LinuxHardware.get_cpu_facts",
+            "suspect_expression": "collected_facts.get('ansible_architecture', '').startswith(('armv', 'aarch'))",
+            "line": 0,
+            "trigger_condition": "collected_facts is a free parameter. If it contains 'ansible_architecture': None, .get returns None instead of the default '' and .startswith raises AttributeError. The guard `or {}` does not protect against a present key with a None value.",
+            "category": "",
+            "hypothesis_id": "7f4509a77e6f"
+          },
+          "verdict": "ESBMC_TIMEOUT",
+          "reason": "ESBMC direto excedeu o tempo limite de 180s.",
+          "target_preserved": false,
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "ESBMC produced no verdict to validate"
+          },
+          "esbmc_status": "timeout",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cases/7f4509a77e6f/harness.py",
+          "agent_output": "lass for it.\n  - ESBMC rejected `cpu_facts['processor'].append(val)` with \"List variable not found\". A minimal repro confirmed it can't handle `.append` on an element of an untyped dict.\n- **Deviation from the instructions:** I annotated `cpu_facts` as `dict[str, list[str]]` to get past that error. The statement is otherwise unchanged and there are no asserts or guards. This is a change inside the function body, which you said to leave unchanged. The other values stored in `cpu_facts` are ints, so the annotation may not hold for them. I haven't checked that.\n- **Stubs in `harness.py`:** `os` and `get_file_lines` are stubbed. `get_file_lines` returns a fixed two-line cpuinfo. The driver passes either `{'ansible_architecture': None}` or a nondet string, chosen by a nondet bool.\n- **Run status:** the earlier foreground runs timed out at about 110\u2013120 seconds. The final conversion has not yet produced a verdict.\n\nI'll report the verdict, or the next conversion error, once the run finishes.",
+          "unwind": 5,
+          "seconds": 864.977
+        },
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "edce49fc532d",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "a408047609c9",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "claude_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_33.py",
+            "function": "text_to_word_sequence",
+            "suspect_expression": "translate_map = maketrans(filters, split * len(filters))",
+            "line": 0,
+            "trigger_condition": "`split` is a free parameter. `maketrans` requires both arguments to have the same length, but the second has len(split)*len(filters). With a split of 2 or more characters, e.g. '--' with the default filters, the lengths differ and ValueError is raised. With split='' the second argument is empty and ValueError is also raised. With split=None, `None * len(filters)` raises TypeError. No try/except covers the call, and the default ' ' passes the guard, so only non-default inputs trigger the failure.",
+            "category": "",
+            "hypothesis_id": "a408047609c9"
+          },
+          "verdict": "UNSUPPORTED",
+          "reason": "ERROR: Unhandled symbol format in string extraction.",
+          "target_preserved": true,
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "ESBMC produced no verdict to validate"
+          },
+          "esbmc_status": "tool_error",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cases/a408047609c9/harness.py",
+          "agent_output": "d a `sys` module error.\n- A `unicode` class stub, to avoid a `unicode` not-found error.\n- A `Sep` class for the free-length separator, with `__mul__` so `split * len(filters)` converts.\n- A `maketrans(x, y)` stub that raises `ValueError` when `len(x) != y.n`, matching the hypothesis.\n- A `Text` stub class.\n- The driver, which calls `text_to_word_sequence` with a nondeterministic separator length (0 to 3) and a nondeterministic `lower`.\n\nThe `maketrans` stub raises only on a length mismatch. The `split=None` / `TypeError` case is not modelled.\n\nI did not change the body of `text_to_word_sequence`. I only added type annotations to its signature, as allowed.\n\n**Decision for you:** the remaining option is to rewrite the `text.split(split)` line. That breaks the \"body unchanged\" rule and drops the `split()` call from the exercised code. The suspect line `maketrans(filters, split * len(filters))` comes before it, so I could still exercise it that way. I haven't done this without your say-so.",
+          "unwind": 5,
+          "seconds": 206.289
+        },
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "8fa98b8997cb",
+      "engine_verdict": "UNVALIDATED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "api_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_38.py",
+            "function": "StackedRNNCells.build",
+            "suspect_expression": "input_shape = (input_shape[0], input_shape[1], output_dim)",
+            "line": 0,
+            "trigger_condition": "input_shape is a free parameter and nothing validates its length. A 1-element shape such as (32,) passes through the loop body, since cell.build and state_size do not touch input_shape[1]. It then reaches input_shape[1] at the end of the first iteration. This raises IndexError, and no try/except catches it.",
+            "category": "",
+            "hypothesis_id": "8fa98b8997cb"
+          },
+          "verdict": "UNSUPPORTED",
+          "reason": "ERROR: TypeError: 'int' object is not subscriptable at artifacts/v2/orq-2026-10-06-full-20/claude_cli_cases/8fa98b8997cb/harness.py:31",
+          "target_preserved": true,
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "ESBMC produced no verdict to validate"
+          },
+          "esbmc_status": "tool_error",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cli_cases/8fa98b8997cb/harness.py",
+          "agent_output": "no verdict",
+          "unwind": 5,
+          "seconds": 194.775
+        },
+        {
+          "arm": "claude_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/bip_keras_38.py",
+            "function": "StackedRNNCells.build",
+            "suspect_expression": "input_shape = (input_shape[0], input_shape[1], output_dim)",
+            "line": 0,
+            "trigger_condition": "input_shape is a free parameter and nothing validates its length. A 1-element shape such as (32,) passes through the loop body, since cell.build and state_size do not touch input_shape[1]. It then reaches input_shape[1] at the end of the first iteration. This raises IndexError, and no try/except catches it.",
+            "category": "",
+            "hypothesis_id": "8fa98b8997cb"
+          },
+          "verdict": "UNVALIDATED",
+          "reason": "dereference failure: invalid pointer",
+          "target_preserved": true,
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses hasattr without a literal attribute name"
+          },
+          "esbmc_status": "violation_found",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cases/8fa98b8997cb/harness.py",
+          "agent_output": "That comes from `--unwind 5` and is not a bug in `build`.\n- **Hypothesis not confirmed:** no property failed at `input_shape[1]`. The `IndexError` on the 1-element shape `(dim0,)` was not reported as a violation, so ESBMC does not flag it here.\n\n**What the harness contains**\n- `StackedRNNCells.build` is copied from `original.py` with its body unchanged.\n- Stubs: `Layer` has a `build` that sets `built`, and `Cell` is a `Layer` subclass holding `state_size`.\n- Driver: at module level it builds `StackedRNNCells([Cell(size), Cell(size)])`, with `size = [nondet_int()]` and the shape `(dim0,)` with `dim0 = nondet_int()`, then calls `stack.build(shape)`.\n\n**Two changes you may want to know about**\n- `state_size` is a one-element list rather than an int. With an int, ESBMC's conversion failed on `cell.state_size[0]` in the `__len__` branch with \"'int' object is not subscriptable\". The list form is what let it convert.\n- I added annotations to the signature as allowed, and no asserts or guards.",
+          "unwind": 10,
+          "seconds": 42.83
+        },
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: uses hasattr without a literal attribute name",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: uses hasattr without a literal attribute name"
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "b8edde5a7e1e",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "ddcad8260108",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "2abbc0787351",
+      "engine_verdict": "ESBMC_MISSED",
+      "route": [],
+      "steps": [],
+      "final": "ESBMC_MISSED"
+    },
+    {
+      "hypothesis_id": "cd22a8de947d",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    },
+    {
+      "hypothesis_id": "ef639b3fabe3",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED"
+    },
+    {
+      "hypothesis_id": "b5652fda143e",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "claude_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/dz_real_02.py",
+            "function": "ExactLanguageSearch.choose_best_split",
+            "suspect_expression": "float(not_parsed) / float(num_substrings)",
+            "line": 0,
+            "trigger_condition": "num_substrings = len(possible_substrings_splits[i]) comes from a free parameter and nothing guards against an empty split. With possible_parsed_splits=[[]] and possible_substrings_splits=[[]], the inner loop is skipped and float(0)/float(0) is evaluated, raising ZeroDivisionError. The same applies to the division by num_substrings in the third rating element.",
+            "category": "",
+            "hypothesis_id": "b5652fda143e"
+          },
+          "verdict": "AGENT_FAILED",
+          "reason": "suspect expression missing from the harness target",
+          "target_preserved": null,
+          "replay": {},
+          "esbmc_status": "",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cases/b5652fda143e/harness.py",
+          "agent_output": "A `lambda` inside a method fails with `Variable 'p' is not defined in function 'lam1'`. That is why the body moved to module level.\n2. `min(..., key=lambda)` is rewritten into a function named `ESBMC_mmkey_0`. ESBMC reports it as not found unless the harness defines it, so I added a stub.\n3. `enumerate(rating)` inside `min` is not modelled by ESBMC. I added an `enumerate` stub.\n4. With those in place, the type checker types `p` after the elements of `rating`, which it infers as floats. So `p[1][1]` fails. I tried several return types on the stubs and none changed this.\n\n**Options**\n- **Loosen \"body unchanged\" (my suggestion):** replace that one `min(...)` line with an equivalent loop over `rating`, or give `rating` a type annotation. I expect that to reach the division. I haven't tried it.\n- **Report as not convertible:** if the body must stay literal, I'd call this case not convertible by ESBMC-Python 8.5.0 because of `min(enumerate(...), key=lambda ...)`.\n\nTell me which one you want.",
+          "seconds": 198.01
+        },
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 20,
+            "runs": 227,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "91509f265939",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "AttributeError",
+            "line": 37,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "c3491e72eff2",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "api_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/nm_real_04.py",
+            "function": "OffsiteMiddleware.get_host_regex",
+            "suspect_expression": "if url_pattern.match(domain):",
+            "line": 0,
+            "trigger_condition": "allowed_domains comes from the spider attribute and is free. A list like ['example.com', None] is truthy, so it passes the early return. The loop calls url_pattern.match(None), and re.Pattern.match on a non-string raises TypeError. The comprehension's 'd is not None' filter shows None entries are expected, but it runs after the loop crashes. No try/except wraps the call.",
+            "category": "",
+            "hypothesis_id": "c3491e72eff2"
+          },
+          "verdict": "AGENT_FAILED",
+          "reason": "harness does not parse: unterminated string literal (detected at line 3)",
+          "target_preserved": null,
+          "replay": {},
+          "esbmc_status": "",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cli_cases/c3491e72eff2/harness.py",
+          "agent_output": "no verdict",
+          "seconds": 133.65
+        },
+        {
+          "arm": "claude_agent",
+          "hypothesis": {
+            "file": "dataset/bugs_reais/funcao_com_bug/nm_real_04.py",
+            "function": "OffsiteMiddleware.get_host_regex",
+            "suspect_expression": "if url_pattern.match(domain):",
+            "line": 0,
+            "trigger_condition": "allowed_domains comes from the spider attribute and is free. A list like ['example.com', None] is truthy, so it passes the early return. The loop calls url_pattern.match(None), and re.Pattern.match on a non-string raises TypeError. The comprehension's 'd is not None' filter shows None entries are expected, but it runs after the loop crashes. No try/except wraps the call.",
+            "category": "",
+            "hypothesis_id": "c3491e72eff2"
+          },
+          "verdict": "UNSUPPORTED",
+          "reason": "ERROR: unsupported: non-constant argument in str % formatting",
+          "target_preserved": true,
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "ESBMC produced no verdict to validate"
+          },
+          "esbmc_status": "tool_error",
+          "harness_path": "artifacts/v2/orq-2026-10-06-full-20/claude_cases/c3491e72eff2/harness.py",
+          "agent_output": "- local stubs for `re`, `re.Pattern`, `warnings.warn` and `URLWarning`;\n- a stand-in `getattr` that returns `spider.allowed_domains`;\n- a module-level driver using `allowed_domains = ['example.com', None]`.\n\nThe `Pattern.match` stub raises `TypeError` when its argument isn't a `str`, which models the bug hypothesis. I didn't use a `nondet_bool()` choice of list in the driver, because the failure on those two lines comes before the list matters.\n\nYou told me to keep the body unchanged, so I stopped here. These are the options I see:\n1. **Let me rewrite the two `%` lines.** For example, `\"...\" + domain` and `'^(.*\\.)?(' + '|'.join(domains) + ')$'`. The semantics stay the same and ESBMC should convert it. The cost is that the body is no longer an exact copy.\n2. **Shadow `str` or `%` with a stub.** I don't think this works, because the left operand is a string literal.\n3. **Treat ESBMC's limitation as the result for this case.** It can't verify this function as written.\n\nWhich should I do?",
+          "unwind": 5,
+          "seconds": 103.051
+        },
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING"
+    },
+    {
+      "hypothesis_id": "52e8c7dc508a",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 49,
+            "runs": 304,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "134eed05190b",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "f5a460ae2fd2",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED"
+    },
+    {
+      "hypothesis_id": "57916072238c",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "IndexError",
+            "line": 33,
+            "runs": 328,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER"
+    },
+    {
+      "hypothesis_id": "a9cdf5adabac",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 79,
+            "runs": 1,
+            "reason": ""
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND"
+    },
+    {
+      "hypothesis_id": "244a2dc788a7",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "hypothesis not found in the pre-rewrite program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE"
+    }
+  ],
+  "summary": {
+    "final": {
+      "CONFIRMED": 3,
+      "FUZZ_UNAVAILABLE": 6,
+      "FUZZ_NOTHING": 2,
+      "NOT_CONFIRMED": 3,
+      "ESBMC_MISSED": 1,
+      "FUZZ_FOUND": 3,
+      "FUZZ_OTHER": 2
+    },
+    "confirmed_at_bug": 3,
+    "fuzz_found_at_bug": 3
+  }
+}

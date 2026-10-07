@@ -299,9 +299,47 @@ para medir o harness (`dataset/bugs_reais/conjunto_dificil.json`). Branch `feat/
 - **Decisão:** A5 (A1 + A2) é a candidata a prompt padrão; a rodada completa com ela fica para o fim
   da etapa do harness, para medir detecção e confirmação juntas uma vez só.
 
+## Fase 10 (06/10): orquestrador de harness e busca no CPython
+
+Mudança no pipeline: a reexecução no CPython ganhou uma passada aleatória com semente fixa
+(`concrete_replay(random_runs=, seed=)`); o braço dinâmico (`verify/dynamic.py`) roda essa busca no
+programa já gerado de um caso travado; a rota (`verify/routing.py`) escolhe os braços pelo motivo do
+travamento; o orquestrador (`verify/orchestrator.py`, `scripts/v2_orchestrate.py`) aplica a rota
+sobre um relatório pronto. Código aff456c. `FUZZ_FOUND` é evidência dinâmica, contada à parte de
+`CONFIRMED`. Especificação e plano: `docs/superpowers/{specs,plans}/2026-10-06-orquestrador-harness*`.
+
+- **Rota dos 229 resultados distintos de `full-2026-10-05-regrounded`** (sem rodar nada): limite do
+  ESBMC 140 (só a busca), falta de contexto 64 (agente Claude Code, depois a busca), harness ruim 10
+  (agente API, depois Claude Code, depois a busca), já com veredito 15.
+
+| Data | Pasta (`artifacts/v2/`) | O que foi | Resultado |
+|---|---|---|---|
+| 06/10 | `orq-2026-10-06-dyn-20` | só a busca, nos 20 casos difíceis (4 s) | 3 `FUZZ_FOUND` na linha do bug: dz_real_02, ip_real_22, oob_real_12 |
+| 06/10 | `orq-2026-10-06-dyn-20-control` | o mesmo nas versões corrigidas | 0 na linha do bug |
+| 06/10 | `orq-2026-10-06-dyn-all` | só a busca, em todos os resultados | 25 `FUZZ_FOUND`, 6 na linha do bug |
+| 06/10 | `orq-2026-10-06-dyn-all-control` | o mesmo nas versões corrigidas | 16 `FUZZ_FOUND`, 1 na linha do bug (ip_real_17, que quebra nas duas) |
+| 06/10 | `orq-2026-10-06-full-20` | rota completa nos 20 (agente API por `claude_cli`, agente Claude Code Sonnet; cerca de 30 min) | os agentes rodaram em 5 casos e não confirmaram nenhum; resultado igual ao `dyn-20` |
+
+- **Comando:** `scripts/v2_orchestrate.py artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json --only-file dataset/bugs_reais/conjunto_dificil.json --arms dynamic[,api_agent,claude_agent] --out ...`; controle com `artifacts/v2/control-fixed-2026-10-06/report_0of1.json --verification-sources dataset/bugs_reais/arquivo_corrigido`.
+- **Busca, comparando versão com bug e corrigida por hipótese:** 5 achados na linha do bug só na
+  versão com bug (dz_real_02, ip_real_14, ip_real_22, oob_real_05, oob_real_12). Em dz_real_02 e
+  oob_real_12 a versão corrigida roda e não quebra ali (evidência mais forte); nas outras 3 a versão
+  corrigida não roda no CPython. ip_real_14 já era confirmado pelo agente; os outros 4 nenhum harness
+  tinha alcançado. 15 achados fora da linha do bug aparecem nas duas versões: vêm dos stubs ou de
+  outra quebra, não do bug.
+- **Agentes nos 5 casos que a rota manda para eles:** ESBMC estourou o tempo (ansible_16), recusou
+  construções (keras_33, keras_38, nm_real_04) ou o agente perdeu a expressão (dz_real_02). Nesta
+  amostra o agente não acrescentou; o ganho do orquestrador veio da busca.
+- **Mutantes (pendência da fase 9):** a busca aleatória é a peça que faltava; refazer a validação com
+  ela fica para a próxima rodada de validação.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
 **7** (av_real_01, oob_real_01, oob_real_02 pelo nível 1; bip_luigi_21, bip_pandas_33, ip_real_14,
 nm_real_14 pelo agente). Confirmações fora do gabarito que dependem do contrato do chamador:
 bip_thefuck_11, ir_real_03.
+
+Evidência dinâmica (CPython quebra na linha do bug só na versão com bug, sem prova formal), fase 10:
+dz_real_02, ip_real_22, oob_real_05, oob_real_12 (dz_real_02 e oob_real_12 com a versão corrigida
+executada sem quebrar ali).

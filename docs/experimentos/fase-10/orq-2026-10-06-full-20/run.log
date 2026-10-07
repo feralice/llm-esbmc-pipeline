@@ -1,0 +1,13 @@
+{
+  "final": {
+    "CONFIRMED": 3,
+    "FUZZ_UNAVAILABLE": 6,
+    "FUZZ_NOTHING": 2,
+    "NOT_CONFIRMED": 3,
+    "ESBMC_MISSED": 1,
+    "FUZZ_FOUND": 3,
+    "FUZZ_OTHER": 2
+  },
+  "confirmed_at_bug": 3,
+  "fuzz_found_at_bug": 3
+}
