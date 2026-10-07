@@ -1,0 +1,63 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/ip_real_22.py",
+        "function": "match",
+        "suspect_expression": "pattern.lower() in command.stderr.lower() or pattern.lower() in command.stdout.lower()",
+        "line": 0,
+        "trigger_condition": "`command` is a free parameter. If `patterns` is non-empty and `command.stderr` is None (stream not captured), `command.stderr.lower()` runs on the first iteration and raises. If stderr is a str that lacks the pattern, `command.stdout.lower()` is evaluated and raises when stdout is None. No guard or try/except covers either case.",
+        "category": "",
+        "hypothesis_id": "91509f265939"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Out of memory",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"command.stderr\": \"Optional[str]\", \"command.stdout\": \"Optional[str]\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/5e1cac52af00_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"command.stderr\": \"Optional[str]\", \"command.stdout\": \"Optional[str]\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Out of memory",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/5e1cac52af00_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"command.stderr\": \"Optional[str]\", \"command.stdout\": \"Optional[str]\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Out of memory",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/5e1cac52af00_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "typing_import_added"
+      ],
+      "program_path": "artifacts/v2/timeout900-2026-10-07/programs/5e1cac52af00_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 1650.963
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_12.py",
+        "function": "fast_float",
+        "suspect_expression": "x[0] in _first_char",
+        "line": 0,
+        "trigger_condition": "x is a free str parameter with no length guard. With x == \"\", x[0] in the first condition of the if is evaluated first and the `or` short-circuit does not help, since the left operand is the one that fails. No try/except surrounds the condition, so the exception propagates to the caller.",
+        "category": "",
+        "hypothesis_id": "a9cdf5adabac"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Out of memory",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"key\": \"Callable[[str], str]\", \"_uni\": \"Callable[[str, float], float]\"}, \"attributes\": {}, \"stubs\": {\"decimal_chars\": \"list[str]\", \"unicodedata.numeric\": \"float\"}, \"assumptions\": []}\n\nWait, the allowed types do not include Callable. Params must use allowed types only. Corrected answer:\n\n{\"params\": {\"key\": \"str\", \"_uni\": \"float\"}, \"attributes\": {}, \"stubs\": {\"decimal_chars\": \"list[str]\", \"unicodedata.numeric\": \"float\"}, \"assumptions\": []}\n",
+          "feedback_given": "",
+          "problems": [
+            "not JSON: Extra data"
+          ]
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"key\": \"str\", \"_uni\": \"float\"}, \"attributes\": {}, \"stubs\": {\"decimal_chars\": \"list[str]\", \"unicodedata.numeric\": \"float\"}, \"assumptions\": []}",
+          "feedback_given": "The JSON was rejected: not JSON: Extra data",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/3324a4fa034d_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"key\": \"str\", \"_uni\": \"float\"}, \"attributes\": {}, \"stubs\": {\"decimal_chars\": \"list[str]\", \"unicodedata.numeric\": \"float\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Out of memory",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/3324a4fa034d_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "stubbed_imports:decimal_chars,unicodedata"
+      ],
+      "program_path": "artifacts/v2/timeout900-2026-10-07/programs/3324a4fa034d_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 963.893
+    }
+  ]
+}

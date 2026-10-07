@@ -53,21 +53,14 @@ rápido: `dataset/bugs_reais/conjunto_dificil.json` (20 casos, mede o harness) e
 
 ## Tarefas pendentes, em ordem
 
-### 1. Ver o resultado dos 5 casos de tempo esgotado com 900 s
+### 1. (Feita) 5 casos de tempo esgotado com 900 s
 
-Foi disparada uma reexecução das 5 hipóteses `ESBMC_TIMEOUT` com 900 s:
-`scripts/v2_replay_specs.py artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json --timeout 900 --only 91509f265939,57916072238c,f5cf2e5684ac,0f293ef94a8e,a9cdf5adabac --shard i/5 --out artifacts/v2/timeout900-2026-10-07`
-(5 processos, `ulimit -v 4500000`, logs em `artifacts/v2/timeout900-<i>.log`).
-
-- Confira se terminaram (`ps -eo args | grep v2_replay_specs`). Os relatórios ficam em
-  `artifacts/v2/timeout900-2026-10-07/report_<i>of5.json`.
-- Para cada uma: veredito novo, e se é `CONFIRMED` na linha do bug (use
-  `research_pipeline.v2_evaluator.at_bug_line(hypothesis, item_do_gabarito)`).
-- Registre como rodada da fase 10 no README e arquive.
+Resultado em `docs/experimentos/README.md` (fase 10, `timeout900-2026-10-07`): mais tempo não
+confirmou nada no gabarito; ip_real_22 e oob_real_12 passaram a esgotar a memória. Por isso a tarefa 2.
 
 ### 2. Entrada fixada ("saída 2", aprovada por ela)
 
-Para os casos que continuarem estourando o tempo (esperados: ip_real_22 `91509f265939` e oob_real_12
+Para os casos que estouram tempo ou memória ( ip_real_22 `91509f265939` e oob_real_12
 `a9cdf5adabac`), a busca no CPython já achou uma entrada que quebra na linha do bug
 (`artifacts/v2/orq-2026-10-06-dyn-all/orchestrated.json`). A ideia: rodar o ESBMC **com essa entrada
 fixada**, para ele provar só aquele caminho. Se der `VERIFICATION FAILED` na linha do bug e o CPython

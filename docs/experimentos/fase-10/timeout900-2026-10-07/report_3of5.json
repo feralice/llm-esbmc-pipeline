@@ -1,0 +1,63 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_06.py",
+        "function": "merge_configs",
+        "suspect_expression": "new_config[k] = v",
+        "line": 0,
+        "trigger_condition": "When default[k] exists but is not a dict (e.g. int or None) and overwrite[k] is a non-empty dict, the recursion deep-copies the scalar and then assigns new_config[k2] = v on it. Example: default={'a': 1}, overwrite={'a': {'b': 2}}. Item assignment on an int raises TypeError. No try/except.",
+        "category": "",
+        "hypothesis_id": "0f293ef94a8e"
+      },
+      "verdict": "UNSUPPORTED",
+      "reason": "ERROR: Out of memory",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"default\": \"dict[str, int]\", \"overwrite\": \"dict[str, dict[str, int]]\"}, \"attributes\": {}, \"stubs\": {\"copy.deepcopy\": \"dict[str, int]\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/fbf3f29d1848_a0_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        },
+        {
+          "attempt": 1,
+          "spec": "{\"params\": {\"default\": \"dict[str, int]\", \"overwrite\": \"dict[str, dict[str, int]]\"}, \"attributes\": {}, \"stubs\": {\"copy.deepcopy\": \"dict[str, int]\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Out of memory",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/fbf3f29d1848_a1_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        },
+        {
+          "attempt": 2,
+          "spec": "{\"params\": {\"default\": \"dict[str, int]\", \"overwrite\": \"dict[str, dict[str, int]]\"}, \"attributes\": {}, \"stubs\": {\"copy.deepcopy\": \"dict[str, int]\"}, \"assumptions\": []}",
+          "feedback_given": "ESBMC rejected the program: ERROR: Out of memory",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/fbf3f29d1848_a2_replay.py",
+          "esbmc_status": "tool_error",
+          "reading": "repairable",
+          "message": "ERROR: Out of memory",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 3,
+      "transforms": [
+        "stubbed_imports:copy"
+      ],
+      "program_path": "artifacts/v2/timeout900-2026-10-07/programs/fbf3f29d1848_a2.py",
+      "replay": {
+        "status": "unavailable",
+        "exception_type": "",
+        "line": null,
+        "runs": 0,
+        "reason": "ESBMC produced no verdict to validate"
+      },
+      "tokens": 0,
+      "seconds": 1925.644
+    }
+  ]
+}

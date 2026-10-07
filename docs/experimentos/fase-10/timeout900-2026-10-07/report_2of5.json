@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_03.py",
+        "function": "get_new_command",
+        "suspect_expression": "command.stderr.split('\\n')[-3].strip().partition('git ')[2]",
+        "line": 0,
+        "trigger_condition": "stderr is a free parameter and nothing checks its length. For stderr == '' or 'fatal: x', split('\\n') yields 1 element, so index [-3] raises IndexError. No try/except covers this line.",
+        "category": "",
+        "hypothesis_id": "f5cf2e5684ac"
+      },
+      "verdict": "CONFIRMED",
+      "reason": "unwinding assertion loop 108; uncaught exception: IndexError",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\", \"replace_argument\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/72f3b813ae5a_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "violation",
+          "message": "unwinding assertion loop 108; uncaught exception: IndexError",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ],
+      "program_path": "artifacts/v2/timeout900-2026-10-07/programs/72f3b813ae5a_a0.py",
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "IndexError",
+        "line": 33,
+        "runs": 1,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 902.97,
+      "pytest": {
+        "status": "unsupported_shape",
+        "path": "",
+        "reason": "ESBMC's generator here needs scalar inputs"
+      }
+    }
+  ]
+}

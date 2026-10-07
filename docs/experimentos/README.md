@@ -342,6 +342,12 @@ sobre um relatório pronto. Código aff456c. `FUZZ_FOUND` é evidência dinâmic
   mandar esses 68 ao agente; harness já julgado ruim deixou de ir à busca. Rota nova nos 229:
   limite do ESBMC 72, falta de contexto 64, harness por código 51, aterramento 17, já com veredito 15,
   harness ruim 10.
+- **`timeout900-2026-10-07`** (07/10): as 5 hipóteses `ESBMC_TIMEOUT` de novo com 900 s
+  (`scripts/v2_replay_specs.py ... --timeout 900 --only <5 ids> --shard i/5`, `ulimit -v 4500000`).
+  ip_real_22, oob_real_12 e oob_real_06 passaram a esgotar a memória; oob_real_03 na linha do bug deu
+  OTHER_FAILURE (CPython quebra na linha 33, fora da hipótese); a outra hipótese de oob_real_03 deu
+  CONFIRMED fora da linha do bug (a mesma quebra aparece na versão corrigida). Métrica principal
+  inalterada (7): o limite é o tamanho da fórmula (strings livres em conjuntos), não o tempo.
 - **Achado do CPython só conta contra o controle:** `--control` no `v2_orchestrate.py` conta os achados
   na linha do bug que a versão corrigida não repete.
 

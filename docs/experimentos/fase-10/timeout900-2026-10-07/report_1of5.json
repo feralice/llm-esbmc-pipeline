@@ -1,0 +1,45 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_03.py",
+        "function": "get_new_command",
+        "suspect_expression": "command.script_parts.pop(upstream_option_index)",
+        "line": 0,
+        "trigger_condition": "script_parts is a free parameter. The guard only checks that the option was found, not that a value follows it. For script_parts == ['git','push','-u'], index is 2. The first pop removes '-u' and the list becomes ['git','push']. The second pop(2) is then out of range.",
+        "category": "",
+        "hypothesis_id": "57916072238c"
+      },
+      "verdict": "OTHER_FAILURE",
+      "reason": "unwinding assertion loop 108; uncaught exception: IndexError",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"replace_argument\": \"str\", \"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "artifacts/v2/timeout900-2026-10-07/programs/5ad3ddafe176_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "violation",
+          "message": "unwinding assertion loop 108; uncaught exception: IndexError",
+          "unwind": 5,
+          "solver": "--z3"
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument"
+      ],
+      "program_path": "artifacts/v2/timeout900-2026-10-07/programs/5ad3ddafe176_a0.py",
+      "replay": {
+        "status": "other_failure",
+        "exception_type": "IndexError",
+        "line": 33,
+        "runs": 28,
+        "reason": ""
+      },
+      "tokens": 0,
+      "seconds": 2223.524
+    }
+  ]
+}
