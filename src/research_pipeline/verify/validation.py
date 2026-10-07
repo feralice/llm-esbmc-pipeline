@@ -32,14 +32,18 @@ def program_for_result(path: Path, hypothesis: dict) -> Program | None:
 
 
 class _AsStubs(ast.NodeTransformer):
-    """``re.sub`` -> ``_esbmc_re_sub`` where the program uses that stub (slicing's refused-member rename)."""
+    """Slicing's stub renames, applied to the original: ``re.sub`` -> ``_esbmc_re_sub`` (refused member)
+    and ``email.utils`` -> ``email_utils`` (flattened external chain), where the program uses that name."""
 
     def __init__(self, stubs: set[str]) -> None:
         self.stubs = stubs
 
     def visit_Attribute(self, node: ast.Attribute) -> ast.AST:
-        name = "_esbmc_" + ast.unparse(node).replace(".", "_")
-        return ast.Name(name, node.ctx) if name in self.stubs else self.generic_visit(node)
+        flat = ast.unparse(node).replace(".", "_")
+        for name in ("_esbmc_" + flat, flat):
+            if name in self.stubs:
+                return ast.Name(name, node.ctx)
+        return self.generic_visit(node)
 
 
 def target_preserved(original_source: str, program_source: str, function: str) -> bool:
@@ -47,7 +51,8 @@ def target_preserved(original_source: str, program_source: str, function: str) -
     checked = find_function(ast.parse(program_source), function)
     if original is None or checked is None:
         return False
-    stubs = {n.id for n in ast.walk(checked) if isinstance(n, ast.Name) and n.id.startswith("_esbmc_")}
+    names = {n.id for n in ast.walk(original) if isinstance(n, ast.Name)}
+    stubs = {n.id for n in ast.walk(checked) if isinstance(n, ast.Name)} - names
     return body_signature(_AsStubs(stubs).visit(original)) == body_signature(checked)
 
 

@@ -39,6 +39,11 @@ def test_a_refused_library_call_replaced_by_its_stub_is_preserved() -> None:
     assert not target_preserved(original, stubbed.replace("[0]", "[1]"), "f")
 
 
+def test_a_flattened_external_chain_is_preserved() -> None:
+    original = "import email.utils\ndef f(s):\n    return email.utils.parsedate_tz(s)\n"
+    assert target_preserved(original, "def f(s):\n    return email_utils.parsedate_tz(s)\n", "f")
+
+
 def test_a_missing_target_is_not_preserved() -> None:
     assert not target_preserved(SOURCE, "def driver():\n    pass\n", "f")
 
