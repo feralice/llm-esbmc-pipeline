@@ -76,6 +76,14 @@ def expressions_equivalent(expected: str, found: str) -> bool:
     return ast.dump(a) == ast.dump(b) or ast.dump(a) in _subexpressions(b) or ast.dump(b) in _subexpressions(a)
 
 
+def at_bug_line(hypothesis: dict, item: dict) -> bool:
+    """The hypothesis names the bug's function and its cause or crash site (a labelled item only)."""
+    if hypothesis["function"] not in {f.strip() for f in item["function"].split("/")}:
+        return False
+    expected = [e for e in [item.get("expression", ""), *item.get("crash_expressions", [])] if e]
+    return any(expressions_equivalent(e, hypothesis["suspect_expression"]) for e in expected)
+
+
 def _points_at(item: dict, expression: str, *, equivalent: bool) -> bool:
     """An unlabelled item matches any expression; otherwise the cause or any crash site counts."""
     if not item["expressions"]:

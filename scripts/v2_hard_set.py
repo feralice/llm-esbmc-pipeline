@@ -23,16 +23,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.v2_evaluator import expressions_equivalent  # noqa: E402
+from research_pipeline.v2_evaluator import at_bug_line  # noqa: E402
 
 CHECKED = ("CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED")
-
-
-def at_bug_line(hypothesis: dict, item: dict) -> bool:
-    if hypothesis["function"] not in {f.strip() for f in item["function"].split("/")}:
-        return False
-    expected = [e for e in [item.get("expression", ""), *item.get("crash_expressions", [])] if e]
-    return any(expressions_equivalent(e, hypothesis["suspect_expression"]) for e in expected)
 
 
 def hard_set(results: list[dict], ground_truth: dict[str, dict], *, size: int = 20) -> list[dict]:
