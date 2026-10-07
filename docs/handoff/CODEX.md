@@ -1,6 +1,6 @@
 # Handoff para o Codex (continuação do trabalho do Claude Code)
 
-Leia este arquivo inteiro antes de qualquer ação. Depois leia `docs/experimentos/README.md`
+Leia este arquivo inteiro antes de qualquer ação. Visão geral do que falta: `docs/ESTADO.md`. Depois leia `docs/experimentos/README.md`
 (seções "Fase 9" e "Fase 10") e o ledger `.superpowers/sdd/2026-10-06-orquestrador-harness/progress.md`.
 
 ## Contexto da pesquisa
