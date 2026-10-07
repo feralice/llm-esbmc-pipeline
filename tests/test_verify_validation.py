@@ -32,6 +32,13 @@ def test_a_simplified_body_is_not_preserved() -> None:
     assert not target_preserved(SOURCE, HARNESS.replace("10 // n", "10 // (n or 1)"), "f")
 
 
+def test_a_refused_library_call_replaced_by_its_stub_is_preserved() -> None:
+    original = "import re\ndef f(s):\n    return re.findall('a', s)[0]\n"
+    stubbed = "def f(s):\n    return _esbmc_re_findall('a', s)[0]\n"
+    assert target_preserved(original, stubbed, "f")
+    assert not target_preserved(original, stubbed.replace("[0]", "[1]"), "f")
+
+
 def test_a_missing_target_is_not_preserved() -> None:
     assert not target_preserved(SOURCE, "def driver():\n    pass\n", "f")
 

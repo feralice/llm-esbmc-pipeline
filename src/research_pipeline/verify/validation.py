@@ -31,10 +31,24 @@ def program_for_result(path: Path, hypothesis: dict) -> Program | None:
     return Program(source, 0, spans, (), (function.lineno, function.end_lineno))
 
 
+class _AsStubs(ast.NodeTransformer):
+    """``re.sub`` -> ``_esbmc_re_sub`` where the program uses that stub (slicing's refused-member rename)."""
+
+    def __init__(self, stubs: set[str]) -> None:
+        self.stubs = stubs
+
+    def visit_Attribute(self, node: ast.Attribute) -> ast.AST:
+        name = "_esbmc_" + ast.unparse(node).replace(".", "_")
+        return ast.Name(name, node.ctx) if name in self.stubs else self.generic_visit(node)
+
+
 def target_preserved(original_source: str, program_source: str, function: str) -> bool:
     original = find_function(ast.parse(original_source), function)
     checked = find_function(ast.parse(program_source), function)
-    return original is not None and checked is not None and body_signature(original) == body_signature(checked)
+    if original is None or checked is None:
+        return False
+    stubs = {n.id for n in ast.walk(checked) if isinstance(n, ast.Name) and n.id.startswith("_esbmc_")}
+    return body_signature(_AsStubs(stubs).visit(original)) == body_signature(checked)
 
 
 def with_unreachable_marker(source: str, line: int) -> str | None:
