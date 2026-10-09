@@ -57,50 +57,36 @@ Dos 229 resultados distintos da rodada completa, por que não houve veredito:
 Os casos de tempo esgotado não melhoram com mais tempo: com 900 s eles esgotam a memória. O limite é
 o tamanho da fórmula (strings livres dentro de conjuntos).
 
-## 5. O que falta, em ordem
+## 5. O que falta, em ordem (combinado em 08/10)
 
-### Curto prazo (fechar o pipeline)
+Para **terminar o pipeline**:
 
-1. **Juntar o branch no `master`.** O `master` está em aff456c; os commits seguintes (fase 10,
-   correções da revisão, handoff, este arquivo) estão só em `feat/validacao-deteccao`. Ela roda:
-   `git -C /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc merge --ff-only feat/validacao-deteccao`.
-2. **Entrada fixada** (tarefa 2 do handoff). A busca no CPython acha a entrada que quebra, e o ESBMC
-   prova só aquele caminho, o que dá confirmação formal onde hoje estoura tempo ou memória.
-   Candidatos: ip_real_22, oob_real_12. É a próxima chance concreta de subir a métrica principal.
-3. **Prazo da passada aleatória** (tarefa 3 do handoff, achado I1 da revisão). Correção pequena em
-   `verify/replay_worker.py`.
-4. **Refazer a validação com mutantes** usando a busca melhorada. Na fase 9 os mutantes deram
-   inconclusivo porque a busca no CPython era fraca.
-5. **Agentes nos 68 casos que a rota nova manda para eles** (harness por código e aterramento).
-   A rota foi corrigida depois da rodada da fase 10, então esses casos ainda não passaram pelo
-   agente com a rota certa. Medir primeiro nos que estão entre os 20 difíceis.
+1. **Medir a entrada fixada** nos 20 casos difíceis (braço `pinned`, `verify/pinned.py`): o ESBMC
+   prova só o caminho da entrada que a busca no CPython achou. Rodando.
+2. **Prazo da passada aleatória** no executor do CPython (achado I1 da revisão): o teste já existe
+   (`test_the_random_pass_gets_time_even_when_every_exhaustive_run_is_slow`), falta o código.
+3. **Juntar o branch no `master`** (ela roda o comando de junção).
+4. **Rodada final, uma vez**: `scripts/run_final.sh <data>`. Detecção com o prompt A5, harness nível 1,
+   ESBMC, orquestrador sem agentes (busca no CPython e entrada fixada), controle nas versões
+   corrigidas e validação. Dá os números da dissertação.
+5. **Registrar os números finais** em `docs/experimentos/` (fase 11) e atualizar este arquivo.
 
-### Médio prazo (melhorar o harness e a independência de ferramenta)
+Depois de terminar:
 
-6. **Skill unificada no repo** (tarefa 4 do handoff, especificação
-   `docs/superpowers/specs/2026-10-07-skill-unificada-design.md`). Tudo o que o agente precisa numa
-   pasta só, sem depender do plugin instalado na máquina; backends para Codex e Gemini CLI.
-7. **Comparar agentes** (Claude Code, Codex, Gemini) nos mesmos 20 casos, com a mesma skill.
-8. **Harness híbrido** (parte 2 do roteiro): a LLM escreve só o driver com `assume` e `assert`; o código
-   faz recorte e stubs. Permite verificar bugs de **resultado errado** com `assert` da propriedade,
-   validado pela versão corrigida. Hoje esses bugs (178 de 289) quase não chegam ao ESBMC.
-9. **Grafo dentro do arquivo** (parte 1 do roteiro): quem chama a função e com que contrato. Ataca os
-   falsos alarmes (ir_real_03, bip_thefuck_11) e parte da falta de contexto.
-
-### Fechamento dos números (uma vez, no fim)
-
-10. **Rodada completa com o prompt A5** (`--v2-variants A1,A2`), seguida da validação e do
-    orquestrador em cima. Leva horas; confirmar com ela antes. Dá o número final de detecção e de
-    confirmação da dissertação.
-11. **Controle nas versões corrigidas** para tudo o que essa rodada confirmar.
-
-### Longo prazo (depois da qualificação, ou se sobrar tempo)
-
-12. **Grafo do repositório e modo scan** (parte 4 do roteiro): apontar para um repositório, a LLM
-    varre, o pipeline confirma. Alvo: código pouco auditado de organizações conhecidas.
-13. **Caça de bugs novos:** parsers e desserializadores que leem entrada de fora (exemplo:
-    CVE-2026-104020 no ion-python, recursão sem limite, creditado a Weiqi Wang e Lucas Cordeiro).
-    Vale perguntar ao professor como foi achado.
+6. **Skill unificada e agente único**: as regras do harness numa pasta só do repo
+   (`skills/esbmc-python-harness/`), e um único caminho "agente" no orquestrador em que a pessoa escolhe
+   a LLM (Claude Code, Codex, Gemini CLI ou qualquer API). Especificação:
+   `docs/superpowers/specs/2026-10-07-skill-unificada-design.md`.
+7. **Grafo dentro do arquivo**: quem chama a função e com que contrato (falsos alarmes, falta de
+   contexto).
+8. **Harness para bugs de resultado errado** (`assert` da propriedade, validado pela versão corrigida).
+9. **Grafo do repositório e modo scan**; caça de bugs novos.
+10. **Virar ferramenta para bugs novos** (ideia de 08/10): primeiro um comando de terminal
+    (`llm-esbmc scan <repositório>`), depois plugin de agente ou servidor MCP em cima da skill do
+    item 6; extensão de editor e GitHub Action ficam por último. Precisa de varredura do repositório
+    (grafo), relatório legível (linha, entrada que quebra, contraexemplo, script de reprodução) e de
+    confiança sem versão corrigida (só ESBMC mais CPython). Antes disso, o método é validado nos bugs
+    reais conhecidos (dissertação).
 
 ## 6. Pendências pequenas (fazer só se atrapalharem)
 
