@@ -1,0 +1,212 @@
+[
+  {
+    "bug": "bip_black_16",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/edce49fc532d_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 3.0,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 3.0,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_keras_25",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/ce1f281c3706_a1.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 6.2,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "ERROR: Z3 error rm and fp sorts expected encountered",
+      "seconds": 4.9,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_keras_3",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/df4db19deb29_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.8,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.7,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_keras_3",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/84b7d050dd85_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.6,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.7,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_keras_40",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/5e3e86af152a_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.5,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.5,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_keras_40",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/56197c3e9e9d_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.5,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 1.4,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_pandas_142",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/e7214f96429a_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 2.8,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 3.1,
+      "failed": []
+    }
+  },
+  {
+    "bug": "bip_tornado_5",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/40ff07661432_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 4.1,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "ERROR: Z3 error rm and fp sorts expected encountered",
+      "seconds": 11.1,
+      "failed": []
+    }
+  },
+  {
+    "bug": "ip_real_22",
+    "engine_verdict": "ESBMC_TIMEOUT",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/91509f265939_a0.py",
+    "default": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    }
+  },
+  {
+    "bug": "nm_real_14",
+    "engine_verdict": "ESBMC_ERROR",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/52e8c7dc508a_a0.py",
+    "default": {
+      "verdict": "NO_VERDICT",
+      "seconds": 4.6,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "NO_VERDICT",
+      "seconds": 4.2,
+      "failed": []
+    }
+  },
+  {
+    "bug": "oob_real_03",
+    "engine_verdict": "ESBMC_TIMEOUT",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/57916072238c_a0.py",
+    "default": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "ERROR: Z3 error Sorts struct_type_pointer_struct and (_ BitVec 64) are incompatible encountered",
+      "seconds": 4.8,
+      "failed": []
+    }
+  },
+  {
+    "bug": "oob_real_03",
+    "engine_verdict": "ESBMC_TIMEOUT",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/f5cf2e5684ac_a0.py",
+    "default": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "ERROR: Z3 error Sorts struct_type_pointer_struct and (_ BitVec 64) are incompatible encountered",
+      "seconds": 5.3,
+      "failed": []
+    }
+  },
+  {
+    "bug": "oob_real_06",
+    "engine_verdict": "ESBMC_TIMEOUT",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/0f293ef94a8e_a0.py",
+    "default": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    }
+  },
+  {
+    "bug": "oob_real_12",
+    "engine_verdict": "ESBMC_TIMEOUT",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/a9cdf5adabac_a1.py",
+    "default": {
+      "verdict": "TIMEOUT",
+      "seconds": 300,
+      "failed": []
+    },
+    "smt_symex": {
+      "verdict": "ERROR: Z3 error Sorts struct_type_pointer_struct and (_ BitVec 64) are incompatible encountered",
+      "seconds": 3.9,
+      "failed": []
+    }
+  }
+]

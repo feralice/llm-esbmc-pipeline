@@ -394,6 +394,15 @@ nesses programas (e `--no-slice` derruba o ESBMC), então a entrada exata não p
   `full-2026-10-05-regrounded`, reverificadas com o código atual e as mesmas especificações: 23 de 23
   com o mesmo veredito. As mudanças das fases 9 e 10 não alteraram o nível 1.
 
+- **Experimento A, perfil do solver** (`scripts/v2_solver_profiles.py`, `fase-10/solver-profiles-2026-10-09`,
+  09/10): os 14 programas de `full-2026-10-05-regrounded` que o ESBMC aceitou mas não terminaram
+  (`ESBMC_TIMEOUT` e `ESBMC_ERROR`), com o perfil atual e com `--z3 --smt-during-symex --smt-symex-guard`,
+  `--unwind 5 --multi-property`, 300 s. Nenhum passou a ter veredito. Nos 5 de tempo esgotado, o perfil
+  novo estoura de novo em 2 (ip_real_22, oob_real_06) e o Z3 para com erro interno em 3 (`Sorts
+  struct_type_pointer_struct and (_ BitVec 64) are incompatible`); nos 9 inconclusivos, os dois perfis
+  saem sem veredito em segundos, e o Z3 dá `rm and fp sorts expected` em bip_keras_25 e bip_tornado_5.
+  A pista do reprodutor 18 (10 s com esse perfil) não se repete nos casos reais.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
