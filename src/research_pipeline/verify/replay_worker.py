@@ -223,9 +223,11 @@ def main(program_path, config_path, output_path):
     if config.get("random_runs") and not config.get("seeds_only"):
         rng = random.Random(config.get("seed", 0))
         passes.append((_random_domains(rng), config["random_runs"], rng))
-    for domains, budget, *random_pass in passes:
+    for index, (domains, budget, *random_pass) in enumerate(passes):
+        # Each pass gets its share of the time left, so a slow exhaustive pass cannot starve the random one.
+        pass_deadline = time.monotonic() + (deadline - time.monotonic()) / (len(passes) - index)
         vector, used = [], 0
-        while vector is not None and used < budget and time.monotonic() < deadline:
+        while vector is not None and used < budget and time.monotonic() < pass_deadline:
             chooser = _RandomChooser(random_pass[0]) if random_pass else _Chooser(vector)
             runs, used = runs + 1, used + 1
             outcome = _run_once(code, chooser, domains, RANDOM_MAX_LIST if random_pass else MAX_LIST, target)
