@@ -1,0 +1,448 @@
+{
+  "config": {
+    "report": "artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json",
+    "only_file": "dataset/bugs_reais/conjunto_dificil.json",
+    "arms": [
+      "dynamic",
+      "pinned"
+    ],
+    "api_backend": "claude_cli",
+    "agent_model": null,
+    "bound": 5,
+    "timeout": 600
+  },
+  "rows": [
+    {
+      "hypothesis_id": "91c7494248a2",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "528ca8730d1f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "7f4509a77e6f",
+      "engine_verdict": "UNSUPPORTED",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "not executed on host: imports os",
+          "replay": {
+            "status": "unavailable",
+            "exception_type": "",
+            "line": null,
+            "runs": 0,
+            "reason": "not executed on host: imports os",
+            "inputs": null
+          }
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "edce49fc532d",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_NOTHING",
+          "reason": "",
+          "replay": {
+            "status": "not_reproduced",
+            "exception_type": "",
+            "line": null,
+            "runs": 301,
+            "reason": "",
+            "inputs": null
+          }
+        }
+      ],
+      "final": "FUZZ_NOTHING",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "a408047609c9",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "no generated program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "8fa98b8997cb",
+      "engine_verdict": "UNVALIDATED",
+      "route": [
+        "api_agent",
+        "claude_agent"
+      ],
+      "steps": [],
+      "final": "UNVALIDATED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "b8edde5a7e1e",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "ddcad8260108",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "2abbc0787351",
+      "engine_verdict": "ESBMC_MISSED",
+      "route": [],
+      "steps": [],
+      "final": "ESBMC_MISSED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "cd22a8de947d",
+      "engine_verdict": "GROUNDING_FAILED",
+      "route": [
+        "claude_agent"
+      ],
+      "steps": [],
+      "final": "GROUNDING_FAILED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "ef639b3fabe3",
+      "engine_verdict": "NOT_CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "NOT_CONFIRMED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "b5652fda143e",
+      "engine_verdict": "MISSING_DEPENDENCY",
+      "route": [
+        "claude_agent",
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "ZeroDivisionError",
+            "line": 20,
+            "runs": 227,
+            "reason": "",
+            "inputs": [
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "final": "FUZZ_FOUND",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "91509f265939",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic",
+        "pinned"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "AttributeError",
+            "line": 37,
+            "runs": 1,
+            "reason": "",
+            "inputs": [
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "arm": "pinned",
+          "verdict": "ESBMC_TIMEOUT",
+          "reason": "ESBMC direto excedeu o tempo limite de 600s.",
+          "inputs": [
+            false,
+            false
+          ],
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "AttributeError",
+            "line": 37,
+            "runs": 1,
+            "reason": "",
+            "inputs": [
+              false,
+              false
+            ]
+          },
+          "esbmc_status": "timeout",
+          "pinned_path": "artifacts/v2/orq-2026-10-08-pinned-20-t600/pinned_cases/91509f265939/pinned.py",
+          "unwind": 5
+        }
+      ],
+      "final": "FUZZ_FOUND",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "c3491e72eff2",
+      "engine_verdict": "SPEC_FAILED",
+      "route": [
+        "api_agent",
+        "claude_agent"
+      ],
+      "steps": [],
+      "final": "SPEC_FAILED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "52e8c7dc508a",
+      "engine_verdict": "ESBMC_ERROR",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "AttributeError",
+            "line": 49,
+            "runs": 304,
+            "reason": "",
+            "inputs": [
+              false,
+              ""
+            ]
+          }
+        }
+      ],
+      "final": "FUZZ_OTHER",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "134eed05190b",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "f5a460ae2fd2",
+      "engine_verdict": "CONFIRMED",
+      "route": [],
+      "steps": [],
+      "final": "CONFIRMED",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "57916072238c",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic",
+        "pinned"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_OTHER",
+          "reason": "",
+          "replay": {
+            "status": "other_failure",
+            "exception_type": "IndexError",
+            "line": 33,
+            "runs": 328,
+            "reason": "",
+            "inputs": [
+              "",
+              0,
+              ""
+            ]
+          }
+        },
+        {
+          "arm": "pinned",
+          "verdict": "PINNED_UNAVAILABLE",
+          "reason": "no crashing input from the dynamic arm"
+        }
+      ],
+      "final": "PINNED_UNAVAILABLE",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "a9cdf5adabac",
+      "engine_verdict": "ESBMC_TIMEOUT",
+      "route": [
+        "dynamic",
+        "pinned"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_FOUND",
+          "reason": "",
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 79,
+            "runs": 1,
+            "reason": "",
+            "inputs": [
+              "",
+              0,
+              0.0,
+              "",
+              "",
+              0.0,
+              0.0,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "arm": "pinned",
+          "verdict": "ESBMC_TIMEOUT",
+          "reason": "ESBMC direto excedeu o tempo limite de 600s.",
+          "inputs": [
+            "",
+            0,
+            0.0,
+            "",
+            "",
+            0.0,
+            0.0,
+            false,
+            false,
+            false,
+            false
+          ],
+          "replay": {
+            "status": "reproduced",
+            "exception_type": "IndexError",
+            "line": 79,
+            "runs": 1,
+            "reason": "",
+            "inputs": [
+              "",
+              0,
+              0.0,
+              "",
+              "",
+              0.0,
+              0.0,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          "esbmc_status": "timeout",
+          "pinned_path": "artifacts/v2/orq-2026-10-08-pinned-20-t600/pinned_cases/a9cdf5adabac/pinned.py",
+          "unwind": 5
+        }
+      ],
+      "final": "FUZZ_FOUND",
+      "complete": true
+    },
+    {
+      "hypothesis_id": "244a2dc788a7",
+      "engine_verdict": "OTHER_FAILURE",
+      "route": [
+        "dynamic"
+      ],
+      "steps": [
+        {
+          "arm": "dynamic",
+          "verdict": "FUZZ_UNAVAILABLE",
+          "reason": "hypothesis not found in the pre-rewrite program",
+          "replay": {}
+        }
+      ],
+      "final": "FUZZ_UNAVAILABLE",
+      "complete": true
+    }
+  ],
+  "summary": {
+    "final": {
+      "CONFIRMED": 3,
+      "FUZZ_UNAVAILABLE": 4,
+      "FUZZ_NOTHING": 1,
+      "UNVALIDATED": 1,
+      "NOT_CONFIRMED": 3,
+      "ESBMC_MISSED": 1,
+      "GROUNDING_FAILED": 1,
+      "FUZZ_FOUND": 3,
+      "SPEC_FAILED": 1,
+      "FUZZ_OTHER": 1,
+      "PINNED_UNAVAILABLE": 1
+    },
+    "confirmed_at_bug": 3,
+    "fuzz_found_at_bug": 3,
+    "confirmed_at_bug_by_pinned": 0
+  }
+}

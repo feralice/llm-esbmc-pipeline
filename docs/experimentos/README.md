@@ -348,6 +348,13 @@ sobre um relatório pronto. Código aff456c. `FUZZ_FOUND` é evidência dinâmic
   OTHER_FAILURE (CPython quebra na linha 33, fora da hipótese); a outra hipótese de oob_real_03 deu
   CONFIRMED fora da linha do bug (a mesma quebra aparece na versão corrigida). Métrica principal
   inalterada (7): o limite é o tamanho da fórmula (strings livres em conjuntos), não o tempo.
+- **Entrada fixada (`verify/pinned.py`, 08/10):** o ESBMC verifica só o caminho da entrada que a
+  busca no CPython achou. Nos 20 casos difíceis (`orq-2026-10-08-pinned-20` com 180 s e
+  `orq-2026-10-08-pinned-20-t600` com 600 s por solver): ip_real_22 e oob_real_12 estouram o tempo
+  mesmo com a entrada fixada (o CPython reproduz a quebra com ela); oob_real_03 não tem entrada que
+  quebre na linha do bug. Métrica principal inalterada (7). No ip_real_22 a causa foi isolada: um
+  `for` sobre lista global com `in` aplicado a `None` não termina no ESBMC-Python, enquanto a mesma
+  verificação sem o laço termina em 2 s (reprodutor 18 em `docs/projeto/possiveis_problemas`).
 - **Achado do CPython só conta contra o controle:** `--control` no `v2_orchestrate.py` conta os achados
   na linha do bug que a versão corrigida não repete.
 

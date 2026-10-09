@@ -1,0 +1,18 @@
+{
+  "final": {
+    "CONFIRMED": 3,
+    "FUZZ_UNAVAILABLE": 4,
+    "FUZZ_NOTHING": 1,
+    "UNVALIDATED": 1,
+    "NOT_CONFIRMED": 3,
+    "ESBMC_MISSED": 1,
+    "GROUNDING_FAILED": 1,
+    "FUZZ_FOUND": 3,
+    "SPEC_FAILED": 1,
+    "FUZZ_OTHER": 1,
+    "PINNED_UNAVAILABLE": 1
+  },
+  "confirmed_at_bug": 3,
+  "fuzz_found_at_bug": 3,
+  "confirmed_at_bug_by_pinned": 0
+}
