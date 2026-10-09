@@ -365,6 +365,35 @@ sobre um relatório pronto. Código aff456c. `FUZZ_FOUND` é evidência dinâmic
   não demonstraram novas confirmações. Comandos, resultados e caminho de melhorias em
   [harness-audit-2026-10-08](fase-10/harness-audit-2026-10-08/README.md).
 
+## Auditoria dos 7 confirmados e regressão do harness (09/10)
+
+Motivo: uma segunda opinião apontou que o `CONFIRMED` do pipeline une uma violação do ESBMC de um
+tipo de exceção (propriedade global, linha 0) com uma reexecução no CPython que levanta esse tipo na
+linha do bug, possivelmente com outra entrada; o ESBMC 8.5.0 não imprime os valores do contraexemplo
+nesses programas (e `--no-slice` derruba o ESBMC), então a entrada exata não pode ser reconstruída.
+
+- **Localização formal** (`scripts/v2_audit_confirmed.py`, `fase-10/audit-2026-10-09`): numa cópia do
+  programa verificado, a instrução da hipótese fica dentro de
+  `try/except <Exceção>: __ESBMC_assert(False, "AUDIT_TARGET")`; uma falha de `AUDIT_TARGET` prova que
+  a exceção nasce naquela instrução. Testado antes num par com bug e seguro.
+
+| Bug | Nível | Exceção | Linha provada pelo ESBMC | Stub ou modelo na linha | Comportamento possível na biblioteca real |
+|---|---|---|---|---|---|
+| av_real_01 | 1 | AssertionError | sim (o `assert` da linha 14 falha) | nenhum | sim |
+| oob_real_01 | 1 | IndexError | sim | `re.findall` vira lista qualquer | sim: `re.findall` devolve `[]` quando nada casa |
+| oob_real_02 | 1 | IndexError | sim | nenhum | sim |
+| bip_pandas_33 | agente | ValueError | sim | `Arr.min` do agente | sim: `min()` de array vazio do NumPy levanta o mesmo `ValueError` |
+| ip_real_14 | agente | ZeroDivisionError | sim | `np.ceil` do agente; objeto montado sem o `__init__` real | provável: depende de `batch_size * stride` poder ser 0 no construtor real |
+| nm_real_14 | agente | TypeError | sim | `to_bytes` do agente | sim: o `to_bytes` do Scrapy levanta `TypeError` com `None` |
+| bip_luigi_21 | agente | AttributeError | **não**: o ESBMC acusa ponteiro nulo dentro do modelo de `list.insert`, e há duas chamadas `insert` no caminho | nenhum | sim |
+
+  **Critério estrito: 6 de 7** com a linha provada pelo ESBMC; bip_luigi_21 fica como evidência mais
+  fraca (ESBMC e CPython concordam no caminho, sem prova de qual `insert`). ip_real_14 tem a ressalva do
+  construtor.
+- **Regressão** (`fase-10/regress-2026-10-09`): as 23 hipóteses com veredito do ESBMC de
+  `full-2026-10-05-regrounded`, reverificadas com o código atual e as mesmas especificações: 23 de 23
+  com o mesmo veredito. As mudanças das fases 9 e 10 não alteraram o nível 1.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

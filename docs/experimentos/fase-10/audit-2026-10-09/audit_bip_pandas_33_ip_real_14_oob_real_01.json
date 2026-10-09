@@ -1,0 +1,66 @@
+[
+  {
+    "bug": "oob_real_01",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/134eed05190b_a0.py",
+    "function": "get_new_command",
+    "expression": "re.findall('ERROR: unknown command \\\\\"([a-z]+)\\\\\"', command.output)[0]",
+    "exception": "IndexError",
+    "stubs_on_line": [
+      "_esbmc_re_findall"
+    ],
+    "located": "yes",
+    "esbmc_tail": [
+      "  AUDIT_TARGET",
+      "  FAILED       [get_new_command.assertion.3]                       line  29  AUDIT_TARGET",
+      "VERIFICATION FAILED"
+    ]
+  },
+  {
+    "bug": "oob_real_01",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/1bcb4b3c7823_a0.py",
+    "function": "get_new_command",
+    "expression": "re.findall('maybe you meant \\\\\"([a-z]+)\\\\\"', command.output)[0]",
+    "exception": "IndexError",
+    "stubs_on_line": [
+      "_esbmc_re_findall"
+    ],
+    "located": "yes",
+    "esbmc_tail": [
+      "  AUDIT_TARGET",
+      "  FAILED       [get_new_command.assertion.5]                       line  30  AUDIT_TARGET",
+      "VERIFICATION FAILED"
+    ]
+  },
+  {
+    "bug": "bip_pandas_33",
+    "level": "agente",
+    "program": "artifacts/v2/agent-2026-10-05-sonnet/cases/af346e18f12b/harness.py",
+    "function": "IntegerArray._values_for_argsort",
+    "expression": "data[self._mask] = data.min() - 1",
+    "exception": "ValueError",
+    "stubs_on_line": [],
+    "located": "yes",
+    "esbmc_tail": [
+      "  AUDIT_TARGET",
+      "  FAILED       [_values_for_argsort.assertion.3]                    line  43  AUDIT_TARGET",
+      "VERIFICATION FAILED"
+    ]
+  },
+  {
+    "bug": "ip_real_14",
+    "level": "agente",
+    "program": "artifacts/v2/agent-2026-10-05-sonnet/cases/d06a2222218e/harness.py",
+    "function": "TimeseriesGenerator.__len__",
+    "expression": "int(np.ceil((self.end_index - self.start_index) / (self.batch_size * self.stride)))",
+    "exception": "ZeroDivisionError",
+    "stubs_on_line": [],
+    "located": "yes",
+    "esbmc_tail": [
+      "  AUDIT_TARGET",
+      "  FAILED       [__len__.assertion.3]                               line 25  AUDIT_TARGET",
+      "VERIFICATION FAILED"
+    ]
+  }
+]

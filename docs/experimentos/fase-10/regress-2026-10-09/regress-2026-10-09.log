@@ -1,0 +1,43 @@
+av_real_01.py    CONFIRMED          -> CONFIRMED          assertion ISINSTANCE(param, 0); dereference failure: NULL pointer; unwinding ass
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:369: SyntaxWarning: invalid escape sequence '\s'
+<unknown>:940: SyntaxWarning: invalid escape sequence '\d'
+av_real_17.py    NOT_CONFIRMED      -> NOT_CONFIRMED      unwinding assertion loop 108; unwinding assertion loop 131
+bip_keras_38.py  UNVALIDATED        -> UNVALIDATED        uncaught exception: AttributeError
+bip_keras_43.py  OTHER_FAILURE      -> OTHER_FAILURE      uncaught exception: AttributeError
+bip_keras_43.py  OTHER_FAILURE      -> OTHER_FAILURE      uncaught exception: AttributeError
+bip_keras_43.py  OTHER_FAILURE      -> OTHER_FAILURE      uncaught exception: AttributeError
+bip_scrapy_15.py NOT_CONFIRMED      -> NOT_CONFIRMED      no_violation_found
+bip_scrapy_15.py NOT_CONFIRMED      -> NOT_CONFIRMED      no_violation_found
+bip_scrapy_21.py ESBMC_MISSED       -> ESBMC_MISSED       unwinding assertion loop 131; unwinding assertion loop 29; unwinding assertion l
+bip_thefuck_11.py CONFIRMED          -> CONFIRMED          unwinding assertion loop 108; uncaught exception: IndexError
+bip_youtube_dl_13.py UNVALIDATED        -> UNVALIDATED        uncaught exception: AttributeError
+bip_youtube_dl_13.py NOT_CONFIRMED      -> NOT_CONFIRMED      no_violation_found
+bip_youtube_dl_13.py NOT_CONFIRMED      -> NOT_CONFIRMED      no_violation_found
+bip_youtube_dl_21.py NOT_CONFIRMED      -> NOT_CONFIRMED      no_violation_found
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+bip_youtube_dl_41.py NOT_CONFIRMED      -> NOT_CONFIRMED      unwinding assertion loop 108
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:805: SyntaxWarning: invalid escape sequence '\d'
+bip_youtube_dl_41.py NOT_CONFIRMED      -> NOT_CONFIRMED      unwinding assertion loop 108
+ip_real_10.py    OTHER_FAILURE      -> OTHER_FAILURE      dereference failure: NULL pointer; unwinding assertion loop 131; uncaught except
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+<unknown>:33: SyntaxWarning: invalid escape sequence '\d'
+ir_real_03.py    CONFIRMED          -> CONFIRMED          unwinding assertion loop 131; uncaught exception: IndexError
+oob_real_01.py   CONFIRMED          -> CONFIRMED          uncaught exception: IndexError
+oob_real_01.py   CONFIRMED          -> CONFIRMED          uncaught exception: IndexError
+oob_real_02.py   CONFIRMED          -> CONFIRMED          unwinding assertion loop 108; uncaught exception: IndexError
+tm_real_04.py    UNVALIDATED        -> UNVALIDATED        unwinding assertion loop 37; invalid literal for int() with empty string; invali
+tm_real_04.py    OTHER_FAILURE      -> OTHER_FAILURE      unwinding assertion loop 37; invalid literal for int() with empty string; invali
+
+ {'NOT_CONFIRMED': 8, 'CONFIRMED': 6, 'OTHER_FAILURE': 5, 'UNVALIDATED': 3, 'ESBMC_MISSED': 1}

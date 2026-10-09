@@ -1,0 +1,117 @@
+[
+  {
+    "bug": "av_real_01",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/91c7494248a2_a2.py",
+    "function": "cli_bool_option",
+    "expression": "assert isinstance(param, bool)",
+    "exception": "AssertionError",
+    "stubs_on_line": [],
+    "located": "assert statement: ESBMC reports its own line"
+  },
+  {
+    "bug": "bip_thefuck_11",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/9be9fc736043_a0.py",
+    "function": "get_new_command",
+    "expression": "command.stderr.split('\\n')[-3]",
+    "exception": "IndexError",
+    "stubs_on_line": [],
+    "located": "timeout"
+  },
+  {
+    "bug": "ir_real_03",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-05-regrounded/programs/209b1024c62b_a0.py",
+    "function": "try_match_char_class_range",
+    "expression": "if not (pattern[0] == '[' and pattern[2] == '-' and (pattern[4] == ']')):",
+    "exception": "IndexError",
+    "stubs_on_line": [],
+    "located": "timeout"
+  },
+  {
+    "bug": "oob_real_01",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/134eed05190b_a0.py",
+    "function": "get_new_command",
+    "expression": "re.findall('ERROR: unknown command \\\\\"([a-z]+)\\\\\"', command.output)[0]",
+    "exception": "IndexError",
+    "stubs_on_line": [],
+    "located": "could not wrap the statement"
+  },
+  {
+    "bug": "oob_real_01",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/1bcb4b3c7823_a0.py",
+    "function": "get_new_command",
+    "expression": "re.findall('maybe you meant \\\\\"([a-z]+)\\\\\"', command.output)[0]",
+    "exception": "IndexError",
+    "stubs_on_line": [],
+    "located": "could not wrap the statement"
+  },
+  {
+    "bug": "oob_real_02",
+    "level": "nivel 1",
+    "program": "artifacts/v2/full-2026-10-04-sonnet/programs/f5a460ae2fd2_a0.py",
+    "function": "match",
+    "expression": "command.script.split()[1]",
+    "exception": "IndexError",
+    "stubs_on_line": [],
+    "located": "yes",
+    "esbmc_tail": [
+      "  AUDIT_TARGET",
+      "  FAILED       [match.assertion.3]                                     line   13  AUDIT_TARGET",
+      "VERIFICATION FAILED"
+    ]
+  },
+  {
+    "bug": "bip_luigi_21",
+    "level": "agente",
+    "program": "artifacts/v2/agent-2026-10-05-sonnet/cases/a5a1121afa6c/harness.py",
+    "function": "run",
+    "expression": "cmdline_args.insert(0, main_task_cls.task_family)",
+    "exception": "AttributeError",
+    "stubs_on_line": [],
+    "located": "no",
+    "esbmc_tail": [
+      "VERIFICATION FAILED"
+    ]
+  },
+  {
+    "bug": "bip_pandas_33",
+    "level": "agente",
+    "program": "artifacts/v2/agent-2026-10-05-sonnet/cases/af346e18f12b/harness.py",
+    "function": "IntegerArray._values_for_argsort",
+    "expression": "data[self._mask] = data.min() - 1",
+    "exception": "ValueError",
+    "stubs_on_line": [],
+    "located": "could not wrap the statement"
+  },
+  {
+    "bug": "ip_real_14",
+    "level": "agente",
+    "program": "artifacts/v2/agent-2026-10-05-sonnet/cases/d06a2222218e/harness.py",
+    "function": "TimeseriesGenerator.__len__",
+    "expression": "int(np.ceil((self.end_index - self.start_index) / (self.batch_size * self.stride)))",
+    "exception": "ZeroDivisionError",
+    "stubs_on_line": [],
+    "located": "could not wrap the statement"
+  },
+  {
+    "bug": "nm_real_14",
+    "level": "agente",
+    "program": "artifacts/v2/agent-2026-10-05-sonnet/cases/52e8c7dc508a/harness.py",
+    "function": "request_httprepr",
+    "expression": "s += b'Host: ' + to_bytes(parsed.hostname) + b'\\r\\n'",
+    "exception": "TypeError",
+    "stubs_on_line": [
+      "to_bytes"
+    ],
+    "located": "yes",
+    "esbmc_tail": [
+      "  AUDIT_TARGET",
+      "  FAILED       [request_httprepr.assertion.4]                   line 69  AUDIT_TARGET",
+      "VERIFICATION FAILED"
+    ]
+  }
+]
