@@ -1,0 +1,536 @@
+{
+  "flags.json": [
+    {
+      "name": "mini_base",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py",
+        "--unwind",
+        "5",
+        "--multi-property"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.03,
+      "phases": [
+        "Slicing time: 0.012s (removed 182 assignments)",
+        "Encoding to solver time: 0.013s",
+        "Slicing time: 0.012s (removed 177 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.013s (removed 180 assignments)",
+        "Encoding to solver time: 0.013s",
+        "Slicing time: 0.011s (removed 180 assignments)",
+        "Encoding to solver time: 0.013s",
+        "Slicing time: 0.012s (removed 180 assignments)",
+        "Encoding to solver time: 0.017s",
+        "Slicing time: 0.013s (removed 180 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.011s (removed 175 assignments)",
+        "Encoding to solver time: 0.016s"
+      ]
+    },
+    {
+      "name": "mini_incremental_smt",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py",
+        "--unwind",
+        "5",
+        "--multi-property",
+        "--z3",
+        "--smt-during-symex",
+        "--smt-symex-guard"
+      ],
+      "status": "failed",
+      "exit_code": 1,
+      "seconds": 10.26,
+      "phases": [
+        "Encoding to solver time: 0.000s",
+        "Slicing time: 0.002s (removed 11 assignments)",
+        "Encoding to solver time: 0.000s",
+        "Slicing time: 0.002s (removed 11 assignments)",
+        "Encoding to solver time: 0.000s",
+        "Slicing time: 0.002s (removed 11 assignments)",
+        "Encoding to solver time: 0.000s",
+        "Slicing time: 0.002s (removed 6 assignments)",
+        "Encoding to solver time: 0.000s",
+        "BMC program time: 7.309s",
+        "  FAILED       [strstr.null-pointer-dereference.1]                 line 235  dereference failure: NULL pointer",
+        "  FAILED       [strstr.assertion.3]                                line 235  unwinding assertion loop 134",
+        "  FAILED       [strstr.null-pointer-dereference.2]                 line 240  dereference failure: NULL pointer",
+        "Solver: Z3 v4.13.3 • Decision procedure total time: 2.729s • Avg: 0.048s/property"
+      ]
+    },
+    {
+      "name": "mini_goto_unwind",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py",
+        "--unwind",
+        "5",
+        "--multi-property",
+        "--goto-unwind"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.02,
+      "phases": [
+        "Encoding to solver time: 0.021s",
+        "Slicing time: 0.017s (removed 188 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.013s (removed 193 assignments)",
+        "Encoding to solver time: 0.012s",
+        "Slicing time: 0.009s (removed 193 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.015s (removed 193 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.014s (removed 193 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.017s (removed 188 assignments)",
+        "Encoding to solver time: 0.012s",
+        "Slicing time: 0.011s (removed 191 assignments)"
+      ]
+    },
+    {
+      "name": "mini_interval",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py",
+        "--unwind",
+        "5",
+        "--multi-property",
+        "--interval-analysis"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.02,
+      "phases": [
+        "Slicing time: 0.011s (removed 219 assignments)",
+        "Encoding to solver time: 0.011s",
+        "Slicing time: 0.009s (removed 219 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.010s (removed 219 assignments)",
+        "Encoding to solver time: 0.015s",
+        "Slicing time: 0.018s (removed 216 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.013s (removed 216 assignments)",
+        "Encoding to solver time: 0.014s",
+        "Slicing time: 0.014s (removed 216 assignments)",
+        "Encoding to solver time: 0.021s",
+        "Slicing time: 0.009s (removed 216 assignments)",
+        "Encoding to solver time: 0.011s"
+      ]
+    },
+    {
+      "name": "ip_incremental_smt",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/artifacts/v2/orq-2026-10-08-pinned-20-t600/pinned_cases/91509f265939/pinned.py",
+        "--unwind",
+        "5",
+        "--multi-property",
+        "--z3",
+        "--smt-during-symex",
+        "--smt-symex-guard"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.02,
+      "phases": [
+        "GOTO program creation time: 3.523s",
+        "GOTO program processing time: 0.047s",
+        "Starting Bounded Model Checking"
+      ]
+    },
+    {
+      "name": "ip_goto_unwind",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/artifacts/v2/orq-2026-10-08-pinned-20-t600/pinned_cases/91509f265939/pinned.py",
+        "--unwind",
+        "5",
+        "--multi-property",
+        "--goto-unwind"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.03,
+      "phases": [
+        "Slicing time: 0.012s (removed 2398 assignments)",
+        "Encoding to solver time: 0.021s",
+        "Slicing time: 0.010s (removed 2398 assignments)",
+        "Encoding to solver time: 0.021s",
+        "Slicing time: 0.012s (removed 2398 assignments)",
+        "Encoding to solver time: 0.019s",
+        "Slicing time: 0.008s (removed 2397 assignments)",
+        "Encoding to solver time: 0.020s",
+        "Slicing time: 0.009s (removed 2397 assignments)",
+        "Encoding to solver time: 0.021s",
+        "Slicing time: 0.008s (removed 2397 assignments)",
+        "Encoding to solver time: 0.024s",
+        "Slicing time: 0.008s (removed 2397 assignments)",
+        "Encoding to solver time: 0.028s"
+      ]
+    }
+  ],
+  "literal.json": [
+    {
+      "id": "91509f265939",
+      "source": "/tmp/harness-audit-2026-10-08/91509f265939_literal.py",
+      "inputs": [
+        false,
+        false
+      ],
+      "exception": "AttributeError",
+      "target_preserved": true,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 37,
+        "runs": 1,
+        "reason": "",
+        "inputs": []
+      },
+      "pruned": "/tmp/harness-audit-2026-10-08/91509f265939_literal_pruned.py"
+    },
+    {
+      "id": "a9cdf5adabac",
+      "source": "/tmp/harness-audit-2026-10-08/a9cdf5adabac_literal.py",
+      "inputs": [
+        "",
+        0,
+        0.0,
+        "",
+        "",
+        0.0,
+        0.0,
+        false,
+        false,
+        false,
+        false
+      ],
+      "exception": "IndexError",
+      "target_preserved": true,
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "IndexError",
+        "line": 79,
+        "runs": 1,
+        "reason": "",
+        "inputs": []
+      },
+      "pruned": "/tmp/harness-audit-2026-10-08/a9cdf5adabac_literal_pruned.py"
+    }
+  ],
+  "literal_runs.json": [
+    {
+      "name": "91509f265939_literal",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/91509f265939_literal.py",
+        "--unwind",
+        "5",
+        "--multi-property"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.03,
+      "phases": [
+        "Slicing time: 0.010s (removed 2420 assignments)",
+        "Encoding to solver time: 0.023s",
+        "Slicing time: 0.010s (removed 2441 assignments)",
+        "Encoding to solver time: 0.011s",
+        "Slicing time: 0.009s (removed 2420 assignments)",
+        "Encoding to solver time: 0.024s",
+        "Slicing time: 0.010s (removed 2420 assignments)",
+        "Encoding to solver time: 0.023s",
+        "Slicing time: 0.011s (removed 2420 assignments)",
+        "Encoding to solver time: 0.024s",
+        "Slicing time: 0.010s (removed 2419 assignments)",
+        "Encoding to solver time: 0.026s",
+        "Slicing time: 0.011s (removed 2419 assignments)",
+        "Encoding to solver time: 0.028s"
+      ]
+    },
+    {
+      "name": "91509f265939_literal_pruned",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/91509f265939_literal_pruned.py",
+        "--unwind",
+        "5",
+        "--multi-property"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.03,
+      "phases": [
+        "Encoding to solver time: 0.012s",
+        "Slicing time: 0.009s (removed 2420 assignments)",
+        "Encoding to solver time: 0.021s",
+        "Slicing time: 0.010s (removed 2420 assignments)",
+        "Encoding to solver time: 0.024s",
+        "Slicing time: 0.010s (removed 2420 assignments)",
+        "Encoding to solver time: 0.022s",
+        "Slicing time: 0.012s (removed 2419 assignments)",
+        "Encoding to solver time: 0.023s",
+        "Slicing time: 0.010s (removed 2419 assignments)",
+        "Encoding to solver time: 0.024s",
+        "Slicing time: 0.010s (removed 2419 assignments)",
+        "Encoding to solver time: 0.025s",
+        "Slicing time: 0.009s (removed 2419 assignments)"
+      ]
+    },
+    {
+      "name": "a9cdf5adabac_literal",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/a9cdf5adabac_literal.py",
+        "--unwind",
+        "5",
+        "--multi-property"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.02,
+      "phases": [
+        "GOTO program creation time: 3.187s",
+        "GOTO program processing time: 0.025s",
+        "Starting Bounded Model Checking"
+      ]
+    },
+    {
+      "name": "a9cdf5adabac_literal_pruned",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/a9cdf5adabac_literal_pruned.py",
+        "--unwind",
+        "5",
+        "--multi-property"
+      ],
+      "status": "timeout",
+      "exit_code": "timeout",
+      "seconds": 35.02,
+      "phases": [
+        "GOTO program creation time: 3.209s",
+        "GOTO program processing time: 0.026s",
+        "Starting Bounded Model Checking"
+      ]
+    }
+  ],
+  "scope.json": [
+    {
+      "id": "528ca8730d1f",
+      "file": "av_real_03",
+      "function": "Series.to_timestamp",
+      "before": 4820,
+      "after": 4815,
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "id": "4c46f82a78ef",
+      "file": "bip_black_13",
+      "function": "generate_tokens",
+      "before": 387,
+      "after": 384,
+      "reason": "undefined name(s): ASYNC, AWAIT, COMMENT, DEDENT, ENDMARKER, ERRORTOKEN, INDENT, NAME, NEWLINE, NL, NUMBER, OP, STRING",
+      "verdict": "MISSING_DEPENDENCY"
+    },
+    {
+      "id": "3d6f97ad6ab6",
+      "file": "bip_keras_26",
+      "function": "rnn",
+      "before": 362,
+      "after": 305,
+      "reason": "undefined name(s): uses_learning_phase",
+      "verdict": "MISSING_DEPENDENCY"
+    },
+    {
+      "id": "90ba797cbb92",
+      "file": "bip_keras_26",
+      "function": "rnn._step",
+      "before": 362,
+      "after": 305,
+      "reason": "function 'rnn._step' not found (or ambiguous)",
+      "verdict": "GROUNDING_FAILED"
+    },
+    {
+      "id": "d53b549d892f",
+      "file": "bip_pandas_154",
+      "function": "GroupBy._get_cythonized_result",
+      "before": 2494,
+      "after": 2478,
+      "reason": "receiver reads inherited member(s): _iterate_slices",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "id": "af346e18f12b",
+      "file": "bip_pandas_33",
+      "function": "IntegerArray._values_for_argsort",
+      "before": 804,
+      "after": 800,
+      "reason": "external name 'register_extension_dtype' is used as a decorator",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "id": "9ccf6f76f3c9",
+      "file": "bip_pandas_61",
+      "function": "Series._get_with",
+      "before": 4657,
+      "after": 4652,
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "id": "93f938743761",
+      "file": "bip_pandas_78",
+      "function": "DataFrame._reduce",
+      "before": 8589,
+      "after": 8584,
+      "reason": "external call Substitution(...) uses *args/**kwargs",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "id": "0e891f89a342",
+      "file": "bip_pandas_87",
+      "function": "crosstab",
+      "before": 274,
+      "after": 270,
+      "reason": "ERROR: Module 'pandas' not found.",
+      "verdict": "MISSING_DEPENDENCY",
+      "program": "/tmp/harness-audit-2026-10-08/0e891f89a342_scope.py",
+      "lines": 320,
+      "target_preserved": false
+    },
+    {
+      "id": "ebae3e20a8d4",
+      "file": "ip_real_19",
+      "function": "VersionInfo.__getitem__",
+      "before": 710,
+      "after": 660,
+      "reason": "ERROR: Type inference failed at line 47. Variable DeprecationWarning not found",
+      "verdict": "UNSUPPORTED",
+      "program": "/tmp/harness-audit-2026-10-08/ebae3e20a8d4_scope.py",
+      "lines": 327,
+      "target_preserved": true
+    },
+    {
+      "id": "e623aa991712",
+      "file": "nm_real_23",
+      "function": "Markdown._html_class_str_from_tag",
+      "before": 2573,
+      "after": 2570,
+      "reason": "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation.",
+      "verdict": "UNSUPPORTED",
+      "program": "/tmp/harness-audit-2026-10-08/e623aa991712_scope.py",
+      "lines": 393,
+      "target_preserved": true
+    },
+    {
+      "id": "148424345a89",
+      "file": "oob_real_14",
+      "function": "LinuxDistribution._parse_uname_content",
+      "before": 989,
+      "after": 756,
+      "reason": "ERROR: Object \"name\" not found.",
+      "verdict": "MISSING_DEPENDENCY",
+      "program": "/tmp/harness-audit-2026-10-08/148424345a89_scope.py",
+      "lines": 216,
+      "target_preserved": true
+    }
+  ],
+  "acceptance.json": [
+    {
+      "name": "ebae3e20a8d4_scope_convert",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/ebae3e20a8d4_scope.py",
+        "--goto-functions-only"
+      ],
+      "exit_code": 255,
+      "seconds": 1.69,
+      "error": [
+        "ERROR: Type inference failed at line 47. Variable DeprecationWarning not found"
+      ]
+    },
+    {
+      "name": "ebae3e20a8d4_original_convert",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/artifacts/v2/full-2026-10-04-sonnet/programs/ebae3e20a8d4_a2.py",
+        "--goto-functions-only"
+      ],
+      "exit_code": 255,
+      "seconds": 1.7,
+      "error": [
+        "ERROR: Type inference failed at line 47. Variable DeprecationWarning not found"
+      ]
+    },
+    {
+      "name": "e623aa991712_scope_convert",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/e623aa991712_scope.py",
+        "--goto-functions-only"
+      ],
+      "exit_code": 255,
+      "seconds": 1.78,
+      "error": [
+        "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation."
+      ]
+    },
+    {
+      "name": "e623aa991712_original_convert",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/artifacts/v2/full-2026-10-05-regrounded/programs/e623aa991712_a2.py",
+        "--goto-functions-only"
+      ],
+      "exit_code": 255,
+      "seconds": 1.8,
+      "error": [
+        "ERROR: Cannot infer type for class attribute '_ws_only_line_re' in class 'Markdown'. Please add explicit type annotation."
+      ]
+    },
+    {
+      "name": "148424345a89_scope_convert",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/tmp/harness-audit-2026-10-08/148424345a89_scope.py",
+        "--goto-functions-only"
+      ],
+      "exit_code": 255,
+      "seconds": 2.14,
+      "error": [
+        "ERROR: Object \"name\" not found."
+      ]
+    },
+    {
+      "name": "148424345a89_original_convert",
+      "command": [
+        "/usr/local/bin/esbmc",
+        "/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/artifacts/v2/full-2026-10-04-sonnet/programs/148424345a89_a0.py",
+        "--goto-functions-only"
+      ],
+      "exit_code": 255,
+      "seconds": 2.22,
+      "error": [
+        "ERROR: Object \"name\" not found."
+      ]
+    }
+  ],
+  "baseline_commit": "72a1989817d0bd883fd44ba7b98c97c90f80c44b",
+  "esbmc_source_commit": "e26dd5422b9fb8a6e7bd6c2d3c3484d0e0015931",
+  "esbmc_binary": "/usr/local/bin/esbmc",
+  "metric": {
+    "before": 7,
+    "new_confirmations": 0,
+    "after": 7
+  },
+  "nested_probe": {
+    "body_preserved": true,
+    "result": "ERROR: NameError: name ndarray is not defined",
+    "log": "nested_pre_processor.log"
+  }
+}

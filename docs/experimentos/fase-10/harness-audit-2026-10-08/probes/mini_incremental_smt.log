@@ -1,0 +1,2579 @@
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Enabling --smt-during-symex to use features that involve encoding SMT during symex
+Parsing /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py
+Warning: mypy not found on PATH; type checking will be skipped.
+  Install with: pip install mypy  or  pipx install mypy
+[93m
+Type checking warning:[0m
+docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py:8: error: Unsupported right operand type for in ("str | None")  [operator]
+Found 1 error in 1 file (checked 1 source file)
+
+WARNING: typing.Optional module-file-not-found
+Converting
+Generating GOTO Program
+GOTO program creation time: 2.806s
+GOTO program processing time: 0.023s
+Starting Bounded Model Checking
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 1   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 2   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 3   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 4   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Not unwinding loop 134 iteration 5   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 155 iteration 1   file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py line 7 column 4 function match
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 1   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 2   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 3   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 134 iteration 4   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 133 iteration 1   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Unwinding loop 133 iteration 2   file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+Not unwinding loop 134 iteration 5   file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+Unwinding loop 155 iteration 2   file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py line 7 column 4 function match
+Symex completed in: 4.110s (913 assignments)
+Caching time: 0.000s (removed 19 assertions)
+Slicing time: 0.006s (removed 325 assignments)
+Generated 818 VCC(s), 446 remaining after simplification (569 assignments)
+Slicing time: 0.000s (removed 121 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 87 column 3 function __ESBMC_list_create' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 121 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 88 column 3 function __ESBMC_list_create' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 120 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 89 column 3 function __ESBMC_list_create' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 297 column 3 function memcpy' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 183 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 183 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 184 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 185 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 186 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 187 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 188 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 119 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 188 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 297 column 3 function memcpy' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 183 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 183 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 184 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 123 assignments)
+Solving claim 'dereference failure: Incorrect alignment when accessing data object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 185 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 185 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 123 assignments)
+Solving claim 'dereference failure: Incorrect alignment when accessing data object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 186 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 186 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 123 assignments)
+Solving claim 'dereference failure: Incorrect alignment when accessing data object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 187 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 187 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 188 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 188 column 3 function __ESBMC_list_push' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 95 column 3 function __ESBMC_list_size' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 95 column 3 function __ESBMC_list_size' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 497 column 3 function __ESBMC_list_at' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 498 column 3 function __ESBMC_list_at' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 118 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py line 7 column 4 function match' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 103 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 108 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 108 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 108 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 108 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 123 assignments)
+Solving claim 'dereference failure: NULL pointer at file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.066s
+
+[Counterexample]
+
+
+State 1 file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr thread 0
+----------------------------------------------------
+Violated property:
+  file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+  dereference failure: NULL pointer
+  CWE: CWE-476
+
+Slicing time: 0.000s (removed 122 assignments)
+Solving claim 'dereference failure: NULL pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.068s
+
+[Counterexample]
+
+
+State 1 file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr thread 0
+----------------------------------------------------
+Violated property:
+  file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr
+  dereference failure: NULL pointer
+  CWE: CWE-476
+
+Slicing time: 0.000s (removed 106 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 106 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 106 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 106 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 101 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 106 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 106 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 106 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 106 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 101 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 99 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 104 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 104 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 99 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 97 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 102 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 102 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 97 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 100 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 100 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.050s
+Slicing time: 0.002s (removed 100 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 100 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.043s
+Slicing time: 0.002s (removed 95 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.031s
+Slicing time: 0.002s (removed 97 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 97 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 97 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 97 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 92 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 97 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 97 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 97 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 97 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 92 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 95 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 90 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 95 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 90 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 93 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 88 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 93 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 88 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 91 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 91 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.041s
+Slicing time: 0.000s (removed 91 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 91 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.043s
+Slicing time: 0.002s (removed 86 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.031s
+Slicing time: 0.002s (removed 88 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 88 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 88 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 88 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 83 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 88 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 88 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 88 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 88 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 83 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 86 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 86 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 86 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 86 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 81 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 86 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 86 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 86 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 86 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 81 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 84 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 84 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 84 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 84 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 84 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 84 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 84 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 84 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 79 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 82 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 82 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.046s
+Slicing time: 0.000s (removed 82 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 82 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.043s
+Slicing time: 0.002s (removed 77 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.031s
+Slicing time: 0.002s (removed 79 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 74 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 79 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 74 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 77 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 77 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 77 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 77 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 72 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 77 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 77 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 77 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 77 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 72 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 70 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 75 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 75 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 70 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 73 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 73 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.049s
+Slicing time: 0.002s (removed 73 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 73 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.055s
+Slicing time: 0.000s (removed 68 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.031s
+Slicing time: 0.000s (removed 70 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 70 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 70 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 70 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 65 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 70 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 70 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 70 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 70 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 65 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 68 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 68 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 68 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 68 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 63 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 68 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 68 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 68 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 68 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 66 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 66 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 66 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 66 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 61 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 66 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 66 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 66 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 66 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 61 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 64 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 64 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.046s
+Slicing time: 0.002s (removed 64 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 64 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.049s
+Slicing time: 0.000s (removed 59 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.033s
+Slicing time: 0.000s (removed 68 assignments)
+Solving claim 'unwinding assertion loop 134 at file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.129s
+
+[Counterexample]
+
+
+State 1 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 184 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->value = { .value=&dynamic_3_array[0], .float_idx=0, .type_id=0,
+    .size=0 }
+
+State 2 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 185 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->float_idx = { .value=&dynamic_3_array[0], .float_idx=0, .type_id=0,
+    .size=0 }
+
+State 3 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 186 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->type_id = { .value=&dynamic_3_array[0], .float_idx=0, .type_id=1583576014053361350,
+    .size=0 }
+
+State 4 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 187 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->size = { .value=&dynamic_3_array[0], .float_idx=0, .type_id=1583576014053361350,
+    .size=3 }
+
+State 5 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 184 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->value = { .value=&dynamic_4_array[0], .float_idx=0, .type_id=1583576014053361350,
+    .size=3 }
+
+State 6 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 185 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->float_idx = { .value=&dynamic_4_array[0], .float_idx=0, .type_id=1583576014053361350,
+    .size=3 }
+
+State 7 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 186 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->type_id = { .value=&dynamic_4_array[0], .float_idx=0, .type_id=1583576014053361350,
+    .size=3 }
+
+State 8 file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 187 column 3 function __ESBMC_list_push thread 0
+----------------------------------------------------
+  item->size = { .value=&dynamic_4_array[0], .float_idx=0, .type_id=1583576014053361350,
+    .size=3 }
+
+State 9 file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py line 7 column 4 function match thread 0
+----------------------------------------------------
+  pattern = dynamic_2_inf_array[0].value
+
+State 10 file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr thread 0
+----------------------------------------------------
+Violated property:
+  file /esbmc-vfs/libc/library/string.c line 235 column 3 function strstr
+  unwinding assertion loop 134
+
+Slicing time: 0.000s (removed 57 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 95 column 3 function __ESBMC_list_size' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 57 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 497 column 3 function __ESBMC_list_at' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 57 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c line 498 column 3 function __ESBMC_list_at' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 57 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py line 7 column 4 function match' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 50 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 55 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 55 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 55 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 55 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 232 column 3 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 53 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 53 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 53 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 53 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 48 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 53 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 53 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 53 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 53 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 48 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 51 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 51 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 51 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 51 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 46 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 51 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 51 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 51 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 51 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 46 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 49 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 49 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 49 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 49 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 49 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 49 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 49 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 49 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 47 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 47 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.027s
+Slicing time: 0.002s (removed 47 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 47 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.028s
+Slicing time: 0.002s (removed 42 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.024s
+Slicing time: 0.000s (removed 44 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 44 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.009s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 39 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 44 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 44 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.007s
+Slicing time: 0.002s (removed 39 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 42 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 42 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 42 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 42 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 37 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 42 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 42 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 42 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 42 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 37 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 40 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 40 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 40 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 40 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 40 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 40 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 40 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 40 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 38 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 38 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.024s
+Slicing time: 0.002s (removed 38 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 38 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.027s
+Slicing time: 0.002s (removed 33 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.023s
+Slicing time: 0.000s (removed 35 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 35 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 30 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 35 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 35 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 30 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 33 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 33 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 33 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 33 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 28 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 33 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 33 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 33 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 33 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 28 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 31 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 31 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 31 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 31 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 26 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 31 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 31 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 31 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 31 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 26 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 29 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 29 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.028s
+Slicing time: 0.000s (removed 29 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 29 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.028s
+Slicing time: 0.002s (removed 24 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.025s
+Slicing time: 0.000s (removed 26 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 26 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 26 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 26 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 21 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 26 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 26 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 26 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 26 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 21 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 24 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 24 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 24 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 24 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 19 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 24 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 24 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 24 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 24 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 19 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 22 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 22 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 20 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 20 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.028s
+Slicing time: 0.002s (removed 20 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 20 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.028s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.026s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 17 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 12 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 17 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 17 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 17 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 12 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 15 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 15 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 10 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 15 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 10 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 13 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 13 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 13 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 13 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 8 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.007s
+Slicing time: 0.002s (removed 13 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 13 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 13 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 13 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.004s
+Slicing time: 0.002s (removed 8 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 240 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 11 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.005s
+Slicing time: 0.002s (removed 11 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.028s
+Slicing time: 0.002s (removed 11 assignments)
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.006s
+Slicing time: 0.002s (removed 11 assignments)
+Solving claim 'dereference failure: array bounds violated at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.050s
+Slicing time: 0.002s (removed 6 assignments)
+Solving claim 'dereference failure: invalid pointer at file /esbmc-vfs/libc/library/string.c line 242 column 5 function strstr' with solver Z3 v4.13.3
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v4.13.3
+Runtime decision procedure: 0.044s
+BMC program time: 7.309s
+
+** Results:
+  PASSED       [global.assertion.1]                                line   0  uncaught exception
+  PASSED       [global.assertion.2]                                line   0  uncaught exception: IndexError
+  PASSED       [global.assertion.3]                                line   0  uncaught exception: ValueError
+  PASSED       [global.assertion.4]                                line   0  uncaught exception: ZeroDivisionError
+/esbmc-vfs/libc/library/string.c, function memcpy
+  PASSED       [memcpy.null-pointer-dereference.1]                 line 297  dereference failure: NULL pointer on DST
+  PASSED       [memcpy.null-pointer-dereference.2]                 line 297  dereference failure: NULL pointer on SRC
+  PASSED       [memcpy.invalidated-dynamic-object.1]               line 297  dereference failure: invalidated dynamic object
+/esbmc-vfs/libc/library/string.c, function strstr
+  PASSED       [strstr.assertion.1]                                line 232  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [strstr.array-bounds-violated.1]                    line 232  dereference failure: array bounds violated
+  PASSED       [strstr.invalid-pointer-dereference.1]              line 232  dereference failure: invalid pointer
+  PASSED       [strstr.invalidated-dynamic-object.1]               line 232  dereference failure: invalidated dynamic object
+  PASSED       [strstr.assertion.2]                                line 235  dereference failure: Incorrect alignment when accessing data object
+  FAILED       [strstr.null-pointer-dereference.1]                 line 235  dereference failure: NULL pointer
+  FAILED       [strstr.assertion.3]                                line 235  unwinding assertion loop 134
+  PASSED       [strstr.assertion.4]                                line 240  dereference failure: Incorrect alignment when accessing data object
+  FAILED       [strstr.null-pointer-dereference.2]                 line 240  dereference failure: NULL pointer
+  PASSED       [strstr.array-bounds-violated.2]                    line 240  dereference failure: array bounds violated
+  PASSED       [strstr.invalid-pointer-dereference.2]              line 240  dereference failure: invalid pointer
+  PASSED       [strstr.invalidated-dynamic-object.2]               line 240  dereference failure: invalidated dynamic object
+  PASSED       [strstr.assertion.5]                                line 242  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [strstr.array-bounds-violated.3]                    line 242  dereference failure: array bounds violated
+  PASSED       [strstr.invalid-pointer-dereference.3]              line 242  dereference failure: invalid pointer
+  PASSED       [strstr.invalidated-dynamic-object.3]               line 242  dereference failure: invalidated dynamic object
+/home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c, function __ESBMC_copy_value
+  PASSED       [__ESBMC_copy_value.object-out-of-bounds.1]         line 111  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_copy_value.assertion.1]                    line 111  dereference failure: Incorrect alignment when accessing data object
+/home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c, function __ESBMC_list_at
+  PASSED       [__ESBMC_list_at.object-out-of-bounds.1]            line 497  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_at.assertion.1]                       line 497  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_at.invalidated-dynamic-object.1]      line 497  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_at.assertion.2]                       line 497  out-of-bounds read in list
+  PASSED       [__ESBMC_list_at.object-out-of-bounds.2]            line 498  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_at.assertion.3]                       line 498  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_at.invalidated-dynamic-object.2]      line 498  dereference failure: invalidated dynamic object
+/home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c, function __ESBMC_list_create
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.1]        line  87  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.1]                   line  87  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.1]  line  87  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.2]        line  88  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.2]                   line  88  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.2]  line  88  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.3]        line  89  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.3]                   line  89  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.3]  line  89  dereference failure: invalidated dynamic object
+/home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c, function __ESBMC_list_push
+  PASSED       [__ESBMC_list_push.object-out-of-bounds.1]          line 183  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_push.assertion.1]                     line 183  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.1]    line 183  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.2]    line 184  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.assertion.2]                     line 185  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.3]    line 185  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.assertion.3]                     line 186  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.4]    line 186  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.assertion.4]                     line 187  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.5]    line 187  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.object-out-of-bounds.2]          line 188  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_push.assertion.5]                     line 188  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.6]    line 188  dereference failure: invalidated dynamic object
+/home/runner/work/esbmc/esbmc/src/c2goto/library/python/list.c, function __ESBMC_list_size
+  PASSED       [__ESBMC_list_size.object-out-of-bounds.1]          line  95  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_size.assertion.1]                     line  95  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_size.invalidated-dynamic-object.1]    line  95  dereference failure: invalidated dynamic object
+/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.claude/worktrees/validacao-deteccao/docs/projeto/possiveis_problemas/18_for_lista_global_in_none.py, function match
+  PASSED       [match.invalidated-dynamic-object.1]                line   7  dereference failure: invalidated dynamic object
+
+** 3 of 58 properties failed, 55 passed
+Solver: Z3 v4.13.3 • Decision procedure total time: 2.729s • Avg: 0.048s/property
+
+VERIFICATION FAILED
+ESBMC version 8.5.0 64-bit x86_64 linux

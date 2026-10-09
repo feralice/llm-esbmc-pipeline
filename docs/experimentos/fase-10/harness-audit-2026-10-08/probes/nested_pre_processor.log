@@ -1,0 +1,18 @@
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing /tmp/harness-audit-2026-10-08/nested_pre_processor.py
+Warning: mypy not found on PATH; type checking will be skipped.
+  Install with: pip install mypy  or  pipx install mypy
+[93m
+Type checking warning:[0m
+/tmp/harness-audit-2026-10-08/nested_pre_processor.py:13: error: Missing type parameters for generic type "Type"  [type-arg]
+/tmp/harness-audit-2026-10-08/nested_pre_processor.py:23: error: Incompatible types in assignment (expression has type "str", variable has type "type[signedinteger[Any]] | None")  [assignment]
+/tmp/harness-audit-2026-10-08/nested_pre_processor.py:24: error: Module has no attribute "float"  [attr-defined]
+Found 3 errors in 1 file (checked 1 source file)
+
+WARNING: typing.Optional module-file-not-found
+WARNING: typing.Tuple module-file-not-found
+WARNING: typing.Type module-file-not-found
+Converting
+WARNING: Default to double since no type could be inferred
+ERROR: NameError: name 'ndarray' is not defined
+ESBMC version 8.5.0 64-bit x86_64 linux

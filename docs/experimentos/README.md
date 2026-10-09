@@ -358,6 +358,13 @@ sobre um relatório pronto. Código aff456c. `FUZZ_FOUND` é evidência dinâmic
 - **Achado do CPython só conta contra o controle:** `--control` no `v2_orchestrate.py` conta os achados
   na linha do bug que a versão corrigida não repete.
 
+- **Auditoria do preparo do harness (08/10, base `72a1989`):** varredura das 229 hipóteses distintas e
+  sondas locais no ESBMC 8.5.0, sem API. Métrica principal permanece 7. SMT durante execução
+  simbólica terminou o reprodutor 18 em 10,26 s; padrão não terminou em 35 s. O ganho não se repetiu
+  no `ip_real_22` completo nesse prazo. Literais diretos nos dois candidatos e recorte por escopo
+  não demonstraram novas confirmações. Comandos, resultados e caminho de melhorias em
+  [harness-audit-2026-10-08](fase-10/harness-audit-2026-10-08/README.md).
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
