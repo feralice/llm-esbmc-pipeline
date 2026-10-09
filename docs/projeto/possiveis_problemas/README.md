@@ -35,6 +35,7 @@ com `None` quando existe.
 | `15_numpy_fatia_2d.py` | `a[:, j]` com `a` vindo de `np.array` 2x2 literal | código válido | `2-D column slicing (a[:, j]) requires a fixed-shape 2-D array` | idem | aceitar forma fixa conhecida |
 | `16_desempacotar_args.py` | `add(*xs)` com `xs` de dois elementos | `ZeroDivisionError` | pré-processador: `add() missing 1 required positional argument: 'b'` | idem | aceitar a chamada |
 | `17_formatacao_percent.py` | `"%s %s" % (code, name)` com valores nondet | executa | `unsupported: non-constant argument in str % formatting` | idem | aceitar `%s` com argumento não constante |
+| `18_for_lista_global_in_none.py` | `for p in patterns: if p in stderr` com `patterns` lista global de 2 strings e `stderr = None` | `TypeError` | não termina em 60 s (`--unwind 5`) | não medido | FAILED em segundos |
 
 Leitura por tipo de problema:
 
@@ -44,6 +45,12 @@ Leitura por tipo de problema:
 - Exceção errada ou ausente no contraexemplo: 07.
 - **Falha do verificador** (crash ou veredito duplo): 02, 04, 11 no 8.5.0, 12.
 - Recusa de código Python válido: 08, 14, 15, 16, 17.
+- **Desempenho** (o verificador não termina num caso pequeno): 18. Medido em 08/10/2026 no 8.5.0,
+  60 s por variante: sem o laço (`'ab' in stderr`) dá FAILED em 2 s; o mesmo laço com a lista local
+  dá FAILED em 47 s; com índice (`while i < 2: patterns[i] in stderr`) dá FAILED em 10 s; o mesmo
+  laço com `stderr` string, sem `None`, termina em 4 s. A explosão vem do `for` sobre a lista global
+  junto com `in` aplicado a `None`. Trocar `.lower()` por um modelo barato não resolve (a variante com
+  `.lower()` também não termina).
 
 ## Audit com a PR #8014 (30/09/2026)
 
@@ -92,6 +99,7 @@ no histórico do git):
 | 15 | `dz_real_01` (matplotlib, `makeMappingArray`) |
 | 16 | `tm_real_07` (`MarkerStyle._recache`): mesma mensagem do pré-processador; a causa no caso real não foi isolada |
 | 17 | `nm_real_03`, `nm_real_04`, `nm_real_23`, `vm_real_05` |
+| 18 | `ip_real_22` (thefuck, regra `sudo`, `match`): estoura 180 s, 600 s e 900 s (com 900 s, falta memória), inclusive com a entrada fixada em `stderr = None` |
 
 O 13 apareceu na geração de stubs, antes de chegar ao dataset: o motor deixou de gerar classe
 aninhada.
