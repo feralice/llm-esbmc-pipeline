@@ -21,6 +21,8 @@ PINNED_SAFE = "PINNED_SAFE"
 PINNED_UNAVAILABLE = "PINNED_UNAVAILABLE"
 
 _CALL = re.compile(r"\bnondet_(int|float|bool|str|list)\(")
+# How render.py writes a list input; ESBMC types the element argument, so each kind gets its own helper.
+_TYPED_LIST = re.compile(r"\bnondet_list\(\s*\d+\s*,\s*elem_type\s*=\s*nondet_(int|float|bool|str)\(\)\s*\)")
 _DEFAULTS = {"int": "0", "float": "0.0", "bool": "False", "str": "''"}
 
 
@@ -39,12 +41,16 @@ def _scalar_helper(kind: str, inputs: list) -> str:
     return "\n".join(lines + ["    __ESBMC_assume(False)", f"    return {_DEFAULTS[kind]}", ""])
 
 
-def _list_helper(inputs: list) -> str:
+def _list_helper(inputs: list, kind: str | None = None) -> str:
     """A list call takes its length then its elements; any int position may be a length."""
-    lines = ["def _pin_list(size: int = 0, elem_type: int = 0) -> list:", "    global _pin_cursor"]
+    head = (f"def _pin_list_{kind}(elem_type: {kind}) -> list[{kind}]:" if kind
+            else "def _pin_list(size: int = 0, elem_type: int = 0) -> list:")
+    lines = [head, "    global _pin_cursor"]
     for position, length in enumerate(inputs):
         elements = inputs[position + 1:position + 1 + length] if type(length) is int and length >= 0 else None
         if elements is None or len(elements) != length or len({type(e) for e in elements}) > 1:
+            continue
+        if kind and any(type(e).__name__ != kind for e in elements):
             continue
         lines += [f"    if _pin_cursor == {position}:", f"        _pin_cursor += {length + 1}",
                   f"        return [{', '.join(repr(e) for e in elements)}]"]
@@ -56,9 +62,12 @@ def pin_program(source: str, inputs: list) -> str | None:
     has no Python literal (NaN, infinities, objects)."""
     if any(_literal(v) is None for v in inputs):
         return None
-    kinds = sorted(set(_CALL.findall(source)))
+    list_kinds = sorted(set(_TYPED_LIST.findall(source)))
+    source = _TYPED_LIST.sub(lambda m: f"_pin_list_{m.group(1)}(nondet_{m.group(1)}())", source)
+    kinds = sorted(set(_CALL.findall(source)) | set(list_kinds))
     helpers = ["_pin_cursor: int = 0", ""]
     helpers += [_list_helper(inputs) if kind == "list" else _scalar_helper(kind, inputs) for kind in kinds]
+    helpers += [_list_helper(inputs, kind) for kind in list_kinds]
     tree = ast.parse(source)
     body = [n for n in tree.body if not isinstance(n, (ast.Import, ast.ImportFrom))
             and not (isinstance(n, ast.Expr) and isinstance(n.value, ast.Constant))]

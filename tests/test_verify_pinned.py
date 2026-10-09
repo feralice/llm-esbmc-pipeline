@@ -40,7 +40,12 @@ def test_lists_take_their_length_and_elements_from_the_sequence() -> None:
     source = "def f(xs: list) -> int:\n    return 1 // (len(xs) - 2)\n\nf(nondet_list(3, elem_type=nondet_str()))\n"
     code = pin_program(source, ["", 2, "a", "b"])
     ast.parse(code)
+    # ESBMC types the element argument: a str list gets its own helper taking a str.
+    assert "f(_pin_list_str(_pin_str()))" in code and "def _pin_list_str(elem_type: str) -> list[str]:" in code
     assert "['a', 'b']" in code
+    namespace = {"__ESBMC_assume": _assume}
+    exec(code.replace("f(_pin_list_str", "got = (_pin_list_str"), namespace)
+    assert namespace["got"] == ["a", "b"]
 
 
 @pytest.mark.parametrize("inputs", [[float("nan")], [float("inf")], [object()]])
