@@ -27,28 +27,66 @@ class _Discard(BaseException):
     """Not an Exception, so target code's ``except Exception`` cannot swallow or convert it."""
 
 
+class _Inconsistent(BaseException):
+    """A fixed input sequence that does not fit the program's nondet calls."""
+
+
 class _Chooser:
     def __init__(self, vector):
         self.vector = vector
         self.sizes = []
+        self.values = []
 
     def pick(self, domain):
         index = len(self.sizes)
         choice = self.vector[index] if index < len(self.vector) else 0
         self.sizes.append(len(domain))
+        self.values.append(domain[choice])
         return domain[choice]
+
+    def pick_length(self, limit):
+        return self.pick(list(range(limit + 1)))
 
 
 class _RandomChooser:
     def __init__(self, rng):
         self.rng = rng
-        self.sizes = []
         self.values = []
 
     def pick(self, domain):
-        self.sizes.append(len(domain))
         value = self.rng.choice(domain)
         self.values.append(value)
+        return value
+
+    def pick_length(self, limit):
+        return self.pick(list(range(limit + 1)))
+
+
+class _FixedChooser:
+    """Returns ``inputs`` in call order; a value of another type, a list longer than the harness
+    allows, or a sequence that ends early or late makes the replay unavailable, never a search."""
+
+    def __init__(self, inputs):
+        self.inputs = list(inputs)
+        self.values = []
+
+    def _next(self):
+        if len(self.values) == len(self.inputs):
+            raise _Inconsistent("the program asked for more values than the fixed input has")
+        value = self.inputs[len(self.values)]
+        self.values.append(value)
+        return value
+
+    def pick(self, domain):
+        value = self._next()
+        if type(value) is not type(domain[0]):  # bool is not int here
+            raise _Inconsistent(f"value {value!r} does not fit a nondet {type(domain[0]).__name__}")
+        return value
+
+    def pick_length(self, limit):
+        value = self._next()
+        if type(value) is not int or not 0 <= value <= limit:
+            raise _Inconsistent(f"list length {value!r} outside 0..{limit}")
         return value
 
 
@@ -77,7 +115,7 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
 
     def nondet_list(size=MAX_LIST, elem_type=0):
         kind = type(elem_type) if type(elem_type) in domains else int
-        length = chooser.pick(list(range(min(size, max_list) + 1)))
+        length = chooser.pick_length(min(size, max_list))
         return [chooser.pick(domains[kind]) for _ in range(length)]
 
     def assume(condition):
@@ -121,22 +159,67 @@ def _seeded(seeds):
     return domains
 
 
+_DISCARDED = "discarded"
+
+
+def _run_once(code, chooser, domains, max_list, target):
+    """One execution: None when it ended normally, _DISCARDED when an assume or the per-run timer
+    cut it, else the crash record."""
+    function, spans, first, last = target
+    real_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    signal.setitimer(signal.ITIMER_REAL, RUN_SECONDS)
+    try:
+        exec(code, {"__name__": "__main__", **_intrinsics(chooser, domains, max_list)})  # noqa: S102 - the replay is the point; host_replay_problem gates it
+    except _Discard:
+        return _DISCARDED
+    except Exception as exc:  # noqa: BLE001 - every crash is evidence
+        frames = [f for f in traceback.extract_tb(exc.__traceback__) if f.filename == "<program>"]
+        # Name and line range together: another class's method may share the name.
+        in_target = [f for f in frames if f.name == function and (not last or first <= f.lineno <= last)]
+        line = in_target[-1].lineno if in_target else (frames[-1].lineno if frames else None)
+        reproduced = bool(in_target) and any(start <= line <= end for start, end in spans)
+        return {"status": "reproduced" if reproduced else "other_failure",
+                "exception_type": type(exc).__name__, "line": line, "inputs": chooser.values}
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        sys.stdout = real_stdout
+    return None
+
+
+def _fixed(code, inputs, target):
+    """Exactly one run with ``inputs``: no search fills in what the sequence does not say."""
+    chooser = _FixedChooser(inputs)
+    try:
+        outcome = _run_once(code, chooser, DOMAINS, 10**6, target)
+    except _Inconsistent as exc:
+        return {"status": "unavailable", "reason": str(exc), "inputs": inputs}
+    if outcome != _DISCARDED and len(chooser.values) < len(inputs):
+        return {"status": "unavailable", "reason": "the fixed input has more values than the program used",
+                "inputs": inputs}
+    return outcome if isinstance(outcome, dict) else {"status": "not_reproduced", "inputs": chooser.values}
+
+
 def main(program_path, config_path, output_path):
     with open(program_path, encoding="utf-8") as handle:
         # Annotations stay unevaluated: ESBMC models types (e.g. uint64) CPython does not define.
         code = compile(handle.read(), "<program>", "exec", flags=__future__.annotations.compiler_flag)
     with open(config_path, encoding="utf-8") as handle:
         config = json.load(handle)
-    function, spans, max_runs = config["function"], config["spans"], config["max_runs"]
     first, last = config.get("range") or (0, 0)
-    deadline = time.monotonic() + config.get("deadline_seconds", 15)
+    target = (config["function"], config["spans"], first, last)
     signal.signal(signal.SIGALRM, _timeout)
-    real_stdout = sys.stdout
+    if config.get("inputs") is not None:
+        result = {**_fixed(code, config["inputs"], target), "runs": 1}
+        with open(output_path, "w", encoding="utf-8") as handle:
+            json.dump(result, handle)
+        return
+    deadline = time.monotonic() + config.get("deadline_seconds", 15)
     other, result, runs = None, None, 0
     # The counterexample's values get a short pass of their own; the default search then runs whole.
     passes = ([(_seeded(config["seeds"]), SEED_RUNS)] if any(config.get("seeds", {}).values()) else [])
     if not config.get("seeds_only"):
-        passes.append((DOMAINS, max_runs))
+        passes.append((DOMAINS, config["max_runs"]))
     if config.get("random_runs") and not config.get("seeds_only"):
         rng = random.Random(config.get("seed", 0))
         passes.append((_random_domains(rng), config["random_runs"], rng))
@@ -145,31 +228,17 @@ def main(program_path, config_path, output_path):
         while vector is not None and used < budget and time.monotonic() < deadline:
             chooser = _RandomChooser(random_pass[0]) if random_pass else _Chooser(vector)
             runs, used = runs + 1, used + 1
-            sys.stdout = io.StringIO()
-            signal.setitimer(signal.ITIMER_REAL, RUN_SECONDS)
-            try:
-                exec(code, {"__name__": "__main__", **_intrinsics(chooser, domains, RANDOM_MAX_LIST if random_pass else MAX_LIST)})  # noqa: S102 - the replay is the point; host_replay_problem gates it
-            except _Discard:
-                pass
-            except Exception as exc:  # noqa: BLE001 - every crash is evidence
-                frames = [f for f in traceback.extract_tb(exc.__traceback__) if f.filename == "<program>"]
-                # Name and line range together: another class's method may share the name.
-                in_target = [f for f in frames if f.name == function and (not last or first <= f.lineno <= last)]
-                line = in_target[-1].lineno if in_target else (frames[-1].lineno if frames else None)
-                record = {"exception_type": type(exc).__name__, "line": line,
-                          "inputs": chooser.values if random_pass else vector}
-                if in_target and any(start <= line <= end for start, end in spans):
-                    result = {"status": "reproduced", **record}
+            outcome = _run_once(code, chooser, domains, RANDOM_MAX_LIST if random_pass else MAX_LIST, target)
+            if isinstance(outcome, dict):
+                if outcome["status"] == "reproduced":
+                    result = outcome
                     break
-                other = other or record
-            finally:
-                signal.setitimer(signal.ITIMER_REAL, 0)
-                sys.stdout = real_stdout
+                other = other or outcome
             vector = [] if random_pass else _next_vector(vector, chooser.sizes)
         if result:
             break
     if result is None:
-        result = {"status": "other_failure", **other} if other else {"status": "not_reproduced"}
+        result = other if other else {"status": "not_reproduced"}
     result["runs"] = runs
     with open(output_path, "w", encoding="utf-8") as handle:
         json.dump(result, handle)
