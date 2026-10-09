@@ -24,6 +24,7 @@ from research_pipeline.verify.dynamic import FUZZ_FOUND, dynamic_check  # noqa: 
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 from research_pipeline.verify.orchestrator import orchestrate  # noqa: E402
+from research_pipeline.verify.pinned import pinned_check  # noqa: E402
 
 _FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
 
@@ -41,7 +42,10 @@ def summarize(rows: list[dict], results: list[dict], ground_truth: dict, control
     found = [r for r in rows if r["final"] == FUZZ_FOUND and at_bug(r)]
     summary = {"final": dict(Counter(r["final"] for r in rows)),
                "confirmed_at_bug": sum(r["final"] == "CONFIRMED" and at_bug(r) for r in rows),
-               "fuzz_found_at_bug": len(found)}
+               "fuzz_found_at_bug": len(found),
+               "confirmed_at_bug_by_pinned": sum(
+                   r["final"] == "CONFIRMED" and at_bug(r) and bool(r["steps"]) and r["steps"][-1]["arm"] == "pinned"
+                   for r in rows)}
     if control is not None:
         fixed = {r["hypothesis_id"]: r["final"] for r in control}
         summary["fuzz_found_at_bug_not_on_fixed"] = sum(fixed.get(r["hypothesis_id"]) != FUZZ_FOUND for r in found)
@@ -75,7 +79,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("report")
     parser.add_argument("--only-file", default=None, help="JSON with 'ids' (v2_hard_set.py)")
-    parser.add_argument("--arms", default="dynamic", help="subset of dynamic,api_agent,claude_agent")
+    parser.add_argument("--arms", default="dynamic", help="subset of dynamic,pinned,api_agent,claude_agent")
     parser.add_argument("--api-backend", default="claude_cli", help="LLMClient backend of the API agent")
     parser.add_argument("--agent-model", default=None)
     parser.add_argument("--verification-sources", default="dataset/bugs_reais/arquivo_com_bug")
@@ -93,7 +97,10 @@ def main() -> int:
         results = [r for r in results if r["hypothesis"]["hypothesis_id"] in wanted]
     builders = {"dynamic": lambda: dynamic_check,
                 "api_agent": lambda: _agent_arm(args.api_backend, args),
-                "claude_agent": lambda: _agent_arm("claude", args)}
+                "claude_agent": lambda: _agent_arm("claude", args),
+                "pinned": lambda: lambda r: pinned_check(r, work_dir=Path(args.out) / "pinned_cases",
+                                                         esbmc=args.esbmc, bound=args.bound,
+                                                         timeout_seconds=args.timeout)}
     arms = {name: builders[name]() for name in args.arms.split(",")}
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

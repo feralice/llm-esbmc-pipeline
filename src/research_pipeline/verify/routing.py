@@ -8,6 +8,7 @@ import re
 DYNAMIC = "dynamic"
 API_AGENT = "api_agent"
 CLAUDE_AGENT = "claude_agent"
+PINNED = "pinned"
 
 _DONE = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
 # Context outside the function: an agent that can open the project may supply it.
@@ -27,6 +28,9 @@ _ROUTES = {
     # No program exists to replay.
     "grounding": (CLAUDE_AGENT,),
     "esbmc_limit": (DYNAMIC,),
+    # ESBMC accepts the program but the formula is too big: a crashing input found by the search
+    # lets it check that one path.
+    "solver": (DYNAMIC, PINNED),
 }
 
 
@@ -34,6 +38,8 @@ def limit_class(result: dict) -> str:
     verdict, reason = result["verdict"], result.get("reason", "")
     if verdict in _DONE:
         return "done"
+    if verdict == "ESBMC_TIMEOUT" or "Out of memory" in reason:
+        return "solver"
     if verdict in {"SPEC_FAILED", "UNVALIDATED"} or _HARNESS.search(reason):
         return "harness"
     if verdict == "MISSING_DEPENDENCY" or (verdict == "UNSUPPORTED" and _CONTEXT.search(reason)):

@@ -35,11 +35,13 @@ def orchestrate(results: list[dict], *, arms: dict[str, Callable[[dict], dict]],
                 outcome = {k: v for k, v in kept[arm].items() if k != "arm"}
             else:
                 try:
-                    outcome = arms[arm](result)
+                    outcome = arms[arm]({**result, "steps": list(row["steps"])})
                 except Exception as exc:  # noqa: BLE001 - one broken arm must not end the run
                     outcome = {"verdict": ARM_FAILED, "reason": f"{type(exc).__name__}: {exc}"}
             row["steps"].append({"arm": arm, **outcome})
-            if outcome["verdict"] != ARM_FAILED:
+            # A failed formal attempt must not hide the dynamic evidence that motivated it.
+            keeps_evidence = row["final"] == "FUZZ_FOUND" and outcome["verdict"] not in _FORMAL
+            if outcome["verdict"] != ARM_FAILED and not keeps_evidence:
                 row["final"] = outcome["verdict"]
             save()
             if outcome["verdict"] in _FORMAL:

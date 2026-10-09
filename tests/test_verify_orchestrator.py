@@ -65,6 +65,14 @@ def test_a_failed_arm_is_retried_on_resume() -> None:
     assert len(attempts) == 2 and rows[0]["final"] == "FUZZ_NOTHING"
 
 
+def test_later_arms_see_earlier_steps_and_do_not_hide_a_dynamic_finding() -> None:
+    seen = []
+    arms = {"dynamic": lambda r: {"verdict": "FUZZ_FOUND"},
+            "pinned": lambda r: seen.append([s["arm"] for s in r["steps"]]) or {"verdict": "PINNED_SAFE"}}
+    rows, _ = _run([_r("a", "ESBMC_TIMEOUT")], arms)
+    assert seen == [["dynamic"]] and rows[0]["final"] == "FUZZ_FOUND"
+
+
 def test_resume_skips_finished_cases() -> None:
     calls = []
     arms = {"dynamic": lambda r: calls.append(1) or {"verdict": "FUZZ_NOTHING"}}
