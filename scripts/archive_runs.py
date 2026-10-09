@@ -48,7 +48,7 @@ PHASES = {
         "replay-2026-10-06-nullrule", "agent-2026-10-06-e2e"],
     9: ["det-2026-10-06-amostra-A0-r2", "det-2026-10-06-amostra-A1", "det-2026-10-06-amostra-A2",
         "det-2026-10-06-amostra-A3", "det-2026-10-06-amostra-A6", "det-2026-10-06-amostra-A1,A2"],
-    10: ["orq-2026-10-08-pinned-20", "orq-2026-10-08-pinned-20-t600", "timeout900-2026-10-07", "orq-2026-10-06-dyn-20", "orq-2026-10-06-dyn-20-control", "orq-2026-10-06-dyn-all",
+    10: ["harness-audit-2026-10-08", "orq-2026-10-08-pinned-20", "orq-2026-10-08-pinned-20-t600", "timeout900-2026-10-07", "orq-2026-10-06-dyn-20", "orq-2026-10-06-dyn-20-control", "orq-2026-10-06-dyn-all",
          "orq-2026-10-06-dyn-all-control", "orq-2026-10-06-full-20"],
 }
 
