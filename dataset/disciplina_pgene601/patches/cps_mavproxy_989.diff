@@ -1,0 +1,12 @@
+--- a/MAVProxy/modules/mavproxy_log.py
++++ b/MAVProxy/modules/mavproxy_log.py
+@@ -123,6 +123,9 @@
+         if m is None:
+             size = 0
+             pct = 0
++        elif m.size == 0:
++            size = 0
++            pct = 100
+         else:
+             size = m.size
+             pct = (100.0*file_size)/size

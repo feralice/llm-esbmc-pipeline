@@ -1,0 +1,11 @@
+--- a/src/cantools/database/can/formats/sym.py
++++ b/src/cantools/database/can/formats/sym.py
+@@ -865,7 +865,7 @@
+                 generated_signals.add(signal.name)
+                 signal_dumps.append(_dump_signal(signal))
+ 
+-    if signals:
++    if signal_dumps:
+         return '{SIGNALS}\n' + '\n'.join(signal_dumps)
+     else:
+         return ''

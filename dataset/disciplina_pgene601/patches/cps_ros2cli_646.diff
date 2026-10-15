@@ -1,0 +1,10 @@
+--- a/ros2param/ros2param/verb/list.py
++++ b/ros2param/ros2param/verb/list.py
+@@ -112,6 +112,7 @@
+                     print(
+                         'Exception while calling service of node '
+                         f"'{node_name.full_name}': {e}", file=sys.stderr)
++                    continue
+                 response = future.result()
+                 sorted_names = sorted(response.result.names)
+                 if regex_filter is not None:

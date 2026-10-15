@@ -1,0 +1,1509 @@
+{
+  "evaluation_policy": {
+    "detection_scope": "only items not requiring patch context",
+    "patch_context_items": []
+  },
+  "description": "Dataset da disciplina PGENE601: 47 bugs de execução corrigidos em PRs aceitos de projetos Python ciber-físicos. Separado de dataset/bugs_reais e da dissertação.",
+  "items": [
+    {
+      "id": "cps_pymodbus_2980",
+      "cohort": "disciplina_pgene601",
+      "function": "ReadFileRecordRequest.decode",
+      "expression": "byte_count = int(data[0])",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 66,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymodbus",
+        "repo_url": "https://github.com/pymodbus-dev/pymodbus",
+        "pr_url": "https://github.com/pymodbus-dev/pymodbus/pull/2980",
+        "source_file": "pymodbus/pdu/file_message.py",
+        "source_function": "ReadFileRecordRequest.decode",
+        "buggy_commit": "4d2c7c67eef068d915a9f103a80a8abb7d789976",
+        "fixed_commit": "09a3cb23566c65e1c11ed6eaabb5ebf093c266f6",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "struct.error",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "struct.error: unpack requires a buffer of 7 bytes (byte_count maior que len(data) - 1)",
+      "crash_expressions": [
+        "struct.unpack(\">BHHH\", data[count : count + 7])"
+      ],
+      "ressalva": "o PR corrige o mesmo padrão em mais duas funções (ReadFileRecordResponse.decode e ReadFifoQueueResponse.decode); só ReadFileRecordRequest.decode está rotulada",
+      "file": "cps_pymodbus_2980.py"
+    },
+    {
+      "id": "cps_pymavlink_1259",
+      "cohort": "disciplina_pgene601",
+      "function": "DFReader_binary.init_arrays_fast",
+      "expression": "body = data[ofs+3:ofs+fmt_fmt.len]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 1334,
+      "label_sources": {
+        "expression": "statement_before_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymavlink",
+        "repo_url": "https://github.com/ArduPilot/pymavlink",
+        "pr_url": "https://github.com/ArduPilot/pymavlink/pull/1259",
+        "source_file": "DFReader.py",
+        "source_function": "DFReader_binary.init_arrays_fast",
+        "buggy_commit": "774840a8e6450c33cd97a33b86e3af5d3d1ea173",
+        "fixed_commit": "075f572b1427705f08d1f90aef89581203161421",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "struct.error",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "struct.error: unpack requires a buffer of N bytes (FMT truncado no fim do .BIN)",
+      "crash_expressions": [
+        "struct.unpack(fmt_fmt.msg_struct, body)"
+      ],
+      "ressalva": "função longa com mmap; o harness precisa recortar só o laço que lê os FMT",
+      "file": "cps_pymavlink_1259.py"
+    },
+    {
+      "id": "cps_opcua_1131",
+      "cohort": "disciplina_pgene601",
+      "function": "HistoryDict.read_node_history / HistoryDict.read_event_history",
+      "expression": "results[self.max_history_data_response_size + 1]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 155,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "opcua-asyncio",
+        "repo_url": "https://github.com/FreeOpcUa/opcua-asyncio",
+        "pr_url": "https://github.com/FreeOpcUa/opcua-asyncio/pull/1131",
+        "source_file": "asyncua/server/history.py",
+        "source_function": "HistoryDict.read_node_history / HistoryDict.read_event_history",
+        "buggy_commit": "9d5861adf8c13949e516a567a46751ed23e69285",
+        "fixed_commit": "e680d7ee57591e08f0a31d75a3c5b1cfbec4e315",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list index out of range quando len(results) == max + 1",
+      "ressalva": "função async: o frontend Python do ESBMC não modela async/await e o motor verify só aterra FunctionDef; conta para a detecção, o harness exige recorte manual do corpo síncrono",
+      "file": "cps_opcua_1131.py"
+    },
+    {
+      "id": "cps_opcua_1955",
+      "cohort": "disciplina_pgene601",
+      "function": "DataSetWriter.generate_uadp_dataset",
+      "expression": "self._seq_no += 1",
+      "categories": [
+        "integer_overflow"
+      ],
+      "line": 153,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "opcua-asyncio",
+        "repo_url": "https://github.com/FreeOpcUa/opcua-asyncio",
+        "pr_url": "https://github.com/FreeOpcUa/opcua-asyncio/pull/1955",
+        "source_file": "asyncua/pubsub/writer.py",
+        "source_function": "DataSetWriter.generate_uadp_dataset",
+        "buggy_commit": "2889b9beb9671a6430c5a3388ee3834aa4f8d0ab",
+        "fixed_commit": "baed48869ee3cd095a40056e82d9979258c38556",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "struct.error",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "struct.error: 'H' format requires 0 <= number <= 65535, no struct.pack do serializador (outro módulo) depois de 65535 mensagens",
+      "ressalva": "função async: o frontend Python do ESBMC não modela async/await e o motor verify só aterra FunctionDef; conta para a detecção, o harness exige recorte manual do corpo síncrono; a exceção estoura fora da função, no serializador UADP",
+      "file": "cps_opcua_1955.py"
+    },
+    {
+      "id": "cps_pythoncan_1811",
+      "cohort": "disciplina_pgene601",
+      "function": "ASCReader.__iter__ / ASCReader._process_fd_can_frame",
+      "expression": "not ASC_MESSAGE_REGEX.match(line)",
+      "categories": [
+        "type_mismatch"
+      ],
+      "line": 278,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-can",
+        "repo_url": "https://github.com/hardbyte/python-can",
+        "pr_url": "https://github.com/hardbyte/python-can/pull/1811",
+        "source_file": "can/io/asc.py",
+        "source_function": "ASCReader.__iter__ / ASCReader._process_fd_can_frame",
+        "buggy_commit": "78e4f81f9a3bec1ce4e32b5e85e7b5545053a579",
+        "fixed_commit": "d34b2d62fe103d203967e8ce2d3481d89e9afc18",
+        "buggy_commit_rule": "commit anterior ao PR (merge por rebase)"
+      },
+      "expected_type": "ValueError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: invalid literal for int() with base 10: 'Start' (linha 'CANFD Start of measurement' chega a _process_fd_can_frame)",
+      "crash_expressions": [
+        "int(channel)"
+      ],
+      "ressalva": "PR integrado por rebase: o pai do merge já é o primeiro commit do PR, então a versão com bug é o commit anterior ao PR; __iter__ é gerador",
+      "file": "cps_pythoncan_1811.py"
+    },
+    {
+      "id": "cps_cantools_595",
+      "cohort": "disciplina_pgene601",
+      "function": "SystemLoader._load_comments",
+      "expression": "lang = l_2.attrib.get('L', 'EN')",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 1370,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "cantools",
+        "repo_url": "https://github.com/cantools/cantools",
+        "pr_url": "https://github.com/cantools/cantools/pull/595",
+        "source_file": "cantools/database/can/formats/arxml/system_loader.py",
+        "source_function": "SystemLoader._load_comments",
+        "buggy_commit": "d17e9a3d73cc2a412b3dfcb2adbc1df280daaa28",
+        "fixed_commit": "36a9cf1612cd8f791f283b60068d542b8070cbb8",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'NoneType' object has no attribute 'split' (<L-2/> vazio no ARXML)",
+      "crash_expressions": [
+        "l_2.text.split('\\n')"
+      ],
+      "file": "cps_cantools_595.py"
+    },
+    {
+      "id": "cps_cantools_804",
+      "cohort": "disciplina_pgene601",
+      "function": "_dump_signals",
+      "expression": "signals",
+      "categories": [
+        "variable_misuse"
+      ],
+      "line": 868,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "cantools",
+        "repo_url": "https://github.com/cantools/cantools",
+        "pr_url": "https://github.com/cantools/cantools/pull/804",
+        "source_file": "src/cantools/database/can/formats/sym.py",
+        "source_function": "_dump_signals",
+        "buggy_commit": "58d85e48a5da7fb5d51308c4df2f678c14429c3f",
+        "fixed_commit": "01e7f2004c2d07ea4946095d0516e8d556a29366",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "UnboundLocalError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnboundLocalError: local variable 'signals' referenced before assignment (database.messages vazio)",
+      "file": "cps_cantools_804.py"
+    },
+    {
+      "id": "cps_pythoncan_1599",
+      "cohort": "disciplina_pgene601",
+      "function": "find_available_interfaces",
+      "expression": "i[\"link_type\"] == \"can\"",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 69,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-can",
+        "repo_url": "https://github.com/hardbyte/python-can",
+        "pr_url": "https://github.com/hardbyte/python-can/pull/1599",
+        "source_file": "can/interfaces/socketcan/utils.py",
+        "source_function": "find_available_interfaces",
+        "buggy_commit": "1a3f5e3769aa565ada8c27177a94f7db43d019dc",
+        "fixed_commit": "b291f806ec7ce02e3c8256b3102d3a0e7f22f85d",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "KeyError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: 'link_type' (entrada de `ip -json link` sem a chave)",
+      "ressalva": "subprocess e json.loads ficam fora do harness; a lista de dicts entra como parâmetro",
+      "file": "cps_pythoncan_1599.py"
+    },
+    {
+      "id": "cps_pythoncan_1293",
+      "cohort": "disciplina_pgene601",
+      "function": "IscanError.__init__",
+      "expression": "self.ERROR_CODES[self.error_code]",
+      "categories": [
+        "variable_misuse"
+      ],
+      "line": 190,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-can",
+        "repo_url": "https://github.com/hardbyte/python-can",
+        "pr_url": "https://github.com/hardbyte/python-can/pull/1293",
+        "source_file": "can/interfaces/iscan.py",
+        "source_function": "IscanError.__init__",
+        "buggy_commit": "af55b0a33d30096cb001c168dafb0c3b81ac9fcc",
+        "fixed_commit": "ed6cd668b9d81df27bcc6a747047d9cba228a682",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'IscanError' object has no attribute 'error_code' (lido antes de ser atribuído; except KeyError não captura)",
+      "crash_expressions": [
+        "self.function.__name__"
+      ],
+      "ressalva": "atributo inexistente, não None; subclasse de Exception",
+      "file": "cps_pythoncan_1293.py"
+    },
+    {
+      "id": "cps_pyserial_820",
+      "cohort": "disciplina_pgene601",
+      "function": "PosixPollSerial.read",
+      "expression": "fd == self.pipe_abort_read_r",
+      "categories": [
+        "variable_misuse"
+      ],
+      "line": 837,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pyserial",
+        "repo_url": "https://github.com/pyserial/pyserial",
+        "pr_url": "https://github.com/pyserial/pyserial/pull/820",
+        "source_file": "serial/serialposix.py",
+        "source_function": "PosixPollSerial.read",
+        "buggy_commit": "9c7b6affe078b0f0b69efc05156b76f189d92e2d",
+        "fixed_commit": "b0b93cbd0ca735050c812057c4c29beb4573fc0e",
+        "buggy_commit_rule": "commit anterior ao PR (merge por rebase)"
+      },
+      "expected_type": "UnboundLocalError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnboundLocalError: local variable 'fd' referenced before assignment (poll() devolve lista vazia no timeout)",
+      "ressalva": "PR integrado por rebase: a versão com bug é o commit anterior ao PR; select.poll e os.read precisam de stub nondet",
+      "file": "cps_pyserial_820.py"
+    },
+    {
+      "id": "cps_pyserial_149",
+      "cohort": "disciplina_pgene601",
+      "function": "FramedPacket.data_received",
+      "expression": "self.packet.append(byte)",
+      "categories": [
+        "type_mismatch"
+      ],
+      "line": 108,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pyserial",
+        "repo_url": "https://github.com/pyserial/pyserial",
+        "pr_url": "https://github.com/pyserial/pyserial/pull/149",
+        "source_file": "serial/threaded/__init__.py",
+        "source_function": "FramedPacket.data_received",
+        "buggy_commit": "686abf500c419f11d0a4c07ac17628efeabd5693",
+        "fixed_commit": "1eb040ee17cd82840cbbde1d6c763708e98c9adb",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: 'bytes' object cannot be interpreted as an integer (serial.iterbytes devolve bytes de tamanho 1 no Python 3)",
+      "file": "cps_pyserial_149.py"
+    },
+    {
+      "id": "cps_pymavlink_1217",
+      "cohort": "disciplina_pgene601",
+      "function": "add_message",
+      "expression": "not mtype in messages",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 92,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymavlink",
+        "repo_url": "https://github.com/ArduPilot/pymavlink",
+        "pr_url": "https://github.com/ArduPilot/pymavlink/pull/1217",
+        "source_file": "mavutil.py",
+        "source_function": "add_message",
+        "buggy_commit": "a2b74990d7f8f904564bca0bdc8f5f94a4263c3a",
+        "fixed_commit": "56a3bb0c950ba0e0d2c50f2fadd74263fe6c3015",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: 'NoneType' object does not support item assignment (mensagem guardada antes sem instância deixa _instances None)",
+      "crash_expressions": [
+        "messages[mtype]._instances[instance_value] = msg"
+      ],
+      "ressalva": "getattr com nome de campo variável e copy.copy",
+      "file": "cps_pymavlink_1217.py"
+    },
+    {
+      "id": "cps_mavproxy_1032",
+      "cohort": "disciplina_pgene601",
+      "function": "FakeGPSModule.idle_task",
+      "expression": "now = time.time()",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 74,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/1032",
+        "source_file": "MAVProxy/modules/mavproxy_fakegps.py",
+        "source_function": "FakeGPSModule.idle_task",
+        "buggy_commit": "09dbeec3ed2fc382ee6abc4a2c63f971e206be58",
+        "fixed_commit": "6403754f9b9cb935b4a071b90dc76856b0998b54",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'NoneType' object has no attribute 'mav' (sem link com o veículo)",
+      "crash_expressions": [
+        "self.master.mav.gps_input_send(time_us, 0, 0, gps_week_ms, gps_week, fix_type,\n                               int(gps_lat*1.0e7), int(gps_lon*1.0e7), gps_alt,\n                               1.0, 1.0,\n                               gps_vel[0], gps_vel[1], gps_vel[2],\n                               0.2, 1.0, 1.0,\n                               nsats,\n                               int(self.FakeGPS_settings.yaw*100))"
+      ],
+      "file": "cps_mavproxy_1032.py"
+    },
+    {
+      "id": "cps_mavproxy_881",
+      "cohort": "disciplina_pgene601",
+      "function": "FTPModule.__init__ / FTPModule.check_read_send",
+      "expression": "self.last_gap_send = None",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 128,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/881",
+        "source_file": "MAVProxy/modules/mavproxy_ftp.py",
+        "source_function": "FTPModule.__init__ / FTPModule.check_read_send",
+        "buggy_commit": "df4249fdf0fadad39a8e5f30fe7573d0fea3d944",
+        "fixed_commit": "4616e6f1287bd8e04083410de030ef1f707366e6",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: unsupported operand type(s) for -: 'float' and 'NoneType'",
+      "crash_expressions": [
+        "now - self.last_gap_send"
+      ],
+      "ressalva": "o bug nasce no __init__ e estoura em check_read_send; o harness monta o objeto",
+      "file": "cps_mavproxy_881.py"
+    },
+    {
+      "id": "cps_dronekit_890",
+      "cohort": "disciplina_pgene601",
+      "function": "Vehicle.is_armable",
+      "expression": "self.gps_0.fix_type > 1",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 1778,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "dronekit-python",
+        "repo_url": "https://github.com/dronekit/dronekit-python",
+        "pr_url": "https://github.com/dronekit/dronekit-python/pull/890",
+        "source_file": "dronekit/__init__.py",
+        "source_function": "Vehicle.is_armable",
+        "buggy_commit": "a80a9bdbcfd7b80ba60a9fa860478cb748a4de16",
+        "fixed_commit": "e412e95d24169c606edcd87fa1dc309af305eb0e",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: '>' not supported between instances of 'NoneType' and 'int' (GPS sem GPS_RAW_INT)",
+      "file": "cps_dronekit_890.py"
+    },
+    {
+      "id": "cps_blinka_434",
+      "cohort": "disciplina_pgene601",
+      "function": "PWMOut.deinit",
+      "expression": "self._pwmpin.stop()",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 52,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_Blinka",
+        "repo_url": "https://github.com/adafruit/Adafruit_Blinka",
+        "pr_url": "https://github.com/adafruit/Adafruit_Blinka/pull/434",
+        "source_file": "src/adafruit_blinka/microcontroller/bcm283x/pulseio/PWMOut.py",
+        "source_function": "PWMOut.deinit",
+        "buggy_commit": "892ea29c1d1434f729e0404eac0ae2cf219b5c89",
+        "fixed_commit": "17b9bef0ecb286581464f4ec02a685dc98022b21",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'NoneType' object has no attribute 'stop' (deinit chamado duas vezes)",
+      "ressalva": "RPi.GPIO global precisa de stub",
+      "file": "cps_blinka_434.py"
+    },
+    {
+      "id": "cps_opcua_1826",
+      "cohort": "disciplina_pgene601",
+      "function": "UaProcessor._process_message",
+      "expression": "self._connection.security_policy.peer_certificate + params.ClientNonce",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 209,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "opcua-asyncio",
+        "repo_url": "https://github.com/FreeOpcUa/opcua-asyncio",
+        "pr_url": "https://github.com/FreeOpcUa/opcua-asyncio/pull/1826",
+        "source_file": "asyncua/server/uaprocessor.py",
+        "source_function": "UaProcessor._process_message",
+        "buggy_commit": "e3e02e3cfaca19647aec9348e9452594c6ebd657",
+        "fixed_commit": "f12f3e19b3e7a3bc3db38add30176eef0cecd300",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: can't concat NoneType to bytes (CreateSession sem ClientNonce)",
+      "ressalva": "função async: o frontend Python do ESBMC não modela async/await e o motor verify só aterra FunctionDef; conta para a detecção, o harness exige recorte manual do corpo síncrono; função enorme, recortar só o ramo CreateSession",
+      "file": "cps_opcua_1826.py"
+    },
+    {
+      "id": "cps_opcua_671",
+      "cohort": "disciplina_pgene601",
+      "function": "application_to_strings",
+      "expression": "app.DiscoveryUrls",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 528,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "opcua-asyncio",
+        "repo_url": "https://github.com/FreeOpcUa/opcua-asyncio",
+        "pr_url": "https://github.com/FreeOpcUa/opcua-asyncio/pull/671",
+        "source_file": "asyncua/tools.py",
+        "source_function": "application_to_strings",
+        "buggy_commit": "fc09e423c7f3e49783b0788ad0933fd836175c15",
+        "fixed_commit": "49b611bdd2eb7eec569d72a981583afcfff7a657",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: 'NoneType' object is not iterable (DiscoveryUrls None)",
+      "file": "cps_opcua_671.py"
+    },
+    {
+      "id": "cps_ros2cli_1112",
+      "cohort": "disciplina_pgene601",
+      "function": "get_port",
+      "expression": "int(os.environ.get('ROS_DOMAIN_ID', 0))",
+      "categories": [
+        "type_mismatch"
+      ],
+      "line": 36,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "ros2cli",
+        "repo_url": "https://github.com/ros2/ros2cli",
+        "pr_url": "https://github.com/ros2/ros2cli/pull/1112",
+        "source_file": "ros2cli/ros2cli/daemon/__init__.py",
+        "source_function": "get_port",
+        "buggy_commit": "5b182c67e4497d4a037b4dff5f4a7f2e9687b947",
+        "fixed_commit": "efae7a72e2be91e244fad11288aea55271173e77",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ValueError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: invalid literal for int() with base 10: '' (ROS_DOMAIN_ID vazia)",
+      "file": "cps_ros2cli_1112.py"
+    },
+    {
+      "id": "cps_ros2cli_1026",
+      "cohort": "disciplina_pgene601",
+      "function": "InterfaceFlags.__str__ / NetworkReport.report",
+      "expression": "return",
+      "categories": [
+        "type_mismatch"
+      ],
+      "line": 54,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "ros2cli",
+        "repo_url": "https://github.com/ros2/ros2cli",
+        "pr_url": "https://github.com/ros2/ros2cli/pull/1026",
+        "source_file": "ros2doctor/ros2doctor/api/network.py",
+        "source_function": "InterfaceFlags.__str__ / NetworkReport.report",
+        "buggy_commit": "0a5b5603d9651c8b98e574142325069a04f31101",
+        "fixed_commit": "74f6989e71ed0376ff026d03a347acf2314d0c32",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: __str__ returned non-string (type NoneType), em str(flags) no relatório",
+      "crash_expressions": [
+        "str(flags)"
+      ],
+      "ressalva": "incerto se o ESBMC-Python checa o tipo de retorno de __str__",
+      "file": "cps_ros2cli_1026.py"
+    },
+    {
+      "id": "cps_pymodbus_2921",
+      "cohort": "disciplina_pgene601",
+      "function": "FramerTLS.decode",
+      "expression": "dev_id = int(data[6])",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 24,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymodbus",
+        "repo_url": "https://github.com/pymodbus-dev/pymodbus",
+        "pr_url": "https://github.com/pymodbus-dev/pymodbus/pull/2921",
+        "source_file": "pymodbus/framer/tls.py",
+        "source_function": "FramerTLS.decode",
+        "buggy_commit": "1b6c1400ab386bda4e9e70f16250492f531d40d0",
+        "fixed_commit": "5e0816c04b176932e10e49d7f8b8ae0817cde1e6",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: index out of range (quadro Modbus/TLS com menos de 7 bytes)",
+      "file": "cps_pymodbus_2921.py"
+    },
+    {
+      "id": "cps_pymodbus_1738",
+      "cohort": "disciplina_pgene601",
+      "function": "ReadDeviceInformationResponse.calculateRtuFrameSize",
+      "expression": "struct.unpack(\">BB\", buffer[size : size + 2])",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 129,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymodbus",
+        "repo_url": "https://github.com/pymodbus-dev/pymodbus",
+        "pr_url": "https://github.com/pymodbus-dev/pymodbus/pull/1738",
+        "source_file": "pymodbus/mei_message.py",
+        "source_function": "ReadDeviceInformationResponse.calculateRtuFrameSize",
+        "buggy_commit": "85890dcbb6a0bf00f0b961a9dab420d348df2cae",
+        "fixed_commit": "8de66a2cf046537cabe390f4dd0d57c3b127005c",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "struct.error",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "struct.error: unpack requires a buffer of 2 bytes (quadro RTU parcial; o laço passa do fim do buffer)",
+      "ressalva": "classmethod; precisa do modelo de struct.unpack com fatia curta",
+      "file": "cps_pymodbus_1738.py"
+    },
+    {
+      "id": "cps_pymodbus_2977",
+      "cohort": "disciplina_pgene601",
+      "function": "WriteMultipleRegistersRequest.decode",
+      "expression": "struct.unpack(\">H\", data[idx : idx + 2])",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 259,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymodbus",
+        "repo_url": "https://github.com/pymodbus-dev/pymodbus",
+        "pr_url": "https://github.com/pymodbus-dev/pymodbus/pull/2977",
+        "source_file": "pymodbus/pdu/register_message.py",
+        "source_function": "WriteMultipleRegistersRequest.decode",
+        "buggy_commit": "60637425f44e716132970227be9280f1ccc808cc",
+        "fixed_commit": "8a3be747ac72ab04797fd36eaa57d626abc6de14",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "struct.error",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "struct.error: unpack requires a buffer of 2 bytes (quantidade declarada maior que o payload FC16)",
+      "ressalva": "o PR corrige o mesmo padrão em ReadWriteMultipleRegistersRequest.decode; só WriteMultipleRegistersRequest.decode está rotulada; precisa do modelo de struct.unpack",
+      "file": "cps_pymodbus_2977.py"
+    },
+    {
+      "id": "cps_minimqtt_5",
+      "cohort": "disciplina_pgene601",
+      "function": "MQTT.connect",
+      "expression": "CONNACK_ERRORS[rc[3]]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 282,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_MiniMQTT",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_MiniMQTT",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_MiniMQTT/pull/5",
+        "source_file": "adafruit_minimqtt.py",
+        "source_function": "MQTT.connect",
+        "buggy_commit": "801b3a3f0af52df20e96ef504db75e09960b0015",
+        "fixed_commit": "25b344ad65c2973efdfa637dc2b2a3e3d16873eb",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: index out of range (rc = self._sock.read(3) tem 3 bytes e o broker recusou a conexão)",
+      "ressalva": "só estoura com código de retorno diferente de 0; o socket precisa de stub",
+      "file": "cps_minimqtt_5.py"
+    },
+    {
+      "id": "cps_umqtt_1149",
+      "cohort": "disciplina_pgene601",
+      "function": "MQTTClient.connect",
+      "expression": "resp[0] == 0x20 and resp[1] == 0x02",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 119,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "micropython-lib",
+        "repo_url": "https://github.com/micropython/micropython-lib",
+        "pr_url": "https://github.com/micropython/micropython-lib/pull/1149",
+        "source_file": "micropython/umqtt.simple/umqtt/simple.py",
+        "source_function": "MQTTClient.connect",
+        "buggy_commit": "ee4bb8ff139e24c42b739935fbd8ec7c4d061e02",
+        "fixed_commit": "a7fe5c39f39bb52ae3e520ab5c1554c62dcddc29",
+        "buggy_commit_rule": "commit anterior ao PR (merge por rebase)"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: index out of range (CONNACK com menos de 4 bytes; TypeError se o read devolver None no timeout)",
+      "crash_expressions": [
+        "resp[3]"
+      ],
+      "ressalva": "PR integrado por rebase: o pai do merge já é o primeiro commit do PR, então a versão com bug é o commit anterior ao PR; o socket precisa de stub",
+      "file": "cps_umqtt_1149.py"
+    },
+    {
+      "id": "cps_pyrtcm_34",
+      "cohort": "disciplina_pgene601",
+      "function": "RTCMMessage.__str__",
+      "expression": "RTCM_MSGIDS[self.identity]",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 262,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pyrtcm",
+        "repo_url": "https://github.com/semuconsulting/pyrtcm",
+        "pr_url": "https://github.com/semuconsulting/pyrtcm/pull/34",
+        "source_file": "src/pyrtcm/rtcmmessage.py",
+        "source_function": "RTCMMessage.__str__",
+        "buggy_commit": "69207f298fe4cc719dbff11942856eaa988044d1",
+        "fixed_commit": "36fae9136fa3c6af872d2ef2639300c506d5635f",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "KeyError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: identidade de mensagem RTCM3 não definida em RTCM_MSGIDS (com labelmsm ligado)",
+      "ressalva": "__str__ percorre self.__dict__; o harness recorta só o teste do dicionário",
+      "file": "cps_pyrtcm_34.py"
+    },
+    {
+      "id": "cps_pycomm3_331",
+      "cohort": "disciplina_pgene601",
+      "function": "PCCCStringType._slc_string_swap",
+      "expression": "[(x2, x1) for x1, x2 in (data[i : i + 2] for i in range(0, len(data), 2))]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 36,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pycomm3",
+        "repo_url": "https://github.com/ottowayi/pycomm3",
+        "pr_url": "https://github.com/ottowayi/pycomm3/pull/331",
+        "source_file": "pycomm3/cip/pccc.py",
+        "source_function": "PCCCStringType._slc_string_swap",
+        "buggy_commit": "d0d75601b27fff490b61c0f329387e79553210e3",
+        "fixed_commit": "a466f887f7e53d410aa856065bf5ba8ef3ded479",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ValueError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: not enough values to unpack (expected 2, got 1) (string SLC de comprimento ímpar)",
+      "ressalva": "patch grande (reescreve também os _encode e _decode do arquivo); a função rotulada tem 4 linhas e usa itertools.chain",
+      "file": "cps_pycomm3_331.py"
+    },
+    {
+      "id": "cps_udsoncan_291",
+      "cohort": "disciplina_pgene601",
+      "function": "AsciiCodec.decode",
+      "expression": "string_bin.decode('ascii')",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 70,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-udsoncan",
+        "repo_url": "https://github.com/pylessard/python-udsoncan",
+        "pr_url": "https://github.com/pylessard/python-udsoncan/pull/291",
+        "source_file": "udsoncan/common/DidCodec.py",
+        "source_function": "AsciiCodec.decode",
+        "buggy_commit": "976b197ed4359a8cce0ef3cdfc1b46afe7c55987",
+        "fixed_commit": "48fabc495a737e1ef22ed0ffe59883b5c913eb19",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "UnicodeDecodeError",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnicodeDecodeError: 'ascii' codec can't decode byte 0xff (VIN não ASCII devolvido pela ECU)",
+      "ressalva": "depende de bytes.decode levantar erro no modelo do ESBMC, o que é incerto",
+      "file": "cps_udsoncan_291.py"
+    },
+    {
+      "id": "cps_udsoncan_198",
+      "cohort": "disciplina_pgene601",
+      "function": "Client.send_request",
+      "expression": "timeout_type_used == 'single_request'",
+      "categories": [
+        "variable_misuse"
+      ],
+      "line": 2170,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-udsoncan",
+        "repo_url": "https://github.com/pylessard/python-udsoncan",
+        "pr_url": "https://github.com/pylessard/python-udsoncan/pull/198",
+        "source_file": "udsoncan/client.py",
+        "source_function": "Client.send_request",
+        "buggy_commit": "fda7a4221342b30fb53c0627dfa66335165977d5",
+        "fixed_commit": "18027a94c2d5e086c9d5adeb125be8a60f5fb3ee",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "UnboundLocalError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnboundLocalError: local variable 'timeout_name_to_report' referenced before assignment (wait_frame devolve None sem TimeoutException)",
+      "crash_expressions": [
+        "timeout_name_to_report"
+      ],
+      "ressalva": "função enorme; a expressão é o if que só atribui timeout_name_to_report dentro do except TimeoutException, e o patch passa esse if para depois do teste de recv_payload None; o harness recorta o laço de espera com recv_payload Optional",
+      "file": "cps_udsoncan_198.py"
+    },
+    {
+      "id": "cps_gps_127",
+      "cohort": "disciplina_pgene601",
+      "function": "_parse_degrees",
+      "expression": "raw[1]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 103,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_GPS",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_GPS",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_GPS/pull/127",
+        "source_file": "adafruit_gps.py",
+        "source_function": "_parse_degrees",
+        "buggy_commit": "3408f293e6f25ca55afb0bd24314deeff923fe69",
+        "fixed_commit": "c7c8d346f8efd60c18999ddd08b535e6b2aef963",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list index out of range (campo NMEA de grau sem ponto decimal; ValueError em int(raw[0]) se o campo for vazio)",
+      "ressalva": "patch grande porque cria o helper _split_decimal e mexe em outras funções; a versão com bug já inclui a correção de GPS#126 (primeiro pai do merge)",
+      "file": "cps_gps_127.py"
+    },
+    {
+      "id": "cps_gps_126",
+      "cohort": "disciplina_pgene601",
+      "function": "GPS._update_timestamp_utc",
+      "expression": "int(time_utc[0:2])",
+      "categories": [
+        "type_mismatch"
+      ],
+      "line": 494,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_GPS",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_GPS",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_GPS/pull/126",
+        "source_file": "adafruit_gps.py",
+        "source_function": "GPS._update_timestamp_utc",
+        "buggy_commit": "c326d99d18513e3d45875f8ff6e11fd1b6765c70",
+        "fixed_commit": "3408f293e6f25ca55afb0bd24314deeff923fe69",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ValueError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: invalid literal for int() with base 10: '' (campo de hora NMEA vazio ou truncado; o mesmo vale para date)",
+      "ressalva": "time.struct_time no fim da função precisa de stub",
+      "file": "cps_gps_126.py"
+    },
+    {
+      "id": "cps_gps_60",
+      "cohort": "disciplina_pgene601",
+      "function": "GPS.update / _parse_talker",
+      "expression": "data_type = bytes(data_type.upper(), \"ascii\")",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 251,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_GPS",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_GPS",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_GPS/pull/60",
+        "source_file": "adafruit_gps.py",
+        "source_function": "GPS.update / _parse_talker",
+        "buggy_commit": "6fa737e2de914071271c8ec5670d96969ee7fe8a",
+        "fixed_commit": "cc4c9dffc79df6ef6aa9c5df134b12cd811d574a",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: index out of range em _parse_talker (sentença NMEA com tipo vazio)",
+      "crash_expressions": [
+        "data_type[0]"
+      ],
+      "ressalva": "a exceção nasce em _parse_talker, chamada por update; o harness liga as duas",
+      "file": "cps_gps_60.py"
+    },
+    {
+      "id": "cps_pythoncan_713",
+      "cohort": "disciplina_pgene601",
+      "function": "CanutilsLogReader.__iter__",
+      "expression": "dlc = 0",
+      "categories": [
+        "variable_misuse"
+      ],
+      "line": 62,
+      "label_sources": {
+        "expression": "statement_before_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-can",
+        "repo_url": "https://github.com/hardbyte/python-can",
+        "pr_url": "https://github.com/hardbyte/python-can/pull/713",
+        "source_file": "can/io/canutils.py",
+        "source_function": "CanutilsLogReader.__iter__",
+        "buggy_commit": "c93a2e0d2a6a43c8fa2e7ccf3ead1a0f0dc3dd8a",
+        "fixed_commit": "216ed73d3250b1622dde62a7a2fbbffbfe320880",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "UnboundLocalError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "UnboundLocalError: local variable 'dataBin' referenced before assignment (quadro remoto antes de qualquer quadro de dados no log candump)",
+      "crash_expressions": [
+        "dataBin"
+      ],
+      "ressalva": "__iter__ é gerador; o patch insere dataBin = None no fim do ramo de quadro remoto, longe da linha que estoura",
+      "file": "cps_pythoncan_713.py"
+    },
+    {
+      "id": "cps_pythoncan_225",
+      "cohort": "disciplina_pgene601",
+      "function": "ASCReader.__iter__",
+      "expression": "(timestamp, channel, dummy) = temp.split(None, 2)",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 40,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "python-can",
+        "repo_url": "https://github.com/hardbyte/python-can",
+        "pr_url": "https://github.com/hardbyte/python-can/pull/225",
+        "source_file": "can/io/asc.py",
+        "source_function": "ASCReader.__iter__",
+        "buggy_commit": "b577d5e939c7bf04ef1c11b379e1a472e9809cc9",
+        "fixed_commit": "0d2707361337d1ca6c1b8a278a522f737742d9a7",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ValueError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: not enough values to unpack (expected 3, got 2) (linha do .asc com menos de três campos)",
+      "ressalva": "__iter__ é gerador; o PR também muda ASCWriter.log_event, que não está rotulado",
+      "file": "cps_pythoncan_225.py"
+    },
+    {
+      "id": "cps_pymavlink_1058",
+      "cohort": "disciplina_pgene601",
+      "function": "DFReader_binary.init_arrays_fast",
+      "expression": "self.name_to_id['UNIT']",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 1343,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pymavlink",
+        "repo_url": "https://github.com/ArduPilot/pymavlink",
+        "pr_url": "https://github.com/ArduPilot/pymavlink/pull/1058",
+        "source_file": "DFReader.py",
+        "source_function": "DFReader_binary.init_arrays_fast",
+        "buggy_commit": "b6616bd5e183cfa08711b171d6aafaab0101e09b",
+        "fixed_commit": "6929b9f7a8e121d4999c1eca8b845bf2f73a27d1",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "KeyError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: 'UNIT' (log .BIN sem mensagem UNIT; o mesmo vale para MULT e FMTU)",
+      "ressalva": "mesma função de cps_pymavlink_1259, com outro bug; o patch é quase todo reindentação e o harness recorta só o bloco UNIT",
+      "file": "cps_pymavlink_1058.py"
+    },
+    {
+      "id": "cps_mavproxy_989",
+      "cohort": "disciplina_pgene601",
+      "function": "LogModule.log_status",
+      "expression": "pct = 0",
+      "categories": [
+        "division_by_zero"
+      ],
+      "line": 125,
+      "label_sources": {
+        "expression": "statement_before_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/989",
+        "source_file": "MAVProxy/modules/mavproxy_log.py",
+        "source_function": "LogModule.log_status",
+        "buggy_commit": "a708305241005c934bf6843d6bddeeb60a4c3b0d",
+        "fixed_commit": "b228d033284074b7fecd2b1b951d178e3f9f0138",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ZeroDivisionError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError: float division by zero (LOG_ENTRY de log vazio, m.size == 0)",
+      "crash_expressions": [
+        "(100.0*file_size)/size"
+      ],
+      "ressalva": "mesma função de cps_mavproxy_741, em outra versão; o patch insere um elif antes do else que divide",
+      "file": "cps_mavproxy_989.py"
+    },
+    {
+      "id": "cps_mavproxy_741",
+      "cohort": "disciplina_pgene601",
+      "function": "LogModule.log_status",
+      "expression": "max(self.download_set)",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 123,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/741",
+        "source_file": "MAVProxy/modules/mavproxy_log.py",
+        "source_function": "LogModule.log_status",
+        "buggy_commit": "33367bb2f9d9805de4946e7cb04931dffa7a653d",
+        "fixed_commit": "122a10c622a5ab86a2257d601ae54932eb24331f",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ValueError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ValueError: max() arg is an empty sequence (nenhum bloco do log chegou ainda)",
+      "ressalva": "mesma função de cps_mavproxy_989, em outra versão; os.path.getsize precisa de stub",
+      "file": "cps_mavproxy_741.py"
+    },
+    {
+      "id": "cps_piouart_6",
+      "cohort": "disciplina_pgene601",
+      "function": "UART.read",
+      "expression": "n == 0",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 187,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_PIO_UART",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_PIO_UART",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_PIO_UART/pull/6",
+        "source_file": "adafruit_pio_uart.py",
+        "source_function": "UART.read",
+        "buggy_commit": "fa6496a4dc2d66493402cf6f52707901317b4df3",
+        "fixed_commit": "66046da48cfb4cdb6d5128b01d56c275d8beb3ac",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: '<' not supported between instances of 'NoneType' and 'int' (readinto devolve None com timeout 0)",
+      "crash_expressions": [
+        "n < len(buf)"
+      ],
+      "ressalva": "readinto vira stub que devolve Optional[int]",
+      "file": "cps_piouart_6.py"
+    },
+    {
+      "id": "cps_mavproxy_1572",
+      "cohort": "disciplina_pgene601",
+      "function": "FTPModule.send",
+      "expression": "self.master.mav.file_transfer_protocol_send(self.network, self.target_system, self.target_component, payload)",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 190,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/1572",
+        "source_file": "MAVProxy/modules/mavproxy_ftp.py",
+        "source_function": "FTPModule.send",
+        "buggy_commit": "b9c4a973be54e9cdffc52cc5ee09f695c463f857",
+        "fixed_commit": "cfa6203f59b80b9a7cf4f7a527a56ebd624542cb",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'NoneType' object has no attribute 'mav' (sem link com o veículo)",
+      "ressalva": "mesmo padrão de cps_mavproxy_1032",
+      "file": "cps_mavproxy_1572.py"
+    },
+    {
+      "id": "cps_mavproxy_1447",
+      "cohort": "disciplina_pgene601",
+      "function": "BatteryModule.cmd_bat",
+      "expression": "self.battery_level[0]",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 54,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/1447",
+        "source_file": "MAVProxy/modules/mavproxy_battery.py",
+        "source_function": "BatteryModule.cmd_bat",
+        "buggy_commit": "eb7f22be12d43dc331ea4f9673f2dc8a2d2043e0",
+        "fixed_commit": "b344a7a3c1ce2ef0c8650a481d300b84253bedef",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "KeyError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "KeyError: 0 (comando bat antes de chegar qualquer BATTERY_STATUS)",
+      "file": "cps_mavproxy_1447.py"
+    },
+    {
+      "id": "cps_gpiozero_716",
+      "cohort": "disciplina_pgene601",
+      "function": "CPUTemperature.__init__ / CPUTemperature.value",
+      "expression": "self.min_temp = min_temp",
+      "categories": [
+        "division_by_zero"
+      ],
+      "line": 121,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "gpiozero",
+        "repo_url": "https://github.com/gpiozero/gpiozero",
+        "pr_url": "https://github.com/gpiozero/gpiozero/pull/716",
+        "source_file": "gpiozero/other_devices.py",
+        "source_function": "CPUTemperature.__init__ / CPUTemperature.value",
+        "buggy_commit": "f05efa993e1b8a2c130e785e352e913f6fdada86",
+        "fixed_commit": "870f0513dad626e52432922b183250398ff9229d",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ZeroDivisionError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError: float division by zero (min_temp == max_temp na configuração)",
+      "crash_expressions": [
+        "(self.temperature - self.min_temp) / temp_range"
+      ],
+      "ressalva": "a correção fica no __init__ e o estouro na property value; a leitura do sensor (temperature) vira nondet",
+      "file": "cps_gpiozero_716.py"
+    },
+    {
+      "id": "cps_simpleio_43",
+      "cohort": "disciplina_pgene601",
+      "function": "map_range",
+      "expression": "(x-in_min) * (out_max - out_min) / (in_max-in_min) + out_min",
+      "categories": [
+        "division_by_zero"
+      ],
+      "line": 241,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_SimpleIO",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_SimpleIO",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_SimpleIO/pull/43",
+        "source_file": "simpleio.py",
+        "source_function": "map_range",
+        "buggy_commit": "ecbd27a0992a840879d3d1c3e8730aa726087788",
+        "fixed_commit": "d1ea1bb923308fe17558521717b7c5700e355703",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "ZeroDivisionError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "ZeroDivisionError: division by zero (faixa de entrada degenerada, in_min == in_max)",
+      "file": "cps_simpleio_43.py"
+    },
+    {
+      "id": "cps_pyspartn_4",
+      "cohort": "disciplina_pgene601",
+      "function": "SPARTNMessage.__init__",
+      "expression": "bytes.fromhex(key)",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 74,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "pyspartn",
+        "repo_url": "https://github.com/semuconsulting/pyspartn",
+        "pr_url": "https://github.com/semuconsulting/pyspartn/pull/4",
+        "source_file": "pyspartn/spartnmessage.py",
+        "source_function": "SPARTNMessage.__init__",
+        "buggy_commit": "31cd509d163fb4da7065d22f0b4f93539450c48c",
+        "fixed_commit": "76d2092c8ae3001fc3acee7ad03948e5dc750603",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: fromhex() argument must be str, not None (MQTTKEY não definida e sem key)",
+      "ressalva": "os.getenv vira parâmetro Optional[str]; depende do modelo de bytes.fromhex; o PR também muda spartnreader.py, que não está rotulado",
+      "file": "cps_pyspartn_4.py"
+    },
+    {
+      "id": "cps_mavproxy_1380",
+      "cohort": "disciplina_pgene601",
+      "function": "MPSlipMapPanel.click_position_text",
+      "expression": "terrain_height == \"?\"",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 534,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "MAVProxy",
+        "repo_url": "https://github.com/ArduPilot/MAVProxy",
+        "pr_url": "https://github.com/ArduPilot/MAVProxy/pull/1380",
+        "source_file": "MAVProxy/modules/mavproxy_map/mp_slipmap_ui.py",
+        "source_function": "MPSlipMapPanel.click_position_text",
+        "buggy_commit": "92c01594173e029ce2334fed55a29757c2d50e59",
+        "fixed_commit": "0a44e1790042e3b14c227b369dbeb89253e8e2bd",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "TypeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "TypeError: unsupported operand type(s) for -: 'NoneType' and 'float' (mapa de elevação sem dado no ponto clicado)",
+      "crash_expressions": [
+        "terrain_height - self.last_terrain_height"
+      ],
+      "ressalva": "arquivo de interface wx; mp_util e o mapa de elevação precisam de stub",
+      "file": "cps_mavproxy_1380.py"
+    },
+    {
+      "id": "cps_ros2cli_370",
+      "cohort": "disciplina_pgene601",
+      "function": "_check_network_config_helper",
+      "expression": "iface.get('flags').lower()",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 40,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "ros2cli",
+        "repo_url": "https://github.com/ros2/ros2cli",
+        "pr_url": "https://github.com/ros2/ros2cli/pull/370",
+        "source_file": "ros2doctor/ros2doctor/api/network.py",
+        "source_function": "_check_network_config_helper",
+        "buggy_commit": "ae2c0445146d4704e1eb692ee15c7313536e50f5",
+        "fixed_commit": "096de53ba6f9424c8999a8a05821fdca17123585",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'NoneType' object has no attribute 'lower' (interface de rede sem flags)",
+      "ressalva": "a função ignora o parâmetro e chama ifcfg.interfaces(), que precisa de stub",
+      "file": "cps_ros2cli_370.py"
+    },
+    {
+      "id": "cps_ros2cli_646",
+      "cohort": "disciplina_pgene601",
+      "function": "ListVerb.main",
+      "expression": "response = future.result()",
+      "categories": [
+        "none_misuse"
+      ],
+      "line": 115,
+      "label_sources": {
+        "expression": "statement_after_insertion",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "ros2cli",
+        "repo_url": "https://github.com/ros2/ros2cli",
+        "pr_url": "https://github.com/ros2/ros2cli/pull/646",
+        "source_file": "ros2param/ros2param/verb/list.py",
+        "source_function": "ListVerb.main",
+        "buggy_commit": "737574d3a45ad615564c302bdf2bd09310fef61c",
+        "fixed_commit": "a9def450ab9fed95d40b8bddd358cc06442192a4",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "AttributeError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "AttributeError: 'NoneType' object has no attribute 'result' (serviço de parâmetros sem resposta dentro do timeout)",
+      "crash_expressions": [
+        "response.result.names"
+      ],
+      "ressalva": "main usa rclpy; o harness recorta o laço de impressão com future.result() Optional",
+      "file": "cps_ros2cli_646.py"
+    },
+    {
+      "id": "cps_paho_118",
+      "cohort": "disciplina_pgene601",
+      "function": "Client._host_matches_cert",
+      "expression": "host.split(\".\", 1)[1]",
+      "categories": [
+        "out_of_bounds"
+      ],
+      "line": 2637,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "paho.mqtt.python",
+        "repo_url": "https://github.com/eclipse-paho/paho.mqtt.python",
+        "pr_url": "https://github.com/eclipse-paho/paho.mqtt.python/pull/118",
+        "source_file": "src/paho/mqtt/client.py",
+        "source_function": "Client._host_matches_cert",
+        "buggy_commit": "0618f61a88ff388a5bc9b1cc6bfcad0391491649",
+        "fixed_commit": "dcd9dba86afeecb62453d34127d2e74f113a4af6",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "IndexError",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "IndexError: list index out of range (hostname sem ponto e certificado curinga)",
+      "file": "cps_paho_118.py"
+    }
+  ]
+}

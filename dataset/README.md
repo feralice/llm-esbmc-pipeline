@@ -7,7 +7,7 @@ dataset/
   coleta_bugsinpy/      a coleta do BugsInPy que gerou a coorte de rótulo automático
   v1_sintetico/         as 70 funções sintéticas da V1
   code_smell/           trechos com code smells rotulados por humanos (fora do pipeline)
-  disciplina_pgene601/  corpus da disciplina PGENE601 (em triagem)
+  disciplina_pgene601/  corpus da disciplina PGENE601: 47 bugs ciber-físicos no formato V2
 ```
 
 ## Três palavras que confundem
@@ -29,7 +29,7 @@ dataset/
 | `coleta_bugsinpy/` | os 199 bugs coletados do BugsInPy: arquivos baixados e rótulos | V2 | sim | não (o pipeline lê o `bugs_reais/`) |
 | `v1_sintetico/` | 70 funções sintéticas (bugs, funções limpas e code smells) | V1 | não se aplica | só no benchmark V1 |
 | `code_smell/` | 379 trechos com code smells rotulados por humanos (3 fontes externas) | nenhuma | rótulo humano | não |
-| `disciplina_pgene601/` | corpus da disciplina PGENE601 (Python ciber-físico), em triagem | nenhuma | ainda não | não |
+| `disciplina_pgene601/` | corpus da disciplina PGENE601 (Python ciber-físico): 47 bugs no formato V2; `geral/` guarda a triagem inicial | nenhuma | ainda não | não |
 
 ## `bugs_reais/`: o dataset
 

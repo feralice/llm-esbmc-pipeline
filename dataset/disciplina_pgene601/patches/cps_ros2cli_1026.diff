@@ -1,0 +1,11 @@
+--- a/ros2doctor/ros2doctor/api/network.py
++++ b/ros2doctor/ros2doctor/api/network.py
+@@ -51,7 +51,7 @@
+ 
+     def __str__(self):
+         if not self.flags:
+-            return
++            return ''
+ 
+         return self.flags.upper()
+ 

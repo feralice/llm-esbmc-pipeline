@@ -1,0 +1,14 @@
+--- a/can/io/asc.py
++++ b/can/io/asc.py
+@@ -273,6 +273,11 @@
+                     if self.relative_timestamp
+                     else self._datetime_to_timestamp(datetime_str)
+                 )
++                continue
++
++            # Handle the "Start of measurement" line
++            if re.match(r"^\d+\.\d+\s+Start of measurement", line):
++                # Skip this line as it's just an indicator
+                 continue
+ 
+             if not ASC_MESSAGE_REGEX.match(line):

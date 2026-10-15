@@ -1,0 +1,50 @@
+--- a/adafruit_gps.py
++++ b/adafruit_gps.py
+@@ -490,11 +490,32 @@
+         data_type = sentence[1:delimiter]
+         return (data_type, sentence[delimiter + 1 :])
+ 
++    @staticmethod
++    def _parse_hhmmss(time_utc: Optional[str]) -> Optional[Tuple[int, int, int]]:
++        # Parse an NMEA hhmmss(.sss) field into (hours, mins, secs).
++        # Returns None if the field is absent, short, or non-numeric.
++        if time_utc is None or len(time_utc) < 6 or not time_utc[0:6].isdigit():
++            return None
++        return (int(time_utc[0:2]), int(time_utc[2:4]), int(time_utc[4:6]))
++
++    @staticmethod
++    def _parse_ddmmyy(date: Optional[str]) -> Optional[Tuple[int, int, int]]:
++        # Parse an NMEA ddmmyy field into (day, month, year).
++        # Returns None if the field is absent, short, or non-numeric.
++        if date is None or len(date) < 6 or not date[0:6].isdigit():
++            return None
++        return (int(date[0:2]), int(date[2:4]), 2000 + int(date[4:6]))
++
+     def _update_timestamp_utc(self, time_utc: str, date: Optional[str] = None) -> None:
+-        hours = int(time_utc[0:2])
+-        mins = int(time_utc[2:4])
+-        secs = int(time_utc[4:6])
+-        if date is None:
++        parsed_time = self._parse_hhmmss(time_utc)
++        if parsed_time is None:
++            # Malformed time field; leave the previous timestamp untouched.
++            return
++        hours, mins, secs = parsed_time
++
++        parsed_date = self._parse_ddmmyy(date)
++        if parsed_date is None:
++            # No usable date field; carry forward the date we already have.
+             if self.timestamp_utc is None:
+                 day, month, year = 0, 0, 0
+             else:
+@@ -502,9 +523,7 @@
+                 month = self.timestamp_utc.tm_mon
+                 year = self.timestamp_utc.tm_year
+         else:
+-            day = int(date[0:2])
+-            month = int(date[2:4])
+-            year = 2000 + int(date[4:6])
++            day, month, year = parsed_date
+ 
+         self.timestamp_utc = time.struct_time((year, month, day, hours, mins, secs, 0, 0, -1))
+ 
