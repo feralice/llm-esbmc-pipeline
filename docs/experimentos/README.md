@@ -403,6 +403,284 @@ nesses programas (e `--no-slice` derruba o ESBMC), então a entrada exata não p
   saem sem veredito em segundos, e o Z3 dá `rm and fp sorts expected` em bip_keras_25 e bip_tornado_5.
   A pista do reprodutor 18 (10 s com esse perfil) não se repete nos casos reais.
 
+## Fase 11 (12/10): técnicas de prompt sobre o A5 e ESBMC master
+
+### Variantes A7 a A11 na amostra de 50
+
+Mudança no pipeline (sem commit até a data): variantes novas em `llm/prompt_variants.py`, schema por
+variante (`llm/schema.py`, `v2_findings_schema`), opção `--context-sources` (A11 lê o contexto do arquivo
+completo da versão com bug).
+
+- **Comando:** `scripts/run_detection_variants.sh 2026-10-12-amostra dataset/bugs_reais/amostra_deteccao.json A1,A2,A9 A1,A2,A7 A1,A2,A11 A1,A2,A8 A1,A2,A10` (Claude Sonnet via `claude_cli`); avaliação por `scripts/v2_union_detection.py --sample`, regra "causa ou quebra".
+
+| Variante | Pasta (`artifacts/v2/`) | Função | Linha | Fora do bug |
+|---|---|---|---|---|
+| A5 (base, fase 9) | `det-2026-10-06-amostra-A1,A2` | 44 | 24 | 72 |
+| A5 + A7 raciocínio antes do JSON | `det-2026-10-12-amostra-A1,A2,A7` | 42 | 22 | 80 |
+| A5 + A8 três exemplos sintéticos | `det-2026-10-12-amostra-A1,A2,A8` | 44 | 22 | 73 |
+| A5 + A9 causa e local da quebra | `det-2026-10-12-amostra-A1,A2,A9` | 45 | 25 | 121 |
+| A5 + A10 docstring mantida | `det-2026-10-12-amostra-A1,A2,A10` | 46 | 25 | 89 |
+| A5 + A11 contexto do arquivo | `det-2026-10-12-amostra-A1,A2,A11` | 43 | 24 | 82 |
+
+- Nenhuma passa da variação da base entre rodadas (cerca de 2). A9 quase dobra o ruído porque cada
+  achado com local da quebra vira dois.
+- **Decisão (proposta):** A5 continua o prompt final. A detecção com o Sonnet está no teto das técnicas de
+  prompt testadas; o gargalo segue na verificação.
+
+### Reprodutores do ESBMC-Python no master (333d07cc8a)
+
+- **Comando:** `docs/projeto/possiveis_problemas/rodar.sh ~/esbmc-master/build/src/esbmc/esbmc` (build com Z3).
+- 14 de 18 dão o resultado esperado (01 a 11, 13, 17 aceito; 12 parcial). Continuam: 14 (`async`),
+  15 (#8257), 16 (`*xs` com tamanho desconhecido) e 18 (`in` em `Optional[str]` com None dá NULL pointer
+  em `strstr`).
+
+### Reverificação da rodada completa com o master
+
+- **Comando:** `scripts/v2_replay_specs.py artifacts/v2/full-2026-10-05-regrounded/v2_verify_report.json --esbmc ~/esbmc-master/build/src/esbmc/esbmc --timeout 180 --out artifacts/v2/esbmc-master-2026-10-12 --shard i/4`.
+- 232 hipóteses: CONFIRMED 6 → 1, UNSUPPORTED 115 → 145, ESBMC_TIMEOUT 5 → 9.
+- Causas: (1) o master gera checagens de memória nos modelos em C (oob_real_02: 535 propriedades contra 4 no
+  8.5.0; 277 s); (2) desde o #7902 uma função `-> bytes` só é aceita se devolver `bytes([...])` ou
+  `nondet_bytes(n)`, e os stubs devolviam `b"ab"`/`b""` (10 recusas). Até `return b"ab"` é recusado:
+  regressão (reprodutor 23 em `docs/projeto/possiveis_problemas`).
+- Flags: `--no-pointer-check --no-align-check` acha o `IndexError` do oob_real_02 em 14 s.
+  `--no-bounds-check` não serve: troca o `IndexError` do Python por `out-of-bounds read in list`. (Uma
+  versão anterior desta nota dizia que as três flags juntas achavam o `IndexError` em 109 s; a leitura
+  estava errada, o `IndexError` era do log sem flags.) A rodada `artifacts/v2/esbmc-master-flags-2026-10-12`
+  usou as três flags e não vale.
+- Correção no harness: stub `-> bytes` devolve `nondet_bytes(2)` (`verify/render.py`); `--esbmc` do
+  script aceita flags.
+
+### Reverificação com as flags certas
+
+- **Pasta:** `artifacts/v2/esbmc-master-flags2-2026-10-12`. **Comando:** o de cima com
+  `--esbmc "~/esbmc-master/build/src/esbmc/esbmc --no-pointer-check --no-align-check"`.
+- 8.5.0 → master: CONFIRMED 6 → 7 (oob_real_03 novo, fora da linha do bug), ESBMC_TIMEOUT 5 → 1,
+  UNSUPPORTED 115 → 142. Nenhuma confirmação do 8.5.0 se perdeu, então juntar as duas versões
+  (portfólio) não acrescenta nada. **Métrica principal: 7, sem mudança.**
+- Os UNSUPPORTED a mais são casos que antes falhavam por outro motivo (18 eram dependência ausente,
+  7 erro do ESBMC) e agora param numa recusa do frontend. Nenhum era confirmado.
+- Os bugs de origem dos reprodutores das issues #8247 a #8258 não mudaram: cada um para numa barreira
+  anterior que não estava no reprodutor (tabela "Casos do dataset afetados" em
+  `docs/projeto/possiveis_problemas/README.md`).
+
+### ip_real_22 e oob_real_12 com mais desenrolamento
+
+- Os dois davam ESBMC_MISSED por `unwinding assertion` com a reexecução reproduzindo o bug. Rodados
+  com `--unwind 10`, `--unwind 25` e `--incremental-bmc --max-k-step 40`, 600 s cada.
+- ip_real_22: com 10, falha em 1 s no laço do `__python_str_lower` (`string.c` linha 511), antes da
+  linha do bug; com 25 e com o incremental, estoura 600 s. oob_real_12: com 10, falha em 5 s nos laços
+  de `strlen`, `__memcpy_impl` e no laço 20 do programa; com 25 e com o incremental, estoura 600 s.
+- Nenhum chega à linha do bug. Métrica continua 7. O custo está nos laços de string dos modelos em C.
+
+### Harness: receptor construído com argumentos
+
+- vm_real_02: o `Schema.validate` chama `Schema(type(s), error=e)`, e o harness trocava o `__init__`
+  real por um sem parâmetros, então o próprio programa ficava inválido (`__init__() takes 1 positional
+  argument but 2 were given`). Correção (`verify/grounding.py`, `verify/render.py`): quando o módulo
+  constrói a classe com argumentos, o `__init__` real fica e o estado não determinístico vai para uma
+  subclasse `_Receiver` (transformação `receiver_subclass`). Teste em `tests/test_verify_review_fixes.py`.
+- Rodada: `artifacts/v2/esbmc-master-subclass-2026-10-12` (`--only` nas 3 hipóteses do vm_real_02).
+  Continua UNSUPPORTED, agora pelo ESBMC (`Variable args not found`). Em sequência vêm `**kw`,
+  `self.__class__.__name__` e tipo como valor: reprodutores 19 a 22.
+- Testes: 551 passaram (`tests/test_verify_*.py`, `tests/test_prompt_variants.py`, `tests/test_v2_*.py`).
+
+## Fase 12 (13/10): contornos no harness sugeridos pela segunda opinião
+
+Prompt em `docs/projeto/segunda_opiniao_2026-10-12.md`, respondido pelo Codex (gpt-6-astra): 11 ideias,
+estimativa de 2 a 5 bugs a mais. Regra nova: reescrever a função vale se preservar o comportamento,
+porque a confirmação continua exigindo que o código original quebre no CPython na linha do bug.
+
+Mudanças (lote 1), todas com teste que falha sem a mudança:
+
+- Tuplas: entrada ou retorno desempacotado em N nomes com tipo escalar vira `tuple[T, ..., T]`
+  (`spec.shape_unpacked`). Bug achado no caminho: o programa de sondagem antes da LLM usava `int` em
+  tudo e recusava esses casos sem chamar a LLM (9 hipóteses); corrigido em `loop._placeholder_spec`.
+- Membros de objetos: o que os auxiliares usam numa entrada repassada entra no objeto gerado
+  (`grounding._forwarding_chain`).
+- Anotação de tipo nos parâmetros da função alvo e dos auxiliares que recebem as entradas, escrita no
+  lugar sem mudar linhas (`render._annotate_inputs`). Anotação não executa no CPython; a auditoria de
+  preservação compara só o corpo.
+- Replay: `random` entra nos módulos permitidos (`verify/sandbox.py`).
+- Ideia 11 (exceções antes dos modelos em C) testada no ip_real_22 e descartada: com `stderr = None`
+  fixado e `--unwindset 2:50`, ainda estoura 500 s.
+
+Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM):
+
+- `artifacts/v2/esbmc-master-lote1full-2026-10-12` (232 hipóteses): UNSUPPORTED 141 → 130,
+  CONFIRMED 7 → 7 (nenhuma perdida), UNVALIDATED 3 → 7, SPEC_FAILED 3 → 7 (membros novos pedem tipo da
+  LLM), ESBMC_TIMEOUT 1 → 3 (os dois luigi, que antes paravam na recusa).
+- `artifacts/v2/esbmc-master-dz03-2026-10-13` (com `random` liberado): dz_real_03 CONFIRMED em 2
+  hipóteses (`bb4c66bf`, `97f127f1`): `ZeroDivisionError` na linha do gabarito, tipos preenchidos 0,
+  função preservada. Antes: `symbolic_type_excp`; destravou pela anotação de tipos.
+- Controle `artifacts/v2/esbmc-master-dz03-control-2026-10-13` (versão corrigida): sem
+  `ZeroDivisionError` (`97f127f1` dá `IndexError` e `CroniterBadCronError`; `bb4c66bf` não acha a
+  expressão, que mudou na correção).
+- **Métrica principal: 7 → 8** (dz_real_03).
+
+## Fase 13 (13 e 14/10): regras do harness a partir dos bugs na linha do gabarito
+
+**Critério novo de prioridade:** contar bugs com hipótese na linha do gabarito e que quebram
+(`at_bug_line` e `should_reach_esbmc`), não hipóteses destravadas. São 45 hipóteses em 33 bugs ainda
+não confirmados (lista em `scratchpad/alvos.tsv` da sessão). As ideias 1 e 2 do Codex (`*args`,
+função em variável) quase não tocam nesses bugs: os 9 `opfunc` do youtube_dl_4 apontam para outra linha.
+
+**Exploração por agentes (sem editar o repositório):** 5 agentes, um por grupo de barreira, editaram
+cópias dos programas gerados até o ESBMC achar a violação na linha do bug, anotando a regra geral de
+cada edição. Resultado com edições à mão: A (atributos) 6/7, B (nomes e imports) 6/8, C (erros de tipo do
+ESBMC) 7/8, D (laços e falsos negativos) 5/6, E (variados) 4/5. Também acharam cerca de 20 limitações
+novas do ESBMC master (atributo e `in` em None não checados, método de usuário chamado `remove`, `get`,
+`copy` ou `append` despachado como método de lista ou dict, `isinstance` que não distingue classes
+vazias, entre outras); falta passar para `docs/projeto/possiveis_problemas`.
+
+**Regras implementadas (todas com teste):**
+
+- `oracle.py`: `NameError: name 'x' is not defined` de nome importado de modelo parcial da stdlib
+  (`datetime` sem `timedelta`) vira membro recusado, com stub.
+- `compat.py` `cut_after_suspect` (só cópia do ESBMC): o que vem depois da instrução de topo que contém o
+  suspeito é apagado; função sem retorno anotado termina ali, com retorno anotado ganha
+  `_esbmc_end_path()` (um `__ESBMC_assume(False)` no fim dobrava o tempo de um laço no 8.5). Não vale
+  para função recursiva nem gerador.
+- `compat.py` `remove_unused`: funções, classes e métodos que nada nomeia saem (na cópia do ESBMC também
+  `__repr__`/`__str__`); roda também no grounding antes de planejar stubs, para que decoradores de
+  métodos inalcançados (`Substitution(...)`) não peçam stub.
+- `compat.py` `none_guards`: na instrução suspeita, antes do que ela avalia sempre, levanta o que o
+  CPython levanta quando o valor é None (AttributeError para atributo; TypeError para `in`, índice,
+  `len`/`int`/`float`, ordenação e aritmética). Mesma linha (`guarda; instrução` ou `if guarda and
+  bool(teste):`), sem guarda em entrada tipada como não-None nem no receptor do método.
+- `replay.py`/`replay_worker.py`: strings constantes curtas da função alvo entram no domínio de `str`
+  da reexecução.
+- Cadeias de atributos (`self.a.b.c()`): donos aninhados em `object_members`, elo intermediário sem tipo
+  vira `object`, uma classe por nível (internas primeiro), só para cadeias que saem de entrada `object`.
+- Atributo do receptor que só é chamado (`self.write(x)`) vira método stub no shell.
+
+Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM, specs gravadas de
+`full-2026-10-05-regrounded`):
+
+- `artifacts/v2/esbmc-master-lote2-alvos-2026-10-14` (45 hipóteses na linha, só as 4 primeiras regras):
+  CONFIRMED novos em oob_real_03 (`57916072238c`, IndexError no segundo `pop`, destravado pelas strings
+  constantes: a reexecução nunca sorteava `'-u'`) e oob_real_05 (`6178dac8e931`, IndexError em
+  `src_txt[-1]`, destravado pelo corte). Tipos preenchidos 0 nos dois.
+- Controle `artifacts/v2/esbmc-master-lote2-control-2026-10-14` (versão corrigida): oob_real_03 dá
+  OTHER_FAILURE (IndexError na linha 49, `stderr.split('\n')[-3]`; o `pop` da linha do bug fica em
+  `try/except IndexError`); oob_real_05 GROUNDING_FAILED (a correção troca `src_txt[-1]` por
+  `src_txt[-1:]`).
+- **Métrica principal: 8 → 10** (oob_real_03, oob_real_05).
+- `artifacts/v2/esbmc-master-lote2full-2026-10-14` (232 hipóteses, todas as regras), contra
+  `esbmc-master-lote1full-2026-10-12`: UNSUPPORTED 130 → 120, MISSING_DEPENDENCY 40 → 36, CONFIRMED 7 → 15
+  hipóteses, NOT_CONFIRMED 9 → 13, nenhuma confirmação anterior perdida. Na linha do gabarito, novos:
+  tm_real_10 (`6e9d7c84fc8b`, AttributeError em `metrics.configure_http_handler(self)`: o retorno em
+  bytes de `generate_latest()` não tem o método; destravado pelas cadeias de atributos) e ip_real_22
+  (`91509f265939`, AttributeError com `command.stderr` None). 5 PIPELINE_ERROR por um `pass` escrito
+  dentro de classe já removida pela poda (corrigido, com teste); refeitas em
+  `esbmc-master-lote2-pe-2026-10-14`: bip_luigi_18 e 19 passam a UNVALIDATED (o ESBMC acha violação),
+  dz_real_03 `330ff664aa17` CONFIRMED (IndexError, outra hipótese do mesmo bug).
+- Controle `artifacts/v2/esbmc-master-lote2full-control-2026-10-14`: tm_real_10 GROUNDING_FAILED (a
+  correção chama o método no coletor, a expressão some). ip_real_22 **não conta**: o bug do gabarito é
+  resultado errado (falta tratar `sudo`), e a quebra achada é outra (stderr None) na mesma linha.
+- **Métrica principal: 10 → 11** (tm_real_10).
+- Lote 3 (mesmo dia): guarda de divisão por zero (retirada depois: o master já checa `/` em float,
+  conferido no reprodutor descartado 21 de `possiveis_problemas`), corte também nos blocos internos (dentro de laço fica só a primeira passada,
+  subaproximação) e contêiner aninhado com 1 item (2 por nível estourava o tempo com 3 níveis).
+  `artifacts/v2/esbmc-master-lote3full-2026-10-14` (232): CONFIRMED 15 → 17 hipóteses (nm_real_06
+  ValueError e dz_real_03 IndexError, ambas fora da linha do gabarito), PIPELINE_ERROR 5 → 0, nenhuma
+  perdida. dz_real_02 passa a converter e estoura o tempo. Métrica inalterada (11).
+- **Lote 4 (14/10), objetivo: mais hipóteses chegando ao ESBMC.** Na lote3full só 49 das 232 tinham
+  veredito do ESBMC; 118 paravam em UNSUPPORTED (76 por erro de conversão do ESBMC, 42 por recusa do
+  harness), em uns 30 padrões. Regras genéricas novas, todas com teste:
+  - `grounding.py` `_hoist_nested`: alvo definido dentro de outra função é copiado para o fim do módulo;
+    os nomes que ele pega da função de fora (via `symtable`) viram parâmetros só-palavra-chave, o corpo
+    fica igual. Fica de fora quem usa `nonlocal` ou classe que pega nomes de fora. 8 das 10 hipóteses
+    aninhadas passam a ser montadas.
+  - `slicing.py` `_drop_external_decorators`: decorador de biblioteca stubada vira linha em branco
+    (`Substitution`, `Appender`, `cache_readonly`, `contextmanager`).
+  - `slicing.py` `_name_spread_arguments`: `lib.f(*a, **k)` vira `lib.f(_star0=a, _kw0=k)`; o stub ignora
+    os argumentos e os valores continuam avaliados.
+  - `grounding.py` `_inline_inherited`: membro herdado de classe base do mesmo arquivo é copiado para o
+    fim da classe do receptor (3 dos 4 casos de herança).
+  - `slicing.py` `_flatten_result_members`: `np.finfo(x).tiny` vira o stub `np.finfo__tiny(x)`.
+  - `compat.py` `rename_builtin_named_methods` (só cópia do ESBMC): método do usuário com nome de
+    método de lista, dict ou str (`get`, `pop`, `copy`, `append`, ...) vira `esbmc_<nome>`, com as
+    referências por `Classe.m`, `self.m` e o receptor do driver. Sondado no master: `get`, `pop`, `copy`,
+    `update` e `clear` dão `Dictionary variable not found`; `append`, `insert`, `sort`, `split` e
+    `replace` são tratados como os da lista ou str.
+  - `compat.py` `remove_unused`: na cópia do ESBMC, valor calculado no corpo da classe
+    (`_re = re.compile(...)`) que nada lê também sai (`Cannot infer type for class attribute`).
+  - `artifacts/v2/esbmc-master-lote4full-2026-10-14` mediu só as 3 primeiras (as outras entraram com a
+    rodada já em curso): chegam ao ESBMC 49 → 50, UNSUPPORTED 118 → 108, CONFIRMED 17 → 12. As 5
+    confirmações perdidas viraram ESBMC_TIMEOUT (dz_real_03 x3, bip_thefuck_11, oob_real_03) com a
+    máquina carregada por testes e sondas em paralelo; refeita sem carga em
+    `esbmc-master-lote5full-2026-10-14` (abaixo). As aninhadas destravadas param agora em nome que falta
+    (`Object "m" not found`, `Function "convert" not found`).
+  - `artifacts/v2/esbmc-master-lote5full-2026-10-14` (as 8 regras, sem outra carga na máquina): chegam ao
+    ESBMC 49 → 54, UNSUPPORTED 118 → 105, MISSING_DEPENDENCY 36 → 44 (aninhadas que agora param em nome
+    que falta). CONFIRMED novos: bip_matplotlib_16, bip_matplotlib_17 e io_real_01 (ZeroDivisionError
+    em `1e6 / tiny`, destravado pelo `np.finfo__tiny`), os três **fora** da linha do gabarito.
+    Perdas aparentes: av_real_01 virou UNVALIDATED por bug da regra de renomeio (o `def get` da classe
+    de objeto virou `esbmc_get`, mas não a chamada `params.get(...)` em variável anotada com a classe;
+    a remoção de não usados apagou o método). Corrigido, com teste. E 4 timeouts (oob_real_02,
+    oob_real_03, dz_real_03, bip_thefuck_11) com programas idênticos aos da lote3 (só saiu a função
+    auxiliar de divisão por zero, não usada).
+  - Recheck num processo só (`esbmc-master-lote5-recheck-2026-10-14`): av_real_01 e oob_real_02
+    CONFIRMED, dz_real_03 1 de 3 hipóteses CONFIRMED (as outras 2 estouram), bip_thefuck_11 estoura.
+    Esses casos ficam perto dos 180 s e oscilam entre rodadas; nenhuma perda por regra. **Métrica: 11.**
+- **Agente LLM pela API do Claude (15/10).** `verify/llm_client.py` ganhou o backend `anthropic`
+  (Messages API, sem `thinking` explícito; resposta cortada em `max_tokens` vira erro), e
+  `v2_orchestrate.py` a opção `--api-agent-everywhere` (todo caso sem veredito formal vai ao
+  `api_agent`; a rota normal manda quase tudo ao Claude Code, que usa a assinatura). O agente grava os
+  tokens de cada chamada em `llm_usage.jsonl`. Alvo: 39 hipóteses na linha do gabarito, em 37 bugs fora
+  da métrica, sem veredito formal na lote5 (`agent_targets.json`).
+  - Piloto `artifacts/v2/agent-anthropic-pilot-2026-10-14` (5 casos, `claude-sonnet-5-5`, ESBMC master):
+    33 chamadas, **US$ 0,79** (US$ 2 / 10 por milhão de tokens). 1 veredito novo (ESBMC_MISSED), 1
+    timeout, 3 ainda recusados pelo ESBMC depois das 8 rodadas. Depois disso as notas do agente
+    (`verify/esbmc_python_notes.md`) ganharam as armadilhas medidas no master (nomes de método de
+    lista ou dict, `**kwargs`, atributo de resultado de stub, função aninhada, valor de classe calculado).
+  - Rodada `artifacts/v2/agent-anthropic-lote5-2026-10-15/part{0,1,2}` (39 hipóteses, 3 processos):
+    240 chamadas, **US$ 11,96** (o dobro da estimativa). Final: UNSUPPORTED 18, AGENT_FAILED 5 (harness
+    que não parseia ou sem o alvo), ESBMC_MISSED 4, CONFIRMED 3, MISSING_DEPENDENCY 2, OTHER_FAILURE 2,
+    UNVALIDATED 2, ESBMC_TIMEOUT 2, NOT_CONFIRMED 1. Das 3 confirmações:
+    - **oob_real_10** (`554b072a0396`, `_wrap_text_to_colwidths`): IndexError em `list_of_lists[0]` com
+      a lista vazia, como no gabarito; corpo do alvo intacto. Controle à mão: o mesmo harness com o
+      corpo da versão corrigida (`if len(list_of_lists): ... else: num_cols = 0`) roda sem erro no
+      CPython. **Conta: métrica 11 → 12**, a primeira pela camada do agente.
+    - ip_real_21 (`2629816a29ef`) **não conta**: o gabarito espera KeyError; o TypeError vem de
+      `len(that)` numa classe `Other` que o agente inventou sem `__len__`.
+    - bip_pandas_10 (`2f90e86be25f`) **não conta**: o bug do gabarito é resultado errado.
+  - Falta automatizar o controle do agente na versão corrigida (hoje feito à mão) e barrar stubs
+    inventados que causam a própria exceção (caso ip_real_21).
+- **15/10, as duas checagens automatizadas** (`verify/agent_arm.py`, sem custo de API):
+  - `STUB_INDUCED`: a confirmação cai quando a exceção nasce dentro de uma classe ou função que só
+    existe no harness (o replay agora guarda a mensagem e a linha mais interna do traceback) ou quando a
+    mensagem nomeia uma classe inventada (`object of type 'Other' has no len()`).
+  - `FIXED_ALSO_FAILS` (só avaliação): o alvo é trocado pela versão de `--fixed-sources`
+    (padrão `dataset/bugs_reais/arquivo_corrigido`, vazio no modo scan) e reexecutado com as mesmas
+    entradas da quebra; se a função corrigida levanta a mesma exceção, a confirmação cai.
+  - Re-checagem das 3 confirmações da rodada acima (harness salvo, ESBMC master, sem LLM):
+    oob_real_10 continua CONFIRMED, controle `not_reproduced`; bip_pandas_10 vira STUB_INDUCED
+    (`TypeError raised inside the stub ndarray.__len__`); ip_real_21 dá UNVALIDATED com as flags
+    `--no-pointer-check --no-align-check`, e a regra da mensagem o barraria. Métrica segue 12.
+  - Suíte rápida: 791 passed.
+- **15/10, passo 3: braço `llm_input`** (`verify/llm_input.py`, rota `solver` = dynamic → llm_input →
+  pinned). Quando a busca no CPython não acha a quebra, o LLM propõe a sequência de valores nondet; ela
+  só vale se o replay do código original, com exatamente esses valores, quebra na expressão suspeita
+  (até 3 rodadas, com o resultado do replay como retorno). O pinned usa a entrada da busca ou do LLM.
+  - OpenAI sem crédito (`credit_balance_exhausted`) em 15/10: braço não rodou com LLM ainda.
+  - Parte gratuita nos 11 ESBMC_TIMEOUT de `esbmc-master-lote5full-2026-10-14`
+    (`artifacts/v2/llm-input-timeouts-2026-10-15/free`, `--arms dynamic,pinned --timeout 180`):
+    7 FUZZ_FOUND, 6 viram CONFIRMED pelo pinned (dz_real_03 ×3, oob_real_02, oob_real_03,
+    bip_thefuck_11); na linha do gabarito: dz_real_03, oob_real_02, oob_real_03, já contados.
+    dz_real_02 quebra na linha do gabarito no CPython, mas o pinned estoura 180 s, e também 900 s
+    (`dz02_t900`): fica como evidência dinâmica, sem prova formal.
+  - Sobram para o LLM: bip_scrapy_18 e nm_real_25 (busca não achou nada), oob_real_06 e um dz_real_03
+    (busca achou outra exceção).
+  - Rodada com LLM via Codex CLI (OpenAI sem crédito; Codex cobra no plano, não por token):
+    `artifacts/v2/llm-input-timeouts-2026-10-15/codex`, `--arms dynamic,llm_input,pinned --api-backend codex`,
+    4 casos, 11 propostas. **0 quebras na linha**: 6 propostas vazias ou curtas demais, 3 rodam sem erro,
+    2 levantam outra exceção (KeyError em oob_real_06, ZeroDivisionError em outra linha do dz_real_03).
+    Causa no nm_real_25: o harness dá a `start_line` uma classe que sempre tem `method`, então o
+    AttributeError da hipótese não existe para nenhuma entrada; o limite é o modelo do objeto, não o valor.
+    **Métrica segue 12.**
+  - Suíte rápida: 794 passed.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
