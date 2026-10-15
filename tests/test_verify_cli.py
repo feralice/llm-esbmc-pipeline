@@ -65,7 +65,7 @@ def test_verify_engine_verifies_detected_hypotheses_on_the_full_source(tmp_path:
     report = json.loads((out / "v2_verify_report.json").read_text(encoding="utf-8"))
     assert report["verification"]["by_verdict"]["CONFIRMED"] == 1
     assert report["results"][0]["hypothesis"]["file"] == str(detection)
-    assert "def helper(v):" in seen["source"]
+    assert "def helper(v: int):" in seen["source"]
 
 
 def test_verification_source_falls_back_to_the_detection_file(tmp_path: Path) -> None:

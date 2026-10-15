@@ -38,6 +38,22 @@ simplify until ESBMC converts the program.
 - `re.match` with a pattern of at most one character always returns a match in ESBMC's model.
 - `sys.exit` is replaced by `assert(false)`: stub `sys` with an `exit` that ends the path.
 
+## More traps, measured on the ESBMC master (333d07cc8a, 2026-10-14)
+- Methods of your own classes named `get`, `pop`, `copy`, `update`, `clear` give `Dictionary variable
+  not found`; `append`, `insert`, `remove`, `sort`, `split`, `replace` run the list/str model instead.
+  Rename such methods in your stubs and classes (e.g. `esbmc_get`) together with their call sites
+  outside the target function.
+- A parameter `**kwargs` is never accepted (`Variable 'kwargs' is not defined`), nor `*args` on a
+  method or constructor: give stubs and constructors explicit parameters with defaults.
+- `lib.f(x).attr` on a stub result cannot be resolved: make `f` return an instance of a small class
+  that declares `attr` with a type annotation, or give the attribute its own stub function.
+- A function nested in another one cannot be the entry point: copy it to module level and turn the
+  names it took from the outer function into parameters.
+- A class attribute computed by a call (`_re = re.compile(...)`) that nothing reads breaks type
+  inference: delete it.
+- A decorator from a stubbed library: remove it.
+- Float division by zero is checked; reading an attribute of None is not.
+
 ## When it cannot work
 If the error comes from the function body itself (`x.__dict__`, `type(x).__name__`, `*args`/`**kwargs`,
 `"%d" % value`, `sorted(..., key=...)` over a non-constant list, `async`), no harness fixes it without

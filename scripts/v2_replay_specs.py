@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import sys
 from collections import Counter
 from pathlib import Path
@@ -59,7 +60,7 @@ class RecordedSpecs:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("report", help="v2_verify_report.json of a finished run")
-    parser.add_argument("--esbmc", default="esbmc")
+    parser.add_argument("--esbmc", default="esbmc", help="binary plus flags, one string: 'esbmc --no-pointer-check --no-align-check'")
     parser.add_argument("--timeout", type=int, default=60)
     parser.add_argument("--sources", default="dataset/bugs_reais/arquivo_com_bug")
     parser.add_argument("--out", required=True)
@@ -84,7 +85,7 @@ def main() -> int:
         source = path.read_text(encoding="utf-8", errors="replace")
         llm = RecordedSpecs([a["spec"] for a in item["attempts"] if "spec" in a])
         try:
-            data = verify_hypothesis(h, llm=llm, source=source, esbmc_command=[args.esbmc], bound=bound,
+            data = verify_hypothesis(h, llm=llm, source=source, esbmc_command=shlex.split(args.esbmc), bound=bound,
                                      timeout_seconds=args.timeout, work_dir=out / "programs").to_dict()
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
             data = {"verdict": "PIPELINE_ERROR", "reason": f"{type(exc).__name__}: {exc}", "transforms": []}

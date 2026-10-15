@@ -24,6 +24,7 @@ _NOT_YET = re.compile(r"([\w.]+)\.(\w+) is not yet supported by ESBMC")
 _OBJECT = re.compile(r'Object "(\w+)" not found')
 _MEMBER = re.compile(r"Module member '(\w+)' not found in module '([\w.]+)'")
 _BASE = re.compile(r"Base class not found: (\w+)")
+_NAME = re.compile(r"NameError: name '(\w+)' is not defined")
 
 
 def _defined(tree: ast.Module) -> set[str]:
@@ -39,6 +40,7 @@ def refusals(diagnostics: str, source: str) -> set[str]:
     found = {m.split(".")[0] for m in _MODULE.findall(diagnostics)}
     found |= {modules[name].split(".")[0] for name in _OBJECT.findall(diagnostics) if name in modules}
     found |= {f"{module}.{member}" for member, module in _MEMBER.findall(diagnostics)}
+    found |= {members[name] for name in _NAME.findall(diagnostics) if name in members}
     for base in _BASE.findall(diagnostics):
         if base in members:
             found.add(members[base])

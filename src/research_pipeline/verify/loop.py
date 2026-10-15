@@ -30,7 +30,7 @@ from .outcome import (
 )
 from .render import DRIVER, Program, RenderError, render_program
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
-from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, spec_problems
+from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, shape_unpacked, spec_problems
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
 STRATEGIES = ("repair", "resample")
@@ -92,8 +92,9 @@ def _user_prompt(grounded: Grounded, previous: str, feedback: str) -> str:
 
 def _placeholder_spec(grounded: Grounded) -> InputSpec:
     params, attrs = resolved_types(InputSpec({}, {}, ()), grounded)
-    return InputSpec({n: "int" for n, t in params.items() if not t}, {n: "int" for n, t in attrs.items() if not t},
-                     (), {key: "int" for key in grounded.stub_keys})
+    return shape_unpacked(InputSpec({n: "int" for n, t in params.items() if not t},
+                                    {n: "int" for n, t in attrs.items() if not t},
+                                    (), {key: "int" for key in grounded.stub_keys}), grounded)
 
 
 def _with_line_context(message: str, program: Program) -> str:
@@ -166,7 +167,7 @@ def verify_hypothesis(
         result.attempts.append(record)
         previous = reply.harness
         try:
-            spec = parse_spec(reply.harness)
+            spec = shape_unpacked(parse_spec(reply.harness), grounded)
             problems = spec_problems(spec, grounded)
         except ValueError as exc:
             problems = [str(exc)]

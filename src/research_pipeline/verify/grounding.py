@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import ast
+import copy
+import dataclasses
+import symtable
 from dataclasses import dataclass, field
 
 from .astutil import expression_nodes, find_function
+from .compat import remove_unused
 from .context import context_module
 from .hypothesis import BugHypothesis
 from .slicing import (
@@ -48,6 +52,13 @@ class Grounded:
     unpacked_inputs: dict[str, int] = field(default_factory=dict)
     # Non-empty when the entry point has a shape the driver cannot call.
     unsupported: str = ""
+    # The module also constructs the class with arguments: its real __init__ stays and the shell
+    # becomes a subclass.
+    receiver_subclass: bool = False
+    # Receiver attributes only ever called: stub methods in the shell, typed by their return value.
+    called_attrs: dict[str, CallShape] = field(default_factory=dict)
+    # (input, helper, helper parameter) for each helper an input is passed on to.
+    forwarded: tuple[tuple[str, str, str], ...] = ()
 
     @property
     def stub_keys(self) -> tuple[str, ...]:
@@ -64,6 +75,11 @@ class GroundingFailure:
     reason: str
     # True when the hypothesis is real but its entry point has an unsupported shape.
     unsupported: bool = False
+
+
+def _constructed_with_args(module: str, class_name: str) -> bool:
+    return any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == class_name
+               and (n.args or n.keywords) for n in ast.walk(ast.parse(module)))
 
 
 def _self_attribute(node: ast.AST) -> str | None:
@@ -162,13 +178,64 @@ def _receiver_attrs(cls: ast.ClassDef, method: str) -> tuple[str, ...]:
     return tuple(sorted(_loaded_self_attrs(cls, method) - values))
 
 
+def _called_attrs(cls: ast.ClassDef, method: str, attrs: tuple[str, ...]) -> dict[str, CallShape]:
+    """Receiver attributes the reachable methods only call (``self.write(x)``): methods the class
+    inherits from a library base, so the shell gives them a stub method, not a field."""
+    methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    calls: dict[str, CallShape] = {}
+    values: set[str] = set()
+    for name in _reachable_methods(cls, method, _replaced_properties(cls, method)):
+        parents = {id(c): n for n in ast.walk(methods[name]) for c in ast.iter_child_nodes(n)}
+        for node in ast.walk(methods[name]):
+            attr = _self_attribute(node)
+            if attr not in attrs:
+                continue
+            parent = parents.get(id(node))
+            shape = _shape(parent) if isinstance(parent, ast.Call) and parent.func is node else None
+            if shape is None:
+                values.add(attr)
+            else:
+                calls[attr] = _merge(calls.get(attr), shape)
+    return {attr: shape for attr, shape in calls.items() if attr not in values}
+
+
 def _inherited_reads(tree: ast.Module, cls: ast.ClassDef, method: str) -> set[str]:
     inherited = set()
     for base in cls.bases:
         base_cls = _class_of(tree, base.id) if isinstance(base, ast.Name) else None
         if base_cls is not None:
             inherited |= _class_level_values(base_cls)
-    return _loaded_self_attrs(cls, method) & inherited
+    return (_loaded_self_attrs(cls, method) & inherited) - _class_level_values(cls)
+
+
+def _inline_inherited(source: str, tree: ast.Module, cls: ast.ClassDef, names: set[str]) -> str | None:
+    """Copy the base-class definitions of ``names`` (and of the base members they read in turn)
+    to the end of ``cls``, re-indented: the receiver then owns them and the base stays as it is.
+    Inserted after the class, so the target's line numbers do not move."""
+    lines = source.splitlines()
+    copied: list[str] = []
+    pending, seen = sorted(names), set()
+    while pending:
+        name = pending.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        for base in (b for b in cls.bases if isinstance(b, ast.Name)):
+            base_cls = _class_of(tree, base.id)
+            nodes = [n for n in base_cls.body if (isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == name)
+                     or (isinstance(n, ast.Assign) and name in _defined_by(n))] if base_cls else []
+            if not nodes:
+                continue
+            shift = cls.body[0].col_offset - nodes[0].col_offset
+            for node in nodes:
+                first = min([node.lineno, *(d.lineno for d in getattr(node, "decorator_list", []))])
+                text = lines[first - 1:node.end_lineno]
+                copied += ["", *((" " * shift + line) if shift >= 0 else line[-shift:] for line in text)]
+                pending += [a for a in (_self_attribute(n) for n in ast.walk(node)) if a]
+            break
+    if not copied:
+        return None
+    return "\n".join([*lines[:cls.end_lineno], *copied, *lines[cls.end_lineno:]]) + "\n"
 
 
 def _members(scopes: list[ast.AST], owner_of) -> dict[str, dict[str, CallShape | None]]:
@@ -188,14 +255,68 @@ def _members(scopes: list[ast.AST], owner_of) -> dict[str, dict[str, CallShape |
     return found
 
 
+def _forwarded(function: ast.FunctionDef, params: set[str], methods: dict[str, ast.FunctionDef],
+               functions: dict[str, ast.FunctionDef]) -> list[tuple[str, ast.FunctionDef, str]]:
+    """(caller input, callee, callee parameter) for each input passed on to a method or module function."""
+    found = []
+    for node in ast.walk(function):
+        if not isinstance(node, ast.Call):
+            continue
+        name = _self_attribute(node.func)
+        callee = methods.get(name) if name else (
+            functions.get(node.func.id) if isinstance(node.func, ast.Name) else None)
+        if callee is None:
+            continue
+        names = [a.arg for a in [*callee.args.posonlyargs, *callee.args.args]][1 if name else 0:]
+        bound = [*zip(names, node.args), *((k.arg, k.value) for k in node.keywords if k.arg)]
+        found += [(value.id, callee, param) for param, value in bound
+                  if isinstance(value, ast.Name) and value.id in params]
+    return found
+
+
+def _forwarding_chain(cls: ast.ClassDef | None, function: ast.FunctionDef, params: list[str],
+                      functions: dict[str, ast.FunctionDef]) -> list[tuple[str, ast.FunctionDef, str]]:
+    """(input, callee, callee parameter) for every helper an input reaches, following calls to a fixpoint."""
+    methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))} if cls else {}
+    chain, pending, seen = [], [(p, function, p) for p in params], set()
+    while pending:
+        owner, scope, name = pending.pop()
+        for _, callee, param in _forwarded(scope, {name}, methods, functions):
+            if (owner, callee.name, param) not in seen:
+                seen.add((owner, callee.name, param))
+                chain.append((owner, callee, param))
+                pending.append((owner, callee, param))
+    return chain
+
+
+_MAX_CHAIN = 3
+
+
+def _rooted(node: ast.AST, is_root) -> str | None:
+    """``node`` as text when it is an input (``is_root``) or a chain of up to _MAX_CHAIN attributes on
+    one: ``self.a.b`` owns the members read on it, like ``self.a`` does."""
+    current, depth = node, 0
+    while not is_root(current):
+        if not isinstance(current, ast.Attribute) or depth == _MAX_CHAIN:
+            return None
+        current, depth = current.value, depth + 1
+    return ast.unparse(node)
+
+
 def _object_members(cls: ast.ClassDef | None, function: ast.FunctionDef, params: list[str],
-                    attrs: tuple[str, ...]) -> dict[str, dict[str, CallShape | None]]:
-    members = _members([function], lambda v: v.id if isinstance(v, ast.Name) and v.id in params else None)
+                    attrs: tuple[str, ...], chain: list[tuple[str, ast.FunctionDef, str]],
+                    ) -> dict[str, dict[str, CallShape | None]]:
+    members = _members([function], lambda v: _rooted(v, lambda n: isinstance(n, ast.Name) and n.id in params))
+    # Members the helpers an input is passed to use on it belong to the same object.
+    for owner, callee, param in chain:
+        used = _members([callee], lambda v, p=param: p if isinstance(v, ast.Name) and v.id == p else None)
+        for attr, shape in used.get(param, {}).items():
+            previous = members.setdefault(owner, {}).get(attr)
+            members[owner][attr] = _merge(previous, shape) if shape is not None else previous
     if cls is not None and attrs:
         methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
         scopes = [methods[name] for name in _reachable_methods(cls, function.name)]
-        members.update(_members(scopes, lambda v: f"self.{_self_attribute(v)}"
-                                if _self_attribute(v) in attrs else None))
+        members.update(_members(scopes, lambda v: _rooted(v, lambda n: _self_attribute(n) in attrs)))
     return members
 
 
@@ -274,20 +395,78 @@ def _unpacked_inputs(function: ast.FunctionDef, params: set[str], attrs: set[str
     return {key: count for key, count in found.items() if key not in conflicting}
 
 
-def _nested_in_function(tree: ast.Module, qualified: str) -> bool:
-    """``outer.Inner.method`` or ``outer.inner``: the LLM located it, but it only exists once outer runs."""
-    *containers, target = qualified.split(".")
-    scope: list[ast.stmt] = tree.body
-    inside_function = False
-    for name in containers:
+def _nested_chain(tree: ast.Module, qualified: str) -> list[ast.AST] | None:
+    """``outer.Inner.method`` or ``outer.inner``: the nodes along the name, when one of them sits
+    inside a function (the LLM located it, but it only exists once outer runs)."""
+    chain, scope = [], tree.body
+    for name in qualified.split("."):
         found = [n for n in scope if isinstance(n, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
                  and n.name == name]
         if len(found) != 1:
-            return False
-        inside_function = inside_function or not isinstance(found[0], ast.ClassDef)
+            return None
+        chain.append(found[0])
         scope = found[0].body
-    return inside_function and any(
-        isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == target for n in scope)
+    if not isinstance(chain[-1], (ast.FunctionDef, ast.AsyncFunctionDef)):
+        return None
+    inside = any(not isinstance(n, ast.ClassDef) for n in chain[:-1])
+    return chain if inside else None
+
+
+def _free_names(table: symtable.SymbolTable) -> set[str]:
+    """Names the scope and those nested in it take from an enclosing function."""
+    free = {s.get_name() for s in table.get_symbols() if s.is_free()}
+    inner = set().union(*(_free_names(child) for child in table.get_children()))
+    if table.get_type() == "function":
+        inner -= set(table.get_locals())
+    return (free | inner) - {"__class__"}
+
+
+def _table_of(table: symtable.SymbolTable, node: ast.AST) -> symtable.SymbolTable | None:
+    for child in table.get_children():
+        if child.get_name() == node.name and child.get_lineno() == node.lineno:
+            return child
+        found = _table_of(child, node)
+        if found is not None:
+            return found
+    return None
+
+
+def _hoist_nested(tree: ast.Module, source: str, h: BugHypothesis) -> tuple[str, BugHypothesis] | None:
+    """Copy the outermost definition that lives inside a function to the end of the module, the
+    names it takes from the enclosing function becoming keyword-only parameters; the body stays
+    verbatim. A class taking names from its function, or code using ``nonlocal``, is left alone."""
+    chain = _nested_chain(tree, h.function)
+    if chain is None:
+        return None
+    index = next(i for i, n in enumerate(chain) if i and not isinstance(chain[i - 1], ast.ClassDef))
+    node = chain[index]
+    if any(isinstance(n, ast.Nonlocal) for n in ast.walk(node)) or any(
+            getattr(n, "name", None) == node.name for n in tree.body):
+        return None
+    table = _table_of(symtable.symtable(source, "module", "exec"), node)
+    # A recursive function names itself through the enclosing scope; hoisted, the name is global.
+    free = sorted(_free_names(table) - {node.name}) if table is not None else None
+    if free is None or (free and not isinstance(node, ast.FunctionDef)):
+        return None
+    lines = source.splitlines()
+    first = min([node.lineno, *(d.lineno for d in node.decorator_list)])
+    text = [line[node.col_offset:] for line in lines[first - 1:node.end_lineno]]
+    if free:
+        header = copy.copy(node)
+        header.args = copy.copy(node.args)
+        header.args.kwonlyargs = [*node.args.kwonlyargs, *(ast.arg(name) for name in free)]
+        header.args.kw_defaults = [*node.args.kw_defaults, *([None] * len(free))]
+        header.body, header.decorator_list = [ast.Pass()], []
+        signature = ast.unparse(header).splitlines()[0]
+        head = node.body[0].lineno - node.lineno
+        if head < 1:
+            return None
+        text[node.lineno - first:node.lineno - first + head] = [signature, *([""] * (head - 1))]
+    start = len(lines) + 3
+    hoisted = "\n".join([*lines, "", "", *text]) + "\n"
+    line = h.line - first + start if first <= h.line <= node.end_lineno else 0
+    name = ".".join(n.name for n in chain[index:])
+    return hoisted, dataclasses.replace(h, function=name, line=line)
 
 
 def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset()) -> Grounded | GroundingFailure:
@@ -300,7 +479,14 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
         name = h.function.split(".")[-1]
         if any(isinstance(n, ast.AsyncFunctionDef) and n.name == name for n in ast.walk(tree)):
             return GroundingFailure("async entry point is not supported", unsupported=True)
-        if _nested_in_function(tree, h.function):
+        hoisted = _hoist_nested(tree, source, h)
+        if hoisted is not None:
+            grounded = ground(hoisted[1], hoisted[0], refused)
+            if isinstance(grounded, Grounded):
+                return dataclasses.replace(grounded, transforms=(f"nested_entry_hoisted:{h.function}",
+                                                                 *grounded.transforms))
+            return grounded
+        if _nested_chain(tree, h.function):
             return GroundingFailure("entry point is nested inside a function; the harness cannot call it",
                                     unsupported=True)
         return GroundingFailure(f"function {h.function!r} not found (or ambiguous)")
@@ -326,23 +512,42 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
     problem = _entry_shape_problem(function, entry)
     if not problem and entry == "method":
         inherited = _inherited_reads(tree, cls, function.name)
+        inlined = _inline_inherited(source, tree, cls, inherited) if inherited else None
+        if inlined is not None:
+            grounded = ground(h, inlined, refused)
+            if isinstance(grounded, Grounded):
+                return dataclasses.replace(grounded, transforms=(
+                    "inherited_members_inlined:" + ",".join(sorted(inherited)), *grounded.transforms))
+            return grounded
         if inherited:
             problem = f"receiver reads inherited member(s): {', '.join(sorted(inherited))}"
     receiver_attrs = _receiver_attrs(cls, function.name) if entry == "method" else ()
     stripped, transforms = (source, ()) if problem else _strip_decorators(source, function)
     module, plan = context_module(stripped, h.function), ExternalPlan()
+    subclass = False
     if module and not problem:
         transforms = list(transforms)
         if cls is not None:
             # Only a method gets a shell; every other entry keeps the real constructor.
             replaced = _replaced_properties(cls, function.name) if entry == "method" else set()
-            module, pruned = prune_class(module, cls.name, _reachable_methods(cls, function.name, replaced),
-                                         drop_init=entry == "method", properties=replaced)
-            transforms += pruned
+            subclass = entry == "method" and _constructed_with_args(module, cls.name)
+            if subclass and any(isinstance(n, ast.FunctionDef) and n.name == "__new__" for n in cls.body):
+                problem = "the target builds its own class, which defines __new__; the receiver cannot subclass it"
+            reachable = _reachable_methods(cls, function.name, replaced)
+            if subclass and "__init__" in {n.name for n in cls.body if isinstance(n, ast.FunctionDef)}:
+                reachable |= _reachable_methods(cls, "__init__", replaced)
+            module, pruned = prune_class(module, cls.name, reachable,
+                                         drop_init=entry == "method" and not subclass, properties=replaced)
+            transforms += [*pruned, "receiver_subclass"] if subclass else pruned
             module = reslice(module, h.function)
+        # Before planning stubs: an unreached method's decorators would otherwise need stubs too.
+        module, unused = remove_unused(module, h.function, display=False)
+        transforms += unused
         module, plan, stubbed = stub_imports(module, refused)
         transforms += stubbed
-        problem = plan.problem
+        problem = problem or plan.problem
+    chain = _forwarding_chain(cls, function, [p.name for p in params],
+                              {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)})
     return Grounded(
         hypothesis=h,
         class_name=cls.name if cls else None,
@@ -357,8 +562,10 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
         function_start=function.lineno,
         transforms=tuple(transforms),
         externals=plan,
-        object_members=_object_members(cls if receiver_attrs else None, function, [p.name for p in params],
-                                       receiver_attrs),
+        object_members=_object_members(cls, function, [p.name for p in params], receiver_attrs, chain),
+        forwarded=tuple((owner, callee.name, param) for owner, callee, param in chain),
         unpacked_inputs=_unpacked_inputs(function, {p.name for p in params}, set(receiver_attrs)),
         unsupported=problem,
+        receiver_subclass=subclass,
+        called_attrs=_called_attrs(cls, function.name, receiver_attrs) if receiver_attrs else {},
     )

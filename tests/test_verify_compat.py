@@ -1,6 +1,13 @@
 import ast
 
-from research_pipeline.verify.compat import rewrite_compat
+from research_pipeline.verify.compat import (
+    NONE_GUARDS,
+    cut_after_suspect,
+    none_guards,
+    remove_unused,
+    rename_builtin_named_methods,
+    rewrite_compat,
+)
 from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 
@@ -94,3 +101,185 @@ def test_alias_of_static_or_variadic_method_is_left_alone():
     )
     rewritten, transforms = rewrite_compat(source)
     assert rewritten == source and transforms == []
+
+
+CUT = '''def helper(x):
+    return x.missing_in_esbmc()
+
+
+def f(xs, n):
+    total = 0
+    if n > 0:
+        total = xs[n]
+    other = helper(xs)
+    return other
+
+
+def _esbmc_main() -> None:
+    f([1], 2)
+'''
+
+
+def test_code_after_the_suspect_statement_is_cut_and_its_helpers_go():
+    cut, transforms = cut_after_suspect(CUT, "f", ((8, 8),))
+    cut, removed = remove_unused(cut, "f")
+    lines = cut.splitlines()
+    assert lines[7] == "        total = xs[n]"
+    assert lines[8] == "    pass" and lines[9] == "" and len(lines) == len(CUT.splitlines())
+    assert "helper" not in cut
+    assert transforms == ["cut_after_suspect:2"] and removed == ["unused_definitions_removed:helper"]
+
+
+def test_an_annotated_return_ends_the_path_instead_of_falling_off():
+    cut, _ = cut_after_suspect(CUT.replace("def f(xs, n):", "def f(xs, n) -> int:"), "f", ((8, 8),))
+    lines = cut.splitlines()
+    assert lines[8] == "    _esbmc_end_path()"
+    assert lines[len(CUT.splitlines()):] == ["", "", "def _esbmc_end_path() -> None:", "    __ESBMC_assume(False)"]
+
+
+def test_no_cut_for_a_recursive_function_a_generator_or_a_last_statement():
+    recursive = CUT.replace("other = helper(xs)", "other = f(xs, n - 1)")
+    generator = CUT.replace("other = helper(xs)", "other = yield xs")
+    for source in (recursive, generator):
+        assert cut_after_suspect(source, "f", ((8, 8),)) == (source, [])
+    assert cut_after_suspect(CUT, "f", ((10, 10),)) == (CUT, [])
+
+
+GUARDED = '''def f(node, key, table, count):
+    node.next.prev = table[key] if key in table else count + 1
+    return node
+'''
+
+
+def _raised(source, *args):
+    namespace = {}
+    exec(source, namespace)
+    try:
+        namespace["f"](*args)
+    except Exception as exc:  # noqa: BLE001
+        return type(exc).__name__
+    return None
+
+
+def test_none_guards_raise_what_cpython_raises_before_the_suspect():
+    guarded, transforms = none_guards(GUARDED, "f", ((2, 2),))
+    assert transforms == ["none_guards:3"]
+    assert guarded.splitlines()[1] == ("    _esbmc_none_attribute(node is None); _esbmc_none_attribute(node.next is None); "
+                                       "_esbmc_none_type(table is None); node.next.prev = "
+                                       "table[key] if key in table else count + 1")
+    assert "key is None" not in guarded and "count is None" not in guarded  # only one branch runs
+
+    class Node:
+        next = None
+
+    linked = Node()
+    linked.next = Node()
+    guarded = "\n".join(NONE_GUARDS) + "\n" + guarded
+    for args in [(None, 1, {}, 0), (Node(), 1, {}, 0), (linked, 1, None, 0), (linked, 1, {}, None),
+                 (linked, 1, {1: 2}, None), (linked, 1, {}, 3)]:
+        assert _raised(guarded, *args) == _raised(GUARDED, *args), args
+
+
+def test_an_if_test_gets_its_guards_inside_and_keeps_its_line():
+    source = "def f(x, n):\n    if '//' in x.url and\\\n            n > 0:\n        return 1\n    return 0\n"
+    guarded, transforms = none_guards(source, "f", ((2, 2),))
+    assert transforms == ["none_guards:2"] and len(guarded.splitlines()) == len(source.splitlines())
+    assert guarded.splitlines()[1] == ("    if _esbmc_none_attribute(x is None) and _esbmc_none_type(x.url is None) and "
+                                       "bool('//' in x.url and\\")
+    assert guarded.splitlines()[2] == "            n > 0):"
+
+
+def test_operands_that_short_circuit_may_skip_get_no_guard():
+    source = "def f(x, y):\n    return x and x.a + len(y)\n"
+    assert none_guards(source, "f", ((2, 2),)) == (source, [])
+
+
+def test_a_methods_receiver_gets_no_guard_but_its_attributes_do():
+    source = "class K:\n    @classmethod\n    def m(cls, x):\n        return cls.a.b + x.c\n"
+    guarded, _ = none_guards(source, "K.m", ((4, 4),))
+    assert guarded.splitlines()[3] == (
+        "        _esbmc_none_attribute(cls.a is None); _esbmc_none_type(cls.a.b is None); "
+        "_esbmc_none_attribute(x is None); _esbmc_none_type(x.c is None); return cls.a.b + x.c")
+
+
+def test_unreached_methods_and_display_dunders_leave_the_esbmc_copy():
+    source = """class Offset:
+    def __init__(self, n):
+        self.n = n
+
+    def __repr__(self):
+        return '<%s>' % self.__class__.__name__
+
+    def __eq__(self, other):
+        return self.n == other.n
+
+    def unused(self):
+        return self.helper()
+
+    def helper(self):
+        return 1
+
+
+def f(n):
+    return Offset(n) == Offset(1)
+"""
+    pruned, transforms = remove_unused(source, "f")
+    assert transforms == ["unused_definitions_removed:__repr__,helper,unused"]
+    assert "__eq__" in pruned and "__init__" in pruned and "__class__" not in pruned
+    assert len(pruned.splitlines()) == len(source.splitlines())
+
+
+def test_a_removed_class_whose_methods_also_go_leaves_valid_code():
+    source = "class Unused:\n    def m(self):\n        return 1\n\n\nclass Kept:\n    def m(self):\n        return 2\n\n\ndef f():\n    return Kept\n"
+    pruned, _ = remove_unused(source, "f")
+    ast.parse(pruned)
+    assert "Unused" not in pruned and pruned.splitlines()[6] == "    pass"
+
+
+def test_inside_a_loop_the_path_ends_after_the_suspect():
+    source = ("def f(rows):\n    out = []\n    for row in rows:\n        out.append(1 / row)\n"
+              "        best = min(enumerate(out))\n    return out\n")
+    cut, transforms = cut_after_suspect(source, "f", ((4, 4),))
+    lines = cut.splitlines()
+    assert lines[4] == "        _esbmc_end_path()" and lines[5] == "    pass"
+    assert transforms == ["cut_after_suspect:2"] and "enumerate" not in cut
+
+
+def test_user_methods_named_like_container_methods_are_renamed_with_their_references():
+    source = ("class Codes:\n    @staticmethod\n    def get(a: int) -> int:\n        return 10 // a\n\n\n"
+              "class Bag:\n    def append(self, x: int) -> int:\n        return Codes.get(x)\n\n"
+              "    def go(self, x: int) -> int:\n        self.items.append(x)\n        return self.append(x)\n\n\n"
+              "def _esbmc_main() -> None:\n    _receiver = Bag()\n    _receiver.append(1)\n")
+    renamed, target, transforms = rename_builtin_named_methods(source, "Bag.append")
+    assert target == "Bag.esbmc_append"
+    assert "    def esbmc_get(a: int) -> int:" in renamed and "return Codes.esbmc_get(x)" in renamed
+    assert "    def esbmc_append(self, x: int) -> int:" in renamed and "return self.esbmc_append(x)" in renamed
+    assert "        self.items.append(x)\n" in renamed
+    assert "    _receiver.esbmc_append(1)\n" in renamed
+    assert transforms == ["builtin_named_methods_renamed:append,get"]
+    namespace = {}
+    exec(renamed.split("def _esbmc_main")[0], namespace)
+    assert namespace["Codes"].esbmc_get(5) == 2
+
+
+def test_classes_without_builtin_named_methods_are_untouched():
+    source = "class A:\n    def run(self) -> int:\n        return 1\n"
+    assert rename_builtin_named_methods(source, "A.run") == (source, "A.run", [])
+
+
+def test_a_computed_class_value_nothing_reads_leaves_the_esbmc_copy():
+    source = ("import re\n\n\nclass P:\n    _unused = re.compile('x')\n    _used = re.compile('y')\n    LIMIT = 3\n\n"
+              "    def go(self, n: int) -> int:\n        self._used.match('y')\n        return n // self.LIMIT\n")
+    pruned, transforms = remove_unused(source, "P.go")
+    assert "_unused" not in pruned and "_used = re.compile('y')" in pruned and "LIMIT = 3" in pruned
+    assert transforms == ["unused_definitions_removed:_unused"]
+    assert remove_unused(source, "P.go", display=False) == (source, [])
+
+
+def test_a_call_on_a_variable_annotated_with_the_class_is_renamed_too():
+    source = ("class _Obj_params:\n    def get(self, a0=None) -> bool:\n        return True\n\n\n"
+              "def f(params: _Obj_params, key: str):\n    return params.get(key)\n\n\n"
+              "def _esbmc_main() -> None:\n    params: _Obj_params = _Obj_params()\n    f(params, 'k')\n")
+    renamed, _, _ = rename_builtin_named_methods(source, "f")
+    assert "    return params.esbmc_get(key)\n" in renamed
+    assert remove_unused(renamed, "f")[0].count("def esbmc_get") == 1

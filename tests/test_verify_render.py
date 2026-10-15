@@ -68,7 +68,8 @@ def test_method_keeps_target_verbatim_and_replaces_constructor():
     spec = InputSpec({}, {"mode": "str", "previous_defs": "list[int]"}, ("depth >= 0", "len(self.previous_defs) > 0"))
     program = render_program(_ground("Tracker.maybe", "self.previous_defs.pop()"), spec)
     ast.parse(program.source)
-    assert MAYBE in program.source
+    assert MAYBE in program.replay_source
+    assert "cut_after_suspect:1" in program.transforms
     assert "cfg.load()" not in program.source
     assert "def __len__(self):" in program.source
     assert "def unrelated" not in program.source
@@ -77,7 +78,8 @@ def test_method_keeps_target_verbatim_and_replaces_constructor():
     assert "    _receiver = Tracker()\n" in program.source
     assert "    __ESBMC_assume(depth >= 0)\n    __ESBMC_assume(len(_receiver.previous_defs) > 0)\n" in program.source
     assert "    _receiver.maybe(depth)\n" in program.source
-    assert set(program.transforms) == {"receiver_init_replaced", "unreachable_methods_removed:unrelated"}
+    assert set(program.transforms) == {"receiver_init_replaced", "unreachable_methods_removed:unrelated",
+                                       "cut_after_suspect:1"}
     lines = program.source.splitlines()
     assert [lines[a - 1].strip() for a, _ in program.target_spans] == ["self.previous_defs.pop()"]
 
@@ -178,7 +180,9 @@ def test_replay_keeps_cpython_exceptions_instead_of_the_stubs():
     program = render_program(ground(BugHypothesis("x.py", "check", 'raw.decode("ascii")'), source), InputSpec({}, {}, ()))
     assert "class UnicodeDecodeError(UnicodeError):" in program.source.splitlines()
     assert "UnicodeError(" not in program.replay_source
-    assert len(program.replay_source.splitlines()) == len(program.source.splitlines())
+    # Up to the driver call the lines match; the ESBMC copy may add its path-cut helper after it.
+    driver_call = "_esbmc_main()"
+    assert program.replay_source.splitlines().index(driver_call) == program.source.splitlines().index(driver_call)
     namespace = {}
     exec(program.replay_source.split("def _esbmc_main")[0], namespace)
     assert namespace["check"](b"\xff") == 1
@@ -218,4 +222,4 @@ def test_new_stays_when_it_is_the_target():
 """
     grounded = ground(BugHypothesis("x.py", "Pool.__new__", "10 // size"), source)
     program = render_program(grounded, InputSpec({"size": "int"}, {}, ()))
-    assert "def __new__(cls, size):" in program.source
+    assert "def __new__(cls, size: int):" in program.source

@@ -22,7 +22,7 @@ def test_grounding_keeps_percent_and_render_preserves_replay_source():
     grounded, program = _render(source, '1 // len(text)', {'x': 'str'})
     assert source in grounded.module
     assert not any(t.startswith('compat_') for t in grounded.transforms)
-    assert source in program.replay_source
+    assert source.replace('def f(x):', 'def f(x: str):') in program.replay_source
     assert 'str(x)' in program.source and '"%s" % x' not in program.source
     assert 'compat_percent_format:1' in program.transforms
 

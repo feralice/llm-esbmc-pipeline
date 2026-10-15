@@ -6,7 +6,7 @@ import ast
 
 _SAFE_MODULES = frozenset({
     "abc", "bisect", "collections", "copy", "dataclasses", "decimal", "enum", "fractions",
-    "functools", "heapq", "itertools", "json", "math", "numbers", "operator", "re",
+    "functools", "heapq", "itertools", "json", "math", "numbers", "operator", "random", "re",
     "statistics", "string", "textwrap", "typing", "typing_extensions", "unicodedata",
 })
 

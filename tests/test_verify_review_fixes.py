@@ -17,6 +17,7 @@ from research_pipeline.verify.outcome import (
     final_verdict,
 )
 from research_pipeline.verify.render import render_program
+from research_pipeline.verify.slicing import CallShape
 from research_pipeline.verify.replay import ReplayVerdict, concrete_replay
 from research_pipeline.verify.spec import InputSpec, spec_problems
 
@@ -49,10 +50,16 @@ def test_declared_class_annotation_without_value_is_still_an_attribute():
     assert _ground(source, "A.go", "n // self.size").receiver_attrs == ("size",)
 
 
-def test_inherited_member_read_is_unsupported():
-    source = ("class Base:\n    def helper(self):\n        return 1\n\n\n"
+def test_inherited_members_are_copied_into_the_receiver_class():
+    source = ("class Base:\n    LIMIT = 3\n\n    def helper(self):\n        return self.LIMIT - 3\n\n\n"
               "class A(Base):\n    def go(self, n: int) -> int:\n        return n // self.helper()\n")
-    assert "inherited" in _ground(source, "A.go", "n // self.helper()").unsupported
+    grounded = _ground(source, "A.go", "n // self.helper()")
+    assert grounded.unsupported == ""
+    assert grounded.transforms[0] == "inherited_members_inlined:helper"
+    program = render_program(grounded, InputSpec({"n": "int"}, {}, ()))
+    body = program.source.split("class A(Base):")[1].split("def _esbmc_main")[0]
+    assert "    def helper(self):" in body and "    LIMIT = 3" in body
+    assert concrete_replay(program, "go").status == "reproduced"
 
 
 # I1: a dunder target would be replaced by the shell.
@@ -209,9 +216,23 @@ def test_external_values_classes_and_warnings_get_stubs():
     assert concrete_replay(program, "go").status == "reproduced"
 
 
-def test_external_decorator_is_still_unsupported():
-    source = "from lib import deco\n\n\nclass A:\n    @deco\n    def helper(self):\n        return 1\n\n    def go(self, n: int):\n        return self.helper() // n\n"
-    assert "deco" in _ground(source, "A.go", "self.helper() // n").unsupported
+def test_external_decorator_is_blanked_and_the_function_stands_as_written():
+    source = ("from lib import deco\n\n\nclass A:\n    @deco(**OPTIONS)\n    def helper(self):\n        return 1\n\n"
+              "    def go(self, n: int):\n        return self.helper() // n\n")
+    grounded = _ground(source, "A.go", "self.helper() // n")
+    assert grounded.unsupported == ""
+    assert "external_decorators_removed:deco" in grounded.transforms
+    assert "@deco" not in grounded.module
+    assert "    def helper(self):" in grounded.module
+
+
+def test_spread_arguments_to_a_stub_become_keywords_that_are_still_evaluated():
+    source = ("import lib\n\n\ndef go(parts: list[str], opts: dict[str, int], n: int):\n"
+              "    lib.make(1, *parts, key=2, **opts)\n    return 10 // n\n")
+    grounded = _ground(source, "go", "10 // n")
+    assert grounded.unsupported == ""
+    assert "    lib.make(1, _star0=parts, key=2, _kw0=opts)\n" in grounded.module
+    assert grounded.externals.namespaces["lib"]["make"] == CallShape(1, ("_star0", "key", "_kw0"))
 
 
 def test_dunder_other_than_init_can_be_a_target():
@@ -360,7 +381,7 @@ def test_library_chains_are_flattened_to_one_level():
     spec = InputSpec({"s": "str"}, {}, (), {"email_utils.parsedate_tz": "object", "http_RESPONSES.get": "str"})
     program = render_program(grounded, spec)
     lines = program.source.splitlines()
-    assert [lines[a - 1].strip() for a, _ in program.target_spans] == ["return 1 // len(http_RESPONSES.get(status))"]
+    assert [lines[a - 1].strip() for a, _ in program.target_spans] == ["return 1 // len(http_RESPONSES.esbmc_get(status))"]
     assert concrete_replay(program, "f").status == "reproduced"
 
 
@@ -527,3 +548,172 @@ def test_an_import_inside_the_function_is_stubbed_like_a_top_level_one():
     assert set(grounded.stub_keys) == {"expressions.evaluate", "deserialize"}
     spec = InputSpec({"n": "int"}, {}, (), {"expressions.evaluate": "None", "deserialize": "None"})
     assert concrete_replay(render_program(grounded, spec), "target").status == "reproduced"
+
+
+def test_a_stub_returning_bytes_gives_a_statically_sized_value() -> None:
+    from research_pipeline.verify.render import _Declarer, _stub_function
+    from research_pipeline.verify.slicing import CallShape
+
+    lines = _stub_function("pickle_model", CallShape(positional=1, keywords=()), "bytes", _Declarer())
+    assert lines[-1].strip() == "return nondet_bytes(2)"
+
+
+def test_a_class_the_target_also_builds_with_arguments_keeps_its_constructor() -> None:
+    source = ("class Schema:\n    def __init__(self, schema, error=None):\n        self._schema = schema\n"
+              "        self._error = error\n\n    def validate(self, data):\n"
+              "        if data:\n            return Schema(data, error=self._error).validate(None)\n"
+              "        return len(self._schema)\n")
+    grounded = _ground(source, "Schema.validate", "len(self._schema)")
+    program = render_program(grounded, InputSpec({"data": "int"}, {"_schema": "str", "_error": "Optional[str]"}, ()))
+    assert "    def __init__(self, schema, error=None):\n" in program.source
+    assert "class _Receiver(Schema):\n    def __init__(self) -> None:\n" in program.source
+    assert "    _receiver = _Receiver()\n" in program.source
+    assert "receiver_subclass" in program.transforms
+    # The inner Schema(data) runs the real constructor, so len() sees the int it was given.
+    with pytest.raises(TypeError, match="has no len"):
+        exec(compile(program.replay_source, "p.py", "exec"),
+             {"nondet_bool": lambda: False, "nondet_int": lambda: 1, "nondet_str": lambda: "ab"})
+
+
+def test_a_bytes_stub_replays_in_cpython() -> None:
+    source = "from codec import encode\n\n\ndef target(n: int) -> int:\n    return encode(n)[2]\n"
+    grounded = _ground(source, "target", "encode(n)[2]")
+    program = render_program(grounded, InputSpec({"n": "int"}, {}, (), {"encode": "bytes"}))
+    verdict = concrete_replay(program, "target")
+    assert (verdict.status, verdict.exception_type) == ("reproduced", "IndexError")
+
+
+def test_the_kept_constructor_keeps_the_methods_it_calls() -> None:
+    source = ("class S:\n    def __init__(self, d, e=None):\n        self._setup(d)\n\n"
+              "    def _setup(self, d):\n        self.d = d\n\n"
+              "    def go(self, n: int) -> int:\n        return S(n, e=1).d // n\n")
+    grounded = _ground(source, "S.go", "S(n, e=1).d // n")
+    assert "def _setup(self, d):" in grounded.module
+    program = render_program(grounded, InputSpec({"n": "int"}, {}, ()))
+    verdict = concrete_replay(program, "go")
+    assert (verdict.status, verdict.exception_type) == ("reproduced", "ZeroDivisionError")
+
+
+def test_a_class_with_new_that_builds_itself_is_unsupported() -> None:
+    source = ("class S:\n    def __new__(cls, d):\n        return object.__new__(cls)\n\n"
+              "    def __init__(self, d):\n        self.d = d\n\n"
+              "    def go(self, n: int) -> int:\n        return S(n).d // n\n")
+    assert "__new__" in _ground(source, "S.go", "S(n).d // n").unsupported
+
+
+def test_members_a_helper_uses_on_a_forwarded_input_belong_to_that_input() -> None:
+    source = ("def reset(t):\n    t.count = 0\n\n\nclass State:\n    def re_enable(self, task, config=None):\n"
+              "        task.failures.clear()\n        reset(task)\n\n"
+              "    def set_status(self, task, status):\n        self.re_enable(task)\n"
+              "        return 10 // len(task.failures) + status\n")
+    grounded = _ground(source, "State.set_status", "10 // len(task.failures)")
+    assert {"failures", "count"} <= set(grounded.object_members["task"])
+
+
+def test_a_helper_parameter_that_receives_an_input_gets_its_type() -> None:
+    source = ("class State:\n    def re_enable(self, task, config=None):\n        task.failures.clear()\n\n"
+              "    def set_status(self, task, status):\n        self.re_enable(task)\n        return 10 // status\n")
+    grounded = _ground(source, "State.set_status", "10 // status")
+    program = render_program(grounded, InputSpec({"task": "object", "status": "int"}, {}, (),
+                                                 {"task.failures": "list[int]"}))
+    assert "def re_enable(self, task: _Obj_task, config=None):" in program.source
+    assert "def set_status(self, task: _Obj_task, status: int):" in program.source
+    verdict = concrete_replay(program, "set_status")
+    assert (verdict.status, verdict.exception_type) == ("reproduced", "ZeroDivisionError")
+
+
+NESTED = '''class Handler:
+    def __init__(self, sched):
+        self.sched = sched
+
+    def get(self, n: int):
+        data = self.sched.state.collector.latest()
+        return data[n]
+'''
+
+
+def test_members_of_an_attribute_chain_become_nested_objects():
+    grounded = ground(BugHypothesis("x.py", "Handler.get", "data[n]"), NESTED)
+    assert grounded.object_members["self.sched"] == {"state": None}
+    assert grounded.object_members["self.sched.state"] == {"collector": None}
+    assert set(grounded.object_members["self.sched.state.collector"]) == {"latest"}
+    spec = InputSpec({"n": "int"}, {"sched": "object"}, (),
+                     stubs={"self.sched.state.collector.latest": "list[int]"})
+    assert spec_problems(spec, grounded) == []
+    program = render_program(grounded, spec)
+    ast.parse(program.source)
+    assert program.source.index("class _Obj_self_sched_state_collector:") \
+        < program.source.index("class _Obj_self_sched_state:") < program.source.index("class _Obj_self_sched:")
+    namespace = {"nondet_int": lambda: 0, "nondet_list": lambda n, elem_type=None: [], "__ESBMC_assume": lambda c: None}
+    with pytest.raises(IndexError):
+        exec(program.replay_source, namespace)
+
+
+def test_a_receiver_attribute_only_called_becomes_a_stub_method():
+    source = ("from web import RequestHandler\n\n\nclass H(RequestHandler):\n"
+              "    def get(self, n: int):\n        page = self.fetch(n)\n        self.write(page)\n"
+              "        return 10 // n\n")
+    grounded = ground(BugHypothesis("x.py", "H.get", "10 // n"), source)
+    program = render_program(grounded, InputSpec({}, {"fetch": "str", "write": "None"}, ()))
+    assert "    def fetch(self, a0=None) -> str:" in program.source
+    assert "    def write(self, a0=None) -> None:" in program.source
+    assert "self.fetch: str" not in program.source
+
+
+def test_members_of_a_chain_on_a_non_object_input_get_no_class():
+    grounded = ground(BugHypothesis("x.py", "Handler.get", "data[n]"), NESTED)
+    program = render_program(grounded, InputSpec({"n": "int"}, {"sched": "int"}, ()))
+    assert "class _Obj_" not in program.source
+
+
+def test_a_nested_container_holds_one_item_and_the_outer_two():
+    from research_pipeline.verify.render import _Declarer
+    lines = _Declarer().declare("rows", "list[dict[str, int]]", "")
+    assert sum(line.strip() == "if nondet_bool():" for line in lines) == 2 + 2 * 1
+
+
+CLOSURE = '''def outer(scale: int):
+    limit = 10
+
+    def inner(xs: list[int]):
+        return xs[limit] // scale
+
+    def again(n: int):
+        return again(n - 1) if n else 0
+
+    return inner
+'''
+
+
+def test_a_function_nested_in_another_is_hoisted_with_its_free_names_as_parameters():
+    grounded = ground(BugHypothesis("n.py", "outer.inner", "xs[limit] // scale", line=5), CLOSURE)
+    assert isinstance(grounded, Grounded)
+    assert [p.name for p in grounded.params] == ["xs", "limit", "scale"]
+    assert grounded.transforms[0] == "nested_entry_hoisted:outer.inner"
+    program = render_program(grounded, InputSpec({"xs": "list[int]", "limit": "int", "scale": "int"}, {}, ()))
+    lines = program.source.splitlines()
+    assert [lines[a - 1].strip() for a, _ in program.target_spans] == ["return xs[limit] // scale"]
+    namespace = {}
+    exec(program.replay_source.split("def _esbmc_main")[0], namespace)
+    assert namespace["inner"]([1, 2, 3], limit=1, scale=2) == 1
+
+
+def test_a_recursive_nested_function_does_not_take_itself_as_a_parameter():
+    grounded = ground(BugHypothesis("n.py", "outer.again", "again(n - 1)"), CLOSURE)
+    assert isinstance(grounded, Grounded)
+    assert [p.name for p in grounded.params] == ["n"]
+
+
+def test_nested_code_using_nonlocal_stays_unsupported():
+    source = "def outer():\n    n = 0\n\n    def bump(k: int):\n        nonlocal n\n        n += 10 // k\n    return bump\n"
+    grounded = ground(BugHypothesis("n.py", "outer.bump", "10 // k"), source)
+    assert isinstance(grounded, GroundingFailure) and grounded.unsupported
+
+
+def test_a_member_of_a_stub_result_gets_its_own_stub():
+    source = ("import numpy as np\n\n\ndef go(scale: float, xs: list[int]):\n"
+              "    tiny = np.finfo(float).tiny\n    np.asarray(xs).sort()\n    return scale / tiny\n")
+    grounded = _ground(source, "go", "scale / tiny")
+    assert "    tiny = np.finfo__tiny(float)\n" in grounded.module
+    assert "    np.asarray(xs).sort()\n" in grounded.module
+    assert "external_result_members_flattened:np.finfo__tiny" in grounded.transforms

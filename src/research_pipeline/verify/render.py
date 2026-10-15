@@ -7,7 +7,14 @@ import builtins
 from dataclasses import dataclass, replace
 
 from .astutil import expression_nodes, find_function, undefined_globals
-from .compat import rewrite_compat
+from .compat import (
+    NONE_GUARDS,
+    cut_after_suspect,
+    none_guards,
+    remove_unused,
+    rename_builtin_named_methods,
+    rewrite_compat,
+)
 from .grounding import Grounded
 from .slicing import END_PATH, KNOWN_MEMBERS, MEMBER_MODELS, CallShape
 from .spec import (
@@ -16,12 +23,14 @@ from .spec import (
     InputSpec,
     TypeShape,
     input_types,
+    member_types,
     parse_type,
     resolved_types,
     spec_problems,
 )
 
 RECEIVER = "_receiver"
+RECEIVER_CLASS = "_Receiver"
 OPAQUE = "_Opaque"
 DRIVER = "_esbmc_main"
 
@@ -76,7 +85,8 @@ def _value(shape: TypeShape, obj_class: str | None) -> str:
 
 
 class _Declarer:
-    """Statements that give a target a nondet value of a type; containers hold at most two items."""
+    """Statements that give a target a nondet value of a type. A container holds at most two items, one
+    when nested in another: two per level made three-level inputs time out (dz_real_02, 14/10)."""
 
     def __init__(self) -> None:
         self.count = 0
@@ -90,7 +100,8 @@ class _Declarer:
         assert shape is not None  # spec_problems already rejected unsupported types
         return self._shape(target, shape, indent, obj_class)
 
-    def _shape(self, target: str, shape: TypeShape, indent: str, obj_class: str | None) -> list[str]:
+    def _shape(self, target: str, shape: TypeShape, indent: str, obj_class: str | None,
+               nested: bool = False) -> list[str]:
         annotation = _annotation(shape, obj_class)
         inner = indent + "    "
         if shape.kind == "none":
@@ -102,34 +113,38 @@ class _Declarer:
             if _simple(base):
                 return [*head, f"{inner}{target} = {_value(base, obj_class)}"]
             temp = self.fresh()
-            return [*head, *self._shape(temp, base, inner, obj_class), f"{inner}{target} = {temp}"]
+            return [*head, *self._shape(temp, base, inner, obj_class, nested), f"{inner}{target} = {temp}"]
         if _simple(shape):
             return [f"{indent}{target}: {annotation} = {_value(shape, obj_class)}"]
         if shape.kind == "bytes":
             return [f'{indent}{target}: bytes = b"ab"', f"{indent}if nondet_bool():", f'{inner}{target} = b""']
         if shape.kind == "frozenset":
             members = self.fresh()
-            return [*self._shape(members, replace(shape, kind="set"), indent, None),
+            return [*self._shape(members, replace(shape, kind="set"), indent, None, nested),
                     f"{indent}{target}: {annotation} = frozenset({members})"]
         empty = {"dict": "{}", "set": "set()"}.get(shape.kind, "[]")
         lines = [f"{indent}{target}: {annotation} = {empty}"]
-        for _ in range(2):
+        for _ in range(1 if nested else 2):
             value = self.fresh()
             lines.append(f"{indent}if nondet_bool():")
             if shape.kind == "dict":
                 key = self.fresh()
                 lines += [f"{inner}{key}: {shape.key} = nondet_{shape.key}()",
-                          *self._shape(value, shape.elem, inner, None), f"{inner}{target}[{key}] = {value}"]
+                          *self._shape(value, shape.elem, inner, None, True), f"{inner}{target}[{key}] = {value}"]
             else:
                 add = "add" if shape.kind == "set" else "append"
-                lines += [*self._shape(value, shape.elem, inner, None), f"{inner}{target}.{add}({value})"]
+                lines += [*self._shape(value, shape.elem, inner, None, True), f"{inner}{target}.{add}({value})"]
         return lines
 
 
-def _shell_init(attributes: dict[str, str], indent: str, decl: _Declarer) -> list[str]:
+def _shell_init(attributes: dict[str, str], indent: str, decl: _Declarer,
+                called: dict[str, CallShape] | None = None) -> list[str]:
     body = indent * 2
+    called = called or {}
     lines = [f"{indent}def __init__(self) -> None:"]
     for name, type_text in attributes.items():
+        if name in called:
+            continue
         cls = object_class(f"self.{name}")
         lines += decl.declare(f"_attr_{name}", type_text, body, cls)
         shape = parse_type(type_text)
@@ -138,18 +153,25 @@ def _shell_init(attributes: dict[str, str], indent: str, decl: _Declarer) -> lis
         lines.append(f"{body}self.{name}{annotation} = _attr_{name}")
     if len(lines) == 1:
         lines.append(f"{body}pass")
+    for name, shape in sorted(called.items()):
+        lines += _stub_function(name, shape, attributes[name], decl, indent, receiver=True)
     return lines
 
 
-def _insert_shell(module: str, class_name: str, attributes: dict[str, str], decl: _Declarer) -> str:
+def _insert_shell(module: str, class_name: str, attributes: dict[str, str], decl: _Declarer,
+                  subclass: bool = False, called: dict[str, CallShape] | None = None) -> str:
     tree = ast.parse(module)
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == class_name)
+    lines = module.splitlines()
+    if subclass:
+        lines[cls.end_lineno:cls.end_lineno] = ["", "", f"class {RECEIVER_CLASS}({class_name}):",
+                                                *_shell_init(attributes, "    ", decl, called)]
+        return "\n".join(lines) + "\n"
     first = cls.body[0]
     docstring = (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
                  and isinstance(first.value.value, str))
     at = first.end_lineno if docstring else min([first.lineno, *(d.lineno for d in getattr(first, "decorator_list", []))]) - 1
-    lines = module.splitlines()
-    lines[at:at] = _shell_init(attributes, " " * first.col_offset, decl)
+    lines[at:at] = _shell_init(attributes, " " * first.col_offset, decl, called)
     return "\n".join(lines) + "\n"
 
 
@@ -166,29 +188,45 @@ def _stub_function(name: str, shape: CallShape, type_text: str, decl: _Declarer,
     lines = [f"{indent}def {name}({params}) -> {returns}:"]
     if returns == "None":
         return [*lines, f"{indent}    return None"]
+    if returns == "bytes":
+        # ESBMC master (#7902) sizes a `-> bytes` return only from bytes([...]) or nondet_bytes(n).
+        return [*lines, f"{indent}    return nondet_bytes(2)"]
     return [*lines, *decl.declare("_stub_value", type_text, indent + "    "), f"{indent}    return _stub_value"]
 
 
 def _object_classes(grounded: Grounded, inputs: dict[str, str], types: dict[str, str], decl: _Declarer) -> list[str]:
-    """One class per input typed ``object``: its read fields are nondet, its called methods are stubs."""
+    """One class per input or member typed ``object``: its read fields are nondet, its called methods
+    are stubs. Inner classes come first, before the classes that build them."""
+    typed = {**inputs, **types}
+
+    def is_object(key: str) -> bool:
+        shape = parse_type(typed.get(key, ""))
+        return shape is not None and shape.kind == OBJECT
+
+    # Only chains that hang off an object input: an int input's members get no class.
+    owners, pending = [], [key for key in inputs if is_object(key)]
+    while pending:
+        key = pending.pop()
+        owners.append(key)
+        pending += [f"{key}.{m}" for m, call in grounded.object_members.get(key, {}).items()
+                    if call is None and is_object(f"{key}.{m}")]
     lines: list[str] = []
-    for key, type_text in inputs.items():
-        shape = parse_type(type_text)
-        if shape is None or shape.kind != OBJECT:
-            continue
+    for key in sorted(owners, key=lambda k: (-k.count("."), k)):
         members = grounded.object_members.get(key, {})
         lines += [f"class {object_class(key)}:", "    def __init__(self) -> None:"]
         fields = [m for m, call in sorted(members.items()) if call is None]
         for member in fields:
-            field_shape = parse_type(types[f"{key}.{member}"])
-            lines += decl.declare(f"_field_{member}", types[f"{key}.{member}"], "        ")
-            annotation = "" if field_shape.kind == "none" else f": {_annotation(field_shape)}"
+            field_key = f"{key}.{member}"
+            field_shape = parse_type(typed[field_key])
+            inner = object_class(field_key) if field_key in owners else None
+            lines += decl.declare(f"_field_{member}", typed[field_key], "        ", inner)
+            annotation = "" if field_shape.kind == "none" else f": {_annotation(field_shape, inner)}"
             lines.append(f"        self.{member}{annotation} = _field_{member}")
         if not fields:
             lines.append("        pass")
         for member, call in sorted(members.items()):
             if call is not None:
-                lines += ["", *_stub_function(member, call, types[f"{key}.{member}"], decl, "    ", receiver=True)]
+                lines += ["", *_stub_function(member, call, typed[f"{key}.{member}"], decl, "    ", receiver=True)]
         lines += ["", ""]
     return lines
 
@@ -314,7 +352,8 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
         lines += decl.declare(name, type_text, "    ", object_class(name))
     receiver = grounded.has_receiver
     if receiver:
-        lines.append(f"    {RECEIVER} = {grounded.class_name}()")
+        receiver_class = RECEIVER_CLASS if grounded.receiver_subclass else grounded.class_name
+        lines.append(f"    {RECEIVER} = {receiver_class}()")
     for assumption in assumptions:
         tree = _ToReceiver().visit(ast.parse(assumption.strip(), mode="eval"))
         lines.append(f"    __ESBMC_assume({ast.unparse(tree)})")
@@ -331,6 +370,45 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
     return lines
 
 
+def _annotate_inputs(module: str, annotations: dict[tuple[str, str], str]) -> str:
+    """Write ``(function, parameter) -> annotation`` into unannotated parameters in place, so lines keep
+    their numbers. ESBMC types a parameter only from its annotation; CPython ignores it when running."""
+    lines = module.splitlines()
+    edits: list[tuple[int, int, str]] = []
+    for node in ast.walk(ast.parse(module)):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for arg in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs]:
+            annotation = annotations.get((node.name, arg.arg))
+            if annotation and arg.annotation is None:
+                edits.append((arg.lineno - 1, arg.end_col_offset, f": {annotation}"))
+    for row, offset, text in sorted(edits, reverse=True):
+        raw = lines[row].encode("utf-8")  # AST offsets count UTF-8 bytes
+        lines[row] = (raw[:offset] + text.encode("utf-8") + raw[offset:]).decode("utf-8")
+    return "\n".join(lines) + "\n"
+
+
+def _input_annotations(grounded: Grounded, params: dict[str, str]) -> dict[tuple[str, str], str]:
+    by_input = {name: _annotation(parse_type(text), object_class(name)) for name, text in params.items()
+                if parse_type(text) is not None}
+    found = {(grounded.method_name, name): text for name, text in by_input.items()}
+    found.update({(callee, param): by_input[owner] for owner, callee, param in grounded.forwarded
+                  if owner in by_input})
+    return found
+
+
+def _suspect_spans(source: str, grounded: Grounded, near: int, function: str) -> tuple[tuple[int, int], ...]:
+    nodes = expression_nodes(find_function(ast.parse(source), function),
+                             grounded.hypothesis.suspect_expression)
+    if nodes and grounded.hypothesis.line:
+        nodes = [min(nodes, key=lambda node: abs(node.lineno - near))]
+    return tuple(sorted({(node.lineno, node.end_lineno) for node in nodes}))
+
+
+def _shifted(spans: tuple[tuple[int, int], ...], k: int) -> tuple[tuple[int, int], ...]:
+    return tuple((start + k, end + k) for start, end in spans)
+
+
 def render_program(grounded: Grounded, spec: InputSpec) -> Program:
     if grounded.unsupported:
         raise RenderError(grounded.unsupported)
@@ -343,9 +421,14 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
     decl = _Declarer()
 
     module, transforms = grounded.module, list(grounded.transforms)
+    if grounded.receiver_subclass and RECEIVER_CLASS in module:
+        raise RenderError(f"the module already uses the name {RECEIVER_CLASS}")
     if grounded.has_receiver:
-        module = _insert_shell(module, grounded.class_name, attributes, decl)
-    stubs = _stubs(grounded, spec.stubs, decl) + _object_classes(grounded, input_types(spec, grounded), spec.stubs, decl)
+        module = _insert_shell(module, grounded.class_name, attributes, decl, grounded.receiver_subclass,
+                               grounded.called_attrs)
+    module = _annotate_inputs(module, _input_annotations(grounded, params))
+    stubs = _stubs(grounded, spec.stubs, decl) + _object_classes(
+        grounded, input_types(spec, grounded), member_types(spec, grounded), decl)
     driver = _driver(grounded, params, spec.assumptions, decl)
     if any(OPAQUE in line for line in [*stubs, *driver]) or OPAQUE in module:
         stubs = [f"class {OPAQUE}:", "    pass", "", "", *stubs]
@@ -372,10 +455,22 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
     spans = tuple((start + shift, end + shift) for start, end in grounded.spans)
     target_range = (function.lineno, function.end_lineno)
     rewritten, compat = rewrite_compat(body, parameter_types={grounded.hypothesis.function: params})
-    rewritten_function = find_function(ast.parse(rewritten), grounded.hypothesis.function)
-    nodes = expression_nodes(rewritten_function, grounded.hypothesis.suspect_expression)
-    if nodes and grounded.hypothesis.line:
-        nodes = [min(nodes, key=lambda node: abs(node.lineno - spans[0][0]))]
-    rewritten_spans = tuple(sorted({(node.lineno, node.end_lineno) for node in nodes})) if nodes else spans
+    rewritten, target, renamed = rename_builtin_named_methods(rewritten, grounded.hypothesis.function)
+    rewritten_spans = _suspect_spans(rewritten, grounded, spans[0][0], target) or spans
+    rewritten, cut = cut_after_suspect(rewritten, target, rewritten_spans)
+    rewritten, unused = remove_unused(rewritten, target)
+    never_none = {key for key, text in input_types(spec, grounded).items()
+                  if (shape := parse_type(text)) is not None and not shape.optional and shape.kind != "none"}
+    rewritten, guards = none_guards(rewritten, target, rewritten_spans, never_none)
+    compat += [*renamed, *cut, *unused, *guards]
+    if guards:
+        # Into both copies (blank in the replay) after the leading import, like the exception stubs:
+        # the lines still match.
+        k = len(NONE_GUARDS)
+        head = len("from typing import Optional\n") if rewritten.startswith("from typing import Optional\n") else 0
+        rewritten = rewritten[:head] + "\n".join(NONE_GUARDS) + "\n" + rewritten[head:]
+        replay = replay[:head] + "\n" * k + replay[head:]
+        driver_start, target_range = driver_start + k, (target_range[0] + k, target_range[1] + k)
+        spans, rewritten_spans = _shifted(spans, k), _shifted(rewritten_spans, k)
     return Program(rewritten, driver_start, rewritten_spans, (*transforms, *compat), target_range,
                    replay_source=replay, replay_target_spans=spans, replay_target_range=target_range)

@@ -3,7 +3,7 @@ from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.oracle import refusals
 from research_pipeline.verify.render import render_program
 from research_pipeline.verify.slicing import stub_imports
-from research_pipeline.verify.spec import InputSpec, spec_problems
+from research_pipeline.verify.spec import InputSpec, shape_unpacked, spec_problems
 
 PROGRAM = """import re
 import threading as th
@@ -93,6 +93,12 @@ def test_a_missing_module_constant_is_refused_like_a_missing_function():
     assert refusals("ERROR: Module member 'VERBOSE' not found in module 're'", PROGRAM) == {"re.VERBOSE"}
 
 
+def test_a_name_imported_from_a_partial_model_is_refused():
+    program = "from datetime import datetime, timedelta\n\n\ndef f(n):\n    return timedelta(n)\n"
+    assert refusals("ERROR: NameError: name 'timedelta' is not defined", program) == {"datetime.timedelta"}
+    assert refusals("ERROR: NameError: name 'f' is not defined", program) == set()
+
+
 BASES = """import collections
 from collections import MutableMapping
 
@@ -117,3 +123,24 @@ def test_a_missing_library_base_class_is_refused_and_becomes_a_stub():
 
     assert "(MutableMapping)" not in module and "(collections.OrderedDict)" not in module
     assert set(plan.classes) == {"_esbmc_collections_MutableMapping", "_esbmc_collections_OrderedDict"}
+
+
+def test_a_scalar_given_for_an_unpacked_value_becomes_a_tuple_of_it():
+    source = ("import requests\n\n\ndef f(size, arr, u):\n    w, h = size\n    n, c = arr.shape\n"
+              "    code, body = requests.fetch(u)\n    return 10 // (w - n)\n")
+    grounded = ground(BugHypothesis("x.py", "f", "10 // (w - n)"), source)
+    spec = shape_unpacked(InputSpec({"size": "int", "arr": "object", "u": "str"}, {}, (),
+                                    {"arr.shape": "int", "requests.fetch": "str"}), grounded)
+    assert spec.params["size"] == "tuple[int, int]" and spec.stubs["arr.shape"] == "tuple[int, int]"
+    assert spec.stubs["requests.fetch"] == "tuple[str, str]" and spec.params["u"] == "str"
+    assert spec_problems(spec, grounded) == []
+    kept = shape_unpacked(InputSpec({"size": "list[int]", "arr": "object", "u": "str"}, {}, (),
+                                    {"arr.shape": "Optional[int]", "requests.fetch": "tuple[int, str]"}), grounded)
+    assert kept.params["size"] == "list[int]" and kept.stubs["arr.shape"] == "Optional[int]"
+
+
+def test_an_unpacked_input_does_not_stop_the_case_before_the_llm():
+    from research_pipeline.verify.loop import precheck
+    source = "def f(d_m_y=None):\n    d, m, y = d_m_y\n    return 10 // d\n"
+    grounded, verdict, reason = precheck(BugHypothesis("x.py", "f", "10 // d"), source)
+    assert grounded is not None, (verdict, reason)

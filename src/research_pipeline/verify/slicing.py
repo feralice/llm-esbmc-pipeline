@@ -353,6 +353,73 @@ def _rename_refused_members(module: str, refused: frozenset[str]) -> tuple[str, 
     return "\n".join(lines) + "\n", names
 
 
+def _root_name(node: ast.expr) -> str | None:
+    while isinstance(node, (ast.Call, ast.Attribute, ast.Subscript)):
+        node = node.func if isinstance(node, ast.Call) else node.value
+    return node.id if isinstance(node, ast.Name) else None
+
+
+def _drop_external_decorators(module: str, external: set[str]) -> tuple[str, list[str]]:
+    """Blank decorators from stubbed libraries: a stub cannot reproduce what they wrap the function
+    in, so the function stands as written (lines blanked, numbering kept)."""
+    tree = ast.parse(module)
+    found = [d for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+             for d in node.decorator_list if _root_name(d) in external]
+    lines = module.splitlines()
+    for decorator in found:
+        lines[decorator.lineno - 1:decorator.end_lineno] = [""] * (decorator.end_lineno - decorator.lineno + 1)
+    names = sorted({_root_name(d) for d in found})
+    return ("\n".join(lines) + "\n", names) if found else (module, [])
+
+
+def _name_spread_arguments(module: str, external: set[str]) -> tuple[str, list[str]]:
+    """``lib.f(*a, **k)`` becomes ``lib.f(_star0=a, _kw0=k)``: a stub ignores its arguments, the
+    spread values are still evaluated, and the call gets a fixed shape a stub can declare."""
+    tree = ast.parse(module)
+    edits = []
+    for call in (n for n in ast.walk(tree) if isinstance(n, ast.Call) and _root_name(n.func) in external):
+        if not isinstance(call.func, (ast.Name, ast.Attribute)):
+            continue
+        stars = [a for a in call.args if isinstance(a, ast.Starred)]
+        spreads = [k for k in call.keywords if k.arg is None]
+        edits += [(a.lineno, a.col_offset, 1, f"_star{i}=") for i, a in enumerate(stars)]
+        edits += [(k.lineno, k.col_offset, 2, f"_kw{i}=") for i, k in enumerate(spreads)]
+        if stars and any(not isinstance(a, ast.Starred) for a in call.args[call.args.index(stars[0]):]):
+            return module, []  # a positional after a spread cannot follow the new keyword
+    lines = module.splitlines()
+    for line, col, width, text in sorted(edits, reverse=True):
+        raw = lines[line - 1].encode("utf-8")
+        lines[line - 1] = (raw[:col] + text.encode("utf-8") + raw[col + width:]).decode("utf-8")
+    names = sorted({ast.unparse(c.func) for c in ast.walk(tree) if isinstance(c, ast.Call)
+                    and _root_name(c.func) in external and _shape(c) is None})
+    return ("\n".join(lines) + "\n", names) if edits else (module, [])
+
+
+def _flatten_result_members(module: str, external: set[str]) -> tuple[str, list[str]]:
+    """``lib.f(a).x`` becomes ``lib.f__x(a)``: ESBMC types no attribute of a stub's result, so the
+    member gets a stub of its own; the arguments are still evaluated. Values read on one line only
+    (not methods called), so line numbers stay; of nested uses the outermost, so edits never overlap."""
+    tree = ast.parse(module)
+    called = {id(n.func) for n in ast.walk(tree) if isinstance(n, ast.Call)}
+    found = [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and id(n) not in called
+             and isinstance(n.ctx, ast.Load) and isinstance(n.value, ast.Call)
+             and isinstance(n.value.func, (ast.Name, ast.Attribute)) and _root_name(n.value.func) in external
+             and _dotted(n.value.func) is not None and n.lineno == n.end_lineno]
+    found = [n for n in found if not any(o is not n and o.lineno == n.lineno and o.col_offset <= n.col_offset
+                                         and n.end_col_offset <= o.end_col_offset for o in found)]
+    lines = module.splitlines()
+    names = []
+    for node in sorted(found, key=lambda n: (n.lineno, n.col_offset), reverse=True):
+        call = node.value
+        raw = lines[node.lineno - 1].encode("utf-8")
+        args = raw[call.func.end_col_offset:call.end_col_offset].decode("utf-8")
+        name = f"{ast.unparse(call.func)}__{node.attr}"
+        lines[node.lineno - 1] = (raw[:node.col_offset] + (name + args).encode("utf-8")
+                                  + raw[node.end_col_offset:]).decode("utf-8")
+        names.append(name)
+    return ("\n".join(lines) + "\n", sorted(set(names))) if names else (module, [])
+
+
 def stub_imports(module: str, refused: frozenset[str] = frozenset()) -> tuple[str, ExternalPlan, list[str]]:
     """Remove unmodeled imports the slice still needs and plan a stub for each use. ``refused`` names
     modules and ``module.member`` entries ESBMC did not convert, which are stubbed too."""
@@ -372,6 +439,15 @@ def stub_imports(module: str, refused: frozenset[str] = frozenset()) -> tuple[st
         lines[node.lineno - 1:node.end_lineno] = [first] + [""] * (node.end_lineno - node.lineno)
     module = "\n".join(lines) + "\n"
     transforms = ["stubbed_imports:" + ",".join(sorted(external))] if external else []
+    module, decorators = _drop_external_decorators(module, external)
+    module, spread = _name_spread_arguments(module, external)
+    module, results = _flatten_result_members(module, external)
+    if results:
+        transforms.append("external_result_members_flattened:" + ",".join(results))
+    if spread:
+        transforms.append("external_spread_arguments_named:" + ",".join(spread))
+    if decorators:
+        transforms.append("external_decorators_removed:" + ",".join(decorators))
     if members:
         transforms.append("esbmc_refused_members_stubbed:" + ",".join(sorted(members)))
     module, flattened = _flatten_chains(module, external)

@@ -143,12 +143,25 @@ def input_types(spec: InputSpec, grounded: Grounded) -> dict[str, str]:
     return {**params, **{f"self.{name}": text for name, text in attributes.items()}}
 
 
+def member_types(spec: InputSpec, grounded: Grounded) -> dict[str, str]:
+    """The spec's stub types, plus ``object`` for a member the code reads further members on
+    (``self.a.b`` in ``self.a.b.c``) when the spec leaves it open."""
+    inputs = input_types(spec, grounded)
+    nested = {owner: OBJECT for owner in grounded.object_members if owner not in inputs}
+    return {**nested, **spec.stubs}
+
+
 def _object_keys(spec: InputSpec, grounded: Grounded) -> list[str]:
-    keys = []
-    for key, text in input_types(spec, grounded).items():
-        shape = parse_type(text) if text else None
+    """``owner.member`` for every member of every input or member typed ``object``, outermost first."""
+    typed = {**input_types(spec, grounded), **member_types(spec, grounded)}
+    keys, pending = [], [key for key in input_types(spec, grounded)]
+    while pending:
+        key = pending.pop(0)
+        shape = parse_type(typed[key]) if typed.get(key) else None
         if shape is not None and shape.kind == OBJECT:
-            keys += [f"{key}.{member}" for member in sorted(grounded.object_members.get(key, {}))]
+            found = [f"{key}.{member}" for member in sorted(grounded.object_members.get(key, {}))]
+            keys += found
+            pending += found
     return keys
 
 
@@ -195,6 +208,30 @@ def ignored_keys(spec: InputSpec, grounded: Grounded) -> list[str]:
             + [f"stub {k}" for k in spec.stubs if k not in stubs])
 
 
+def shape_unpacked(spec: InputSpec, grounded: Grounded) -> InputSpec:
+    """A scalar type for a value the code unpacks into N names becomes an N-tuple of that scalar: an
+    unpacked int cannot be the input the hypothesis means. Container types stay, since a wrong length
+    is itself a reachable failure."""
+    def widen(text: str, count: int) -> str:
+        shape = parse_type(text) if text else None
+        if shape is None or shape.kind not in SCALARS or shape.optional:
+            return text
+        return f"tuple[{', '.join([shape.kind] * count)}]"
+
+    params, attributes, stubs = dict(spec.params), dict(spec.attributes), dict(spec.stubs)
+    declared = {p.name for p in grounded.params if p.annotation and parse_type(p.annotation)}
+    for key, count in [*grounded.unpacked_inputs.items(), *grounded.externals.unpacked.items()]:
+        if key.startswith("self."):
+            attr = key.removeprefix("self.")
+            if attr in attributes and not grounded.attr_annotations.get(attr):
+                attributes[attr] = widen(attributes[attr], count)
+        elif key in params and key not in declared:
+            params[key] = widen(params[key], count)
+        elif key in stubs:
+            stubs[key] = widen(stubs[key], count)
+    return InputSpec(params, attributes, spec.assumptions, stubs)
+
+
 def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
     problems: list[str] = []
     params, attributes = resolved_types(spec, grounded)
@@ -205,8 +242,9 @@ def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
             elif parse_type(text) is None:
                 problems.append(f"{kind} {name!r}: unsupported type {text!r}")
     object_keys = _object_keys(spec, grounded)
+    members = member_types(spec, grounded)
     for key in [*grounded.stub_keys, *object_keys]:
-        text = spec.stubs.get(key, "")
+        text = members.get(key, "")
         shape = parse_type(text) if text else None
         if not text:
             problems.append(f"stub {key!r}: missing return type")
