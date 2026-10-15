@@ -35,6 +35,7 @@ class CodeUnit:
     guards: list[str]                  # Conditions/assertions that may guard unsafe operations.
     metrics: dict[str, int]            # Simple metrics such as line and parameter count.
     kind: str = "function"             # ``function`` or ``module``.
+    caller_context: str = ""           # Call sites from the repo graph (scan mode, variant A12).
 
 
 # ---------------------------------------------------------------------------

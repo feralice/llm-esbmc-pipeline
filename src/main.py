@@ -10,6 +10,7 @@ Modos de execução:
   benchmark   Benchmark V2 end-to-end com métricas vs ground truth.
   benchmark-v1 Benchmark legado dos fluxos A+B+C.
   ensemble    Agrega votos de modelos já rodados (sem chamar LLM/ESBMC).
+  scan        Varre um repositório: grafo de chamadas, detecção por função, motor verify.
   v2          Alias compatível de hybrid.
 
 
@@ -19,6 +20,7 @@ Exemplos:
   python src/main.py --mode hybrid      --input dataset/v1_sintetico --model gpt-4o --bound 5
   python src/main.py --mode benchmark   --input dataset/bugs_reais/funcao_com_bug --ground-truth dataset/bugs_reais/ground_truths.json --backend codex --synth-backend codex
   python src/main.py --mode benchmark-v1 --input dataset/v1_sintetico/ground_truths --model gpt-4o
+  python src/main.py --mode scan --input <repo> --backend codex --scan-limit 20 --output-dir artifacts/scan [--yes]
 """
 from __future__ import annotations
 
@@ -57,7 +59,8 @@ from research_pipeline.llm.backends.factory import (
     _GEMINI_OPENAI_BASE_URL,
     build_analyzer,
 )
-from research_pipeline.llm.schema import V2_FINDINGS_JSON_SCHEMA
+from research_pipeline.llm.prompts import set_context_sources
+from research_pipeline.llm.schema import v2_findings_schema
 from research_pipeline.pipeline import (
     Backend,
     run_pipeline_esbmc_direct,
@@ -65,6 +68,7 @@ from research_pipeline.pipeline import (
     run_pipeline_multi,
 )
 from research_pipeline.preprocess import preprocess_file
+from research_pipeline.scan.pipeline import execute_scan, plan_scan
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.llm_client import LLMClient
@@ -95,7 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--mode",
         choices=[
             "esbmc-only", "llm-only", "hybrid", "hybrid-direct",
-            "benchmark", "benchmark-v1", "ensemble",
+            "benchmark", "benchmark-v1", "ensemble", "scan",
         ],
         default="benchmark",
         help="Modo de execução. hybrid e benchmark usam a V2; benchmark-v1 é o legado. (padrão: benchmark)",
@@ -137,7 +141,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--synth-backend",
-        choices=["openai", "ollama", "google", "codex", "claude_cli"],
+        choices=["openai", "ollama", "google", "codex", "claude_cli", "anthropic"],
         default=None,
         help=(
             "Backend só para a síntese de harness no modo V2 (padrão: mesmo de --backend). "
@@ -289,6 +293,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Motor verify: verifica no arquivo de mesmo nome deste diretório (ex.: arquivo_com_bug) quando existir.",
     )
     parser.add_argument(
+        "--context-sources",
+        default=None,
+        metavar="DIR",
+        help="Variante A11: lê o contexto (imports, classe, chamadores) do arquivo de mesmo nome deste "
+             "diretório; padrão: --verification-sources.",
+    )
+    parser.add_argument(
         "--v2-variants",
         default="",
         metavar="A1,A2",
@@ -305,6 +316,12 @@ def build_parser() -> argparse.ArgumentParser:
             "detecção, para comparar prompts sem gastar verificação."
         ),
     )
+    parser.add_argument("--scan-limit", type=_positive_int, default=None, metavar="N",
+                        help="Modo scan: analisa só as N primeiras funções do ranking (padrão: todas).")
+    parser.add_argument("--scan-include-tests", action="store_true",
+                        help="Modo scan: inclui arquivos e pastas de teste no grafo e na seleção.")
+    parser.add_argument("--yes", action="store_true",
+                        help="Modo scan: confirma o gasto com a LLM; sem ele, só monta o grafo e a seleção.")
     return parser
 
 
@@ -479,7 +496,7 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
         "detector_prompt": sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/system_prompt_v2.txt").read_bytes()
         ).hexdigest(),
-        "detector_schema": sha256(json.dumps(V2_FINDINGS_JSON_SCHEMA, sort_keys=True).encode()).hexdigest(),
+        "detector_schema": sha256(json.dumps(v2_findings_schema(tuple(config.get("v2_variants", ()))), sort_keys=True).encode()).hexdigest(),
         "spec_prompt": sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/input_spec_prompt.txt").read_bytes()
         ).hexdigest(),
@@ -1113,6 +1130,63 @@ def _mode_v2_verify(
     return 0
 
 
+def _build_synthesizer(args: argparse.Namespace, synth_backend: str, synth_model: str,
+                       openai_key: str | None, google_key: str | None) -> LLMClient:
+    return LLMClient(
+        backend=synth_backend,
+        model=synth_model,
+        api_key=(openai_key if synth_backend == "openai" else google_key)
+        if synth_backend in {"openai", "google"}
+        else None if synth_backend == "anthropic"
+        else "ollama",
+        base_url=(args.ollama_base_url or "http://localhost:11434/v1")
+        if synth_backend == "ollama"
+        else _GEMINI_OPENAI_BASE_URL
+        if synth_backend == "google"
+        else "https://api.openai.com/v1/responses",
+        timeout_seconds=args.llm_timeout,
+        request_delay=4.0 if synth_backend == "google" else 0.0,
+    )
+
+
+def mode_scan(args: argparse.Namespace) -> int:
+    root = Path(args.input[0])
+    if len(args.input) != 1 or not root.is_dir():
+        print("O modo scan recebe um único diretório de repositório em --input.", file=sys.stderr)
+        return 1
+    plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
+                     include_tests=args.scan_include_tests)
+    if not args.yes:
+        print(f"Simulação: nenhuma chamada à LLM. Seleção em {plan.output_dir / 'scan_selection.json'}; "
+              "rode de novo com --yes para gastar as chamadas.")
+        return 0
+    backend: Backend = args.backend or _infer_backend(args.model or "")
+    model = "" if backend in {"codex", "claude_cli"} and not args.model else _resolve_model(args.model, backend)
+    synth_backend = args.synth_backend or backend
+    synth_model = args.synth_model or ("" if synth_backend in {"codex", "claude_cli"}
+                                       else model if synth_backend == backend else _DEFAULT_MODEL[synth_backend])
+    anthropic_key, openai_key, google_key = _resolve_keys(args)
+    try:
+        analyzer = build_analyzer(backend=backend, llm_model=model, openai_api_key=openai_key,
+                                  anthropic_api_key=anthropic_key, google_api_key=google_key,
+                                  ollama_base_url=args.ollama_base_url, timeout_seconds=args.llm_timeout,
+                                  include_smells=False, v2_detection=True, v2_variants=plan.variants)
+        spec_llm = _build_synthesizer(args, synth_backend, synth_model, openai_key, google_key)
+    except ValueError as exc:
+        print(f"Erro: {exc}", file=sys.stderr)
+        return 1
+    if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
+        args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
+    try:
+        report = execute_scan(plan, analyzer=analyzer, spec_llm=spec_llm, resume=args.resume,
+                              esbmc_command=args.esbmc_command, bound=args.bound, timeout_seconds=args.timeout,
+                              strategy=args.spec_strategy)
+    except ValueError as exc:
+        print(f"Erro: {exc}", file=sys.stderr)
+        return 1
+    return 2 if report["detection"]["failed"] else 0
+
+
 def mode_v2(args: argparse.Namespace) -> int:
     variants = tuple(v for v in args.v2_variants.split(",") if v)
     input_paths = _resolve_input_paths(args.input)
@@ -1163,20 +1237,9 @@ def mode_v2(args: argparse.Namespace) -> int:
             v2_detection=True,
             v2_variants=variants,
         )
-        synthesizer = LLMClient(
-            backend=synth_backend,
-            model=synth_model,
-            api_key=(openai_key if synth_backend == "openai" else google_key)
-            if synth_backend in {"openai", "google"}
-            else "ollama",
-            base_url=(args.ollama_base_url or "http://localhost:11434/v1")
-            if synth_backend == "ollama"
-            else _GEMINI_OPENAI_BASE_URL
-            if synth_backend == "google"
-            else "https://api.openai.com/v1/responses",
-            timeout_seconds=args.llm_timeout,
-            request_delay=4.0 if synth_backend == "google" else 0.0,
-        )
+        context_sources = args.context_sources or args.verification_sources
+        set_context_sources(Path(context_sources) if context_sources else None)
+        synthesizer = _build_synthesizer(args, synth_backend, synth_model, openai_key, google_key)
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
@@ -1197,6 +1260,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "excluded_patch_context_files": len(all_input_paths) - len(input_paths),
         "verification_sources": args.verification_sources,
         "verification_sources_strict": args.verification_sources_strict,
+        "context_sources": args.context_sources or args.verification_sources,
         "spec_strategy": args.spec_strategy,
         "bound": args.bound,
         "timeout": args.timeout,
@@ -1451,6 +1515,7 @@ def main() -> int:
         "benchmark":  mode_benchmark,
         "benchmark-v1": mode_benchmark_v1,
         "ensemble":   mode_ensemble,
+        "scan":       mode_scan,
     }
     return dispatch[args.mode](args)
 
