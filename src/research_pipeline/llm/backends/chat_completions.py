@@ -50,7 +50,7 @@ class ChatCompletionsAnalyzer:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants)},
-                {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells)},
+                {"role": "user", "content": build_user_prompt(unit, include_smells=self.include_smells, v2_variants=self.v2_variants)},
             ],
             "response_format": {"type": "json_object"},
             "temperature": 0,

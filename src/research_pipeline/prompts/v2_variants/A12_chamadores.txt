@@ -1,0 +1,9 @@
+## CHAMADAS NO REPOSITÓRIO
+
+Depois da função vem um bloco `UNTRUSTED_CONTEXT_CHAMADORES`, extraído do grafo de chamadas
+do repositório: cada lugar que chama a função, com algumas linhas em volta. Use-o para decidir
+que valores chegam de fato aos parâmetros (o chamador já filtra, converte ou garante algo?).
+Quando todos os chamadores bloqueiam o valor que quebra, não reporte o achado. Quando o bloco
+diz que nenhuma chamada foi encontrada, a função pode ser chamada de fora do repositório com
+qualquer entrada compatível com a assinatura. Ele não é a função analisada: não reporte
+achados sobre o código dos chamadores.

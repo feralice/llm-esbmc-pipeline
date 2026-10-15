@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import json
+from dataclasses import replace
 
 from ..ast_utils import explain_ast_mismatch, expression_exists_in_executable_ast
 from ..models import CONFIDENCE_SOURCE_LLM_SELF_REPORT, CodeUnit, Finding
@@ -76,6 +77,7 @@ def finding_from_dict(data: dict) -> Finding:
             "guard_evidence": str(metadata_raw.get("guard_evidence", "")),
             "missing_guard": str(metadata_raw.get("missing_guard", "")),
             "context_needed": _metadata_strings(metadata_raw.get("context_needed", [])),
+            "crash_expression": str(metadata_raw.get("crash_expression", "")),
             "expected_exception": str(data.get("expected_exception", "")),
             "violated_property": str(data.get("violated_property", "")),
         },
@@ -107,6 +109,11 @@ def normalize_findings(unit: CodeUnit, findings: list[Finding], *, v2_detection:
 
         if v2_detection:
             normalized.append(_v2_finding(finding, finding_id))
+            crash = finding.metadata.get("crash_expression", "").strip()
+            if crash and crash != finding.metadata.get("expression", "").strip():
+                crash_id = _unique_finding_id(f"{finding_id}:crash", f"{finding_id}:crash", seen_ids)
+                normalized.append(_v2_finding(replace(finding, metadata={**finding.metadata, "expression": crash}),
+                                              crash_id))
             continue
         if finding.category not in SUPPORTED_CATEGORIES:
             normalized.append(_out_of_scope_finding(finding, finding_id))

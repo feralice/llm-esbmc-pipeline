@@ -46,7 +46,7 @@ class CodexAnalyzer:
         try:
             response = self._run_cli(
                 load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants),
-                build_user_prompt(unit, include_smells=self.include_smells),
+                build_user_prompt(unit, include_smells=self.include_smells, v2_variants=self.v2_variants),
             )
             payload = json.loads(strip_markdown_json(response["output_text"]))
             findings = [finding_from_dict(item) for item in coerce_findings_payload(payload)]

@@ -8,7 +8,7 @@ import time
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
-from ..schema import FINDINGS_JSON_SCHEMA, V2_FINDINGS_JSON_SCHEMA
+from ..schema import FINDINGS_JSON_SCHEMA, v2_findings_schema
 from ..telemetry import response_event
 
 # Tools this analysis task never needs: the function source is already in the
@@ -52,7 +52,7 @@ class ClaudeCliAnalyzer:
         try:
             response = self._run_cli(
                 load_system_prompt(include_smells=self.include_smells, v2_detection=self.v2_detection, v2_variants=self.v2_variants),
-                build_user_prompt(unit, include_smells=self.include_smells),
+                build_user_prompt(unit, include_smells=self.include_smells, v2_variants=self.v2_variants),
             )
             findings = [finding_from_dict(item) for item in coerce_findings_payload(response["payload"])]
             result = normalize_findings(unit, findings, v2_detection=self.v2_detection)
@@ -74,7 +74,7 @@ class ClaudeCliAnalyzer:
 
 
     def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
-        schema = schema or (V2_FINDINGS_JSON_SCHEMA if self.v2_detection else FINDINGS_JSON_SCHEMA)["schema"]
+        schema = schema or (v2_findings_schema(self.v2_variants) if self.v2_detection else FINDINGS_JSON_SCHEMA)["schema"]
         command = [
             self.claude_command, "--print",
             "--output-format", "json",

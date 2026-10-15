@@ -1,0 +1,38 @@
+## EXEMPLOS RESOLVIDOS
+
+Os exemplos abaixo mostram o formato e o critério; não têm relação com a função que você vai analisar.
+
+Exemplo 1: exceção alcançável, reportada.
+
+def target_function(scores, k):
+    top = sorted(scores, reverse=True)
+    return top[k - 1]
+
+{"findings": [{"finding_type": "suspected_bug", "metadata": {"expression": "top[k - 1]", "line": 3,
+"operands": ["top", "k"], "guard_evidence": "none", "missing_guard": "k <= len(scores)",
+"context_needed": []}, "explanation": "k vem de fora sem restrição e não há guarda sobre o tamanho de
+scores. Com scores vazio, ou k maior que len(scores), top[k - 1] lê fora da lista.",
+"violated_property": "IndexError em top[k - 1]", "verifiable": true}]}
+
+Exemplo 2: operação perigosa protegida, nada a reportar.
+
+def target_function(total, count):
+    if count == 0:
+        return 0.0
+    return total / count
+
+{"findings": []}
+A divisão só é alcançada com count diferente de zero: a guarda bloqueia exatamente o valor que quebra.
+
+Exemplo 3: resultado errado sem exceção, reportado como não verificável.
+
+def target_function(prices, discount):
+    """Aplica o desconto percentual a cada preço."""
+    return [p - discount for p in prices]
+
+{"findings": [{"finding_type": "suspected_bug", "metadata": {"expression": "p - discount", "line": 3,
+"operands": ["p", "discount"], "guard_evidence": "none", "missing_guard": "p * (1 - discount / 100)",
+"context_needed": []}, "explanation": "A docstring pede desconto percentual, mas o código subtrai o valor
+absoluto: com p = 50 e discount = 10 devolve 40 em vez de 45. Nada quebra.",
+"violated_property": "resultado errado: subtrai o desconto em vez de aplicar a porcentagem",
+"verifiable": false}]}

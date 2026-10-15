@@ -17,6 +17,7 @@ for variant in "$@"; do
     [[ -f $out/v2_checkpoint.json ]] && resume=(--resume)
     PYTHONPATH=src "$PY" src/main.py --mode hybrid --v2-stage detection \
       --input "${files[@]}" --ground-truth dataset/bugs_reais/ground_truths.json \
+      --context-sources dataset/bugs_reais/arquivo_com_bug \
       --backend claude_cli --model claude-sonnet-5-5 "${flags[@]}" "${resume[@]}" \
       --output-dir "$out" >> "$out.log" 2>&1 && break
     sleep 600  # usage limit or network: wait before resuming

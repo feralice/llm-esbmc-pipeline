@@ -9,7 +9,7 @@ from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
 from ..rate_limit import is_daily_quota_exhausted
-from ..schema import FINDINGS_JSON_SCHEMA, V2_FINDINGS_JSON_SCHEMA
+from ..schema import FINDINGS_JSON_SCHEMA, v2_findings_schema
 from ..telemetry import response_event
 
 
@@ -49,10 +49,10 @@ class OpenAIResponsesAnalyzer:
                 },
                 {
                     "role": "user",
-                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells)}],
+                    "content": [{"type": "input_text", "text": build_user_prompt(unit, include_smells=self.include_smells, v2_variants=self.v2_variants)}],
                 },
             ],
-            "text": {"format": {"type": "json_schema", **(V2_FINDINGS_JSON_SCHEMA if self.v2_detection else FINDINGS_JSON_SCHEMA)}},
+            "text": {"format": {"type": "json_schema", **(v2_findings_schema(self.v2_variants) if self.v2_detection else FINDINGS_JSON_SCHEMA)}},
         }
 
         started = time.monotonic()

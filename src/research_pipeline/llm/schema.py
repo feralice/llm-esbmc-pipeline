@@ -99,3 +99,18 @@ V2_FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"] = {
     "properties": _V2_ITEM_PROPERTIES,
     "required": list(_V2_ITEM_PROPERTIES),
 }
+
+
+def v2_findings_schema(variants: tuple[str, ...] = ()) -> dict:
+    """The V2 schema with the fields some prompt variants ask for (A7: ``analysis``, A9: ``crash_expression``)."""
+    schema = deepcopy(V2_FINDINGS_JSON_SCHEMA)
+    body = schema["schema"]
+    if "A9" in variants:
+        metadata = body["properties"]["findings"]["items"]["properties"]["metadata"]
+        metadata["properties"]["crash_expression"] = {"type": "string"}
+        metadata["required"].append("crash_expression")
+    if "A7" in variants:
+        # Declared first so the model writes its analysis before committing to findings.
+        body["properties"] = {"analysis": {"type": "string"}, **body["properties"]}
+        body["required"] = ["analysis", *body["required"]]
+    return schema
