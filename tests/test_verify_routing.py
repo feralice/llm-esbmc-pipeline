@@ -1,6 +1,6 @@
 import pytest
 
-from research_pipeline.verify.routing import API_AGENT, CLAUDE_AGENT, DYNAMIC, PINNED, route
+from research_pipeline.verify.routing import API_AGENT, CLAUDE_AGENT, DYNAMIC, LLM_INPUT, PINNED, route
 
 
 @pytest.mark.parametrize(("verdict", "reason", "expected"), [
@@ -20,8 +20,8 @@ from research_pipeline.verify.routing import API_AGENT, CLAUDE_AGENT, DYNAMIC, P
     ("UNSUPPORTED", "receiver reads inherited member(s): make_block", (CLAUDE_AGENT, DYNAMIC)),
     ("UNSUPPORTED", "ERROR: uncaught exception [16irep2_cast_error]: irep2", (DYNAMIC,)),
     ("GROUNDING_FAILED", "function 'rnn._step' not found (or ambiguous)", (CLAUDE_AGENT,)),
-    ("ESBMC_TIMEOUT", "ESBMC direto excedeu o tempo limite de 180s.", (DYNAMIC, PINNED)),
-    ("UNSUPPORTED", "ERROR: Out of memory", (DYNAMIC, PINNED)),
+    ("ESBMC_TIMEOUT", "ESBMC direto excedeu o tempo limite de 180s.", (DYNAMIC, LLM_INPUT, PINNED)),
+    ("UNSUPPORTED", "ERROR: Out of memory", (DYNAMIC, LLM_INPUT, PINNED)),
     ("ESBMC_ERROR", "ESBMC direto: resultado inconclusivo.", (DYNAMIC,)),
     ("CONFIRMED", "", ()),
     ("NOT_CONFIRMED", "", ()),

@@ -128,6 +128,7 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
         "nondet_bool": lambda: chooser.pick(domains[bool]),
         "nondet_str": lambda: chooser.pick(domains[str]),
         "nondet_list": nondet_list,
+        "nondet_bytes": lambda size=2: bytes(chooser.pick(domains[int]) % 256 for _ in range(size)),
         "__ESBMC_assume": assume,
         # Names an agent-written harness imports from ESBMC's Python module.
         "assume": assume,
@@ -180,7 +181,8 @@ def _run_once(code, chooser, domains, max_list, target):
         line = in_target[-1].lineno if in_target else (frames[-1].lineno if frames else None)
         reproduced = bool(in_target) and any(start <= line <= end for start, end in spans)
         return {"status": "reproduced" if reproduced else "other_failure",
-                "exception_type": type(exc).__name__, "line": line, "inputs": chooser.values}
+                "exception_type": type(exc).__name__, "line": line, "inputs": chooser.values,
+                "message": str(exc)[:300], "raised_at": frames[-1].lineno if frames else None}
     finally:
         signal.setitimer(signal.ITIMER_REAL, 0)
         sys.stdout = real_stdout
@@ -223,7 +225,10 @@ def main(program_path, config_path, output_path):
     if config.get("random_runs") and not config.get("seeds_only"):
         rng = random.Random(config.get("seed", 0))
         passes.append((_random_domains(rng), config["random_runs"], rng))
+    constants = [c for c in config.get("str_constants", []) if c not in DOMAINS[str]]
     for index, (domains, budget, *random_pass) in enumerate(passes):
+        if constants and not random_pass:
+            domains = {**domains, str: [*domains[str], *constants]}
         # Each pass gets its share of the time left, so a slow exhaustive pass cannot starve the random one.
         pass_deadline = time.monotonic() + (deadline - time.monotonic()) / (len(passes) - index)
         vector, used = [], 0

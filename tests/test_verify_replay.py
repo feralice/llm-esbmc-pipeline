@@ -147,3 +147,24 @@ def test_replay_reproduces_a_bug_only_the_counterexample_reaches():
     assert concrete_replay(program, "deep").status == "not_reproduced"
     seeded = concrete_replay(program, "deep", seeds={"int": [8], "float": []})
     assert (seeded.status, seeded.exception_type) == ("reproduced", "ZeroDivisionError")
+
+
+FLAG = '''def strip_flag(args):
+    i = args.index("-u")
+    args.pop(i + 1)
+    return args
+
+
+def main() -> None:
+    args: list[str] = nondet_list(2, elem_type=nondet_str())
+    strip_flag(args)
+
+
+main()
+'''
+
+
+def test_string_constants_of_the_target_join_the_replay_domain():
+    program = Program(FLAG, 8, ((3, 3),), (), target_range=(1, 4))
+    verdict = concrete_replay(program, "strip_flag")
+    assert (verdict.status, verdict.exception_type, verdict.line) == ("reproduced", "IndexError", 3)

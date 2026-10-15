@@ -78,16 +78,18 @@ def pin_program(source: str, inputs: list) -> str | None:
 
 def _found_inputs(steps: list[dict]) -> list | None:
     for step in reversed(steps):
-        if step.get("arm") == "dynamic" and step.get("verdict") == "FUZZ_FOUND":
-            return (step.get("replay") or {}).get("inputs")
+        inputs = (step.get("replay") or {}).get("inputs")
+        if step.get("arm") in {"dynamic", "llm_input"} and step.get("verdict") == "FUZZ_FOUND" and inputs:
+            return inputs
     return None
 
 
 def pinned_check(result: dict, *, work_dir: Path, esbmc: str, bound: int, timeout_seconds: int) -> dict:
-    """``result["steps"]`` holds the orchestrator's earlier arms; the pinned input is the dynamic arm's."""
+    """``result["steps"]`` holds the orchestrator's earlier arms; the pinned input is the crash the search
+    or the LLM-input arm found."""
     inputs = _found_inputs(result.get("steps") or [])
     if inputs is None or not result.get("program_path"):
-        return {"verdict": PINNED_UNAVAILABLE, "reason": "no crashing input from the dynamic arm"}
+        return {"verdict": PINNED_UNAVAILABLE, "reason": "no crashing input from an earlier arm"}
     hypothesis = result["hypothesis"]
     pinned = pin_program(Path(result["program_path"]).read_text(encoding="utf-8"), inputs)
     replay_path = replay_program_path(result)

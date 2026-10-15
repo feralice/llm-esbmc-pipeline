@@ -3,9 +3,13 @@ from pathlib import Path
 from research_pipeline.verify import esbmc_run
 from research_pipeline.models import ESBMCDirectResult
 from research_pipeline.verify import agent_arm
-from research_pipeline.verify.agent_arm import AGENT_FAILED, run_agent_arm
+import ast
+
+from research_pipeline.verify.agent_arm import (AGENT_FAILED, FIXED_ALSO_FAILS, STUB_INDUCED, run_agent_arm,
+                                               stub_cause)
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.outcome import CONFIRMED, UNVALIDATED
+from research_pipeline.verify.replay import ReplayVerdict
 
 ORIGINAL = "import lib\n\n\ndef ratio(total, count):\n    lib.log(total)\n    return total // count\n"
 
@@ -84,6 +88,43 @@ def test_agent_harness_is_checked_independently_and_confirmed(tmp_path, monkeypa
     assert result["replay"]["exception_type"] == "ZeroDivisionError"
     assert "total // count" in agent.calls[0] and "esbmc-verification" in agent.calls[0]
     assert "`esbmc harness.py --unwind 5" in agent.calls[0]
+
+
+def test_exception_raised_inside_an_invented_stub_is_rejected(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    stubbed = PRESERVED.replace("def ratio(", """class Count:
+    def __rfloordiv__(self, other: int) -> int:
+        return other // 0
+
+
+def ratio(""").replace("    c: int = nondet_int()\n    ratio(t, c)", "    ratio(t, Count())")
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(stubbed),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == STUB_INDUCED, result
+    assert "Count.__rfloordiv__" in result["reason"]
+
+
+def test_control_replays_the_fixed_version_with_the_same_inputs(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc(stdout=TRACE))
+    guarded = tmp_path / "guarded.py"
+    guarded.write_text(ORIGINAL.replace("    return total // count", "    return total // count if count else 0"))
+    unguarded = tmp_path / "unguarded.py"
+    unguarded.write_text(ORIGINAL.replace("return total // count", "return (total // count)"))
+    def run(fixed):
+        return run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / fixed.stem, run_agent=_agent(PRESERVED),
+                             esbmc_command=["esbmc"], bound=5, timeout_seconds=30, fixed_path=fixed)
+    assert run(guarded)["verdict"] == CONFIRMED
+    assert run(unguarded)["verdict"] == FIXED_ALSO_FAILS
+
+
+def test_exception_naming_an_invented_class_is_rejected():
+    harness = ast.parse("class Other:\n    pass\n\n\ndef eq(a, b):\n    return len(b)\n")
+    original = ast.parse("def eq(a, b):\n    return len(b)\n")
+    replay = ReplayVerdict("reproduced", "TypeError", line=6, raised_at=6,
+                           message="object of type 'Other' has no len()")
+    assert "Other" in stub_cause(replay, harness, original)
+    assert stub_cause(ReplayVerdict("reproduced", "KeyError", line=6, raised_at=6, message="3"),
+                      harness, original) == ""
 
 
 def test_simplified_function_confirms_only_when_esbmc_inputs_break_the_original(tmp_path, monkeypatch):

@@ -9,6 +9,7 @@ DYNAMIC = "dynamic"
 API_AGENT = "api_agent"
 CLAUDE_AGENT = "claude_agent"
 PINNED = "pinned"
+LLM_INPUT = "llm_input"
 
 _DONE = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
 # Context outside the function: an agent that can open the project may supply it.
@@ -28,9 +29,9 @@ _ROUTES = {
     # No program exists to replay.
     "grounding": (CLAUDE_AGENT,),
     "esbmc_limit": (DYNAMIC,),
-    # ESBMC accepts the program but the formula is too big: a crashing input found by the search
-    # lets it check that one path.
-    "solver": (DYNAMIC, PINNED),
+    # ESBMC accepts the program but the formula is too big: a crashing input found by the search, or
+    # proposed by an LLM when the search finds none, lets it check that one path.
+    "solver": (DYNAMIC, LLM_INPUT, PINNED),
 }
 
 

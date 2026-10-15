@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import functools
 import json
 import re
@@ -26,6 +27,8 @@ class ReplayVerdict:
     runs: int = 0
     reason: str = ""
     inputs: list | None = None  # the nondet values of the run, in call order
+    message: str = ""
+    raised_at: int | None = None  # innermost line of the program in the traceback
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -64,6 +67,28 @@ def counterexample_seeds(output: str, driver: str | None) -> dict[str, list]:
     return seeds
 
 
+_MAX_CONSTANTS = 6
+
+
+def string_constants(source: str, target_range: tuple[int, int]) -> list[str]:
+    """Short string literals of the target, docstring aside: the values its comparisons and searches
+    look for, which the small default domain never produces."""
+    first, last = target_range
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
+    docstrings = {id(node.body[0].value) for node in ast.walk(tree)
+                  if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body
+                  and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant)}
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Constant) and isinstance(node.value, str) and id(node) not in docstrings
+                and first <= node.lineno <= last and 0 < len(node.value) <= 30 and node.value not in found):
+            found.append(node.value)
+    return sorted(found, key=lambda text: (len(text), text))[:_MAX_CONSTANTS]
+
+
 @functools.cache
 def _no_network_prefix() -> tuple[str, ...]:
     """Run the replay in a new network namespace when the host allows it (unprivileged unshare)."""
@@ -98,7 +123,7 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
     config = {"function": function, "spans": spans, "range": target_range,
               "max_runs": max_runs, "deadline_seconds": max(1, timeout_seconds - 3), "seeds": seeds or {},
               "seeds_only": seeds_only, "random_runs": random_runs, "seed": seed,
-              "inputs": inputs}
+              "inputs": inputs, "str_constants": string_constants(source, tuple(target_range))}
     try:
         with tempfile.TemporaryDirectory(prefix="llm-esbmc-verify-") as temp_dir:
             directory = Path(temp_dir)
@@ -129,4 +154,6 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
         runs=int(data.get("runs", 0)),
         reason=str(data.get("reason", "")),
         inputs=data.get("inputs"),
+        message=str(data.get("message", "")),
+        raised_at=data.get("raised_at"),
     )

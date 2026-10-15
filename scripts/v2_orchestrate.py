@@ -19,9 +19,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.v2_evaluator import at_bug_line  # noqa: E402
-from research_pipeline.verify.agent_arm import make_agent, run_agent_arm  # noqa: E402
+from research_pipeline.verify.agent_arm import DEFAULT_MODELS, make_agent, run_agent_arm  # noqa: E402
 from research_pipeline.verify.dynamic import FUZZ_FOUND, dynamic_check  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
+from research_pipeline.verify.llm_input import llm_input_check  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 from research_pipeline.verify.orchestrator import orchestrate  # noqa: E402
 from research_pipeline.verify.pinned import pinned_check  # noqa: E402
@@ -67,22 +68,34 @@ def _agent_arm(backend: str, args: argparse.Namespace):
 
     def run(result: dict) -> dict:
         h = BugHypothesis(**{k: v for k, v in result["hypothesis"].items() if k != "hypothesis_id"})
+        fixed = Path(args.fixed_sources) / Path(h.file).name if args.fixed_sources else None
         data = run_agent_arm(h, work_dir=Path(args.out) / f"{backend}_cases", run_agent=agent,
                              esbmc_command=[args.esbmc], bound=args.bound, timeout_seconds=args.timeout,
                              agent_timeout=args.agent_timeout, source_path=verification_source(h, sources),
-                             skill=skill)
+                             skill=skill, fixed_path=fixed if fixed and fixed.exists() else None)
         return agent_outcome(data)
     return run
+
+
+def _llm_input_arm(args: argparse.Namespace):
+    from research_pipeline.verify.llm_client import LLMClient  # noqa: PLC0415 - only this arm needs a key
+
+    llm = LLMClient(backend=args.api_backend, model=args.agent_model or DEFAULT_MODELS.get(args.api_backend))
+    return lambda r: llm_input_check(r, llm=llm, work_dir=Path(args.out) / "llm_input_cases")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("report")
     parser.add_argument("--only-file", default=None, help="JSON with 'ids' (v2_hard_set.py)")
-    parser.add_argument("--arms", default="dynamic", help="subset of dynamic,pinned,api_agent,claude_agent")
+    parser.add_argument("--arms", default="dynamic", help="subset of dynamic,llm_input,pinned,api_agent,claude_agent")
     parser.add_argument("--api-backend", default="claude_cli", help="LLMClient backend of the API agent")
     parser.add_argument("--agent-model", default=None)
+    parser.add_argument("--api-agent-everywhere", action="store_true",
+                        help="send every result without a formal verdict to api_agent only, whatever its stop reason")
     parser.add_argument("--verification-sources", default="dataset/bugs_reais/arquivo_com_bug")
+    parser.add_argument("--fixed-sources", default="dataset/bugs_reais/arquivo_corrigido",
+                        help="fixed versions for the agent's control replay; empty to skip (scan mode)")
     parser.add_argument("--ground-truth", default="dataset/bugs_reais/ground_truths.json")
     parser.add_argument("--esbmc", default="/usr/local/bin/esbmc")
     parser.add_argument("--bound", type=int, default=5)
@@ -98,6 +111,7 @@ def main() -> int:
     builders = {"dynamic": lambda: dynamic_check,
                 "api_agent": lambda: _agent_arm(args.api_backend, args),
                 "claude_agent": lambda: _agent_arm("claude", args),
+                "llm_input": lambda: _llm_input_arm(args),
                 "pinned": lambda: lambda r: pinned_check(r, work_dir=Path(args.out) / "pinned_cases",
                                                          esbmc=args.esbmc, bound=args.bound,
                                                          timeout_seconds=args.timeout)}
@@ -107,7 +121,8 @@ def main() -> int:
     state_path = out / "orchestrator_state.json"
     config = {"report": args.report, "only_file": args.only_file, "arms": sorted(arms),
               "api_backend": args.api_backend, "agent_model": args.agent_model, "bound": args.bound,
-              "timeout": args.timeout}
+              "timeout": args.timeout, "api_agent_everywhere": args.api_agent_everywhere,
+              "fixed_sources": args.fixed_sources}
     state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {}
     if state.get("config") != config:
         state = {"config": config}
@@ -115,7 +130,8 @@ def main() -> int:
     def save() -> None:
         state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
-    rows = orchestrate(results, arms=arms, state=state, save=save)
+    route = (lambda r: () if r["verdict"] in _FORMAL else ("api_agent",)) if args.api_agent_everywhere else None
+    rows = orchestrate(results, arms=arms, state=state, save=save, **({"route": route} if route else {}))
     items = {i["id"]: i for i in json.loads(Path(args.ground_truth).read_text(encoding="utf-8"))["items"]}
     control = json.loads(Path(args.control).read_text(encoding="utf-8"))["rows"] if args.control else None
     summary = summarize(rows, results, items, control=control)

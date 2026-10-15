@@ -16,14 +16,14 @@ from urllib import error, request
 from ..llm.rate_limit import is_daily_quota_exhausted
 from ..llm.telemetry import response_event
 
-_FENCE = re.compile(r"```(?:python)?\s*\n(.*?)```", re.DOTALL)
+_FENCE = re.compile(r"```(?:python|json)?\s*\n(.*?)```", re.DOTALL)
 
 
 _MAX_UNTRUSTED_CHARS = 32_000
 
 
 def _strip_fence(text: str) -> str:
-    """Return the code inside the first ```python fence, or the text as-is."""
+    """Return the text inside the first ```python or ```json fence, or the text as-is."""
     match = _FENCE.search(text)
     if match:
         return match.group(1).strip() + "\n"
@@ -71,10 +71,10 @@ class LLMClient:
         claude_command: str = "claude",
         request_delay: float = 0.0,
     ) -> None:
-        if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
+        if backend not in {"openai", "ollama", "google", "codex", "claude_cli", "anthropic"}:
             raise ValueError(
                 f"synth backend {backend!r} not supported yet; "
-                "use 'openai', 'google', 'ollama', 'codex' or 'claude_cli'."
+                "use 'openai', 'google', 'ollama', 'codex', 'claude_cli' or 'anthropic'."
             )
         self.backend = backend
         self.model = model
@@ -88,8 +88,10 @@ class LLMClient:
         self.codex_command = codex_command
         self.claude_command = claude_command
         self.api_key = api_key or os.environ.get(
-            "GEMINI_API_KEY" if backend == "google" else "OPENAI_API_KEY"
+            {"google": "GEMINI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}.get(backend, "OPENAI_API_KEY")
         )
+        if backend == "anthropic" and not self.api_key:
+            raise ValueError("ANTHROPIC_API_KEY não configurada para a síntese de harness.")
         if backend == "openai" and not self.api_key:
             raise ValueError("OPENAI_API_KEY não configurada para a síntese de harness.")
         if backend == "google" and not self.api_key:
@@ -128,6 +130,8 @@ class LLMClient:
                 raw_response = self._run_codex(system_prompt, user_prompt)
             elif self.backend == "claude_cli":
                 raw_response = self._run_claude_cli(system_prompt, user_prompt)
+            elif self.backend == "anthropic":
+                raw_response = self._run_anthropic(system_prompt, user_prompt)
             else:
                 raw_response = self._post_json(payload)
         except Exception as exc:
@@ -288,6 +292,38 @@ class LLMClient:
                 "output_tokens": usage.get("output_tokens"),
             },
         }
+
+    _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+
+    def _run_anthropic(self, system_prompt: str, user_prompt: str, _retries: int = 3) -> dict:
+        """Messages API, no extended thinking; returns the {"output_text", "usage", "model"} shape."""
+        body = json.dumps({
+            "model": self.model, "max_tokens": 16000, "system": system_prompt,
+            "messages": [{"role": "user", "content": user_prompt}],
+        }).encode("utf-8")
+        headers = {"x-api-key": self.api_key, "anthropic-version": "2023-06-01",
+                   "Content-Type": "application/json"}
+        for attempt in range(_retries):
+            try:
+                with request.urlopen(request.Request(self._ANTHROPIC_URL, data=body, headers=headers, method="POST"),
+                                     timeout=self.timeout_seconds) as response:
+                    data = json.loads(response.read().decode("utf-8"))
+                break
+            except error.HTTPError as exc:
+                details = exc.read().decode("utf-8", errors="replace")
+                if exc.code in (429, 500, 502, 503, 504, 529) and attempt < _retries - 1:
+                    time.sleep(30 if exc.code == 429 else 2 ** (attempt + 2))
+                    continue
+                raise RuntimeError(f"Falha ao chamar Anthropic Messages API: {exc.code} {details}") from exc
+            except (error.URLError, TimeoutError) as exc:
+                if attempt < _retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise RuntimeError(f"Falha de rede ao chamar Anthropic Messages API: {exc}") from exc
+        if data.get("stop_reason") == "max_tokens":
+            raise RuntimeError("Anthropic Messages API: resposta cortada em max_tokens.")
+        text = "".join(block.get("text", "") for block in data.get("content", []) if block.get("type") == "text")
+        return {"output_text": text, "model": data.get("model", self.model), "usage": data.get("usage", {})}
 
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         if self.request_delay > 0:

@@ -31,6 +31,12 @@ AGENT_FAILED = "AGENT_FAILED"
 # The agent simplified the target's body for ESBMC, and ESBMC's counterexample values, replayed on the
 # ORIGINAL body under CPython, raise the hypothesis's exception at the suspect expression.
 CONFIRMED_SIMPLIFIED = "CONFIRMED_SIMPLIFIED"
+# The replayed exception comes from code the agent invented (a stub raised it, or it names a stub class),
+# not from the real code: a confirmation of the harness, not of the bug.
+STUB_INDUCED = "STUB_INDUCED"
+# Evaluation only: the harness with the target swapped for its fixed version, fed the same ESBMC inputs,
+# still raises at the suspect expression, so the crash is not the bug the fix removed.
+FIXED_ALSO_FAILS = "FIXED_ALSO_FAILS"
 PLUGIN_DIR = Path.home() / ".claude/plugins/cache/esbmc-marketplace/esbmc-plugin/1.1.0"
 
 RunAgent = Callable[[str, Path, int], str]
@@ -53,7 +59,9 @@ body unchanged (you may add type annotations to its signature), plus whatever mi
 classes or helper definitions ESBMC needs, and a driver that calls `{function}` with nondet inputs
 and runs at module level. Keep every stub inside harness.py: do not create or import other local
 modules (the CPython replay runs harness.py alone). Do not add assert statements and do not guard
-the suspect expression.
+the suspect expression. Classes you write for the inputs must support every operation the target
+applies to them (len, iteration, indexing, comparison) and must not raise: an exception raised inside
+your stubs, or caused by an operation a stub lacks, is rejected as an artefact of the harness.
 {simplify}Run `{esbmc} harness.py --unwind {bound} --multi-property` (always this binary) and fix harness.py until ESBMC reaches a
 verdict (VERIFICATION FAILED or SUCCESSFUL) instead of a conversion error. Then reply DONE.
 """
@@ -114,6 +122,10 @@ def api_agent(llm, *, rounds: int = 8, esbmc: str = "/usr/local/bin/esbmc", boun
                 reply = llm.complete(system, task + feedback)
             except Exception as exc:  # noqa: BLE001 - an API failure ends this case, not the run
                 return f"API error: {type(exc).__name__}: {str(exc)[:200]}"
+            usage = reply.telemetry or {}
+            with (cwd / "llm_usage.jsonl").open("a", encoding="utf-8") as log:
+                log.write(json.dumps({"model": reply.model, "prompt_tokens": usage.get("prompt_tokens"),
+                                      "completion_tokens": usage.get("completion_tokens")}) + "\n")
             harness = reply.harness.strip()
             if not harness:
                 feedback = "\n\nYour reply had no python code block. Reply with the complete harness.py."
@@ -162,9 +174,11 @@ def run_agent_arm(
     h: BugHypothesis, *, work_dir: Path, run_agent: RunAgent, esbmc_command: list[str] | None,
     bound: int, timeout_seconds: int, agent_timeout: int = 900, source_path: Path | None = None,
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
+    fixed_path: Path | None = None,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py;
-    ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept."""
+    ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept;
+    ``fixed_path``, the fixed version of the source, turns on the evaluation control."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -192,8 +206,9 @@ def run_agent_arm(
     if not harness_path.exists():
         return finish(AGENT_FAILED, "agent wrote no harness.py")
     harness = harness_path.read_text(encoding="utf-8", errors="replace")
+    fixed = Path(fixed_path).read_text(encoding="utf-8", errors="replace") if fixed_path else None
     verdict, reason = evaluate_harness(h, harness, original, case_dir, result, esbmc_command=esbmc_command,
-                                       bound=bound, timeout_seconds=timeout_seconds)
+                                       bound=bound, timeout_seconds=timeout_seconds, fixed=fixed)
     if plugin_command and result.get("target_preserved"):
         result["plugin_report"] = plugin_report(run_agent, plugin_command, case_dir, agent_timeout)
     return finish(verdict, reason)
@@ -213,7 +228,7 @@ def plugin_report(run_agent: RunAgent, command: str, case_dir: Path, timeout_sec
 
 def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Path, result: dict, *,
                      esbmc_command: list[str] | None, bound: int, timeout_seconds: int,
-                     output_dir: Path | None = None) -> tuple[str, str]:
+                     output_dir: Path | None = None, fixed: str | None = None) -> tuple[str, str]:
     """Re-run ESBMC on an agent's harness and replay it; fills ``result`` and returns (verdict, reason).
     Also re-checks harnesses saved by earlier runs without calling the agent again; ``output_dir`` keeps
     that check's ESBMC logs apart from the original run's."""
@@ -242,15 +257,61 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                           tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes})), (),
                           (target.lineno, target.end_lineno))
         replay = concrete_replay(program, target.name, seeds=seeds)
+        replayed = harness_tree
     else:
         # ESBMC checked a simplified body; only the original body, fed ESBMC's own values, can confirm.
-        replay = _replay_original(harness, target, original, original_target, h.suspect_expression, seeds)
+        replay, replayed = _replay_original(harness, target, original, original_target, h.suspect_expression, seeds)
         result["replayed_original_body"] = True
     result["replay"] = replay.to_dict()
     verdict = final_verdict(reading, replay)
+    if verdict == CONFIRMED:
+        stub = stub_cause(replay, replayed, original_tree)
+        if stub:
+            return STUB_INDUCED, stub
+        if fixed is not None:
+            # The exact inputs that broke the original; the fix may rewrite the suspect expression, so any
+            # line of the fixed function counts.
+            control, _ = _replay_original(harness, target, fixed, _target(ast.parse(fixed), h.function), None,
+                                          seeds, inputs=replay.inputs or [])
+            result["control"] = control.to_dict()
+            if control.status == "reproduced" and control.exception_type == replay.exception_type:
+                return FIXED_ALSO_FAILS, f"the fixed version also raises {control.exception_type}"
     if not result["target_preserved"] and verdict == CONFIRMED:
         verdict = CONFIRMED_SIMPLIFIED
     return verdict, reading.message
+
+
+def _definitions(tree: ast.Module) -> dict[str, ast.AST]:
+    """Every class and function by qualified name (``Class.method``)."""
+    found: dict[str, ast.AST] = {}
+    def visit(node: ast.AST, prefix: str) -> None:
+        for child in ast.iter_child_nodes(node):
+            if isinstance(child, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                found[prefix + child.name] = child
+                visit(child, f"{prefix}{child.name}.")
+    visit(tree, "")
+    return found
+
+
+def stub_cause(replay: ReplayVerdict, replayed: ast.Module | None, original: ast.Module) -> str:
+    """Why the replayed exception belongs to code the agent invented, or "" when it does not."""
+    if replayed is None:
+        return ""
+    real = set(_definitions(original))
+    def spans(node: ast.AST, line: int | None) -> bool:
+        return line is not None and node.lineno <= line <= node.end_lineno
+    # The target may sit under a name the original lacks; whatever encloses the replayed line is not a stub.
+    invented = {name: node for name, node in _definitions(replayed).items()
+                if name not in real and not spans(node, replay.line)}
+    if replay.raised_at is not None:
+        inside = [name for name, node in invented.items() if spans(node, replay.raised_at)]
+        if inside:
+            return f"{replay.exception_type} raised inside the stub {max(inside, key=len)}"
+    classes = {name for name, node in invented.items() if isinstance(node, ast.ClassDef) and "." not in name}
+    named = classes & set(re.findall(r"\w+", replay.message))
+    if named:
+        return f"{replay.exception_type} names the stub class {min(named)}: {replay.message}"
+    return ""
 
 
 def _first_line(node: ast.FunctionDef) -> int:
@@ -258,10 +319,12 @@ def _first_line(node: ast.FunctionDef) -> int:
 
 
 def _replay_original(harness: str, target: ast.FunctionDef, original: str, original_target: ast.FunctionDef | None,
-                     expression: str, seeds: dict[str, list]) -> ReplayVerdict:
-    """Replay the agent's harness with its simplified target swapped back for the original function."""
+                     expression: str | None, seeds: dict[str, list],
+                     inputs: list | None = None) -> tuple[ReplayVerdict, ast.Module | None]:
+    """Replay the agent's harness with its simplified target swapped back for the original function;
+    also returns the replayed program's tree. Without ``expression`` the whole function is the span."""
     if original_target is None:
-        return ReplayVerdict("unavailable", reason="original function not found")
+        return ReplayVerdict("unavailable", reason="original function not found"), None
     first = _first_line(target)
     source = "\n".join(original.splitlines()[_first_line(original_target) - 1:original_target.end_lineno])
     body = textwrap.indent(textwrap.dedent(source), " " * target.col_offset).splitlines()
@@ -271,15 +334,17 @@ def _replay_original(harness: str, target: ast.FunctionDef, original: str, origi
     try:
         tree = ast.parse(spliced)
     except SyntaxError as exc:
-        return ReplayVerdict("unavailable", reason=f"original body does not fit the harness: {exc.msg}")
+        return ReplayVerdict("unavailable", reason=f"original body does not fit the harness: {exc.msg}"), None
     swapped = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.lineno == def_line)
-    nodes = expression_nodes(swapped, expression)
+    nodes = expression_nodes(swapped, expression) if expression is not None else [swapped]
     if not nodes:
-        return ReplayVerdict("unavailable", reason="suspect expression missing from the original function")
+        return ReplayVerdict("unavailable", reason="suspect expression missing from the original function"), None
     program = Program(_without_esbmc_imports(spliced), 0,
                       tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes})), (),
                       (swapped.lineno, swapped.end_lineno))
-    return concrete_replay(program, swapped.name, seeds=seeds, seeds_only=True)
+    if inputs is not None:
+        return concrete_replay(program, swapped.name, inputs=inputs), tree
+    return concrete_replay(program, swapped.name, seeds=seeds, seeds_only=True), tree
 
 
 # Engine verdicts the agent is worth trying on: no ESBMC verdict, and something a harness could change.
@@ -318,8 +383,8 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
     return [data for key, data in done.items() if key in wanted]
 
 
-_DEFAULT_MODELS = {"openai": "gpt-4o-mini", "google": "gemini-2.5-flash", "ollama": "qwen2.5-coder:7b",
-                   "claude_cli": "sonnet"}
+DEFAULT_MODELS = {"openai": "gpt-4o-mini", "google": "gemini-2.5-flash", "ollama": "qwen2.5-coder:7b",
+                   "claude_cli": "sonnet", "anthropic": "claude-sonnet-5-5"}
 _DEFAULT_URLS = {"google": "https://generativelanguage.googleapis.com/v1beta/openai/",
                  "ollama": "http://localhost:11434/v1"}
 
@@ -327,13 +392,13 @@ _DEFAULT_URLS = {"google": "https://generativelanguage.googleapis.com/v1beta/ope
 def make_agent(backend: str, *, model: str | None, esbmc: str, bound: int, plugin: bool = True,
                isolated: bool = True, rounds: int = 8, base_url: str | None = None) -> tuple[RunAgent, bool]:
     """The agent for ``backend``: "claude" is Claude Code with the ESBMC plugin; any LLMClient backend
-    (openai, google, ollama, claude_cli) runs the API loop. Returns it and whether the prompt may name
+    (openai, google, ollama, claude_cli, anthropic) runs the API loop. Returns it and whether the prompt may name
     the plugin's skill (only Claude Code has it)."""
     if backend == "claude":
         return claude_agent(model=model, esbmc=esbmc, plugin=plugin, isolated=isolated), plugin
     from .llm_client import LLMClient  # only the API agent needs a client (and its key)
 
     url = base_url or _DEFAULT_URLS.get(backend)
-    llm = LLMClient(backend=backend, model=model or _DEFAULT_MODELS[backend], **({"base_url": url} if url else {}),
+    llm = LLMClient(backend=backend, model=model or DEFAULT_MODELS[backend], **({"base_url": url} if url else {}),
                     request_delay=4.0 if backend == "google" else 0.0)  # Gemini's free tier limits requests/minute
     return api_agent(llm, rounds=rounds, esbmc=esbmc, bound=bound), False
