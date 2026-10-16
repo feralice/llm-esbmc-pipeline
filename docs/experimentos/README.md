@@ -681,6 +681,49 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
     **Métrica segue 12.**
   - Suíte rápida: 794 passed.
 
+## Fase 14 (15/10): harness congelado e rodada final
+
+- **Congelamento:** tag `harness-freeze-2026-10-15` (commit 88ad57a). Daqui em diante, nenhuma regra
+  nova no harness antes de terminar a rodada final.
+- **Rodada final** `artifacts/v2/final-2026-10-15` (em andamento):
+  - detecção com o prompt A5 (`--v2-variants A1,A2`) e spec pelo Claude Code CLI (Sonnet 5.5, assinatura,
+    sem custo de API), 277 arquivos (os 12 de contexto de patch ficam fora);
+  - ESBMC master 333d07cc8a com `--no-pointer-check --no-align-check` (`esbmc.sh` na pasta), limite 180 s,
+    `ulimit -v 8000000`;
+  - comando: `run.sh` na pasta (comando base com as variações acima);
+  - depois: orquestrador com `dynamic,llm_input,pinned` e o agente, LLM pelo Codex CLI, controle na
+    versão corrigida.
+
+- **15/10, regras depois do congelamento** (patch `docs/projeto/regras_pos_congelamento_2026-10-15.patch`,
+  ainda fora do master): decoradores do projeto tirados da cópia do ESBMC, `x = a if c else lambda`
+  reescrito como if/else, autorreferência não conta como uso. Medição sem LLM nos specs gravados
+  (`artifacts/v2/rules-after-freeze-2026-10-15/full`, 2 shards, timeout 180) contra o lote 5:
+  CONFIRMED 13 → 20 e ESBMC_TIMEOUT 11 → 4, mas as viradas são timeouts do lote 5 (máquina carregada);
+  nenhuma confirmação nova vem das regras. **Métrica segue 12**, nenhuma perda. ip_real_22 confirma na
+  linha, mas com AttributeError (`command.stderr` None); o gabarito é resultado errado, então não conta.
+  Testes das 3 regras escritos no patch (o da autorreferência falha no código antigo).
+- **Rodada final retomada** com `run.sh --resume` depois de cair na detecção (183/277).
+- **15/10, rodada final terminada com lacunas.** A detecção completou (277 arquivos, 541 hipóteses), mas
+  o limite da assinatura do Claude acabou no meio da verificação: 209 hipóteses ficaram `PIPELINE_ERROR`
+  ("claude -p saiu com código 1"). Retomada em cópia `artifacts/v2/final-2026-10-15-codex` (checkpoint
+  copiado, fingerprint com `synth_backend: codex`, `run.sh --resume`): o spec dessas hipóteses passou a
+  vir do Codex CLI, as demais mantêm o spec do Sonnet (**spec misto**). O limite do Codex também acabou:
+  **114 hipóteses ainda `PIPELINE_ERROR`**. Nível 1: CONFIRMED 24, 93/541 com veredito do ESBMC.
+- **Orquestrador sem LLM** (`--arms dynamic,pinned`, controle `--fixed-sources`, timeout 180,
+  `orq_free/`): `confirmed_at_bug` 8, `fuzz_found_at_bug` 4.
+  - Na linha e contando: av_real_01, dz_real_03 (já contados), **av_real_02** (novo: `assert self.stream
+    is not None`, AssertionError, o tipo do gabarito) e **dz_real_02** (novo, pelo `pinned`: ZeroDivisionError
+    em `float(not_parsed)/float(num_substrings)` com a entrada achada pelo dinâmico; antes dava timeout. A
+    correção protege exatamente esse caso).
+  - Na linha, mas sem contar: bip_scrapy_15 (gabarito UnicodeError do idna; o achado é AttributeError com
+    `netloc` None), av_real_07 e ip_real_22 (gabarito resultado errado).
+  - Só evidência dinâmica na linha: ip_real_14 (já contado pelo agente), ip_real_17, bip_pandas_162,
+    ip_real_05 (resultado errado).
+- **Métrica: 12 → 14** (união com as rodadas anteriores: + av_real_02, + dz_real_02). Os outros 10 dos 12
+  vieram do agente/nível 1 de rodadas anteriores e ainda não foram refeitos aqui.
+- **Pendente** (precisa de limite de LLM): refazer as 114 hipóteses (`run.sh --resume` na pasta codex),
+  braços `llm_input` e `api_agent` pelo Codex.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
