@@ -384,7 +384,7 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
 
 
 DEFAULT_MODELS = {"openai": "gpt-4o-mini", "google": "gemini-2.5-flash", "ollama": "qwen2.5-coder:7b",
-                   "claude_cli": "sonnet", "anthropic": "claude-sonnet-5-5"}
+                   "claude_cli": "sonnet", "anthropic": "claude-sonnet-5-5", "codex": ""}
 _DEFAULT_URLS = {"google": "https://generativelanguage.googleapis.com/v1beta/openai/",
                  "ollama": "http://localhost:11434/v1"}
 
@@ -392,7 +392,7 @@ _DEFAULT_URLS = {"google": "https://generativelanguage.googleapis.com/v1beta/ope
 def make_agent(backend: str, *, model: str | None, esbmc: str, bound: int, plugin: bool = True,
                isolated: bool = True, rounds: int = 8, base_url: str | None = None) -> tuple[RunAgent, bool]:
     """The agent for ``backend``: "claude" is Claude Code with the ESBMC plugin; any LLMClient backend
-    (openai, google, ollama, claude_cli, anthropic) runs the API loop. Returns it and whether the prompt may name
+    (openai, google, ollama, claude_cli, anthropic, codex) runs the API loop. Returns it and whether the prompt may name
     the plugin's skill (only Claude Code has it)."""
     if backend == "claude":
         return claude_agent(model=model, esbmc=esbmc, plugin=plugin, isolated=isolated), plugin

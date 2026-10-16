@@ -268,7 +268,7 @@ def build_parser() -> argparse.ArgumentParser:
              "agente (Claude Code + plugin ESBMC, assinatura do Claude Code); o resultado é refeito pelo pipeline.",
     )
     parser.add_argument(
-        "--agent-backend", default="claude", choices=["claude", "openai", "google", "ollama", "claude_cli"],
+        "--agent-backend", default="claude", choices=["claude", "openai", "google", "ollama", "claude_cli", "codex", "anthropic"],
         help="Agente do nível 2: 'claude' é o Claude Code com o plugin ESBMC; os outros fazem o mesmo ciclo por API "
              "(qualquer pessoa reproduz sem assinatura do Claude; 'ollama' usa modelo local).",
     )
