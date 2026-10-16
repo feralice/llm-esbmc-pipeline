@@ -756,6 +756,18 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Comando:** `timeout 10m .venv/bin/python -m pytest -q tests --ignore=tests/test_verify_esbmc_integration.py`
   → 966 passed (945 antes do item, 21 testes novos).
 
+## Fase 17 (16/10): gabarito com causas do patch e linhas da quebra (item 1 do plano geral), sem rodada
+
+- **O que mudou:** depois da revisão da Fernanda na tabela `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`,
+  `scripts/propose_crash_lines.py apply` gravou em `ground_truths.json`, `manifest.json`, `manifest_full.json`
+  e `coleta_bugsinpy/labels.json`.
+- **Resultado:** 289 itens alterados. Todos os 289 têm `cause_expressions` (242 `patch`, 47 `patch_revisado`).
+  58 têm `crash_expressions` (`llm_patch_revisado`); nos outros aceitos a quebra é a própria linha da causa.
+  Quebras em dúvida (8) e rejeitadas (5) ficaram de fora. Reaplicar não muda nada (0 itens).
+- **Comando:** `PYTHONPATH=src .venv/bin/python scripts/propose_crash_lines.py apply`; testes
+  `tests/test_v2_evaluator.py tests/test_propose_crash_lines.py` → 43 passed.
+- **Métrica:** não medida (item 6). Continua 14 até a rodada final.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

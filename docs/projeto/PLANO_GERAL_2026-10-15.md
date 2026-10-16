@@ -11,7 +11,7 @@ a mesma exceção na linha). **Hoje: 14.**
 
 | # | Item | Estado |
 |---|---|---|
-| 1 | Corrigir o gabarito | esperando revisão da Fernanda |
+| 1 | Corrigir o gabarito | pronto (aplicado em 16/10) |
 | 2 | Sondas de capacidade do ESBMC (self-healing) | pronto, sem medição (mede no item 6) |
 | 3 | Spec com contexto dos chamadores | pronto, sem medição (mede no item 6) |
 | 4 | Variantes de prompt | pronto (A13, A14); comparação no item 6 |
@@ -31,8 +31,8 @@ Spec `docs/superpowers/specs/2026-10-15-linha-da-quebra-design.md`, plano
 - [x] Causas gravadas para os 289 (213 claras, 41 ambíguas, 33 só inserção, 2 sem casamento).
 - [x] Claude propôs a linha da quebra dos 84 bugs de exceção.
 - [x] Conferência por revisores (143 casos): quebra 57 aceitas, 14 corrigidas, 5 rejeitadas, 8 dúvidas; causa 96 aceitas, 47 corrigidas.
-- [ ] Revisão da Fernanda na tabela `docs/projeto/revisao_linha_da_quebra_2026-10-15.md` (esperando).
-- [ ] Aplicar no gabarito.
+- [x] Revisão da Fernanda na tabela `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`.
+- [x] Aplicado no gabarito (289 com causa, 58 com quebra própria; Fase 17 do README).
 
 **Pronto quando:** tabela revisada e gabarito aplicado. Sem medição agora: todos os experimentos ficam para o item 6.
 

@@ -11,7 +11,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "deveria levantar AnsibleError sem MANIFEST.json; a versão com bug segue sem erro"
+    "failure_kind_note": "deveria levantar AnsibleError sem MANIFEST.json; a versão com bug segue sem erro",
+    "cause_expressions": [
+      "local_collection = CollectionRequirement.from_path(b_search_path, False)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_ansible_3",
@@ -24,7 +30,13 @@
     "line": 323,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "path == '/etc/lsb-release' and 'Kali' in data"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_ansible_5",
@@ -37,7 +49,13 @@
     "line": 192,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "msg = \"missing required arguments: %s\" % \", \".join(missing)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_ansible_16",
@@ -50,7 +68,13 @@
     "line": 246,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "collected_facts.get('ansible_architecture', '').startswith(('armv', 'aarch'))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_2",
@@ -63,7 +87,20 @@
     "line": 3119,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "is_fmt_on = False",
+      "list_comments(container.prefix, is_endmarker=False)",
+      "comment.value in FMT_ON",
+      "is_fmt_on = True",
+      "comment.value in FMT_OFF",
+      "is_fmt_on",
+      "yield container",
+      "container = container.next_sibling"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_3",
@@ -86,7 +123,13 @@
     "line": 2760,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "node.insert_child(index, Node(syms.atom, [lpar, child, rpar]))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_8",
@@ -99,7 +142,14 @@
     "line": 2408,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "leaves[-1].type != token.COMMA",
+      "leaves.append(Leaf(token.COMMA, \",\"))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_9",
@@ -113,7 +163,17 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "ParseError no parser lib2to3 por gramática errada"
+    "failure_kind_note": "ParseError no parser lib2to3 por gramática errada",
+    "cause_expressions": [
+      "return [pygram.python_grammar]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "[pygram.python_grammar]"
+    ]
   },
   {
     "id": "bip_black_13",
@@ -127,7 +187,15 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "tokens errados para async for"
+    "failure_kind_note": "tokens errados para async for",
+    "cause_expressions": [
+      "token == 'def'",
+      "async_def = True",
+      "async_def_indent = indents[-1]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_16",
@@ -141,7 +209,13 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "ValueError de Path.relative_to com link simbólico para fora da raiz; modelo: Path.relative_to levanta ValueError fora da raiz"
+    "failure_kind_note": "ValueError de Path.relative_to com link simbólico para fora da raiz; modelo: Path.relative_to levanta ValueError fora da raiz",
+    "cause_expressions": [
+      "normalized_path = \"/\" + child.resolve().relative_to(root).as_posix()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_19",
@@ -154,7 +228,13 @@
     "line": 1045,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "newlines = 2"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_black_20",
@@ -167,7 +247,14 @@
     "line": 344,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "src_name = f\"{src.name}  (original)\"",
+      "dst_name = f\"{src.name}  (formatted)\""
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_black_21",
@@ -184,7 +271,13 @@
     "failure_kind_note": "UnicodeEncodeError: depende da codificação do sistema",
     "crash_expressions": [
       "f.write(lines)"
-    ]
+    ],
+    "cause_expressions": [
+      "tempfile.NamedTemporaryFile(\n        mode=\"w\", prefix=\"blk_\", suffix=\".log\", delete=False\n    )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_cookiecutter_1",
@@ -201,7 +294,13 @@
     "failure_kind_note": "UnicodeDecodeError: depende da codificação do sistema",
     "crash_expressions": [
       "obj = json.load(file_handle, object_pairs_hook=OrderedDict)"
-    ]
+    ],
+    "cause_expressions": [
+      "open(context_file)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_cookiecutter_3",
@@ -214,7 +313,13 @@
     "line": 91,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "user_choice = click.prompt(\n        prompt, type=click.Choice(choices), default=default\n    )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_fastapi_2",
@@ -227,7 +332,13 @@
     "line": 501,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "route = APIWebSocketRoute(path, endpoint=endpoint, name=name)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_fastapi_4",
@@ -240,7 +351,13 @@
     "line": 183,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "operation[\"parameters\"] = parameters"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_fastapi_5",
@@ -253,7 +370,13 @@
     "line": 100,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "use_type.__fields__[f.name] = f"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_fastapi_6",
@@ -276,7 +399,13 @@
     "line": 577,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "field = Field(\n        name=\"body\",\n        type_=BodyModel,\n        default=None,\n        required=required,\n        model_config=BaseConfig,\n        class_validators={},\n        alias=\"body\",\n        schema=BodySchema(None),\n    )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_fastapi_10",
@@ -289,7 +418,13 @@
     "line": 55,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return jsonable_encoder(\n            value,\n            include=include,\n            exclude=exclude,\n            by_alias=by_alias,\n            skip_defaults=skip_defaults,\n        )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_fastapi_11",
@@ -302,7 +437,13 @@
     "line": 134,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return (\n        field.shape == Shape.SINGLETON\n        and not lenient_issubclass(field.type_, BaseModel)\n        and not lenient_issubclass(field.type_, sequence_types + (dict,))\n        and not isinstance(field.schema, params.Body)\n    )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_fastapi_15",
@@ -325,7 +466,15 @@
     "line": 18,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "not obj.Config.json_encoders",
+      "return jsonable_encoder(\n                obj.dict(include=include, exclude=exclude, by_alias=by_alias),\n                include_none=include_none,\n            )",
+      "return jsonable_encoder(\n                obj.dict(include=include, exclude=exclude, by_alias=by_alias),\n                include_none=include_none,\n                custom_encoder=obj.Config.json_encoders,\n            )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_httpie_4",
@@ -338,7 +487,13 @@
     "line": 106,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "'Host' not in headers"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_3",
@@ -355,7 +510,14 @@
     "failure_kind_note": "TypeError levantado por compute_mask de camada sem suporte a máscara; código do projeto: incluir Layer.compute_mask no harness",
     "crash_expressions": [
       "output_masks = to_list(\n                        layer.compute_mask(computed_tensors,\n                                           computed_masks))"
-    ]
+    ],
+    "cause_expressions": [
+      "output_masks = to_list(\n                        layer.compute_mask(computed_tensor,\n                                           computed_mask))",
+      "output_masks = to_list(\n                        layer.compute_mask(computed_tensors,\n                                           computed_masks))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_4",
@@ -369,7 +531,13 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "TypeError: argumento posicional para compute_gradients que só aceita nomeado; modelo: método que só aceita argumento nomeado"
+    "failure_kind_note": "TypeError: argumento posicional para compute_gradients que só aceita nomeado; modelo: método que só aceita argumento nomeado",
+    "cause_expressions": [
+      "grads = self.optimizer.compute_gradients(loss, params)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_5",
@@ -382,7 +550,13 @@
     "line": 173,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "cache_dir = os.path.join(os.path.expanduser('~'), '.keras')"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_6",
@@ -396,7 +570,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "divisão de tensor por zero gera NaN, sem exceção"
+    "failure_kind_note": "divisão de tensor por zero gera NaN, sem exceção",
+    "cause_expressions": [
+      "score_array /= K.mean(mask)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_7",
@@ -409,7 +589,13 @@
     "line": 323,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return np.squeeze(self.model.predict(x, **kwargs))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_8",
@@ -423,7 +609,16 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "saídas diferentes após from_config"
+    "failure_kind_note": "saídas diferentes após from_config",
+    "cause_expressions": [
+      "add_unprocessed_node(layer, node_data)",
+      "return",
+      "unprocessed_nodes.pop(layer)",
+      "process_node(layer, node_data)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_9",
@@ -436,7 +631,13 @@
     "line": 120,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "block = docstring[starting_point:(None if ending_point == -1 else\n                                      ending_point - 1)]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_10",
@@ -450,7 +651,26 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "class_weight ignorado quando há sample_weight"
+    "failure_kind_note": "class_weight ignorado quando há sample_weight",
+    "cause_expressions": [
+      "sample_weight is not None and class_weight is not None",
+      "warnings.warn('Found both `sample_weight` and `class_weight`: '\n                      '`class_weight` argument will be ignored.')",
+      "return sample_weight",
+      "isinstance(class_weight, dict)",
+      "y.shape[1] > 1",
+      "y_classes = np.argmax(y, axis=1)",
+      "y.shape[1] == 1",
+      "y_classes = np.reshape(y, y.shape[0])",
+      "weights = np.asarray([class_weight[cls] for cls in y_classes\n                              if cls in class_weight])",
+      "len(weights) != len(y_classes)",
+      "return weights",
+      "sample_weight_mode is None",
+      "return np.ones((y.shape[0],), dtype=K.floatx())",
+      "return np.ones((y.shape[0], y.shape[1]), dtype=K.floatx())"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_14",
@@ -463,7 +683,13 @@
     "line": 48,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return K.mean(K.in_top_k(y_pred, K.cast(K.max(y_true, axis=-1), 'int32'), k),\n                  axis=-1)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_17",
@@ -476,7 +702,13 @@
     "line": 37,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return K.cast(K.equal(K.max(y_true, axis=-1),\n                          K.cast(K.argmax(y_pred, axis=-1), K.floatx())),\n                  K.floatx())"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_22",
@@ -500,7 +732,18 @@
     "review": "pending",
     "failure_kind": "excecao_local",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "AttributeError: primeira camada sem batch_input_shape"
+    "failure_kind_note": "AttributeError: primeira camada sem batch_input_shape",
+    "cause_expressions": [
+      "batch_shape = first_layer.batch_input_shape",
+      "dtype = first_layer.dtype"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "batch_shape = first_layer.batch_input_shape"
+    ]
   },
   {
     "id": "bip_keras_24",
@@ -514,7 +757,17 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "erro do TensorFlow ao receber lista; modelo: tf.summary.histogram recusa lista"
+    "failure_kind_note": "erro do TensorFlow ao receber lista; modelo: tf.summary.histogram recusa lista",
+    "cause_expressions": [
+      "tf.summary.histogram('{}_out'.format(layer.name),\n                                         layer.output)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "tf.summary.histogram('{}_out'.format(layer.name),\n                                         layer.output)"
+    ]
   },
   {
     "id": "bip_keras_25",
@@ -535,7 +788,13 @@
       "x[0, :, :] -= mean[0]",
       "x[:, 0, :, :] -= mean[0]",
       "x[..., 0] -= mean[0]"
-    ]
+    ],
+    "cause_expressions": [
+      "mode == 'tf'"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_keras_26",
@@ -549,7 +808,17 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "erro de formato no tf.where"
+    "failure_kind_note": "erro de formato no tf.where",
+    "cause_expressions": [
+      "new_states = [tf.where(tiled_mask_t, new_states[i], states[i]) for i in range(len(states))]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "tf.where(tiled_mask_t, new_states[i], states[i])"
+    ]
   },
   {
     "id": "bip_keras_31",
@@ -563,7 +832,18 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "erro de formato no TensorFlow com lote de tamanho 1"
+    "failure_kind_note": "erro de formato no TensorFlow com lote de tamanho 1",
+    "cause_expressions": [
+      "label_length = tf.to_int32(tf.squeeze(label_length))",
+      "input_length = tf.to_int32(tf.squeeze(input_length))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "ctc_label_dense_to_sparse(y_true, label_length)"
+    ]
   },
   {
     "id": "bip_keras_33",
@@ -580,7 +860,16 @@
     "failure_kind_note": "ValueError de str.maketrans com tamanhos diferentes",
     "crash_expressions": [
       "translate_map = maketrans(filters, split * len(filters))"
-    ]
+    ],
+    "cause_expressions": [
+      "sys.version_info < (3,) and isinstance(text, unicode)",
+      "translate_map = dict((ord(c), unicode(split)) for c in filters)",
+      "translate_map = maketrans(filters, split * len(filters))",
+      "text = text.translate(translate_map)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_36",
@@ -593,7 +882,14 @@
     "line": 3419,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "strides = (1, 1) + strides + (1,)",
+      "strides = (1, 1, 1) + strides"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_38",
@@ -610,7 +906,13 @@
     "failure_kind_note": "erro de formato ao construir as células",
     "crash_expressions": [
       "cell.build(input_shape)"
-    ]
+    ],
+    "cause_expressions": [
+      "input_shape = (input_shape[0], input_shape[1], output_dim)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_39",
@@ -634,7 +936,15 @@
     "line": 398,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "output_dim = self.cell.state_size[0]",
+      "output_dim = self.cell.state_size",
+      "state_shape = [(input_shape[0], output_dim) for _ in self.states]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_keras_43",
@@ -647,7 +957,13 @@
     "line": 22,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "input_shape = y.shape"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_keras_45",
@@ -661,7 +977,16 @@
     "review": "pending",
     "failure_kind": "excecao_local",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "TypeError: soma com bias None quando use_bias=False"
+    "failure_kind_note": "TypeError: soma com bias None quando use_bias=False",
+    "cause_expressions": [
+      "x_i = K.dot(inputs_i, self.kernel_i) + self.bias_i",
+      "x_f = K.dot(inputs_f, self.kernel_f) + self.bias_f",
+      "x_c = K.dot(inputs_c, self.kernel_c) + self.bias_c",
+      "x_o = K.dot(inputs_o, self.kernel_o) + self.bias_o"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_3",
@@ -685,7 +1010,14 @@
     "line": 335,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "query = (\"select 1 as table_exists \"\n                     \"from information_schema.tables \"\n                     \"where table_schema = %s and table_name = %s limit 1\")",
+      "query = (\"select 1 as table_exists \"\n                     \"from pg_table_def \"\n                     \"where tablename = %s limit 1\")"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_10",
@@ -698,7 +1030,13 @@
     "line": 305,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return state.get_pending_tasks()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_11",
@@ -722,7 +1060,13 @@
     "line": 570,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "task.id not in necessary_tasks and self._state.prune(task, self._config)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_17",
@@ -736,7 +1080,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "record_task_history deveria ser False"
+    "failure_kind_note": "record_task_history deveria ser False",
+    "cause_expressions": [
+      "return scheduler.CentralPlannerScheduler(prune_on_get_work=True)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_18",
@@ -749,7 +1099,13 @@
     "line": 405,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "task.scheduler_disable_time is not None"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_19",
@@ -762,7 +1118,13 @@
     "line": 408,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "new_status == FAILED and task.can_disable()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_21",
@@ -780,7 +1142,14 @@
     "crash_expressions": [
       "cmdline_args.insert(0, main_task_cls.task_family)",
       "cmdline_args.insert(0, '--local-scheduler')"
-    ]
+    ],
+    "cause_expressions": [
+      "cmdline_args.insert(0, main_task_cls.task_family)",
+      "cmdline_args.insert(0, '--local-scheduler')"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_luigi_22",
@@ -803,7 +1172,13 @@
     "line": 272,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "command += [name, '\"{0}={1}\"'.format(prop, value)]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_26",
@@ -817,7 +1192,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "mensagem de erro errada"
+    "failure_kind_note": "mensagem de erro errada",
+    "cause_expressions": [
+      "not job.jar() or not os.path.exists(job.jar())"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_29",
@@ -830,7 +1211,14 @@
     "line": 138,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "cls.run == NotImplemented",
+      "continue"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_luigi_30",
@@ -858,7 +1246,13 @@
     "failure_kind_note": "levanta UnknownParameterException para parâmetro posicional não significativo",
     "crash_expressions": [
       "raise parameter.UnknownParameterException('%s: takes at most %d parameters (%d given)' % (exc_desc, len(positional_params), len(args)))"
-    ]
+    ],
+    "cause_expressions": [
+      "positional_params = [(n, p) for n, p in params if p.significant]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_2",
@@ -871,7 +1265,14 @@
     "line": 4479,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "edgecolors = 'face'",
+      "collection = mcoll.PathCollection(\n                (path,), scales,\n                facecolors=colors,\n                edgecolors=edgecolors,\n                linewidths=linewidths,\n                offsets=offsets,\n                transOffset=kwargs.pop('transform', self.transData),\n                alpha=alpha\n                )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_6",
@@ -885,7 +1286,13 @@
     "review": "pending",
     "failure_kind": "excecao_local",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "ValueError levantado na própria função para cor com formato (1, 4)"
+    "failure_kind_note": "ValueError levantado na própria função para cor com formato (1, 4)",
+    "cause_expressions": [
+      "c.size == xsize"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_7",
@@ -898,7 +1305,13 @@
     "line": 1939,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "hasattr(intensity, 'mask')"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_9",
@@ -911,7 +1324,13 @@
     "line": 952,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "thetamin, thetamax = np.rad2deg(self._realViewLim.intervalx)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_matplotlib_10",
@@ -924,7 +1343,13 @@
     "line": 827,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "'labelcolor' in kwtrans"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_matplotlib_11",
@@ -937,7 +1362,23 @@
     "line": 894,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "dpi is not None",
+      "dpi_orig = self.figure.dpi",
+      "self.figure.dpi = dpi",
+      "tx, ty = self._get_xy_display()",
+      "return Bbox.from_bounds(tx, ty, 0, 0)",
+      "bbox, info, descent = self._get_layout(self._renderer)",
+      "x, y = self.get_unitless_position()",
+      "x, y = self.get_transform().transform((x, y))",
+      "bbox = bbox.translated(x, y)",
+      "self.figure.dpi = dpi_orig",
+      "return bbox"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_13",
@@ -950,7 +1391,13 @@
     "line": 333,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return cls(vertices, codes)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_matplotlib_14",
@@ -963,7 +1410,13 @@
     "line": 178,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "sentinel = object()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_16",
@@ -977,7 +1430,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
+    "failure_kind_note": "estouro de inteiro do numpy, sem exceção",
+    "cause_expressions": [
+      "maxabsvalue = max(abs(vmin), abs(vmax))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_matplotlib_17",
@@ -991,7 +1450,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "estouro de inteiro do numpy, sem exceção"
+    "failure_kind_note": "estouro de inteiro do numpy, sem exceção",
+    "cause_expressions": [
+      "maxabsvalue = max(abs(vmin), abs(vmax))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_matplotlib_21",
@@ -1025,7 +1490,14 @@
     "line": 1510,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "x0, x1 = map(x_trf.inverted().transform, dL.intervalx)",
+      "y0, y1 = map(y_trf.inverted().transform, dL.intervaly)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_25",
@@ -1039,7 +1511,14 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "deveria levantar ValueError para positions None"
+    "failure_kind_note": "deveria levantar ValueError para positions None",
+    "cause_expressions": [
+      "positions is None or len(positions) == 0",
+      "hasattr(positions, 'ndim') and positions.ndim > 1"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_26",
@@ -1052,7 +1531,13 @@
     "line": 1909,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "setter(self, max(vmin, vmax, oldmax), min(vmin, vmax, oldmin),\n                       ignore=True)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_27",
@@ -1065,7 +1550,13 @@
     "line": 727,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "self._label = str(label)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_matplotlib_28",
@@ -1079,7 +1570,18 @@
     "review": "pending",
     "failure_kind": "incerto",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "o teste espera um aviso; pelo patch não dá para saber se a versão com bug quebra"
+    "failure_kind_note": "o teste espera um aviso; pelo patch não dá para saber se a versão com bug quebra",
+    "cause_expressions": [
+      "self.get_xscale() == 'log'"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "left = old_left",
+      "right = old_right"
+    ]
   },
   {
     "id": "bip_pandas_1",
@@ -1092,7 +1594,13 @@
     "line": 602,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "is_excluded_checks = (is_period_dtype, is_interval_dtype)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_4",
@@ -1105,7 +1613,13 @@
     "line": 3531,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return multi_join_idx, lidx, ridx"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_6",
@@ -1133,7 +1647,15 @@
     "failure_kind_note": "TypeError do numpy ao subtrair datas com fuso",
     "crash_expressions": [
       "left_distances = abs(self.values[left_indexer] - target)"
-    ]
+    ],
+    "cause_expressions": [
+      "target = np.asarray(target)",
+      "left_distances = abs(self.values[left_indexer] - target)",
+      "right_distances = abs(self.values[right_indexer] - target)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_8",
@@ -1146,7 +1668,13 @@
     "line": 731,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "not mask.any()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_10",
@@ -1159,7 +1687,13 @@
     "line": 1602,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "isinstance(new, np.ndarray) and len(new) == len(mask)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_11",
@@ -1184,7 +1718,13 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "TypeError em operação com DateOffset"
+    "failure_kind_note": "TypeError em operação com DateOffset",
+    "cause_expressions": [
+      "is_datetime64_dtype(ldtype) and is_object_dtype(rdtype)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_19",
@@ -1198,7 +1738,18 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "deveria levantar KeyError"
+    "failure_kind_note": "deveria levantar KeyError",
+    "cause_expressions": [
+      "isinstance(key, (ABCSeries, np.ndarray)) and key.ndim <= 1",
+      "isinstance(key, ABCDataFrame)",
+      "raise NotImplementedError(\n                        \"Indexing a MultiIndex with a \"\n                        \"DataFrame key is not \"\n                        \"implemented\"\n                    )",
+      "raise NotImplementedError(\n                        \"Indexing a MultiIndex with a \"\n                        \"multidimensional key is not \"\n                        \"implemented\"\n                    )",
+      "(\n                    not isinstance(key, tuple)\n                    and len(key)\n                    and not isinstance(key[0], tuple)\n                )",
+      "key = tuple([key])"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_21",
@@ -1211,7 +1762,14 @@
     "line": 952,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "isinstance(key, list)",
+      "return self.reindex(key)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_23",
@@ -1224,7 +1782,14 @@
     "line": 727,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return type(self)(data=[])",
+      "left_chunk = left.values[lslice]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_24",
@@ -1237,7 +1802,13 @@
     "line": 976,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return self._simple_new(new_dates, dtype=dtype, freq=self.freq)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_25",
@@ -1250,7 +1821,13 @@
     "line": 1280,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "sarray = fields.build_isocalendar_sarray(self.asi8)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_28",
@@ -1263,7 +1840,13 @@
     "line": 2300,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return [Series(others._values, index=others)]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_29",
@@ -1276,7 +1859,17 @@
     "line": 549,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "needs_float_conversion",
+      "left = left.astype(\"float\")",
+      "left.values[key] = value_left",
+      "right = right.astype(\"float\")",
+      "right.values[key] = value_right"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_30",
@@ -1301,7 +1894,17 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "ValueError do numpy: min() de array vazio; modelo: min() de array vazio levanta ValueError"
+    "failure_kind_note": "ValueError do numpy: min() de array vazio; modelo: min() de array vazio levanta ValueError",
+    "cause_expressions": [
+      "data[self._mask] = data.min() - 1"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "data.min()"
+    ]
   },
   {
     "id": "bip_pandas_34",
@@ -1315,7 +1918,13 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "AmbiguousTimeError da conversão de fuso"
+    "failure_kind_note": "AmbiguousTimeError da conversão de fuso",
+    "cause_expressions": [
+      "binner = labels = date_range(\n            freq=self.freq,\n            start=first,\n            end=last,\n            tz=ax.tz,\n            name=ax.name,\n            ambiguous=\"infer\",\n            nonexistent=\"shift_forward\",\n        )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_35",
@@ -1329,7 +1938,13 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "weakref morta vira None no motor do índice"
+    "failure_kind_note": "weakref morta vira None no motor do índice",
+    "cause_expressions": [
+      "period = weakref.ref(self)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_39",
@@ -1352,7 +1967,14 @@
     "line": 1163,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "is_interval_dtype(left.dtype) or is_interval_dtype(right.dtype)",
+      "is_extension_array_dtype(left.dtype) or is_extension_array_dtype(right.dtype)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_48",
@@ -1387,7 +2009,13 @@
     "line": 106,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "ret[mask] = False"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_52",
@@ -1400,7 +2028,22 @@
     "line": 596,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "val[isna(val)] = np.datetime64(\"NaT\")",
+      "sorter = np.lexsort((val, ids))",
+      "msg = f\"val.dtype must be object, got {val.dtype}\"",
+      "assert val.dtype == object, msg",
+      "val, _ = algorithms.factorize(val, sort=False)",
+      "_isna = lambda a: a == -1",
+      "_isna = isna",
+      "ids, val = ids[sorter], val[sorter]",
+      "inc = np.r_[1, val[1:] != val[:-1]]",
+      "mask = _isna(val)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_58",
@@ -1417,7 +2060,13 @@
     "failure_kind_note": "ValueError levantado na própria função para códigos Int64",
     "crash_expressions": [
       "raise ValueError(\"codes need to be array-like integers\")"
-    ]
+    ],
+    "cause_expressions": [
+      "codes = np.asarray(codes)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_59",
@@ -1431,7 +2080,13 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "erro ao usar janela de frequência"
+    "failure_kind_note": "erro ao usar janela de frequência",
+    "cause_expressions": [
+      "window = self._get_window(other)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_60",
@@ -1455,7 +2110,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "deveria levantar ValueError com outra mensagem"
+    "failure_kind_note": "deveria levantar ValueError com outra mensagem",
+    "cause_expressions": [
+      "return self._get_values(key)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_63",
@@ -1472,7 +2133,19 @@
     "failure_kind_note": "ValueError levantado na própria função para índice de float",
     "crash_expressions": [
       "raise ValueError(\n                        \"At based indexing on an non-integer \"\n                        \"index can only have non-integer \"\n                        \"indexers\"\n                    )"
-    ]
+    ],
+    "cause_expressions": [
+      "zip(self.obj.axes, key)",
+      "ax.is_integer()",
+      "not is_integer(i)",
+      "raise ValueError(\n                        \"At based indexing on an integer index \"\n                        \"can only have integer indexers\"\n                    )",
+      "raise ValueError(\n                        \"At based indexing on an non-integer \"\n                        \"index can only have non-integer \"\n                        \"indexers\"\n                    )",
+      "is_integer(i) and not (ax.holds_integer() or ax.is_floating())",
+      "return key"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_64",
@@ -1485,7 +2158,13 @@
     "line": 406,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "self.df = df"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_69",
@@ -1502,7 +2181,13 @@
     "failure_kind_note": "ValueError levantado na própria função para índice de float",
     "crash_expressions": [
       "raise ValueError(\n                        \"At based indexing on an non-integer \"\n                        \"index can only have non-integer \"\n                        \"indexers\"\n                    )"
-    ]
+    ],
+    "cause_expressions": [
+      "is_integer(i) and not ax.holds_integer()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_76",
@@ -1526,7 +2211,13 @@
     "line": 8016,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "result = Series(result, index=labels)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_84",
@@ -1540,7 +2231,17 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "KeyError na busca de nível com nome tupla; modelo: busca de nível inexistente levanta KeyError"
+    "failure_kind_note": "KeyError na busca de nível com nome tupla; modelo: busca de nível inexistente levanta KeyError",
+    "cause_expressions": [
+      "clocs = [index._get_level_number(i) for i in clocs]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "index._get_level_number(i)"
+    ]
   },
   {
     "id": "bip_pandas_85",
@@ -1563,7 +2264,13 @@
     "line": 592,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "table = df.pivot_table(\n        \"__dummy__\",\n        index=rownames,\n        columns=colnames,\n        margins=margins,\n        margins_name=margins_name,\n        dropna=dropna,\n        **kwargs,\n    )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_88",
@@ -1577,7 +2284,17 @@
     "review": "pending",
     "failure_kind": "incerto",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "o teste compara o resultado; pelo patch não dá para saber se quebra antes"
+    "failure_kind_note": "o teste compara o resultado; pelo patch não dá para saber se quebra antes",
+    "cause_expressions": [
+      "table.index.nlevels > 1"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "table.columns.nlevels > 1"
+    ]
   },
   {
     "id": "bip_pandas_89",
@@ -1590,7 +2307,13 @@
     "line": 361,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "result = result.unstack(val)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_91",
@@ -1604,7 +2327,15 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "tipo de exceção errado"
+    "failure_kind_note": "tipo de exceção errado",
+    "cause_expressions": [
+      "value = np.array(value, dtype=_TD_DTYPE, copy=False)",
+      "value = Timedelta(value).asm8.view(_TD_DTYPE)",
+      "return self.values.searchsorted(value, side=side, sorter=sorter)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_95",
@@ -1617,7 +2348,16 @@
     "line": 76,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "ordinal_op = getattr(self.asi8, opname)",
+      "isinstance(other, int)",
+      "other = Period(other, freq=self.freq)",
+      "result = ordinal_op(other.ordinal)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_98",
@@ -1630,7 +2370,17 @@
     "line": 298,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "(\n            is_interval_dtype(data) or is_interval_dtype(dtype)\n        ) and not is_object_dtype(dtype)",
+      "closed = kwargs.get(\"closed\", None)",
+      "return IntervalIndex(data, dtype=dtype, name=name, copy=copy, closed=closed)",
+      "is_period_dtype(data) and not is_object_dtype(dtype)",
+      "return PeriodIndex(data, copy=copy, name=name, **kwargs)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_102",
@@ -1644,7 +2394,18 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "erro ao montar blocos com array 2-D"
+    "failure_kind_note": "erro ao montar blocos com array 2-D",
+    "cause_expressions": [
+      "columns = [0]",
+      "return arrays_to_mgr([values], columns, index, columns, dtype=dtype)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "return arrays_to_mgr([values], columns, index, columns, dtype=dtype)"
+    ]
   },
   {
     "id": "bip_pandas_104",
@@ -1658,7 +2419,22 @@
     "review": "pending",
     "failure_kind": "incerto",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "pode ser o assert len(indices) == len(result) da própria função ou resultado errado"
+    "failure_kind_note": "pode ser o assert len(indices) == len(result) da própria função ou resultado errado",
+    "cause_expressions": [
+      "order = np.roll(list(range(result.index.nlevels)), -1)",
+      "result = result.reindex(q, level=-1)",
+      "hi = len(q) * self.ngroups",
+      "arr = np.arange(0, hi, self.ngroups)",
+      "arrays = []",
+      "range(self.ngroups)",
+      "arr2 = arr + i",
+      "arrays.append(arr2)",
+      "indices = np.concatenate(arrays)",
+      "assert len(indices) == len(result)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_106",
@@ -1675,7 +2451,13 @@
     "failure_kind_note": "erro ao comparar índice de datas com outro tipo",
     "crash_expressions": [
       "tgt_values = target.asi8"
-    ]
+    ],
+    "cause_expressions": [
+      "self.is_all_dates"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_107",
@@ -1688,7 +2470,18 @@
     "line": 6760,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "other.name is None",
+      "index = None",
+      "index = Index([other.name], name=self.index.name)",
+      "other = other.reindex(combined_columns, copy=False)",
+      "other = DataFrame(\n                other.values.reshape((1, len(other))),\n                index=index,\n                columns=combined_columns,\n            )",
+      "other = other._convert(datetime=True, timedelta=True)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_115",
@@ -1701,7 +2494,13 @@
     "line": 280,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "result[invalid] = np.interp(inds[invalid], inds[valid], yvalues[valid])"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_116",
@@ -1715,7 +2514,13 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "MergeError: fuso perdido em .values"
+    "failure_kind_note": "MergeError: fuso perdido em .values",
+    "cause_expressions": [
+      "left_keys = [self.left.index.values]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_117",
@@ -1728,7 +2533,13 @@
     "line": 179,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "isinstance(obj, (ABCSeries, np.ndarray, ABCIndexClass))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_119",
@@ -1741,7 +2552,13 @@
     "line": 266,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "margin_dummy[cols] = margin_dummy[cols].astype(dtype)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_127",
@@ -1755,7 +2572,13 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "ValueError do reindex com índice duplicado; modelo: reindex com índice duplicado levanta ValueError"
+    "failure_kind_note": "ValueError do reindex com índice duplicado; modelo: reindex com índice duplicado levanta ValueError",
+    "cause_expressions": [
+      "rs = rs.reindex_like(data)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_128",
@@ -1782,7 +2605,13 @@
     "failure_kind_note": "UnboundLocalError com axis='index'",
     "crash_expressions": [
       "ax = _maybe_transposed_self._get_axis_number(ax)"
-    ]
+    ],
+    "cause_expressions": [
+      "_maybe_transposed_self = self"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_139",
@@ -1795,7 +2624,13 @@
     "line": 333,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "self._group_index = CategoricalIndex(\n                    Categorical.from_codes(\n                        codes=codes, categories=categories, ordered=self.grouper.ordered\n                    )\n                )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_141",
@@ -1808,7 +2643,13 @@
     "line": 391,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "start, stop, step = (self.stop - self.step, self.start + 1, -self.step)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_142",
@@ -1825,7 +2666,13 @@
     "failure_kind_note": "TypeError do numpy ao subtrair booleanos; modelo: subtração de booleanos levanta TypeError",
     "crash_expressions": [
       "out_arr[res_indexer] = arr[res_indexer] - arr[lag_indexer]"
-    ]
+    ],
+    "cause_expressions": [
+      "out_arr[res_indexer] = arr[res_indexer] - arr[lag_indexer]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_pandas_143",
@@ -1838,7 +2685,14 @@
     "line": 383,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "not (method is None and tolerance is None and is_list_like(target))",
+      "return super().get_indexer(target, method=method, tolerance=tolerance)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_144",
@@ -1851,7 +2705,14 @@
     "line": 1438,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "ax.set_xticks(self.tick_pos)",
+      "ax.set_xticklabels(ticklabels)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_145",
@@ -1865,7 +2726,17 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "TypeError em operação com NaT"
+    "failure_kind_note": "TypeError em operação com NaT",
+    "cause_expressions": [
+      "return {i: func(a.iloc[:, i], b.iloc[i]) for i in range(len(a.columns))}"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "func(a.iloc[:, i], b.iloc[i])"
+    ]
   },
   {
     "id": "bip_pandas_148",
@@ -1878,7 +2749,15 @@
     "line": 208,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "EMPTY_SERIES = Series([])",
+      "r = self.f(EMPTY_SERIES, *self.args, **self.kwds)",
+      "return self.obj._constructor_sliced(np.nan, index=self.agg_axis)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_152",
@@ -1892,7 +2771,13 @@
     "review": "pending",
     "failure_kind": "excecao_local",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "TypeError: lista + tupla"
+    "failure_kind_note": "TypeError: lista + tupla",
+    "cause_expressions": [
+      "to_concat = [self] + to_append"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_154",
@@ -1906,7 +2791,17 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "erro de tipo no código Cython"
+    "failure_kind_note": "erro de tipo no código Cython",
+    "cause_expressions": [
+      "result_sz = len(obj.values)",
+      "cython_dtype = obj.values.dtype",
+      "vals = obj.values",
+      "mask = isna(obj.values).view(np.uint8)",
+      "result = algorithms.take_nd(obj.values, result)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_155",
@@ -1919,7 +2814,13 @@
     "line": 1656,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return self.obj.index"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_158",
@@ -1936,7 +2837,15 @@
     "failure_kind_note": "TypeError em NDFrame.rename com objeto não chamável",
     "crash_expressions": [
       "return super().rename(index=index, **kwargs)"
-    ]
+    ],
+    "cause_expressions": [
+      "non_mapping = is_scalar(index) or (\n            is_list_like(index) and not is_dict_like(index)\n        )",
+      "non_mapping",
+      "return super().rename(index=index, **kwargs)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_160",
@@ -1953,7 +2862,14 @@
     "failure_kind_note": "AttributeError: dtype de Series não tem value_counts",
     "crash_expressions": [
       "s = o.dtypes.value_counts()"
-    ]
+    ],
+    "cause_expressions": [
+      "hasattr(o, \"dtypes\")",
+      "isinstance(o, np.ndarray)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_161",
@@ -1966,7 +2882,14 @@
     "line": 1843,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "indexer = np.where(values_codes != -1)",
+      "codes[indexer] = values_codes[values_codes != -1]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_162",
@@ -1980,7 +2903,23 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "KeyError no .loc com nome de margem personalizado"
+    "failure_kind_note": "KeyError no .loc com nome de margem personalizado",
+    "cause_expressions": [
+      "column_margin = table.loc[:, margins_name].drop(margins_name)",
+      "index_margin = table.loc[margins_name, :].drop(margins_name)",
+      "table = table.drop(margins_name, axis=1).drop(margins_name)",
+      "table_index_names = table.index.names",
+      "table_columns_names = table.columns.names",
+      "table.index.names = table_index_names",
+      "table.columns.names = table_columns_names"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "table.loc[margins_name, :].drop(margins_name)"
+    ]
   },
   {
     "id": "bip_pandas_163",
@@ -1994,7 +2933,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "altera a entrada do usuário"
+    "failure_kind_note": "altera a entrada do usuário",
+    "cause_expressions": [
+      "values[np.isinf(values)] = np.NaN"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_166",
@@ -2007,7 +2952,14 @@
     "line": 7213,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "res = concat(frames, axis=1, join=\"outer\", verify_integrity=True)",
+      "return concat(frames, axis=1, join=how, verify_integrity=True)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_pandas_168",
@@ -2021,7 +2973,18 @@
     "review": "pending",
     "failure_kind": "excecao_nao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "KeyError ao ignorar o eixo"
+    "failure_kind_note": "KeyError ao ignorar o eixo",
+    "cause_expressions": [
+      "obj._check_label_or_level_ambiguity(gpr)",
+      "obj._is_level_reference(gpr)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "raise KeyError(gpr)"
+    ]
   },
   {
     "id": "bip_sanic_1",
@@ -2034,7 +2997,13 @@
     "line": 656,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "self.named_response_middleware[_rn].append(middleware)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_scrapy_6",
@@ -2047,7 +3016,13 @@
     "line": 135,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "image.mode != 'RGB'"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_scrapy_8",
@@ -2064,7 +3039,14 @@
     "failure_kind_note": "erro do interpretador na criação da classe sem __classcell__",
     "crash_expressions": [
       "_class = super(ItemMeta, mcs).__new__(mcs, 'x_' + class_name, new_bases, attrs)"
-    ]
+    ],
+    "cause_expressions": [
+      "_class = super(ItemMeta, mcs).__new__(mcs, 'x_' + class_name, new_bases, attrs)",
+      "return super(ItemMeta, mcs).__new__(mcs, class_name, bases, new_attrs)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_scrapy_15",
@@ -2078,7 +3060,17 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "UnicodeError do codec idna; modelo: idna levanta UnicodeError para rótulo vazio ou com mais de 63 caracteres"
+    "failure_kind_note": "UnicodeError do codec idna; modelo: idna levanta UnicodeError para rótulo vazio ou com mais de 63 caracteres",
+    "cause_expressions": [
+      "return (\n        to_native_str(parts.scheme),\n        to_native_str(parts.netloc.encode('idna')),\n\n        # default encoding for path component SHOULD be UTF-8\n        quote(to_bytes(parts.path, path_encoding), _safe_chars),\n        quote(to_bytes(parts.params, path_encoding), _safe_chars),\n\n        # encoding of query and fragment follows page encoding\n        # or form-charset (if known and passed)\n        quote(to_bytes(parts.query, encoding), _safe_chars),\n        quote(to_bytes(parts.fragment, encoding), _safe_chars)\n    )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "parts.netloc.encode('idna')"
+    ]
   },
   {
     "id": "bip_scrapy_18",
@@ -2092,7 +3084,17 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "UnicodeDecodeError; modelo: decodificar bytes inválidos levanta UnicodeDecodeError"
+    "failure_kind_note": "UnicodeDecodeError; modelo: decodificar bytes inválidos levanta UnicodeDecodeError",
+    "cause_expressions": [
+      "filename = to_native_str(content_disposition).split(';')[1].split('=')[1]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "to_native_str(content_disposition)"
+    ]
   },
   {
     "id": "bip_scrapy_21",
@@ -2106,7 +3108,13 @@
     "review": "pending",
     "failure_kind": "excecao_modelavel",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "KeyError em outro método depois do pop; código do projeto: incluir o método que lê _parsers no harness"
+    "failure_kind_note": "KeyError em outro método depois do pop; código do projeto: incluir o método que lê _parsers no harness",
+    "cause_expressions": [
+      "self._parsers.pop(netloc).callback(None)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_scrapy_27",
@@ -2130,7 +3138,13 @@
     "line": 39,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "self.fingerprints.update(x.rstrip() for x in self.file)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_scrapy_38",
@@ -2143,7 +3157,13 @@
     "line": 173,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "clickables = [\n        el for el in form.xpath(\n            'descendant::*[(self::input or self::button)'\n            ' and re:test(@type, \"^submit$\", \"i\")]'\n            '|descendant::button[not(@type)]',\n            namespaces={\"re\": \"http://exslt.org/regular-expressions\"})\n        ]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_scrapy_39",
@@ -2156,7 +3176,14 @@
     "line": 69,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "self.make_requests_from_url is not Spider.make_requests_from_url",
+      "warnings.warn(\n                \"Spider.make_requests_from_url method is deprecated; \"\n                \"it won't be called in future Scrapy releases. \"\n                \"Please override start_requests method instead.\"\n            )"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_scrapy_40",
@@ -2174,7 +3201,15 @@
     "crash_expressions": [
       "return to_bytes(value, encoding=self.encoding)",
       "return to_unicode(value, encoding=self.encoding)"
-    ]
+    ],
+    "cause_expressions": [
+      "self.binary",
+      "return to_bytes(value, encoding=self.encoding)",
+      "return to_unicode(value, encoding=self.encoding)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_spacy_1",
@@ -2188,7 +3223,14 @@
     "review": "pending",
     "failure_kind": "excecao_local",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "AttributeError do getattr com nome dunder"
+    "failure_kind_note": "AttributeError do getattr com nome dunder",
+    "cause_expressions": [
+      "msg = getattr(err_cls, code)",
+      "return \"[{code}] {msg}\".format(code=code, msg=msg)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_spacy_2",
@@ -2201,7 +3243,13 @@
     "line": 211,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "config = meta.get(\"pipeline_args\", {}).get(name, {})"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_spacy_6",
@@ -2214,7 +3262,13 @@
     "line": 407,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return self.pipeline.pop(self.pipe_names.index(name))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_2",
@@ -2227,7 +3281,13 @@
     "line": 121,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "bins = [exe.name.decode('utf8') if six.PY2 else exe.name\n            for path in os.environ.get('PATH', '').split(':')\n            for exe in _safe(lambda: list(Path(path).iterdir()), [])\n            if not _safe(exe.is_dir, True)\n            and exe.name not in tf_entry_points]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_3",
@@ -2240,7 +3300,14 @@
     "line": 108,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "proc = Popen(['fish', '-c', 'echo $FISH_VERSION'],\n                     stdout=PIPE, stderr=DEVNULL)",
+      "version = proc.stdout.read().decode('utf-8').strip()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_4",
@@ -2257,7 +3324,15 @@
     "failure_kind_note": "ValueError ao desempacotar alias sem espaço",
     "crash_expressions": [
       "name, value = alias.replace('alias ', '', 1).split(' ', 1)"
-    ]
+    ],
+    "cause_expressions": [
+      "alias_out = proc.stdout.read().decode('utf-8').strip().split('\\n')",
+      "alias_out",
+      "name, value = alias.replace('alias ', '', 1).split(' ', 1)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_10",
@@ -2270,7 +3345,14 @@
     "line": 21,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "last_arg = command.script_parts[-1]",
+      "return [\n        last_arg + ' --help',\n        \"\".join(split_cmd3),\n        \"\".join(split_cmd2),\n    ]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_11",
@@ -2283,7 +3365,13 @@
     "line": 14,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return replace_argument(command.script, 'push', push_upstream)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_14",
@@ -2296,7 +3384,16 @@
     "line": 10,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "overridden_aliases = os.environ.get('TF_OVERRIDDEN_ALIASES', '').strip()",
+      "overridden_aliases",
+      "return [alias.strip() for alias in overridden_aliases.split(',')]",
+      "return ['cd', 'grep', 'ls', 'man', 'open']"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_19",
@@ -2309,7 +3406,13 @@
     "line": 15,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return replace_argument(command.script, 'push', 'push --force')"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_25",
@@ -2322,7 +3425,13 @@
     "line": 13,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return re.sub('^mkdir (.*)', 'mkdir -p \\\\1', command.script)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_26",
@@ -2335,7 +3444,14 @@
     "line": 10,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "machine = \"\"",
+      "return shells.and_(\"vagrant up \" +  machine, command.script)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_thefuck_30",
@@ -2348,7 +3464,13 @@
     "line": 53,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return 'EDITOR' in os.environ and _search(command.stderr)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_tornado_5",
@@ -2361,7 +3483,13 @@
     "line": 1221,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "callback_time_sec = self.callback_time / 1000.0"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_tornado_8",
@@ -2375,7 +3503,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "o ValueError é capturado pelo try/except da própria função; falta responder 400"
+    "failure_kind_note": "o ValueError é capturado pelo try/except da própria função; falta responder 400",
+    "cause_expressions": [
+      "self._handle_websocket_headers()"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_tqdm_1",
@@ -2388,7 +3522,13 @@
     "line": 41,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return enumerate(tqdm_class(iterable, start, **tqdm_kwargs))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_2",
@@ -2412,7 +3552,13 @@
     "line": 599,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return re.sub(\n        r'&([^;]+;)', lambda m: _htmlentity_transform(m.group(1)), s)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_4",
@@ -2429,7 +3575,14 @@
     "failure_kind_note": "ExtractorError levantado na própria função para chamada sem argumentos",
     "crash_expressions": [
       "raise ExtractorError('Unsupported JS expression %r' % expr)"
-    ]
+    ],
+    "cause_expressions": [
+      "m = re.match(\n            r'^(?P<func>%s)\\((?P<args>[a-zA-Z0-9_$,]+)\\)$' % _NAME_RE, expr)",
+      "argvals = tuple([\n                int(v) if v.isdigit() else local_vars[v]\n                for v in m.group('args').split(',')])"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_5",
@@ -2442,7 +3595,15 @@
     "line": 1104,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "pm_delta = datetime.timedelta(hours=12 if re.search(r'(?i)PM', date_str) else 0)",
+      "dt = datetime.datetime.strptime(date_str, expression) - timezone + pm_delta",
+      "return calendar.timegm(timetuple.timetuple())"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_7",
@@ -2455,7 +3616,14 @@
     "line": 1704,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return v",
+      "v.startswith(\"'\")"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado"
+    }
   },
   {
     "id": "bip_youtube_dl_8",
@@ -2468,7 +3636,14 @@
     "line": 961,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "current_selector = None",
+      "selectors.append(FormatSelector(PICKFIRST, (first_choice, second_choice), []))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_9",
@@ -2492,7 +3667,13 @@
     "line": 1563,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "res = re.sub(r'''(?x)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\\")?)*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\')?)*'|\n        [a-zA-Z_][.a-zA-Z_0-9]*\n        ''', fix_kv, code)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_13",
@@ -2505,7 +3686,13 @@
     "line": 1871,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "re.match(r'^(?:https?:)?//', path)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_15",
@@ -2518,7 +3705,13 @@
     "line": 2270,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        {comment}|,(?={skip}[\\]}}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        \\b(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:{skip}:)?|\n        [0-9]+(?={skip}:)\n        '''.format(comment=COMMENT_RE, skip=SKIP_RE), fix_kv, code)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_20",
@@ -2531,7 +3724,13 @@
     "line": 368,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "re.finditer(r'''(?xs)\n        <([a-zA-Z0-9:._-]+)\n         (?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?\n         \\s+%s=['\"]?%s['\"]?\n         (?:\\s+[a-zA-Z0-9:._-]+(?:=[a-zA-Z0-9:._-]*|=\"[^\"]*\"|='[^']*'))*?\n        \\s*>\n        (?P<content>.*?)\n        </\\1>\n    ''' % (re.escape(attribute), value), html)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_21",
@@ -2545,7 +3744,13 @@
     "review": "pending",
     "failure_kind": "resultado_errado",
     "failure_kind_source": "patch_lido",
-    "failure_kind_note": "path em bytes devolve None na primeira checagem, sem exceção"
+    "failure_kind_note": "path em bytes devolve None na primeira checagem, sem exceção",
+    "cause_expressions": [
+      "not isinstance(base, compat_str) or not re.match(r'^(?:https?:)?//', base)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_22",
@@ -2569,7 +3774,14 @@
     "line": 2110,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "v.startswith('/*') or v == ','",
+      "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        /\\*.*?\\*/|,(?=\\s*[\\]}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        \\b(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\\s*:)?|\n        [0-9]+(?=\\s*:)\n        ''', fix_kv, code)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_24",
@@ -2582,7 +3794,15 @@
     "line": 2348,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "m.group('strval') is not None",
+      "comparison_value = m.group('strval')",
+      "actual_value = dct.get(m.group('key'))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_25",
@@ -2595,7 +3815,14 @@
     "line": 2041,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "INTEGER_TABLE = (\n            (r'^0[xX][0-9a-fA-F]+', 16),\n            (r'^0+[0-7]+', 8),\n        )",
+      "i = int(im.group(0), base)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_26",
@@ -2608,7 +3835,13 @@
     "line": 1973,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "return re.sub(r'''(?sx)\n        \"(?:[^\"\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^\"\\\\]*\"|\n        '(?:[^'\\\\]*(?:\\\\\\\\|\\\\['\"nurtbfx/\\n]))*[^'\\\\]*'|\n        /\\*.*?\\*/|,(?=\\s*[\\]}])|\n        [a-zA-Z_][.a-zA-Z_0-9]*|\n        (?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\\s*:)?|\n        [0-9]+(?=\\s*:)\n        ''', fix_kv, code)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_27",
@@ -2621,7 +3854,14 @@
     "line": 1985,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "mobj = re.match(r'^(\\d+):(\\d\\d):(\\d\\d(?:\\.\\d+)?)$', time_expr)",
+      "return 3600 * int(mobj.group(1)) + 60 * int(mobj.group(2)) + float(mobj.group(3))"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_30",
@@ -2635,7 +3875,18 @@
     "review": "pending",
     "failure_kind": "incerto",
     "failure_kind_source": "teste_bugsinpy_lido",
-    "failure_kind_note": "o teste compara o formato escolhido; pelo patch não dá para saber se quebra"
+    "failure_kind_note": "o teste compara o formato escolhido; pelo patch não dá para saber se quebra",
+    "cause_expressions": [
+      "format_spec == 'all'",
+      "formats[format_idx]"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch_revisado",
+      "crash_expressions": "llm_patch_revisado"
+    },
+    "crash_expressions": [
+      "formats[format_idx]"
+    ]
   },
   {
     "id": "bip_youtube_dl_41",
@@ -2648,7 +3899,14 @@
     "line": 759,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "date_str = date_str.replace(',',' ')",
+      "date_str = re.sub(r' ?(\\+|-)[0-9:]*$', '', date_str)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   },
   {
     "id": "bip_youtube_dl_43",
@@ -2661,6 +3919,12 @@
     "line": 1090,
     "review": "pending",
     "failure_kind": "resultado_errado",
-    "failure_kind_source": "patch_lido"
+    "failure_kind_source": "patch_lido",
+    "cause_expressions": [
+      "m = re.match(r'(?:https?:|)//[^/]+/(?:[^/?#]+/)?([^/?#]+)/?(?:[?#]|$)', url)"
+    ],
+    "label_sources": {
+      "cause_expressions": "patch"
+    }
   }
 ]
