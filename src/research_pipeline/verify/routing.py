@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import re
 
+from .hypothesis import VALUE_ORACLE
+
 DYNAMIC = "dynamic"
 API_AGENT = "api_agent"
 CLAUDE_AGENT = "claude_agent"
@@ -53,4 +55,7 @@ def limit_class(result: dict) -> str:
 
 
 def route(result: dict) -> tuple[str, ...]:
+    # Every arm looks for an exception; none knows a wrong-result hypothesis's property.
+    if (result.get("hypothesis") or {}).get("oracle") == VALUE_ORACLE:
+        return ()
     return _ROUTES[limit_class(result)]

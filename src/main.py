@@ -59,7 +59,12 @@ from research_pipeline.llm.backends.factory import (
     _GEMINI_OPENAI_BASE_URL,
     build_analyzer,
 )
-from research_pipeline.llm.prompts import set_context_sources
+from research_pipeline.llm.example_pool import load_example_pool
+from research_pipeline.llm.prompts import (
+    load_system_prompt,
+    set_context_sources,
+    set_example_pool,
+)
 from research_pipeline.llm.schema import v2_findings_schema
 from research_pipeline.pipeline import (
     Backend,
@@ -70,13 +75,15 @@ from research_pipeline.pipeline import (
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.pipeline import execute_scan, plan_scan
 from research_pipeline.verify.candidate import Candidate
-from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.capabilities import resolve_rules
+from research_pipeline.verify.hypothesis import VALUE_ORACLE, BugHypothesis
 from research_pipeline.verify.llm_client import LLMClient
 from research_pipeline.verify.agent_arm import make_agent, run_agent_fallback
 from research_pipeline.verify.levels import consolidate, level_summary
 from research_pipeline.verify.loop import run_verify
 from research_pipeline.v2_evaluator import evaluate_detection
 from research_pipeline.verify.report import evaluate_verify, summarize
+from research_pipeline.verify.rules import ALL_RULES
 from research_pipeline.voting import aggregate_votes, write_vote_report
 
 # ---------------------------------------------------------------------------
@@ -287,10 +294,37 @@ def build_parser() -> argparse.ArgumentParser:
              "com o mesmo orçamento (linha de base do reparo).",
     )
     parser.add_argument(
+        "--no-capability-probes",
+        dest="capability_probes",
+        action="store_false",
+        help="Motor verify: não roda as sondas de capacidade do ESBMC; todas as regras de reescrita "
+             "ficam ligadas (para reproduzir uma rodada congelada).",
+    )
+    parser.add_argument(
+        "--capability-cache",
+        default="artifacts/esbmc_capabilities",
+        metavar="DIR",
+        help="Motor verify: cache das sondas, uma entrada por binário, flags e versão do ESBMC.",
+    )
+    parser.add_argument(
+        "--spec-context",
+        choices=["none", "callers"],
+        default="callers",
+        help="Motor verify: 'callers' mostra ao LLM do spec as chamadas da função e os fatos de uso das entradas, "
+             "e rejeita tipo contrariado pelo uso; 'none' é o pedido de antes (linha de base).",
+    )
+    parser.add_argument(
         "--verification-sources",
         default=None,
         metavar="DIR",
         help="Motor verify: verifica no arquivo de mesmo nome deste diretório (ex.: arquivo_com_bug) quando existir.",
+    )
+    parser.add_argument(
+        "--fixed-sources",
+        default=None,
+        metavar="DIR",
+        help="Motor verify: versões corrigidas (ex.: arquivo_corrigido) para o controle do oráculo de valor; "
+             "o LLM nunca as vê.",
     )
     parser.add_argument(
         "--context-sources",
@@ -305,6 +339,14 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="A1,A2",
         help="Variantes do prompt V2 (research_pipeline/llm/prompt_variants.py), aplicadas em ordem.",
     )
+    parser.add_argument(
+        "--example-pool",
+        default=str(REPO_ROOT / "dataset/bugs_reais/ground_truths.json"),
+        metavar="JSON",
+        help="Variante A13: gabarito de onde saem os exemplos (funções em funcao_com_bug/ ao lado dele).",
+    )
+    parser.add_argument("--example-k", type=_positive_int, default=3, metavar="K",
+                        help="Variante A13: quantos exemplos por função (padrão: 3).")
     parser.add_argument(
         "--v2-stage",
         choices=["end-to-end", "synthesis", "detection"],
@@ -487,7 +529,8 @@ def _load_v2_oracle_candidates(
 
 
 def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
-    return {
+    variants = tuple(config.get("v2_variants", ()))
+    fingerprint = {
         "config": config,
         "sources": {
             str(path.resolve()): sha256(path.read_bytes()).hexdigest()
@@ -496,11 +539,23 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
         "detector_prompt": sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/system_prompt_v2.txt").read_bytes()
         ).hexdigest(),
-        "detector_schema": sha256(json.dumps(v2_findings_schema(tuple(config.get("v2_variants", ()))), sort_keys=True).encode()).hexdigest(),
+        "detector_schema": sha256(json.dumps(v2_findings_schema(variants), sort_keys=True).encode()).hexdigest(),
         "spec_prompt": sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/input_spec_prompt.txt").read_bytes()
         ).hexdigest(),
     }
+    # Only for A13 onwards, which keeps the fingerprint of earlier variants as it was. That no longer makes old
+    # checkpoints resume: config always carries spec_context and the spec prompt changed on 16/10.
+    if {"A13", "A14", "A15"} & set(variants):
+        system = load_system_prompt(include_smells=False, v2_detection=True, v2_variants=variants)
+        fingerprint["detector_system_prompt"] = sha256(system.encode()).hexdigest()
+    if "A15" in variants:
+        fingerprint["value_prompt"] = sha256(
+            (REPO_ROOT / "src/research_pipeline/prompts/value_property_prompt.txt").read_bytes()
+        ).hexdigest()
+    if "A13" in variants:
+        fingerprint["example_pool"] = sha256(Path(config["example_pool"]).read_bytes()).hexdigest()
+    return fingerprint
 
 
 def _summarize_v2_telemetry(events: list[dict]) -> dict:
@@ -1077,6 +1132,19 @@ def _mode_v2_verify(
         capture_telemetry()
         _save_checkpoint(checkpoint_path, checkpoint)
 
+    capabilities = checkpoint.get("capabilities")
+    if capabilities is None:
+        # A batch keeps one rule set and a resume reuses it. A checkpoint with results but no rule set keeps
+        # every rule on; none exists today (pre-16/10 checkpoints fail the fingerprint), the branch is a guard.
+        # The probes run what check() runs: without --esbmc-command that is `esbmc` from PATH.
+        capabilities = resolve_rules(args.esbmc_command or ["esbmc"], cache_dir=Path(args.capability_cache),
+                                     enabled=args.capability_probes,
+                                     resumed=bool(checkpoint.get("verify_results")),
+                                     bound=args.bound, timeout_seconds=min(args.timeout, 60))
+        checkpoint["capabilities"] = capabilities
+        _save_checkpoint(checkpoint_path, checkpoint)
+    if capabilities["disabled_rules"]:
+        print("Regras desligadas pelas sondas: " + ", ".join(capabilities["disabled_rules"]))
     try:
         results = run_verify(
             hypotheses,
@@ -1089,7 +1157,10 @@ def _mode_v2_verify(
             bound=args.bound,
             timeout_seconds=args.timeout,
             strategy=args.spec_strategy,
+            spec_context=args.spec_context,
             strict_sources=args.verification_sources_strict,
+            fixed_sources=Path(args.fixed_sources) if args.fixed_sources else None,
+            rules=ALL_RULES - frozenset(capabilities["disabled_rules"]),
         )
     except KeyboardInterrupt:
         checkpoint["status"] = "interrupted"
@@ -1110,7 +1181,8 @@ def _mode_v2_verify(
     level_rows = consolidate(results, agent_results)
     levels = level_summary(level_rows)
     _write_json_atomic(report_path, {
-        "config": {**config, "esbmc_version": _esbmc_version(args.esbmc_command or ["esbmc"])},
+        "config": {**config, "esbmc_version": _esbmc_version(args.esbmc_command or ["esbmc"]),
+                   "capabilities": capabilities},
         "detection": detection,
         "verification": summary,
         "telemetry": _summarize_v2_telemetry(telemetry_events),
@@ -1180,7 +1252,7 @@ def mode_scan(args: argparse.Namespace) -> int:
     try:
         report = execute_scan(plan, analyzer=analyzer, spec_llm=spec_llm, resume=args.resume,
                               esbmc_command=args.esbmc_command, bound=args.bound, timeout_seconds=args.timeout,
-                              strategy=args.spec_strategy)
+                              strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph)
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
@@ -1195,6 +1267,12 @@ def mode_v2(args: argparse.Namespace) -> int:
         return 1
     if args.v2_stage == "synthesis" and not args.ground_truth:
         print("--v2-stage synthesis requer --ground-truth.", file=sys.stderr)
+        return 1
+    prompt_sources = {Path(d).resolve() for d in (args.verification_sources, args.context_sources) if d}
+    if args.fixed_sources and Path(args.fixed_sources).resolve() in prompt_sources:
+        # The fixed version must never reach an LLM prompt; those two directories feed the prompts.
+        print("--fixed-sources não pode ser o diretório de --verification-sources nem de --context-sources.",
+              file=sys.stderr)
         return 1
     all_input_paths = input_paths
     if args.v2_stage in ("end-to-end", "detection") and args.ground_truth:
@@ -1239,8 +1317,12 @@ def mode_v2(args: argparse.Namespace) -> int:
         )
         context_sources = args.context_sources or args.verification_sources
         set_context_sources(Path(context_sources) if context_sources else None)
+        if "A13" in variants:
+            set_example_pool(load_example_pool(Path(args.example_pool)), k=args.example_k)
+        else:
+            set_example_pool(None)
         synthesizer = _build_synthesizer(args, synth_backend, synth_model, openai_key, google_key)
-    except ValueError as exc:
+    except (ValueError, OSError, KeyError) as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
 
@@ -1262,11 +1344,18 @@ def mode_v2(args: argparse.Namespace) -> int:
         "verification_sources_strict": args.verification_sources_strict,
         "context_sources": args.context_sources or args.verification_sources,
         "spec_strategy": args.spec_strategy,
+        "spec_context": args.spec_context,
         "bound": args.bound,
         "timeout": args.timeout,
         "llm_timeout": args.llm_timeout,
         "esbmc_command": args.esbmc_command or ["esbmc"],
     }
+    if args.fixed_sources:
+        # Only when given, so a run without it keeps the same fingerprint (no pre-16/10 checkpoint resumes).
+        config["fixed_sources"] = args.fixed_sources
+    if "A13" in variants:
+        config["example_pool"] = str(Path(args.example_pool).resolve())
+        config["example_k"] = args.example_k
     fingerprint = _v2_fingerprint(config, input_paths)
     checkpoint_path = output_path / "v2_checkpoint.json"
     if args.resume:
@@ -1367,8 +1456,10 @@ def mode_v2(args: argparse.Namespace) -> int:
             unit_candidates: list[Candidate] = []
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:
-                # The LLM decides: only findings it marks formally verifiable reach ESBMC.
-                if not finding.verifiable:
+                # With A15 the LLM says how the bug shows; a wrong result goes to the value oracle.
+                wrong_result = "A15" in variants and finding.metadata.get("failure_mode") == "resultado_errado"
+                # Otherwise the LLM decides: only findings it marks formally verifiable reach ESBMC.
+                if not finding.verifiable and not wrong_result:
                     unit_rejections.append(
                         {
                             "file": str(file_path),
@@ -1386,6 +1477,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                         expression=str(finding.metadata.get("expression", "")),
                         note=finding.explanation,
                         violated_property=str(finding.metadata.get("violated_property", "")),
+                        oracle=VALUE_ORACLE if wrong_result else "",
                     )
                 )
             candidates.extend(unit_candidates)

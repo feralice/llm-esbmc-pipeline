@@ -24,11 +24,19 @@ ESBMC_TIMEOUT = "ESBMC_TIMEOUT"
 ESBMC_ERROR = "ESBMC_ERROR"
 PIPELINE_ERROR = "PIPELINE_ERROR"
 NO_SOURCE = "NO_SOURCE"
+# Wrong-result hypotheses (verify/value_oracle.py): ESBMC and the replay agree the original breaks the
+# postcondition; the fixed version then keeps it (confirmed), also breaks it (property rejected), or
+# could not tell (violation only).
+VALUE_VIOLATION = "VALUE_VIOLATION"
+VALUE_CONFIRMED = "VALUE_CONFIRMED"
+PROPERTY_REJECTED = "PROPERTY_REJECTED"
 
 VERDICTS = (CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED, GROUNDING_FAILED,
-            MISSING_DEPENDENCY, UNSUPPORTED, SPEC_FAILED, ESBMC_TIMEOUT, ESBMC_ERROR, PIPELINE_ERROR, NO_SOURCE)
+            MISSING_DEPENDENCY, UNSUPPORTED, SPEC_FAILED, ESBMC_TIMEOUT, ESBMC_ERROR, PIPELINE_ERROR, NO_SOURCE,
+            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED)
 # Verdicts reached by a program ESBMC actually checked: the success@k numerator.
-CHECKED = frozenset({CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED})
+CHECKED = frozenset({CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED,
+                     VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED})
 
 # "inconclusive" is VERIFICATION UNKNOWN or a crash without a verdict, never evidence of safety.
 _SAFE_STATUSES = frozenset({"no_violation_found", "no_vcc_generated"})

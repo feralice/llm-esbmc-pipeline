@@ -10,15 +10,26 @@ from .astutil import expression_nodes, find_function, undefined_globals
 from .compat import (
     NONE_GUARDS,
     cut_after_suspect,
+    drop_project_decorators,
     none_guards,
     remove_unused,
     rename_builtin_named_methods,
     rewrite_compat,
+    split_conditional_assignments,
 )
 from .grounding import Grounded
+from .hypothesis import VALUE_ORACLE
+from .rules import (
+    ALL_RULES,
+    BUILTIN_NAMED_METHODS,
+    CONDITIONAL_ASSIGNMENTS,
+    NONE_GUARD_KINDS,
+    PROJECT_DECORATORS,
+)
 from .slicing import END_PATH, KNOWN_MEMBERS, MEMBER_MODELS, CallShape
 from .spec import (
     OBJECT,
+    RESULT,
     SCALARS,
     InputSpec,
     TypeShape,
@@ -33,6 +44,7 @@ RECEIVER = "_receiver"
 RECEIVER_CLASS = "_Receiver"
 OPAQUE = "_Opaque"
 DRIVER = "_esbmc_main"
+RESULT_VAR = "_esbmc_result"
 
 
 class RenderError(ValueError):
@@ -49,6 +61,8 @@ class Program:
     replay_source: str | None = None
     replay_target_spans: tuple[tuple[int, int], ...] | None = None
     replay_target_range: tuple[int, int] | None = None
+    property_line: int = 0  # the driver's assert of a wrong-result hypothesis, in ``source``
+    replay_property_line: int | None = None  # the same assert in ``replay_source``; None: same line
 
 
 def object_class(input_key: str) -> str:
@@ -346,7 +360,15 @@ class _ToReceiver(ast.NodeTransformer):
         return ast.copy_location(ast.Name(RECEIVER, node.ctx), node) if node.id == "self" else node
 
 
-def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, ...], decl: _Declarer) -> list[str]:
+class _ToResult(ast.NodeTransformer):
+    def visit_Name(self, node: ast.Name) -> ast.Name:
+        return ast.copy_location(ast.Name(RESULT_VAR, node.ctx), node) if node.id == RESULT else node
+
+
+def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, ...], decl: _Declarer,
+            returns: str = "", postcondition: str = "") -> list[str]:
+    """With ``postcondition``, the call's value goes to RESULT_VAR (unless ``returns`` is None) and the
+    postcondition's ``assert`` is the driver's last line."""
     lines = [f"def {DRIVER}() -> None:"]
     for name, type_text in params.items():
         lines += decl.declare(name, type_text, "    ", object_class(name))
@@ -360,14 +382,22 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
     keyword = {p.name for p in grounded.params if p.keyword}
     args = ", ".join(f"{name}={name}" if name in keyword else name for name in params)
     if receiver:
-        lines.append(f"    {RECEIVER}.{grounded.method_name}({args})")
+        call = f"{RECEIVER}.{grounded.method_name}({args})"
     elif grounded.entry == "constructor":
-        lines.append(f"    {grounded.class_name}({args})")
+        call = f"{grounded.class_name}({args})"
     elif grounded.class_name:
-        lines.append(f"    {grounded.class_name}.{grounded.method_name}({args})")
+        call = f"{grounded.class_name}.{grounded.method_name}({args})"
     else:
-        lines.append(f"    {grounded.method_name}({args})")
-    return lines
+        call = f"{grounded.method_name}({args})"
+    if not postcondition:
+        return [*lines, f"    {call}"]
+    shape = parse_type(returns)
+    if shape is None or shape.kind == "none":
+        lines.append(f"    {call}")
+    else:
+        lines.append(f"    {RESULT_VAR}: {_annotation(shape)} = {call}")
+    tree = _ToResult().visit(_ToReceiver().visit(ast.parse(postcondition.strip(), mode="eval")))
+    return [*lines, f"    assert {ast.unparse(tree)}"]
 
 
 def _annotate_inputs(module: str, annotations: dict[tuple[str, str], str]) -> str:
@@ -409,7 +439,7 @@ def _shifted(spans: tuple[tuple[int, int], ...], k: int) -> tuple[tuple[int, int
     return tuple((start + k, end + k) for start, end in spans)
 
 
-def render_program(grounded: Grounded, spec: InputSpec) -> Program:
+def render_program(grounded: Grounded, spec: InputSpec, rules: frozenset[str] = ALL_RULES) -> Program:
     if grounded.unsupported:
         raise RenderError(grounded.unsupported)
     if not grounded.module:
@@ -417,6 +447,9 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
     problems = spec_problems(spec, grounded)
     if problems:
         raise RenderError("; ".join(problems))
+    value = grounded.hypothesis.oracle == VALUE_ORACLE
+    if value and grounded.entry == "constructor":
+        raise RenderError("the value oracle needs a returned value or a receiver; a constructor call has neither")
     params, attributes = resolved_types(spec, grounded)
     decl = _Declarer()
 
@@ -429,7 +462,8 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
     module = _annotate_inputs(module, _input_annotations(grounded, params))
     stubs = _stubs(grounded, spec.stubs, decl) + _object_classes(
         grounded, input_types(spec, grounded), member_types(spec, grounded), decl)
-    driver = _driver(grounded, params, spec.assumptions, decl)
+    driver = _driver(grounded, params, spec.assumptions, decl,
+                     spec.returns if value else "", spec.postcondition if value else "")
     if any(OPAQUE in line for line in [*stubs, *driver]) or OPAQUE in module:
         stubs = [f"class {OPAQUE}:", "    pass", "", "", *stubs]
         transforms.append("opaque_values")
@@ -454,14 +488,23 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
     shift = function.lineno - grounded.function_start
     spans = tuple((start + shift, end + shift) for start, end in grounded.spans)
     target_range = (function.lineno, function.end_lineno)
-    rewritten, compat = rewrite_compat(body, parameter_types={grounded.hypothesis.function: params})
-    rewritten, target, renamed = rename_builtin_named_methods(rewritten, grounded.hypothesis.function)
+    rewritten, compat = rewrite_compat(body, parameter_types={grounded.hypothesis.function: params}, rules=rules)
+    rewritten, decorators = (drop_project_decorators(rewritten) if PROJECT_DECORATORS in rules
+                             else (rewritten, []))
+    rewritten, split = (split_conditional_assignments(rewritten) if CONDITIONAL_ASSIGNMENTS in rules
+                        else (rewritten, []))
+    compat += [*decorators, *split]
+    if BUILTIN_NAMED_METHODS in rules:
+        rewritten, target, renamed = rename_builtin_named_methods(rewritten, grounded.hypothesis.function)
+    else:
+        target, renamed = grounded.hypothesis.function, []
     rewritten_spans = _suspect_spans(rewritten, grounded, spans[0][0], target) or spans
-    rewritten, cut = cut_after_suspect(rewritten, target, rewritten_spans)
+    # A wrong value shows only after the function returns: its path must not end at the suspect.
+    rewritten, cut = (rewritten, []) if value else cut_after_suspect(rewritten, target, rewritten_spans)
     rewritten, unused = remove_unused(rewritten, target)
     never_none = {key for key, text in input_types(spec, grounded).items()
                   if (shape := parse_type(text)) is not None and not shape.optional and shape.kind != "none"}
-    rewritten, guards = none_guards(rewritten, target, rewritten_spans, never_none)
+    rewritten, guards = none_guards(rewritten, target, rewritten_spans, never_none, kinds=rules & NONE_GUARD_KINDS)
     compat += [*renamed, *cut, *unused, *guards]
     if guards:
         # Into both copies (blank in the replay) after the leading import, like the exception stubs:
@@ -472,5 +515,15 @@ def render_program(grounded: Grounded, spec: InputSpec) -> Program:
         replay = replay[:head] + "\n" * k + replay[head:]
         driver_start, target_range = driver_start + k, (target_range[0] + k, target_range[1] + k)
         spans, rewritten_spans = _shifted(spans, k), _shifted(rewritten_spans, k)
-    return Program(rewritten, driver_start, rewritten_spans, (*transforms, *compat), target_range,
-                   replay_source=replay, replay_target_spans=spans, replay_target_range=target_range)
+    # The assert is the driver's last line; the split below may move it in the ESBMC copy only.
+    replay_property_line = driver_start + len(driver) - 1 if value and spec.postcondition else 0
+    rewritten_range = target_range
+    if split:
+        # The split adds lines to the ESBMC copy only; the replay keeps the original numbering.
+        moved = find_function(ast.parse(rewritten), target)
+        rewritten_range = (moved.lineno, moved.end_lineno) if moved else target_range
+        driver_start = rewritten.splitlines().index(f"def {DRIVER}() -> None:") + 1
+    property_line = driver_start + len(driver) - 1 if replay_property_line else 0
+    return Program(rewritten, driver_start, rewritten_spans, (*transforms, *compat), rewritten_range,
+                   replay_source=replay, replay_target_spans=spans, replay_target_range=target_range,
+                   property_line=property_line, replay_property_line=replay_property_line)

@@ -21,7 +21,7 @@ from .render import Program
 
 @dataclass(frozen=True)
 class ReplayVerdict:
-    status: str  # reproduced | other_failure | not_reproduced | unavailable
+    status: str  # reproduced | property_violated | other_failure | not_reproduced | unavailable
     exception_type: str = ""
     line: int | None = None
     runs: int = 0
@@ -120,10 +120,12 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
     worker = Path(__file__).with_name("replay_worker.py")
     spans = program.target_spans if program.replay_target_spans is None else program.replay_target_spans
     target_range = program.target_range if program.replay_target_range is None else program.replay_target_range
+    property_line = program.property_line if program.replay_property_line is None else program.replay_property_line
     config = {"function": function, "spans": spans, "range": target_range,
               "max_runs": max_runs, "deadline_seconds": max(1, timeout_seconds - 3), "seeds": seeds or {},
               "seeds_only": seeds_only, "random_runs": random_runs, "seed": seed,
-              "inputs": inputs, "str_constants": string_constants(source, tuple(target_range))}
+              "inputs": inputs, "str_constants": string_constants(source, tuple(target_range)),
+              "property_line": property_line}
     try:
         with tempfile.TemporaryDirectory(prefix="llm-esbmc-verify-") as temp_dir:
             directory = Path(temp_dir)
@@ -147,6 +149,9 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
     if data.get("status") == "reproduced" and not inside:
         # The worker shares its process with the program it runs: a claim outside the target is not trusted.
         return ReplayVerdict("unavailable", reason=f"replay reported line {line} outside the hypothesis")
+    if data.get("status") == "property_violated" and line != property_line:
+        return ReplayVerdict("unavailable", reason=f"replay reported a property violation at line {line}, "
+                                                   "not at the property")
     return ReplayVerdict(
         status=str(data["status"]),
         exception_type=str(data.get("exception_type", "")),

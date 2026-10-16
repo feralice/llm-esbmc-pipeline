@@ -6,6 +6,7 @@ import pytest
 
 from research_pipeline.v2_evaluator import (
     _bug_detection_metrics,
+    at_bug_line,
     evaluate_detection,
     expressions_equivalent,
 )
@@ -158,3 +159,9 @@ def test_equivalent_expression_metric_sits_beside_the_exact_one(tmp_path):
     assert metrics["expression"]["tp"] == 0
     assert metrics["expression_equivalent"]["tp"] == 1
     assert metrics["expression_equivalent"]["fp"] == 1
+
+
+def test_at_bug_line_accepts_any_cause_line_from_the_patch():
+    item = {"function": "f", "expression": "window = get(k)", "cause_expressions": ["k = k or 1"]}
+    assert at_bug_line({"function": "f", "suspect_expression": "k = k or 1"}, item)
+    assert not at_bug_line({"function": "f", "suspect_expression": "other()"}, item)

@@ -16,6 +16,7 @@ class Candidate:
     expression: str = ""
     note: str = ""
     violated_property: str = ""
+    oracle: str = ""
 
     def to_dict(self) -> dict[str, str]:
         return asdict(self)
@@ -28,4 +29,4 @@ class Candidate:
             raise ValueError(f"candidate missing field(s): {', '.join(missing)}")
         return cls(str(data["file"]), str(data["function"]), str(data.get("category", "")),
                    str(data.get("expression", "")), str(data.get("note", "")),
-                   str(data.get("violated_property", "")))
+                   str(data.get("violated_property", "")), str(data.get("oracle", "")))

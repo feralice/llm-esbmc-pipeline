@@ -105,11 +105,64 @@ def _repo_callers(prompt: str) -> str:
     return _swap("A12", prompt, "## SAÍDA: JSON válido", callers + "\n## SAÍDA: JSON válido")
 
 
+_REAL_EXAMPLES = """## EXEMPLOS DE BUGS REAIS
+
+Depois da função vem um bloco `UNTRUSTED_EXEMPLOS` com funções de outros projetos
+e o bug real que os mantenedores corrigiram em cada uma: a expressão que a correção
+mudou e, quando houve exceção, onde ela estoura. Use-os para calibrar que expressão
+apontar em `expression`. Eles não são a função analisada: não reporte achados sobre
+eles e não suponha que a função analisada tenha o mesmo bug.
+"""
+
+
+def _real_examples(prompt: str) -> str:
+    """The examples themselves depend on the function; ``build_user_prompt`` adds them."""
+    return _swap("A13", prompt, "## SAÍDA: JSON válido", _REAL_EXAMPLES + "\n## SAÍDA: JSON válido")
+
+
+_QUOTED_EVIDENCE = """## EVIDÊNCIA CITADA
+
+Para cada achado, preencha mais dois campos em `metadata`:
+- `quoted_line`: a linha inteira da função onde está `expression`, copiada sem
+  mudar nada; `expression` precisa aparecer dentro dela;
+- `trigger`: a condição concreta sobre as entradas ou o estado que leva ao
+  comportamento errado, escrita como expressão Python sobre os nomes da função
+  (por exemplo `len(xs) == 0` ou `k > len(scores)`).
+Se não conseguir copiar a linha ou escrever a condição, não reporte o achado.
+"""
+
+
+def _quoted_evidence(prompt: str) -> str:
+    prompt = _swap("A14", prompt, "## SAÍDA: JSON válido", _QUOTED_EVIDENCE + "\n## SAÍDA: JSON válido")
+    return _swap("A14", prompt, '"line": 0,',
+                 '"line": 0,\n'
+                 '        "quoted_line": "<linha inteira copiada da função>",\n'
+                 '        "trigger": "<condição sobre as entradas que leva ao erro>",')
+
+
+_WRONG_RESULT = """## BUG DE RESULTADO ERRADO
+
+Em `metadata.failure_mode`, diga como o bug aparece: `excecao` quando a função quebra
+(exceção levantada ou assert falso), `resultado_errado` quando ela termina normalmente mas
+devolve um valor errado ou deixa `self` num estado errado, e `outro` quando a falha depende
+do ambiente. Um achado `resultado_errado` vai ao ESBMC mesmo com `verifiable` false: uma
+etapa seguinte escreve a propriedade que o resultado correto cumpre.
+"""
+
+
+def _wrong_result(prompt: str) -> str:
+    prompt = _swap("A15", prompt, "## SAÍDA: JSON válido", _WRONG_RESULT + "\n## SAÍDA: JSON válido")
+    return _swap("A15", prompt, '"context_needed": ["<helper/import/classe necessária, se houver>"]',
+                 '"context_needed": ["<helper/import/classe necessária, se houver>"],\n'
+                 '        "failure_mode": "excecao | resultado_errado | outro"')
+
+
 VARIANTS: dict[str, Callable[[str], str]] = {"A1": _report_without_context, "A2": _input_checklist, "A3": _ranked,
                                              "A6": _any_wrong_behaviour, "A7": _reason_first,
                                              "A8": _worked_examples, "A9": _cause_and_crash,
                                              "A10": _keep_docstring, "A11": _file_context,
-                                             "A12": _repo_callers}
+                                             "A12": _repo_callers, "A13": _real_examples, "A14": _quoted_evidence,
+                                             "A15": _wrong_result}
 
 
 def apply_variants(prompt: str, names: tuple[str, ...]) -> str:

@@ -724,6 +724,38 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Pendente** (precisa de limite de LLM): refazer as 114 hipóteses (`run.sh --resume` na pasta codex),
   braços `llm_input` e `api_agent` pelo Codex.
 
+## Fase 15 (16/10): spec com contexto dos chamadores (item 3 do plano geral), sem rodada
+
+- **Objetivo:** item 3 do plano geral, sem rodada. O pedido de spec passa a mostrar as chamadas reais da
+  função, as referências sem chamada (`partial(f, ...)`) e fatos de uso das entradas, e um tipo
+  contrariado pelo uso (`int` com `.groups()`, escalar subscrito) volta ao LLM pelo laço de reparo antes
+  do ESBMC. Flag nova `--spec-context {none,callers}`, padrão `callers`.
+- **Commit:** (o da Fernanda, se ela commitar).
+- **Comando:** `timeout 10m .venv/bin/python -m pytest -q tests --ignore=tests/test_verify_esbmc_integration.py`
+  → 945 passed (921 antes do item, 24 testes novos).
+- **Linha de base:** a regra "tipo contrariado pelo uso é rejeitado" fica no bloco de contexto, não em
+  `input_spec_prompt.txt`, que voltou ao texto de antes do item (mesmo sha256). Com `--spec-context none`
+  o prompt de sistema e o pedido são idênticos aos de antes do item 3 (teste
+  `test_without_context_the_system_prompt_is_the_pre_item_3_one`).
+- **Retomada:** o hash do prompt do spec não muda mais, mas o `config` do fingerprint ganhou
+  `spec_context`, e a comparação é do dicionário inteiro; então `artifacts/v2/final-2026-10-15-codex`
+  continua **não retomável** com este código, nem com `--spec-context none`.
+- Medição adiada para o item 6 (`--spec-context none` contra `callers`).
+
+## Fase 16 (16/10): variantes A13 e A14 (item 4 do plano geral), sem rodada
+
+- **Objetivo:** item 4 do plano geral, sem rodada. `llm/example_pool.py` (pool do gabarito, similaridade
+  Jaccard por AST, exclusão do projeto do bug), variantes A13 e A14 em `llm/prompt_variants.py`, campos
+  `quoted_line` e `trigger` no esquema com A14, `--example-pool`/`--example-k` no `main.py`, impressão
+  digital ampliada só para A13 e A14, `scripts/print_detection_prompt.py` e `BACKEND`/`MODEL` em
+  `scripts/run_detection_variants.sh`.
+- **Commit:** (o da Fernanda, se ela commitar).
+- **Sem rodada:** nenhuma chamada a LLM. A comparação fica para o item 6 do PLANO_GERAL.
+- **Pool real:** 227 dos 289 itens entram como exemplo; varredura dos 289 sem nenhum exemplo do mesmo
+  projeto. Inspeção de `bip_pandas_84` com A1,A2,A13,A14: cerca de 3.425 tokens de entrada.
+- **Comando:** `timeout 10m .venv/bin/python -m pytest -q tests --ignore=tests/test_verify_esbmc_integration.py`
+  → 966 passed (945 antes do item, 21 testes novos).
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

@@ -5,6 +5,11 @@ import pytest
 from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.render import RenderError, render_program
+from research_pipeline.verify.rules import (
+    ALL_RULES,
+    BUILTIN_NAMED_METHODS,
+    NONE_GUARD_KINDS,
+)
 from research_pipeline.verify.spec import InputSpec
 
 SOURCE = '''def ratio(total, count):
@@ -223,3 +228,26 @@ def test_new_stays_when_it_is_the_target():
     grounded = ground(BugHypothesis("x.py", "Pool.__new__", "10 // size"), source)
     program = render_program(grounded, InputSpec({"size": "int"}, {}, ()))
     assert "def __new__(cls, size: int):" in program.source
+
+
+STORE = "class Store:\n    def get(self, k):\n        return 10 // k\n"
+
+
+def test_builtin_named_rule_off_keeps_the_method_name():
+    grounded = ground(BugHypothesis("x.py", "Store.get", "10 // k"), STORE)
+    spec = InputSpec({"k": "int"}, {}, ())
+    full = render_program(grounded, spec)
+    assert "def esbmc_get(" in full.source
+    assert any(t.startswith("builtin_named_methods_renamed") for t in full.transforms)
+    plain = render_program(grounded, spec, rules=ALL_RULES - {BUILTIN_NAMED_METHODS})
+    assert "def get(self, k: int)" in plain.source and "_receiver.get(k)" in plain.source
+    assert not any(t.startswith("builtin_named_methods_renamed") for t in plain.transforms)
+
+
+def test_none_guards_follow_the_enabled_rules():
+    grounded = _ground("ratio", "total // count")
+    spec = InputSpec({"total": "Optional[int]", "count": "int"}, {}, ())
+    assert "_esbmc_none_type(total is None)" in render_program(grounded, spec).source
+    off = render_program(grounded, spec, rules=ALL_RULES - NONE_GUARD_KINDS)
+    assert "_esbmc_none_type" not in off.source
+    assert not any(t.startswith("none_guards") for t in off.transforms)

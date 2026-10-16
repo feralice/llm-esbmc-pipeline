@@ -3,13 +3,22 @@ import ast
 from research_pipeline.verify.compat import (
     NONE_GUARDS,
     cut_after_suspect,
+    drop_project_decorators,
     none_guards,
     remove_unused,
     rename_builtin_named_methods,
     rewrite_compat,
+    split_conditional_assignments,
 )
 from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.rules import (
+    ALL_RULES,
+    METHOD_ALIAS,
+    NONE_ATTRIBUTE,
+    NONE_GUARD_KINDS,
+    PERCENT_FORMAT,
+)
 
 
 def test_percent_s_with_tuple_literal_becomes_str_concatenation():
@@ -283,3 +292,58 @@ def test_a_call_on_a_variable_annotated_with_the_class_is_renamed_too():
     renamed, _, _ = rename_builtin_named_methods(source, "f")
     assert "    return params.esbmc_get(key)\n" in renamed
     assert remove_unused(renamed, "f")[0].count("def esbmc_get") == 1
+
+
+def test_project_decorators_are_blanked_and_builtin_ones_stay():
+    source = ("def deprecated(func):\n    return func\n\n\n"
+              "class C:\n    @deprecated\n    def f(self):\n        return 1\n\n"
+              "    @staticmethod\n    def g():\n        return 2\n")
+    rewritten, transforms = drop_project_decorators(source)
+    assert "@deprecated" not in rewritten and "@staticmethod" in rewritten
+    assert len(rewritten.splitlines()) == len(source.splitlines())
+    assert transforms == ["project_decorators_removed:deprecated"]
+
+
+def test_conditional_assignment_of_functions_becomes_if_else():
+    source = "def f(a, w):\n    g = w if a == 1 else lambda c: w(c, 2)\n    return g\n"
+    rewritten, transforms = split_conditional_assignments(source)
+    assert "    if a == 1: g = w\n    else: g = lambda c: w(c, 2)\n" in rewritten
+    assert transforms == ["conditional_assignments_split:1"]
+    plain = "def f(a):\n    x = 3 if a else 0\n    return x\n"
+    assert split_conditional_assignments(plain) == (plain, [])
+
+
+def test_a_definition_named_only_by_itself_is_unused():
+    source = ("def deprecated(func=None):\n    if func is None:\n        return deprecated\n    return func\n\n\n"
+              "def f(x):\n    return x\n")
+    pruned, transforms = remove_unused(source, "f")
+    assert "def deprecated" not in pruned
+    assert transforms == ["unused_definitions_removed:deprecated"]
+
+
+def test_rule_names_cover_every_none_guard_kind():
+    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 12
+
+
+def test_rewrite_compat_skips_a_disabled_percent_rule():
+    source = 'def label(code, name):\n    return "id=%s:%s!" % (code, name)\n'
+    types = {"label": {"code": "int", "name": "str"}}
+    assert rewrite_compat(source, parameter_types=types, rules=ALL_RULES - {PERCENT_FORMAT}) == (source, [])
+    assert rewrite_compat(source, parameter_types=types)[1] == ["compat_percent_format:1"]
+
+
+def test_rewrite_compat_skips_a_disabled_alias_rule():
+    source = "class C:\n    def __str__(self):\n        return 'c'\n    __repr__ = __str__\n"
+    assert rewrite_compat(source, rules=ALL_RULES - {METHOD_ALIAS}) == (source, [])
+    assert rewrite_compat(source)[1] == ["compat_method_alias:1"]
+
+
+def test_none_guards_keep_only_the_enabled_kinds():
+    source = "def f(a, xs):\n    y = a.size, 'k' in xs\n    return y\n"
+    both, transforms = none_guards(source, "f", ((2, 2),))
+    assert "_esbmc_none_attribute(a is None)" in both and "_esbmc_none_type(xs is None)" in both
+    assert transforms == ["none_guards:2"]
+    only_in, transforms = none_guards(source, "f", ((2, 2),), kinds=NONE_GUARD_KINDS - {NONE_ATTRIBUTE})
+    assert "_esbmc_none_attribute" not in only_in and "_esbmc_none_type(xs is None)" in only_in
+    assert transforms == ["none_guards:1"]
+    assert none_guards(source, "f", ((2, 2),), kinds=frozenset()) == (source, [])

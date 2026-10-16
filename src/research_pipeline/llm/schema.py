@@ -102,13 +102,20 @@ V2_FINDINGS_JSON_SCHEMA["schema"]["properties"]["findings"]["items"] = {
 
 
 def v2_findings_schema(variants: tuple[str, ...] = ()) -> dict:
-    """The V2 schema with the fields some prompt variants ask for (A7: ``analysis``, A9: ``crash_expression``)."""
+    """The V2 schema with the fields some prompt variants ask for (A7: ``analysis``, A9: ``crash_expression``,
+    A14: ``quoted_line`` and ``trigger``, A15: ``failure_mode``)."""
     schema = deepcopy(V2_FINDINGS_JSON_SCHEMA)
     body = schema["schema"]
-    if "A9" in variants:
-        metadata = body["properties"]["findings"]["items"]["properties"]["metadata"]
-        metadata["properties"]["crash_expression"] = {"type": "string"}
-        metadata["required"].append("crash_expression")
+    metadata = body["properties"]["findings"]["items"]["properties"]["metadata"]
+    extra = [*(["crash_expression"] if "A9" in variants else []),
+             *(["quoted_line", "trigger"] if "A14" in variants else [])]
+    for name in extra:
+        metadata["properties"][name] = {"type": "string"}
+        metadata["required"].append(name)
+    if "A15" in variants:
+        metadata["properties"]["failure_mode"] = {"type": "string",
+                                                  "enum": ["excecao", "resultado_errado", "outro"]}
+        metadata["required"].append("failure_mode")
     if "A7" in variants:
         # Declared first so the model writes its analysis before committing to findings.
         body["properties"] = {"analysis": {"type": "string"}, **body["properties"]}

@@ -2,7 +2,8 @@
 
 Percent formatting is lowered only for literal formats and primitive driver domains.
 Annotations alone do not establish a domain. Dynamic string %r stays unsupported:
-ESBMC 8.5 does not model repr() faithfully. Edits preserve the number of source lines.
+ESBMC 8.5 does not model repr() faithfully. Edits preserve the number of source lines, except
+``split_conditional_assignments``, which adds one line per rewritten assignment.
 """
 
 from __future__ import annotations
@@ -10,6 +11,18 @@ from __future__ import annotations
 import ast
 
 from .astutil import find_function
+from .rules import (
+    ALL_RULES,
+    METHOD_ALIAS,
+    NONE_ARITHMETIC,
+    NONE_ATTRIBUTE,
+    NONE_CALL,
+    NONE_GUARD_KINDS,
+    NONE_MEMBERSHIP,
+    NONE_ORDERING,
+    NONE_SUBSCRIPT,
+    PERCENT_FORMAT,
+)
 
 _NUMERIC = {"int", "float", "bool"}
 _SCALAR = _NUMERIC | {"str", "bytes", "None", "none"}
@@ -255,13 +268,14 @@ def _method_alias_edits(tree: ast.Module) -> list[tuple[int, int, int, str]]:
     return edits
 
 
-def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | None = None) -> tuple[str, list[str]]:
+def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | None = None,
+                   rules: frozenset[str] = ALL_RULES) -> tuple[str, list[str]]:
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return source, []
-    percent = _percent_format_edits(tree, parameter_types or {})
-    aliases = _method_alias_edits(tree)
+    percent = _percent_format_edits(tree, parameter_types or {}) if PERCENT_FORMAT in rules else []
+    aliases = _method_alias_edits(tree) if METHOD_ALIAS in rules else []
     if not percent and not aliases:
         return source, []
     offsets = [0]
@@ -303,21 +317,28 @@ def _unused_definitions(tree: ast.Module, keep: set[str], display: bool = True) 
     candidates += [m for c in tree.body if isinstance(c, ast.ClassDef) for m in c.body
                    if _removable_method(m, display) or (display and _computed_class_value(m))]
     candidates = [n for n in candidates if _defined_name(n) not in keep]
+    ids = {id(n) for n in candidates}
     removed: set[int] = set()
     while True:
-        loaded: set[str] = set()
-        pending: list[ast.AST] = [tree]
+        # Names each definition loads; a definition naming only itself (recursion,
+        # ``partial(deprecated, ...)``) is not used by that.
+        loaded: set[tuple[str, int]] = set()
+        pending: list[tuple[ast.AST, int]] = [(tree, 0)]
         while pending:
-            node = pending.pop()
+            node, owner = pending.pop()
             if id(node) in removed:
                 continue
+            if id(node) in ids:
+                owner = id(node)
             if isinstance(node, ast.Name) and not isinstance(node.ctx, ast.Store):
-                loaded.add(node.id)
+                loaded.add((node.id, owner))
             elif isinstance(node, ast.Attribute):
-                loaded.add(node.attr)
-            pending += list(ast.iter_child_nodes(node))
-        dead = [n for n in candidates if id(n) not in removed and _defined_name(n) not in loaded]
-        # A method named only by itself (recursion) is still loaded; that leaves it, which is safe.
+                loaded.add((node.attr, owner))
+            pending += [(child, owner) for child in ast.iter_child_nodes(node)]
+        owners: dict[str, set[int]] = {}
+        for name, owner in loaded:
+            owners.setdefault(name, set()).add(owner)
+        dead = [n for n in candidates if id(n) not in removed and not owners.get(_defined_name(n), set()) - {id(n)}]
         if not dead:
             return [n for n in candidates if id(n) in removed]
         removed |= {id(n) for n in dead}
@@ -451,27 +472,28 @@ def _always_evaluated(root: ast.AST) -> list[ast.AST]:
     return found
 
 
-def _guarded_values(evaluated: list[ast.AST], names: set[str], receiver: str | None) -> list[tuple[ast.expr, str]]:
+def _guarded_values(evaluated: list[ast.AST], names: set[str], receiver: str | None) -> list[tuple[ast.expr, str, str]]:
+    """(value, helper, rule) for each value CPython rejects when it is None."""
     def _chain(node: ast.expr) -> bool:
         return _is_chain(node, names, receiver)
 
-    found: list[tuple[ast.expr, str]] = []
+    found: list[tuple[ast.expr, str, str]] = []
     for node in evaluated:
         if isinstance(node, ast.Attribute) and _chain(node.value):
-            found.append((node.value, "_esbmc_none_attribute"))
+            found.append((node.value, "_esbmc_none_attribute", NONE_ATTRIBUTE))
         elif isinstance(node, ast.Subscript) and isinstance(node.ctx, ast.Load) and _chain(node.value):
-            found.append((node.value, "_esbmc_none_type"))
+            found.append((node.value, "_esbmc_none_type", NONE_SUBSCRIPT))
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _TYPE_CALLS \
                 and len(node.args) == 1 and _chain(node.args[0]):
-            found.append((node.args[0], "_esbmc_none_type"))
+            found.append((node.args[0], "_esbmc_none_type", NONE_CALL))
         elif isinstance(node, ast.Compare):
             op, right = node.ops[0], node.comparators[0]
             if isinstance(op, (ast.In, ast.NotIn)) and _chain(right):
-                found.append((right, "_esbmc_none_type"))
+                found.append((right, "_esbmc_none_type", NONE_MEMBERSHIP))
             elif isinstance(op, _ORDERING):
-                found += [(side, "_esbmc_none_type") for side in (node.left, right) if _chain(side)]
+                found += [(side, "_esbmc_none_type", NONE_ORDERING) for side in (node.left, right) if _chain(side)]
         elif isinstance(node, ast.BinOp) and isinstance(node.op, _ARITHMETIC):
-            found += [(side, "_esbmc_none_type") for side in (node.left, node.right) if _chain(side)]
+            found += [(side, "_esbmc_none_type", NONE_ARITHMETIC) for side in (node.left, node.right) if _chain(side)]
     return found
 
 
@@ -504,11 +526,13 @@ def _evaluated_part(stmt: ast.stmt, lines: list[str]) -> ast.AST | None:
 
 
 def none_guards(source: str, function: str, spans: tuple[tuple[int, int], ...],
-                never_none: frozenset[str] | set[str] = frozenset()) -> tuple[str, list[str]]:
+                never_none: frozenset[str] | set[str] = frozenset(),
+                kinds: frozenset[str] = NONE_GUARD_KINDS) -> tuple[str, list[str]]:
     """Before the suspect statement, raise what CPython raises when a value it uses unconditionally is
     None: AttributeError for an attribute, TypeError for ``in``, indexing, ``len``/``int``/``float``,
     ordering and arithmetic. ``never_none`` names inputs (``x``, ``self.x``) whose type excludes None;
-    on any other value that is never None a guard is a no-op."""
+    on any other value that is never None a guard is a no-op. ``kinds`` names the rules
+    (rules.NONE_GUARD_KINDS) whose guards are kept."""
     try:
         tree = ast.parse(source)
     except SyntaxError:
@@ -531,9 +555,9 @@ def none_guards(source: str, function: str, spans: tuple[tuple[int, int], ...],
     values = sorted(_guarded_values(_always_evaluated(part), names, receiver),
                     key=lambda item: (item[0].lineno, item[0].col_offset, item[0].end_col_offset))
     calls: list[str] = []
-    for value, helper in values:
+    for value, helper, rule in values:
         call = f"{helper}({ast.unparse(value)} is None)"
-        if ast.unparse(value) not in never_none and call not in calls:
+        if rule in kinds and ast.unparse(value) not in never_none and call not in calls:
             calls.append(call)
     if not calls:
         return source, []
@@ -621,3 +645,61 @@ def rename_builtin_named_methods(source: str, function: str) -> tuple[str, str, 
         function = f"{parts[0]}.esbmc_{parts[1]}"
     names = sorted(renamed | {m for ms in owned.values() for m in ms})
     return "".join(lines), function, ["builtin_named_methods_renamed:" + ",".join(names)]
+
+
+# Decorators ESBMC models itself.
+_BUILTIN_DECORATORS = frozenset({"staticmethod", "classmethod", "property"})
+
+
+def _decorator_root(node: ast.expr) -> str:
+    while isinstance(node, (ast.Call, ast.Attribute)):
+        node = node.func if isinstance(node, ast.Call) else node.value
+    return node.id if isinstance(node, ast.Name) else ""
+
+
+def drop_project_decorators(source: str) -> tuple[str, list[str]]:
+    """Blank decorators defined in the program itself: ESBMC must type the wrapper they return
+    (``*args, **kwargs`` closures it refuses), and the replay keeps them (lines kept)."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return source, []
+    defined = {n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))} - _BUILTIN_DECORATORS
+    found = [d for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+             for d in node.decorator_list if _decorator_root(d) in defined]
+    if not found:
+        return source, []
+    lines = source.splitlines()
+    for decorator in found:
+        lines[decorator.lineno - 1:decorator.end_lineno] = [""] * (decorator.end_lineno - decorator.lineno + 1)
+    return "\n".join(lines) + "\n", ["project_decorators_removed:" + ",".join(sorted({_decorator_root(d) for d in found}))]
+
+
+_CALLABLE = (ast.Name, ast.Attribute, ast.Lambda)
+
+
+def split_conditional_assignments(source: str) -> tuple[str, list[str]]:
+    """``f = a if c else (lambda x: ...)`` becomes an if/else statement: ESBMC cannot type a
+    conditional expression whose branches are functions, but types each assignment of a branch."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return source, []
+    found = [n for n in ast.walk(tree) if isinstance(n, ast.Assign) and len(n.targets) == 1
+             and isinstance(n.targets[0], ast.Name) and isinstance(n.value, ast.IfExp)
+             and isinstance(n.value.body, _CALLABLE) and isinstance(n.value.orelse, _CALLABLE)
+             and n.lineno == n.end_lineno]
+    lines = source.splitlines()
+    # Alone on its line: the replacement takes the whole line.
+    found = [n for n in found if not lines[n.lineno - 1][:n.col_offset].strip()
+             and not lines[n.lineno - 1][n.end_col_offset:].strip()]
+    if not found:
+        return source, []
+    for node in sorted(found, key=lambda n: n.lineno, reverse=True):
+        indent = " " * node.col_offset
+        name = node.targets[0].id
+        segment = lambda part: ast.get_source_segment(source, part)
+        lines[node.lineno - 1:node.lineno] = [
+            f"{indent}if {segment(node.value.test)}: {name} = {segment(node.value.body)}",
+            f"{indent}else: {name} = {segment(node.value.orelse)}"]
+    return "\n".join(lines) + "\n", [f"conditional_assignments_split:{len(found)}"]

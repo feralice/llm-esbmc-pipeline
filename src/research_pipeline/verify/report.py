@@ -8,7 +8,7 @@ from pathlib import Path
 
 from research_pipeline.v2_evaluator import _bug_detection_metrics, evaluate_detection
 
-from .outcome import CHECKED, CONFIRMED, VERDICTS
+from .outcome import CHECKED, CONFIRMED, VALUE_CONFIRMED, VERDICTS
 
 MAX_CALLS = 3
 
@@ -42,20 +42,26 @@ def _expected_items(ground_truth_path: Path, evaluated_sources: list) -> tuple[l
     return items, base
 
 
+def _confirmed_by_location(results: list[dict], verdict: str, items: list[dict], base: Path) -> dict:
+    found = [
+        {"file": r["hypothesis"]["file"], "function": r["hypothesis"]["function"],
+         "expression": r["hypothesis"]["suspect_expression"]}
+        for r in results if r["verdict"] == verdict
+    ]
+    metrics = _bug_detection_metrics(items, found, base)
+    metrics.pop("triage")  # every confirmed hypothesis was sent; triage says nothing here
+    return metrics
+
+
 def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: str | Path,
                 evaluated_sources: list, rejected_findings: list[dict]) -> dict:
     detection = evaluate_detection(candidates=candidates, ground_truth_path=ground_truth_path,
                                    evaluated_sources=evaluated_sources, rejected_findings=rejected_findings)
     items, base = _expected_items(Path(ground_truth_path), evaluated_sources)
-    confirmed = [
-        {"file": r["hypothesis"]["file"], "function": r["hypothesis"]["function"],
-         "expression": r["hypothesis"]["suspect_expression"]}
-        for r in results if r["verdict"] == CONFIRMED
-    ]
-    confirmed_by_location = _bug_detection_metrics(items, confirmed, base)
-    confirmed_by_location.pop("triage")  # every confirmed hypothesis was sent; triage says nothing here
     return {
         "triage": detection["triage"],
         "detection_by_location": detection["bug_detection"],
-        "confirmed_by_location": confirmed_by_location,
+        "confirmed_by_location": _confirmed_by_location(results, CONFIRMED, items, base),
+        # Kept apart: a wrong-result confirmation rests on an LLM-written property and the fixed-version control.
+        "value_confirmed_by_location": _confirmed_by_location(results, VALUE_CONFIRMED, items, base),
     }

@@ -27,7 +27,7 @@ from research_pipeline.verify.loop import verification_source  # noqa: E402
 from research_pipeline.verify.orchestrator import orchestrate  # noqa: E402
 from research_pipeline.verify.pinned import pinned_check  # noqa: E402
 
-_FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
+_FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED", "VALUE_CONFIRMED", "VALUE_VIOLATION", "PROPERTY_REJECTED"}
 
 
 def summarize(rows: list[dict], results: list[dict], ground_truth: dict, control: list[dict] | None = None) -> dict:
@@ -41,8 +41,13 @@ def summarize(rows: list[dict], results: list[dict], ground_truth: dict, control
         return item is not None and at_bug_line(h, item)
 
     found = [r for r in rows if r["final"] == FUZZ_FOUND and at_bug(r)]
+    confirmed = sum(r["final"] == "CONFIRMED" and at_bug(r) for r in rows)
+    # A wrong-result hypothesis counts only once the fixed version kept its property (VALUE_CONFIRMED).
+    value = sum(r["final"] == "VALUE_CONFIRMED" and at_bug(r) for r in rows)
     summary = {"final": dict(Counter(r["final"] for r in rows)),
-               "confirmed_at_bug": sum(r["final"] == "CONFIRMED" and at_bug(r) for r in rows),
+               "confirmed_at_bug": confirmed,
+               "value_confirmed_at_bug": value,
+               "confirmed_at_bug_with_value": confirmed + value,
                "fuzz_found_at_bug": len(found),
                "confirmed_at_bug_by_pinned": sum(
                    r["final"] == "CONFIRMED" and at_bug(r) and bool(r["steps"]) and r["steps"][-1]["arm"] == "pinned"
@@ -60,6 +65,14 @@ def agent_outcome(data: dict) -> dict:
     if data["verdict"] in _FORMAL and data.get("target_preserved") is False:
         return {**data, "verdict": "TARGET_ALTERED"}
     return data
+
+
+def api_agent_everywhere(result: dict) -> tuple[str, ...]:
+    """--api-agent-everywhere: every result without a formal verdict goes to api_agent, except a
+    wrong-result hypothesis, whose property the agent does not know."""
+    if result["verdict"] in _FORMAL or result["hypothesis"].get("oracle") == "value":
+        return ()
+    return ("api_agent",)
 
 
 def _agent_arm(backend: str, args: argparse.Namespace):
@@ -130,7 +143,7 @@ def main() -> int:
     def save() -> None:
         state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
-    route = (lambda r: () if r["verdict"] in _FORMAL else ("api_agent",)) if args.api_agent_everywhere else None
+    route = api_agent_everywhere if args.api_agent_everywhere else None
     rows = orchestrate(results, arms=arms, state=state, save=save, **({"route": route} if route else {}))
     items = {i["id"]: i for i in json.loads(Path(args.ground_truth).read_text(encoding="utf-8"))["items"]}
     control = json.loads(Path(args.control).read_text(encoding="utf-8"))["rows"] if args.control else None

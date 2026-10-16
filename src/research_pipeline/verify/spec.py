@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import ast
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from .grounding import Grounded
+from .hypothesis import VALUE_ORACLE
 
 # The subset ESBMC-Python 8.5.0 converted in the 2026-09-29 probes.
 SCALARS = ("int", "float", "bool", "str")
@@ -35,6 +36,9 @@ class InputSpec:
     assumptions: tuple[str, ...]
     # Return type of each stubbed library call, keyed "name" or "module.attr".
     stubs: dict[str, str] = field(default_factory=dict)
+    # Wrong-result hypotheses only: the returned type and the property every correct call satisfies.
+    returns: str = ""
+    postcondition: str = ""
 
 
 def _is_none(node: ast.expr) -> bool:
@@ -116,11 +120,16 @@ def parse_spec(text: str) -> InputSpec:
     if not (isinstance(params, dict) and isinstance(attributes, dict) and isinstance(stubs, dict)
             and isinstance(assumptions, list)):
         raise ValueError("params/attributes/stubs must be objects and assumptions a list")
+    returns, postcondition = data.get("returns") or "", data.get("postcondition") or ""
+    if not (isinstance(returns, str) and isinstance(postcondition, str)):
+        raise ValueError("returns and postcondition must be strings")
     return InputSpec(
         {str(k): str(v) for k, v in params.items()},
         {str(k): str(v) for k, v in attributes.items()},
         tuple(str(a) for a in assumptions),
         {str(k): str(v) for k, v in stubs.items()},
+        returns,
+        postcondition,
     )
 
 
@@ -198,14 +207,76 @@ def _assumption_problem(text: str, params: set[str], attrs: set[str], receiver: 
     return ""
 
 
+RESULT = "result"
+_TYPE_NAMES = frozenset({*SCALARS, "bytes", "list", "dict", "tuple", "set", "frozenset"})
+
+
+def _postcondition_problem(text: str, params: set[str], attrs: set[str], receiver: bool) -> str:
+    """An assumption's language plus ``result`` and ``isinstance(x, T)``. It must read ``result`` or a
+    receiver attribute: a property of the inputs alone says nothing about what the call did."""
+    if RESULT in params:
+        return "postcondition: a parameter is named result, which the postcondition reserves for the return value"
+    try:
+        tree = ast.parse(text.strip(), mode="eval")
+    except SyntaxError:
+        return f"postcondition {text!r} is not a Python expression"
+    type_names: set[int] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, _ALLOWED_NODES):
+            return f"postcondition {text!r} uses {type(node).__name__}"
+        if isinstance(node, ast.Call):
+            name = node.func.id if isinstance(node.func, ast.Name) else ""
+            if name == "len" and len(node.args) == 1:
+                continue
+            if (name == "isinstance" and len(node.args) == 2 and isinstance(node.args[1], ast.Name)
+                    and node.args[1].id in _TYPE_NAMES):
+                type_names.add(id(node.args[1]))
+                continue
+            return f"postcondition {text!r} may only call len() and isinstance(x, <builtin type>)"
+        if isinstance(node, ast.Tuple) and not all(isinstance(e, ast.Constant) for e in node.elts):
+            return f"postcondition {text!r} may only use a tuple of constants"
+        if isinstance(node, ast.Attribute) and not (
+                receiver and isinstance(node.value, ast.Name) and node.value.id == "self" and node.attr in attrs):
+            return f"postcondition {text!r} reads an attribute that is not a receiver attribute"
+    names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name) and id(n) not in type_names}
+    names -= {"len", "isinstance", "self"} if receiver else {"len", "isinstance"}
+    unknown = names - params - {RESULT}
+    if unknown:
+        return f"postcondition {text!r} uses unknown name(s) {', '.join(sorted(unknown))}"
+    if RESULT not in names and not any(isinstance(n, ast.Attribute) for n in ast.walk(tree)):
+        return f"postcondition {text!r} reads neither result nor a receiver attribute"
+    return ""
+
+
+def _value_problems(spec: InputSpec, params: set[str], attrs: set[str], receiver: bool) -> list[str]:
+    problems = []
+    shape = parse_type(spec.returns) if spec.returns else None
+    if not spec.returns:
+        problems.append("returns: missing type")
+    elif shape is None or shape.kind == OBJECT:
+        problems.append(f"returns: {spec.returns!r} is not an allowed return type (object is not allowed)")
+    if not spec.postcondition:
+        return [*problems, "postcondition: missing"]
+    problem = _postcondition_problem(spec.postcondition, params, attrs, receiver)
+    if problem:
+        return [*problems, problem]
+    read = {n.id for n in ast.walk(ast.parse(spec.postcondition.strip(), mode="eval")) if isinstance(n, ast.Name)}
+    if shape is not None and shape.kind == "none" and RESULT in read:
+        problems.append("postcondition reads result, but returns is None: read self.<attribute> instead")
+    return problems
+
+
 def ignored_keys(spec: InputSpec, grounded: Grounded) -> list[str]:
     """Names the spec gives that the harness has no use for. They change nothing in the program,
     so they are recorded, not rejected: a rejection would spend an LLM call on a harmless extra."""
     params, attributes = resolved_types(spec, grounded)
     stubs = {*grounded.stub_keys, *_object_keys(spec, grounded)}
+    value_keys = [] if grounded.hypothesis.oracle == VALUE_ORACLE else [
+        key for key, text in (("returns", spec.returns), ("postcondition", spec.postcondition)) if text]
     return ([f"param {n}" for n in spec.params if n not in params]
             + [f"attribute {n}" for n in spec.attributes if n not in attributes]
-            + [f"stub {k}" for k in spec.stubs if k not in stubs])
+            + [f"stub {k}" for k in spec.stubs if k not in stubs]
+            + value_keys)
 
 
 def shape_unpacked(spec: InputSpec, grounded: Grounded) -> InputSpec:
@@ -229,10 +300,12 @@ def shape_unpacked(spec: InputSpec, grounded: Grounded) -> InputSpec:
             params[key] = widen(params[key], count)
         elif key in stubs:
             stubs[key] = widen(stubs[key], count)
-    return InputSpec(params, attributes, spec.assumptions, stubs)
+    return replace(spec, params=params, attributes=attributes, stubs=stubs)
 
 
-def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
+def spec_problems(spec: InputSpec, grounded: Grounded, *, require_property: bool = False) -> list[str]:
+    """``require_property``: a wrong-result hypothesis must give ``returns`` and ``postcondition``. Without
+    it they are checked only when given, so the precheck's placeholder spec renders."""
     problems: list[str] = []
     params, attributes = resolved_types(spec, grounded)
     for kind, types in (("parameter", params), ("attribute", attributes)):
@@ -267,4 +340,6 @@ def spec_problems(spec: InputSpec, grounded: Grounded) -> list[str]:
         problem = _assumption_problem(assumption, set(params), set(attributes), grounded.has_receiver, fields)
         if problem:
             problems.append(problem)
+    if grounded.hypothesis.oracle == VALUE_ORACLE and (require_property or spec.returns or spec.postcondition):
+        problems += _value_problems(spec, set(params), set(attributes), grounded.has_receiver)
     return problems

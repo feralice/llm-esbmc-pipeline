@@ -16,7 +16,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from .render import Program
+from .render import DRIVER, Program
 from .replay import _no_network_prefix
 from .sandbox import host_replay_problem, process_limits
 from .spec import parse_type
@@ -24,8 +24,9 @@ from .spec import parse_type
 _SCALARS = {"int", "float", "bool", "str"}
 
 
-def _source_without_driver(source: str, driver_start: int) -> list[str]:
-    return source.splitlines()[:driver_start - 1]
+def _source_without_driver(source: str) -> list[str]:
+    lines = source.splitlines()
+    return lines[:lines.index(f"def {DRIVER}() -> None:")]
 
 
 def pytest_reproducer(program: Program, *, function: str, params: dict[str, str], exception: str,
@@ -40,7 +41,7 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
     out_dir.mkdir(parents=True, exist_ok=True)
     module = out_dir / f"{name}.py"
     call = f"{function}({', '.join(f'__VERIFIER_nondet_{t.kind}()' for t in types)})"
-    module.write_text("\n".join([*_source_without_driver(program.source, program.driver_start), call]) + "\n",
+    module.write_text("\n".join([*_source_without_driver(program.source), call]) + "\n",
                       encoding="utf-8")
     test = out_dir / f"test_{name}.py"
     test.unlink(missing_ok=True)
@@ -57,7 +58,7 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
     except SyntaxError as exc:
         return {"status": "invalid", "path": str(test), "reason": f"ESBMC wrote invalid Python: {exc.msg}"}
     # The test imports the module: CPython gets the replayed program (real exceptions), without the call.
-    library = "\n".join(_source_without_driver(program.replay_source or program.source, program.driver_start)) + "\n"
+    library = "\n".join(_source_without_driver(program.replay_source or program.source)) + "\n"
     problem = host_replay_problem(library)
     if problem:
         return {"status": "not_run", "path": str(test), "reason": f"not executed on host: {problem}"}

@@ -181,6 +181,17 @@ def build_callgraph(root: str | Path, *, include_tests: bool = False) -> CallGra
     return _Builder(root, modules, skipped).build()
 
 
+def build_source_callgraph(source: str, filename: str) -> CallGraph:
+    """The graph of one file on its own: the verification source, whose project is not on disk.
+    Raises SyntaxError or ValueError when ``source`` does not parse."""
+    path = Path(filename)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        tree = ast.parse(source, filename=path.name)
+    module = _Module(path.stem, path.name, tree, False, source.splitlines())
+    return _Builder(path.parent.resolve(), {module.name: module}, []).build()
+
+
 class _Builder:
     def __init__(self, root: Path, modules: dict[str, _Module], skipped: list[dict[str, str]]):
         self.root = root

@@ -20,7 +20,7 @@ from typing import Callable
 from .astutil import body_signature, expression_nodes, find_function
 from .context import context_module
 
-from .hypothesis import BugHypothesis
+from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output
 from .outcome import CONFIRMED, final_verdict
 from .procs import run_group
@@ -361,7 +361,8 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
     if state.get("agent_config") != config:
         state["agent_config"], state["agent_results"] = config, {}
     done = state.setdefault("agent_results", {})
-    pending = [r for r in results if r["verdict"] in AGENT_VERDICTS]
+    # The agent looks for an exception; it does not know a wrong-result hypothesis's property.
+    pending = [r for r in results if r["verdict"] in AGENT_VERDICTS and r["hypothesis"].get("oracle") != VALUE_ORACLE]
     print(f"\nAgente: {len(pending)} hipótese(s) sem veredito do ESBMC no motor")
     for index, result in enumerate(pending, 1):
         h = BugHypothesis(**{k: v for k, v in result["hypothesis"].items() if k != "hypothesis_id"})

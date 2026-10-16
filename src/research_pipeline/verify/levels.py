@@ -19,6 +19,7 @@ from .outcome import (
     NO_SOURCE,
     PIPELINE_ERROR,
     SPEC_FAILED,
+    VALUE_CONFIRMED,
 )
 
 ENGINE, AGENT, LLM_ONLY = "esbmc_engine", "esbmc_agent", "llm_only"
@@ -123,6 +124,10 @@ def level_summary(rows: list[dict]) -> dict:
         "esbmc_verdict": len(checked),
         "confirmed": sum(1 for r in checked if r["verdict"] == "CONFIRMED"),
         "confirmed_by_level": dict(Counter(r["level"] for r in checked if r["verdict"] == "CONFIRMED")),
+        # Wrong-result confirmations (verify/value_oracle.py) stay apart: their oracle is an LLM-written
+        # property plus the fixed-version control, not an exception.
+        "value_confirmed": sum(1 for r in checked if r["verdict"] == VALUE_CONFIRMED),
+        "value_confirmed_by_level": dict(Counter(r["level"] for r in checked if r["verdict"] == VALUE_CONFIRMED)),
         "confirmed_simplified": sum(1 for r in rows if r["level"] == SIMPLIFIED),
         "llm_only_by_limit": {group: sum(1 for r in rows if r.get("limit") == group) for group in LIMIT_GROUPS},
     }

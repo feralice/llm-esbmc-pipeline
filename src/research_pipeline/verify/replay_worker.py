@@ -165,8 +165,9 @@ _DISCARDED = "discarded"
 
 def _run_once(code, chooser, domains, max_list, target):
     """One execution: None when it ended normally, _DISCARDED when an assume or the per-run timer
-    cut it, else the crash record."""
-    function, spans, first, last = target
+    cut it, else the crash record. With a property line, the driver's AssertionError raised there is a
+    property violation; any other exception follows the usual rules."""
+    function, spans, first, last, property_line = target
     real_stdout = sys.stdout
     sys.stdout = io.StringIO()
     signal.setitimer(signal.ITIMER_REAL, RUN_SECONDS)
@@ -176,6 +177,10 @@ def _run_once(code, chooser, domains, max_list, target):
         return _DISCARDED
     except Exception as exc:  # noqa: BLE001 - every crash is evidence
         frames = [f for f in traceback.extract_tb(exc.__traceback__) if f.filename == "<program>"]
+        if (property_line and isinstance(exc, AssertionError) and frames
+                and frames[-1].name == "_esbmc_main" and frames[-1].lineno == property_line):
+            return {"status": "property_violated", "exception_type": "AssertionError", "line": property_line,
+                    "inputs": chooser.values, "message": str(exc)[:300], "raised_at": property_line}
         # Name and line range together: another class's method may share the name.
         in_target = [f for f in frames if f.name == function and (not last or first <= f.lineno <= last)]
         line = in_target[-1].lineno if in_target else (frames[-1].lineno if frames else None)
@@ -199,6 +204,10 @@ def _fixed(code, inputs, target):
     if outcome != _DISCARDED and len(chooser.values) < len(inputs):
         return {"status": "unavailable", "reason": "the fixed input has more values than the program used",
                 "inputs": inputs}
+    if outcome == _DISCARDED and target[4]:
+        # With a property, a cut run would read as "the property held".
+        return {"status": "unavailable", "reason": "the run was discarded (a failed assumption or the time limit)",
+                "inputs": inputs}
     return outcome if isinstance(outcome, dict) else {"status": "not_reproduced", "inputs": chooser.values}
 
 
@@ -209,7 +218,9 @@ def main(program_path, config_path, output_path):
     with open(config_path, encoding="utf-8") as handle:
         config = json.load(handle)
     first, last = config.get("range") or (0, 0)
-    target = (config["function"], config["spans"], first, last)
+    target = (config["function"], config["spans"], first, last, config.get("property_line", 0))
+    # A wrong-result hypothesis looks for its property's violation, not for an exception at the suspect.
+    wanted = "property_violated" if target[4] else "reproduced"
     signal.signal(signal.SIGALRM, _timeout)
     if config.get("inputs") is not None:
         result = {**_fixed(code, config["inputs"], target), "runs": 1}
@@ -237,7 +248,7 @@ def main(program_path, config_path, output_path):
             runs, used = runs + 1, used + 1
             outcome = _run_once(code, chooser, domains, RANDOM_MAX_LIST if random_pass else MAX_LIST, target)
             if isinstance(outcome, dict):
-                if outcome["status"] == "reproduced":
+                if outcome["status"] == wanted:
                     result = outcome
                     break
                 other = other or outcome

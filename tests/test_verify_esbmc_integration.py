@@ -220,3 +220,19 @@ def test_a_mutant_no_input_breaks_does_not_count(tmp_path):
     mutant = Mutant("assign_none", 4, DRIVEN.replace("return xs[i]", "return len(xs)"))
     assert run_mutant(mutant, "f", (1, 4), esbmc_command=[str(ESBMC)], bound=5, timeout_seconds=60,
                       work_dir=tmp_path) == NOT_COUNTED
+
+
+WRAPPER = Path(__file__).resolve().parents[1] / "artifacts/v2/final-2026-10-15/esbmc.sh"
+MASTER = Path("/home/fernanda/esbmc-master/build/src/esbmc/esbmc")
+
+
+@pytest.mark.skipif(not (WRAPPER.exists() and MASTER.exists()), reason="ESBMC master wrapper not available")
+def test_probes_on_master_keep_the_rules_its_known_gaps_need(tmp_path):
+    from research_pipeline.verify.capabilities import ACEITA, probe_capabilities
+    from research_pipeline.verify.rules import BUILTIN_NAMED_METHODS, NONE_ATTRIBUTE
+
+    report = probe_capabilities([str(WRAPPER)], cache_dir=tmp_path)
+    # possiveis_problemas 25 and 27: SUCCESSFUL on master 333d07cc8a with the wrapper's flags.
+    assert report["results"]["none_atributo_campo"]["outcome"] != ACEITA
+    assert report["results"]["metodo_append"]["outcome"] != ACEITA
+    assert {NONE_ATTRIBUTE, BUILTIN_NAMED_METHODS} <= set(report["active_rules"])

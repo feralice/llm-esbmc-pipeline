@@ -86,3 +86,28 @@ def test_strict_verification_sources_skip_cases_without_a_file(tmp_path: Path) -
     results = run_verify([BugHypothesis(str(tmp_path / "a.py"), "f", "1 // a")], llm=None, output_dir=tmp_path,
                          verification_sources=tmp_path / "fixed", strict_sources=True)
     assert results[0]["verdict"] == "NO_SOURCE"
+
+
+def test_spec_context_defaults_to_callers_and_enters_the_fingerprint(tmp_path: Path, monkeypatch) -> None:
+    detection = tmp_path / "sample.py"
+    detection.write_text("def helper(v):\n    return v\n\n\ndef divide(x, y):\n    return helper(x) // y\n\n\n"
+                         "def run():\n    return divide(1, 0)\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", _SpecLLM)
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc)
+    monkeypatch.setattr(loop, "concrete_replay",
+                        lambda program, function, **_: ReplayVerdict("reproduced", "ZeroDivisionError", 6))
+    reports = {}
+    for flag in ("callers", "none"):
+        out = tmp_path / flag
+        args = main.build_parser().parse_args(["--mode", "hybrid", "--input", str(detection), "--output-dir",
+                                               str(out), "--esbmc-command", "esbmc", "--spec-context", flag])
+        assert main.mode_v2(args) == 0
+        checkpoint = json.loads((out / "v2_checkpoint.json").read_text(encoding="utf-8"))
+        assert checkpoint["fingerprint"]["config"]["spec_context"] == flag
+        results = json.loads((out / "v2_verify_report.json").read_text(encoding="utf-8"))["results"]
+        reports[flag] = next(r for r in results if r["verdict"] == "CONFIRMED")
+    assert reports["callers"]["spec_context"]["call_sites"] == 1
+    assert "spec_context" not in reports["none"]
+    assert main.build_parser().parse_args(["--mode", "hybrid", "--input", str(detection)]).spec_context == "callers"

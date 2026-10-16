@@ -12,8 +12,9 @@ MAX_CHARS = 3_000
 
 
 def caller_context(graph: CallGraph, key: str, *, before: int = 3, after: int = 1, max_sites: int = MAX_SITES,
-                   max_chars: int = MAX_CHARS) -> str:
-    """The detection prompt renames the function to ``target_function``; the context follows suit."""
+                   max_chars: int = MAX_CHARS, rename: bool = True) -> str:
+    """The detection prompt renames the function to ``target_function`` and the context follows suit
+    (``rename``); the spec prompt names the function, so it keeps the real name."""
     function = graph.functions[key]
     sites = graph.callers(key)
     if not sites:
@@ -28,7 +29,7 @@ def caller_context(graph: CallGraph, key: str, *, before: int = 3, after: int = 
         shown += 1
     if shown < len(sites):
         text += f"\n# [+{len(sites) - shown} chamada(s) omitida(s)]"
-    return re.sub(rf"\b{re.escape(function.name)}\b", "target_function", text)
+    return re.sub(rf"\b{re.escape(function.name)}\b", "target_function", text) if rename else text
 
 
 def _block(graph: CallGraph, site: CallSite, before: int, after: int) -> str:

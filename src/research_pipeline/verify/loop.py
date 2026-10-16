@@ -10,9 +10,13 @@ from pathlib import Path
 from typing import Protocol
 
 
+from research_pipeline.models import ESBMCDirectResult
+
+from ..scan.callgraph import CallGraph
 from .astutil import undefined_globals
+from .caller_facts import collect_facts, render_section, usage_problems
 from .grounding import Grounded, GroundingFailure, ground
-from .hypothesis import BugHypothesis
+from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .llm_client import SynthResult, _bound_untrusted
 from .esbmc_run import check, esbmc_output
 from .oracle import convert, refusals
@@ -25,15 +29,20 @@ from .outcome import (
     PIPELINE_ERROR,
     SPEC_FAILED,
     UNSUPPORTED,
+    VALUE_VIOLATION,
     EsbmcReading,
     final_verdict,
 )
 from .render import DRIVER, Program, RenderError, render_program
+from .rules import ALL_RULES
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, shape_unpacked, spec_problems
+from .value_oracle import apply_control, check_fixed, esbmc_hits_property, value_verdict
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
+VALUE_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "value_property_prompt.txt").read_text(encoding="utf-8")
 STRATEGIES = ("repair", "resample")
+SPEC_CONTEXTS = ("none", "callers")
 _INTRINSICS = {"nondet_int", "nondet_float", "nondet_bool", "nondet_str", "nondet_list", "__ESBMC_assume"}
 
 
@@ -55,6 +64,8 @@ class VerifyResult:
     tokens: int = 0
     seconds: float = 0.0
     pytest: dict = field(default_factory=dict)
+    spec_context: dict = field(default_factory=dict)
+    control: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -63,10 +74,12 @@ class VerifyResult:
             "transforms": list(self.transforms), "program_path": self.program_path, "replay": self.replay,
             "tokens": self.tokens, "seconds": round(self.seconds, 3),
             **({"pytest": self.pytest} if self.pytest else {}),
+            **({"spec_context": self.spec_context} if self.spec_context else {}),
+            **({"control": self.control} if self.control else {}),
         }
 
 
-def _user_prompt(grounded: Grounded, previous: str, feedback: str) -> str:
+def _user_prompt(grounded: Grounded, previous: str, feedback: str, context: str = "") -> str:
     h = grounded.hypothesis
     params = {p.name: p.annotation or "" for p in grounded.params}
     attrs = {a: grounded.attr_annotations.get(a, "") for a in grounded.receiver_attrs}
@@ -85,6 +98,10 @@ def _user_prompt(grounded: Grounded, previous: str, feedback: str) -> str:
                      for key, members in sorted(grounded.object_members.items())) or "none"),
         "Code (verbatim slice of the real module):\n```python\n" + _bound_untrusted(grounded.module) + "\n```",
     ]
+    if h.oracle == VALUE_ORACLE:
+        parts.insert(3, 'Kind: wrong result (nothing raises). Also give "returns" and "postcondition".')
+    if context:
+        parts.append(context)
     if previous:
         parts.append(f"Previous attempt:\n{previous}\nError:\n{feedback}")
     return "\n\n".join(parts)
@@ -112,17 +129,17 @@ def _with_line_context(message: str, program: Program) -> str:
 _ORACLE_ROUNDS = 5
 
 
-def precheck(h: BugHypothesis, source: str,
-             esbmc_command: list[str] | None = None) -> tuple[Grounded | None, str, str]:
+def precheck(h: BugHypothesis, source: str, esbmc_command: list[str] | None = None,
+             rules: frozenset[str] = ALL_RULES) -> tuple[Grounded | None, str, str]:
     """Everything decidable before spending an LLM call; returns (grounded, "", "") when ready.
     With ``esbmc_command``, library members ESBMC cannot convert are stubbed before the LLM sees the slice."""
     refused: frozenset[str] = frozenset()
     for _ in range(_ORACLE_ROUNDS):
-        grounded = ground(h, source, refused)
+        grounded = ground(h, source, refused, rules=rules)
         if isinstance(grounded, GroundingFailure):
             return None, UNSUPPORTED if grounded.unsupported else GROUNDING_FAILED, grounded.reason
         try:
-            probe = render_program(grounded, _placeholder_spec(grounded))
+            probe = render_program(grounded, _placeholder_spec(grounded), rules=rules)
         except RenderError as exc:
             return None, UNSUPPORTED, str(exc)
         if not esbmc_command:
@@ -140,35 +157,52 @@ def precheck(h: BugHypothesis, source: str,
 def verify_hypothesis(
     h: BugHypothesis, *, llm: SpecLLM, source: str, esbmc_command: list[str] | None, bound: int,
     timeout_seconds: int, work_dir: Path, max_repairs: int = 2, replay_runs: int = 400,
-    strategy: str = "repair",
+    strategy: str = "repair", rules: frozenset[str] = ALL_RULES, spec_context: str = "none",
+    graph: CallGraph | None = None, fixed_source: str | None = None,
 ) -> VerifyResult:
     """``strategy="resample"`` spends the same call budget on independent samples that never see
-    the previous error: the baseline a guided repair has to beat (Olausson et al., ICLR 2024)."""
+    the previous error: the baseline a guided repair has to beat (Olausson et al., ICLR 2024).
+    ``spec_context="callers"`` shows the call sites and usage facts and rejects a spec they contradict;
+    ``graph`` is the repository's call graph (scan mode), else the callers come from ``source`` alone.
+    ``fixed_source`` (evaluation only) is the fixed version of the file: a wrong-result hypothesis is
+    replayed on it, after the LLM is done, with the input that broke the original."""
     if strategy not in STRATEGIES:
         raise ValueError(f"strategy must be one of {STRATEGIES}")
+    if spec_context not in SPEC_CONTEXTS:
+        raise ValueError(f"spec_context must be one of {SPEC_CONTEXTS}")
     started = time.monotonic()
     result = VerifyResult(h, "")
+    value = h.oracle == VALUE_ORACLE
+    system = f"{SYSTEM_PROMPT}\n{VALUE_PROMPT}" if value else SYSTEM_PROMPT
 
     def finish(verdict: str, reason: str = "") -> VerifyResult:
         result.verdict, result.reason, result.seconds = verdict, reason, time.monotonic() - started
         return result
 
-    grounded, verdict, reason = precheck(h, source, esbmc_command)
+    grounded, verdict, reason = precheck(h, source, esbmc_command, rules)
     if grounded is None:
         return finish(verdict, reason)
 
+    facts = collect_facts(h, grounded, source, graph=graph) if spec_context == "callers" else None
+    context = render_section(facts, grounded) if facts is not None else ""
+    if facts is not None:
+        result.spec_context = {"call_sites": facts.site_count, "references": len(facts.references),
+                               "chars": len(context)}
     work_dir.mkdir(parents=True, exist_ok=True)
     previous, feedback, last_problems = "", "", []
     for attempt in range(1 + max_repairs):
         shown_previous, shown_feedback = (previous, feedback) if strategy == "repair" else ("", "")
-        reply = llm.complete(SYSTEM_PROMPT, _user_prompt(grounded, shown_previous, shown_feedback), json_mode=True)
+        reply = llm.complete(system, _user_prompt(grounded, shown_previous, shown_feedback, context),
+                             json_mode=True)
         result.tokens += int((reply.telemetry or {}).get("total_tokens") or 0)
         record: dict = {"attempt": attempt, "spec": reply.harness, "feedback_given": feedback}
         result.attempts.append(record)
         previous = reply.harness
         try:
             spec = shape_unpacked(parse_spec(reply.harness), grounded)
-            problems = spec_problems(spec, grounded)
+            problems = spec_problems(spec, grounded, require_property=value)
+            if not problems and facts is not None:
+                problems = usage_problems(spec, grounded, facts)
         except ValueError as exc:
             problems = [str(exc)]
         if problems:
@@ -180,7 +214,7 @@ def verify_hypothesis(
         ignored = ignored_keys(spec, grounded)
         if ignored:
             record["ignored"] = ignored
-        program = render_program(grounded, spec)
+        program = render_program(grounded, spec, rules=rules)
         path = work_dir / f"{h.hypothesis_id}_a{attempt}.py"
         path.write_text(program.source, encoding="utf-8")
         replay_path = path.with_name(path.stem + "_replay.py")
@@ -197,6 +231,8 @@ def verify_hypothesis(
             continue
         replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc))
         result.replay = replay.to_dict()
+        if value:
+            return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source))
         verdict = final_verdict(reading, replay)
         if verdict == CONFIRMED and esbmc_command:
             result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command, bound, work_dir)
@@ -205,6 +241,18 @@ def verify_hypothesis(
         # The model kept naming a real type the harness cannot build: a method limit, not a model error.
         return finish(UNSUPPORTED, "input type outside the supported subset: " + "; ".join(last_problems))
     return finish(SPEC_FAILED, feedback)
+
+
+def _value_outcome(result: VerifyResult, reading: EsbmcReading, esbmc: ESBMCDirectResult, program: Program,
+                   grounded: Grounded, replay: ReplayVerdict, fixed_source: str | None) -> tuple[str, str]:
+    verdict = value_verdict(reading, esbmc_hits_property(esbmc, program.property_line), replay)
+    if verdict != VALUE_VIOLATION or fixed_source is None:
+        return verdict, reading.message
+    control = check_fixed(program, grounded.hypothesis.function, grounded.method_name, fixed_source,
+                          replay.inputs)
+    result.control = control.to_dict()
+    verdict, why = apply_control(verdict, control)
+    return verdict, why or reading.message
 
 
 def _pytest_for(program: Program, grounded: Grounded, spec: InputSpec, replay: ReplayVerdict,
@@ -235,10 +283,18 @@ def verification_source(h: BugHypothesis, verification_sources: Path | None) -> 
     return Path(h.file)
 
 
+def _fixed_source(h: BugHypothesis, fixed_sources: Path | None) -> str | None:
+    """Only a wrong-result hypothesis gets the fixed file, and only for the control after the LLM."""
+    if fixed_sources is None or h.oracle != VALUE_ORACLE:
+        return None
+    path = Path(fixed_sources) / Path(h.file).name
+    return path.read_text(encoding="utf-8", errors="replace") if path.exists() else None
+
+
 def run_verify(
     hypotheses: list[BugHypothesis], *, llm: SpecLLM, output_dir: Path, verification_sources: Path | None = None,
     completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None,
-    strict_sources: bool = False, **kwargs,
+    strict_sources: bool = False, fixed_sources: Path | None = None, **kwargs,
 ) -> list[dict]:
     """``strict_sources`` skips a hypothesis with no file in ``verification_sources`` instead of
     falling back to its detection file (needed when those files are, e.g., the fixed versions)."""
@@ -258,7 +314,7 @@ def run_verify(
         print(f"[{index + 1}/{len(hypotheses)}] {Path(h.file).name}::{h.function}")
         try:
             data = verify_hypothesis(h, llm=llm, source=source, work_dir=Path(output_dir) / "programs",
-                                     **kwargs).to_dict()
+                                     fixed_source=_fixed_source(h, fixed_sources), **kwargs).to_dict()
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
             data = VerifyResult(h, PIPELINE_ERROR, f"{type(exc).__name__}: {exc}").to_dict()
         print(f"    -> {data['verdict']} {data['reason'][:120]}")

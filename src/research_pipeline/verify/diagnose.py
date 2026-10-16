@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+
 @dataclass(frozen=True)
 class CapabilityDiagnostic:
     kind: str
@@ -27,6 +28,11 @@ _PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("container", re.compile(r"ListComp|list indices must be integers|object of this type has no len", re.IGNORECASE)),
     ("annotation", re.compile(r"annotation.{0,50}(unsupported|not supported|cannot)|unsupported.{0,30}annotation", re.IGNORECASE)),
 )
+
+
+def limitation(text: str) -> str | None:
+    """The kind of frontend limitation ``text`` reports, or None."""
+    return next((kind for kind, pattern in _PATTERNS if pattern.search(text)), None)
 
 
 def _line_number(output: str) -> int | None:
@@ -74,8 +80,7 @@ def diagnose_esbmc(
         return CapabilityDiagnostic("timeout", summary.strip() or "ESBMC timed out", None, raw)
 
     message = _error_message(combined, summary, status)
-    if status in {"tool_error", "unsupported_case"}:
-        for kind, pattern in _PATTERNS:
-            if pattern.search(combined):
-                return CapabilityDiagnostic(kind, message, _line_number(combined), raw)
+    kind = limitation(combined) if status in {"tool_error", "unsupported_case"} else None
+    if kind:
+        return CapabilityDiagnostic(kind, message, _line_number(combined), raw)
     return CapabilityDiagnostic("unknown", message, None, raw)

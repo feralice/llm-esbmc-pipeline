@@ -1,0 +1,16 @@
+This hypothesis says the function returns a wrong value or leaves self in a wrong state; nothing
+raises. Add two keys to the JSON object:
+
+{"returns": "<type>", "postcondition": "<expr>"}
+
+- returns: the type the function returns, from the allowed types except object; "None" when it
+  returns nothing.
+- postcondition: one boolean Python expression that every correct call satisfies, judged from the
+  function's name, docstring, the code around it and the hypothesis. `result` is the returned value;
+  it may also read the parameters and any self.<attribute> the function reads, with their values
+  after the call (an attribute the function only assigns cannot be read).
+  Allowed: comparisons, and/or/not, + - *, len(x), isinstance(x, T) with T one of int, float, bool,
+  str, bytes, list, dict, tuple, set, frozenset, `is None`, and membership in a tuple of constants.
+  It must read result or a self.<attribute>; it cannot read result when returns is "None".
+- Write what a correct function guarantees, not what this code computes: the checker looks for an
+  input where this code breaks the postcondition.

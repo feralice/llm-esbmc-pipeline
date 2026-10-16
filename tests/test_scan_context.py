@@ -70,3 +70,25 @@ def test_a12_puts_the_caller_block_in_the_user_prompt_only_when_asked() -> None:
         unit, include_smells=False, v2_variants=("A12",))
     assert "CHAMADORES" not in build_user_prompt(unit, include_smells=False)
     assert "CHAMADORES" not in build_user_prompt(_unit(""), include_smells=False, v2_variants=("A12",))
+
+
+def test_single_source_graph_finds_in_file_callers_without_a_directory() -> None:
+    from research_pipeline.scan.callgraph import build_source_callgraph
+
+    graph = build_source_callgraph(SOURCE, "dataset/arquivo_com_bug/m.py")
+    assert [site.line for site in graph.callers("m:ratio")] == [10, 11]
+    assert graph.functions["m:ratio"].file == "m.py"
+
+
+def test_single_source_graph_raises_on_a_file_that_does_not_parse() -> None:
+    import pytest
+
+    from research_pipeline.scan.callgraph import build_source_callgraph
+
+    with pytest.raises(SyntaxError):
+        build_source_callgraph("def broken(:\n", "m.py")
+
+
+def test_context_can_keep_the_real_name_for_the_spec_prompt(tmp_path: Path) -> None:
+    text = caller_context(_graph(tmp_path, SOURCE), "m:ratio", rename=False)
+    assert "return ratio(1, n)" in text and "target_function" not in text

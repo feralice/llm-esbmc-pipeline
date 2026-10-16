@@ -168,6 +168,8 @@ def test_cli_with_yes_runs_detection_and_verify(tmp_path: Path, monkeypatch) -> 
     assert built["analyzer"]["v2_variants"] == DEFAULT_VARIANTS and built["analyzer"]["v2_detection"]
     assert built["spec"]["backend"] == "openai" and built["spec"]["model"] == "gpt-5.5"
     assert calls[0]["kwargs"]["bound"] == 9 and calls[0]["kwargs"]["esbmc_command"] == ["esbmc"]
+    assert calls[0]["kwargs"]["spec_context"] == "callers"
+    assert "calc:ratio" in calls[0]["kwargs"]["graph"].functions
     assert (out / "scan_report.json").exists()
 
 

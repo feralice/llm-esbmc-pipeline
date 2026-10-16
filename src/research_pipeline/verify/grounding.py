@@ -12,6 +12,7 @@ from .astutil import expression_nodes, find_function
 from .compat import remove_unused
 from .context import context_module
 from .hypothesis import BugHypothesis
+from .rules import ALL_RULES, PROPERTIES_AS_ATTRIBUTES
 from .slicing import (
     CallShape,
     ExternalPlan,
@@ -126,6 +127,10 @@ def _replaced_properties(cls: ast.ClassDef, start: str) -> set[str]:
     return _properties(cls) - {start} - (_with_setter(cls) & assigned)
 
 
+def _replaced(cls: ast.ClassDef, start: str, replace_properties: bool) -> set[str]:
+    return _replaced_properties(cls, start) if replace_properties else set()
+
+
 def _reachable_methods(cls: ast.ClassDef, start: str, replaced: frozenset[str] | set[str] = frozenset()) -> set[str]:
     """``start``, methods it calls through self, and methods the class body names (``property(f)``),
     ignoring the ``replaced`` properties."""
@@ -163,28 +168,29 @@ def _class_level_values(cls: ast.ClassDef) -> set[str]:
     return names
 
 
-def _loaded_self_attrs(cls: ast.ClassDef, method: str) -> set[str]:
+def _loaded_self_attrs(cls: ast.ClassDef, method: str, replace_properties: bool = True) -> set[str]:
     methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
     return {
         _self_attribute(node)
-        for name in _reachable_methods(cls, method, _replaced_properties(cls, method))
+        for name in _reachable_methods(cls, method, _replaced(cls, method, replace_properties))
         for node in ast.walk(methods[name])
         if isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Load) and _self_attribute(node)
     }
 
 
-def _receiver_attrs(cls: ast.ClassDef, method: str) -> tuple[str, ...]:
-    values = _class_level_values(cls) - _replaced_properties(cls, method)
-    return tuple(sorted(_loaded_self_attrs(cls, method) - values))
+def _receiver_attrs(cls: ast.ClassDef, method: str, replace_properties: bool = True) -> tuple[str, ...]:
+    values = _class_level_values(cls) - _replaced(cls, method, replace_properties)
+    return tuple(sorted(_loaded_self_attrs(cls, method, replace_properties) - values))
 
 
-def _called_attrs(cls: ast.ClassDef, method: str, attrs: tuple[str, ...]) -> dict[str, CallShape]:
+def _called_attrs(cls: ast.ClassDef, method: str, attrs: tuple[str, ...],
+                  replace_properties: bool = True) -> dict[str, CallShape]:
     """Receiver attributes the reachable methods only call (``self.write(x)``): methods the class
     inherits from a library base, so the shell gives them a stub method, not a field."""
     methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
     calls: dict[str, CallShape] = {}
     values: set[str] = set()
-    for name in _reachable_methods(cls, method, _replaced_properties(cls, method)):
+    for name in _reachable_methods(cls, method, _replaced(cls, method, replace_properties)):
         parents = {id(c): n for n in ast.walk(methods[name]) for c in ast.iter_child_nodes(n)}
         for node in ast.walk(methods[name]):
             attr = _self_attribute(node)
@@ -199,13 +205,13 @@ def _called_attrs(cls: ast.ClassDef, method: str, attrs: tuple[str, ...]) -> dic
     return {attr: shape for attr, shape in calls.items() if attr not in values}
 
 
-def _inherited_reads(tree: ast.Module, cls: ast.ClassDef, method: str) -> set[str]:
+def _inherited_reads(tree: ast.Module, cls: ast.ClassDef, method: str, replace_properties: bool = True) -> set[str]:
     inherited = set()
     for base in cls.bases:
         base_cls = _class_of(tree, base.id) if isinstance(base, ast.Name) else None
         if base_cls is not None:
             inherited |= _class_level_values(base_cls)
-    return (_loaded_self_attrs(cls, method) & inherited) - _class_level_values(cls)
+    return (_loaded_self_attrs(cls, method, replace_properties) & inherited) - _class_level_values(cls)
 
 
 def _inline_inherited(source: str, tree: ast.Module, cls: ast.ClassDef, names: set[str]) -> str | None:
@@ -469,7 +475,9 @@ def _hoist_nested(tree: ast.Module, source: str, h: BugHypothesis) -> tuple[str,
     return hoisted, dataclasses.replace(h, function=name, line=line)
 
 
-def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset()) -> Grounded | GroundingFailure:
+def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
+           rules: frozenset[str] = ALL_RULES) -> Grounded | GroundingFailure:
+    properties = PROPERTIES_AS_ATTRIBUTES in rules
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
@@ -481,7 +489,7 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
             return GroundingFailure("async entry point is not supported", unsupported=True)
         hoisted = _hoist_nested(tree, source, h)
         if hoisted is not None:
-            grounded = ground(hoisted[1], hoisted[0], refused)
+            grounded = ground(hoisted[1], hoisted[0], refused, rules)
             if isinstance(grounded, Grounded):
                 return dataclasses.replace(grounded, transforms=(f"nested_entry_hoisted:{h.function}",
                                                                  *grounded.transforms))
@@ -511,17 +519,17 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
                for a in function.args.kwonlyargs]
     problem = _entry_shape_problem(function, entry)
     if not problem and entry == "method":
-        inherited = _inherited_reads(tree, cls, function.name)
+        inherited = _inherited_reads(tree, cls, function.name, properties)
         inlined = _inline_inherited(source, tree, cls, inherited) if inherited else None
         if inlined is not None:
-            grounded = ground(h, inlined, refused)
+            grounded = ground(h, inlined, refused, rules)
             if isinstance(grounded, Grounded):
                 return dataclasses.replace(grounded, transforms=(
                     "inherited_members_inlined:" + ",".join(sorted(inherited)), *grounded.transforms))
             return grounded
         if inherited:
             problem = f"receiver reads inherited member(s): {', '.join(sorted(inherited))}"
-    receiver_attrs = _receiver_attrs(cls, function.name) if entry == "method" else ()
+    receiver_attrs = _receiver_attrs(cls, function.name, properties) if entry == "method" else ()
     stripped, transforms = (source, ()) if problem else _strip_decorators(source, function)
     module, plan = context_module(stripped, h.function), ExternalPlan()
     subclass = False
@@ -529,7 +537,7 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
         transforms = list(transforms)
         if cls is not None:
             # Only a method gets a shell; every other entry keeps the real constructor.
-            replaced = _replaced_properties(cls, function.name) if entry == "method" else set()
+            replaced = _replaced(cls, function.name, properties) if entry == "method" else set()
             subclass = entry == "method" and _constructed_with_args(module, cls.name)
             if subclass and any(isinstance(n, ast.FunctionDef) and n.name == "__new__" for n in cls.body):
                 problem = "the target builds its own class, which defines __new__; the receiver cannot subclass it"
@@ -567,5 +575,5 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset())
         unpacked_inputs=_unpacked_inputs(function, {p.name for p in params}, set(receiver_attrs)),
         unsupported=problem,
         receiver_subclass=subclass,
-        called_attrs=_called_attrs(cls, function.name, receiver_attrs) if receiver_attrs else {},
+        called_attrs=_called_attrs(cls, function.name, receiver_attrs, properties) if receiver_attrs else {},
     )

@@ -2,6 +2,7 @@ from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.grounding import Grounded, GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.levels import CONTEXT, limit_group
+from research_pipeline.verify.rules import ALL_RULES, PROPERTIES_AS_ATTRIBUTES
 
 SOURCE = '''import math
 
@@ -212,3 +213,12 @@ def test_a_suspect_copied_with_its_block_header_or_semicolon_still_grounds():
 
 def test_a_suspect_that_is_not_in_the_function_still_fails_after_the_rewrites():
     assert isinstance(ground(BugHypothesis("a.py", "check", "if k in params:"), HEADERS), GroundingFailure)
+
+
+def test_properties_stay_when_the_rule_is_off():
+    result = ground(_h("Request.follow", "self.url[n]"), PROPERTY_SOURCE,
+                    rules=ALL_RULES - {PROPERTIES_AS_ATTRIBUTES})
+    assert isinstance(result, Grounded) and result.unsupported == ""
+    assert set(result.receiver_attrs) == {"_url", "_body"}
+    assert "@property" in result.module and "url = property(_get_url)" in result.module
+    assert not any(t.startswith("properties_as_attributes") for t in result.transforms)

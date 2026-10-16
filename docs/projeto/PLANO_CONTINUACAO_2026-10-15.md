@@ -1,5 +1,7 @@
 # Plano de continuação (15/10/2026) para o Codex
 
+> **Substituído em 15/10/2026 por `docs/projeto/PLANO_GERAL_2026-10-15.md`**, que é o plano em vigor.
+
 Repositório: `/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc`, branch `master` (trabalhar direto em
 master, sem branch nova). Regras da Fernanda: não usar travessão, não commitar sem ela pedir, nunca pôr
 IA como coautor, registrar toda rodada em `docs/experimentos/README.md` (data, pasta, commit, comando,

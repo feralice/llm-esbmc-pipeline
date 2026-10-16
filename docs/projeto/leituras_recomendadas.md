@@ -1045,3 +1045,9 @@ Quatro peças candidatas a contribuição, da mais sólida para a mais arriscada
    extractor de 41 linhas do RepoAudit, mas para aritmética e pré-condição, não ponteiro.
 4. **Protocolo de avaliação sem gabarito**: funil (candidatos, harness válidos, confirmados,
    `abstraction_gap`) mais auditoria manual de amostra, com o V1 rotulado como calibração.
+
+## 9. Fichamento em planilha (15/10/2026)
+
+A lista de leitura em formato de planilha, com a conferência bibliográfica de cada entrada e as
+sugestões novas para modo scan, self-healing, contaminação e inferência de tipos, está em
+`docs/projeto/fichamento.md` (espelho da planilha do Google Sheets).

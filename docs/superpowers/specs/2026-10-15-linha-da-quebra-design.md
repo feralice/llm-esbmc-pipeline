@@ -12,15 +12,33 @@ Nos outros, quando o LLM aponta a linha da quebra, a avaliação conta como erro
 deles é esse problema de rótulo (ex.: bip_pandas_59, gabarito `window = self._get_window(other)`,
 quebra na divisão logo abaixo).
 
-**Sucesso:** todo bug de exceção sem `crash_expressions` recebe uma decisão revisada (linha da quebra
-adicionada, ou "a quebra é a própria linha da causa"), com origem registrada, e a métrica é recalculada
-nos relatórios existentes mostrando antes e depois separados.
+Além disso, `expression` guarda **uma** linha da causa mesmo quando o patch muda várias. Um bug pode
+estar em mais de um lugar, e o gabarito deve listar todos.
 
-**Fora do escopo:** bugs de resultado errado (178), mudar `expression`, mudar a regra de exceção
-esperada da métrica, rodar o pipeline de novo.
+**Convenção adotada:** segue a usada em benchmarks de bugs reais (Defects4J, BugsInPy) e nos estudos de
+localização de falhas: as linhas defeituosas são as que a correção do desenvolvedor modificou ou apagou.
+Acréscimo próprio, por medirmos exceções: as linhas onde a versão com bug levanta a exceção também contam.
+
+**Sucesso:** todo bug de exceção tem (a) `cause_expressions`, todas as linhas da função que o patch muda
+ou apaga, extraídas por código; e (b) uma decisão revisada sobre a quebra (`crash_expressions` adicionada,
+ou "a quebra é a própria causa"). A avaliação aceita qualquer linha das duas listas. A métrica é
+recalculada nos relatórios existentes mostrando antes e depois separados.
+
+**Fora do escopo:** bugs de resultado errado (178), apagar ou trocar `expression` (continua sendo a causa
+principal), mudar a regra de exceção esperada da métrica, rodar o pipeline de novo.
 
 ## Fluxo
 
+0. **Causa a partir do patch (sem LLM).** Para cada bug de exceção, ler `patches/<id>.diff`, pegar as
+   linhas removidas (`-`) dos hunks do arquivo da função (`provenance.source_file`) e casá-las **pelo
+   texto** com as linhas da função com bug (`funcao_com_bug/<id>.py`). O casamento é por texto porque os
+   patches das coortes curadas vêm do BugsInPy original e seus números de linha não batem com os nossos
+   arquivos. Cada linha casada vira a expressão do menor nó da AST que a contém: o cabeçalho (`test`,
+   `iter`, `items`) se for `if`/`while`/`for`/`with`, senão o comando inteiro. Linhas fora da função são
+   ignoradas. Situações marcadas para revisão: `so_insercao` (o patch só acrescenta código; vale a quebra),
+   `ambigua` (o mesmo texto aparece mais de uma vez na função; entram todas as ocorrências e a revisão
+   confirma), `sem_casamento` (nenhuma linha removida casou). Gravado em `crash_proposals.json`, chave
+   `cause` de cada bug.
 1. **Propor** (`scripts/propose_crash_lines.py`). Para cada bug com `failure_kind` diferente de
    `resultado_errado` e sem `crash_expressions`, o LLM (padrão `claude_cli` Sonnet, escolhível por
    `--backend/--model` como no resto do pipeline) recebe: a função com bug (`funcao_com_bug`), o patch
@@ -34,7 +52,10 @@ esperada da métrica, rodar o pipeline de novo.
    `review: aceita | rejeitada | duvida` e `review_note` no mesmo arquivo.
 4. **Revisão da Fernanda.** Tabela em `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`: bug, causa,
    quebra proposta, exceção, parecer. Ela marca as que discorda.
-5. **Aplicar.** As aceitas entram em `dataset/coleta_bugsinpy/labels.json` (campo `crash_expressions`) com
+5. **Aplicar.** `cause_expressions` entra para todo bug com causa `ok` (determinística) ou `ambigua` aceita
+   na revisão, com `label_sources.cause_expressions = "patch"`. A avaliação (`at_bug_line` e a localização
+   em `v2_evaluator.py`) passa a aceitar `expression`, `cause_expressions` e `crash_expressions`.
+   As quebras aceitas entram em `dataset/coleta_bugsinpy/labels.json` (campo `crash_expressions`) com
    `label_sources.crash_expressions = "llm_patch_revisado"`; o gabarito é regerado por
    `scripts/build_v2_bugsinpy.py`. Dos 84 bugs, 31 são da coleta BugsInPy; os 53 das coortes curadas
    (av/dz/ip/nm/oob/tm) não têm gerador e recebem o campo direto em `ground_truths.json`, `manifest.json`
@@ -62,7 +83,10 @@ esperada da métrica, rodar o pipeline de novo.
 
 ## Testes
 
-`tests/test_propose_crash_lines.py`, LLM falso:
+`tests/test_propose_crash_lines.py` e `tests/test_v2_evaluator*.py`, LLM falso:
+- causa: linha removida casa com o comando ou cabeçalho certo; linha de outra função é ignorada; patch só
+  com inserção vira `so_insercao`; texto repetido vira `ambigua`;
+- avaliação: hipótese numa linha de `cause_expressions` conta como linha certa;
 - expressão inexistente na função é descartada;
 - `same_as_expression` não adiciona linha;
 - retomada não chama o LLM para bug já proposto;

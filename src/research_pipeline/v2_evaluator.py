@@ -80,7 +80,8 @@ def at_bug_line(hypothesis: dict, item: dict) -> bool:
     """The hypothesis names the bug's function and its cause or crash site (a labelled item only)."""
     if hypothesis["function"] not in {f.strip() for f in item["function"].split("/")}:
         return False
-    expected = [e for e in [item.get("expression", ""), *item.get("crash_expressions", [])] if e]
+    expected = [e for e in [item.get("expression", ""), *item.get("cause_expressions", []),
+                            *item.get("crash_expressions", [])] if e]
     return any(expressions_equivalent(e, hypothesis["suspect_expression"]) for e in expected)
 
 
@@ -132,8 +133,9 @@ def _bug_detection_metrics(
             "file": str((base / item["detection_file"]).resolve()),
             # "gamma / lgamma": the same bug appears in each listed function.
             "functions": {part.strip() for part in str(item.get("function", "")).split("/") if part.strip()},
-            # Where the patch fixes the bug, then where the buggy version raises (exception bugs only).
-            "expressions": [e for e in [str(item.get("expression", "")), *item.get("crash_expressions", [])] if e],
+            # Every line the patch changes, then where the buggy version raises (exception bugs only).
+            "expressions": [e for e in [str(item.get("expression", "")), *item.get("cause_expressions", []),
+                                         *item.get("crash_expressions", [])] if e],
             "reaches_esbmc": should_reach_esbmc(item),
         }
         for item in expected_items
