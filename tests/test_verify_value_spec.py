@@ -97,3 +97,30 @@ def test_exception_hypotheses_ignore_the_value_fields():
 def test_shape_unpacked_keeps_the_value_fields():
     spec = shape_unpacked(_spec("result >= 0"), _grounded())
     assert (spec.returns, spec.postcondition) == ("int", "result >= 0")
+
+
+def _object_input():
+    g = _grounded(params=("command",))
+    return Grounded(**{**g.__dict__, "params": (Param("command", ""),),
+                       "object_members": {"command": {"script": None}}})
+
+
+def _object_spec(postcondition):
+    return parse_spec('{"params": {"command": "object"}, "stubs": {"command.script": "str"}, '
+                      f'"returns": "bool", "postcondition": "{postcondition}"}}')
+
+
+def test_the_postcondition_may_read_a_field_of_an_object_input():
+    spec = _object_spec("not result or command.script == 'ls'")
+    assert spec_problems(spec, _object_input(), require_property=True) == []
+
+
+def test_a_postcondition_over_input_fields_alone_is_rejected():
+    problems = spec_problems(_object_spec("command.script == 'ls'"), _object_input(), require_property=True)
+    assert any("reads neither result" in p for p in problems)
+
+
+def test_a_field_the_spec_does_not_build_is_still_rejected():
+    problems = spec_problems(_object_spec("not result or command.other == 'ls'"), _object_input(),
+                             require_property=True)
+    assert any("nor an input field" in p for p in problems)

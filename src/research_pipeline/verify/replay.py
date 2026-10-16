@@ -86,7 +86,10 @@ def string_constants(source: str, target_range: tuple[int, int]) -> list[str]:
         if (isinstance(node, ast.Constant) and isinstance(node.value, str) and id(node) not in docstrings
                 and first <= node.lineno <= last and 0 < len(node.value) <= 30 and node.value not in found):
             found.append(node.value)
-    return sorted(found, key=lambda text: (len(text), text))[:_MAX_CONSTANTS]
+    constants = sorted(found, key=lambda text: (len(text), text))[:_MAX_CONSTANTS]
+    # A search such as `'ls' in s` is broken by a text that contains the constant without being it.
+    variants = [v for c in constants for v in (f"x{c}", f"{c}x", f"{c} x") if v not in constants]
+    return [*constants, *variants]
 
 
 @functools.cache

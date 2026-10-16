@@ -168,3 +168,24 @@ def test_string_constants_of_the_target_join_the_replay_domain():
     program = Program(FLAG, 8, ((3, 3),), (), target_range=(1, 4))
     verdict = concrete_replay(program, "strip_flag")
     assert (verdict.status, verdict.exception_type, verdict.line) == ("reproduced", "IndexError", 3)
+
+
+CONTAINS = '''def match(script):
+    if 'ls' in script and script != 'ls':
+        raise ValueError(script)
+
+
+def main() -> None:
+    script: str = nondet_str()
+    match(script)
+
+
+main()
+'''
+
+
+def test_variants_of_a_string_constant_join_the_replay_domain():
+    # 'ls' alone never breaks it; a constant inside a longer text does (av_real_07: "cls").
+    program = Program(CONTAINS, 7, ((3, 3),), (), target_range=(1, 3))
+    verdict = concrete_replay(program, "match")
+    assert (verdict.status, verdict.exception_type, verdict.line) == ("reproduced", "ValueError", 3)

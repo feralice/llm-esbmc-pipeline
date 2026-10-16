@@ -211,9 +211,11 @@ RESULT = "result"
 _TYPE_NAMES = frozenset({*SCALARS, "bytes", "list", "dict", "tuple", "set", "frozenset"})
 
 
-def _postcondition_problem(text: str, params: set[str], attrs: set[str], receiver: bool) -> str:
-    """An assumption's language plus ``result`` and ``isinstance(x, T)``. It must read ``result`` or a
-    receiver attribute: a property of the inputs alone says nothing about what the call did."""
+def _postcondition_problem(text: str, params: set[str], attrs: set[str], receiver: bool,
+                           fields: frozenset[str] = frozenset()) -> str:
+    """An assumption's language plus ``result`` and ``isinstance(x, T)``; ``fields`` as in assumptions.
+    It must read ``result`` or a receiver attribute: a property of the inputs alone says nothing about
+    what the call did."""
     if RESULT in params:
         return "postcondition: a parameter is named result, which the postcondition reserves for the return value"
     try:
@@ -236,19 +238,22 @@ def _postcondition_problem(text: str, params: set[str], attrs: set[str], receive
         if isinstance(node, ast.Tuple) and not all(isinstance(e, ast.Constant) for e in node.elts):
             return f"postcondition {text!r} may only use a tuple of constants"
         if isinstance(node, ast.Attribute) and not (
-                receiver and isinstance(node.value, ast.Name) and node.value.id == "self" and node.attr in attrs):
-            return f"postcondition {text!r} reads an attribute that is not a receiver attribute"
+                (receiver and isinstance(node.value, ast.Name) and node.value.id == "self" and node.attr in attrs)
+                or ast.unparse(node) in fields):
+            return f"postcondition {text!r} reads an attribute that is not a receiver attribute nor an input field"
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name) and id(n) not in type_names}
     names -= {"len", "isinstance", "self"} if receiver else {"len", "isinstance"}
     unknown = names - params - {RESULT}
     if unknown:
         return f"postcondition {text!r} uses unknown name(s) {', '.join(sorted(unknown))}"
-    if RESULT not in names and not any(isinstance(n, ast.Attribute) for n in ast.walk(tree)):
+    if RESULT not in names and not any(isinstance(n, ast.Attribute) and ast.unparse(n) not in fields
+                                       for n in ast.walk(tree)):
         return f"postcondition {text!r} reads neither result nor a receiver attribute"
     return ""
 
 
-def _value_problems(spec: InputSpec, params: set[str], attrs: set[str], receiver: bool) -> list[str]:
+def _value_problems(spec: InputSpec, params: set[str], attrs: set[str], receiver: bool,
+                    fields: frozenset[str] = frozenset()) -> list[str]:
     problems = []
     shape = parse_type(spec.returns) if spec.returns else None
     if not spec.returns:
@@ -257,7 +262,7 @@ def _value_problems(spec: InputSpec, params: set[str], attrs: set[str], receiver
         problems.append(f"returns: {spec.returns!r} is not an allowed return type (object is not allowed)")
     if not spec.postcondition:
         return [*problems, "postcondition: missing"]
-    problem = _postcondition_problem(spec.postcondition, params, attrs, receiver)
+    problem = _postcondition_problem(spec.postcondition, params, attrs, receiver, fields)
     if problem:
         return [*problems, problem]
     read = {n.id for n in ast.walk(ast.parse(spec.postcondition.strip(), mode="eval")) if isinstance(n, ast.Name)}
@@ -341,5 +346,5 @@ def spec_problems(spec: InputSpec, grounded: Grounded, *, require_property: bool
         if problem:
             problems.append(problem)
     if grounded.hypothesis.oracle == VALUE_ORACLE and (require_property or spec.returns or spec.postcondition):
-        problems += _value_problems(spec, set(params), set(attributes), grounded.has_receiver)
+        problems += _value_problems(spec, set(params), set(attributes), grounded.has_receiver, fields)
     return problems

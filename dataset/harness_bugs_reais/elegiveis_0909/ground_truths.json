@@ -40,6 +40,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ZeroDivisionError com num_substrings == 0",
+      "cause_expressions": [
+        "rating.append([num_substrings, float(not_parsed)/float(num_substrings),\n                           float(num_substrings_without_digits)/float(num_substrings)])"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "ZeroDivisionError",
       "eligibility_reason": "Divisão real por num_substrings == 0; fix protege a divisão. invalid_precondition removida no elegível: não há evidência independente (o fix é um guard local, não validação de entrada)."
     },
@@ -82,6 +88,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ZeroDivisionError no % com faixa vazia",
+      "cause_expressions": [
+        "return ((crc >> idx) % (range_end - range_begin + 1)) + range_begin"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "ZeroDivisionError",
       "eligibility_reason": "Módulo por zero real; o fix valida a faixa e lança CroniterBadCronError, o que é evidência independente de precondição de entrada."
     },
@@ -121,6 +133,16 @@
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "código do projeto: to_native_str(None) levanta TypeError",
+      "cause_expressions": [
+        "return '%s %s' % (status, to_native_str(http.RESPONSES.get(int(status))))"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch",
+        "crash_expressions": "llm_patch_revisado"
+      },
+      "crash_expressions": [
+        "to_native_str(http.RESPONSES.get(int(status)))"
+      ],
       "esbmc_property": "TypeError",
       "eligibility_reason": "TypeError real: dict.get sem default devolve None para to_native_str. invalid_precondition removida no elegível: mesma evidência da none_misuse."
     },
@@ -160,6 +182,17 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "KeyError: that[key] com chave ausente",
+      "cause_expressions": [
+        "return (len(self._dict) == len(that)\n                and all(self[key] == that[key] for key in self))",
+        "return (len(self._dict) != len(that)\n                or any(self[key] != that[key] for key in self))"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch",
+        "crash_expressions": "llm_patch_revisado"
+      },
+      "crash_expressions": [
+        "that[key]"
+      ],
       "esbmc_property": "KeyError",
       "eligibility_reason": "KeyError nativo com dicts de mesmo tamanho e chaves diferentes (harness corrigido: o anterior tinha tamanhos diferentes, que o código real curto-circuita)."
     },
@@ -202,6 +235,12 @@
       "crash_expressions": [
         "raise RuntimeError(\"current IOLoop already exists\")"
       ],
+      "cause_expressions": [
+        "IOLoop.current(instance=False) is None"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch_revisado"
+      },
       "esbmc_property": "RuntimeError",
       "eligibility_reason": "RuntimeError real lançado com condição invertida em entrada válida; fix inverte o teste."
     },
@@ -243,6 +282,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "AttributeError: None.prev",
+      "cause_expressions": [
+        "current_line.next.prev = current_line.prev"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "null_dereference",
       "eligibility_reason": "NULL dereference nativo ao acessar current_line.next.prev com next None; fix adiciona o guard."
     },
@@ -284,6 +329,13 @@
       "failure_kind": "resultado_errado",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "devolve None quando não há correspondência",
+      "cause_expressions": [
+        "matches",
+        "return self.__class__(matches)"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "missing_return",
       "eligibility_reason": "Missing return nativo: caminho sem return devolve None; fix sempre retorna a lista."
     },
@@ -325,6 +377,13 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: self._cached[0]",
+      "cause_expressions": [
+        "commands = self._remove_duplicates(self._commands)",
+        "self._cached = [self._cached[0]] + sorted(\n            commands, key=lambda corrected_command: corrected_command.priority)"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -366,6 +425,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: src_txt[-1] de texto vazio",
+      "cause_expressions": [
+        "src_txt[-1] != \"\\n\""
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -403,6 +468,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: l[i + 4]",
+      "cause_expressions": [
+        "i+3 < len_l and l[i+3] == ':'"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -440,6 +511,16 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: list_of_lists[0]",
+      "cause_expressions": [
+        "numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch",
+        "crash_expressions": "llm_patch_revisado"
+      },
+      "crash_expressions": [
+        "len(list_of_lists[0])"
+      ],
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -477,6 +558,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: pwcs[idx]",
+      "cause_expressions": [
+        "end = len(pwcs) if n is None else n"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -514,6 +601,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: x[0] de sequência vazia",
+      "cause_expressions": [
+        "x[0] in _first_char or x.lstrip()[:3] in _nan_inf"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch_revisado"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -551,6 +644,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: result[-1]",
+      "cause_expressions": [
+        "char == _ZWJ and result[-1].chars in EMOJI_DATA and string[i - 1] in tree"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -588,6 +687,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "IndexError: lines[0]",
+      "cause_expressions": [
+        "match = re.search(r\"^([^\\s]+)\\s+([\\d\\.]+)\", lines[0].strip())"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch_revisado"
+      },
       "esbmc_property": "IndexError",
       "eligibility_reason": "IndexError nativo na operação real; o patch do commit elimina a falha com a mesma main."
     },
@@ -628,6 +733,17 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "AttributeError no resultado de generate_latest",
+      "cause_expressions": [
+        "metrics = self._scheduler._state._metrics_collector.generate_latest()",
+        "metrics.configure_http_handler(self)"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch",
+        "crash_expressions": "llm_patch_revisado"
+      },
+      "crash_expressions": [
+        "metrics.configure_http_handler(self)"
+      ],
       "esbmc_property": "AttributeError",
       "eligibility_reason": "AttributeError nativo: método chamado no objeto errado; fix chama no coletor."
     },
@@ -671,6 +787,12 @@
       "failure_kind": "excecao_local",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "ZeroDivisionError com step_size == 0",
+      "cause_expressions": [
+        "(h_src - wdw_size) / step_size"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch_revisado"
+      },
       "esbmc_property": "ZeroDivisionError",
       "eligibility_reason": "Divisão por step_size == 0; o fix (PR #126) acrescenta assert chunk_size >= 2 na entrada, evidência independente de precondição."
     },
@@ -710,6 +832,16 @@
       "failure_kind": "excecao_modelavel",
       "failure_kind_source": "patch_lido",
       "failure_kind_note": "modelo: XMLGenerator.characters com valor não texto",
+      "cause_expressions": [
+        "self._xg_characters(serialized_value)"
+      ],
+      "label_sources": {
+        "cause_expressions": "patch_revisado",
+        "crash_expressions": "llm_patch_revisado"
+      },
+      "crash_expressions": [
+        "serialized_value.decode(self.encoding)"
+      ],
       "esbmc_property": "AttributeError",
       "eligibility_reason": "AttributeError nativo: .decode() em valor int; fix converte com str()."
     }

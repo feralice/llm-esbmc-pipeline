@@ -92,6 +92,9 @@ Todos os experimentos: comparação de prompts, gabarito novo e rodada final, co
 
 **Pronto quando:** número final registrado no README e tag de congelamento criada.
 
+Decisões da Fernanda (16/10): LLM = Gemini grátis (`--backend google`); ESBMC = release oficial v8.6
+(`~/esbmc-releases/v8.6`), com `--no-pointer-check --no-align-check` como nas rodadas anteriores.
+
 ## 7. Modo scan e 8. Plugin
 
 Depois do número final. Primeira rodada real do scan num repositório pequeno; plugin com MCP + skill e
@@ -103,4 +106,5 @@ escolha de LLM (com fallback quando um limite acaba).
 - Rascunhos de issue para o Lucas a partir dos reprodutores 19 a 44.
 - 47 bugs da disciplina PGENE601.
 - Harness de desenvolvimento no Claude Code (skills/agentes do próprio projeto).
+- Issue do `nondet_str()` sem valor no contraexemplo: rascunho pronto em `docs/projeto/rascunho_issue_nondet_str.md` (reprodutor 45, confirmado na v8.6), falta a Fernanda decidir se posta. O replay contorna com variações das constantes.
 - Fine-tuning (trabalho futuro): precisa de dataset maior e modelo aberto em GPU maior; few-shot (item 4) cobre parte do ganho.

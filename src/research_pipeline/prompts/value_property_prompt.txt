@@ -7,7 +7,8 @@ raises. Add two keys to the JSON object:
   returns nothing.
 - postcondition: one boolean Python expression that every correct call satisfies, judged from the
   function's name, docstring, the code around it and the hypothesis. `result` is the returned value;
-  it may also read the parameters and any self.<attribute> the function reads, with their values
+  it may also read the parameters, the members of inputs typed object (for example command.script)
+  and any self.<attribute> the function reads, with their values
   after the call (an attribute the function only assigns cannot be read).
   Allowed: comparisons, and/or/not, + - *, len(x), isinstance(x, T) with T one of int, float, bool,
   str, bytes, list, dict, tuple, set, frozenset, `is None`, and membership in a tuple of constants.

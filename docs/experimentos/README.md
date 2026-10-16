@@ -768,6 +768,25 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
   `tests/test_v2_evaluator.py tests/test_propose_crash_lines.py` → 43 passed.
 - **Métrica:** não medida (item 6). Continua 14 até a rodada final.
 
+## Fase 18 (16/10): revisão dos itens 2 a 5 em bugs reais, correções do item 5 e ESBMC v8.6, sem rodada de LLM
+
+- **Item 2 (sondas):** dz_real_03 com o spec gravado da rodada final, sem LLM: CONFIRMED com as 12 regras e
+  com as 10 das sondas (sem a proteção manual de `None` na linha do bug).
+- **Item 3 (spec com contexto):** nos 708 specs gravados da rodada final, a checagem de uso barraria 46
+  (18 funções; ex.: `list[int]` com `.map()` no av_real_03). Efeito na confirmação só no item 6.
+- **Item 5 (oráculo de valor), duas correções com teste:** a propriedade pode ler campos de entradas
+  `object` (`command.script`; 87 dos 170 bugs de resultado errado analisados leem campos de parâmetro), e o
+  replay testa variações das constantes de texto (`'xls'`, `'lsx'`, `'ls x'`), porque o contraexemplo do
+  ESBMC não mostra o valor de `nondet_str()` (reprodutor 45; rascunho de issue em
+  `docs/projeto/rascunho_issue_nondet_str.md`). av_real_07 com propriedade escrita à mão:
+  **VALUE_CONFIRMED** (entrada `'xls'`: com bug True, corrigido False).
+- **Gabarito:** `dataset/harness_bugs_reais/elegiveis_0909` regenerado (o commit 1abeab7 deixou o
+  subconjunto desatualizado; `test_committed_eligible_subset_matches_a_fresh_build` falhava).
+- **ESBMC v8.6** (release de 15/10) em `~/esbmc-releases/v8.6`, `esbmc.sh` com `--no-pointer-check
+  --no-align-check`; escolhido para o item 6. Sondas: desliga as mesmas 2 regras do master 333d07cc8a.
+- **Comando:** `timeout 10m .venv/bin/python -m pytest -q` → 1087 passed.
+- **Métrica:** não medida (item 6). Continua 14.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

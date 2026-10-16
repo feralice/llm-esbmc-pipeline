@@ -201,6 +201,7 @@ dos modelos em C; sem elas o `--multi-property` fica lento. `--no-bounds-check` 
 | 42 | `Incompatible struct in cast-to-struct` (aborta) | a reportar |
 | 43 | SUCCESSFUL | a reportar |
 | 44 | `Variable 'k' is not defined in function 'caller'` | a reportar |
+| 45 | FAILED, sem o valor de `s` no contraexemplo | a reportar (rascunho em `../rascunho_issue_nondet_str.md`) |
 
 Candidatos descartados ao montar 19 a 24: `len(self)` num objeto sem `__len__` (o ESBMC acha o
 `TypeError`; o erro interno do `nm_real_11` vem de um atributo `popitem` criado pelo harness) e classe
