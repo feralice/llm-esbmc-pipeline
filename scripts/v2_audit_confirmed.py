@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.astutil import expression_nodes, find_function  # noqa: E402
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E402
 
 _TARGET = re.compile(r"FAILED\s+\[[^\]]+\]\s+line\s+\d+\s+AUDIT_TARGET")
 
@@ -91,7 +92,7 @@ def cases() -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--esbmc", default="/usr/local/bin/esbmc")
+    parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--only", default="", help="comma-separated bug ids")
     parser.add_argument("--out", required=True)

@@ -16,13 +16,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.agent_arm import AGENT_FAILED, evaluate_harness
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 from research_pipeline.verify.hypothesis import BugHypothesis
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run", help="agent-arm output directory (agent_results.json + cases/)")
-    parser.add_argument("--esbmc", default="/usr/local/bin/esbmc")
+    parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--out", required=True)

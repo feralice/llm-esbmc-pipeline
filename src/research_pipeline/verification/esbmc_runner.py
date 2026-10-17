@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 import ast
+import os
 import re
 import shutil
 import subprocess
@@ -10,6 +11,10 @@ from hashlib import sha256
 from pathlib import Path
 
 from ..models import ESBMCDirectResult, ESBMCResult
+
+# ESBMC v8.6 release behind a wrapper adding --no-pointer-check --no-align-check, the flags of every run
+# since phase 13; without them 8.6 times out on small list programs (measured 16/10/2026). LLM_ESBMC overrides.
+DEFAULT_ESBMC = os.environ.get("LLM_ESBMC", str(Path.home() / "esbmc-releases" / "v8.6" / "esbmc.sh"))
 
 
 def _bounded_incremental_flags(bound: int) -> list[str]:

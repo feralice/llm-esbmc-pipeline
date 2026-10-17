@@ -15,9 +15,14 @@ import argparse
 import json
 import re
 import subprocess
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E402
 
 PROFILES = {"default": [], "smt_symex": ["--z3", "--smt-during-symex", "--smt-symex-guard"]}
 _FAILED = re.compile(r"^\s+FAILED\s+\[([^\]]+)\]\s+line\s+(\d+)\s+(.*)$", re.M)
@@ -43,7 +48,7 @@ def run(esbmc: str, program: str, flags: list[str], timeout: int) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("report")
-    parser.add_argument("--esbmc", default="/usr/local/bin/esbmc")
+    parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--out", required=True)

@@ -787,6 +787,22 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Comando:** `timeout 10m .venv/bin/python -m pytest -q` → 1087 passed.
 - **Métrica:** não medida (item 6). Continua 14.
 
+## Fase 19 (16/10): texto do contraexemplo pelo pytest do ESBMC e ESBMC v8.6 como padrão, sem rodada de LLM
+
+- **Texto escondido (5b):** quando o ESBMC acha a violação, o replay não reproduz e a entrada tem
+  `nondet_str()`, o pipeline roda o ESBMC de novo com `--generate-pytest-testcase --pytest-values-only`
+  (parando na primeira violação, sem unwinding assertions) e dá os textos do `witness` ao replay como
+  sementes (`verify/string_witness.py`). Na v8.6: `s != 'ab'` dá `"ab"`; o harness do av_real_07 dá
+  `"llls"` em 1,7 s. Substitui o contorno de copiar cada letra para um `int` com `--no-slice`.
+- **ESBMC padrão:** `DEFAULT_ESBMC` (`verification/esbmc_runner.py`) = `~/esbmc-releases/v8.6/esbmc.sh`
+  (v8.6 com `--no-pointer-check --no-align-check`), sobrescrito por `LLM_ESBMC`; substitui
+  `/usr/local/bin/esbmc` (8.5) no `main.py`, no agente e nos scripts. No programa do laço protegido, a 8.5
+  levava 175 s e dava falso positivo; a 8.6 sem as flags estoura 300 s, com as flags termina em 24 s com
+  `VERIFICATION SUCCESSFUL`.
+- **Comando:** `timeout 9m .venv/bin/python -m pytest -q tests/test_verify_esbmc_integration.py` → 25 passed
+  em 2 min 55 s (antes passava de 10 min com a 8.5).
+- **Métrica:** não medida. Continua 14.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

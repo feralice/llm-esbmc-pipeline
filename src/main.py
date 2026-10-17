@@ -43,6 +43,7 @@ load_dotenv(REPO_ROOT / ".env")
 
 
 from research_pipeline.dataset_audit import match_unit
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 from research_pipeline.evaluator import (
     EvalCounts,
     accuracy_defined,
@@ -1087,7 +1088,7 @@ def mode_ensemble(args: argparse.Namespace) -> int:
 
 
 # The release build; ~/.local/bin/esbmc may shadow it with a development build.
-_VERIFY_DEFAULT_ESBMC = "/usr/local/bin/esbmc"
+_VERIFY_DEFAULT_ESBMC = DEFAULT_ESBMC
 
 
 def _esbmc_version(command: list[str]) -> str:
@@ -1103,7 +1104,7 @@ def _esbmc_version(command: list[str]) -> str:
 def _agent_fallback(args: argparse.Namespace, results: list[dict], output_path: Path, checkpoint: dict,
                     checkpoint_path: Path) -> list[dict]:
     """Second level: the agent tries each hypothesis the engine left without an ESBMC verdict."""
-    esbmc = args.esbmc_command or ["/usr/local/bin/esbmc"]
+    esbmc = args.esbmc_command or [DEFAULT_ESBMC]
     agent, skill = make_agent(args.agent_backend, model=args.agent_model, esbmc=esbmc[0], bound=args.bound,
                               base_url=args.ollama_base_url if args.agent_backend == "ollama" else None)
     return run_agent_fallback(

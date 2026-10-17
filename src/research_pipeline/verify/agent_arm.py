@@ -17,6 +17,8 @@ import time
 from pathlib import Path
 from typing import Callable
 
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
+
 from .astutil import body_signature, expression_nodes, find_function
 from .context import context_module
 
@@ -68,7 +70,7 @@ verdict (VERIFICATION FAILED or SUCCESSFUL) instead of a conversion error. Then 
 
 
 def claude_agent(claude_command: str = "claude", model: str | None = None,
-                 esbmc: str = "/usr/local/bin/esbmc", *, plugin: bool = True, isolated: bool = True) -> RunAgent:
+                 esbmc: str = DEFAULT_ESBMC, *, plugin: bool = True, isolated: bool = True) -> RunAgent:
     """``isolated`` loads no user settings (globally enabled plugins, hooks), so the ESBMC plugin is
     present exactly when ``plugin`` asks for it: the variants of an experiment differ in one thing."""
     def run(prompt: str, cwd: Path, timeout_seconds: int) -> str:
@@ -104,7 +106,7 @@ sends you its output; fix the harness until ESBMC reaches VERIFICATION FAILED or
 {notes}"""
 
 
-def api_agent(llm, *, rounds: int = 8, esbmc: str = "/usr/local/bin/esbmc", bound: int = 5,
+def api_agent(llm, *, rounds: int = 8, esbmc: str = DEFAULT_ESBMC, bound: int = 5,
               esbmc_timeout: int = 120) -> RunAgent:
     """The agent's loop for any chat API (OpenAI, Gemini, Ollama, Claude CLI): the model proposes
     harness.py, the pipeline runs ESBMC and returns its errors, for at most ``rounds`` turns. Its

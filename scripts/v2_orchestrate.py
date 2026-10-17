@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.v2_evaluator import at_bug_line  # noqa: E402
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E402
 from research_pipeline.verify.agent_arm import DEFAULT_MODELS, make_agent, run_agent_arm  # noqa: E402
 from research_pipeline.verify.dynamic import FUZZ_FOUND, dynamic_check  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
@@ -110,7 +111,7 @@ def main() -> int:
     parser.add_argument("--fixed-sources", default="dataset/bugs_reais/arquivo_corrigido",
                         help="fixed versions for the agent's control replay; empty to skip (scan mode)")
     parser.add_argument("--ground-truth", default="dataset/bugs_reais/ground_truths.json")
-    parser.add_argument("--esbmc", default="/usr/local/bin/esbmc")
+    parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--agent-timeout", type=int, default=900)

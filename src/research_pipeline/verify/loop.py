@@ -37,6 +37,7 @@ from .render import DRIVER, Program, RenderError, render_program
 from .rules import ALL_RULES
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, shape_unpacked, spec_problems
+from .string_witness import string_witness
 from .value_oracle import apply_control, check_fixed, esbmc_hits_property, value_verdict
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
@@ -230,6 +231,14 @@ def verify_hypothesis(
             feedback = "ESBMC rejected the program: " + _with_line_context(reading.message, program)
             continue
         replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc))
+        if replay.status == "not_reproduced" and reading.kind == "violation" and esbmc_command \
+                and "nondet_str()" in program.source:
+            strings = string_witness(path, esbmc_command=esbmc_command,
+                                     bound=how["unwind"] if isinstance(how["unwind"], int) and how["unwind"] else bound,
+                                     timeout_seconds=timeout_seconds, work_dir=work_dir / path.stem)
+            record["witness_strings"] = strings
+            if strings:
+                replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc), strings)
         result.replay = replay.to_dict()
         if value:
             return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source))
@@ -267,11 +276,14 @@ def _pytest_for(program: Program, grounded: Grounded, spec: InputSpec, replay: R
 
 
 def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Grounded, runs: int,
-                       log: str = "") -> ReplayVerdict:
+                       log: str = "", strings: list[str] | None = None) -> ReplayVerdict:
+    """``strings``: the counterexample's nondet strings, which ESBMC's own trace does not print."""
     if reading.kind not in {"violation", "artifact", "safe"}:
         return ReplayVerdict("unavailable", reason="ESBMC produced no verdict to validate")
-    return concrete_replay(program, grounded.method_name, max_runs=runs,
-                           seeds=counterexample_seeds(log, DRIVER))
+    seeds = counterexample_seeds(log, DRIVER)
+    if strings:
+        seeds["str"] = strings
+    return concrete_replay(program, grounded.method_name, max_runs=runs, seeds=seeds)
 
 
 def verification_source(h: BugHypothesis, verification_sources: Path | None) -> Path:

@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.agent_arm import AGENT_VERDICTS, NOTES_PATH, make_agent, run_agent_arm  # noqa: E402
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 
@@ -41,7 +42,7 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--reason", default="", help="only results whose reason matches this regex")
     parser.add_argument("--out", required=True)
-    parser.add_argument("--esbmc", default="/usr/local/bin/esbmc")
+    parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--model", default=None)
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)

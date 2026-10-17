@@ -4,14 +4,15 @@ from pathlib import Path
 
 import pytest
 
+from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 from research_pipeline.verify.compat import rewrite_compat
 from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import verify_hypothesis
 from research_pipeline.verify.outcome import CONFIRMED, NOT_CONFIRMED, UNVALIDATED
 
-ESBMC = Path("/usr/local/bin/esbmc")
-pytestmark = pytest.mark.skipif(not ESBMC.exists(), reason="official ESBMC 8.5 not installed")
+ESBMC = Path(DEFAULT_ESBMC)
+pytestmark = pytest.mark.skipif(not ESBMC.exists(), reason="ESBMC v8.6 wrapper not installed")
 
 TRACKER = '''class Tracker:
     def __init__(self, mode, cfg):

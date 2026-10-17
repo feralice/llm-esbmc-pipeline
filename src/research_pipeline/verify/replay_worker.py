@@ -153,7 +153,7 @@ def _seeded(seeds):
     """Domains made of ESBMC's counterexample values only (defaults where it gave none)."""
     domains = dict(DOMAINS)
     for kind, values in seeds.items():
-        python_type = {"int": int, "float": float}[kind]
+        python_type = {"int": int, "float": float, "str": str}[kind]
         unique = [v for i, v in enumerate(values) if v == v and v not in values[:i]]  # NaN never repeats
         if unique:
             domains[python_type] = unique
