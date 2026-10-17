@@ -507,7 +507,7 @@ def test_import_sharing_a_line_keeps_the_other_statement():
 
 
 def test_sys_exit_ends_the_path_and_known_sys_values_are_fixed():
-    source = ("import sys\n\n\ndef f(args: list[int]):\n    if sys.version_info[0] < 3:\n        return 0\n"
+    source = ("import sys\n\n\ndef f(args: list[int]):\n    major = sys.version_info[0]\n    if major < 3:\n        return 0\n"
               "    if not args:\n        sys.exit(1)\n    return args[0] + sys.maxsize\n")
     grounded = _ground(source, "f", "args[0]")
     assert grounded.stub_keys == ()

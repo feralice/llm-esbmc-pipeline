@@ -222,3 +222,88 @@ def test_properties_stay_when_the_rule_is_off():
     assert set(result.receiver_attrs) == {"_url", "_body"}
     assert "@property" in result.module and "url = property(_get_url)" in result.module
     assert not any(t.startswith("properties_as_attributes") for t in result.transforms)
+
+
+TEXT_ANNOTATIONS = '''from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pandas import DataFrame
+
+
+def first(data: "DataFrame", key) -> "DataFrame":
+    return data[key]
+'''
+
+
+def test_text_annotations_leave_the_verified_module():
+    # ip_real_16: "DataFrame" exists only under TYPE_CHECKING, so ESBMC raised NameError on every attempt.
+    grounded = ground(BugHypothesis("t.py", "first", "data[key]"), TEXT_ANNOTATIONS)
+    assert isinstance(grounded, Grounded)
+    assert grounded.module == "def first(data, key):\n    return data[key]\n"
+    assert "text_annotations_dropped:2" in grounded.transforms
+
+
+def test_dropping_text_annotations_keeps_every_line():
+    from research_pipeline.verify.slicing import drop_text_annotations
+    module = 'def f(a: "X",\n      b: int) -> "Y":\n    return a\n'
+    out, transforms = drop_text_annotations(module)
+    assert out == 'def f(a,\n      b: int):\n    return a\n'
+    assert transforms == ["text_annotations_dropped:2"]
+    assert drop_text_annotations("def g(a: int) -> int:\n    return a\n") == ("def g(a: int) -> int:\n    return a\n", [])
+
+
+COMPAT = '''from youtube_dl.compat import compat_chr, compat_urlparse
+
+
+def fix_entity(num):
+    return compat_chr(int(num))
+'''
+
+
+def test_compat_aliases_of_builtins_are_the_builtins():
+    # ip_real_07: stubbing compat_chr with a free string erased chr()'s real ValueError.
+    grounded = ground(BugHypothesis("y.py", "fix_entity", "compat_chr(int(num))"), COMPAT)
+    assert isinstance(grounded, Grounded)
+    # ESBMC v8.6 refuses `compat_chr = chr` ("Variable chr not found") and an untyped chr() argument;
+    # a typed one-line wrapper keeps chr's range check.
+    assert "def compat_chr(a0: int) -> str: return chr(a0)" in grounded.module
+    assert "compat_chr" not in grounded.externals.calls
+    assert "compat_builtins_bound:compat_chr" in grounded.transforms
+
+
+def test_compat_str_is_spelt_str_so_isinstance_keeps_working():
+    source = COMPAT.replace("compat_chr, ", "compat_str, ").replace("return compat_chr(int(num))",
+                                                                     "return isinstance(num, compat_str)")
+    grounded = ground(BugHypothesis("y.py", "fix_entity", "isinstance(num, compat_str)"), source)
+    assert "return isinstance(num, str)" in grounded.module
+    assert "compat_builtins_bound:compat_str" in grounded.transforms
+
+
+def test_compat_ord_is_not_taken_for_ord():
+    source = COMPAT.replace("compat_chr", "compat_ord")
+    grounded = ground(BugHypothesis("y.py", "fix_entity", "compat_ord(int(num))"), source)
+    assert "compat_ord(int(num))" in grounded.module
+    assert "compat_ord" in grounded.externals.calls
+
+
+def test_a_parameter_named_like_a_compat_alias_is_left_alone():
+    # Review I5: `def f(compat_str): return compat_str(1)` became `return str(1)`.
+    source = "from youtube_dl.compat import compat_str\n\n\ndef f(compat_str, n):\n    return compat_str(n) // n\n"
+    grounded = ground(BugHypothesis("y.py", "f", "compat_str(n) // n"), source)
+    assert "return compat_str(n) // n" in grounded.module
+
+
+def test_a_module_that_rebinds_the_alias_keeps_it():
+    source = ("try:\n    from youtube_dl.compat import compat_str\nexcept ImportError:\n    compat_str = unicode\n\n\n"
+              "def f(n):\n    return isinstance(n, compat_str)\n")
+    grounded = ground(BugHypothesis("y.py", "f", "isinstance(n, compat_str)"), source)
+    assert "str = unicode" not in grounded.module.replace("compat_str = unicode", "")
+
+
+def test_an_import_sharing_its_line_keeps_the_stub():
+    # Review I6/I7: `try: def ...` does not parse and `def ...; y = 1` swallows the tail.
+    for source in ("try: from youtube_dl.compat import compat_chr\nexcept ImportError: pass\n\n\ndef f(n):\n    return compat_chr(n)\n",
+                   "from youtube_dl.compat import compat_chr; y = 1\n\n\ndef f(n):\n    return compat_chr(n + y)\n"):
+        grounded = ground(BugHypothesis("y.py", "f", "compat_chr"), source)
+        compile(grounded.module, "m.py", "exec")
+        assert "def compat_chr" not in grounded.module

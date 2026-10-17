@@ -17,9 +17,9 @@ rodada completa: 19 de 230 bugs exercitados tiveram alguma confirmação (8,3%),
 | 3 | Spec com contexto dos chamadores | pronto; barraria 46 de 708 specs gravados |
 | 4 | Variantes de prompt | pronto (A13, A14); comparação no item 6 |
 | 5 | Oráculo de valor errado no harness | pronto; av_real_07 VALUE_CONFIRMED com propriedade à mão |
-| 5b | Texto escondido no contraexemplo (`nondet_str`) | código e testes prontos; falta a suíte passar e o commit |
+| 5b | Texto escondido no contraexemplo (`nondet_str`) e ESBMC v8.6 como padrão | pronto (commit a1fccb4) |
 | 6a | Backend `gemini_cli` | cancelado: a Fernanda decidiu usar o Claude (16/10). Em 16/10 o login pessoal do Gemini CLI falhava (IneligibleTierError) |
-| 6 | Diagnóstico, intervenções e rodada final (4 semanas, abaixo) | a fazer |
+| 6 | Diagnóstico, intervenções e rodada final (4 semanas, abaixo) | semanas 1 a 3 feitas (Fase 20 do README); semana 4 (rodada com LLM) espera a Fernanda |
 | 7 | Modo scan num repositório real | depois da qualificação |
 | 8 | Plugin/extensão (MCP + skill) com escolha de LLM | depois da qualificação |
 
@@ -44,6 +44,26 @@ Item 6 em 4 semanas:
 | 3 | Implementar só as 2 intervenções de maior ganho por dia que o piloto mostrar, com teste (se o piloto confirmar bugs, uma delas é automatizar o passo da semana 2: o LLM reescreve a linha recusada guiado pelos testes do ESBMC, validado por testes diferenciais, e o caso fica guardado para virar regra com sonda); reservar bugs não usados no desenvolvimento | não |
 | 4 | Rodada congelada: Claude pela assinatura (`--backend claude_cli`, retomando quando o limite acabar), ESBMC v8.6, comparação de prompts (amostra de 50) e rodada final; comparação com o braço dinâmico por bug, tempo e contribuição exclusiva; registrar positivos e negativos | sim |
 
+Comandos da semana 4 (rodam só com a Fernanda; usam o limite da assinatura do Claude):
+
+```bash
+# 1. Prompts na amostra de 50 (detecção só; cada variante retoma sozinha depois de um limite)
+BACKEND=claude_cli MODEL=claude-sonnet-5-5 scripts/run_detection_variants.sh 2026-11-XX-amostra \
+  dataset/bugs_reais/amostra_deteccao.json A1,A2 A1,A2,A9 A1,A2,A13 A1,A2,A14
+# 2. Rodada final do zero com a vencedora (<V>), ESBMC v8.6, oráculo de valor e controle
+PYTHONPATH=src .venv/bin/python -W ignore::SyntaxWarning src/main.py --mode hybrid --v2-stage end-to-end \
+  --input dataset/bugs_reais/funcao_com_bug --ground-truth dataset/bugs_reais/ground_truths.json \
+  --verification-sources dataset/bugs_reais/arquivo_com_bug --fixed-sources dataset/bugs_reais/arquivo_corrigido \
+  --v2-variants <V>,A15 --backend claude_cli --model claude-sonnet-5-5 \
+  --synth-backend claude_cli --synth-model claude-sonnet-5-5 \
+  --esbmc-command ~/esbmc-releases/v8.6/esbmc.sh --bound 5 --timeout 180 --output-dir artifacts/v2/final-2026-11-XX
+# (repetir com --resume quando o limite acabar)
+# 3. Funil e controle da rodada
+PYTHONPATH=src .venv/bin/python scripts/v2_funnel.py artifacts/v2/final-2026-11-XX --out artifacts/v2/final-2026-11-XX/funil
+PYTHONPATH=src .venv/bin/python scripts/v2_audit_control.py artifacts/v2/final-2026-11-XX/v2_verify_report.json \
+  --out artifacts/v2/final-2026-11-XX/controle
+```
+
 Cuidados registrados:
 - Não chamar as sondas de "self-healing" sem diferenciar: o termo já é usado no ESBMC-AI (LLM corrige o
   programa com o contraexemplo do ESBMC), do grupo do Lucas. Aqui é o harness que se calibra ao verificador.
@@ -54,8 +74,7 @@ Cuidados registrados:
 - Referências só depois de conferidas (trabalhos próximos: ESBMC-Python, Shivaji et al., PyVeritas,
   ESBMC-AI, Evident).
 
-Cronograma até a qualificação (fevereiro de 2027): 5b até o fim de outubro; item 6 até o fim de
-novembro; texto em dezembro; revisão em janeiro.
+Cronograma até a qualificação (fevereiro de 2027): item 6 até o fim de novembro; texto em dezembro; revisão em janeiro.
 
 ## 1. Corrigir o gabarito
 
@@ -97,14 +116,14 @@ LLM, para reduzir recusas do ESBMC por tipo errado (ex.: ip_real_32, `int` usado
 
 ## 4. Variantes de prompt
 
-Comparar variantes do prompt de detecção no gabarito já corrigido, medidas com Gemini (sem custo).
+Comparar variantes do prompt de detecção no gabarito já corrigido, medidas com o Claude pela assinatura.
 
 **Pronto quando:** variantes implementadas e testadas; a comparação roda no item 6.
 
 - [x] Spec `docs/superpowers/specs/2026-10-16-variantes-prompt-design.md`, plano `docs/superpowers/plans/2026-10-16-variantes-prompt.md`.
 - [x] A13 (exemplos reais por similaridade, sem o projeto do bug) e A14 (linha citada e condição de disparo), com testes.
 - [x] `scripts/print_detection_prompt.py` (prompts sem LLM) e `BACKEND`/`MODEL` em `run_detection_variants.sh`.
-- Para o item 6: comparar A5, A5+A9, A5+A13, A5+A14 com `BACKEND=google MODEL=gemini-2.5-flash`.
+- Para o item 6: comparar A5, A5+A9, A5+A13, A5+A14 com `BACKEND=claude_cli`.
 
 ## 5. Oráculo de valor errado no harness
 
@@ -124,8 +143,8 @@ errado para a métrica de confirmação.
 
 ## 6. Rodada final e2e
 
-Todos os experimentos: comparação de prompts, gabarito novo e rodada final, com tudo congelado. Retomar ou refazer a rodada final (checkpoint atual em
-`artifacts/v2/final-2026-10-15-codex`, pausado em 470/564), rodar o orquestrador e contar a métrica.
+Em 4 semanas (tabela do plano revisado acima). A rodada final começa do zero: o checkpoint
+`artifacts/v2/final-2026-10-15-codex` não retoma com o código atual.
 
 **Pronto quando:** número final registrado no README e tag de congelamento criada.
 
@@ -143,7 +162,7 @@ escolha de LLM (com fallback quando um limite acaba).
 - Rascunhos de issue para o Lucas a partir dos reprodutores 19 a 44.
 - 47 bugs da disciplina PGENE601.
 - Harness de desenvolvimento no Claude Code (skills/agentes do próprio projeto).
-- Issue do `nondet_str()` sem valor no contraexemplo: rascunho pronto em `docs/projeto/rascunho_issue_nondet_str.md` (reprodutor 45, confirmado na v8.6), falta a Fernanda decidir se posta. O replay contorna com variações das constantes.
+- Issue do `nondet_str()` sem valor no contraexemplo: rascunho pronto em `docs/projeto/rascunho_issue_nondet_str.md` (reprodutor 45, confirmado na v8.6), a Fernanda vai falar com o Lucas. O pipeline contorna com o witness do `--generate-pytest-testcase`.
 - Reescrita da linha recusada por LLM, guiada pelos testes de regressão do ESBMC e validada por testes
   diferenciais (antigo "2b"/nível 1): só se o piloto da semana 2 mostrar que vale.
 - Modelos de operações de biblioteca gerados por LLM (nível 2): só para operações compartilhadas por vários bugs.

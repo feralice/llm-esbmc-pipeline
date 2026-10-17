@@ -91,14 +91,98 @@ def _dunder(name: str) -> bool:
     return name.startswith("__") and name.endswith("__")
 
 
+# Special methods only a given construct calls: unreached ones go when the module lacks it (a name in a
+# group means a Name or attribute root with that id; "with" means a with statement).
+_TRIGGERED = {
+    "with": ("__enter__", "__exit__", "__aenter__", "__aexit__"),
+    "copy": ("__copy__", "__deepcopy__", "__reduce__", "__reduce_ex__", "__getstate__", "__setstate__"),
+    "numpy": ("__array__", "__array_ufunc__", "__array_function__", "__array_wrap__"),
+}
+_TRIGGER_NAMES = {"copy": {"copy", "deepcopy", "pickle"}, "numpy": {"np", "numpy"}}
+
+
+def _absent_triggers(tree: ast.Module, skip: set[int]) -> set[str]:
+    """Trigger groups nothing in the module outside the ``skip`` nodes uses."""
+    used: set[str] = set()
+    stack = [n for n in tree.body if id(n) not in skip]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, (ast.With, ast.AsyncWith)):
+            used.add("with")
+        if isinstance(node, ast.Name):
+            used |= {group for group, names in _TRIGGER_NAMES.items() if node.id in names}
+        stack.extend(child for child in ast.iter_child_nodes(node) if id(child) not in skip)
+    return set(_TRIGGERED) - used
+
+
+def _self_calls(method: ast.AST) -> set[str]:
+    return {n.attr for n in ast.walk(method) if isinstance(n, ast.Attribute)
+            and isinstance(n.value, ast.Name) and n.value.id == "self"}
+
+
+_PURE_CALLS = frozenset({"set", "frozenset", "list", "dict", "tuple"})
+_FIELD_BASES = frozenset({"Enum", "IntEnum", "StrEnum", "Flag", "IntFlag", "NamedTuple", "TypedDict"})
+
+
+def _side_effect_free(node: ast.expr) -> bool:
+    """No call but container constructors: removing it cannot drop a registration or other effect."""
+    return all(isinstance(n.func, ast.Name) and n.func.id in _PURE_CALLS
+               for n in ast.walk(node) if isinstance(n, ast.Call))
+
+
+def _unused_class_attributes(tree: ast.Module, cls: ast.ClassDef) -> list[ast.stmt]:
+    """Class-body assignments whose name nothing else in the module reads: as an attribute, a bare
+    name, or a string (``getattr(self, "name")``)."""
+    def single_name(node: ast.stmt) -> str | None:
+        targets = node.targets if isinstance(node, ast.Assign) else [node.target] if isinstance(node, ast.AnnAssign) else []
+        return targets[0].id if len(targets) == 1 and isinstance(targets[0], ast.Name) else None
+
+    # Decorated classes (dataclass, attrs) and enum/record bases read their body as fields or members.
+    bases = {b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else "" for b in cls.bases}
+    if cls.decorator_list or bases & _FIELD_BASES or any(b.endswith(("Enum", "Model")) for b in bases):
+        return []
+    unused = []
+    for node in cls.body:
+        name = single_name(node)
+        value = getattr(node, "value", None)
+        if name is None or _dunder(name) or value is None or not _side_effect_free(value):
+            continue
+        own = {id(n) for n in ast.walk(node)}
+        read = any(id(n) not in own and ((isinstance(n, ast.Attribute) and n.attr == name)
+                                         or (isinstance(n, ast.Name) and n.id == name)
+                                         or (isinstance(n, ast.keyword) and n.arg == name)
+                                         or (isinstance(n, ast.Constant) and n.value == name))
+                   for n in ast.walk(tree))
+        if not read:
+            unused.append(node)
+    return unused
+
+
 def prune_class(module: str, class_name: str, reachable: set[str], drop_init: bool = True,
                 properties: frozenset[str] | set[str] = frozenset()) -> tuple[str, list[str]]:
-    """Drop non-dunder methods the target cannot reach, ``__init__`` when a shell replaces it, and
-    the ``properties`` the shell supplies as plain attributes."""
+    """Drop non-dunder methods the target cannot reach, unreached special methods whose trigger the
+    module lacks (``_TRIGGERED``), ``__init__`` when a shell replaces it, and the ``properties`` the
+    shell supplies as plain attributes. A method a kept special method uses stays, so no call is left
+    dangling."""
     tree = ast.parse(module)
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == class_name)
     methods = [n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-    removed = [m for m in methods if m.name != "__init__" and m.name not in reachable and not _dunder(m.name)
+    triggered = {name for group in _TRIGGERED.values() for name in group}
+    candidates = [m for m in methods if m.name in triggered and m.name not in reachable]
+    absent = _absent_triggers(tree, {id(m) for m in candidates})
+    special = [m for m in candidates if any(m.name in _TRIGGERED[g] for g in absent)]
+    # Seeds: special methods that stay, and the real __init__ when no shell replaces it.
+    seeds = [m for m in methods if _dunder(m.name) and m not in special
+             and not (m.name in ("__init__", "__new__") and drop_init)]
+    by_name = {m.name: m for m in methods}
+    needed, frontier = set(reachable), [n for m in seeds for n in _self_calls(m)]
+    while frontier:
+        name = frontier.pop()
+        if name in by_name and name not in needed:
+            needed.add(name)
+            frontier.extend(_self_calls(by_name[name]))
+    special = [m for m in special if m.name not in needed]
+    removed = [m for m in methods if m.name != "__init__" and m.name not in needed and not _dunder(m.name)
                and m.name not in properties]
     # The shell builds the receiver's state, so the real construction (__new__ too) is not run.
     init = [m for m in methods if m.name == "__init__" or (m.name == "__new__" and m.name not in reachable)
@@ -106,7 +190,8 @@ def prune_class(module: str, class_name: str, reachable: set[str], drop_init: bo
     props = [n for n in cls.body if (isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name in properties)
              or (isinstance(n, ast.Assign) and {t.id for t in n.targets if isinstance(t, ast.Name)} & properties)]
     lines = module.splitlines()
-    for node in sorted([*removed, *init, *props], key=_first_line, reverse=True):
+    attributes = [n for n in _unused_class_attributes(tree, cls) if n not in props]
+    for node in sorted([*removed, *special, *init, *props, *attributes], key=_first_line, reverse=True):
         del lines[_first_line(node) - 1:node.end_lineno]
     transforms = (["receiver_init_replaced" if any(m.name == "__init__" for m in init) else "receiver_init_added"]
                   if drop_init else [])
@@ -114,6 +199,11 @@ def prune_class(module: str, class_name: str, reachable: set[str], drop_init: bo
         transforms.append("receiver_new_removed")
     if removed:
         transforms.append("unreachable_methods_removed:" + ",".join(sorted(m.name for m in removed)))
+    if special:
+        transforms.append("special_methods_removed:" + ",".join(sorted(m.name for m in special)))
+    if attributes:
+        names = sorted(n.targets[0].id if isinstance(n, ast.Assign) else n.target.id for n in attributes)
+        transforms.append("unused_class_attributes_removed:" + ",".join(names))
     if props:
         transforms.append("properties_as_attributes:" + ",".join(sorted(properties)))
     return "\n".join(lines) + "\n", transforms
@@ -420,6 +510,78 @@ def _flatten_result_members(module: str, external: set[str]) -> tuple[str, list[
     return ("\n".join(lines) + "\n", sorted(set(names))) if names else (module, [])
 
 
+def _is_text(node: ast.expr | None) -> bool:
+    return isinstance(node, ast.Constant) and isinstance(node.value, str)
+
+
+def drop_text_annotations(module: str) -> tuple[str, list[str]]:
+    """Text annotations (``data: "DataFrame"``, ``-> "Report"``) name things the slice may not hold, often
+    imported only under ``TYPE_CHECKING``; CPython ignores them, so dropping them changes no behaviour and
+    lets render annotate from the spec. Single-line ones only, so every line keeps its number."""
+    tree = ast.parse(module)
+    lines = [line.encode("utf-8") for line in module.splitlines()]
+    cuts: list[tuple[int, int, int]] = []  # (row, start, end) in UTF-8 bytes
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for arg in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs,
+                    *filter(None, (node.args.vararg, node.args.kwarg))]:
+            note = arg.annotation
+            if _is_text(note) and note.lineno == note.end_lineno == arg.lineno:
+                cuts.append((arg.lineno - 1, arg.col_offset + len(arg.arg.encode("utf-8")), note.end_col_offset))
+        note = node.returns
+        if _is_text(note) and note.lineno == note.end_lineno:
+            row = lines[note.lineno - 1]
+            arrow = row.rfind(b"->", 0, note.col_offset)
+            if arrow >= 0:
+                start = len(row[:arrow].rstrip())
+                cuts.append((note.lineno - 1, start, note.end_col_offset))
+    for row, start, end in sorted(cuts, reverse=True):
+        lines[row] = lines[row][:start] + lines[row][end:]
+    if not cuts:
+        return module, []
+    return "\n".join(line.decode("utf-8") for line in lines) + "\n", [f"text_annotations_dropped:{len(cuts)}"]
+
+
+def _rename_names(module: str, names: dict[str, str]) -> str:
+    """Every load of a name replaced in place (callers make sure the module never rebinds it); ESBMC v8.6 refuses ``alias = chr`` ("Variable chr not
+    found"), so a builtin alias is spelt as the builtin."""
+    lines = [line.encode("utf-8") for line in module.splitlines()]
+    hits = [n for n in ast.walk(ast.parse(module)) if isinstance(n, ast.Name) and n.id in names
+            and isinstance(n.ctx, ast.Load)]
+    for node in sorted(hits, key=lambda n: (n.lineno, n.col_offset), reverse=True):
+        row = lines[node.lineno - 1]
+        lines[node.lineno - 1] = row[:node.col_offset] + names[node.id].encode("utf-8") + row[node.end_col_offset:]
+    return "\n".join(line.decode("utf-8") for line in lines) + "\n"
+
+
+# youtube-dl's compat names that are the builtin itself on Python 3 (youtube_dl/utils.py: `except NameError:
+# compat_chr = chr`). compat_ord is not ord: it returns an int argument unchanged. compat_str is spelt str
+# (it is also an isinstance type); compat_chr gets a typed wrapper, since ESBMC v8.6 refuses both
+# `compat_chr = chr` and chr() of an untyped argument.
+COMPAT_RENAMED = {"compat_str": "str"}
+COMPAT_WRAPPED = {"compat_chr": "def compat_chr(a0: int) -> str: return chr(a0)"}
+COMPAT_BUILTINS = frozenset(COMPAT_RENAMED) | frozenset(COMPAT_WRAPPED)
+
+
+def _rebound(tree: ast.Module, name: str) -> set[str]:
+    """``{name}`` when the module binds it besides importing it (a fallback assignment, a parameter, a
+    def): then it is not the builtin everywhere."""
+    for node in ast.walk(tree):
+        if ((isinstance(node, ast.Name) and node.id == name and not isinstance(node.ctx, ast.Load))
+                or (isinstance(node, ast.arg) and node.arg == name)
+                or (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.name == name)):
+            return {name}
+    return set()
+
+
+def _alone_on_its_lines(lines: list[str], node: ast.stmt) -> bool:
+    """A one-line ``def`` can replace the import only when nothing else shares its lines."""
+    head = lines[node.lineno - 1].encode("utf-8")[:node.col_offset]
+    tail = lines[node.end_lineno - 1].encode("utf-8")[node.end_col_offset:]
+    return not head.strip() and not tail.strip()
+
+
 def stub_imports(module: str, refused: frozenset[str] = frozenset()) -> tuple[str, ExternalPlan, list[str]]:
     """Remove unmodeled imports the slice still needs and plan a stub for each use. ``refused`` names
     modules and ``module.member`` entries ESBMC did not convert, which are stubbed too."""
@@ -430,15 +592,26 @@ def stub_imports(module: str, refused: frozenset[str] = frozenset()) -> tuple[st
         return module, ExternalPlan(), []
     external = {name for _, names in imports for name in names}
     lines = module.splitlines()
-    for node, _ in sorted(imports, key=lambda item: item[0].lineno, reverse=True):
+    alone = {name for node, names in imports for name in names if _alone_on_its_lines(lines, node)}
+    bound = sorted({name for name in external & COMPAT_BUILTINS if name not in _rebound(tree, name)
+                    and (name in COMPAT_RENAMED or name in alone)})
+    external -= set(bound)
+    for node, names in sorted(imports, key=lambda item: item[0].lineno, reverse=True):
         # Replace, not delete: the chain edits below use this tree's line numbers. ``pass`` keeps
         # an enclosing block (``except ImportError: import x``) non-empty.
         head = lines[node.lineno - 1].encode("utf-8")[:node.col_offset]  # ast offsets count UTF-8 bytes
         tail = lines[node.end_lineno - 1].encode("utf-8")[node.end_col_offset:] if node.lineno == node.end_lineno else b""
-        first = "" if not head and not tail.strip() else (head + b"pass" + tail).decode("utf-8")
+        wrapper = next((COMPAT_WRAPPED[n] for n in names if n in bound and n in COMPAT_WRAPPED), "")
+        first = ("" if not wrapper and not head and not tail.strip()
+                 else (head + (wrapper.encode("utf-8") or b"pass") + tail).decode("utf-8"))
         lines[node.lineno - 1:node.end_lineno] = [first] + [""] * (node.end_lineno - node.lineno)
     module = "\n".join(lines) + "\n"
+    renamed = {name: COMPAT_RENAMED[name] for name in bound if name in COMPAT_RENAMED}
+    if renamed:
+        module = _rename_names(module, renamed)
     transforms = ["stubbed_imports:" + ",".join(sorted(external))] if external else []
+    if bound:
+        transforms.append("compat_builtins_bound:" + ",".join(bound))
     module, decorators = _drop_external_decorators(module, external)
     module, spread = _name_spread_arguments(module, external)
     module, results = _flatten_result_members(module, external)

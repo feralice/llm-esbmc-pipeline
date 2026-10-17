@@ -78,6 +78,8 @@ def _annotation(shape: TypeShape, obj_class: str | None = None) -> str:
         base = f"tuple[{', '.join(_annotation(item) for item in shape.items)}]"
     elif shape.kind == OBJECT:
         base = obj_class or OPAQUE
+    elif shape.kind == "none":
+        return "None"
     else:
         base = shape.kind
     return f"Optional[{base}]" if shape.optional else base

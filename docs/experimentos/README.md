@@ -803,6 +803,34 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
   em 2 min 55 s (antes passava de 10 min com a 8.5).
 - **Métrica:** não medida. Continua 14.
 
+## Fase 20 (16 e 17/10): passos 1 a 3 do item 6, sem rodada de LLM
+
+- **Passo 1, auditoria** (`docs/projeto/auditoria_semana1_2026-10-16.md`): funil por bug da rodada final
+  (`scripts/v2_funnel.py`, `artifacts/v2/funil-2026-10-16/`). Nos 111 bugs de exceção: 38 com a hipótese fora
+  da linha, 31 nunca verificados por falta de limite do LLM, 26 recusados pelo ESBMC, 5 confirmados. Controle
+  com a versão corrigida (`scripts/v2_audit_control.py`, regra: cai só se a corrigida levanta a mesma
+  exceção): nenhuma confirmação da métrica cai; fora da linha, 10 de 17 quebram igual na corrigida.
+  ESBMC v8.6 sozinho: **ip_real_17** passa a CONFIRMED na linha (controle: "correção muda o comportamento").
+- **Passo 2, piloto manual** (`docs/projeto/piloto_semana2_2026-10-16.md`, `artifacts/v2/piloto-manual/`):
+  19 bugs travados, 4 agentes. 13 chegam à exceção na linha do bug com o CPython confirmando no original
+  (12 com o controle), 84 obstáculos (4,4 por bug), 17 falsos vereditos do ESBMC v8.6 com reprodutor.
+- **Passo 3, recorte e harness** (spec `docs/superpowers/specs/2026-10-17-recorte-e-harness-design.md`): R1
+  guardas mortas (`verify/dead_guards.py`), R2 métodos especiais sem gatilho, R3 sem chamada órfã, R4
+  atributos de classe sem uso, R5 anotação `None`, R6 anotações em texto, R7 `compat_chr` (wrapper tipado) e
+  `compat_str` (`str`).
+- **Medição do passo 3** (35 hipóteses na linha, 29 bugs, specs gravados, v8.6; base = commit a1fccb4 numa
+  cópia): veredito do ESBMC 7 → 8 (ip_real_16), 4 bugs avançam um obstáculo (bip_keras_33, bip_pandas_133,
+  ip_real_14, ip_real_07), confirmações 1 → 1, nenhuma perda. Saída em `artifacts/v2/semana3-base/` e
+  `artifacts/v2/semana3-novo/`. A primeira versão da R7 (`compat_chr = chr`) fazia o ip_real_07 regredir
+  ("Variable chr not found") e foi trocada.
+- **Revisão independente** do código do passo 3: 3 críticos e 9 importantes (R1 gerava código inválido com
+  decorador ou acento e confundia uma variável local `TYPE_CHECKING` com a constante; R2/R3 podiam tirar um
+  `__getstate__` chamado por um `__eq__` mantido; R4 tirava campos de `@dataclass` e membros de `Enum`; R7
+  trocava parâmetros chamados `compat_str` e gerava código inválido em import de uma linha só). Todos
+  corrigidos, cada um com teste que falhava antes; a medição não muda (7 → 8).
+- **Comando dos testes:** suíte em duas partes, 1109 + 25 passed.
+- **Métrica:** 14, mais ip_real_17 como candidato (15) a confirmar na rodada final.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

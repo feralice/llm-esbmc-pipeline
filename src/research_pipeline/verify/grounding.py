@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from .astutil import expression_nodes, find_function
 from .compat import remove_unused
 from .context import context_module
+from .dead_guards import fold_dead_guards
 from .hypothesis import BugHypothesis
 from .rules import ALL_RULES, PROPERTIES_AS_ATTRIBUTES
 from .slicing import (
@@ -18,6 +19,7 @@ from .slicing import (
     ExternalPlan,
     _merge,
     _shape,
+    drop_text_annotations,
     prune_class,
     reslice,
     stub_imports,
@@ -531,10 +533,15 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
             problem = f"receiver reads inherited member(s): {', '.join(sorted(inherited))}"
     receiver_attrs = _receiver_attrs(cls, function.name, properties) if entry == "method" else ()
     stripped, transforms = (source, ()) if problem else _strip_decorators(source, function)
+    if not problem:
+        stripped, folded = fold_dead_guards(stripped)
+        transforms = (*transforms, *folded)
     module, plan = context_module(stripped, h.function), ExternalPlan()
     subclass = False
     if module and not problem:
         transforms = list(transforms)
+        module, dropped = drop_text_annotations(module)
+        transforms += dropped
         if cls is not None:
             # Only a method gets a shell; every other entry keeps the real constructor.
             replaced = _replaced(cls, function.name, properties) if entry == "method" else set()

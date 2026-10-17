@@ -125,10 +125,10 @@ def test_methods_named_in_the_class_body_are_kept():
     source = ('class Req:\n    def __init__(self, raw):\n        self.raw = raw\n\n'
               '    def _check(self):\n        return True\n\n'
               '    HOOKS = [_check]\n\n'
-              '    def first(self):\n        return self.raw[0]\n')
+              '    def first(self):\n        return self.raw[0] if self.HOOKS else 0\n')
     grounded = ground(BugHypothesis("r.py", "Req.first", "self.raw[0]"), source)
     program = render_program(grounded, InputSpec({}, {"raw": "list[int]"}, ()))
-    assert "def _check(self):" in program.source
+    assert "def _check(self):" in program.source and "HOOKS = [_check]" in program.source
     assert not any(t.startswith("unreachable_methods_removed") for t in program.transforms)
 
 
@@ -251,3 +251,12 @@ def test_none_guards_follow_the_enabled_rules():
     off = render_program(grounded, spec, rules=ALL_RULES - NONE_GUARD_KINDS)
     assert "_esbmc_none_type" not in off.source
     assert not any(t.startswith("none_guards") for t in off.transforms)
+
+
+def test_a_parameter_typed_none_is_annotated_None():
+    # bip_luigi_21: the harness wrote `worker_scheduler_factory: none=None`.
+    source = "def run(tasks, factory=None):\n    return tasks + 1\n"
+    grounded = ground(BugHypothesis("r.py", "run", "tasks + 1"), source)
+    program = render_program(grounded, InputSpec({"tasks": "int", "factory": "None"}, {}, ()))
+    assert "factory: None=None" in program.source
+    assert "none" not in program.source.replace("None", "")
