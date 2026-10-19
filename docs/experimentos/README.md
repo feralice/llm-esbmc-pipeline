@@ -849,6 +849,49 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
   Fase 9). A9 quase dobra os achados fora da linha sem achar mais.
 - **Decisão:** a rodada final usa A5, mais A15 para os bugs de resultado errado.
 
+## Fase 22 (17 a 19/10): rodada final do item 6 (passos 4.2 e 4.3)
+
+- **Pasta:** `artifacts/v2/final-2026-10-17/` (`run.sh`, `run.log`, `status.log`, `v2_verify_report.json`,
+  `funil/`, `controle/`). Código do commit 7a3ab0e (os commits seguintes só mexem em docs e na disciplina).
+- **Comando:** `run.sh`, que repete `src/main.py --mode hybrid --v2-stage end-to-end --v2-variants A1,A2,A15
+  --backend claude_cli --model claude-sonnet-5-5 --synth-backend claude_cli --synth-model claude-sonnet-5-5
+  --fixed-sources dataset/bugs_reais/arquivo_corrigido --esbmc-command ~/esbmc-releases/v8.6/esbmc.sh
+  --bound 5 --timeout 180 --resume` até não sobrar `PIPELINE_ERROR`, com 30 min entre tentativas.
+- **Andamento:** detecção em 277 arquivos (101 funções caíram no limite da assinatura e foram refeitas), 742
+  hipóteses. Quatro tentativas de verify bastaram (a última em 19/10, 16:19); o limite da assinatura, o
+  notebook suspenso e quedas do Wi-Fi (timeouts do `claude -p`) explicam os dois dias. Defeito no `run.sh`:
+  a parada procurava o texto `"PIPELINE_ERROR"`, que o resumo do relatório sempre traz com valor 0, e o laço
+  seguiu à toa até ser parado à mão; a condição agora é `"status": "PIPELINE_ERROR"`.
+- **Vereditos (742):** UNSUPPORTED 288, GROUNDING_FAILED 116, MISSING_DEPENDENCY 108, NOT_CONFIRMED 47,
+  UNVALIDATED 43, CONFIRMED 40, SPEC_FAILED 37, OTHER_FAILURE 26, ESBMC_ERROR 13, ESBMC_MISSED 10,
+  VALUE_VIOLATION 5, ESBMC_TIMEOUT 5, PROPERTY_REJECTED 3, VALUE_CONFIRMED 1, PIPELINE_ERROR 0. Veredito do
+  ESBMC em 170 de 701.
+- **Funil por bug** (`scripts/v2_funnel.py`, 289 bugs): confirmado 13, ESBMC rodou sem confirmar 30, ESBMC
+  recusou 98, harness não montado 6, hipótese fora da linha 107, sem hipótese 23, fora da rodada 12, cortado
+  pelo limite do LLM 0.
+- **Confirmados na linha nesta rodada:** av_real_01, av_real_02, av_real_07, dz_real_03, ip_real_17,
+  ip_real_22, nm_real_11, nm_real_21, oob_real_01, oob_real_02, oob_real_03, oob_real_05, tm_real_10.
+  - **Contam três novos:** ip_real_17 (TypeError em `to_native_str(http.RESPONSES.get(int(status)))` com
+    status desconhecido; a correção dá o valor padrão "Unknown Status"), nm_real_11 (TypeError em
+    `len(self) >= self.limit` com `limit` None; a correção guarda com `if self.limit`) e **nm_real_21**,
+    primeira confirmação pelo oráculo de valor (A15): `get_index` devolve None quando nada casa, a
+    propriedade é `resultado is not None` e a versão corrigida, que sempre devolve a lista, roda limpa com a
+    mesma entrada.
+  - **Não contam:** av_real_07 e ip_real_22. O gabarito é resultado errado e a quebra achada é outra na
+    mesma linha (TypeError e AttributeError com valor None), a mesma regra da Fase 14.
+- **Controle com a versão corrigida** (`scripts/v2_audit_control.py`, `controle/auditoria.json`): nenhuma
+  confirmação na linha quebra igual na mesma linha da corrigida. Em ip_real_17 (NameError de `http`),
+  nm_real_11 (`super().__setitem__` sem a base `OrderedDict`), tm_real_10 (método do coletor ausente no
+  stub) e dz_real_03 (`CroniterBadCronError` não definido) a corrigida não encaixa no programa de replay:
+  controle inconclusivo, decidido pela leitura do patch. Em oob_real_03 a corrigida dá IndexError na
+  linha 49, outra linha, como na Fase 13.
+- **Não reconfirmados nesta rodada** (seguem na métrica pela união, como na Fase 14): bip_luigi_21,
+  bip_pandas_33, dz_real_02, ip_real_14, nm_real_14, oob_real_10, quase todos vindos do agente ou do
+  orquestrador, que esta rodada não usa.
+- **Métrica: 14 → 17** (+ ip_real_17, nm_real_11, nm_real_21).
+- **Falta do passo 4.3:** o orquestrador sem LLM (braços dinâmico e com entrada fixada) sobre este relatório,
+  para a comparação da QP3.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

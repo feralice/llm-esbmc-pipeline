@@ -19,7 +19,7 @@ rodada completa: 19 de 230 bugs exercitados tiveram alguma confirmação (8,3%),
 | 5 | Oráculo de valor errado no harness | pronto; av_real_07 VALUE_CONFIRMED com propriedade à mão |
 | 5b | Texto escondido no contraexemplo (`nondet_str`) e ESBMC v8.6 como padrão | pronto (commit a1fccb4) |
 | 6a | Backend `gemini_cli` | cancelado: a Fernanda decidiu usar o Claude (16/10). Em 16/10 o login pessoal do Gemini CLI falhava (IneligibleTierError) |
-| 6 | Diagnóstico, intervenções e rodada final (4 semanas, abaixo) | semanas 1 a 3 feitas (Fase 20 do README); semana 4 (rodada com LLM) espera a Fernanda |
+| 6 | Diagnóstico, intervenções e rodada final (4 semanas, abaixo) | rodada final feita (Fase 22 do README, 19/10): métrica 14 → 17; falta o orquestrador sem LLM para a QP3 |
 | 6b | Harness que aprende com o repositório do ESBMC, automático (regras de reescrita guiadas pelos testes de regressão, com sonda; stubs fiéis; issues ao Lucas) | novembro, depois do número final do item 6; spec e plano com superpowers antes, com aprovação da Fernanda |
 | 7 | Modo scan num repositório real | depois da qualificação |
 | 8 | Plugin/extensão (MCP + skill) com escolha de LLM | depois da qualificação |
