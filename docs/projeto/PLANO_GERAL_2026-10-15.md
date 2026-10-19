@@ -20,6 +20,7 @@ rodada completa: 19 de 230 bugs exercitados tiveram alguma confirmação (8,3%),
 | 5b | Texto escondido no contraexemplo (`nondet_str`) e ESBMC v8.6 como padrão | pronto (commit a1fccb4) |
 | 6a | Backend `gemini_cli` | cancelado: a Fernanda decidiu usar o Claude (16/10). Em 16/10 o login pessoal do Gemini CLI falhava (IneligibleTierError) |
 | 6 | Diagnóstico, intervenções e rodada final (4 semanas, abaixo) | semanas 1 a 3 feitas (Fase 20 do README); semana 4 (rodada com LLM) espera a Fernanda |
+| 6b | Harness que aprende com o repositório do ESBMC, automático (regras de reescrita guiadas pelos testes de regressão, com sonda; stubs fiéis; issues ao Lucas) | novembro, depois do número final do item 6; spec e plano com superpowers antes, com aprovação da Fernanda |
 | 7 | Modo scan num repositório real | depois da qualificação |
 | 8 | Plugin/extensão (MCP + skill) com escolha de LLM | depois da qualificação |
 
@@ -74,7 +75,7 @@ Cuidados registrados:
 - Referências só depois de conferidas (trabalhos próximos: ESBMC-Python, Shivaji et al., PyVeritas,
   ESBMC-AI, Evident).
 
-Cronograma até a qualificação (fevereiro de 2027): item 6 até o fim de novembro; texto em dezembro; revisão em janeiro.
+Cronograma até a qualificação (fevereiro de 2027): item 6 nos próximos dias (rodada final em andamento); item 6b em novembro (semanas 1-2 regras de reescrita com sonda, semana 3 stubs fiéis, semana 4 medição sem LLM e issues); texto em dezembro; revisão em janeiro.
 
 ## 1. Corrigir o gabarito
 

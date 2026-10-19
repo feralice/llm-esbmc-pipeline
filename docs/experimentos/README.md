@@ -831,6 +831,24 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Comando dos testes:** suíte em duas partes, 1109 + 25 passed.
 - **Métrica:** 14, mais ip_real_17 como candidato (15) a confirmar na rodada final.
 
+## Fase 21 (17/10): comparação de prompts na amostra de 50 (passo 4.1 do item 6)
+
+- **Comando:** `BACKEND=claude_cli MODEL=claude-sonnet-5-5 scripts/run_detection_variants.sh 2026-10-17-amostra
+  dataset/bugs_reais/amostra_deteccao.json A1,A2 A1,A2,A9 A1,A2,A13 A1,A2,A14`, cerca de 16 min por variante.
+- **Avaliação:** bugs da amostra com pelo menos um achado na linha do bug (`v2_evaluator.at_bug_line`,
+  gabarito novo com causa e quebra).
+
+| Variante | Pasta (`artifacts/v2/`) | Bugs na linha (50) | Exceção (20) | Achados | Fora da linha |
+|---|---|---|---|---|---|
+| **A5 = A1 + A2** | `det-2026-10-17-amostra-A1,A2` | **24** | **16** | 97 | 68 |
+| A5 + A9 causa e quebra separadas | `det-2026-10-17-amostra-A1,A2,A9` | 22 | 15 | 163 | 124 |
+| A5 + A13 exemplos parecidos | `det-2026-10-17-amostra-A1,A2,A13` | 19 | 14 | 85 | 61 |
+| A5 + A14 linha citada | `det-2026-10-17-amostra-A1,A2,A14` | 15 | 12 | 71 | 53 |
+
+- A13 e A14 reduzem o ruído, mas perdem 5 e 9 bugs, acima da variação entre rodadas iguais (cerca de 2,
+  Fase 9). A9 quase dobra os achados fora da linha sem achar mais.
+- **Decisão:** a rodada final usa A5, mais A15 para os bugs de resultado errado.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
