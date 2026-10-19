@@ -1,0 +1,159 @@
+{
+  "evaluation_policy": {
+    "detection_scope": "only items not requiring patch context",
+    "patch_context_items": []
+  },
+  "description": "Subconjunto da PGENE601: 4 bugs de valor errado em drivers de sensores da Adafruit, cada um com uma propriedade tirada do datasheet. Separado de dataset/bugs_reais e da dissertação.",
+  "items": [
+    {
+      "id": "ada_shtc3_5",
+      "cohort": "disciplina_pgene601_adafruit",
+      "function": "SHTC3.measurements",
+      "expression": "raw_temp = unpack_from(\">h\", temp_data)[0]",
+      "categories": [
+        "type_mismatch"
+      ],
+      "line": 198,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_SHTC3",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_SHTC3",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_SHTC3/pull/5",
+        "source_file": "adafruit_shtc3.py",
+        "source_function": "SHTC3.measurements",
+        "buggy_commit": "8e0fea8535ee843c39d7477a954cff60657ffea9",
+        "fixed_commit": "9ecdce67f4ac76925fdd11a1cf981a4e72736d95",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "resultado_errado",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "o valor cru de 16 bits é lido com sinal; acima de 42,5 °C a temperatura sai negativa (issue #4)",
+      "datasheet": {
+        "sensor": "Sensirion SHTC3",
+        "requirement": "faixa de medição de temperatura de -40 a 125 °C; T = -45 + 175 * S_T / 2^16, S_T sem sinal",
+        "precondition": "o valor cru S_T = (b0 << 8) | b1 corresponde a uma temperatura dentro da faixa (1873 <= S_T <= 63663) e o CRC confere",
+        "postcondition": "-40 <= temperature <= 125",
+        "source": "https://sensirion.com/shtc3"
+      },
+      "file": "ada_shtc3_5.py"
+    },
+    {
+      "id": "ada_max31855_11",
+      "cohort": "disciplina_pgene601_adafruit",
+      "function": "MAX31855.reference_temperature",
+      "expression": "return self._read(True) * 0.625",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 91,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_MAX31855",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_MAX31855",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_MAX31855/pull/11",
+        "source_file": "adafruit_max31855.py",
+        "source_function": "MAX31855.reference_temperature",
+        "buggy_commit": "a47c8f78f0de4cc443b775854e738540d8304b08",
+        "fixed_commit": "5f51a0250dece3ad1751426ca8be40dcea8b2228",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "resultado_errado",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "fator de conversão da junção fria dez vezes maior (0,625 em vez de 0,0625 °C por LSB) (issue #10)",
+      "datasheet": {
+        "sensor": "Maxim/Analog Devices MAX31855",
+        "requirement": "resolução da temperatura da junção fria de 0,0625 °C; faixa de operação de -40 a 125 °C",
+        "precondition": "o valor de 12 bits da junção fria corresponde a uma temperatura de operação válida (-640 <= refer <= 2000) e nenhum bit de falha está ligado",
+        "postcondition": "-40 <= reference_temperature <= 125",
+        "source": "https://wcm-cce.cldnet.analog.com/media/en/technical-documentation/data-sheets/MAX31855.pdf"
+      },
+      "file": "ada_max31855_11.py"
+    },
+    {
+      "id": "ada_tsl2591_6",
+      "cohort": "disciplina_pgene601_adafruit",
+      "function": "TSL2591.lux",
+      "expression": "if channel_0 == 0xFFFF or channel_1 == 0xFFFF:",
+      "categories": [
+        "invalid_precondition"
+      ],
+      "line": 252,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_TSL2591",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_TSL2591",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_TSL2591/pull/6",
+        "source_file": "adafruit_tsl2591.py",
+        "source_function": "TSL2591.lux",
+        "buggy_commit": "0fa3c2e585821b8cbeba668e721a8e561ad79b7c",
+        "fixed_commit": "8a9647bcc4a34a438106a301c35c9773b3e46d10",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "resultado_errado",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "com integração de 100 ms o canal satura em 36863, não em 65535; a saturação vira lux (issue #5)",
+      "datasheet": {
+        "sensor": "ams TSL2591",
+        "requirement": "contagem máxima do ADC de 36863 com ATIME = 100 ms e 65535 nos demais tempos",
+        "precondition": "canais de 16 bits (0 a 65535)",
+        "postcondition": "se lux devolve um valor com integração de 100 ms, channel_0 < 36863 e channel_1 < 36863",
+        "source": "https://web.physics.ucsb.edu/~phys126/lipman/handouts/datasheets/ams_tsl2591.pdf"
+      },
+      "ressalva": "a propriedade é sobre não devolver valor: com o canal saturado, lux deve levantar erro",
+      "file": "ada_tsl2591_6.py"
+    },
+    {
+      "id": "ada_tsl2591_34",
+      "cohort": "disciplina_pgene601_adafruit",
+      "function": "TSL2591.visible",
+      "expression": "full = (channel_1 << 16) | channel_0",
+      "categories": [
+        "integer_overflow"
+      ],
+      "line": 415,
+      "label_sources": {
+        "expression": "changed_line",
+        "category": "patch_lido"
+      },
+      "review": "patch_lido",
+      "provenance": {
+        "project": "Adafruit_CircuitPython_TSL2591",
+        "repo_url": "https://github.com/adafruit/Adafruit_CircuitPython_TSL2591",
+        "pr_url": "https://github.com/adafruit/Adafruit_CircuitPython_TSL2591/pull/34",
+        "source_file": "adafruit_tsl2591.py",
+        "source_function": "TSL2591.visible",
+        "buggy_commit": "573f035d8f1e6df6daad608ca9adee1961c599cd",
+        "fixed_commit": "391dd858390b460296b74edd88c56020d9035fa6",
+        "buggy_commit_rule": "primeiro pai do merge"
+      },
+      "expected_type": "resultado_errado",
+      "failure_kind": "resultado_errado",
+      "failure_kind_source": "patch_lido",
+      "failure_kind_note": "luz visível montada como número de 32 bits juntando os dois canais; o valor sai na casa dos milhões",
+      "datasheet": {
+        "sensor": "ams TSL2591",
+        "requirement": "cada canal é um ADC de 16 bits; CH0 mede visível mais infravermelho e CH1 só infravermelho",
+        "precondition": "canais de 16 bits com channel_1 <= channel_0",
+        "postcondition": "0 <= visible <= 65535",
+        "source": "https://web.physics.ucsb.edu/~phys126/lipman/handouts/datasheets/ams_tsl2591.pdf"
+      },
+      "ressalva": "o PR corrige também full_spectrum, com o mesmo padrão; só visible está rotulada",
+      "file": "ada_tsl2591_34.py"
+    }
+  ]
+}

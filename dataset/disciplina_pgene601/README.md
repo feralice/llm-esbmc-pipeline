@@ -196,3 +196,9 @@ etapa de detecção, use `--v2-stage synthesis`.
 Este dataset não faz parte da dissertação. Os resultados dele vão para a disciplina e não somam
 nem substituem os 289 bugs de `dataset/bugs_reais/`. A subpasta `geral/` é
 anterior: guarda a triagem inicial do corpus da disciplina (rclpy) e não é lida pelo pipeline.
+
+## Subconjunto de valor errado
+
+`adafruit_valor/` traz quatro bugs de drivers de sensores da Adafruit que devolvem um número errado sem
+levantar exceção, cada um com uma propriedade tirada do datasheet, para testar a hipótese da especificação.
+Ver `adafruit_valor/README.md`.
