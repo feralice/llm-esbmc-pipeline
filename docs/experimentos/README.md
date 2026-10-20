@@ -918,6 +918,20 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Revisão da literatura** aplicada ao pipeline: https://claude.ai/artifact/W812dGmbGxBt2KJvZDkMV5
 - **Testes:** 1191 passam.
 
+## Fase 24 (19/10): juiz por AST, alucinação da detecção (passo 2 do PLANO_2026-10-19)
+
+- **Pasta:** `artifacts/v2/alucinacao-2026-10-19/` (`alucinacao.md`, `alucinacao.json`).
+- **Comando:** `python scripts/v2_hallucination.py artifacts/v2/det-2026-10-*-amostra-*/ --out artifacts/v2/alucinacao-2026-10-19`.
+  Sem LLM e sem ESBMC. Uma hipótese alucina quando a função não está no arquivo que o LLM viu, a expressão não
+  está na função, ou a exceção alegada não pode vir das operações da expressão (só ZeroDivisionError,
+  IndexError, KeyError e AttributeError são julgados; expressão com chamada nunca é julgada, porque a chamada
+  pode levantar qualquer coisa por dentro).
+- **Resultado (15 rodadas, 1263 hipóteses na amostra de 48):** 44 alucinadas (3,5%): 35 expressões que não
+  existem, 9 exceções impossíveis, nenhuma função inventada. Filtrar quase não muda a precisão (A5: 33% → 35%
+  e 32% → 32%) e perde tm_real_05 em 2 rodadas.
+- **Leitura:** o LLM quase não inventa código; a precisão de cerca de 30% vem de hipóteses plausíveis e erradas.
+  Um filtro por AST não resolve; precisa de um juiz semântico (passo 7).
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
