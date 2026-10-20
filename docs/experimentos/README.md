@@ -977,6 +977,23 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
 - **Leitura:** a variação entre prompts (20 a 26 de 48) é da ordem do ruído entre rodadas; nenhuma técnica de
   prompt ou de pós-filtro passou a A5. A métrica continua 17.
 
+## Fase 27 (20/10): self-consistency, ruído entre rodadas e onde o LLM não acha
+
+- **Três repetições da A5 no mesmo código** (`scripts/run_detection_variants.sh 2026-10-20-sc<i>
+  dataset/bugs_reais/amostra_deteccao.json A1,A2`, i = 1, 2, 3, em paralelo, claude_cli, cerca de 16 min cada):
+  22, 23 e 24 de 48 bugs na linha, precisão 29% a 31%. Com as rodadas de 06/10 (24) e 17/10 (26), a faixa de
+  ruído da A5 é **22 a 26**. A12 (22) e A16 (20) ficam dentro ou abaixo dela: nenhuma variante de prompt é
+  distinguível da A5.
+- **Self-consistency** (Wang et al., ICLR 2023; `scripts/v2_self_consistency.py`, hipóteses iguais = mesmo
+  arquivo, função e expressão): nas 3 de hoje, 1 de 3 (união) dá 26 bugs com 144 hipóteses e 28%; 2 de 3 dá 23,
+  91 e 30%; 3 de 3 dá 15, 50 e 36%. Com as 5 rodadas da A5, a união chega a 28 e 3 de 5 dá 24 com 33%.
+  **Não passa a faixa de uma rodada.**
+- **Teto de todas as rodadas da amostra (18):** 31 de 48. Por tipo de falha do gabarito: exceção local 11/12,
+  exceção não modelável 3/4, exceção modelável 4/6, **resultado errado 13/26**. 13 dos 17 bugs que nenhuma
+  rodada acha são de resultado errado (sem exceção).
+- **Leitura:** para bugs que quebram com exceção, a detecção já acha 18 de 22 em alguma rodada; o buraco é
+  bug de resultado errado, que depende da intenção da função.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
