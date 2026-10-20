@@ -2964,14 +2964,19 @@
         "harness_property": "_isint(string)",
         "provenance_complete": true
       },
-      "failure_kind": "resultado_errado",
-      "failure_kind_source": "patch_lido",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "revisao_manual",
       "cause_expressions": [
         "_isint(string)"
       ],
       "label_sources": {
-        "cause_expressions": "patch"
-      }
+        "cause_expressions": "patch",
+        "crash_expressions": "revisao_manual"
+      },
+      "crash_expressions": [
+        "_isnumber(string)"
+      ],
+      "failure_kind_note": "revisao 19/10/2026 (Fernanda): TypeError de float(None) em _isconvertible, chamado por _isnumber"
     },
     {
       "id": "nm_real_18",
@@ -4130,9 +4135,9 @@
         "harness_property": "headerrow=None",
         "provenance_complete": false
       },
-      "failure_kind": "incerto",
-      "failure_kind_source": "patch_lido",
-      "failure_kind_note": "pelo patch não dá para saber se headerrow None quebra depois",
+      "failure_kind": "excecao_modelavel",
+      "failure_kind_source": "revisao_manual",
+      "failure_kind_note": "revisao 19/10/2026 (Fernanda): headerrow=None quebra ao desempacotar em _build_simple_row (outra função do projeto)",
       "cause_expressions": [
         "return TableFormat(None, None, None, None,\n                       headerrow=None, datarow=DataRow('', separator, ''),\n                       padding=0, with_header_hide=None)"
       ],
@@ -5171,7 +5176,8 @@
       ],
       "label_sources": {
         "cause_expressions": "patch_revisado"
-      }
+      },
+      "behaviour_change": "revisao 19/10/2026 (Fernanda): mudança de comportamento, fora do denominador: find_hook passa a devolver uma lista de hooks em vez do primeiro"
     },
     {
       "id": "oob_real_06",
@@ -5861,7 +5867,8 @@
       "file": "bip_fastapi_10.py",
       "cause_expressions": [
         "return jsonable_encoder(\n            value,\n            include=include,\n            exclude=exclude,\n            by_alias=by_alias,\n            skip_defaults=skip_defaults,\n        )"
-      ]
+      ],
+      "failure_kind_note": "revisao 19/10/2026 (Fernanda): código faltante: o fix insere response.dict(skip_defaults=...) antes deste return"
     },
     {
       "id": "bip_fastapi_11",
@@ -6950,7 +6957,8 @@
       "label_sources": {
         "expression": "changed_line",
         "category": "heuristic_from_fix_diff",
-        "cause_expressions": "patch"
+        "cause_expressions": "patch",
+        "crash_expressions": "revisao_manual"
       },
       "review": "pending",
       "provenance": {
@@ -6962,12 +6970,15 @@
         "source_file": "luigi/contrib/hadoop_jar.py",
         "source_function": "HadoopJarJobRunner.run_job"
       },
-      "failure_kind": "resultado_errado",
-      "failure_kind_source": "patch_lido",
-      "failure_kind_note": "mensagem de erro errada",
+      "failure_kind": "excecao_local",
+      "failure_kind_source": "revisao_manual",
+      "failure_kind_note": "revisao 19/10/2026 (Fernanda): TypeError em os.path.abspath(None) quando jar() é None",
       "file": "bip_luigi_26.py",
       "cause_expressions": [
         "not job.jar() or not os.path.exists(job.jar())"
+      ],
+      "crash_expressions": [
+        "os.path.abspath(job.jar())"
       ]
     },
     {
@@ -10166,7 +10177,8 @@
         "overridden_aliases",
         "return [alias.strip() for alias in overridden_aliases.split(',')]",
         "return ['cd', 'grep', 'ls', 'man', 'open']"
-      ]
+      ],
+      "behaviour_change": "revisao 19/10/2026 (Fernanda): mudança de comportamento, fora do denominador: os aliases do usuário passam a somar com os padrões em vez de substituí-los"
     },
     {
       "id": "bip_thefuck_19",

@@ -19,14 +19,14 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.v2_evaluator import at_bug_line  # noqa: E402
 
-STAGES = ("fora_da_rodada", "sem_hipotese", "hipotese_fora_da_linha", "cortado_pelo_limite_do_llm",
-          "harness_nao_montado", "esbmc_recusou", "esbmc_rodou_sem_confirmar", "confirmado")
+STAGES = ("mudanca_de_comportamento", "fora_da_rodada", "sem_hipotese", "hipotese_fora_da_linha", "cortado_pelo_limite_do_llm",
+          "harness_nao_montado", "esbmc_recusou", "so_llm", "esbmc_rodou_sem_confirmar", "confirmado")
 _BY_VERDICT = {
     "PIPELINE_ERROR": "cortado_pelo_limite_do_llm",
     "GROUNDING_FAILED": "harness_nao_montado", "NO_SOURCE": "harness_nao_montado",
     "SPEC_FAILED": "harness_nao_montado",
     "UNSUPPORTED": "esbmc_recusou", "MISSING_DEPENDENCY": "esbmc_recusou", "ESBMC_ERROR": "esbmc_recusou",
-    "ESBMC_TIMEOUT": "esbmc_recusou",
+    "ESBMC_TIMEOUT": "esbmc_recusou", "LLM_ONLY": "so_llm",
     "NOT_CONFIRMED": "esbmc_rodou_sem_confirmar", "UNVALIDATED": "esbmc_rodou_sem_confirmar",
     "OTHER_FAILURE": "esbmc_rodou_sem_confirmar", "ESBMC_MISSED": "esbmc_rodou_sem_confirmar",
     "VALUE_VIOLATION": "esbmc_rodou_sem_confirmar", "PROPERTY_REJECTED": "esbmc_rodou_sem_confirmar",
@@ -38,7 +38,9 @@ def stage(verdicts: list[str]) -> str:
     return max((_BY_VERDICT[v] for v in verdicts), key=STAGES.index)
 
 
-def bug_stage(*, in_run: bool, verdicts: list[str], at_line: list[str]) -> str:
+def bug_stage(*, in_run: bool, verdicts: list[str], at_line: list[str], behaviour_change: bool = False) -> str:
+    if behaviour_change:
+        return "mudanca_de_comportamento"
     if not in_run:
         return "fora_da_rodada"
     if not verdicts:
@@ -66,7 +68,8 @@ def funnel(run: Path, ground_truth: Path) -> list[dict]:
                             for r in at_line]
         rows.append({"id": item["id"], "failure_kind": item.get("failure_kind", ""),
                      "stage": bug_stage(in_run=item["id"] in in_run, verdicts=[r["verdict"] for r in mine],
-                                        at_line=verdicts_at_line),
+                                        at_line=verdicts_at_line,
+                                        behaviour_change="behaviour_change" in item),
                      "hypotheses": len(mine), "at_line": len(at_line),
                      "verdicts_at_line": dict(Counter(verdicts_at_line))})
     return rows

@@ -26,3 +26,13 @@ def test_bugs_before_the_harness_are_staged_by_detection():
     assert v2_funnel.bug_stage(in_run=True, verdicts=[], at_line=[]) == "sem_hipotese"
     assert v2_funnel.bug_stage(in_run=True, verdicts=["CONFIRMED"], at_line=[]) == "hipotese_fora_da_linha"
     assert v2_funnel.bug_stage(in_run=True, verdicts=["UNSUPPORTED"], at_line=["UNSUPPORTED"]) == "esbmc_recusou"
+
+
+def test_llm_only_sits_between_refusal_and_a_checked_verdict():
+    assert v2_funnel.stage(["UNSUPPORTED", "LLM_ONLY"]) == "so_llm"
+    assert v2_funnel.stage(["LLM_ONLY", "NOT_CONFIRMED"]) == "esbmc_rodou_sem_confirmar"
+
+
+def test_a_behaviour_change_leaves_the_denominator():
+    assert v2_funnel.bug_stage(in_run=True, verdicts=["CONFIRMED"], at_line=["CONFIRMED"],
+                               behaviour_change=True) == "mudanca_de_comportamento"
