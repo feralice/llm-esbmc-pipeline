@@ -952,6 +952,31 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
   do ESBMC-Python é longa; a métrica continua 17.
 - **Testes:** 1208 passam.
 
+## Fase 26 (20/10): juiz por LLM, A12, A16 e lote 1 de self-healing (passos 5b, 6, 7 e 7b do PLANO_2026-10-19)
+
+Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`det-2026-10-17-amostra-A1,A2`): 26/48,
+96 hipóteses, precisão 32%.
+
+- **Juiz por LLM com evidência** (`scripts/v2_judge.py artifacts/v2/det-2026-10-17-amostra-A1,A2 --out
+  artifacts/v2/juiz-2026-10-20-A5`, claude_cli, claude-sonnet-5-5): o juiz precisa construir uma entrada concreta.
+  Limiar 0: 96 hipóteses, 26 bugs, 32%; 0,3: 81, 23, 35%; 0,5: 71, 18, 31%; 0,7: 58, 13, 26%. O filtro corta
+  bugs reais quase na mesma proporção das hipóteses erradas: **não ajuda**.
+- **A12, chamadores do arquivo completo** (`scripts/run_detection_variants.sh 2026-10-20-amostra
+  dataset/bugs_reais/amostra_deteccao.json A1,A2,A12`): 22/48, 73 hipóteses, precisão 36%, 0 bugs fora da união
+  das rodadas anteriores. Só 26 de 54 unidades têm chamador no próprio arquivo.
+- **A16, checklist de consistência interna** (`... 2026-10-20b-amostra ... A1,A2,A16`): 20/48, 88 hipóteses,
+  precisão 27%, 0 bugs novos, 11 bugs da união perdidos.
+- **Lote 1 de self-healing** (`scripts/v2_replay_specs.py artifacts/v2/final-2026-10-17/v2_verify_report.json
+  --esbmc ~/esbmc-master/esbmc.sh --timeout 180 --only vm_real_05,nm_real_03,tm_real_11,oob_real_11,ip_real_16
+  --live-spec --heal error+kb --heal-rounds 2 --out artifacts/v2/lote1-2026-10-20`): LLM_ONLY 3 (ip_real_16
+  `Cannot resolve attribute 'values' on Subscript result`; vm_real_05 módulo não suportado; nm_real_03 `list
+  indices must be integers or slices, not str` depois de simplificar o corpo), NOT_CONFIRMED 1 (tm_real_11: o
+  healer definiu `Request` e o ESBMC rodou sem violação), OTHER_FAILURE 1 (oob_real_11: NameError no replay).
+  **Bugs novos na métrica: 0.**
+- **Timeout do oob_real_06:** limite do solver (merge_configs recursiva com dicts aninhados), não da flag.
+- **Leitura:** a variação entre prompts (20 a 26 de 48) é da ordem do ruído entre rodadas; nenhuma técnica de
+  prompt ou de pós-filtro passou a A5. A métrica continua 17.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
