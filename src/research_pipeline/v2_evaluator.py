@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import ast
 import json
+import textwrap
 from pathlib import Path
 
 
@@ -41,8 +42,10 @@ _STATEMENT_PREFIXES = ("if ", "elif ", "while ", "return ", "assert ")
 
 
 def _normalized(text: str) -> ast.AST | None:
-    """One expression or statement, ignoring spacing, a leading keyword and a trailing colon."""
-    text = text.strip().removesuffix(":").strip()
+    """One expression or statement, ignoring spacing, a leading keyword and a trailing colon; a
+    compound statement may come with its body or as a bare header (``for x in y:``)."""
+    block = textwrap.dedent(text).strip()
+    text = block.removesuffix(":").strip()
     for prefix in _STATEMENT_PREFIXES:
         if text.startswith(prefix):
             text = text[len(prefix):]
@@ -50,10 +53,14 @@ def _normalized(text: str) -> ast.AST | None:
     try:
         return ast.parse(text, mode="eval").body
     except SyntaxError:
+        pass
+    for candidate in (block, block + "\n    pass"):
         try:
-            return ast.parse(text).body[0]
-        except (SyntaxError, IndexError):
-            return None
+            body = ast.parse(candidate).body
+        except SyntaxError:
+            continue
+        return body[0] if len(body) == 1 else None
+    return None
 
 
 def _is_reference(node: ast.expr) -> bool:
@@ -64,7 +71,8 @@ def _is_reference(node: ast.expr) -> bool:
 
 def _subexpressions(node: ast.AST) -> set[str]:
     # A bare name, attribute chain or literal would match any expression that mentions it.
-    return {ast.dump(n) for n in ast.walk(node) if isinstance(n, ast.expr) and not _is_reference(n)}
+    return {ast.dump(n) for n in ast.walk(node)
+            if isinstance(n, ast.stmt) or (isinstance(n, ast.expr) and not _is_reference(n))}
 
 
 def expressions_equivalent(expected: str, found: str) -> bool:

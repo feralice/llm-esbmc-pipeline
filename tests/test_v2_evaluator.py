@@ -144,6 +144,13 @@ def test_ast_rejection_remains_a_detection_false_positive(tmp_path) -> None:
     ("self.x + 1", "self.x", False),
     ("self.a.b[0]", "if self.a.b[0]:", True),
     ("", "a // b", False),
+    ("IOLoop.current(instance=False) is None",
+     "if IOLoop.current(instance=False) is None:\n            raise RuntimeError('exists')", True),
+    ("(h - w) / s", "for h in range(math.ceil((h - w) / s) + 1):", True),
+    ("open(context_file)", "with open(context_file) as fh:", True),
+    ("ret[mask] = False", "if op not in {'__eq__'}:\n    mask = codes == -1\n    ret[mask] = False", True),
+    ("self.iterable = iterable", "self.iterable = iterable\nself.disable = disable", False),
+    ("ret[mask] = False", "if op:\n    ret[other] = False", False),
 ])
 def test_expressions_equivalent(expected, found, same):
     assert expressions_equivalent(expected, found) is same

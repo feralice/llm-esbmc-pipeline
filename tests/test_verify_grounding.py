@@ -307,3 +307,67 @@ def test_an_import_sharing_its_line_keeps_the_stub():
         grounded = ground(BugHypothesis("y.py", "f", "compat_chr"), source)
         compile(grounded.module, "m.py", "exec")
         assert "def compat_chr" not in grounded.module
+
+
+def test_the_prompt_rename_is_undone_in_the_hypothesis():
+    from research_pipeline.verify.candidate import Candidate
+    candidate = Candidate(file="m.py", function="Encoder.encode", category="", note="",
+                          expression="return {target_function(k): self.target_function(v) for k, v in d.items()}")
+    h = BugHypothesis.from_candidate(candidate)
+    assert h.suspect_expression == "return {encode(k): self.target_function(v) for k, v in d.items()}"
+
+
+BRANCHED = '''def outer(flag):
+    if flag:
+        def step(x):
+            return x + 1
+    else:
+        def step(x):
+            return 1 / x
+    return step
+'''
+
+
+def test_a_nested_function_defined_in_branches_is_the_one_holding_the_expression():
+    from research_pipeline.verify.grounding import Grounded, ground
+    h = BugHypothesis(file="m.py", function="outer.step", suspect_expression="1 / x")
+    grounded = ground(h, BRANCHED)
+    assert isinstance(grounded, Grounded), grounded
+    assert "return 1 / x" in grounded.module and "x + 1" not in grounded.module.split("def step")[-1]
+
+
+def test_same_name_branches_without_the_expression_stay_unresolved():
+    from research_pipeline.verify.grounding import GroundingFailure, ground
+    h = BugHypothesis(file="m.py", function="outer.step", suspect_expression="x * 2")
+    assert isinstance(ground(h, BRANCHED), GroundingFailure)
+
+
+BLOCKS = '''def load(context_file, rows):
+    with open(context_file) as fh:
+        data = fh.read()
+    for row in rows[1:]:
+        data += row
+    return data
+'''
+
+
+def test_a_bare_block_header_grounds_on_its_expression():
+    from research_pipeline.verify.grounding import Grounded, ground
+    for expression in ("with open(context_file) as fh:", "for row in rows[1:]:"):
+        assert isinstance(ground(BugHypothesis(file="m.py", function="load", suspect_expression=expression),
+                                 BLOCKS), Grounded), expression
+
+
+def test_a_copied_line_pair_with_mixed_indentation_grounds():
+    from research_pipeline.verify.grounding import Grounded, ground
+    h = BugHypothesis(file="m.py", function="load", suspect_expression="data = fh.read()")
+    copied = BugHypothesis(file="m.py", function="load",
+                           suspect_expression="for row in rows[1:]:\n        data += row")
+    assert isinstance(ground(h, BLOCKS), Grounded)
+    assert isinstance(ground(copied, BLOCKS), Grounded)
+
+
+def test_a_block_of_several_statements_stays_rejected():
+    from research_pipeline.verify.grounding import GroundingFailure, ground
+    h = BugHypothesis(file="m.py", function="load", suspect_expression="data = fh.read()\n    data += 'x'")
+    assert isinstance(ground(h, BLOCKS), GroundingFailure)

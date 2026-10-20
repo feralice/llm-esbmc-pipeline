@@ -45,18 +45,38 @@ def _readings(expression: str) -> list[str]:
     return list(dict.fromkeys(r for r in readings if r.strip()))
 
 
+def _header_expression(text: str) -> ast.expr | None:
+    """``for x in rows:`` or ``with open(f) as fh:`` copied without its body: the expression it evaluates."""
+    if not text.endswith(":"):
+        return None
+    try:
+        body = ast.parse(text + "\n    pass").body
+    except SyntaxError:
+        return None
+    node = body[0] if len(body) == 1 else None
+    if isinstance(node, (ast.For, ast.AsyncFor)):
+        return node.iter
+    if isinstance(node, (ast.With, ast.AsyncWith)) and len(node.items) == 1:
+        return node.items[0].context_expr
+    return None
+
+
 def _matching(function: ast.FunctionDef, expression: str) -> list[ast.AST]:
     try:
         suspect: ast.AST = ast.parse(expression, mode="eval").body
         kind: type = ast.expr
     except SyntaxError:
+        text = textwrap.dedent(expression).strip()
         try:
-            body = ast.parse(textwrap.dedent(expression).strip()).body
+            body = ast.parse(text).body
         except SyntaxError:
-            return []
+            header = _header_expression(text)
+            if header is None:
+                return []
+            body = [header]
         if len(body) != 1:
             return []
-        suspect, kind = body[0], ast.stmt
+        suspect, kind = body[0], (ast.expr if isinstance(body[0], ast.expr) else ast.stmt)
     wanted = ast.dump(suspect, include_attributes=False)
     return [node for node in ast.walk(function)
             if isinstance(node, kind) and ast.dump(node, include_attributes=False) == wanted]

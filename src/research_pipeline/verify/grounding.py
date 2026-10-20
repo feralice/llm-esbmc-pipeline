@@ -403,13 +403,34 @@ def _unpacked_inputs(function: ast.FunctionDef, params: set[str], attrs: set[str
     return {key: count for key, count in found.items() if key not in conflicting}
 
 
-def _nested_chain(tree: ast.Module, qualified: str) -> list[ast.AST] | None:
+def _definitions_in(body: list[ast.stmt], name: str) -> list[ast.AST]:
+    """Classes and functions called ``name`` in a scope, also under if/try/with/for (Keras' ``rnn`` and
+    pandas' ``dispatch_to_series`` define one helper per branch), never inside another definition."""
+    found, pending = [], list(body)
+    while pending:
+        node = pending.pop(0)
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            if node.name == name:
+                found.append(node)
+            continue
+        for field in ("body", "orelse", "finalbody", "handlers"):
+            pending += [n for n in getattr(node, field, []) if isinstance(n, ast.AST)]
+        if isinstance(node, ast.ExceptHandler):
+            pending += node.body
+    return found
+
+
+def _nested_chain(tree: ast.Module, qualified: str, expression: str = "") -> list[ast.AST] | None:
     """``outer.Inner.method`` or ``outer.inner``: the nodes along the name, when one of them sits
-    inside a function (the LLM located it, but it only exists once outer runs)."""
+    inside a function (the LLM located it, but it only exists once outer runs). When branches define
+    the last name more than once, the one holding ``expression`` is it."""
     chain, scope = [], tree.body
-    for name in qualified.split("."):
-        found = [n for n in scope if isinstance(n, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
-                 and n.name == name]
+    names = qualified.split(".")
+    for position, name in enumerate(names):
+        found = _definitions_in(scope, name) if chain else [
+            n for n in scope if isinstance(n, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == name]
+        if len(found) > 1 and expression and position == len(names) - 1:
+            found = [n for n in found if isinstance(n, ast.FunctionDef) and expression_nodes(n, expression)]
         if len(found) != 1:
             return None
         chain.append(found[0])
@@ -443,7 +464,7 @@ def _hoist_nested(tree: ast.Module, source: str, h: BugHypothesis) -> tuple[str,
     """Copy the outermost definition that lives inside a function to the end of the module, the
     names it takes from the enclosing function becoming keyword-only parameters; the body stays
     verbatim. A class taking names from its function, or code using ``nonlocal``, is left alone."""
-    chain = _nested_chain(tree, h.function)
+    chain = _nested_chain(tree, h.function, h.suspect_expression)
     if chain is None:
         return None
     index = next(i for i, n in enumerate(chain) if i and not isinstance(chain[i - 1], ast.ClassDef))
@@ -496,7 +517,7 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
                 return dataclasses.replace(grounded, transforms=(f"nested_entry_hoisted:{h.function}",
                                                                  *grounded.transforms))
             return grounded
-        if _nested_chain(tree, h.function):
+        if _nested_chain(tree, h.function, h.suspect_expression):
             return GroundingFailure("entry point is nested inside a function; the harness cannot call it",
                                     unsupported=True)
         return GroundingFailure(f"function {h.function!r} not found (or ambiguous)")
