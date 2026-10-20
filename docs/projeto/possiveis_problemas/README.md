@@ -224,3 +224,24 @@ sem encadear (`j = jobs.pop("b")`), o master aborta com `irep2_cast_error`. Nos 
 depende das flags: sem `--no-pointer-check` o master acusa falha de memória, mas nunca a exceção do
 Python. O 31 foi medido com a máquina carregada (outras rodadas do master em paralelo); o mesmo laço
 sem o `split` interno termina em 4 s, e `strip` seguido de `split` sem laço, em 7 s.
+
+## Medição de 19/10/2026: v8.6 × master
+
+Mesmo `rodar.sh`, com `--no-pointer-check --no-align-check`. **v8.6**: release de 15/10. **master**:
+`df93f12` de 19/10 (`~/esbmc-master`). Só as linhas que mudaram; nas outras 37 as duas dão o mesmo veredito.
+
+| Arquivo | Esperado | v8.6 | master | Leitura |
+|---|---|---|---|---|
+| `12_incremental_failed_e_unknown.py` | um único veredito | FAILED duas vezes | FAILED uma vez (`IndexError`) | corrigido |
+| `15_numpy_fatia_2d.py` | aceitar forma fixa conhecida | recusa (`2-D column slicing ... requires`) | aceita (FAILED por `ZeroDivisionError` e `IndexError`) | aceito agora |
+| `22_tipo_como_valor.py` | FAILED | `NameError: name 's' is not defined` | FAILED (`ZeroDivisionError`) | corrigido |
+| `27_metodo_append_do_usuario.py` | FAILED com `ZeroDivisionError` | SUCCESSFUL (falso negativo) | FAILED (`ZeroDivisionError`) | corrigido |
+| `32_is_float_parametro.py` | FAILED | SUCCESSFUL (falso negativo) | FAILED (`ZeroDivisionError`) | corrigido |
+| `33_atributo_ausente_uniao.py` | FAILED com `AttributeError` | SUCCESSFUL (falso negativo) | recusa com mensagem sobre `x.size` | melhor (recusa explícita), ainda não FAILED |
+| `29_optional_dict_como_valor.py` | FAILED | falha de segmentação (código 139) | erro do Z3 (`Sorts ... Optional_struct`) | ainda quebrado |
+| `31_strip_split_laco.py` | veredito em segundos | só `unwinding assertion` | sem veredito em 300 s | piorou |
+
+Remedido no mesmo dia com o master `5d17828` (9 commits novos no frontend Python, entre eles #8884, #8856 e
+#8852): os 45 arquivos dão o mesmo veredito do `df93f12`, e o 31 continua sem veredito em 300 s. Em relação à
+tabela de 12/10, três já estavam corrigidos desde a v8.6: o 30 acusa `ValueError`, o 36 dá FAILED no
+`isinstance` e o 44 acusa `ZeroDivisionError`.

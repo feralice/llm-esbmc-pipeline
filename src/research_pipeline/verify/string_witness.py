@@ -11,6 +11,13 @@ from .esbmc_run import Runner
 from research_pipeline.verification.esbmc_runner import run_esbmc_direct
 
 
+def _decoded(value):
+    """ESBMC master (5d17828) writes a string as its char codes up to and past a NUL terminator."""
+    if isinstance(value, list) and 0 in value and all(isinstance(c, int) and 0 <= c < 0x110000 for c in value):
+        return "".join(map(chr, value[:value.index(0)]))
+    return value
+
+
 def parse_witness(text: str) -> list:
     """The values of every witness entry, in file order; nothing when the file has no readable list."""
     try:
@@ -24,7 +31,7 @@ def parse_witness(text: str) -> list:
                 entries = ast.literal_eval(node.value)
             except ValueError:
                 return []
-            return [value for entry in entries if isinstance(entry, dict) for value in entry.values()]
+            return [_decoded(value) for entry in entries if isinstance(entry, dict) for value in entry.values()]
     return []
 
 

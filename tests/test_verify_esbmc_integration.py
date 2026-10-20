@@ -233,7 +233,9 @@ def test_probes_on_master_keep_the_rules_its_known_gaps_need(tmp_path):
     from research_pipeline.verify.rules import BUILTIN_NAMED_METHODS, NONE_ATTRIBUTE
 
     report = probe_capabilities([str(WRAPPER)], cache_dir=tmp_path)
-    # possiveis_problemas 25 and 27: SUCCESSFUL on master 333d07cc8a with the wrapper's flags.
+    # possiveis_problemas 25: SUCCESSFUL on master 333d07cc8a with the wrapper's flags, still a gap.
     assert report["results"]["none_atributo_campo"]["outcome"] != ACEITA
-    assert report["results"]["metodo_append"]["outcome"] != ACEITA
-    assert {NONE_ATTRIBUTE, BUILTIN_NAMED_METHODS} <= set(report["active_rules"])
+    assert NONE_ATTRIBUTE in report["active_rules"]
+    # possiveis_problemas 27: fixed by master 5d17828, so its rule switches itself off.
+    assert report["results"]["metodo_append"]["outcome"] == ACEITA
+    assert BUILTIN_NAMED_METHODS not in report["active_rules"]

@@ -28,7 +28,7 @@ fi
 
 if [[ ! -f $OUT/control/report_0of1.json ]]; then
   step "2/5 control on the fixed versions (saved specs, no LLM)"
-  "$PY" scripts/v2_replay_specs.py "$OUT/v2_verify_report.json" --esbmc "${LLM_ESBMC:-$HOME/esbmc-releases/v8.6/esbmc.sh}" --timeout 180 \
+  "$PY" scripts/v2_replay_specs.py "$OUT/v2_verify_report.json" --esbmc "${LLM_ESBMC:-$HOME/esbmc-master/esbmc.sh}" --timeout 180 \
     --sources dataset/bugs_reais/arquivo_corrigido --strict-sources --out "$OUT/control" >> "$OUT/run.log" 2>&1
 fi
 
