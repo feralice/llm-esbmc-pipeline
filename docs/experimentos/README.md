@@ -892,6 +892,32 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Falta do passo 4.3:** o orquestrador sem LLM (braços dinâmico e com entrada fixada) sobre este relatório,
   para a comparação da QP3.
 
+## Fase 23 (19/10): ESBMC master, comparação, gabarito, grounding e piloto do self-healing
+
+- **ESBMC master `5d17828`** (`~/esbmc-master`): os 45 reprodutores de `docs/projeto/possiveis_problemas/`
+  dão o mesmo veredito do `df93f12`. O master grava a string do contraexemplo como lista de códigos com NUL
+  (`[97, 98, 0, ...]`); `verify/string_witness.py` passou a decodificar. A regra `builtin_named_methods`
+  desliga sozinha no master (reprodutor 27 corrigido).
+- **Comparação hipótese × gabarito** (`v2_evaluator.expressions_equivalent`): aceita cabeçalho de `for`/`with`
+  e comando composto com corpo, e não casa mais só o primeiro comando de um bloco. Rodada final: 147 → 153
+  bugs com hipótese na linha; métrica de confirmados igual (13 na rodada, 17 na união).
+- **Gabarito revisado com a Fernanda** (7 casos): bip_luigi_26 e nm_real_17 ganham linha de quebra e viram
+  exceção; tm_real_08 sai de `incerto`; bip_fastapi_10 ganha nota de código faltante; bip_thefuck_14 e
+  ip_real_34 viram `behaviour_change` (fora do denominador; etapa `mudanca_de_comportamento` no funil).
+  Amostra de 50 → 48: A5 24 e 26, união das 15 rodadas 31. bip_luigi_26 era achado em todas as 15 rodadas.
+- **Bugs que nenhum prompt achou** (20 da amostra): 17 de resultado errado; 7 precisam da intenção (testes ou
+  issue), 5 de semântica de biblioteca, 4 de código fora da função, 3 visíveis (inconsistência interna).
+- **Grounding** (116 falhas na rodada final): só cerca de 22 eram alucinação do LLM. Três consertos sem LLM
+  (`target_function` volta ao nome real; função definida em vários ramos escolhida pela expressão; cabeçalho
+  `for`/`with` sem corpo): 42 das 116 passam, e 7 bugs na linha voltam à verificação (bip_cookiecutter_1,
+  bip_fastapi_16, bip_httpie_4, bip_pandas_63, dz_real_04, oob_real_06, vm_real_03).
+- **Self-healing** (`verify/healing.py`, `verify/esbmc_knowledge.py`, `--heal`), piloto em
+  `artifacts/v2/self-healing-piloto-2026-10-19/`: só o master, sem LLM, não muda nenhum dos 10 casos; com
+  `--heal error+kb --heal-rounds 2` em 4 casos, 5 obstáculos contornados e 0 veredito (2 erros internos do
+  ESBMC, `%r` dentro do corpo, outra recusa). Todos terminam `LLM_ONLY`.
+- **Revisão da literatura** aplicada ao pipeline: https://claude.ai/artifact/W812dGmbGxBt2KJvZDkMV5
+- **Testes:** 1191 passam.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
