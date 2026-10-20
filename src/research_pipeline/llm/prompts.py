@@ -6,6 +6,8 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
+from ..scan.callgraph import build_source_callgraph
+from ..scan.context import caller_context
 from ..models import CodeUnit
 from ..smell_policy import load_smell_thresholds
 from .example_pool import Example, ExamplePool, select_examples
@@ -160,10 +162,22 @@ def _file_context_section(unit: CodeUnit) -> str:
     return f"<UNTRUSTED_CONTEXT_ARQUIVO>\n{context}\n</UNTRUSTED_CONTEXT_ARQUIVO>\n\n"
 
 
-def _caller_context_section(unit: CodeUnit) -> str:
-    if not unit.caller_context:
+def file_callers(unit: CodeUnit) -> str:
+    """The unit's callers in its own full file (``set_context_sources``): the scan's graph, one file wide."""
+    path = _context_path(unit)
+    try:
+        graph = build_source_callgraph(path.read_text(encoding="utf-8"), path.name)
+    except (OSError, SyntaxError, UnicodeDecodeError, ValueError):
         return ""
-    return f"<UNTRUSTED_CONTEXT_CHAMADORES>\n{unit.caller_context}\n</UNTRUSTED_CONTEXT_CHAMADORES>\n\n"
+    key = f"{path.stem}:{unit.qualname}"
+    return caller_context(graph, key) if key in graph.functions else ""
+
+
+def _caller_context_section(unit: CodeUnit) -> str:
+    context = unit.caller_context or file_callers(unit)
+    if not context:
+        return ""
+    return f"<UNTRUSTED_CONTEXT_CHAMADORES>\n{context}\n</UNTRUSTED_CONTEXT_CHAMADORES>\n\n"
 
 
 _example_pool: ExamplePool | None = None

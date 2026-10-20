@@ -1,0 +1,14 @@
+## CONSISTÊNCIA INTERNA
+
+Depois da partição de entradas, confira a função contra ela mesma. Um bug de
+resultado errado muitas vezes aparece só como incoerência, sem nenhuma exceção:
+- um parâmetro ou atributo é recebido, validado ou calculado, mas nunca afeta o
+  valor devolvido nem o estado alterado;
+- uma mensagem de erro, de aviso, um comentário ou a docstring descreve um
+  comportamento que o código não faz;
+- ramos parecidos (if/elif, try/except, casos de um mesmo dicionário) tratam
+  casos parecidos de jeitos diferentes, e um deles esquece uma condição, uma
+  conversão ou um valor que os outros têm;
+- um valor é atribuído duas vezes sem uso entre as atribuições, ou é sobrescrito
+  antes de ser lido.
+Cada incoerência que muda o resultado para alguma entrada é uma hipótese.

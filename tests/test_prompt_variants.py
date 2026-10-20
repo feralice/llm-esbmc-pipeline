@@ -247,3 +247,32 @@ def test_a13_renames_the_example_function_but_not_an_attribute_of_the_same_name(
     finally:
         set_example_pool(None)
     assert "Bug corrigido pelos mantenedores: `conf.update(kwargs) or target_function(conf, {})`" in prompt
+
+
+def test_a12_builds_the_callers_from_the_full_file_when_the_unit_has_none(tmp_path: Path) -> None:
+    (tmp_path / "slice").mkdir()
+    (tmp_path / "full").mkdir()
+    (tmp_path / "slice" / "m.py").write_text("def scale(tag):\n    return 10 / len(tag)\n", encoding="utf-8")
+    (tmp_path / "full" / "m.py").write_text(
+        "def scale(tag):\n    return 10 / len(tag)\n\n\ndef parse(line):\n    parts = line.split(',')\n"
+        "    return scale(parts[0])\n", encoding="utf-8")
+    unit = _unit(tmp_path / "slice" / "m.py", "def scale(tag):\n    return 10 / len(tag)\n", name="scale")
+    set_context_sources(tmp_path / "full")
+    try:
+        prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A12",))
+    finally:
+        set_context_sources(None)
+    assert "UNTRUSTED_CONTEXT_CHAMADORES" in prompt and "target_function(parts[0])" in prompt
+
+
+def test_a12_keeps_the_scan_callers_when_the_unit_brings_them(tmp_path: Path) -> None:
+    from dataclasses import replace
+    unit = replace(_unit(tmp_path / "m.py", "def f(x):\n    return x\n"), caller_context="g calls target_function(1)")
+    prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A12",))
+    assert "g calls target_function(1)" in prompt
+
+
+def test_a16_adds_the_consistency_checklist_before_the_output_section() -> None:
+    changed = apply_variants(BASE, ("A1", "A2", "A16"))
+    assert changed.index("## PARTIÇÃO DE ENTRADAS") < changed.index("## CONSISTÊNCIA INTERNA") < changed.index("## SAÍDA")
+    assert "parâmetro" in changed.split("## CONSISTÊNCIA INTERNA")[1]

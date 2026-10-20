@@ -27,6 +27,11 @@ def _input_checklist(prompt: str) -> str:
     return _swap("A2", prompt, "## SAÍDA: JSON válido", checklist + "\n## SAÍDA: JSON válido")
 
 
+def _consistency(prompt: str) -> str:
+    checklist = (_DIR / "A16_consistencia.txt").read_text(encoding="utf-8")
+    return _swap("A16", prompt, "## SAÍDA: JSON válido", checklist + "\n## SAÍDA: JSON válido")
+
+
 def _ranked(prompt: str) -> str:
     return _swap("A3", prompt,
                  "A saída pode conter zero, uma ou várias hipóteses: não existe quantidade mínima\n"
@@ -162,7 +167,7 @@ VARIANTS: dict[str, Callable[[str], str]] = {"A1": _report_without_context, "A2"
                                              "A8": _worked_examples, "A9": _cause_and_crash,
                                              "A10": _keep_docstring, "A11": _file_context,
                                              "A12": _repo_callers, "A13": _real_examples, "A14": _quoted_evidence,
-                                             "A15": _wrong_result}
+                                             "A15": _wrong_result, "A16": _consistency}
 
 
 def apply_variants(prompt: str, names: tuple[str, ...]) -> str:
