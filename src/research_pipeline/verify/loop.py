@@ -67,6 +67,7 @@ class VerifyResult:
     pytest: dict = field(default_factory=dict)
     spec_context: dict = field(default_factory=dict)
     control: dict = field(default_factory=dict)
+    healing: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
@@ -77,6 +78,7 @@ class VerifyResult:
             **({"pytest": self.pytest} if self.pytest else {}),
             **({"spec_context": self.spec_context} if self.spec_context else {}),
             **({"control": self.control} if self.control else {}),
+            **({"healing": self.healing} if self.healing else {}),
         }
 
 
@@ -306,10 +308,13 @@ def _fixed_source(h: BugHypothesis, fixed_sources: Path | None) -> str | None:
 def run_verify(
     hypotheses: list[BugHypothesis], *, llm: SpecLLM, output_dir: Path, verification_sources: Path | None = None,
     completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None,
-    strict_sources: bool = False, fixed_sources: Path | None = None, **kwargs,
+    strict_sources: bool = False, fixed_sources: Path | None = None, healer=None, heal_rounds: int = 3,
+    **kwargs,
 ) -> list[dict]:
     """``strict_sources`` skips a hypothesis with no file in ``verification_sources`` instead of
-    falling back to its detection file (needed when those files are, e.g., the fixed versions)."""
+    falling back to its detection file (needed when those files are, e.g., the fixed versions).
+    ``healer`` (verify/healing.py) repairs a hypothesis ESBMC never reached, up to ``heal_rounds`` times."""
+    from .healing import verify_with_healing  # healing imports this module
     results: list[dict] = []
     for index, h in enumerate(hypotheses):
         if completed and index in completed:
@@ -325,8 +330,10 @@ def run_verify(
         source = path.read_text(encoding="utf-8", errors="replace")
         print(f"[{index + 1}/{len(hypotheses)}] {Path(h.file).name}::{h.function}")
         try:
-            data = verify_hypothesis(h, llm=llm, source=source, work_dir=Path(output_dir) / "programs",
-                                     fixed_source=_fixed_source(h, fixed_sources), **kwargs).to_dict()
+            common = {"llm": llm, "work_dir": Path(output_dir) / "programs",
+                      "fixed_source": _fixed_source(h, fixed_sources), **kwargs}
+            data = (verify_with_healing(h, healer=healer, source=source, rounds=heal_rounds, **common)
+                    if healer is not None else verify_hypothesis(h, source=source, **common)).to_dict()
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
             data = VerifyResult(h, PIPELINE_ERROR, f"{type(exc).__name__}: {exc}").to_dict()
         print(f"    -> {data['verdict']} {data['reason'][:120]}")

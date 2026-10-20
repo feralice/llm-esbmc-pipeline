@@ -203,3 +203,14 @@ def test_api_agent_loops_on_esbmc_errors_until_a_verdict(tmp_path):
     assert "no python code block" in prompts[1]
     assert 'Object "lib" not found' in prompts[2] and "ratio(1, 0)" in prompts[2]
     assert "# fixed" in (case / "harness.py").read_text(encoding="utf-8")
+
+
+def test_knowledge_from_the_esbmc_checkout_joins_the_notes(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    notes = tmp_path / "notes.md"
+    notes.write_text("# hand notes\n", encoding="utf-8")
+    run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                  esbmc_command=["esbmc"], bound=5, timeout_seconds=30, notes=notes,
+                  knowledge="### README: Limitations\nNo async.")
+    written = next((tmp_path / "work").glob("*/ESBMC_PYTHON_NOTES.md")).read_text(encoding="utf-8")
+    assert written.startswith("# hand notes") and "No async." in written

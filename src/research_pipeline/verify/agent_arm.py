@@ -21,6 +21,7 @@ from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
 from .astutil import body_signature, expression_nodes, find_function
 from .context import context_module
+from .esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root_of, load_index, lookup
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output
@@ -176,9 +177,10 @@ def run_agent_arm(
     h: BugHypothesis, *, work_dir: Path, run_agent: RunAgent, esbmc_command: list[str] | None,
     bound: int, timeout_seconds: int, agent_timeout: int = 900, source_path: Path | None = None,
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
-    fixed_path: Path | None = None,
+    fixed_path: Path | None = None, knowledge: str = "",
 ) -> dict:
-    """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py;
+    """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
+    ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
     ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept;
     ``fixed_path``, the fixed version of the source, turns on the evaluation control."""
     started = time.monotonic()
@@ -194,7 +196,10 @@ def run_agent_arm(
         return result
 
     if notes is not None:
-        (case_dir / "ESBMC_PYTHON_NOTES.md").write_text(Path(notes).read_text(encoding="utf-8"), encoding="utf-8")
+        text = Path(notes).read_text(encoding="utf-8")
+        if knowledge:
+            text += "\n\n## From the installed ESBMC's own README and regression tests\n\n" + knowledge + "\n"
+        (case_dir / "ESBMC_PYTHON_NOTES.md").write_text(text, encoding="utf-8")
     prompt = _PROMPT.format(skill=_SKILL if skill else "", notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
                             function=h.function, expression=h.suspect_expression,
@@ -365,6 +370,8 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
     done = state.setdefault("agent_results", {})
     # The agent looks for an exception; it does not know a wrong-result hypothesis's property.
     pending = [r for r in results if r["verdict"] in AGENT_VERDICTS and r["hypothesis"].get("oracle") != VALUE_ORACLE]
+    root = esbmc_root_of(esbmc_command or [DEFAULT_ESBMC])
+    index = load_index(root, KNOWLEDGE_CACHE) if root is not None else None
     print(f"\nAgente: {len(pending)} hipótese(s) sem veredito do ESBMC no motor")
     for index, result in enumerate(pending, 1):
         h = BugHypothesis(**{k: v for k, v in result["hypothesis"].items() if k != "hypothesis_id"})
@@ -375,7 +382,8 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
             data = run_agent_arm(h, work_dir=work_dir, run_agent=run_agent, esbmc_command=esbmc_command,
                                  bound=bound, timeout_seconds=timeout_seconds, agent_timeout=agent_timeout,
                                  source_path=verification_source(h, sources), skill=skill,
-                                 notes=None if skill else NOTES_PATH)
+                                 notes=None if skill else NOTES_PATH,
+                                 knowledge=lookup(index, result.get("reason", ""), "") if index else "")
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the run
             data = {"hypothesis": h.to_dict(), "verdict": AGENT_FAILED, "reason": f"{type(exc).__name__}: {exc}"}
         data["engine_verdict"] = result["verdict"]

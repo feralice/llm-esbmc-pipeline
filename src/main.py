@@ -81,6 +81,7 @@ from research_pipeline.verify.hypothesis import VALUE_ORACLE, BugHypothesis
 from research_pipeline.verify.llm_client import LLMClient
 from research_pipeline.verify.agent_arm import make_agent, run_agent_fallback
 from research_pipeline.verify.levels import consolidate, level_summary
+from research_pipeline.verify.healing import HEAL_MODES, build_healer
 from research_pipeline.verify.loop import run_verify
 from research_pipeline.v2_evaluator import evaluate_detection
 from research_pipeline.verify.report import evaluate_verify, summarize
@@ -307,6 +308,14 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="DIR",
         help="Motor verify: cache das sondas, uma entrada por binário, flags e versão do ESBMC.",
     )
+    parser.add_argument(
+        "--heal",
+        choices=list(HEAL_MODES),
+        default="none",
+        help="Motor verify: self-healing quando o ESBMC não chega a veredito; 'error' devolve a mensagem do ESBMC "
+             "ao LLM, 'error+kb' também o README e os testes de regressão do checkout do ESBMC",
+    )
+    parser.add_argument("--heal-rounds", type=int, default=3, help="Rodadas de self-healing por hipótese")
     parser.add_argument(
         "--spec-context",
         choices=["none", "callers"],
@@ -1162,6 +1171,8 @@ def _mode_v2_verify(
             strict_sources=args.verification_sources_strict,
             fixed_sources=Path(args.fixed_sources) if args.fixed_sources else None,
             rules=ALL_RULES - frozenset(capabilities["disabled_rules"]),
+            healer=build_healer(args.heal, llm=llm, esbmc_command=args.esbmc_command),
+            heal_rounds=args.heal_rounds,
         )
     except KeyboardInterrupt:
         checkpoint["status"] = "interrupted"
@@ -1253,7 +1264,10 @@ def mode_scan(args: argparse.Namespace) -> int:
     try:
         report = execute_scan(plan, analyzer=analyzer, spec_llm=spec_llm, resume=args.resume,
                               esbmc_command=args.esbmc_command, bound=args.bound, timeout_seconds=args.timeout,
-                              strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph)
+                              strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph,
+                              healer=build_healer(args.heal, llm=spec_llm, esbmc_command=args.esbmc_command,
+                                                  graph=plan.graph),
+                              heal_rounds=args.heal_rounds)
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1

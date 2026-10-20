@@ -20,7 +20,9 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.llm_client import SynthResult
-from research_pipeline.verify.loop import verification_source, verify_hypothesis
+from research_pipeline.verify.healing import HEAL_MODES, HEALABLE, build_healer, verify_with_healing
+from research_pipeline.verify.llm_client import LLMClient
+from research_pipeline.verify.loop import verification_source
 
 _NEEDED = {
     "params": re.compile(r"^Parameters needing a type: (.*?)  \(declared", re.M),
@@ -68,6 +70,14 @@ def main() -> int:
                         help="skip a hypothesis with no file in --sources instead of using its detection file")
     parser.add_argument("--only", default="", help="comma-separated hypothesis ids")
     parser.add_argument("--shard", default="0/1", help="i/n: run every n-th hypothesis starting at i")
+    parser.add_argument("--heal", choices=list(HEAL_MODES), default="none",
+                        help="self-healing for verdicts ESBMC never reached; spends LLM calls")
+    parser.add_argument("--heal-rounds", type=int, default=3)
+    parser.add_argument("--heal-backend", default="claude_cli")
+    parser.add_argument("--heal-model", default="claude-sonnet-5-5")
+    parser.add_argument("--strategy", choices=["repair", "resample"], default="repair")
+    parser.add_argument("--estimate", action="store_true",
+                        help="print how many hypotheses self-healing would touch and the most LLM calls, then stop")
     args = parser.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -76,7 +86,19 @@ def main() -> int:
     report = json.loads(Path(args.report).read_text(encoding="utf-8"))
     bound = int(report.get("config", {}).get("bound", 5))
     only = set(filter(None, args.only.split(",")))
-    for item in [i for i in report["results"] if not only or i["hypothesis"]["hypothesis_id"] in only][index::count]:
+    items = [i for i in report["results"] if not only or i["hypothesis"]["hypothesis_id"] in only][index::count]
+    if args.estimate:
+        healable = sum(i["verdict"] in HEALABLE for i in items)
+        # Each round: one repair call, then up to three spec calls (first try plus two repairs).
+        print(f"{len(items)} hypotheses, {healable} with a verdict self-healing repairs; "
+              f"at most {healable * args.heal_rounds * 4} LLM calls with --heal (verdicts from the report, "
+              "so a newer ESBMC may need fewer)")
+        return 0
+    live = None if args.heal == "none" else LLMClient(backend=args.heal_backend, model=args.heal_model,
+                                                      timeout_seconds=600)
+    esbmc = shlex.split(args.esbmc)
+    healer = build_healer(args.heal, llm=live, esbmc_command=esbmc)
+    for item in items:
         h = BugHypothesis(**{k: v for k, v in item["hypothesis"].items() if k != "hypothesis_id"})
         h = BugHypothesis(**{**h.__dict__, "file": str(ROOT / h.file)}) if not Path(h.file).is_absolute() else h
         path = verification_source(h, ROOT / args.sources)
@@ -85,13 +107,16 @@ def main() -> int:
         source = path.read_text(encoding="utf-8", errors="replace")
         llm = RecordedSpecs([a["spec"] for a in item["attempts"] if "spec" in a])
         try:
-            data = verify_hypothesis(h, llm=llm, source=source, esbmc_command=shlex.split(args.esbmc), bound=bound,
-                                     timeout_seconds=args.timeout, work_dir=out / "programs").to_dict()
+            data = verify_with_healing(h, healer=healer, source=source, rounds=args.heal_rounds,
+                                       spec_llm_after_heal=live, llm=llm, esbmc_command=esbmc, bound=bound,
+                                       timeout_seconds=args.timeout, work_dir=out / "programs",
+                                       strategy=args.strategy).to_dict()
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
             data = {"verdict": "PIPELINE_ERROR", "reason": f"{type(exc).__name__}: {exc}", "transforms": []}
         row = {"id": item["hypothesis"]["hypothesis_id"], "file": Path(h.file).name, "function": h.function,
                "before": item["verdict"], "after": data["verdict"], "reason": data["reason"][:300],
-               "recorded_specs": len(llm.specs), "filled": llm.filled, "transforms": data.get("transforms", [])}
+               "recorded_specs": len(llm.specs), "filled": llm.filled, "transforms": data.get("transforms", []),
+               "healing_rounds": len(data.get("healing", []))}
         rows.append(row)
         results.append({"hypothesis": item["hypothesis"], **{k: v for k, v in data.items() if k != "hypothesis"}})
         print(f"{row['file']:16s} {row['before']:18s} -> {row['after']:18s} {row['reason'][:80]}", flush=True)
