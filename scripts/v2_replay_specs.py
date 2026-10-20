@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.hypothesis import BugHypothesis, undo_prompt_rename
 from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.healing import HEAL_MODES, HEALABLE, build_healer, verify_with_healing
 from research_pipeline.verify.llm_client import LLMClient
@@ -76,6 +76,8 @@ def main() -> int:
     parser.add_argument("--heal-backend", default="claude_cli")
     parser.add_argument("--heal-model", default="claude-sonnet-5-5")
     parser.add_argument("--strategy", choices=["repair", "resample"], default="repair")
+    parser.add_argument("--live-spec", action="store_true",
+                        help="ask the LLM for the spec when the report saved none (the hypothesis stopped before it)")
     parser.add_argument("--estimate", action="store_true",
                         help="print how many hypotheses self-healing would touch and the most LLM calls, then stop")
     args = parser.parse_args()
@@ -94,18 +96,20 @@ def main() -> int:
               f"at most {healable * args.heal_rounds * 4} LLM calls with --heal (verdicts from the report, "
               "so a newer ESBMC may need fewer)")
         return 0
-    live = None if args.heal == "none" else LLMClient(backend=args.heal_backend, model=args.heal_model,
+    live = None if args.heal == "none" and not args.live_spec else LLMClient(backend=args.heal_backend, model=args.heal_model,
                                                       timeout_seconds=600)
     esbmc = shlex.split(args.esbmc)
     healer = build_healer(args.heal, llm=live, esbmc_command=esbmc)
     for item in items:
         h = BugHypothesis(**{k: v for k, v in item["hypothesis"].items() if k != "hypothesis_id"})
         h = BugHypothesis(**{**h.__dict__, "file": str(ROOT / h.file)}) if not Path(h.file).is_absolute() else h
+        h = BugHypothesis(**{**h.__dict__, "suspect_expression": undo_prompt_rename(h.suspect_expression, h.function)})
         path = verification_source(h, ROOT / args.sources)
         if args.strict_sources and path == Path(h.file):
             continue
         source = path.read_text(encoding="utf-8", errors="replace")
-        llm = RecordedSpecs([a["spec"] for a in item["attempts"] if "spec" in a])
+        recorded = [a["spec"] for a in item["attempts"] if "spec" in a]
+        llm = live if args.live_spec and not recorded else RecordedSpecs(recorded)
         try:
             data = verify_with_healing(h, healer=healer, source=source, rounds=args.heal_rounds,
                                        spec_llm_after_heal=live, llm=llm, esbmc_command=esbmc, bound=bound,
@@ -115,7 +119,7 @@ def main() -> int:
             data = {"verdict": "PIPELINE_ERROR", "reason": f"{type(exc).__name__}: {exc}", "transforms": []}
         row = {"id": item["hypothesis"]["hypothesis_id"], "file": Path(h.file).name, "function": h.function,
                "before": item["verdict"], "after": data["verdict"], "reason": data["reason"][:300],
-               "recorded_specs": len(llm.specs), "filled": llm.filled, "transforms": data.get("transforms", []),
+               "recorded_specs": len(recorded), "filled": getattr(llm, "filled", 0), "transforms": data.get("transforms", []),
                "healing_rounds": len(data.get("healing", []))}
         rows.append(row)
         results.append({"hypothesis": item["hypothesis"], **{k: v for k, v in data.items() if k != "hypothesis"}})

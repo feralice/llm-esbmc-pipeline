@@ -80,3 +80,19 @@ def test_real_code_from_the_graph_is_not_held_to_stub_rules():
 
 def test_unappliable_edit_is_a_problem_not_a_crash():
     assert _problems(edits=(("nope", "x"),)) == ["edit text not found: 'nope'"]
+
+
+def test_a_body_simplification_that_keeps_the_suspect_is_allowed():
+    edit = (("    total = helper(x)\n", "    total: int = helper(x)\n"),)
+    assert patch_problems(SOURCE, Patch(edits=edit), "target", expression="items[total]") == []
+
+
+def test_a_body_simplification_that_drops_the_suspect_is_rejected():
+    edit = (("return items[total]", "return items[0]"),)
+    assert any("suspect" in p for p in patch_problems(SOURCE, Patch(edits=edit), "target", expression="items[total]"))
+
+
+def test_body_edits_are_told_apart_from_edits_around_the_target():
+    from research_pipeline.verify.healing import body_edits
+    edits = (("    total = helper(x)\n", "    total: int = helper(x)\n"), ("import os\n", ""))
+    assert body_edits(SOURCE, edits, "target") == (edits[0],)

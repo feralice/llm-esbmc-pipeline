@@ -78,7 +78,7 @@ def test_invalid_patch_spends_a_round(monkeypatch):
     bad = Patch(edits=(("return 1 / x", "return 0"),))
     result = verify_with_healing(H, healer=ScriptedHealer([bad, None]), source=SOURCE, llm="spec", rounds=2)
     assert result.verdict == LLM_ONLY and len(seen) == 1
-    assert "changed" in result.healing[0]["problems"][0]
+    assert "suspect" in result.healing[0]["problems"][0]
     assert result.healing[1]["problems"] == ["no usable repair"]
 
 
@@ -115,3 +115,87 @@ def test_run_verify_heals_when_given_a_healer(monkeypatch, tmp_path):
     h = BugHypothesis(file=str(source), function="f", suspect_expression="1 / x")
     rows = loop.run_verify([h], llm="spec", output_dir=tmp_path, healer=ScriptedHealer([]), heal_rounds=1)
     assert rows[0]["verdict"] == LLM_ONLY
+
+
+BODY = "import os\n\n\ndef f(x):\n    msg = 'bad %r' % x\n    return 1 / x\n"
+
+
+def test_a_body_simplification_is_replayed_on_the_original_body(monkeypatch):
+    seen, replays = [], []
+
+    def fake(h, *, source, llm, replay_source=None, **kwargs):
+        seen.append(source)
+        replays.append(replay_source)
+        return VerifyResult(h, UNSUPPORTED if len(seen) == 1 else CONFIRMED)
+    monkeypatch.setattr(healing, "verify_hypothesis", fake)
+    simplify = Patch(edits=(("'bad %r' % x", "'bad %s' % x"), ("import os\n", "")))
+    h = BugHypothesis(file="m.py", function="f", suspect_expression="1 / x")
+    result = verify_with_healing(h, healer=ScriptedHealer([simplify]), source=BODY, llm="spec")
+    assert result.verdict == CONFIRMED
+    assert "%s" in seen[1] and "import os" not in seen[1]
+    assert "%r" in replays[1] and "import os" not in replays[1]
+    assert result.healing[0]["simplified_body"] is True
+
+
+def test_the_replay_program_carries_the_original_body():
+    from research_pipeline.verify.grounding import ground
+    from research_pipeline.verify.loop import with_original_replay
+    from research_pipeline.verify.render import render_program
+    from research_pipeline.verify.spec import InputSpec
+    simplified = BODY.replace("%r", "%s")
+    h = BugHypothesis(file="m.py", function="f", suspect_expression="1 / x")
+    spec = InputSpec({"x": "int"}, {}, ())
+    program = render_program(ground(h, simplified), spec)
+    replayed = with_original_replay(program, h, BODY, spec)
+    assert "%r" not in replayed.source
+    assert "%r" in replayed.replay_source
+    lines = replayed.replay_source.splitlines()
+    assert any("1 / x" in lines[a - 1] for a, _ in replayed.replay_target_spans)
+
+
+def test_an_original_body_that_cannot_be_rebuilt_gives_no_replay():
+    from research_pipeline.verify.grounding import ground
+    from research_pipeline.verify.loop import with_original_replay
+    from research_pipeline.verify.render import render_program
+    from research_pipeline.verify.spec import InputSpec
+    h = BugHypothesis(file="m.py", function="f", suspect_expression="1 / x")
+    spec = InputSpec({"x": "int"}, {}, ())
+    program = render_program(ground(h, BODY.replace("%r", "%s")), spec)
+    assert isinstance(with_original_replay(program, h, "def g(:\n", spec), str)
+
+
+def _reasons(verdicts_and_reasons, seen):
+    def fake(h, *, source, llm, **kwargs):
+        seen.append(source)
+        verdict, reason = verdicts_and_reasons.pop(0)
+        return VerifyResult(h, verdict, reason=reason)
+    return fake
+
+
+STUB = Patch(definitions="def g(a=None) -> int:\n    return nondet_int()\n")
+
+
+def test_an_internal_esbmc_error_stops_healing_as_a_tool_bug(monkeypatch):
+    from research_pipeline.verify.outcome import ESBMC_ERROR
+    seen = []
+    monkeypatch.setattr(healing, "verify_hypothesis", _reasons(
+        [(UNSUPPORTED, "ERROR: Variable 'kwargs' is not defined"),
+         (UNSUPPORTED, "ERROR: vector::_M_range_check: __n (which is 0) >= this->size()")], seen))
+    result = verify_with_healing(H, healer=ScriptedHealer([STUB] * 5), source=SOURCE, llm="spec")
+    assert result.verdict == ESBMC_ERROR and "internal" in result.reason
+    assert len(seen) == 2
+
+
+def test_a_new_obstacle_resets_the_rounds(monkeypatch):
+    seen = []
+    chain = [(UNSUPPORTED, f"ERROR: obstacle {n}") for n in "abcd"] + [(NOT_CONFIRMED, "")]
+    monkeypatch.setattr(healing, "verify_hypothesis", _reasons(chain, seen))
+    result = verify_with_healing(H, healer=ScriptedHealer([STUB] * 9), source=SOURCE, llm="spec", rounds=2)
+    assert result.verdict == NOT_CONFIRMED and len(seen) == 5
+
+
+def test_the_same_obstacle_gets_only_its_rounds(monkeypatch):
+    seen = []
+    monkeypatch.setattr(healing, "verify_hypothesis", _reasons([(UNSUPPORTED, "ERROR: same at line 3")] * 9, seen))
+    result = verify_with_healing(H, healer=ScriptedHealer([STUB] * 9), source=SOURCE, llm="spec", rounds=2)
+    assert result.verdict == LLM_ONLY and len(seen) == 3

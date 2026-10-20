@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import re
 import time
 from collections.abc import Callable
@@ -117,6 +118,24 @@ def _placeholder_spec(grounded: Grounded) -> InputSpec:
                                     (), {key: "int" for key in grounded.stub_keys}), grounded)
 
 
+def with_original_replay(program: Program, h: BugHypothesis, original: str, spec: InputSpec,
+                         rules: frozenset[str] = ALL_RULES) -> Program | str:
+    """``program`` with its replay copy rebuilt from ``original``, the source before self-healing simplified the
+    target's body: ESBMC checks the simplified copy, CPython replays the real one. A string says why it cannot."""
+    grounded = ground(h, original, rules=rules)
+    if isinstance(grounded, GroundingFailure):
+        return f"original body cannot be grounded for the replay: {grounded.reason}"
+    try:
+        twin = render_program(grounded, spec, rules=rules)
+    except RenderError as exc:
+        return f"original body cannot be rendered for the replay: {exc}"
+    return dataclasses.replace(
+        program, replay_source=twin.replay_source or twin.source,
+        replay_target_spans=twin.replay_target_spans or twin.target_spans,
+        replay_target_range=twin.replay_target_range or twin.target_range,
+        replay_property_line=twin.replay_property_line if twin.replay_source else twin.property_line)
+
+
 def _with_line_context(message: str, program: Program) -> str:
     match = re.search(r"line (\d+)", message)
     if not match:
@@ -161,7 +180,7 @@ def verify_hypothesis(
     h: BugHypothesis, *, llm: SpecLLM, source: str, esbmc_command: list[str] | None, bound: int,
     timeout_seconds: int, work_dir: Path, max_repairs: int = 2, replay_runs: int = 400,
     strategy: str = "repair", rules: frozenset[str] = ALL_RULES, spec_context: str = "none",
-    graph: CallGraph | None = None, fixed_source: str | None = None,
+    graph: CallGraph | None = None, fixed_source: str | None = None, replay_source: str | None = None,
 ) -> VerifyResult:
     """``strategy="resample"`` spends the same call budget on independent samples that never see
     the previous error: the baseline a guided repair has to beat (Olausson et al., ICLR 2024).
@@ -218,6 +237,10 @@ def verify_hypothesis(
         if ignored:
             record["ignored"] = ignored
         program = render_program(grounded, spec, rules=rules)
+        no_replay = ""
+        if replay_source is not None:
+            rebuilt = with_original_replay(program, h, replay_source, spec, rules)
+            program, no_replay = (program, rebuilt) if isinstance(rebuilt, str) else (rebuilt, "")
         path = work_dir / f"{h.hypothesis_id}_a{attempt}.py"
         path.write_text(program.source, encoding="utf-8")
         replay_path = path.with_name(path.stem + "_replay.py")
@@ -232,7 +255,8 @@ def verify_hypothesis(
         if reading.kind == "repairable" and attempt < max_repairs:
             feedback = "ESBMC rejected the program: " + _with_line_context(reading.message, program)
             continue
-        replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc))
+        replay = (ReplayVerdict("unavailable", reason=no_replay) if no_replay
+                  else _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc)))
         if replay.status == "not_reproduced" and reading.kind == "violation" and esbmc_command \
                 and "nondet_str()" in program.source:
             strings = string_witness(path, esbmc_command=esbmc_command,

@@ -27,7 +27,7 @@ from .esbmc_knowledge import (
 )
 from .hypothesis import BugHypothesis
 from .loop import VerifyResult, verify_hypothesis
-from .outcome import GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
+from .outcome import ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parents[1] / "prompts" / "healing_prompt.txt").read_text(encoding="utf-8")
 HEALABLE = frozenset({GROUNDING_FAILED, MISSING_DEPENDENCY, UNSUPPORTED})
@@ -100,7 +100,9 @@ def stub_problems(definitions: str) -> list[str]:
     return sorted(set(problems))
 
 
-def patch_problems(original: str, patch: Patch, function: str) -> list[str]:
+def patch_problems(original: str, patch: Patch, function: str, expression: str = "") -> list[str]:
+    """With ``expression``, the target's body may be simplified as long as the suspect stays in it: the replay
+    then runs the original body (``verify_with_healing``), so a simplification that matters fails to confirm."""
     try:
         patched = apply_patch(original, patch)
     except PatchError as exc:
@@ -112,8 +114,21 @@ def patch_problems(original: str, patch: Patch, function: str) -> list[str]:
     problems = stub_problems(patch.definitions) if patch.definitions.strip() else []
     old, new = find_function(before, function), find_function(after, function)
     if old is not None and (new is None or body_signature(old) != body_signature(new)):
-        problems.append(f"the body of the target function {function!r} changed")
+        if not expression:
+            problems.append(f"the body of the target function {function!r} changed")
+        elif new is None or not expression_nodes(new, expression):
+            problems.append(f"the body change drops the suspect expression of {function!r}")
     return problems
+
+
+def body_edits(source: str, edits: tuple[tuple[str, str], ...], function: str) -> tuple[tuple[str, str], ...]:
+    """The edits whose text lies inside the target function."""
+    try:
+        node = find_function(ast.parse(source), function)
+    except SyntaxError:
+        return ()
+    segment = ast.get_source_segment(source, node) if node is not None else None
+    return tuple(e for e in edits if segment and e[0] in segment) if segment else ()
 
 
 def _source_of(graph: CallGraph, node: FunctionNode) -> str:
@@ -253,37 +268,60 @@ class Healer:
         return Patch(edits=edits, definitions=definitions)
 
 
+# Crashes and solver failures inside ESBMC say nothing about the harness: reported as tool bugs, not repaired.
+_INTERNAL = re.compile(r"vector::_M_range_check|json\.exception|irep2_cast_error|Segmentation fault|terminate called"
+                       r"|bad optional access|Z3 error|Incompatible struct in cast-to-struct|std::\w+")
+
+
+def _obstacle(reason: str) -> str:
+    """The refusal without numbers and paths: the same obstacle on another line is still the same obstacle."""
+    return re.sub(r"\S*/\S*|\d+", "", reason)[:200]
+
+
 def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str, rounds: int = 3,
                         spec_llm_after_heal=None, **verify_kwargs) -> VerifyResult:
-    """``verify_hypothesis`` plus up to ``rounds`` repairs while the verdict is one ESBMC never reached.
+    """``verify_hypothesis`` plus up to ``rounds`` repairs per obstacle, while the verdict is one ESBMC never
+    reached; a new ESBMC message is progress and gets its own rounds (at most ``3 * rounds`` in all).
     The result keeps the original hypothesis, which is what the metric scores."""
     result = verify_hypothesis(h, source=source, **verify_kwargs)
     if healer is None:
         return result
     log: list[dict] = []
-    current, text = h, source
-    for number in range(rounds):
+    current, text, replay_text = h, source, source
+    spent: dict[str, int] = {}
+    for number in range(3 * rounds):
         if result.verdict not in HEALABLE:
             break
+        if _INTERNAL.search(result.reason):
+            result.reason, result.verdict = f"internal ESBMC error (tool bug): {result.reason}", ESBMC_ERROR
+            break
+        obstacle = _obstacle(result.reason)
+        if spent.get(obstacle, 0) >= rounds:
+            break
+        spent[obstacle] = spent.get(obstacle, 0) + 1
         entry = {"round": number, "verdict_before": result.verdict, "reason_before": result.reason[:500]}
         log.append(entry)
         patch = healer.propose(current, text, result.verdict, result.reason, log[:-1])
         if patch is None:
             entry["problems"] = ["no usable repair"]
             continue
-        problems = patch_problems(text, patch, current.function)
+        problems = patch_problems(text, patch, current.function, current.suspect_expression)
         entry["patch"] = asdict(patch)
         if problems:
             entry["problems"] = problems
             continue
+        simplified = body_edits(text, patch.edits, current.function)
+        entry["simplified_body"] = bool(simplified)
         text = apply_patch(text, patch)
+        replay_text = apply_patch(replay_text, replace(patch, edits=tuple(e for e in patch.edits if e not in simplified)))
         if patch.hypothesis_function:
             current = replace(current, function=patch.hypothesis_function,
                               suspect_expression=patch.hypothesis_expression or current.suspect_expression)
             entry["hypothesis_after"] = current.to_dict()
         if spec_llm_after_heal is not None:
             verify_kwargs = {**verify_kwargs, "llm": spec_llm_after_heal}
-        result = verify_hypothesis(current, source=text, **verify_kwargs)
+        result = verify_hypothesis(current, source=text, replay_source=replay_text if replay_text != text else None,
+                                   **verify_kwargs)
         entry["verdict_after"] = result.verdict
     if result.verdict in HEALABLE:
         result.reason, result.verdict = f"{result.verdict}: {result.reason}", LLM_ONLY

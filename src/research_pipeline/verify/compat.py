@@ -562,12 +562,15 @@ def none_guards(source: str, function: str, spans: tuple[tuple[int, int], ...],
     if not calls:
         return source, []
     # On the statement's own line, so the ESBMC copy keeps the replay's line numbers.
-    if isinstance(stmt, ast.If):
-        test, prefix = stmt.test, f"{' and '.join(calls)} and bool(".encode("utf-8")
-        end = lines[test.end_lineno - 1].encode("utf-8")
-        lines[test.end_lineno - 1] = (end[:test.end_col_offset] + b")" + end[test.end_col_offset:]).decode("utf-8")
-        start = lines[test.lineno - 1].encode("utf-8")
-        lines[test.lineno - 1] = (start[:test.col_offset] + prefix + start[test.col_offset:]).decode("utf-8")
+    # A block header cannot follow ``;``: the guards go inside the expression it evaluates.
+    if isinstance(stmt, (ast.If, ast.For, ast.AsyncFor)):
+        header = stmt.test if isinstance(stmt, ast.If) else stmt.iter
+        wrap = "bool(" if isinstance(stmt, ast.If) else "("
+        prefix = f"{' and '.join(calls)} and {wrap}".encode("utf-8")
+        end = lines[header.end_lineno - 1].encode("utf-8")
+        lines[header.end_lineno - 1] = (end[:header.end_col_offset] + b")" + end[header.end_col_offset:]).decode("utf-8")
+        start = lines[header.lineno - 1].encode("utf-8")
+        lines[header.lineno - 1] = (start[:header.col_offset] + prefix + start[header.col_offset:]).decode("utf-8")
     else:
         row = stmt.lineno - 1
         lines[row] = lines[row][:stmt.col_offset] + "; ".join(calls) + "; " + lines[row][stmt.col_offset:]

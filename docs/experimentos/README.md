@@ -932,6 +932,26 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 - **Leitura:** o LLM quase não inventa código; a precisão de cerca de 30% vem de hipóteses plausíveis e erradas.
   Um filtro por AST não resolve; precisa de um juiz semântico (passo 7).
 
+## Fase 25 (19-20/10): self-healing ajustado e os 7 bugs recuperados (passos 3 e 4 do PLANO_2026-10-19)
+
+- **Ajustes do self-healing (literatura em https://claude.ai/artifact/W812dGmbGxBt2KJvZDkMV5):** erro interno do
+  ESBMC para o conserto e vira `ESBMC_ERROR` ("tool bug"); o LLM pode simplificar o corpo da função alvo desde
+  que a expressão suspeita fique, e o replay no CPython roda o corpo original (`loop.with_original_replay`);
+  orçamento de `--heal-rounds` rodadas por obstáculo (mensagem nova do ESBMC é progresso), até 3x no total.
+- **Piloto nos mesmos 4 casos** (`artifacts/v2/self-healing-piloto-2026-10-19/braco2b/`, `--heal error+kb
+  --heal-rounds 2`): bip_keras_4 chega a CONFIRMED depois de 4 consertos, mas a quebra é AttributeError de
+  `self.optimizer` None, não o TypeError do gabarito (`compute_gradients` só aceita `var_list` nomeado), e a
+  versão corrigida quebra igual: **não conta**. bip_youtube_dl_4 passa do `%r` com a simplificação do corpo e
+  para em `Dictionary variable not found: str`; bip_cookiecutter_1 termina ESBMC_ERROR (`vector::_M_range_check`);
+  bip_pandas_154 passa 5 obstáculos e termina LLM_ONLY. **Bugs novos na métrica: 0.**
+- **Os 7 bugs que o grounding recuperou** (`artifacts/v2/passo4-recuperados-2026-10-19/`, `--live-spec --heal
+  error+kb --heal-rounds 2`, 9 hipóteses): LLM_ONLY 5, ESBMC_TIMEOUT 2, ESBMC_ERROR 1, PIPELINE_ERROR 1
+  (dz_real_04: os guards de None entravam com `;` antes de um cabeçalho `for`; corrigido em `compat.none_guards`).
+  **Bugs novos na métrica: 0.**
+- **Leitura:** o self-healing passa obstáculos (no piloto, 1 hipótese chega a veredito), mas a fila de recusas
+  do ESBMC-Python é longa; a métrica continua 17.
+- **Testes:** 1208 passam.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

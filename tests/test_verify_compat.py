@@ -347,3 +347,10 @@ def test_none_guards_keep_only_the_enabled_kinds():
     assert "_esbmc_none_attribute" not in only_in and "_esbmc_none_type(xs is None)" in only_in
     assert transforms == ["none_guards:1"]
     assert none_guards(source, "f", ((2, 2),), kinds=frozenset()) == (source, [])
+
+
+def test_guards_of_a_for_header_go_inside_its_iterable():
+    source = "def f(total, size, step):\n    for h in range((total - size) // step):\n        pass\n"
+    guarded, transforms = none_guards(source, "f", ((2, 2),))
+    ast.parse(guarded)
+    assert transforms and guarded.splitlines()[1].lstrip().startswith("for h in _esbmc_none_type(")
