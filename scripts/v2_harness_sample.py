@@ -40,7 +40,7 @@ def harness_sample(results: list[dict], items: dict[str, dict], size: int, seed:
     picked = []
     for bug in sorted(by_bug, key=lambda b: _rank(seed, b))[:size]:
         chosen = min(by_bug[bug], key=lambda hid: _rank(seed, hid))
-        picked.append({**by_bug[bug][chosen], "bug": bug})
+        picked.append(by_bug[bug][chosen])
     return picked
 
 
@@ -56,7 +56,7 @@ def main() -> int:
     items = json.loads(Path(args.ground_truth).read_text(encoding="utf-8"))["items"]
     hypotheses = harness_sample(results, {i["id"]: i for i in items}, args.size, args.seed)
     Path(args.out).write_text(json.dumps({
-        "seed": args.seed, "size": len(hypotheses), "source_run": args.report, "rule": __doc__.split("\n\n")[1].replace("\n", " "),
+        "seed": args.seed, "size": len(hypotheses), "source_run": args.report,
         "hypotheses": hypotheses}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"{len(hypotheses)} hipoteses -> {args.out}")
     return 0

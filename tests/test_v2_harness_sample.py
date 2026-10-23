@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from v2_harness_sample import harness_sample  # noqa: E402
 
-from research_pipeline.verify.hypothesis import VALUE_ORACLE  # noqa: E402
+from research_pipeline.verify.hypothesis import VALUE_ORACLE, BugHypothesis  # noqa: E402
 
 ITEMS = {f"b{n}": {"id": f"b{n}", "function": "f", "expression": "x / y"} for n in range(6)}
 
@@ -37,4 +37,9 @@ def test_sample_keeps_only_at_line_exception_hypotheses():
 def test_one_hypothesis_per_bug():
     sample = harness_sample(_results(), ITEMS, 10, 1)
     assert len(sample) == 6
-    assert len({h["bug"] for h in sample}) == 6
+    assert len({Path(h["file"]).stem for h in sample}) == 6
+
+
+def test_entries_build_a_bug_hypothesis():
+    for h in harness_sample(_results(), ITEMS, 10, 1):
+        assert BugHypothesis(**{k: v for k, v in h.items() if k != "hypothesis_id"}).function == "f"
