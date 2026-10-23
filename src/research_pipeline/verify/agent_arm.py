@@ -28,6 +28,7 @@ from .esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root_of, load_index, lookup
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output
 from .outcome import CONFIRMED, final_verdict
+from .pytest_gen import esbmc_pytest, pytest_seeds
 from .procs import run_group
 from .render import Program
 from .round_warnings import mypy_messages, round_warnings
@@ -343,6 +344,14 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                 return FIXED_ALSO_FAILS, f"the fixed version also raises {control.exception_type}"
     if not result["target_preserved"] and verdict == CONFIRMED:
         verdict = CONFIRMED_SIMPLIFIED
+    if verdict == CONFIRMED and esbmc_command:
+        result["pytest"] = esbmc_pytest(harness_path, esbmc_command=esbmc_command, bound=bound,
+                                        out_dir=case_dir / "pytest", exception=replay.exception_type or "",
+                                        timeout_seconds=timeout_seconds)
+        if result["pytest"]["status"] == "reproduces":
+            first = pytest_seeds(result["pytest"]["path"])
+            seeds = {kind: [*first.get(kind, []), *(v for v in seeds.get(kind, []) if v not in first.get(kind, []))]
+                     for kind in {*first, *seeds}}
     if verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
         from .differential import CHANGED, differential  # differential imports this module
 

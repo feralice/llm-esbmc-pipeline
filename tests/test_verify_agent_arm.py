@@ -45,6 +45,19 @@ def _few_differential_runs(monkeypatch):
     monkeypatch.setattr(agent_arm, "DIFFERENTIAL_RUNS", 3)
 
 
+@pytest.fixture(autouse=True)
+def _pytest_calls(monkeypatch):
+    """The generator would run the real ESBMC; each test sees what it was called with."""
+    calls = []
+
+    def fake(path, **kwargs):
+        calls.append(kwargs)
+        return {"status": "not_generated", "path": "", "reason": "fake", "route": "direct"}
+
+    monkeypatch.setattr(agent_arm, "esbmc_pytest", fake)
+    return calls
+
+
 def _hypothesis(tmp_path: Path) -> BugHypothesis:
     source = tmp_path / "orig.py"
     source.write_text(ORIGINAL, encoding="utf-8")
@@ -259,3 +272,42 @@ def test_run_agent_arm_records_skill_versions(tmp_path, monkeypatch):
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30, project_skills=True)
     assert set(result["skills"]) == {"regras-harness", "reparos-aprendidos"}
     assert "regras-harness" in agent.calls[0]
+
+
+def test_confirmed_case_records_the_esbmc_pytest_and_its_values_lead_the_differential(tmp_path, monkeypatch):
+    from research_pipeline.verify import differential as differential_module
+
+    generated = tmp_path / "test_bug.py"
+    generated.write_text('@pytest.mark.parametrize("t,c", [\n    (41, 0),\n])\ndef test_ratio(t, c):\n    ratio(t, c)\n')
+    monkeypatch.setattr(agent_arm, "esbmc_pytest", lambda path, **kw: {
+        "status": "reproduces", "path": str(generated), "reason": "", "route": "direct"})
+    seen = {}
+    real = differential_module.differential
+
+    def spy(harness, original, h, seeds, **kwargs):
+        seen["seeds"] = seeds
+        return real(harness, original, h, seeds, **kwargs)
+
+    monkeypatch.setattr(differential_module, "differential", spy)
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == CONFIRMED, result
+    assert result["pytest"]["status"] == "reproduces" and result["pytest"]["route"] == "direct"
+    assert seen["seeds"]["int"][:2] == [41, 0]
+
+
+def test_a_pytest_that_does_not_reproduce_leaves_the_verdict_alone(tmp_path, monkeypatch, _pytest_calls):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == CONFIRMED
+    assert result["pytest"]["status"] == "not_generated"
+    assert _pytest_calls[0]["exception"] == "ZeroDivisionError"
+
+
+def test_unconfirmed_case_does_not_run_the_pytest_generator(tmp_path, monkeypatch, _pytest_calls):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation"))
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] != CONFIRMED and "pytest" not in result and not _pytest_calls

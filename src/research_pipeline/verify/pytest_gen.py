@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import ast
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -46,8 +47,9 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
     test = out_dir / f"test_{name}.py"
     test.unlink(missing_ok=True)
     try:
-        subprocess.run([*esbmc_command, str(module), "--unwind", str(bound), "--generate-pytest-testcase",
-                        "--pytest-output-dir", str(out_dir)], capture_output=True, text=True,
+        subprocess.run([*esbmc_command, str(module), "--unwind", str(bound), "--no-slice",
+                        "--no-unwinding-assertions", "--generate-pytest-testcase", "--pytest-output-dir",
+                        str(out_dir)], capture_output=True, text=True,
                        timeout=timeout_seconds, check=False)
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {"status": "not_generated", "path": "", "reason": f"ESBMC did not finish: {type(exc).__name__}"}
@@ -59,13 +61,20 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
         return {"status": "invalid", "path": str(test), "reason": f"ESBMC wrote invalid Python: {exc.msg}"}
     # The test imports the module: CPython gets the replayed program (real exceptions), without the call.
     library = "\n".join(_source_without_driver(program.replay_source or program.source)) + "\n"
+    return _run_generated_test(test, module, library, exception)
+
+
+def _run_generated_test(test: Path, module: Path, library: str, exception: str) -> dict:
+    """Run ESBMC's test against ``library`` (the module without its call); accept it only when it fails
+    with ``exception``."""
+    out_dir = test.parent
     problem = host_replay_problem(library)
     if problem:
         return {"status": "not_run", "path": str(test), "reason": f"not executed on host: {problem}"}
     module.write_text(library, encoding="utf-8")
     try:
-        done = subprocess.run([*_no_network_prefix(), sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
-                               test.name], cwd=out_dir, capture_output=True, text=True, timeout=60, check=False,
+        done = subprocess.run([*_no_network_prefix(), sys.executable, "-m", "pytest", "-q", "--tb=short",
+                               "-p", "no:cacheprovider", test.name], cwd=out_dir, capture_output=True, text=True, timeout=60, check=False,
                               env={key: os.environ[key] for key in ("PATH", "HOME") if key in os.environ},
                               preexec_fn=process_limits(60))
     except subprocess.TimeoutExpired:
@@ -80,3 +89,145 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
         return {"status": "does_not_reproduce", "path": str(test), "reason": tail}
     # Any other failure (a missing argument, an import error) is a defect of the generated test.
     return {"status": "invalid", "path": str(test), "reason": tail}
+
+
+def _cpython_source(nodes: list[ast.stmt]) -> str:
+    from .agent_arm import _without_esbmc_imports  # agent_arm imports this module
+
+    return _without_esbmc_imports(ast.unparse(ast.Module(nodes, [])))
+
+
+def _driver_call(tree: ast.Module) -> tuple[ast.FunctionDef, ast.Expr, ast.Call] | None:
+    """The driver (a no-argument function called at module level) and its final call, whose arguments
+    are rewritten to hold the nondet calls inline: the only shape the generator names correctly."""
+    functions = {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)}
+    for statement in tree.body:
+        call = statement.value if isinstance(statement, ast.Expr) else None
+        if isinstance(call, ast.Call) and isinstance(call.func, ast.Name) and not call.args:
+            driver = functions.get(call.func.id)
+            if driver is not None and not driver.args.args:
+                break
+    else:
+        return None
+    nondet: dict[str, ast.expr] = {}
+    for node in driver.body[:-1]:
+        target = node.target if isinstance(node, ast.AnnAssign) else node.targets[0] if (
+            isinstance(node, ast.Assign) and len(node.targets) == 1) else None
+        value = getattr(node, "value", None)
+        if not (isinstance(target, ast.Name) and isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+                and value.func.id.startswith("nondet_") and not value.args):
+            return None
+        nondet[target.id] = value
+    last = driver.body[-1] if driver.body else None
+    if not (isinstance(last, ast.Expr) and isinstance(last.value, ast.Call)):
+        return None
+    inline = ast.Call(func=last.value.func, args=[nondet.get(a.id, a) if isinstance(a, ast.Name) else a
+                                                  for a in last.value.args], keywords=[])
+    return driver, ast.Expr(inline), inline
+
+
+def _direct_test(tree: ast.Module, *, name: str, esbmc_command: list[str], bound: int, out_dir: Path,
+                 exception: str, timeout_seconds: int) -> dict:
+    found = _driver_call(tree)
+    if found is None:
+        return {"status": "not_generated", "path": "", "reason": "harness shape not recognised"}
+    driver, call, inline = found
+    if not isinstance(inline.func, ast.Name) or any(isinstance(a, ast.Call) and not (
+            isinstance(a.func, ast.Name) and a.func.id.startswith("nondet_")) for a in inline.args):
+        return {"status": "not_generated", "path": "", "reason": "the call is not a free function of inputs"}
+    rest = [n for n in tree.body if n is not driver and not (
+        isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and getattr(n.value.func, "id", "") == driver.name)]
+    module = out_dir / f"{name}.py"
+    module.write_text(ast.unparse(ast.Module([*rest, call], [])) + "\n", encoding="utf-8")
+    test = out_dir / f"test_{name}.py"
+    test.unlink(missing_ok=True)
+    try:
+        subprocess.run([*esbmc_command, str(module), "--unwind", str(bound), "--no-slice",
+                        "--no-unwinding-assertions", "--generate-pytest-testcase", "--pytest-output-dir",
+                        str(out_dir)], capture_output=True, text=True, timeout=timeout_seconds, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"status": "not_generated", "path": "", "reason": f"ESBMC did not finish: {type(exc).__name__}"}
+    if not test.exists():
+        return {"status": "not_generated", "path": "", "reason": "ESBMC wrote no test"}
+    try:
+        ast.parse(test.read_text(encoding="utf-8"))
+    except SyntaxError as exc:
+        return {"status": "invalid", "path": str(test), "reason": f"ESBMC wrote invalid Python: {exc.msg}"}
+    library = _cpython_source(rest)
+    return _run_generated_test(test, module, library + "\n", exception)
+
+
+def _ran(outcome: dict) -> bool:
+    """The generated test was executed (a test that fails otherwise is "invalid" in ``pytest_reproducer``)."""
+    return outcome["status"] in ("reproduces", "does_not_reproduce") or (
+        outcome["status"] == "invalid" and not outcome["reason"].startswith("ESBMC wrote invalid Python"))
+
+
+def _verdict(outcome: dict) -> str:
+    return "reproduces" if outcome["status"] == "reproduces" else "does_not_reproduce"
+
+
+def esbmc_pytest(harness_path: Path, *, esbmc_command: list[str], bound: int, out_dir: Path, exception: str,
+                 timeout_seconds: int = 120) -> dict:
+    """ESBMC's own pytest for the harness's counterexample, run under CPython and kept only if it fails
+    with ``exception``. Returns {"status", "path", "reason", "route"}: status is reproduces,
+    does_not_reproduce or not_generated; route is direct (the harness's call rewritten with inline nondet
+    inputs) or free_function (``pytest_reproducer``, after the direct route produced nothing usable)."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    name = "bug_" + re.sub(r"\W", "_", Path(harness_path).parent.name or "harness")
+    try:
+        tree = ast.parse(Path(harness_path).read_text(encoding="utf-8", errors="replace"))
+    except (OSError, SyntaxError) as exc:
+        return {"status": "not_generated", "path": "", "reason": f"harness unreadable: {type(exc).__name__}",
+                "route": "direct"}
+    direct = _direct_test(tree, name=name, esbmc_command=esbmc_command, bound=bound, out_dir=out_dir,
+                          exception=exception, timeout_seconds=timeout_seconds)
+    if _ran(direct):
+        return {**direct, "status": _verdict(direct), "route": "direct"}
+    fallback = _free_function(tree, name=name, esbmc_command=esbmc_command, bound=bound, out_dir=out_dir,
+                              exception=exception, timeout_seconds=timeout_seconds)
+    if _ran(fallback):
+        return {**fallback, "status": _verdict(fallback), "route": "free_function"}
+    reason = f"direct: {direct['reason']}; free function: {fallback['status']}, {fallback['reason']}"
+    return {"status": "not_generated", "path": fallback["path"] or direct["path"], "reason": reason,
+            "route": "free_function"}
+
+
+def _free_function(tree: ast.Module, *, name: str, esbmc_command: list[str], bound: int, out_dir: Path,
+                   exception: str, timeout_seconds: int) -> dict:
+    found = _driver_call(tree)
+    if found is None:
+        return {"status": "not_generated", "path": "", "reason": "harness shape not recognised"}
+    driver, _, inline = found
+    function = ast.unparse(inline.func)
+    definition = next((n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == function), None)
+    params = {a.arg: ast.unparse(a.annotation) for a in definition.args.args if a.annotation} if definition else {}
+    if definition is None or len(params) != len(definition.args.args):
+        return {"status": "unsupported_shape", "path": "", "reason": "not a fully annotated free function"}
+    rest = [n for n in tree.body if n is not driver and not (
+        isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and getattr(n.value.func, "id", "") == driver.name)]
+    source = _cpython_source(rest) + f"\n\n\ndef {DRIVER}() -> None:\n    pass\n"
+    return pytest_reproducer(Program(source, 0, (), ()), function=function, params=params, exception=exception,
+                             esbmc_command=esbmc_command, bound=bound, out_dir=out_dir, name=name,
+                             timeout_seconds=timeout_seconds)
+
+
+def pytest_seeds(path: str) -> dict[str, list]:
+    """The values of a generated test's parametrize list, as the differential's seeds."""
+    seeds: dict[str, list] = {}
+    try:
+        tree = ast.parse(Path(path).read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, ValueError):
+        return seeds
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and getattr(node.func, "attr", "") == "parametrize" and len(node.args) == 2:
+            try:
+                rows = ast.literal_eval(node.args[1])
+            except ValueError:
+                return seeds
+            for row in rows:
+                for value in row if isinstance(row, tuple) else (row,):
+                    kind = "float" if isinstance(value, float) else "int" if isinstance(value, int) else None
+                    if kind and value not in seeds.setdefault(kind, []):
+                        seeds[kind].append(value)
+    return seeds
