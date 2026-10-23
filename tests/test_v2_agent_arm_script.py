@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+BUILD_SHA = "7da3564989217e1d816b6fdf957555d747106f18"
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "v2_agent_arm.py"
 
 
@@ -23,7 +24,7 @@ def esbmc_checkout(tmp_path):
     (root / "src" / "python-frontend" / "README.md").write_text("docs", encoding="utf-8")
     binary = root / "build" / "esbmc"
     binary.parent.mkdir()
-    binary.write_text("#!/bin/sh\necho 'ESBMC version 9.9.9 64-bit'\n", encoding="utf-8")
+    binary.write_text(f"#!/bin/sh\n# ESBMC built from  {BUILD_SHA}\necho 'ESBMC version 9.9.9 64-bit'\n", encoding="utf-8")
     binary.chmod(0o755)
     for command in (["init", "-q"], ["add", "."], ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "x"]):
         subprocess.run(["git", "-C", str(root), *command], check=True)
@@ -68,7 +69,8 @@ def test_variant_records_esbmc_commit_and_skill_versions(script, tmp_path, esbmc
     report = _report(tmp_path / "report.json", ["a"])
     results = _run(script, tmp_path, esbmc_checkout, "--project-skills", report=report)
     variant = results[0]["variant"]
-    assert len(variant["esbmc_commit"]) == 40
+    assert variant["esbmc_commit"] == BUILD_SHA
+    assert len(variant["esbmc_checkout"]) == 40 and variant["esbmc_checkout"] != BUILD_SHA
     assert variant["esbmc_version"] == "ESBMC version 9.9.9 64-bit"
     assert set(variant["skills"]) == {"regras-harness", "reparos-aprendidos"}
 
@@ -98,3 +100,14 @@ def test_sample_flag_runs_only_sampled_hypotheses(script, tmp_path, esbmc_checko
                       encoding="utf-8")
     _run(script, tmp_path, esbmc_checkout, "--sample", str(sample), report=report)
     assert [h.trigger_condition for h, _ in calls] == ["b"]
+
+
+def test_missing_build_marker_gives_no_commit(script, tmp_path, esbmc_checkout):
+    esbmc_checkout.write_text("#!/bin/sh\necho v\n", encoding="utf-8")
+    assert script.esbmc_identity(str(esbmc_checkout))["esbmc_commit"] is None
+
+
+def test_wrapper_resolves_to_the_binary_behind_exec(script, tmp_path, esbmc_checkout):
+    wrapper = tmp_path / "esbmc.sh"
+    wrapper.write_text(f"#!/bin/sh\nexec {esbmc_checkout} --x \"$@\"\n", encoding="utf-8")
+    assert script.esbmc_identity(str(wrapper))["esbmc_commit"] == BUILD_SHA

@@ -37,8 +37,36 @@ def _results(path: Path) -> list[dict]:
     return [data["verify_results"][k] for k in sorted(data.get("verify_results", {}), key=int)]
 
 
-def esbmc_identity(esbmc: str) -> dict[str, str]:
-    """HEAD of the checkout the binary lives in, and the binary's own version line."""
+_BUILD_MARKER = re.compile(rb"ESBMC built from +([0-9a-f]{40})")
+
+
+def _real_binary(esbmc: str) -> Path:
+    path = Path(esbmc).expanduser()
+    if path.suffix == ".sh" and path.is_file():
+        target = re.search(r"^exec (/\S+)", path.read_text(encoding="utf-8", errors="replace"), re.MULTILINE)
+        if target:
+            return Path(target.group(1))
+    return path
+
+
+def build_commit(binary: Path) -> str | None:
+    """The commit embedded in the binary itself, read in chunks (the binary is hundreds of MB)."""
+    tail = b""
+    try:
+        with binary.open("rb") as handle:
+            while chunk := handle.read(1 << 24):
+                found = _BUILD_MARKER.search(tail + chunk)
+                if found:
+                    return found.group(1).decode()
+                tail = chunk[-80:]
+    except OSError:
+        return None
+    return None
+
+
+def esbmc_identity(esbmc: str) -> dict[str, str | None]:
+    """esbmc_commit: the build commit embedded in the binary (None when absent, never guessed from the
+    checkout); esbmc_checkout: HEAD of the checkout next to it, so a mismatch is visible."""
     def run(command: list[str]) -> str:
         try:
             done = subprocess.run(command, capture_output=True, text=True, timeout=30, check=False)
@@ -47,7 +75,8 @@ def esbmc_identity(esbmc: str) -> dict[str, str]:
         return done.stdout.strip().splitlines()[0] if done.returncode == 0 and done.stdout.strip() else ""
 
     root = esbmc_root_of([esbmc])
-    return {"esbmc_commit": run(["git", "-C", str(root), "rev-parse", "HEAD"]) if root else "",
+    return {"esbmc_commit": build_commit(_real_binary(esbmc)),
+            "esbmc_checkout": run(["git", "-C", str(root), "rev-parse", "HEAD"]) if root else "",
             "esbmc_version": run([esbmc, "--version"])}
 
 
