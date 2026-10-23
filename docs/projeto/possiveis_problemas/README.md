@@ -245,3 +245,99 @@ Remedido no mesmo dia com o master `5d17828` (9 commits novos no frontend Python
 #8852): os 45 arquivos dão o mesmo veredito do `df93f12`, e o 31 continua sem veredito em 300 s. Em relação à
 tabela de 12/10, três já estavam corrigidos desde a v8.6: o 30 acusa `ValueError`, o 36 dá FAILED no
 `isinstance` e o 44 acusa `ZeroDivisionError`.
+
+## Medição de 22/10/2026: master `7da3564`
+
+Master de 22/10 (98 commits depois do `5d17828`, 40 deles no frontend Python), build com Z3,
+`./rodar.sh ~/esbmc-master/build/src/esbmc/esbmc "--no-pointer-check --no-align-check"`. Só dois arquivos
+mudaram em relação a 19/10; os outros 43 dão o mesmo veredito.
+
+| Arquivo | Esperado | master 19/10 (`5d17828`) | master 22/10 (`7da3564`) | Leitura |
+|---|---|---|---|---|
+| `33_atributo_ausente_uniao.py` | FAILED com `AttributeError` | recusa com mensagem sobre `x.size` | recusa: `storing or passing 'x', which holds an instance of A or B` | outra recusa explícita, ainda não FAILED |
+| `34_pop_encadeado.py` | FAILED com `KeyError` | SUCCESSFUL (falso negativo) | recusa: `calling method 'stop' on a value whose class is not known` | melhor (recusa no lugar de falso negativo), ainda não FAILED |
+
+Situação dos 45 nesta versão:
+
+- **Resultado esperado (22):** 01 a 10, 12, 13, 15, 16, 22, 27, 30, 32, 36, 44, e 11 e 17 quando se
+  aceita o `unwinding assertion` junto da exceção (11) ou sozinho num programa agora aceito (17).
+- **Exceção ausente (1):** 18, FAILED só por `unwinding assertion`, sem o `TypeError`.
+- **Falso negativo, SUCCESSFUL (10):** 25, 26, 28, 37, 38, 39, 40, 41, 43; e 45 dá FAILED mas sem o valor
+  de `s` no contraexemplo.
+- **Falso positivo (1):** 35 (`chr()` de surrogate).
+- **Recusa ou erro interno (10):** 14 (`async`), 19, 20, 21, 23, 24, 29 (erro do Z3), 33, 34, 42.
+- **Desempenho (1):** 31, sem veredito em 300 s.
+
+Esses grupos são a lista de partida para as issues; cada uma só é aberta depois de remedida no master
+do dia e com Bitwuzla.
+
+## Validação de 22/10/2026
+
+Master `7da3564` com Z3 (`~/esbmc-master/build`) e com Bitwuzla 0.9.0 (`~/esbmc-master/build-bw`, `--bitwuzla`),
+sempre com `--no-pointer-check --no-align-check`. Para cada arquivo: CPython 3.12 com stubs dos `nondet_*`
+(valores pequenos que forçam o caminho do bug), as flags do `rodar.sh` (`--unwind 5 --multi-property`) e duas
+variações de robustez, `--unwind 10 --multi-property` e `--unwind 5` sem `--multi-property`. Duplicatas
+procuradas com `gh issue list` e `gh search issues` no esbmc/esbmc. Os `_min.py` são versões menores, com o
+mesmo erro, gravadas ao lado do original; os rascunhos de issue (em inglês, não postados) estão em `issues/`.
+
+| Arquivo | CPython | ESBMC master (Z3) | Bitwuzla | Robusto a unwind/multi-property? | Issue existente | Pronto para issue? |
+|---|---|---|---|---|---|---|
+| `14_async.py` | executa; a corrotina não é aguardada, o corpo não roda | `AsyncFunctionDef statements are not supported` | igual | sim | nenhuma | sim, com a variante `14_async_run.py` (`asyncio.run`, `ZeroDivisionError`); ver nota abaixo |
+| `18_for_lista_global_in_none.py` | `TypeError` (linha 8) | FAILED só por `unwinding assertion` em `strstr` | igual | sim (também com `--unwind 30` no `_min`) | #8249 (fechada) cobre dict e list, não str | sim, junto com o 26 (`issues/26_in_optional_str_none.md`) |
+| `19_args_em_atributo.py` | `ZeroDivisionError` | `Variable args not found` | igual | sim | #7543, #8498, #8959 tratam de outros casos de `*args` | sim |
+| `20_kwargs.py` | `ZeroDivisionError` | `Object "kw" not found.` | igual | sim | #8497, fechada em 21/10 pelo #9002, que não cobre `__init__` | sim, citando a #8497 |
+| `21_class_name.py` | `ZeroDivisionError` | `Cannot resolve nested attribute: __name__` | igual | sim | nenhuma | sim |
+| `23_bytes_literal.py` | `IndexError` | `cannot determine the length of a -> bytes return value` | igual | sim | nenhuma (regressão do #7902) | sim, com o `_min` |
+| `24_numpy_shape_parametro.py` | `ZeroDivisionError` | `Tuple index out of range (size: 1)` | igual | sim | #4666 (fechada) é outra mensagem | sim |
+| `25_atributo_em_none.py` | `AttributeError` | SUCCESSFUL (propriedades de `AttributeError` provadas) | igual | sim | #8325 (fechada pelo #8756) cobre o caso sem ramo | sim, citando a #8325 |
+| `26_in_str_none.py` | `TypeError` | SUCCESSFUL (0 VCC) | igual | sim | #8249 (fechada) cobre dict e list | sim, com o `_min` |
+| `28_raise_no_else_do_try.py` | `ValueError` | SUCCESSFUL | igual | sim | nenhuma | sim, com o `_min` |
+| `29_optional_dict_como_valor.py` | `TypeError` | aborta: `Z3 error Sorts ... Optional_struct` (134) | SIGSEGV (139) | sim | nenhuma | sim |
+| `31_strip_split_laco.py` | executa | sem veredito em 300 s | sem veredito em 300 s | `--unwind 1`: 1 s; `--unwind 2`: 38 s; `--unwind 3`: mais de 300 s | nenhuma | não: é escalonamento do solver com string nondet, sem alvo de tempo que sustente a issue |
+| `33_atributo_ausente_uniao.py` | `AttributeError` | recusa: `holds an instance of A or B depending on the path` | igual | sim | #8408 (aberta), mesma construção | não: duplicata da #8408 (no máximo um comentário lá) |
+| `34_pop_encadeado.py` | `KeyError` | recusa: `calling method 'stop' on a value whose class is not known` | igual | sim | nenhuma | sim |
+| `35_chr_surrogate.py` | executa | FAILED (`chr() arg is a surrogate code point`) | igual | sim | nenhuma | sim |
+| `37_str_de_chamada.py` | `ValueError` | SUCCESSFUL (0 VCC) | igual | sim | nenhuma | sim, com o `_min` |
+| `38_not_isinstance_optional.py` | `TypeError` | SUCCESSFUL | igual | sim | nenhuma | sim |
+| `39_int_de_none.py` | `TypeError` | SUCCESSFUL (0 VCC) | igual | sim | #6260 (fechada) é outra operação | sim, com o `_min` |
+| `40_sequence_indice.py` | `IndexError` | SUCCESSFUL (0 VCC) | igual | sim | #3045 (fechada) é outro sintoma | sim |
+| `41_lista_mais_tupla.py` | `TypeError` | SUCCESSFUL (0 VCC) | igual | sim | nenhuma | sim, com o `_min` (uma linha) |
+| `42_tupla_de_str_retorno.py` | `ValueError` com `"bearer"` | aborta: `Incompatible struct in cast-to-struct` (134) | igual | sim | nenhuma | sim, com o `_min` |
+| `43_optional_str_nondet.py` | `AssertionError` | SUCCESSFUL | igual | sim | nenhuma | sim |
+| `45_nondet_str_contraexemplo.py` | `AssertionError` com `"ab"` | FAILED sem o valor de `s` | igual | sim | nenhuma | sim (atualiza `../rascunho_issue_nondet_str.md`) |
+| `46_super_com_len_aborta.py` | `TypeError` (linha 11) | aborta: `Couldn't convert expression in unrecognised format` (134) | igual | sim | nenhuma (#8927 é outro `cpp_throw`) | sim, junto com o 47 |
+| `47_len_sem_dunder_len.py` | `TypeError` | SUCCESSFUL (0 VCC) | igual | sim | nenhuma | sim (`issues/47_exception_in_condition.md`) |
+
+Resumo: 23 dos 25 prontos, que viram 21 rascunhos (18 entra no do 26; 46 no do 47). Duplicata clara só o 33.
+Nenhum arquivo deixou de reproduzir, e nenhuma variação de unwind ou de `--multi-property` mudou veredito.
+
+O que a redução mostrou:
+
+- 46 e 47 têm a mesma causa. A exceção que o frontend gera para `len()` sem `__len__` ou para atributo
+  ausente some quando a expressão é condição de `if` ou `while` (`if len(c) > 0:` dá SUCCESSFUL, `n = len(c)`
+  dá FAILED). Quando a condição de um `while` levanta e há outra propriedade depois do laço, o `cpp_throw`
+  chega ao solver e o ESBMC aborta. O `super` e o `len` do 46 original não são necessários.
+- O 18 deixou de ser caso de desempenho no master: termina em 2 s, mas só com `unwinding assertion` em
+  `strstr`, sem `TypeError`, também com `--unwind 30`. É a mesma falta do 26 (`in` sobre str `None`), por
+  outro caminho (parâmetro em vez de variável local).
+- No 28 basta um `try`/`except ValueError`/`else: raise ValueError` no nível do módulo; com `except
+  KeyError` o ESBMC acusa.
+- O 42 aborta mesmo com o primeiro elemento literal (`("x", nondet_str())`) e um `assert a == "x"`.
+
+Achados laterais, sem arquivo próprio: `def f(**kw): return kw.get('error')` com `assert f() is None` dá
+FAILED (`None returned from a function whose return type cannot hold None`), falso positivo citado no
+rascunho do 20; `xs: Sequence[str] = ["a"]` no nível do módulo dá `NameError: name 'Sequence' is not
+defined`, citado no rascunho do 40; `super().put()` com a base sem `put` dá `uncontrolled recursion in put`
+em vez de `AttributeError`.
+
+Nota sobre o 14: a coluna CPython da tabela original ("executa (corrotina não aguardada)") já estava certa.
+O esperado é SUCCESSFUL no 14 e FAILED com `ZeroDivisionError` no `14_async_run.py`. Às 22:14 o binário Z3
+de `~/esbmc-master/build` foi recompilado por outra frente com um patch local não commitado
+(`coroutine_lowering.py`); com ele o 14 dá SUCCESSFUL e o `14_async_run.py` dá FAILED com
+`ZeroDivisionError`, ambos corretos. Os vereditos do master limpo na tabela vêm das rodadas anteriores à
+recompilação e do build Bitwuzla (compilado às 22:05). Rodei de novo os outros 24 arquivos no binário com o
+patch e nenhum veredito mudou. Se o patch virar PR, o rascunho `issues/14_async_def.md` serve de issue
+para ela.
+
+Bitwuzla: única diferença em relação ao Z3 é o 29, que troca o erro do Z3 por SIGSEGV ao codificar o claim
+de `__ESBMC_list_contains`.
