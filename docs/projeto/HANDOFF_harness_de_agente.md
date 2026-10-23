@@ -56,10 +56,17 @@ Documento para abrir uma sessão nova e continuar de onde paramos. Ler antes de 
   - Nos dois, o agente fez o ESBMC rodar em 3 dos 5 com o corpo preservado (o motor de regras: 0 de 5). Nenhum
     bug confirmado. No nm_real_12 (B) o ESBMC disse seguro e o CPython reproduziu o bug: falso negativo do ESBMC.
   - `C/<id>/opiniao.md`: parecer do consultor por caso (por que travou, como rodaria sem mudar o comportamento,
-    que regra aprender). O primeiro (nm_real_12) mostra o harness do pipeline esvaziando a classe e reescrevendo o
-    corpo, e o ESBMC sem acusar atributo de `None`. **Os pareceres que faltavam continuavam sendo gerados na
-    sessão anterior** em `/tmp/claude-1000/-mnt-c-Users-ferna-Documents-mestrado-llm-esbmc/41aee925-2ea5-4f4f-a687-70075783aef0/scratchpad/spike/C/`;
-    se existirem lá, copiar para `artifacts/v2/teste-ab-2026-10-22/C/`.
+    que regra aprender). Prontos:
+    - **nm_real_12** (`6e33562fdd8f`): o harness do pipeline esvaziou a classe e reescreveu o corpo; com o corpo
+      idêntico e uma lista real no driver, o ESBMC dá SUCCESSFUL (não acusa atributo de `None`, como o reprodutor
+      25); com guarda de `None` explícita, acusa o bug.
+    - **ip_real_15** (`13930a2e99b6`): montar o harness só com o caminho de chamada, reescrever `attr.dataclass`
+      num `__init__` simples, ordenar funções chamadas antes de quem chama, e reduzir erro de conversão a programa
+      mínimo antes de classificá-lo.
+  - Faltam três: **bip_thefuck_4** estourou os 1500 s do consultor; **bip_pandas_7** e **nm_real_08** não rodaram
+    porque o `consult.py` (copiado na mesma pasta) supõe que o pipeline montou um harness, e o bip_pandas_7 foi
+    recusado antes disso (`attempts` vazio). Para completar: tratar `attempts` vazio (dar só o original e o motivo
+    da recusa) e rodar de novo; o script pula os casos que já têm `opiniao.md`. Usa a assinatura.
   - Ainda não registrado em `docs/experimentos/README.md` (é o passo 1 da Tarefa 10).
 - **Limpeza:** V1 removida do código (resultados, logs e dataset antigos mantidos); `docs/` reorganizado por papel
   (`projeto`, `desenho`, `experimentos`, `esbmc`, `pgene601`, `historico`).
