@@ -46,6 +46,10 @@ ESBMC_CRASH = "ESBMC_CRASH"
 # Evaluation only: the harness with the target swapped for its fixed version, fed the same ESBMC inputs,
 # still raises at the suspect expression, so the crash is not the bug the fix removed.
 FIXED_ALSO_FAILS = "FIXED_ALSO_FAILS"
+# A confirmation the differential test overturned: on some input the harness and the original code
+# (the original body inside the harness, or the real module) end differently.
+BEHAVIOUR_CHANGED = "BEHAVIOUR_CHANGED"
+DIFFERENTIAL_RUNS = 100
 PLUGIN_DIR = Path.home() / ".claude/plugins/cache/esbmc-marketplace/esbmc-plugin/1.1.0"
 
 SKILLS_DIR = Path(__file__).with_name("skills")
@@ -247,7 +251,8 @@ def run_agent_arm(
     harness = harness_path.read_text(encoding="utf-8", errors="replace")
     fixed = Path(fixed_path).read_text(encoding="utf-8", errors="replace") if fixed_path else None
     verdict, reason = evaluate_harness(h, harness, original, case_dir, result, esbmc_command=esbmc_command,
-                                       bound=bound, timeout_seconds=timeout_seconds, fixed=fixed)
+                                       bound=bound, timeout_seconds=timeout_seconds, fixed=fixed,
+                                       original_path=Path(source_path or h.file))
     if plugin_command and result.get("target_preserved"):
         result["plugin_report"] = plugin_report(run_agent, plugin_command, case_dir, agent_timeout)
     if crashed and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
@@ -286,10 +291,12 @@ def plugin_report(run_agent: RunAgent, command: str, case_dir: Path, timeout_sec
 
 def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Path, result: dict, *,
                      esbmc_command: list[str] | None, bound: int, timeout_seconds: int,
-                     output_dir: Path | None = None, fixed: str | None = None) -> tuple[str, str]:
+                     output_dir: Path | None = None, fixed: str | None = None,
+                     original_path: Path | None = None) -> tuple[str, str]:
     """Re-run ESBMC on an agent's harness and replay it; fills ``result`` and returns (verdict, reason).
     Also re-checks harnesses saved by earlier runs without calling the agent again; ``output_dir`` keeps
-    that check's ESBMC logs apart from the original run's."""
+    that check's ESBMC logs apart from the original run's. A confirmation then goes through the
+    differential test, whose real level imports ``original_path`` when given."""
     harness_path = case_dir / "harness.py"
     try:
         harness_tree, original_tree = ast.parse(harness), ast.parse(original)
@@ -336,6 +343,14 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                 return FIXED_ALSO_FAILS, f"the fixed version also raises {control.exception_type}"
     if not result["target_preserved"] and verdict == CONFIRMED:
         verdict = CONFIRMED_SIMPLIFIED
+    if verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
+        from .differential import CHANGED, differential  # differential imports this module
+
+        diff = differential(harness, original, h, seeds, runs=DIFFERENTIAL_RUNS, original_path=original_path)
+        result["differential"] = diff.to_dict()
+        if diff.preservation == CHANGED:
+            return BEHAVIOUR_CHANGED, (f"{diff.level} differential: {len(diff.divergences)} of {diff.total} "
+                                       f"input sequences end differently, first {diff.divergences[0]['inputs']}")
     return verdict, reading.message
 
 
@@ -377,10 +392,11 @@ def _first_line(node: ast.FunctionDef) -> int:
 
 
 def _replay_original(harness: str, target: ast.FunctionDef, original: str, original_target: ast.FunctionDef | None,
-                     expression: str | None, seeds: dict[str, list],
-                     inputs: list | None = None) -> tuple[ReplayVerdict, ast.Module | None]:
+                     expression: str | None, seeds: dict[str, list], inputs: list | None = None,
+                     random_seed: int | None = None) -> tuple[ReplayVerdict, ast.Module | None]:
     """Replay the agent's harness with its simplified target swapped back for the original function;
-    also returns the replayed program's tree. Without ``expression`` the whole function is the span."""
+    also returns the replayed program's tree. Without ``expression`` the whole function is the span;
+    ``random_seed`` makes it one random run instead of ESBMC's values."""
     if original_target is None:
         return ReplayVerdict("unavailable", reason="original function not found"), None
     first = _first_line(target)
@@ -402,6 +418,8 @@ def _replay_original(harness: str, target: ast.FunctionDef, original: str, origi
                       (swapped.lineno, swapped.end_lineno))
     if inputs is not None:
         return concrete_replay(program, swapped.name, inputs=inputs), tree
+    if random_seed is not None:
+        return concrete_replay(program, swapped.name, max_runs=0, random_runs=1, seed=random_seed), tree
     return concrete_replay(program, swapped.name, seeds=seeds, seeds_only=True), tree
 
 

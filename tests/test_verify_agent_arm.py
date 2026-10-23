@@ -6,8 +6,10 @@ from research_pipeline.models import ESBMCDirectResult
 from research_pipeline.verify import agent_arm
 import ast
 
-from research_pipeline.verify.agent_arm import (AGENT_FAILED, FIXED_ALSO_FAILS, STUB_INDUCED, run_agent_arm,
-                                               stub_cause)
+import pytest
+
+from research_pipeline.verify.agent_arm import (AGENT_FAILED, BEHAVIOUR_CHANGED, FIXED_ALSO_FAILS, STUB_INDUCED,
+                                               run_agent_arm, stub_cause)
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.outcome import CONFIRMED, UNVALIDATED
 from research_pipeline.verify.replay import ReplayVerdict
@@ -36,6 +38,11 @@ def main() -> None:
 
 main()
 '''
+
+
+@pytest.fixture(autouse=True)
+def _few_differential_runs(monkeypatch):
+    monkeypatch.setattr(agent_arm, "DIFFERENTIAL_RUNS", 3)
 
 
 def _hypothesis(tmp_path: Path) -> BugHypothesis:
@@ -140,6 +147,26 @@ def test_simplified_function_confirms_only_when_esbmc_inputs_break_the_original(
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work2", run_agent=_agent(dropped),
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
     assert result["verdict"] == UNVALIDATED
+
+
+def test_simplification_that_changes_behaviour_drops_the_confirmation(tmp_path, monkeypatch):
+    changed = PRESERVED.replace("    lib.log(total)\n", "    if count == 7:\n        raise KeyError(count)\n")
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc(stdout=TRACE))
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(changed),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == BEHAVIOUR_CHANGED, result
+    assert result["differential"]["preservation"] == "alterada"
+    assert result["differential"]["divergences"][0]["harness"]["exception_type"] == "KeyError"
+
+
+def test_confirmation_records_an_unmeasured_differential(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc(stdout=TRACE))
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == CONFIRMED, result
+    # orig.py imports a module that does not exist, so only the stubs level runs.
+    assert result["differential"]["level"] == "stubs"
+    assert result["differential"]["preservation"] == "nao_medida"
 
 
 def test_esbmc_inputs_that_do_not_break_the_original_do_not_confirm(tmp_path, monkeypatch):
