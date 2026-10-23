@@ -164,9 +164,9 @@ Roda depois do agente, sem LLM, e decide se a confirmação vale:
 3. **Teste diferencial:** original e harness rodam no CPython com as mesmas entradas (o teste pytest do ESBMC,
    o contraexemplo e mais entradas geradas). Se divergirem no caminho do bug (retorno, ou exceção e a linha onde
    nasce), a confirmação não vale. O resultado é um número por bug, por exemplo "concordou em 98 de 100
-   entradas". **Em dois níveis (decisão da Fernanda):** onde o bug tem ambiente real que roda (hoje 18 de 120
-   casos da V2 passam no portão de build e pytest), o original roda com as dependências reais, e essa é a medida
-   forte; nos outros, roda contra os mesmos stubs e o bug sai marcado como "preservação não medida", nunca como
+   entradas". **Em dois níveis (decisão da Fernanda):** onde o bug tem ambiente real que roda, o original roda com
+   as dependências reais, e essa é a medida forte (quantos bugs têm esse ambiente ainda não foi medido; os 18
+   casos "elegíveis" de 28/09 têm harness manual aprovado, o que é outra coisa); nos outros, roda contra os mesmos stubs e o bug sai marcado como "preservação não medida", nunca como
    preservado.
 4. **Avisos baratos:** corpo preservado (`target_preserved`), exceção nascida em stub (`STUB_INDUCED`) e erros
    de mypy que o harness tem e o original não tem.
