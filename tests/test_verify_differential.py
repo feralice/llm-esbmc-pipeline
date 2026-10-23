@@ -97,3 +97,50 @@ def test_unimportable_original_falls_back_to_stubs(tmp_path):
     result = differential(HARNESS, ORIGINAL, h, SEEDS, runs=3, original_path=Path(h.file))
     assert result.level == "stubs" and result.preservation == "nao_medida"
     assert "pacote_que_nao_existe" in result.reason
+
+
+TWO_STEPS = '''from esbmc import nondet_int
+
+
+def divide(a: int, b: int) -> int:
+    x = a // b
+    x = a // b
+    return x
+
+
+def main() -> None:
+    a: int = nondet_int()
+    b: int = nondet_int()
+    divide(a, b)
+
+
+main()
+'''
+
+
+def _two_steps(original_body: str) -> str:
+    return f"def divide(a, b):\n{original_body}    return x\n"
+
+
+def test_annotated_local_is_the_same_statement(tmp_path):
+    original = _two_steps("    x = a // b\n")
+    harness = TWO_STEPS.replace("    x = a // b\n    x = a // b\n", "    x: int = a // b\n")
+    result = differential(harness, original, _hypothesis(tmp_path, original), SEEDS, runs=3)
+    assert result.total >= 1 and result.divergences == [], result
+
+
+def test_trailing_comment_is_the_same_statement(tmp_path):
+    original = _two_steps("    x = a // b  # floor\n")
+    harness = TWO_STEPS.replace("    x = a // b\n    x = a // b\n", "    x = a // b\n")
+    result = differential(harness, original, _hypothesis(tmp_path, original), SEEDS, runs=3)
+    assert result.total >= 1 and result.divergences == [], result
+
+
+def test_raise_moving_to_an_identical_later_line_diverges(tmp_path):
+    original = _two_steps("    x = a // b\n    x = a // b\n")
+    harness = TWO_STEPS.replace("    x = a // b\n    x = a // b\n", "    x = a // (b or 1)\n    x = a // b\n")
+    result = differential(harness, original, _hypothesis(tmp_path, original), SEEDS, runs=3)
+    assert result.preservation == "alterada", result
+    divergence = result.divergences[0]
+    assert divergence["harness"]["exception_type"] == divergence["original"]["exception_type"]
+    assert divergence["harness"]["line"] != divergence["original"]["line"]

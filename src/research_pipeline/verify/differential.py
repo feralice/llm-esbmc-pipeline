@@ -2,12 +2,13 @@
 
 The stubs level runs each input sequence through the harness and through the harness with the original
 target body, comparing status, exception type and the line, relative to the target, where the exception
-crosses it. Only the real level (the true module, imported without network) can call behaviour preserved.
+crosses it (the statement, matched across the two bodies). Only the real level (the true module, imported without network) can call behaviour preserved.
 """
 
 from __future__ import annotations
 
 import ast
+import copy
 import json
 import subprocess
 import sys
@@ -37,21 +38,91 @@ class DiffResult:
         return asdict(self)
 
 
+def _statements(node: ast.FunctionDef) -> list[ast.stmt]:
+    """Every statement inside the function, in source order."""
+    found = [n for n in ast.walk(node) if isinstance(n, ast.stmt) and n is not node]
+    return sorted(found, key=lambda n: (n.lineno, n.col_offset))
+
+
+class _Normalized(ast.NodeTransformer):
+    """Drop what does not change behaviour: annotations, and a compound statement's nested bodies
+    (they are statements of their own)."""
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> ast.stmt:
+        if node.value is None:
+            return ast.Pass()
+        return ast.Assign(targets=[self.visit(node.target)], value=self.visit(node.value))
+
+    def visit_arg(self, node: ast.arg) -> ast.arg:
+        node.annotation = None
+        return node
+
+    def generic_visit(self, node: ast.AST) -> ast.AST:
+        for name in ("body", "orelse", "finalbody", "handlers"):
+            if isinstance(node, ast.stmt) and isinstance(getattr(node, name, None), list):
+                setattr(node, name, [])
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            node.returns = None
+        return super().generic_visit(node)
+
+
+def _key(statement: ast.stmt) -> str:
+    return ast.dump(_Normalized().visit(copy.deepcopy(statement)))
+
+
+def _align(left: list[str], right: list[str]) -> dict[int, int]:
+    """Pair statements by a global alignment (match 2, substitution 0, gap -1): a dropped statement is a
+    gap, an edited one a substitution, so identical statements pair by position, not by first occurrence."""
+    rows, cols = len(left) + 1, len(right) + 1
+    score = [[0] * cols for _ in range(rows)]
+    for i in range(rows):
+        score[i][0] = -i
+    for j in range(cols):
+        score[0][j] = -j
+    for i in range(1, rows):
+        for j in range(1, cols):
+            diagonal = score[i - 1][j - 1] + (2 if left[i - 1] == right[j - 1] else 0)
+            score[i][j] = max(diagonal, score[i - 1][j] - 1, score[i][j - 1] - 1)
+    pairs: dict[int, int] = {}
+    i, j = len(left), len(right)
+    while i and j:
+        if score[i][j] == score[i - 1][j - 1] + (2 if left[i - 1] == right[j - 1] else 0):
+            pairs[i - 1] = j - 1
+            i, j = i - 1, j - 1
+        elif score[i][j] == score[i - 1][j] - 1:
+            i -= 1
+        else:
+            j -= 1
+    return pairs
+
+
 @dataclass(frozen=True)
 class _Frame:
     """Where the target sits in one program. Lines before it are shared and lines after it shift by the
-    body's length; inside it a line is named by its text, so a body that dropped a statement still lines
-    up with the original."""
+    body's length; inside it a line is named by the reference statement it belongs to."""
     first: int
     end: int
-    text: tuple[str, ...]
+    labels: tuple  # per line of the target: the reference statement's label, None on the header
 
     @classmethod
-    def of(cls, source: str, node: ast.FunctionDef, first: int | None = None) -> _Frame:
+    def of(cls, node: ast.FunctionDef, reference: ast.FunctionDef | None = None, first: int | None = None) -> _Frame:
+        """``reference`` is the original target whose statements name the lines; ``first`` the line where
+        the function starts in the program, when it was spliced there from another file."""
         start = agent_arm._first_line(node)
-        lines = source.splitlines()[start - 1:node.end_lineno]
+        end = node.end_lineno or node.lineno
+        own = _statements(node)
+        if reference is None:
+            pairs = {i: i for i in range(len(own))}
+        else:
+            pairs = _align([_key(n) for n in own], [_key(n) for n in _statements(reference)])
+        labels = []
+        for line in range(start, end + 1):
+            inside = [i for i, n in enumerate(own) if n.lineno <= line <= (n.end_lineno or n.lineno)]
+            innermost = min(inside, key=lambda i: ((own[i].end_lineno or own[i].lineno) - own[i].lineno, -i),
+                            default=None)
+            labels.append(None if innermost is None else pairs.get(innermost, f"unmatched {innermost}"))
         first = start if first is None else first
-        return cls(first, first + len(lines) - 1, tuple(line.strip() for line in lines))
+        return cls(first, first + end - start, tuple(labels))
 
     def place(self, line: int | None) -> list | None:
         if line is None:
@@ -60,7 +131,7 @@ class _Frame:
             return ["before", line]
         if line > self.end:
             return ["after", line - self.end]
-        return ["target", self.text[line - self.first]]
+        return ["target", self.labels[line - self.first]]
 
 
 def _outcome(verdict: ReplayVerdict, frame: _Frame) -> dict:
@@ -84,8 +155,8 @@ class _Sides:
         self.target, self.original_target = target, original_target
         span = (target.lineno, target.end_lineno or target.lineno)
         self.program = Program(agent_arm._without_esbmc_imports(harness), 0, (span,), (), span)
-        self.harness_frame = _Frame.of(harness, target)
-        self.original_frame = _Frame.of(original, self.original_target, first=self.harness_frame.first)
+        self.harness_frame = _Frame.of(target, original_target)
+        self.original_frame = _Frame.of(original_target, first=self.harness_frame.first)
 
     def run_original(self, **kwargs) -> ReplayVerdict:
         verdict, _ = agent_arm._replay_original(self.harness, self.target, self.original, self.original_target,
@@ -193,7 +264,8 @@ def _real_level(sides: _Sides, path: Path, function: str, sequences: list[list])
             completed = subprocess.run(
                 [*_no_network_prefix(), sys.executable, "-I", "-S", str(worker), "program.py", "config.json",
                  str(output)],
-                cwd=directory, env={}, capture_output=True, text=True, timeout=REAL_TIMEOUT, check=False,
+                cwd=directory, env={}, stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                timeout=REAL_TIMEOUT, check=False,
                 preexec_fn=process_limits(REAL_TIMEOUT),
             )
             if not output.exists():
@@ -209,9 +281,9 @@ def _real_level(sides: _Sides, path: Path, function: str, sequences: list[list])
                 and "timeout" not in (r["harness"]["status"], r["real"]["status"])]
     if not compared:
         return None, "no sequence reached the target"
-    real_frame = _Frame.of(source, real_target)
+    harness_frame, real_frame = _Frame.of(sides.target, real_target), _Frame.of(real_target)
     for r in compared:
-        r["harness"]["line"] = sides.harness_frame.place(r["harness"]["line"])
+        r["harness"]["line"] = harness_frame.place(r["harness"]["line"])
         r["real"]["line"] = real_frame.place(r["real"]["line"])
     divergences = [r for r in compared if r["harness"] != r["real"]]
     return DiffResult("real", len(compared) - len(divergences), len(compared), divergences,
