@@ -83,3 +83,14 @@ def test_crash_round_never_confirms(tmp_path, monkeypatch):
                            esbmc_command=[fake], bound=5, timeout_seconds=30, log_rounds=True)
     assert result["esbmc_crash"] is True and result["rounds"][-1]["kind"] == "crash"
     assert result["verdict"] == ESBMC_CRASH
+
+
+def test_restarted_case_drops_rounds_left_by_an_earlier_attempt(tmp_path):
+    stale = tmp_path / "work" / _hypothesis(tmp_path).hypothesis_id / "rounds" / "001"
+    stale.mkdir(parents=True)
+    (stale / "output.txt").write_text("VERIFICATION FAILED", encoding="utf-8")
+    (stale / "exit_code").write_text("1", encoding="utf-8")
+    fake = _fake_esbmc(tmp_path, "echo 'ERROR: unsupported'; exit 1")
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_calling_agent(tmp_path, None),
+                           esbmc_command=[fake], bound=5, timeout_seconds=30, log_rounds=True)
+    assert [(r["index"], r["kind"]) for r in result["rounds"]] == [(1, "refused")]

@@ -90,6 +90,10 @@ def install_project_skills(case_dir: Path, skills_dir: Path = SKILLS_DIR) -> dic
     returns each skill's name and the hash of its SKILL.md, to record which rules a run followed."""
     target = Path(case_dir) / ".claude" / "skills"
     shutil.copytree(skills_dir, target, dirs_exist_ok=True)
+    return skill_versions(skills_dir)
+
+
+def skill_versions(skills_dir: Path = SKILLS_DIR) -> dict[str, str]:
     return {path.parent.name: hashlib.sha256(path.read_bytes()).hexdigest()[:12]
             for path in sorted(Path(skills_dir).glob("*/SKILL.md"))}
 
@@ -205,14 +209,15 @@ def run_agent_arm(
     bound: int, timeout_seconds: int, agent_timeout: int = 900, source_path: Path | None = None,
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
     fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
-    log_rounds: bool = False,
+    log_rounds: bool = False, differential: bool = True, pytest: bool = True,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
     ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept;
     ``fixed_path``, the fixed version of the source, turns on the evaluation control;
     ``project_skills`` installs the regras-harness skills in the case folder and records their versions;
-    ``log_rounds`` installs the recording ``esbmc`` and keeps every call as ``result["rounds"]``."""
+    ``log_rounds`` installs the recording ``esbmc`` and keeps every call as ``result["rounds"]``;
+    ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -233,6 +238,7 @@ def run_agent_arm(
     if project_skills:
         result["skills"] = install_project_skills(case_dir)
     if log_rounds:
+        shutil.rmtree(case_dir / "rounds", ignore_errors=True)  # a resumed case must not keep old rounds
         install_round_logger(case_dir, (esbmc_command or [DEFAULT_ESBMC])[0])
     prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
                             notes=_NOTES if notes is not None else "",
@@ -253,7 +259,8 @@ def run_agent_arm(
     fixed = Path(fixed_path).read_text(encoding="utf-8", errors="replace") if fixed_path else None
     verdict, reason = evaluate_harness(h, harness, original, case_dir, result, esbmc_command=esbmc_command,
                                        bound=bound, timeout_seconds=timeout_seconds, fixed=fixed,
-                                       original_path=Path(source_path or h.file))
+                                       original_path=Path(source_path or h.file),
+                                       differential_test=differential, generate_pytest=pytest)
     if plugin_command and result.get("target_preserved"):
         result["plugin_report"] = plugin_report(run_agent, plugin_command, case_dir, agent_timeout)
     if crashed and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
@@ -293,7 +300,8 @@ def plugin_report(run_agent: RunAgent, command: str, case_dir: Path, timeout_sec
 def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Path, result: dict, *,
                      esbmc_command: list[str] | None, bound: int, timeout_seconds: int,
                      output_dir: Path | None = None, fixed: str | None = None,
-                     original_path: Path | None = None) -> tuple[str, str]:
+                     original_path: Path | None = None, differential_test: bool = True,
+                     generate_pytest: bool = True) -> tuple[str, str]:
     """Re-run ESBMC on an agent's harness and replay it; fills ``result`` and returns (verdict, reason).
     Also re-checks harnesses saved by earlier runs without calling the agent again; ``output_dir`` keeps
     that check's ESBMC logs apart from the original run's. A confirmation then goes through the
@@ -344,7 +352,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                 return FIXED_ALSO_FAILS, f"the fixed version also raises {control.exception_type}"
     if not result["target_preserved"] and verdict == CONFIRMED:
         verdict = CONFIRMED_SIMPLIFIED
-    if verdict == CONFIRMED and esbmc_command:
+    if verdict == CONFIRMED and esbmc_command and generate_pytest:
         result["pytest"] = esbmc_pytest(harness_path, esbmc_command=esbmc_command, bound=bound,
                                         out_dir=case_dir / "pytest", exception=replay.exception_type or "",
                                         timeout_seconds=timeout_seconds)
@@ -352,7 +360,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
             first = pytest_seeds(result["pytest"]["path"])
             seeds = {kind: [*first.get(kind, []), *(v for v in seeds.get(kind, []) if v not in first.get(kind, []))]
                      for kind in {*first, *seeds}}
-    if verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
+    if differential_test and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
         from .differential import CHANGED, differential  # differential imports this module
 
         diff = differential(harness, original, h, seeds, runs=DIFFERENTIAL_RUNS, original_path=original_path)
@@ -479,12 +487,14 @@ _DEFAULT_URLS = {"google": "https://generativelanguage.googleapis.com/v1beta/ope
 
 
 def make_agent(backend: str, *, model: str | None, esbmc: str, bound: int, plugin: bool = True,
-               isolated: bool = True, rounds: int = 8, base_url: str | None = None) -> tuple[RunAgent, bool]:
+               isolated: bool = True, rounds: int = 8, base_url: str | None = None,
+               log_rounds: bool = False) -> tuple[RunAgent, bool]:
     """The agent for ``backend``: "claude" is Claude Code with the ESBMC plugin; any LLMClient backend
     (openai, google, ollama, claude_cli, anthropic, codex) runs the API loop. Returns it and whether the prompt may name
     the plugin's skill (only Claude Code has it)."""
     if backend == "claude":
-        return claude_agent(model=model, esbmc=esbmc, plugin=plugin, isolated=isolated), plugin
+        return claude_agent(model=model, esbmc=esbmc, plugin=plugin, isolated=isolated,
+                            log_rounds=log_rounds), plugin
     from .llm_client import LLMClient  # only the API agent needs a client (and its key)
 
     url = base_url or _DEFAULT_URLS.get(backend)
