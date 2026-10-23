@@ -994,6 +994,35 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
 - **Leitura:** para bugs que quebram com exceção, a detecção já acha 18 de 22 em alguma rodada; o buraco é
   bug de resultado errado, que depende da intenção da função.
 
+## Fase 28 (22/10): teste A/B do harness de agente, sem mudança de código
+
+- **Pergunta:** o agente com o plugin do ESBMC faz rodar os bugs em que o motor de regras parou em
+  `UNSUPPORTED`, sem mudar o comportamento no caminho do bug?
+- **Casos:** 5 bugs reais em que a rodada final (Fase 22) deu `UNSUPPORTED`: nm_real_12, bip_thefuck_4,
+  ip_real_15, bip_pandas_7, nm_real_08.
+- **Pasta:** `artifacts/v2/teste-ab-2026-10-22/` (fora do git). Código: branch `feat/harness-de-agente` antes da
+  Tarefa 1 do plano (só commits de documentação desde `87f88c2`). Modelo `claude-sonnet-5-5` via `claude -p`
+  (assinatura). ESBMC: `~/esbmc-master/esbmc.sh`, que nessa noite apontava para o `build` com Z3; às 22:14 esse
+  binário foi recompilado com um patch local de `async`, então parte da rodada usou o master `7da3564` limpo e
+  parte o master com o patch. Nenhum dos 5 alvos é `async def`.
+- **Braço A** (agente isolado, como o pipeline): NOT_CONFIRMED 3, AGENT_FAILED 1 (bip_thefuck_4, tempo
+  esgotado), UNSUPPORTED 1 (nm_real_08, erro interno do ESBMC `json.exception.type_error.302`).
+- **Braço B** (agente com as configurações dela, plugin e `/esbmc-plugin:audit`): ESBMC_MISSED 1 (nm_real_12:
+  ESBMC diz seguro, CPython reproduz o bug), NOT_CONFIRMED 2, AGENT_FAILED 1, UNSUPPORTED 1.
+- **Métrica final: 0 bugs confirmados nos dois braços.** Alcance: o ESBMC deu veredito com o corpo preservado em
+  3 de 5 nos dois braços, contra 0 de 5 do motor de regras.
+- **Consultor** (`C/<id>/opiniao.md`, um `claude -p` por caso explicando por que travou): prontos nm_real_12 e
+  ip_real_15; bip_thefuck_4 estourou 1500 s; bip_pandas_7 e nm_real_08 não rodaram (`consult.py` supõe
+  `attempts` não vazio). Sondas refeitas em 22/10 no master `7da3564` limpo com Bitwuzla, mesmo resultado:
+  - nm_real_12: com o corpo idêntico e uma lista real no driver, SUCCESSFUL (falso negativo, issue #9078); com
+    guard de `None`, FAILED com `AttributeError`.
+  - ip_real_15: com os métodos reordenados e o corpo idêntico, **FAILED** (`before == 1` na primeira linha),
+    bug confirmado na unidade, não ponta a ponta.
+  - Limites novos: `possiveis_problemas` 48 (atributo aninhado de campo `None`), 49 (`defaultdict(dict)`, issue
+    #9093) e 50 (desempacotar retorno de função definida depois).
+- **Leitura:** o agente destrava mais casos que o motor de regras, mas sem bug confirmado ainda; os bloqueios
+  restantes são limites do ESBMC (falso negativo do `None`, conversões) e harness que reescreve o corpo.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
