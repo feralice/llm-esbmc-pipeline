@@ -94,3 +94,14 @@ def test_restarted_case_drops_rounds_left_by_an_earlier_attempt(tmp_path):
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_calling_agent(tmp_path, None),
                            esbmc_command=[fake], bound=5, timeout_seconds=30, log_rounds=True)
     assert [(r["index"], r["kind"]) for r in result["rounds"]] == [(1, "refused")]
+
+
+def test_stale_harness_from_an_earlier_attempt_is_not_evaluated(tmp_path):
+    case = tmp_path / "work" / _hypothesis(tmp_path).hypothesis_id
+    case.mkdir(parents=True)
+    (case / "harness.py").write_text(PRESERVED, encoding="utf-8")
+    (case / "plugin_report.md").write_text("old", encoding="utf-8")
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_calling_agent(tmp_path, None),
+                           esbmc_command=[_fake_esbmc(tmp_path, "exit 1")], bound=5, timeout_seconds=30, log_rounds=True)
+    assert result["verdict"] == AGENT_FAILED and result["reason"] == "agent wrote no harness.py"
+    assert not list(case.glob("plugin_*.md"))

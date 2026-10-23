@@ -27,6 +27,8 @@ from research_pipeline.verify.esbmc_knowledge import esbmc_root_of  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 
+COMPARED_FIELDS = ("backend", "plugin", "isolated", "notes", "model", "plugin_command", "allow_simplify",
+                   "differential", "pytest", "log_rounds", "esbmc_commit", "skills")
 DEFAULT_VERDICTS = ",".join(sorted(AGENT_VERDICTS))
 
 
@@ -151,15 +153,24 @@ def main(argv: list[str] | None = None) -> int:
     results_path = out / "agent_results.json"
     done = json.loads(results_path.read_text(encoding="utf-8")) if results_path.exists() else []
     finished = {r["hypothesis"]["hypothesis_id"] for r in done}
-    agent, skill = make_agent(args.backend, model=args.model, esbmc=args.esbmc, bound=args.bound,
-                              plugin=not args.no_plugin, isolated=not args.not_isolated, rounds=args.rounds,
-                              base_url=args.base_url, log_rounds=args.log_rounds)
-    notes = Path(args.notes) if args.notes else (None if args.backend == "claude" else NOTES_PATH)
     variant = {"backend": args.backend, "plugin": not args.no_plugin and args.backend == "claude", "isolated": not args.not_isolated, "notes": args.notes,
                "model": args.model, "plugin_command": args.plugin_command,
                "allow_simplify": args.allow_simplify, "differential": args.differential, "pytest": args.pytest,
                "log_rounds": args.log_rounds, **esbmc_identity(args.esbmc),
                "skills": skill_versions() if args.project_skills else {}}
+    if variant["esbmc_commit"] is None:
+        print("warning: no 'ESBMC built from' string in the binary; this run will not record the ESBMC build commit",
+              file=sys.stderr)
+    differing = sorted({key for r in done for key, value in r.get("variant", {}).items()
+                        if key in COMPARED_FIELDS and variant.get(key) != value})
+    if differing:
+        print(f"refusing to resume {results_path}: its results came from another engine; "
+              f"differing fields: {', '.join(differing)}", file=sys.stderr)
+        return 2
+    agent, skill = make_agent(args.backend, model=args.model, esbmc=args.esbmc, bound=args.bound,
+                              plugin=not args.no_plugin, isolated=not args.not_isolated, rounds=args.rounds,
+                              base_url=args.base_url, log_rounds=args.log_rounds)
+    notes = Path(args.notes) if args.notes else (None if args.backend == "claude" else NOTES_PATH)
     sources = Path(args.verification_sources) if args.verification_sources else None
     for index, (h, previous) in enumerate(hypotheses, 1):
         if h.hypothesis_id in finished:

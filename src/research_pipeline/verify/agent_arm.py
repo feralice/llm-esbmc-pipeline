@@ -237,8 +237,11 @@ def run_agent_arm(
         (case_dir / "ESBMC_PYTHON_NOTES.md").write_text(text, encoding="utf-8")
     if project_skills:
         result["skills"] = install_project_skills(case_dir)
+    for stale in ("rounds", "pytest"):  # a restarted case must not inherit an earlier attempt's artifacts
+        shutil.rmtree(case_dir / stale, ignore_errors=True)
+    for stale in ["harness.py", *(p.name for p in case_dir.glob("plugin_*.md"))]:
+        (case_dir / stale).unlink(missing_ok=True)
     if log_rounds:
-        shutil.rmtree(case_dir / "rounds", ignore_errors=True)  # a resumed case must not keep old rounds
         install_round_logger(case_dir, (esbmc_command or [DEFAULT_ESBMC])[0])
     prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
                             notes=_NOTES if notes is not None else "",

@@ -111,3 +111,19 @@ def test_wrapper_resolves_to_the_binary_behind_exec(script, tmp_path, esbmc_chec
     wrapper = tmp_path / "esbmc.sh"
     wrapper.write_text(f"#!/bin/sh\nexec {esbmc_checkout} --x \"$@\"\n", encoding="utf-8")
     assert script.esbmc_identity(str(wrapper))["esbmc_commit"] == BUILD_SHA
+
+
+def test_resume_refuses_results_from_another_engine(script, tmp_path, esbmc_checkout, calls, capsys):
+    report = _report(tmp_path / "report.json", ["a", "b"])
+    _run(script, tmp_path, esbmc_checkout, "--limit", "1", "--model", "m1", report=report)
+    calls.clear()
+    argv = ["--report", str(report), "--esbmc", str(esbmc_checkout), "--out", str(tmp_path / "out"),
+            "--verdicts", "AGENT_NEEDED", "--model", "m2"]
+    assert script.main(argv) != 0
+    assert calls == [] and "model" in capsys.readouterr().err
+
+
+def test_missing_build_commit_warns_on_stderr(script, tmp_path, esbmc_checkout, calls, capsys):
+    esbmc_checkout.write_text("#!/bin/sh\necho v\n", encoding="utf-8")
+    _run(script, tmp_path, esbmc_checkout, report=_report(tmp_path / "report.json", ["a"]))
+    assert "build commit" in capsys.readouterr().err
