@@ -70,7 +70,8 @@ def test_agent_without_harness_keeps_its_rounds(tmp_path):
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_calling_agent(tmp_path, None),
                            esbmc_command=[fake], bound=5, timeout_seconds=30, log_rounds=True)
     assert result["verdict"] == AGENT_FAILED and result["reason"] == "agent wrote no harness.py"
-    assert result["rounds"] == [{"index": 1, "kind": "refused", "warnings": []}]
+    assert [(r["index"], r["kind"]) for r in result["rounds"]] == [(1, "refused")]
+    assert "body_changed" in result["rounds"][0]["warnings"]
     assert result["esbmc_crash"] is False
 
 

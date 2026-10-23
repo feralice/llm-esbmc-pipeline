@@ -30,6 +30,7 @@ from .esbmc_run import VERDICT_KINDS, check, esbmc_output
 from .outcome import CONFIRMED, final_verdict
 from .procs import run_group
 from .render import Program
+from .round_warnings import round_warnings
 from .rounds import install_round_logger, read_rounds
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 
@@ -237,9 +238,9 @@ def run_agent_arm(
     try:
         result["agent_output"] = run_agent(prompt, case_dir, agent_timeout)[-1000:]
     except (OSError, subprocess.TimeoutExpired) as exc:
-        record_rounds(case_dir, result, log_rounds)
+        record_rounds(case_dir, result, log_rounds, original, h.function)
         return finish(AGENT_FAILED, f"agent did not finish: {type(exc).__name__}")
-    crashed = record_rounds(case_dir, result, log_rounds)
+    crashed = record_rounds(case_dir, result, log_rounds, original, h.function)
     harness_path = case_dir / "harness.py"
     if not harness_path.exists():
         return finish(AGENT_FAILED, "agent wrote no harness.py")
@@ -254,12 +255,14 @@ def run_agent_arm(
     return finish(verdict, reason)
 
 
-def record_rounds(case_dir: Path, result: dict, log_rounds: bool) -> bool:
+def record_rounds(case_dir: Path, result: dict, log_rounds: bool, original: str, function: str) -> bool:
     """Copy the recorded rounds into ``result``; returns whether the last one was an ESBMC crash."""
     if not log_rounds:
         return False
     rounds = read_rounds(case_dir)
-    result["rounds"] = [{"index": r.index, "kind": r.kind, "warnings": []} for r in rounds]
+    result["rounds"] = [{"index": r.index, "kind": r.kind,
+                         "warnings": round_warnings(r.source, original, function) if r.source else []}
+                        for r in rounds]
     result["esbmc_crash"] = bool(rounds) and rounds[-1].kind == "crash"
     return result["esbmc_crash"]
 
