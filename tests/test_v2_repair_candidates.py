@@ -11,7 +11,8 @@ REFUSED = "Parsing...\nERROR: Unsupported construct\nmore detail\n"
 VERDICT = "VERIFICATION FAILED\n"
 
 
-def _case(tmp_path: Path, rounds: list[tuple[str, str, int]], preservation: str | None = None) -> Path:
+def _case(tmp_path: Path, rounds: list[tuple[str, str, int]], preservation: str | None = None,
+          results: bool = True, entry_id: str = "h1") -> Path:
     case = tmp_path / "cases" / "h1"
     for number, (source, output, code) in enumerate(rounds, 1):
         folder = case / "rounds" / f"{number:03d}"
@@ -19,10 +20,11 @@ def _case(tmp_path: Path, rounds: list[tuple[str, str, int]], preservation: str 
         (folder / "input.py").write_text(source, encoding="utf-8")
         (folder / "output.txt").write_text(output, encoding="utf-8")
         (folder / "exit_code").write_text(str(code), encoding="utf-8")
-    entry = {"hypothesis": {"hypothesis_id": "h1"}}
+    entry = {"hypothesis": {"hypothesis_id": entry_id}}
     if preservation:
         entry["differential"] = {"preservation": preservation}
-    (tmp_path / "agent_results.json").write_text(json.dumps([entry]), encoding="utf-8")
+    if results:
+        (tmp_path / "agent_results.json").write_text(json.dumps([entry]), encoding="utf-8")
     return case
 
 
@@ -59,3 +61,15 @@ def test_write_candidates_lists_each_pair_in_portuguese(tmp_path) -> None:
     assert "# Candidatos" in text and "ERROR: Unsupported construct" in text and "h1" in text
     assert chr(0x2014) not in text
     assert case.exists()
+
+
+def test_case_without_results_file_is_not_a_candidate(tmp_path) -> None:
+    case = _case(tmp_path, [("a\n", REFUSED, 1), ("b\n", VERDICT, 1)], results=False)
+
+    assert v2_repair_candidates.repair_candidates(case) == []
+
+
+def test_case_missing_from_results_is_not_a_candidate(tmp_path) -> None:
+    case = _case(tmp_path, [("a\n", REFUSED, 1), ("b\n", VERDICT, 1)], entry_id="other")
+
+    assert v2_repair_candidates.repair_candidates(case) == []

@@ -5,8 +5,6 @@ description: Repairs learned from earlier harness attempts that ESBMC-Python rej
 
 # Learned repairs
 
-Version: 0
-
 No repairs recorded yet.
 
 ## Format of an approved repair
