@@ -311,3 +311,45 @@ def test_unconfirmed_case_does_not_run_the_pytest_generator(tmp_path, monkeypatc
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
     assert result["verdict"] != CONFIRMED and "pytest" not in result and not _pytest_calls
+
+
+def _prompt(tmp_path: Path, **kwargs) -> str:
+    agent = _agent(None)
+    run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent, bound=5,
+                  timeout_seconds=30, **kwargs)
+    return agent.calls[0]
+
+
+def test_prompt_names_the_recording_facade_only_when_rounds_are_logged(tmp_path):
+    command = [str(tmp_path / "esbmc.sh"), "--python-strict-types"]
+    logged = _prompt(tmp_path, esbmc_command=command, log_rounds=True)
+    assert "`esbmc harness.py --unwind 5" in logged and "esbmc.sh" not in logged
+    facade = (tmp_path / "work" / _hypothesis(tmp_path).hypothesis_id / "bin" / "esbmc").read_text(encoding="utf-8")
+    assert f"{command[0]} --python-strict-types \"$@\"" in facade
+    plain = _prompt(tmp_path, esbmc_command=command, log_rounds=False)
+    assert f"`{command[0]} harness.py --unwind 5" in plain
+
+
+@pytest.mark.parametrize("project_skills", [False, True])
+@pytest.mark.parametrize("allow_simplify", [False, True])
+def test_simplification_is_allowed_only_by_allow_simplify(tmp_path, project_skills, allow_simplify):
+    prompt = _prompt(tmp_path, esbmc_command=["esbmc"], project_skills=project_skills, allow_simplify=allow_simplify)
+    assert ("you may simplify" in prompt) is allow_simplify
+    assert ("regras-harness" in prompt) is project_skills
+
+
+def test_harness_skill_grants_no_simplification():
+    text = (agent_arm.SKILLS_DIR / "regras-harness" / "SKILL.md").read_text(encoding="utf-8")
+    assert "simplify" not in text and "unchanged" in text
+
+
+def test_recheck_writes_its_pytest_under_its_own_output_dir(tmp_path, monkeypatch, _pytest_calls):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    case = tmp_path / "case"
+    case.mkdir()
+    (case / "harness.py").write_text(PRESERVED, encoding="utf-8")
+    verdict, _ = agent_arm.evaluate_harness(_hypothesis(tmp_path), PRESERVED, ORIGINAL, case, {},
+                                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30,
+                                            output_dir=tmp_path / "recheck")
+    assert verdict == CONFIRMED
+    assert _pytest_calls[0]["out_dir"] == tmp_path / "recheck" / "pytest"

@@ -105,3 +105,11 @@ def test_stale_harness_from_an_earlier_attempt_is_not_evaluated(tmp_path):
                            esbmc_command=[_fake_esbmc(tmp_path, "exit 1")], bound=5, timeout_seconds=30, log_rounds=True)
     assert result["verdict"] == AGENT_FAILED and result["reason"] == "agent wrote no harness.py"
     assert not list(case.glob("plugin_*.md"))
+
+
+def test_logger_runs_the_configured_command_with_its_flags(tmp_path):
+    fake = _fake_esbmc(tmp_path, 'echo "args: $*"; echo VERIFICATION SUCCESSFUL')
+    (tmp_path / "h.py").write_text("pass\n")
+    done = _call(install_round_logger(tmp_path, [fake, "--python-strict-types"]), tmp_path / "h.py", tmp_path)
+    assert done.stdout.startswith(f"args: --python-strict-types {tmp_path / 'h.py'} --unwind 5")
+    assert [r.kind for r in read_rounds(tmp_path)] == ["verdict"]

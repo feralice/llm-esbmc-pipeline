@@ -5,6 +5,8 @@ exit_code), so the rounds survive an agent that never finishes a harness."""
 
 from __future__ import annotations
 
+import shlex
+import shutil
 import stat
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,7 +22,7 @@ mkdir -p "$dir"
 for arg in "$@"; do
   case "$arg" in *.py) cp "$arg" "$dir/input.py"; break;; esac
 done
-'{esbmc}' "$@" > "$dir/output.txt" 2>&1
+{command} "$@" > "$dir/output.txt" 2>&1
 code=$?
 echo "$code" > "$dir/exit_code"
 cat "$dir/output.txt"
@@ -37,13 +39,18 @@ class Round:
     kind: str  # verdict | refused | crash | timeout
 
 
-def install_round_logger(case_dir: Path, esbmc: str) -> Path:
-    """Write ``case_dir/bin/esbmc``, which runs the real ESBMC and records the call; returns ``case_dir/bin``."""
+def install_round_logger(case_dir: Path, esbmc: str | list[str]) -> Path:
+    """Write ``case_dir/bin/esbmc``, which runs the configured ESBMC command (binary and flags) and records
+    the call; returns ``case_dir/bin``."""
+    first, *flags = [esbmc] if isinstance(esbmc, str) else esbmc
+    # Resolved now: a plain name looked up later would find this facade itself on the agent's PATH.
+    binary = shutil.which(first) if "/" not in first else None
+    command = shlex.join([str(Path(binary or first).resolve()), *flags])
     case_dir = Path(case_dir).resolve()
     bin_dir = case_dir / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
     script = bin_dir / "esbmc"
-    script.write_text(_WRAPPER.format(rounds=case_dir / "rounds", esbmc=Path(esbmc).resolve()), encoding="utf-8")
+    script.write_text(_WRAPPER.format(rounds=case_dir / "rounds", command=command), encoding="utf-8")
     script.chmod(script.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     return bin_dir
 

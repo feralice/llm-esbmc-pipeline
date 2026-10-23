@@ -123,6 +123,18 @@ def test_resume_refuses_results_from_another_engine(script, tmp_path, esbmc_chec
     assert calls == [] and "model" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("flag,first,second", [("--bound", "5", "8"),
+                                                ("--timeout", "180", "60"), ("--agent-timeout", "900", "300")])
+def test_resume_refuses_another_bound_or_timeout(script, tmp_path, esbmc_checkout, calls, capsys, flag, first, second):
+    report = _report(tmp_path / "report.json", ["a", "b"])
+    _run(script, tmp_path, esbmc_checkout, "--limit", "1", flag, first, report=report)
+    calls.clear()
+    argv = ["--report", str(report), "--esbmc", str(esbmc_checkout), "--out", str(tmp_path / "out"),
+            "--verdicts", "AGENT_NEEDED", flag, second]
+    assert script.main(argv) != 0
+    assert calls == [] and flag.lstrip("-").replace("-", "_") in capsys.readouterr().err
+
+
 def test_missing_build_commit_warns_on_stderr(script, tmp_path, esbmc_checkout, calls, capsys):
     esbmc_checkout.write_text("#!/bin/sh\necho v\n", encoding="utf-8")
     _run(script, tmp_path, esbmc_checkout, report=_report(tmp_path / "report.json", ["a"]))

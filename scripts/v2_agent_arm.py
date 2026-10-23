@@ -28,7 +28,8 @@ from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 
 COMPARED_FIELDS = ("backend", "plugin", "isolated", "notes", "model", "plugin_command", "allow_simplify",
-                   "differential", "pytest", "log_rounds", "esbmc_commit", "skills")
+                   "differential", "pytest", "log_rounds", "esbmc_commit", "skills", "bound", "timeout",
+                   "agent_timeout")
 DEFAULT_VERDICTS = ",".join(sorted(AGENT_VERDICTS))
 
 
@@ -156,7 +157,8 @@ def main(argv: list[str] | None = None) -> int:
     variant = {"backend": args.backend, "plugin": not args.no_plugin and args.backend == "claude", "isolated": not args.not_isolated, "notes": args.notes,
                "model": args.model, "plugin_command": args.plugin_command,
                "allow_simplify": args.allow_simplify, "differential": args.differential, "pytest": args.pytest,
-               "log_rounds": args.log_rounds, **esbmc_identity(args.esbmc),
+               "log_rounds": args.log_rounds, "bound": args.bound, "timeout": args.timeout,
+               "agent_timeout": args.agent_timeout, **esbmc_identity(args.esbmc),
                "skills": skill_versions() if args.project_skills else {}}
     if variant["esbmc_commit"] is None:
         print("warning: no 'ESBMC built from' string in the binary; this run will not record the ESBMC build commit",

@@ -15,20 +15,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.verify.agent_arm import AGENT_FAILED, evaluate_harness
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
+from research_pipeline.verify.agent_arm import AGENT_FAILED, evaluate_harness
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.loop import verification_source
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run", help="agent-arm output directory (agent_results.json + cases/)")
+    parser.add_argument("--verification-sources", default="dataset/bugs_reais/arquivo_com_bug",
+                        help="same as v2_agent_arm.py: the differential test's real level imports this file")
     parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--out", required=True)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     run = Path(args.run)
+    sources = Path(args.verification_sources) if args.verification_sources else None
     rows = []
     for item in json.loads((run / "agent_results.json").read_text(encoding="utf-8")):
         h = BugHypothesis(**{k: v for k, v in item["hypothesis"].items() if k != "hypothesis_id"})
@@ -40,13 +44,15 @@ def main() -> int:
                 h, harness.read_text(encoding="utf-8", errors="replace"),
                 original.read_text(encoding="utf-8", errors="replace"), case_dir, result,
                 esbmc_command=[args.esbmc], bound=args.bound, timeout_seconds=args.timeout,
-                output_dir=Path(args.out).with_suffix("") / item["hypothesis"]["hypothesis_id"])
+                output_dir=Path(args.out).with_suffix("") / item["hypothesis"]["hypothesis_id"],
+                original_path=verification_source(h, sources))
         else:
             verdict, reason = AGENT_FAILED, "no saved harness"
         rows.append({"hypothesis": item["hypothesis"], "verdict": verdict, "id": item["hypothesis"]["hypothesis_id"],
                      "file": Path(h.file).name, "function": h.function,
                      "before": item["verdict"], "after": verdict, "reason": reason[:300],
-                     "target_preserved": result.get("target_preserved"), "replay": result.get("replay", {})})
+                     "target_preserved": result.get("target_preserved"), "replay": result.get("replay", {}),
+                     "differential": result.get("differential"), "pytest": result.get("pytest")})
         print(f"{rows[-1]['file']:16s} {item['verdict']:16s} -> {verdict:16s} {reason[:80]}", flush=True)
     print("\n", dict(Counter(r["after"] for r in rows).most_common()))
     Path(args.out).write_text(json.dumps(rows, indent=2), encoding="utf-8")

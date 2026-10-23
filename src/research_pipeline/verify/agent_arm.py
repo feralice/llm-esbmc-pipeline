@@ -108,7 +108,8 @@ def claude_agent(claude_command: str = "claude", model: str | None = None,
         command = [claude_command, "--print", "--output-format", "json", "--no-session-persistence",
                    *(["--setting-sources", "project"] if isolated else []),
                    *(["--plugin-dir", str(PLUGIN_DIR)] if plugin else []),
-                   # The plugin's commands call plain `esbmc` (and `which`); PATH below points it at this binary.
+                   # Plain `esbmc` (the plugin's commands; the prompt under log_rounds) resolves through PATH
+                   # below: the case's recording facade first when log_rounds, then this binary's folder.
                    "--allowedTools", "Read", "Write", "Edit", f"Bash({esbmc}:*)", "Bash(esbmc:*)", "Bash(which:*)",
                    *(["Skill", "Agent", "Task"] if plugin else []),
                    "--permission-mode", "acceptEdits"]
@@ -216,7 +217,9 @@ def run_agent_arm(
     ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept;
     ``fixed_path``, the fixed version of the source, turns on the evaluation control;
     ``project_skills`` installs the regras-harness skills in the case folder and records their versions;
-    ``log_rounds`` installs the recording ``esbmc`` and keeps every call as ``result["rounds"]``;
+    ``log_rounds`` installs the recording ``esbmc``, names it in the prompt (the agent must put it first on
+    PATH, as claude_agent(log_rounds=True) does) and keeps every call as ``result["rounds"]``;
+    ESBMC_CRASH looks only at the agent's last recorded call (conservative: it may drop a confirmation);
     ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
@@ -242,13 +245,13 @@ def run_agent_arm(
     for stale in ["harness.py", *(p.name for p in case_dir.glob("plugin_*.md"))]:
         (case_dir / stale).unlink(missing_ok=True)
     if log_rounds:
-        install_round_logger(case_dir, (esbmc_command or [DEFAULT_ESBMC])[0])
+        install_round_logger(case_dir, esbmc_command or [DEFAULT_ESBMC])
     prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
                             notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
                             function=h.function, expression=h.suspect_expression,
                             trigger=h.trigger_condition or "not given", bound=bound,
-                            esbmc=(esbmc_command or ["esbmc"])[0])
+                            esbmc="esbmc" if log_rounds else (esbmc_command or ["esbmc"])[0])
     try:
         result["agent_output"] = run_agent(prompt, case_dir, agent_timeout)[-1000:]
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -307,7 +310,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                      generate_pytest: bool = True) -> tuple[str, str]:
     """Re-run ESBMC on an agent's harness and replay it; fills ``result`` and returns (verdict, reason).
     Also re-checks harnesses saved by earlier runs without calling the agent again; ``output_dir`` keeps
-    that check's ESBMC logs apart from the original run's. A confirmation then goes through the
+    that check's ESBMC logs and generated pytest apart from the original run's. A confirmation then goes through the
     differential test, whose real level imports ``original_path`` when given."""
     harness_path = case_dir / "harness.py"
     try:
@@ -357,7 +360,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         verdict = CONFIRMED_SIMPLIFIED
     if verdict == CONFIRMED and esbmc_command and generate_pytest:
         result["pytest"] = esbmc_pytest(harness_path, esbmc_command=esbmc_command, bound=bound,
-                                        out_dir=case_dir / "pytest", exception=replay.exception_type or "",
+                                        out_dir=(output_dir or case_dir) / "pytest", exception=replay.exception_type or "",
                                         timeout_seconds=timeout_seconds)
         if result["pytest"]["status"] == "reproduces":
             first = pytest_seeds(result["pytest"]["path"])
