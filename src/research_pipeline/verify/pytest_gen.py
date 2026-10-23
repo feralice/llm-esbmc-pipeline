@@ -119,7 +119,7 @@ def _driver_call(tree: ast.Module) -> tuple[ast.FunctionDef, ast.Expr, ast.Call]
             return None
         nondet[target.id] = value
     last = driver.body[-1] if driver.body else None
-    if not (isinstance(last, ast.Expr) and isinstance(last.value, ast.Call)):
+    if not (isinstance(last, ast.Expr) and isinstance(last.value, ast.Call) and not last.value.keywords):
         return None
     inline = ast.Call(func=last.value.func, args=[nondet.get(a.id, a) if isinstance(a, ast.Name) else a
                                                   for a in last.value.args], keywords=[])
