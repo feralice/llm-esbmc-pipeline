@@ -3,23 +3,14 @@ main.py — Pipeline LLM + AST + ESBMC para verificação de bugs em Python.
 
 
 Modos de execução:
-  esbmc-only  Flow A: ESBMC puro com --function, sem LLM.
-  llm-only    Flow C: LLM puro, sem ESBMC.
   hybrid      Fluxo principal: LLM detecta → gera harness → ESBMC confirma.
-  hybrid-direct Flow B legado: LLM aponta bug → ESBMC confirma no código original.
   benchmark   Benchmark V2 end-to-end com métricas vs ground truth.
-  benchmark-v1 Benchmark legado dos fluxos A+B+C.
-  ensemble    Agrega votos de modelos já rodados (sem chamar LLM/ESBMC).
   scan        Varre um repositório: grafo de chamadas, detecção por função, motor verify.
-  v2          Alias compatível de hybrid.
 
 
 Exemplos:
-  python src/main.py --mode esbmc-only  --input dataset/v1_sintetico --bound 5
-  python src/main.py --mode llm-only    --input dataset/v1_sintetico --model gpt-4o
-  python src/main.py --mode hybrid      --input dataset/v1_sintetico --model gpt-4o --bound 5
+  python src/main.py --mode hybrid      --input dataset/bugs_reais/funcao_com_bug --backend codex
   python src/main.py --mode benchmark   --input dataset/bugs_reais/funcao_com_bug --ground-truth dataset/bugs_reais/ground_truths.json --backend codex --synth-backend codex
-  python src/main.py --mode benchmark-v1 --input dataset/v1_sintetico/ground_truths --model gpt-4o
   python src/main.py --mode scan --input <repo> --backend codex --scan-limit 20 --output-dir artifacts/scan [--yes]
 """
 from __future__ import annotations
@@ -44,20 +35,10 @@ load_dotenv(REPO_ROOT / ".env")
 
 from research_pipeline.dataset_audit import match_unit
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
-from research_pipeline.evaluator import (
-    EvalCounts,
-    accuracy_defined,
-    evaluate_model,
-    formal_confirmation_rate_defined,
-    hallucination_rate_defined,
-    mcc_defined,
-    noise_reduction_rate_defined,
-    prf_defined,
-    summarize_repeated_runs,
-)
 from research_pipeline.llm.backends.factory import (
     _DEFAULT_MODEL,
     _GEMINI_OPENAI_BASE_URL,
+    Backend,
     build_analyzer,
 )
 from research_pipeline.llm.example_pool import load_example_pool
@@ -67,12 +48,6 @@ from research_pipeline.llm.prompts import (
     set_example_pool,
 )
 from research_pipeline.llm.schema import v2_findings_schema
-from research_pipeline.pipeline import (
-    Backend,
-    run_pipeline_esbmc_direct,
-    run_pipeline_llm_only,
-    run_pipeline_multi,
-)
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.pipeline import execute_scan, plan_scan
 from research_pipeline.verify.candidate import Candidate
@@ -86,7 +61,6 @@ from research_pipeline.verify.loop import run_verify
 from research_pipeline.v2_evaluator import evaluate_detection
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.verify.rules import ALL_RULES
-from research_pipeline.voting import aggregate_votes, write_vote_report
 
 # ---------------------------------------------------------------------------
 # CLI
@@ -106,12 +80,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=[
-            "esbmc-only", "llm-only", "hybrid", "hybrid-direct",
-            "benchmark", "benchmark-v1", "ensemble", "scan",
-        ],
+        choices=["hybrid", "benchmark", "scan"],
         default="benchmark",
-        help="Modo de execução. hybrid e benchmark usam a V2; benchmark-v1 é o legado. (padrão: benchmark)",
+        help="Modo de execução. (padrão: benchmark)",
     )
     parser.add_argument(
         "--input", "-i",
@@ -120,9 +91,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="CAMINHO",
         help=(
             "Arquivo(s) Python ou diretório. Diretórios são lidos recursivamente. "
-            "No modo benchmark, passe o diretório raiz de ground truth (ex: dataset/v1_sintetico/ground_truths). Inclui bugs, clean e smells recursivamente. "
-            "No modo ensemble, passe 2+ diretórios per_file de --report de modelos diferentes "
-            "(ex: reports/json/v1_benchmark/per_file/gpt-5_5 reports/json/v1_benchmark/per_file/claude-sonnet-4-6)."
+            "No modo scan, um único diretório de repositório."
         ),
     )
     parser.add_argument(
@@ -219,16 +188,10 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="CAMINHO",
         help=(
-            "Ground truth para comparação. "
-            "No modo benchmark, pode ser passado aqui em vez de --input. "
-            "No modo V2, informe dataset/bugs_reais/ground_truths.json; "
+            "Ground truth para comparação (obrigatório no modo benchmark). "
+            "Informe dataset/bugs_reais/ground_truths.json; "
             "ele é lido somente depois das chamadas às LLMs e ao ESBMC."
         ),
-    )
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Mostrar detalhes de cada arquivo durante avaliação.",
     )
     parser.add_argument(
         "--resume",
@@ -236,38 +199,6 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Retomar unidades concluídas no --output-dir; exige a mesma "
             "configuração de modelo, prompt, bound e timeout."
-        ),
-    )
-    parser.add_argument(
-        "--repeat",
-        type=int,
-        default=1,
-        metavar="N",
-        help=(
-            "Somente no modo benchmark-v1. Repete a avaliação completa N vezes "
-            "(a LLM é estocástica) e persiste cada outcome bruto em "
-            "raw_runs_<label>.json ao lado de --report, além de média/desvio-padrão "
-            "das métricas de headline. (padrão: 1, sem custo extra de API)"
-        ),
-    )
-    parser.add_argument(
-        "--min-votes",
-        type=int,
-        default=2,
-        metavar="N",
-        help=(
-            "Somente no modo ensemble. Número mínimo de modelos que precisam "
-            "concordar em (função, categoria) para o achado ser selecionado. "
-            "(padrão: 2)"
-        ),
-    )
-    parser.add_argument(
-        "--vote-kind",
-        choices=["bugs", "smells"],
-        default="bugs",
-        help=(
-            "Somente no modo ensemble. Vota em achados formais (generated_bugs) "
-            "ou em code smells heurísticos (generated_smells). (padrão: bugs)"
         ),
     )
     parser.add_argument(
@@ -393,7 +324,6 @@ def _resolve_input_paths(inputs: list[str]) -> list[Path]:
             paths.extend(sorted(candidate for candidate in p.rglob("*.py") if "__pycache__" not in candidate.parts))
         elif p.suffix == ".py" and p.exists():
             paths.append(p)
-        # If it's a .json, the caller handles it (benchmark mode)
     return paths
 
 
@@ -443,17 +373,6 @@ def _resolve_keys(args: argparse.Namespace) -> tuple[str | None, str | None, str
 
 def _default_output_dir(mode: str) -> str:
     return str(REPO_ROOT / "artifacts" / mode)
-
-
-def _run_status_exit_code(output_dir: str | Path) -> int:
-    status_path = Path(output_dir) / "run_status.json"
-    if not status_path.exists():
-        return 0
-    status = json.loads(status_path.read_text(encoding="utf-8"))
-    if status.get("status") == "complete":
-        return 0
-    print(f"Execução parcial; veja {status_path}", file=sys.stderr)
-    return 2
 
 
 def _write_json_atomic(path: Path, payload: object) -> None:
@@ -626,425 +545,9 @@ def _summarize_detection_trace(trace: list[dict]) -> dict:
     return summary
 
 
-
-
-def _print_summary(results) -> None:
-    from collections import Counter
-    counts = Counter(r.final_classification for r in results)
-    print("\n── Resumo ────────────────────────────────")
-    for cls, n in sorted(counts.items()):
-        print(f"  {n:3d}  {cls}")
-    print(f"  {len(results):3d}  TOTAL")
-    print("──────────────────────────────────────────")
-
-
-
-
-
-
-def _fmt_ci(cis: dict, key: str) -> str:
-    v = cis.get(key)
-    if v is None:
-        return ""
-    return f"  [95% CI: {v[0]:.2f}–{v[1]:.2f}]"
-
-
-def _round_optional(value: float | None, digits: int = 4) -> float | None:
-    return round(value, digits) if value is not None else None
-
-
-def _fmt_optional(value: float | None) -> str:
-    return f"{value:.2f}" if value is not None else "N/A"
-
-
-def _fmt_rate(value: float | None) -> str:
-    return f"{value:.1%}" if value is not None else "N/A"
-
-
-def _category_metrics(counts: dict[str, int]) -> dict[str, float | int | None]:
-    values = prf_defined(counts["tp"], counts["fp"], counts["fn"])
-    return {
-        "precision": _round_optional(values["precision"]),
-        "recall": _round_optional(values["recall"]),
-        "f1": _round_optional(values["f1"]),
-        "tp": counts["tp"],
-        "fp": counts["fp"],
-        "fn": counts["fn"],
-    }
-
-
-
-
-def _print_benchmark_table(label: str, counts: EvalCounts, cis: dict | None = None) -> None:
-    cis = cis or {}
-    bug = prf_defined(counts.bug_tp, counts.bug_fp, counts.bug_fn)
-    smell = prf_defined(counts.smell_tp, counts.smell_fp, counts.smell_fn)
-    esbmc = prf_defined(counts.esbmc_direct_tp, counts.esbmc_direct_fp, counts.esbmc_direct_fn)
-    hybrid = prf_defined(counts.hybrid_bug_tp, counts.hybrid_bug_fp, counts.hybrid_bug_fn)
-    bug_acc = accuracy_defined(counts.bug_func_tp, counts.bug_func_fp, counts.bug_func_fn, counts.bug_func_tn)
-    bug_mcc = mcc_defined(counts.bug_func_tp, counts.bug_func_fp, counts.bug_func_fn, counts.bug_func_tn)
-    hybrid_acc = accuracy_defined(counts.hybrid_bug_func_tp, counts.hybrid_bug_func_fp, counts.hybrid_bug_func_fn, counts.hybrid_bug_func_tn)
-    hybrid_mcc = mcc_defined(counts.hybrid_bug_func_tp, counts.hybrid_bug_func_fp, counts.hybrid_bug_func_fn, counts.hybrid_bug_func_tn)
-    esbmc_acc = accuracy_defined(counts.esbmc_direct_func_tp, counts.esbmc_direct_func_fp, counts.esbmc_direct_func_fn, counts.esbmc_direct_func_tn)
-    esbmc_mcc = mcc_defined(counts.esbmc_direct_func_tp, counts.esbmc_direct_func_fp, counts.esbmc_direct_func_fn, counts.esbmc_direct_func_tn)
-    fcr = formal_confirmation_rate_defined(counts)
-    nrr = noise_reduction_rate_defined(counts)
-    hlr = hallucination_rate_defined(counts)
-
-
-    print(f"\n{'─' * 60}")
-    print(f"Modelo: {label}")
-    print(f"{'─' * 60}")
-    print(f"  Bug LLM P/R/F1:          {_fmt_optional(bug['precision'])} / {_fmt_optional(bug['recall'])} / {_fmt_optional(bug['f1'])}{_fmt_ci(cis, 'llm_bug_f1')}")
-    print(f"    finding TP={counts.bug_tp}  FP={counts.bug_fp}  FN={counts.bug_fn}")
-    print(f"    função Acc/MCC:        {_fmt_optional(bug_acc)} / {_fmt_optional(bug_mcc)}{_fmt_ci(cis, 'llm_bug_mcc')}")
-    print(f"    função TP={counts.bug_func_tp}  FP={counts.bug_func_fp}  FN={counts.bug_func_fn}  TN={counts.bug_func_tn}")
-    print(f"  Bug Híbrido P/R/F1:      {_fmt_optional(hybrid['precision'])} / {_fmt_optional(hybrid['recall'])} / {_fmt_optional(hybrid['f1'])}{_fmt_ci(cis, 'hybrid_bug_f1')}")
-    print(f"    finding TP={counts.hybrid_bug_tp}  FP={counts.hybrid_bug_fp}  FN={counts.hybrid_bug_fn}")
-    print(f"    função Acc/MCC:        {_fmt_optional(hybrid_acc)} / {_fmt_optional(hybrid_mcc)}{_fmt_ci(cis, 'hybrid_bug_mcc')}")
-    print(f"    função TP={counts.hybrid_bug_func_tp}  FP={counts.hybrid_bug_func_fp}  FN={counts.hybrid_bug_func_fn}  TN={counts.hybrid_bug_func_tn}")
-    print(f"    confirmados ESBMC={counts.llm_confirmed_by_esbmc}  não confirmados={counts.not_confirmed_within_bound}  inconclusivos={counts.esbmc_inconclusive}")
-    print(f"    FCR/NRR:               {_fmt_optional(fcr)} / {_fmt_optional(nrr)}")
-    print(f"  Smell P/R/F1:            {_fmt_optional(smell['precision'])} / {_fmt_optional(smell['recall'])} / {_fmt_optional(smell['f1'])}{_fmt_ci(cis, 'smell_f1')}")
-    print(f"    TP={counts.smell_tp}  FP={counts.smell_fp}  FN={counts.smell_fn}")
-    print(f"  Flow A P/R/F1:           {_fmt_optional(esbmc['precision'])} / {_fmt_optional(esbmc['recall'])} / {_fmt_optional(esbmc['f1'])}{_fmt_ci(cis, 'esbmc_bug_f1')}")
-    print(f"    função Acc/MCC:        {_fmt_optional(esbmc_acc)} / {_fmt_optional(esbmc_mcc)}{_fmt_ci(cis, 'esbmc_bug_mcc')}")
-    print(f"    função TP={counts.esbmc_direct_func_tp}  FP={counts.esbmc_direct_func_fp}  FN={counts.esbmc_direct_func_fn}  TN={counts.esbmc_direct_func_tn}")
-    print(f"  Alucinações LLM:         {counts.hallucination_count}  (taxa: {_fmt_rate(hlr)})")
-    print(f"  Fora do escopo LLM:      {counts.out_of_scope_count}")
-    print(
-        f"  Cobertura do benchmark:  {counts.cases_evaluated}/{counts.cases_planned} "
-        f"casos; falhas={counts.cases_failed}"
-    )
-
-
-    if counts.per_category_hybrid:
-        print("\n  Por categoria (Flow B — híbrido):")
-        for cat, c in sorted(counts.per_category_hybrid.items()):
-            metrics = prf_defined(c["tp"], c["fp"], c["fn"])
-            print(f"    {cat:<30} P={_fmt_optional(metrics['precision'])} R={_fmt_optional(metrics['recall'])} F1={_fmt_optional(metrics['f1'])}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")
-    if counts.per_category:
-        print("\n  Por categoria (Flow C — LLM only):")
-        for cat, c in sorted(counts.per_category.items()):
-            metrics = prf_defined(c["tp"], c["fp"], c["fn"])
-            print(f"    {cat:<30} P={_fmt_optional(metrics['precision'])} R={_fmt_optional(metrics['recall'])} F1={_fmt_optional(metrics['f1'])}  TP={c['tp']} FP={c['fp']} FN={c['fn']}")
-    print(f"{'─' * 60}")
-
-
-def _print_repeated_summary(label: str, summary: dict) -> None:
-    """Print mean±stdev across repeated benchmark runs. See --repeat."""
-    print(f"\n{'─' * 60}")
-    print(f"Variância entre runs — {label} (N={len(summary['raw_runs'])})")
-    print(f"{'─' * 60}")
-    for metric_name, stats in summary["aggregate"].items():
-        if stats["mean"] is None:
-            print(f"  {metric_name:<28} indefinido em todas as {stats['n_runs']} runs")
-            continue
-        print(
-            f"  {metric_name:<28} {stats['mean']:.3f} ± {stats['stdev']:.3f}"
-            f"  (definido em {stats['n_defined']}/{stats['n_runs']} runs)"
-        )
-    print(f"{'─' * 60}")
-
-
 # ---------------------------------------------------------------------------
 # Mode handlers
 # ---------------------------------------------------------------------------
-
-
-def mode_esbmc_only(args: argparse.Namespace) -> int:
-    input_paths = _resolve_input_paths(args.input)
-    if not input_paths:
-        print("Nenhum arquivo .py encontrado.", file=sys.stderr)
-        return 1
-
-
-    output_dir = args.output_dir or _default_output_dir("esbmc-only")
-    results = run_pipeline_esbmc_direct(
-        input_paths=input_paths,
-        output_dir=output_dir,
-        esbmc_command=args.esbmc_command,
-        bound=args.bound,
-        timeout_seconds=args.timeout,
-    )
-
-
-    print(f"\nFlow A — ESBMC-only com --function — {len(results)} arquivo(s) analisado(s):")
-    for r in results:
-        print(f"  [{r.status:20s}]  {Path(r.source_file).name}  — {r.summary[:70]}")
-
-
-    summary_path = Path(output_dir) / "esbmc_direct_results.json"
-    print(f"\nResultados JSON: {summary_path}")
-    incomplete = {
-        "skipped", "timeout", "tool_error", "unsupported_case", "inconclusive",
-        "no_vcc_generated",
-    }
-    return 2 if any(result.status in incomplete for result in results) else 0
-
-
-
-
-def mode_llm_only(args: argparse.Namespace) -> int:
-    input_paths = _resolve_input_paths(args.input)
-    if not input_paths:
-        print("Nenhum arquivo .py encontrado.", file=sys.stderr)
-        return 1
-
-
-    backend: Backend = args.backend or _infer_backend(args.model)
-    model   = _resolve_model(args.model, backend)
-    anthropic_key, openai_key, google_key = _resolve_keys(args)
-    output_dir = args.output_dir or _default_output_dir("llm-only")
-
-
-    results = run_pipeline_llm_only(
-        input_paths=input_paths,
-        output_dir=output_dir,
-        backend=backend,
-        llm_model=model,
-        openai_api_key=openai_key,
-        anthropic_api_key=anthropic_key,
-        google_api_key=google_key,
-        ollama_base_url=args.ollama_base_url,
-        timeout_seconds=args.llm_timeout,
-        resume=args.resume,
-    )
-
-
-    report_path = Path(output_dir) / "report.json"
-    _print_summary(results)
-    print(f"\nRelatório JSON: {report_path}")
-    return _run_status_exit_code(output_dir)
-
-
-
-
-def mode_hybrid(args: argparse.Namespace) -> int:
-    input_paths = _resolve_input_paths(args.input)
-    if not input_paths:
-        print("Nenhum arquivo .py encontrado.", file=sys.stderr)
-        return 1
-
-
-    backend: Backend = args.backend or _infer_backend(args.model)
-    model   = _resolve_model(args.model, backend)
-    anthropic_key, openai_key, google_key = _resolve_keys(args)
-    output_dir = args.output_dir or _default_output_dir("hybrid")
-
-
-    results = run_pipeline_multi(
-        input_paths=input_paths,
-        output_dir=output_dir,
-        esbmc_command=args.esbmc_command,
-        backend=backend,
-        llm_model=model,
-        openai_api_key=openai_key,
-        anthropic_api_key=anthropic_key,
-        google_api_key=google_key,
-        ollama_base_url=args.ollama_base_url,
-        bound=args.bound,
-        timeout_seconds=args.timeout,
-        llm_timeout_seconds=args.llm_timeout,
-        resume=args.resume,
-    )
-
-
-    report_path = Path(output_dir) / "report.json"
-    _print_summary(results)
-    print(f"\nRelatório JSON: {report_path}")
-    return _run_status_exit_code(output_dir)
-
-
-
-
-def mode_benchmark_v1(args: argparse.Namespace) -> int:
-    if args.resume and not args.report:
-        print("--resume no modo benchmark requer --report para localizar o checkpoint.", file=sys.stderr)
-        return 1
-    if args.repeat > 1 and args.resume:
-        # --resume reads per-case results from a checkpoint written by ONE
-        # earlier run. Combined with --repeat it would silently reuse that
-        # run's LLM answer for some cases while re-querying others, breaking
-        # the "N independent trials" premise the variance summary relies on.
-        print("--repeat > 1 não pode ser combinado com --resume (veja --repeat --help).", file=sys.stderr)
-        return 1
-    # --ground-truth tem prioridade; fallback para --input (compatibilidade retroativa)
-    gt_raw = getattr(args, "ground_truth", None) or args.input[0]
-    gt_path = Path(gt_raw)
-
-
-    if not gt_path.exists():
-        print(f"Ground truth não encontrado em: {gt_path}", file=sys.stderr)
-        print("Exemplo: --ground-truth dataset/v1_sintetico/ground_truths", file=sys.stderr)
-        return 1
-
-
-    backend: Backend = args.backend or _infer_backend(args.model)
-    model   = _resolve_model(args.model, backend)
-    anthropic_key, openai_key, google_key = _resolve_keys(args)
-
-
-    label = f"{backend}/{model or '(padrão)'}"
-    print(f"Benchmark — {label}")
-
-
-    report_arg = getattr(args, "report", None)
-    per_file_dir: Path | None = None
-    if report_arg:
-        per_file_dir = Path(report_arg).parent / "per_file" / Path(report_arg).stem.removeprefix("benchmark_")
-
-
-    def _run_once() -> tuple[EvalCounts, dict]:
-        return evaluate_model(
-            ground_truth_path=gt_path,
-            backend=backend,
-            model=model or "",
-            anthropic_api_key=anthropic_key,
-            openai_api_key=openai_key,
-            google_api_key=google_key,
-            ollama_base_url=args.ollama_base_url,
-            esbmc_command=args.esbmc_command,
-            bound=args.bound,
-            timeout_seconds=args.timeout,
-            llm_timeout_seconds=args.llm_timeout,
-            verbose=args.verbose,
-            output_dir=per_file_dir,
-            resume=args.resume,
-        )
-
-    repeated_summary: dict | None = None
-    if args.repeat > 1:
-        runs: list[tuple[EvalCounts, dict]] = []
-        for run_index in range(1, args.repeat + 1):
-            print(f"\n=== Run {run_index}/{args.repeat} ===")
-            runs.append(_run_once())
-        counts, cis = runs[-1]  # table/report below show the last run in full detail
-        repeated_summary = summarize_repeated_runs([c for c, _ in runs])
-        _print_repeated_summary(label, repeated_summary)
-    else:
-        counts, cis = _run_once()
-
-    _print_benchmark_table(label, counts, cis)
-
-    if report_arg and repeated_summary is not None:
-        raw_runs_path = Path(report_arg).parent / f"raw_runs_{Path(report_arg).stem}.json"
-        _write_json_atomic(raw_runs_path, repeated_summary)
-        print(f"Outcomes brutos ({args.repeat} runs): {raw_runs_path}")
-
-    if report_arg:
-        fcr = formal_confirmation_rate_defined(counts)
-        nrr = noise_reduction_rate_defined(counts)
-        bug_defined = prf_defined(counts.bug_tp, counts.bug_fp, counts.bug_fn)
-        hybrid_defined = prf_defined(
-            counts.hybrid_bug_tp, counts.hybrid_bug_fp, counts.hybrid_bug_fn
-        )
-        smell_defined = prf_defined(counts.smell_tp, counts.smell_fp, counts.smell_fn)
-        esbmc_defined = prf_defined(
-            counts.esbmc_direct_tp, counts.esbmc_direct_fp, counts.esbmc_direct_fn
-        )
-        report_data = {
-            "model": label,
-            "backend": backend,
-            "ground_truth": str(gt_path.resolve()),
-            "bound": args.bound,
-            "timeout": args.timeout,
-            "coverage": {
-                "status": "complete" if counts.cases_failed == 0 else "partial",
-                "planned": counts.cases_planned,
-                "evaluated": counts.cases_evaluated,
-                "failed": counts.cases_failed,
-                "failed_cases": counts.failed_cases,
-            },
-            "metrics": {
-                "bugs_llm_only": {
-                    "precision": _round_optional(bug_defined["precision"]),
-                    "recall": _round_optional(bug_defined["recall"]),
-                    "f1": _round_optional(bug_defined["f1"]),
-                    "tp": counts.bug_tp,
-                    "fp": counts.bug_fp,
-                    "fn": counts.bug_fn,
-                    "function_accuracy": _round_optional(accuracy_defined(counts.bug_func_tp, counts.bug_func_fp, counts.bug_func_fn, counts.bug_func_tn)),
-                    "function_mcc": _round_optional(mcc_defined(counts.bug_func_tp, counts.bug_func_fp, counts.bug_func_fn, counts.bug_func_tn)),
-                    "function_tp": counts.bug_func_tp,
-                    "function_fp": counts.bug_func_fp,
-                    "function_fn": counts.bug_func_fn,
-                    "function_tn": counts.bug_func_tn,
-                },
-                "bugs_hybrid_pipeline": {
-                    "precision": _round_optional(hybrid_defined["precision"]),
-                    "recall": _round_optional(hybrid_defined["recall"]),
-                    "f1": _round_optional(hybrid_defined["f1"]),
-                    "tp": counts.hybrid_bug_tp,
-                    "fp": counts.hybrid_bug_fp,
-                    "fn": counts.hybrid_bug_fn,
-                    "function_accuracy": _round_optional(accuracy_defined(counts.hybrid_bug_func_tp, counts.hybrid_bug_func_fp, counts.hybrid_bug_func_fn, counts.hybrid_bug_func_tn)),
-                    "function_mcc": _round_optional(mcc_defined(counts.hybrid_bug_func_tp, counts.hybrid_bug_func_fp, counts.hybrid_bug_func_fn, counts.hybrid_bug_func_tn)),
-                    "function_tp": counts.hybrid_bug_func_tp,
-                    "function_fp": counts.hybrid_bug_func_fp,
-                    "function_fn": counts.hybrid_bug_func_fn,
-                    "function_tn": counts.hybrid_bug_func_tn,
-                    "llm_confirmed_by_esbmc": counts.llm_confirmed_by_esbmc,
-                    "not_confirmed_within_bound": counts.not_confirmed_within_bound,
-                    "esbmc_inconclusive": counts.esbmc_inconclusive,
-                    "formal_confirmation_rate": _round_optional(fcr),
-                    "noise_reduction_rate": _round_optional(nrr),
-                },
-                "smells": {
-                    "precision": _round_optional(smell_defined["precision"]),
-                    "recall": _round_optional(smell_defined["recall"]),
-                    "f1": _round_optional(smell_defined["f1"]),
-                    "tp": counts.smell_tp,
-                    "fp": counts.smell_fp,
-                    "fn": counts.smell_fn,
-                },
-                "esbmc_direct_baseline": {
-                    "precision": _round_optional(esbmc_defined["precision"]),
-                    "recall": _round_optional(esbmc_defined["recall"]),
-                    "f1": _round_optional(esbmc_defined["f1"]),
-                    "tp": counts.esbmc_direct_tp,
-                    "fp": counts.esbmc_direct_fp,
-                    "fn": counts.esbmc_direct_fn,
-                    "function_accuracy": _round_optional(accuracy_defined(counts.esbmc_direct_func_tp, counts.esbmc_direct_func_fp, counts.esbmc_direct_func_fn, counts.esbmc_direct_func_tn)),
-                    "function_mcc": _round_optional(mcc_defined(counts.esbmc_direct_func_tp, counts.esbmc_direct_func_fp, counts.esbmc_direct_func_fn, counts.esbmc_direct_func_tn)),
-                    "function_tp": counts.esbmc_direct_func_tp,
-                    "function_fp": counts.esbmc_direct_func_fp,
-                    "function_fn": counts.esbmc_direct_func_fn,
-                    "function_tn": counts.esbmc_direct_func_tn,
-                },
-            },
-            "hallucinations": {
-                "count": counts.hallucination_count,
-                "rate": _round_optional(hallucination_rate_defined(counts)),
-            },
-            "out_of_scope_findings": {
-                "count": counts.out_of_scope_count,
-            },
-            "per_category_llm": {
-                cat: _category_metrics(c)
-                for cat, c in sorted(counts.per_category.items())
-            },
-            "per_category_hybrid": {
-                cat: _category_metrics(c)
-                for cat, c in sorted(counts.per_category_hybrid.items())
-            },
-            "confidence_intervals_95": {
-                key: ([_round_optional(value[0]), _round_optional(value[1])] if value else None)
-                for key, value in cis.items()
-            },
-        }
-        report_path_out = Path(report_arg)
-        _write_json_atomic(report_path_out, report_data)
-        print(f"\nRelatório JSON: {report_path_out}")
-
-
-    if counts.cases_failed:
-        print(
-            "Benchmark parcial: há casos ausentes das métricas; consulte coverage no relatório.",
-            file=sys.stderr,
-        )
-        return 2
-    return 0
 
 
 def mode_benchmark(args: argparse.Namespace) -> int:
@@ -1057,43 +560,6 @@ def mode_benchmark(args: argparse.Namespace) -> int:
         return 1
     args.v2_stage = "end-to-end"
     return mode_v2(args)
-
-
-def mode_ensemble(args: argparse.Namespace) -> int:
-    if len(args.input) < 2:
-        print(
-            "Modo ensemble requer 2+ diretórios per_file (um por modelo) em --input.",
-            file=sys.stderr,
-        )
-        return 1
-
-
-    try:
-        report = aggregate_votes(args.input, min_votes=args.min_votes, kind=args.vote_kind)
-    except (ValueError, FileNotFoundError) as exc:
-        print(f"Erro no ensemble: {exc}", file=sys.stderr)
-        return 1
-
-
-    print(f"\nEnsemble ({args.vote_kind}) — {report['model_count']} modelo(s): {', '.join(report['models'])}")
-    print(f"  min_votes={report['min_votes']}")
-    print(f"  candidatos={report['candidate_count']}  selecionados={report['selected_count']}")
-    if args.verbose:
-        for candidate in report["candidates"]:
-            mark = "✓" if candidate["selected"] else " "
-            print(
-                f"  [{mark}] {candidate['votes']} voto(s)  "
-                f"{candidate['file']}::{candidate['function']}  {candidate['category']}  "
-                f"({', '.join(candidate['models'])})"
-            )
-
-
-    if args.report:
-        report_path = write_vote_report(report, args.report)
-        print(f"\nRelatório JSON: {report_path}")
-
-
-    return 0
 
 
 # The release build; ~/.local/bin/esbmc may shadow it with a development build.
@@ -1615,14 +1081,9 @@ def main() -> int:
 
 
     dispatch = {
-        "esbmc-only": mode_esbmc_only,
-        "llm-only":   mode_llm_only,
-        "hybrid":     mode_v2,
-        "hybrid-direct": mode_hybrid,
-        "benchmark":  mode_benchmark,
-        "benchmark-v1": mode_benchmark_v1,
-        "ensemble":   mode_ensemble,
-        "scan":       mode_scan,
+        "hybrid":    mode_v2,
+        "benchmark": mode_benchmark,
+        "scan":      mode_scan,
     }
     return dispatch[args.mode](args)
 

@@ -75,23 +75,6 @@ def test_direct_runner_persists_partial_output_on_timeout(tmp_path: Path, monkey
     assert "partial error" in Path(result.raw_log_path).read_text(encoding="utf-8")
 
 
-def test_function_runner_persists_partial_output_on_timeout(tmp_path: Path, monkeypatch) -> None:
-    def timeout(command, **kwargs):
-        raise subprocess.TimeoutExpired(command, kwargs["timeout"], output="Converting", stderr="partial error")
-
-    monkeypatch.setattr(esbmc_runner.subprocess, "run", timeout)
-    source = tmp_path / "probe.py"
-    source.write_text("def f(x: int):\n    return x\n", encoding="utf-8")
-    result = esbmc_runner.run_esbmc_on_function(
-        source, "f", "probe", "division_by_zero", esbmc_command=["/bin/true"],
-        output_dir=tmp_path / "logs",
-    )
-    assert result.status == "inconclusive"
-    assert "Converting" in result.stdout
-    assert Path(result.raw_log_path).exists()
-    assert "partial error" in Path(result.raw_log_path).read_text(encoding="utf-8")
-
-
 def test_diagnosis_reads_raw_log_when_output_was_summarized(tmp_path):
     log = tmp_path / "run.log"
     log.write_text(

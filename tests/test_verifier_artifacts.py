@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import pytest
 
-from research_pipeline.models import ESBMCDirectResult, ESBMCResult
-from research_pipeline.report import _category_from_esbmc_property
 from research_pipeline.verification.esbmc_runner import (
     _extract_esbmc_details,
     only_verifier_artifacts,
@@ -91,27 +89,4 @@ def test_only_verifier_artifacts(output: str, artifact: bool) -> None:
 
 def test_details_without_parsed_properties_are_not_called_artifacts() -> None:
     assert only_verifier_artifacts({}) is False
-
-
-@pytest.mark.parametrize(
-    ("text", "category"),
-    [
-        ("Missing return statement detected in function 'multi_get'", "none_misuse"),
-        ("dereference failure: invalid pointer", "unknown_esbmc_violation"),
-        ("dereference failure: NULL pointer", "none_misuse"),
-    ],
-)
-def test_property_to_category_mapping(text: str, category: str) -> None:
-    assert _category_from_esbmc_property(text) == category
-
-
-def _native(output: str) -> ESBMCResult:
-    return ESBMCResult(finding_id="n", status="violation_found", command=["esbmc"], returncode=1,
-                       summary="v", details=_extract_esbmc_details(output))
-
-
-def _direct(status: str, output: str = "") -> ESBMCDirectResult:
-    return ESBMCDirectResult(source_file="x.py", status=status, command=["esbmc"], returncode=1,
-                             summary=status, details=_extract_esbmc_details(output))
-
 

@@ -49,7 +49,7 @@ relatório):
    contexto da função, recurso de Python que o ESBMC não tem, falha interna do ESBMC, tempo,
    tipos inválidos ou função não encontrada.
 
-Regras que definem o método (detalhes em [`docs/v2/desenho_motor_verify.md`](docs/v2/desenho_motor_verify.md)):
+Regras que definem o método (detalhes em [`docs/desenho/motor_verify.md`](docs/desenho/motor_verify.md)):
 
 - **A hipótese é congelada:** localização e expressão não mudam entre tentativas.
 - **A LLM não escreve código:** devolve só um JSON com tipos, pré-condições e o tipo de retorno de
@@ -78,11 +78,10 @@ Regras que definem o método (detalhes em [`docs/v2/desenho_motor_verify.md`](do
 | Fluxo | Modo | Descrição |
 |---|---|---|
 | **V2 (principal)** | `--mode hybrid` / `--mode benchmark` | Detecção pela LLM e verificação pelo motor descrito acima |
-| **Flow A** | `--mode esbmc-only` | ESBMC puro: baseline formal sem LLM (V1) |
-| **Flow B** | `--mode hybrid-direct` | LLM indica categoria e o ESBMC roda direto na função (V1) |
-| **Flow C** | `--mode llm-only` | LLM pura, sem verificação formal (V1) |
-| **Benchmark V1** | `--mode benchmark-v1` | Avalia os fluxos A+B+C com as métricas V1 |
-| **Ensemble** | `--mode ensemble` | Voto entre modelos já rodados (V1) |
+| **Scan** | `--mode scan` | Varre um repositório: grafo de chamadas, detecção por função e motor verify |
+
+O código da V1 (fluxos A/B/C, benchmark V1 e ensemble) foi removido. Ficam os resultados em
+`reports/json/v1_benchmark/` e `logs/`, o dataset em `dataset/v1_sintetico/` e a descrição em `docs/historico/v1/`.
 
 ---
 
@@ -105,10 +104,10 @@ função não encontrada. Os do corpo da função só caem corrigindo o ESBMC; r
 deixaria de verificar o código real.
 
 Ainda falta rodar o agente nas versões corrigidas (controle de confirmação falsa do nível 2).
-Mudanças e medições: [`docs/projeto/harness_oraculo_esbmc_2026-10-01.md`](docs/projeto/harness_oraculo_esbmc_2026-10-01.md).
+Mudanças e medições: [`docs/historico/harness_oraculo_esbmc_2026-10-01.md`](docs/historico/harness_oraculo_esbmc_2026-10-01.md).
 
 Detalhes e caminhos possíveis: [`docs/projeto/entendendo_o_pipeline.md`](docs/projeto/entendendo_o_pipeline.md)
-(seções 9 e 10) e [`docs/projeto/duvidas_orientacao_2026-09-30.md`](docs/projeto/duvidas_orientacao_2026-09-30.md).
+(seções 9 e 10) e [`docs/historico/duvidas_orientacao_2026-09-30.md`](docs/historico/duvidas_orientacao_2026-09-30.md).
 
 ---
 
@@ -288,52 +287,11 @@ Scripts da V2:
 | `scripts/fetch_v2_full_sources.py`, `scripts/fetch_v2_fixed_sources.py` | baixam os arquivos completos com bug e corrigidos |
 | `scripts/collect_validated_bugs.py`, `scripts/label_candidates.py` | coletam e rotulam bugs validados em `dataset/coleta_bugsinpy/` |
 
-### Benchmark V1 (baseline)
+### Resultados V1 (histórico)
 
-```bash
-source .env
-
-# Modelos via API
-python src/main.py --mode benchmark \
-    --input dataset/v1_sintetico/ground_truths \
-    --model gpt-4o \
-    --bound 5 --timeout 30 \
-    --report reports/json/v1_benchmark/benchmark_gpt-4o.json
-
-# Modelos locais Ollama (--llm-timeout maior pois inferência é lenta)
-python src/main.py --mode benchmark \
-    --input dataset/v1_sintetico/ground_truths \
-    --model deepseek-r1:7b \
-    --bound 5 --timeout 30 --llm-timeout 600 \
-    --report reports/json/v1_benchmark/benchmark_deepseek-r1-7b.json
-```
-
-O prompt enviado à LLM contém somente o código da função e metadados básicos; operações pré-extraídas pelo AST não são expostas.
-
-Se a execução for interrompida, repita o mesmo comando com `--resume`. O
-checkpoint só é aceito com a mesma configuração. Execuções parciais retornam
-código `2` e registram os casos ausentes em `coverage.failed_cases`.
-
-Ver todos os comandos em [`TUTORIAL.md`](TUTORIAL.md).
-
-### Modos auxiliares
-
-```bash
-# Fluxo híbrido legado (exploração/debug)
-python src/main.py --mode hybrid-direct \
-    --input dataset/v1_sintetico/ok/bugs \
-    --model gpt-4o --bound 5 --timeout 30
-
-# Flow A: ESBMC puro sem LLM
-python src/main.py --mode esbmc-only \
-    --input dataset/v1_sintetico/ok/bugs \
-    --bound 5 --timeout 30
-
-# Flow C: só LLM, sem ESBMC
-python src/main.py --mode llm-only \
-    --input dataset/v1_sintetico/ok/bugs \
-    --model gpt-4o
-```
+A V1 não roda mais neste repositório: o código dos fluxos A/B/C foi removido. Os relatórios do
+benchmark V1 continuam em `reports/json/v1_benchmark/`, os logs em `logs/` e a descrição dos fluxos e
+métricas em [`docs/historico/v1/`](docs/historico/v1).
 
 ---
 
@@ -360,7 +318,7 @@ Schema simplificado (5 campos obrigatórios):
 
 ---
 
-## Flags ESBMC por categoria (Flow B)
+## Flags ESBMC por categoria (Flow B, V1, histórico)
 
 ```python
 {
@@ -375,7 +333,7 @@ O `--bound N` da CLI é aplicado ao incremental BMC como `--max-k-step N`.
 
 ---
 
-## Classificações de resultado (V1)
+## Classificações de resultado (V1, histórico)
 
 | Classificação | Significado |
 |---|---|
@@ -389,9 +347,9 @@ O `--bound N` da CLI é aplicado ao incremental BMC como `--max-k-step N`.
 
 ---
 
-## Métricas (V1)
+## Métricas (V1, histórico)
 
-O modo `benchmark` calcula:
+O benchmark V1, cujo código foi removido, calculava:
 
 - **P/R/F1** em nível de finding para bugs (Flow B), smells e Flow A
 - **MCC e accuracy** em nível de função (binário: bug vs. não-bug)
@@ -399,7 +357,7 @@ O modo `benchmark` calcula:
 - **NRR** (Noise Reduction Rate): redução de FP do Flow C para o Flow B
 - **Bootstrap 95% CIs** (B=2000, seed=42)
 
-Ver [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) para a especificação completa.
+Ver [`docs/historico/v1/benchmark_reference.md`](docs/historico/v1/benchmark_reference.md) para a especificação completa.
 
 ---
 
@@ -408,11 +366,9 @@ Ver [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) para a es
 ```
 llm-esbmc-pipeline/
 ├── src/
-│   ├── main.py                     # CLI: --mode hybrid|benchmark (V2), benchmark-v1|hybrid-direct|esbmc-only|llm-only|ensemble (V1)
+│   ├── main.py                     # CLI: --mode hybrid|benchmark|scan
 │   └── research_pipeline/
 │       ├── preprocess.py           # Extrai CodeUnit por função via AST
-│       ├── pipeline.py             # Orquestra os flows A/B/C da V1
-│       ├── report.py, evaluator.py # Classificações e métricas da V1
 │       ├── v2_evaluator.py         # Métricas de detecção da V2 (localização e triagem)
 │       ├── llm/                    # Backends da LLM de detecção (openai, anthropic, ollama, google, codex, claude_cli)
 │       ├── prompts/
@@ -465,9 +421,9 @@ python -m pytest -m live_llm -q
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/v2/desenho_motor_verify.md`](docs/v2/desenho_motor_verify.md) | Desenho do motor de verificação da V2, vereditos e limitações |
-| [`docs/v2/README.md`](docs/v2/README.md) | Como rodar a V2 e ler os resultados |
-| [`docs/projeto/complemento_apresentacao_2026-09-30.md`](docs/projeto/complemento_apresentacao_2026-09-30.md) | Apresentação com os resultados atuais |
-| [`docs/projeto/repro_esbmc_none/`](docs/projeto/repro_esbmc_none/) | Reprodutores mínimos de limites do ESBMC-Python |
-| [`docs/v1/benchmark_reference.md`](docs/v1/benchmark_reference.md) | Especificação dos fluxos, flags ESBMC, métricas e metodologia V1 |
-| [`docs/v1/pipeline_walkthrough.md`](docs/v1/pipeline_walkthrough.md) | Walkthrough arquivo por arquivo do pipeline V1 |
+| [`docs/desenho/motor_verify.md`](docs/desenho/motor_verify.md) | Desenho do motor de verificação da V2, vereditos e limitações |
+| [`docs/projeto/guia_v2.md`](docs/projeto/guia_v2.md) | Como rodar a V2 e ler os resultados |
+| [`docs/historico/complemento_apresentacao_2026-09-30.md`](docs/historico/complemento_apresentacao_2026-09-30.md) | Apresentação com os resultados atuais |
+| [`docs/projeto/possiveis_problemas/`](docs/projeto/possiveis_problemas/) | Reprodutores mínimos de limites do ESBMC-Python |
+| [`docs/historico/v1/benchmark_reference.md`](docs/historico/v1/benchmark_reference.md) | Especificação dos fluxos, flags ESBMC, métricas e metodologia V1 |
+| [`docs/historico/v1/pipeline_walkthrough.md`](docs/historico/v1/pipeline_walkthrough.md) | Walkthrough arquivo por arquivo do pipeline V1 |

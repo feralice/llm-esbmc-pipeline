@@ -1,6 +1,5 @@
 ﻿from __future__ import annotations
 
-import ast
 import os
 import re
 import shutil
@@ -10,7 +9,7 @@ import time
 from hashlib import sha256
 from pathlib import Path
 
-from ..models import ESBMCDirectResult, ESBMCResult
+from ..models import ESBMCDirectResult
 
 # ESBMC master build behind a wrapper adding --no-pointer-check --no-align-check, the flags of every run
 # since phase 13; without them 8.6 times out on small list programs (measured 16/10/2026). The item 6 number
@@ -36,23 +35,6 @@ def _timeout_text(value: str | bytes | None) -> str:
         return value.decode("utf-8", errors="replace")
     return value or ""
 
-
-def _esbmc_path(file_path: Path) -> Path:
-    """Return path relative to cwd when possible — ESBMC behaves differently with absolute paths."""
-    try:
-        import os
-        # relpath correctly handles absolute/relative mix and returns relative if possible
-        rel = os.path.relpath(str(file_path), os.getcwd())
-        if not rel.startswith(".."):
-            return Path(rel)
-        return file_path
-    except Exception:
-        return file_path
-
-
-# ---------------------------------------------------------------------------
-# Legacy helper — ESBMC on original file at module level
-# ---------------------------------------------------------------------------
 
 def run_esbmc_direct(
     file_path: str | Path,
@@ -157,81 +139,6 @@ def run_esbmc_direct(
     )
 
 
-def generate_pytest_testcase(
-    file_path: str | Path,
-    *,
-    esbmc_command: list[str] | None = None,
-    bound: int = 5,
-    timeout_seconds: int = 30,
-    output_dir: str | Path,
-) -> dict[str, object]:
-    """Generate a concrete pytest file from ESBMC's symbolic witnesses."""
-    file_path = Path(file_path)
-    output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
-    existing_pytest_files = {
-        path.resolve() for path in output_path.rglob("*.py")
-    }
-    base_command = list(esbmc_command or ["esbmc"])
-    command = [
-        *base_command,
-        *_bounded_incremental_flags(bound),
-        "--generate-pytest-testcase",
-        "--pytest-output-dir",
-        str(output_path),
-        str(file_path),
-    ]
-    expected_path = output_path / f"test_{file_path.name}"
-    if shutil.which(command[0]) is None:
-        return {"status": "skipped", "path": "", "summary": "ESBMC não encontrado no PATH.", "command": command}
-    started = time.monotonic()
-    try:
-        completed = subprocess.run(
-            command, check=False, capture_output=True, text=True, timeout=timeout_seconds
-        )
-    except subprocess.TimeoutExpired:
-        return {
-            "status": "timeout", "path": "",
-            "summary": f"Geração do contra-teste excedeu {timeout_seconds}s.",
-            "seconds": float(timeout_seconds), "command": command,
-        }
-    except OSError as exc:
-        return {
-            "status": "error", "path": "", "summary": str(exc),
-            "seconds": time.monotonic() - started, "command": command,
-        }
-    generated_paths = sorted(
-        path for path in output_path.rglob("*.py")
-        if path.resolve() not in existing_pytest_files
-    )
-    actual_path = (
-        generated_paths[0]
-        if generated_paths
-        else expected_path if expected_path.exists() else None
-    )
-    if actual_path is not None:
-        try:
-            ast.parse(actual_path.read_text(encoding="utf-8"), filename=str(actual_path))
-        except (OSError, SyntaxError) as exc:
-            return {
-                "status": "invalid_generated_test",
-                "path": str(actual_path),
-                "summary": f"ESBMC gerou Python inválido: {exc}",
-                "seconds": time.monotonic() - started,
-                "command": command,
-            }
-        return {
-            "status": "generated", "path": str(actual_path),
-            "summary": f"Contra-teste Pytest gerado: {actual_path}",
-            "seconds": time.monotonic() - started, "command": command,
-        }
-    output = f"{completed.stdout or ''}\n{completed.stderr or ''}".strip()
-    return {
-        "status": "not_generated", "path": "", "summary": output or "ESBMC não gerou arquivo Pytest.",
-        "seconds": time.monotonic() - started, "command": command,
-    }
-
-
 def _classify_esbmc_direct_result(output: str, returncode: int | None) -> str:
     """Classify ESBMC output into one of the five canonical statuses for Flow A."""
     if re.search(
@@ -297,258 +204,6 @@ def _write_direct_log(file_path: Path, combined: str, output_dir: str | Path | N
 
 
 # ---------------------------------------------------------------------------
-# Flow B — ESBMC with --function (symbolic entry point, no instrumentation)
-# ---------------------------------------------------------------------------
-
-# Both Flow A and Flow B use identical flags: symbolic parameters only.
-# No cross-property suppression flags — both flows get the same verification conditions.
-_FLOW_B_CATEGORY_FLAGS: dict[str, list[str]] = {
-    "division_by_zero":    ["--assign-param-nondet"],
-    "out_of_bounds":       ["--assign-param-nondet"],
-    "assertion_violation": ["--assign-param-nondet"],
-    "none_misuse":         ["--assign-param-nondet"],
-    "type_mismatch":       ["--assign-param-nondet"],
-    "invalid_precondition": ["--assign-param-nondet"],
-    "variable_misuse":     ["--assign-param-nondet"],
-    "integer_overflow":    [
-        "--assign-param-nondet",
-        "--overflow-check",
-        "--unsigned-overflow-check",
-    ],
-}
-
-_FLOW_A_BASE_FLAGS: list[str] = ["--assign-param-nondet"]
-
-
-def run_esbmc_on_function(
-    file_path: str | Path,
-    function_name: str,
-    finding_id: str,
-    category: str,
-    extra_flags: list[str] | None = None,
-    esbmc_command: list[str] | None = None,
-    bound: int = 5,
-    timeout_seconds: int = 30,
-    output_dir: str | Path | None = None,
-    class_name: str | None = None,
-) -> ESBMCResult:
-    """Flow B: run ESBMC with --function so parameters become symbolic automatically."""
-    file_path = Path(file_path)
-    base = list(esbmc_command or ["esbmc"])
-    flags = list(_FLOW_B_CATEGORY_FLAGS.get(category, []))
-    if extra_flags:
-        flags.extend(extra_flags)
-    command = [
-        *base,
-        "--function",
-        function_name,
-        *(["--class", class_name] if class_name else []),
-        *_bounded_incremental_flags(bound),
-        *flags,
-        str(file_path),
-    ]
-
-    executable = shutil.which(command[0])
-    if executable is None:
-        return ESBMCResult(
-            finding_id=finding_id,
-            status="skipped",
-            command=command,
-            returncode=None,
-            summary="ESBMC não encontrado no PATH. Verificação formal não executada.",
-            details=_verification_metadata("skipped", bound, timeout_seconds),
-        )
-
-    start = time.monotonic()
-    try:
-        completed = subprocess.run(
-            command,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-        )
-        elapsed = time.monotonic() - start
-    except subprocess.TimeoutExpired as exc:
-        partial_stdout = _timeout_text(exc.stdout)
-        partial_stderr = _timeout_text(exc.stderr)
-        logs_dir = (
-            Path(output_dir)
-            if output_dir
-            else Path(tempfile.gettempdir()) / "llm-esbmc" / "esbmc_function_logs"
-        )
-        logs_dir.mkdir(parents=True, exist_ok=True)
-        raw_log_path = logs_dir / f"{_artifact_stem(file_path)}_{finding_id}.log"
-        raw_log_path.write_text(
-            f"{partial_stdout}\n{partial_stderr}".strip(), encoding="utf-8"
-        )
-        details = _verification_metadata("inconclusive", bound, timeout_seconds, "timeout")
-        details["partial_output_available"] = bool(partial_stdout or partial_stderr)
-        return ESBMCResult(
-            finding_id=finding_id,
-            status="inconclusive",
-            command=command,
-            returncode=None,
-            summary="ESBMC excedeu o tempo limite configurado.",
-            time_seconds=float(timeout_seconds),
-            stdout=partial_stdout,
-            stderr=partial_stderr,
-            details=details,
-            raw_log_path=str(raw_log_path),
-        )
-
-    stdout = completed.stdout or ""
-    stderr = completed.stderr or ""
-    combined = f"{stdout}\n{stderr}"
-
-    if "ERROR:" in combined and "VERIFICATION" not in combined:
-        status = "tool_error"
-    else:
-        status = _classify_esbmc_result(combined, completed.returncode)
-
-    details = _extract_esbmc_details(combined, file_path)
-    details["bound"] = bound
-    details.update(_verification_metadata(status, bound, timeout_seconds))
-
-    logs_dir = (
-        Path(output_dir)
-        if output_dir
-        else Path(tempfile.gettempdir()) / "llm-esbmc" / "esbmc_function_logs"
-    )
-    logs_dir.mkdir(parents=True, exist_ok=True)
-    raw_log_path = logs_dir / f"{_artifact_stem(file_path)}_{finding_id}.log"
-    raw_log_path.write_text(combined, encoding="utf-8")
-
-    return ESBMCResult(
-        finding_id=finding_id,
-        status=status,
-        command=command,
-        returncode=completed.returncode,
-        summary=_summarize(status, details),
-        time_seconds=round(elapsed, 3),
-        stdout=stdout,
-        stderr=_prettify_output(status, details, raw_log_path),
-        details=details,
-        raw_log_path=str(raw_log_path),
-    )
-
-
-def run_esbmc_function_baseline(
-    file_path: str | Path,
-    function_names: list[str],
-    esbmc_command: list[str] | None = None,
-    bound: int = 5,
-    timeout_seconds: int = 30,
-    output_dir: str | Path | None = None,
-) -> ESBMCDirectResult:
-    """Flow A: run ESBMC with --function for each function, without LLM guidance."""
-    file_path = Path(file_path)
-    unique_names = list(dict.fromkeys(function_names))
-    command = [
-        *(esbmc_command or ["esbmc"]),
-        "--function",
-        "<each-function>",
-        *_bounded_incremental_flags(bound),
-        str(file_path),
-    ]
-
-    if not unique_names:
-        return ESBMCDirectResult(
-            source_file=str(file_path),
-            status="skipped",
-            command=command,
-            returncode=None,
-            summary="ESBMC Flow A: nenhuma função candidata encontrada.",
-            details={
-                "mode": "function_baseline",
-                "bound": bound,
-                "function_count": 0,
-                "functions": [],
-            },
-        )
-
-    start = time.monotonic()
-    results = [
-        run_esbmc_on_function(
-            file_path=file_path,
-            function_name=function_name,
-            finding_id=f"flow_a_{function_name}",
-            category="",
-            extra_flags=_FLOW_A_BASE_FLAGS,
-            esbmc_command=esbmc_command,
-            bound=bound,
-            timeout_seconds=timeout_seconds,
-            output_dir=output_dir,
-        )
-        for function_name in unique_names
-    ]
-    elapsed = time.monotonic() - start
-
-    statuses = [r.status for r in results]
-    if any(status == "violation_found" for status in statuses):
-        status = "violation_found"
-    elif all(status == "skipped" for status in statuses):
-        status = "skipped"
-    elif any(status == "no_violation_found" for status in statuses):
-        status = "no_violation_found"
-    elif all(status == "tool_error" for status in statuses):
-        status = "tool_error"
-    else:
-        status = "inconclusive"
-
-    violating = [
-        name for name, result in zip(unique_names, results)
-        if result.status == "violation_found"
-    ]
-    details = {
-        "mode": "function_baseline",
-        "bound": bound,
-        "function_count": len(unique_names),
-        "functions": [
-            {
-                "name": name,
-                "status": result.status,
-                "summary": result.summary,
-                "command": result.command,
-                "raw_log_path": result.raw_log_path,
-                "property_kind": result.details.get("property_kind", ""),
-                "property_text": result.details.get("property_text", ""),
-                "location": result.details.get("location", ""),
-            }
-            for name, result in zip(unique_names, results)
-        ],
-        "violating_functions": violating,
-    }
-
-    return ESBMCDirectResult(
-        source_file=str(file_path),
-        status=status,
-        command=command,
-        returncode=None,
-        summary=_summarize_function_baseline(status, unique_names, violating),
-        time_seconds=round(elapsed, 3),
-        details=details,
-    )
-
-
-def _summarize_function_baseline(
-    status: str,
-    function_names: list[str],
-    violating_functions: list[str],
-) -> str:
-    if status == "violation_found":
-        names = ", ".join(violating_functions)
-        return f"ESBMC Flow A encontrou violação em função candidata: {names}."
-    if status == "no_violation_found":
-        return f"ESBMC Flow A verificou {len(function_names)} função(ões) com --function sem violação no bound."
-    if status == "skipped":
-        return "ESBMC Flow A não executou: ESBMC não encontrado ou nenhuma função candidata."
-    if status == "tool_error":
-        return "ESBMC Flow A encontrou erro de ferramenta em todas as funções candidatas."
-    return "ESBMC Flow A retornou resultado inconclusivo nas funções candidatas."
-
-
-# ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------
 
@@ -576,30 +231,6 @@ def _only_unsupported_function_failed(output: str) -> bool:
         for match in re.finditer(r"Violated property:\n(?:[ \t]+file .*\n)?[ \t]+(.*)\n", output)
     ]
     return bool(kinds) and all(k.startswith("Unsupported function") for k in kinds)
-
-
-def _summarize(status: str, details: dict[str, object]) -> str:
-    property_kind = str(details.get("property_kind", "")).strip()
-    property_text = str(details.get("property_text", "")).strip()
-    location      = str(details.get("location", "")).strip()
-
-    if status == "violation_found":
-        base = "ESBMC encontrou violação da propriedade."
-        if property_kind and property_text:
-            base = f"ESBMC encontrou violação: {property_kind} ({property_text})."
-        elif property_kind:
-            base = f"ESBMC encontrou violação: {property_kind}."
-        elif property_text:
-            base = f"ESBMC encontrou violação da propriedade {property_text}."
-        return f"{base} Local: {location}." if location else base
-    if status == "no_violation_found":
-        bound = details.get("bound")
-        if bound is not None:
-            return f"ESBMC não encontrou violação até o limite k={bound}."
-        return "ESBMC não encontrou violação no escopo analisado."
-    if status == "tool_error":
-        return "ESBMC retornou erro interno (recurso não suportado ou código incompatível)."
-    return "Resultado inconclusivo da verificação formal."
 
 
 def _extract_esbmc_details(
@@ -784,47 +415,3 @@ def _verification_metadata(
     elif outcome == "inconclusive":
         metadata["inconclusive_reason"] = status
     return metadata
-
-
-def _prettify_output(
-    status: str,
-    details: dict[str, object],
-    raw_log_path: Path,
-) -> str:
-    lines: list[str] = []
-    property_kind = str(details.get("property_kind", "")).strip()
-    property_text = str(details.get("property_text", "")).strip()
-    location      = str(details.get("location", "")).strip()
-    warnings_raw = details.get("warnings", [])
-    counterexample_raw = details.get("counterexample", [])
-    warnings = [str(item) for item in warnings_raw] if isinstance(warnings_raw, list) else []
-    counterexample = (
-        [str(item) for item in counterexample_raw]
-        if isinstance(counterexample_raw, list)
-        else []
-    )
-
-    if status == "violation_found":
-        lines.append("ESBMC confirmou violação.")
-    elif status == "no_violation_found":
-        lines.append("ESBMC não encontrou violação no escopo analisado.")
-    else:
-        lines.append("ESBMC retornou resultado inconclusivo ou erro.")
-
-    if location:
-        lines.append(f"Local: {location}")
-    if property_kind:
-        lines.append(f"Tipo de propriedade: {property_kind}")
-    if property_text:
-        lines.append(f"Propriedade: {property_text}")
-    if counterexample:
-        lines.append("Contraexemplo relevante:")
-        for item in counterexample:
-            lines.append(f"- {item}")
-    if warnings:
-        lines.append("Avisos:")
-        for item in warnings:
-            lines.append(f"- {item}")
-
-    lines.append(f"Log bruto completo: {raw_log_path}")
-    return "\n".join(lines)

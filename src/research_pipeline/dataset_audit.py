@@ -8,8 +8,7 @@ from collections import Counter
 from pathlib import Path
 
 from .ast_utils import expression_exists_as_statement
-from .dataset_layout import MANUAL_HARNESS, buggy_function_dir, dataset_of_harness
-from .evaluator import load_ground_truth_cases
+from .dataset_layout import MANUAL_HARNESS, buggy_function_dir, dataset_of_harness, manual_harness_dir
 from .preprocess import preprocess_file
 
 _LEAKY_NAME = re.compile(r"(^|_)(buggy|correct|fixed|broken|unsafe)($|_)", re.IGNORECASE)
@@ -17,6 +16,116 @@ _LEAKY_COMMENT = re.compile(
     r"\b(real bug|before the fix|pre-fix|buggy|the fix|correct behavior|crash trigger)\b",
     re.IGNORECASE,
 )
+
+
+def load_ground_truth_cases(ground_truth_path: Path) -> list[tuple[Path, list[dict]]]:
+    """Load either the legacy ground_truth.json or the new per-category dataset JSONs."""
+    if ground_truth_path.is_dir():
+        return _load_cases_from_dir(ground_truth_path)
+
+    payload = json.loads(ground_truth_path.read_text(encoding="utf-8"))
+    if isinstance(payload, dict) and "items" in payload:
+        if _is_flat_multilabel_dataset(payload, ground_truth_path):
+            return _load_flat_multilabel_cases(payload, manual_harness_dir(ground_truth_path.parent))
+        source_root = _infer_source_root_for_ground_truth_dir(ground_truth_path.parent)
+        category = str(payload.get("category") or ground_truth_path.stem)
+        return [
+            (_source_path_for_item(source_root, category, item), [_expected_from_dataset_item(item)])
+            for item in payload.get("items", [])
+            if isinstance(item, dict) and item.get("file")
+        ]
+
+    labeled_dir = ground_truth_path.parent
+    return [
+        (labeled_dir / filename, entry.get("expected_findings", []))
+        for filename, entry in payload.items()
+    ]
+
+
+def _load_cases_from_dir(directory: Path) -> list[tuple[Path, list[dict]]]:
+    """Load dataset JSONs recursively from a ground_truths directory or category dir.
+
+    Multiple ground-truth items for the same source file are grouped into a
+    single case so the file is only sent to the LLM once.
+    """
+    grouped: dict[Path, list[dict]] = {}
+    for json_path in sorted(directory.rglob("*.json")):
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict) or "items" not in payload:
+            continue
+        source_root = _infer_source_root_for_ground_truth_dir(json_path.parent)
+        category = str(payload.get("category") or json_path.stem)
+        for item in payload.get("items", []):
+            if not isinstance(item, dict) or not item.get("file"):
+                continue
+            src = _source_path_for_item(source_root, category, item)
+            grouped.setdefault(src, []).append(_expected_from_dataset_item(item))
+    return [(path, expected) for path, expected in grouped.items()]
+
+
+def _infer_source_root_for_ground_truth_dir(ground_truth_dir: Path) -> Path:
+    # dataset/v1_sintetico/ground_truths/bugs -> dataset/v1_sintetico/ok/bugs
+    if ground_truth_dir.parent.name == "ground_truths":
+        return ground_truth_dir.parent.parent / "ok" / ground_truth_dir.name
+    return ground_truth_dir.parent / "ok" / ground_truth_dir.name
+
+
+def _source_path_for_item(source_root: Path, category: str, item: dict) -> Path:
+    filename = str(item["file"])
+    if category == "clean" or source_root.name == category:
+        return source_root / filename
+    return source_root / category / filename
+
+
+def _expected_from_dataset_item(item: dict, *, use_harness_aliases: bool = False) -> dict:
+    function = item.get("function", "")
+    expression = item.get("expression", "")
+    line = item.get("line")
+    if use_harness_aliases:
+        function = item.get("harness_function", function)
+        expression = item.get("harness_expression", expression)
+        line = item.get("harness_line", line)
+    return {
+        "function": function,
+        "category": item.get("expected_category", item.get("category", "")),
+        "verifiable": bool(item.get("verifiable", False)),
+        "expression": expression,
+        "line": line,
+        "id": item.get("id", ""),
+        "expected_type": item.get("expected_type", ""),
+        "should_go_to_esbmc": bool(item.get("should_go_to_esbmc", False)),
+    }
+
+
+def _is_flat_multilabel_dataset(payload: dict, ground_truth_path: Path) -> bool:
+    """Return whether this is the V2 flat ``bugs/`` + category-list layout."""
+    items = payload.get("items", [])
+    return (
+        manual_harness_dir(ground_truth_path.parent).is_dir()
+        and isinstance(items, list)
+        and any(isinstance(item, dict) and isinstance(item.get("categories"), list) for item in items)
+    )
+
+
+def _load_flat_multilabel_cases(payload: dict, source_root: Path) -> list[tuple[Path, list[dict]]]:
+    """Load V2 items, expanding each category tag into one expected finding."""
+    grouped: dict[Path, list[dict]] = {}
+    for item in payload.get("items", []):
+        if not isinstance(item, dict):
+            continue
+        filename = item.get("harness_file", item.get("file"))
+        if not filename:
+            continue
+        categories = item.get("categories", [])
+        if not isinstance(categories, list) or not categories:
+            continue
+        source = source_root / str(filename)
+        expected = grouped.setdefault(source, [])
+        for category in categories:
+            entry = _expected_from_dataset_item(item, use_harness_aliases=True)
+            entry["category"] = str(category)
+            expected.append(entry)
+    return sorted(grouped.items(), key=lambda case: str(case[0]))
 
 
 def _is_module_level_label(function: str) -> bool:

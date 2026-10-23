@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from research_pipeline.dataset_layout import buggy_function_dir, manual_harness_dir
-from research_pipeline.evaluator import load_ground_truth_cases
+from research_pipeline.dataset_audit import load_ground_truth_cases
 from research_pipeline.llm.categories import FORMAL_CATEGORIES
 from research_pipeline.v2_eligibility import (
     EligibilityError,
