@@ -30,6 +30,7 @@ from .esbmc_run import VERDICT_KINDS, check, esbmc_output
 from .outcome import CONFIRMED, final_verdict
 from .procs import run_group
 from .render import Program
+from .rounds import install_round_logger, read_rounds
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 
 AGENT_FAILED = "AGENT_FAILED"
@@ -39,6 +40,8 @@ CONFIRMED_SIMPLIFIED = "CONFIRMED_SIMPLIFIED"
 # The replayed exception comes from code the agent invented (a stub raised it, or it names a stub class),
 # not from the real code: a confirmation of the harness, not of the bug.
 STUB_INDUCED = "STUB_INDUCED"
+# ESBMC crashed on the agent's last call: a candidate reproducer for an ESBMC bug, never a confirmation.
+ESBMC_CRASH = "ESBMC_CRASH"
 # Evaluation only: the harness with the target swapped for its fixed version, fed the same ESBMC inputs,
 # still raises at the suspect expression, so the crash is not the bug the fix removed.
 FIXED_ALSO_FAILS = "FIXED_ALSO_FAILS"
@@ -86,8 +89,10 @@ def install_project_skills(case_dir: Path, skills_dir: Path = SKILLS_DIR) -> dic
 
 
 def claude_agent(claude_command: str = "claude", model: str | None = None,
-                 esbmc: str = DEFAULT_ESBMC, *, plugin: bool = True, isolated: bool = True) -> RunAgent:
-    """``isolated`` loads no user settings (globally enabled plugins, hooks), so the ESBMC plugin is
+                 esbmc: str = DEFAULT_ESBMC, *, plugin: bool = True, isolated: bool = True,
+                 log_rounds: bool = False) -> RunAgent:
+    """``log_rounds`` puts the case folder's recording ``esbmc`` (run_agent_arm installs it) first on PATH.
+    ``isolated`` loads no user settings (globally enabled plugins, hooks), so the ESBMC plugin is
     present exactly when ``plugin`` asks for it: the variants of an experiment differ in one thing."""
     def run(prompt: str, cwd: Path, timeout_seconds: int) -> str:
         command = [claude_command, "--print", "--output-format", "json", "--no-session-persistence",
@@ -102,7 +107,8 @@ def claude_agent(claude_command: str = "claude", model: str | None = None,
         command.append(prompt)
         # Same as the claude_cli backend: use the CLI's own login, not a leaked API key.
         env = {key: value for key, value in os.environ.items() if key != "ANTHROPIC_API_KEY"}
-        env["PATH"] = os.pathsep.join([str(Path(esbmc).parent), env.get("PATH", "")])
+        env["PATH"] = os.pathsep.join([*([str(Path(cwd).resolve() / "bin")] if log_rounds else []),
+                                      str(Path(esbmc).parent), env.get("PATH", "")])
         completed = run_group(command, cwd=cwd, timeout_seconds=timeout_seconds, env=env)
         if completed is None:
             raise subprocess.TimeoutExpired(command, timeout_seconds)
@@ -193,12 +199,14 @@ def run_agent_arm(
     bound: int, timeout_seconds: int, agent_timeout: int = 900, source_path: Path | None = None,
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
     fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
+    log_rounds: bool = False,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
     ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept;
     ``fixed_path``, the fixed version of the source, turns on the evaluation control;
-    ``project_skills`` installs the regras-harness skills in the case folder and records their versions."""
+    ``project_skills`` installs the regras-harness skills in the case folder and records their versions;
+    ``log_rounds`` installs the recording ``esbmc`` and keeps every call as ``result["rounds"]``."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -218,6 +226,8 @@ def run_agent_arm(
         (case_dir / "ESBMC_PYTHON_NOTES.md").write_text(text, encoding="utf-8")
     if project_skills:
         result["skills"] = install_project_skills(case_dir)
+    if log_rounds:
+        install_round_logger(case_dir, (esbmc_command or [DEFAULT_ESBMC])[0])
     prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
                             notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
@@ -227,7 +237,9 @@ def run_agent_arm(
     try:
         result["agent_output"] = run_agent(prompt, case_dir, agent_timeout)[-1000:]
     except (OSError, subprocess.TimeoutExpired) as exc:
+        record_rounds(case_dir, result, log_rounds)
         return finish(AGENT_FAILED, f"agent did not finish: {type(exc).__name__}")
+    crashed = record_rounds(case_dir, result, log_rounds)
     harness_path = case_dir / "harness.py"
     if not harness_path.exists():
         return finish(AGENT_FAILED, "agent wrote no harness.py")
@@ -237,7 +249,19 @@ def run_agent_arm(
                                        bound=bound, timeout_seconds=timeout_seconds, fixed=fixed)
     if plugin_command and result.get("target_preserved"):
         result["plugin_report"] = plugin_report(run_agent, plugin_command, case_dir, agent_timeout)
+    if crashed and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
+        return finish(ESBMC_CRASH, "ESBMC crashed on the agent's last call")
     return finish(verdict, reason)
+
+
+def record_rounds(case_dir: Path, result: dict, log_rounds: bool) -> bool:
+    """Copy the recorded rounds into ``result``; returns whether the last one was an ESBMC crash."""
+    if not log_rounds:
+        return False
+    rounds = read_rounds(case_dir)
+    result["rounds"] = [{"index": r.index, "kind": r.kind, "warnings": []} for r in rounds]
+    result["esbmc_crash"] = bool(rounds) and rounds[-1].kind == "crash"
+    return result["esbmc_crash"]
 
 
 def plugin_report(run_agent: RunAgent, command: str, case_dir: Path, timeout_seconds: int) -> str:
