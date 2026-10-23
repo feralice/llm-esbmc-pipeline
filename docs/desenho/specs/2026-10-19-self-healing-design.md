@@ -1,6 +1,6 @@
 # Self-healing do harness guiado pelo repositório do ESBMC (item B, 19/10/2026)
 
-Documento de trabalho da Fernanda. Substitui o escopo do item 6b do `docs/projeto/PLANO_GERAL_2026-10-15.md`
+Documento de trabalho da Fernanda. Substitui o escopo do item 6b do `docs/historico/PLANO_GERAL_2026-10-15.md`
 (harness que aprende com o repositório do ESBMC) e o antecipa para agora.
 
 ## Intenção
@@ -153,7 +153,7 @@ CPython (`FUZZ_FOUND`), ela aparece junto.
 ## Medição
 
 Base: hipóteses **na linha do bug** de bugs ainda não confirmados, da rodada final, que pararam em grounding,
-dependência, recusa ou spec. O ponto de partida é a tabela de `docs/projeto/6b_base_recusas_2026-10-19.md`
+dependência, recusa ou spec. O ponto de partida é a tabela de `docs/historico/6b_base_recusas_2026-10-19.md`
 (96 hipóteses em 73 bugs só de recusa), somada às de grounding e dependência.
 
 Rodadas com as specs já salvas e LLM só onde o conserto pede. As hipóteses que pararam antes da spec não têm
@@ -179,7 +179,7 @@ data, pasta, commit e comando.
 ## Aplicação em repositório real
 
 Depois do dataset, o modo scan roda com e sem o B nos dois primeiros repositórios da primeira leva de
-`docs/projeto/pgene601_repos_scan_2026-10-19.md`: Adafruit_CircuitPython_GPS e pynmea2. Com o grafo do
+`docs/pgene601/pgene601_repos_scan_2026-10-19.md`: Adafruit_CircuitPython_GPS e pynmea2. Com o grafo do
 repositório inteiro, o B1 traz o código real das funções chamadas de outros arquivos. Sem gabarito, a medida é:
 funções que chegam a um veredito do ESBMC, achados `CONFIRMED` que sobrevivem à leitura manual (o contexto real
 de chamada permite a entrada do contraexemplo) e achados `LLM_ONLY`. A detecção roda uma vez por repositório e

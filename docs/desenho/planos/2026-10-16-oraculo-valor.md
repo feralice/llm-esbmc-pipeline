@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.12 do `.venv`, `ast`, `dataclasses`, pytest com `monkeypatch`; replay pelo CPython em subprocesso (já existente); nenhum ESBMC ou LLM real nos testes.
 
-**Spec:** `docs/superpowers/specs/2026-10-16-oraculo-valor-design.md`
+**Spec:** `docs/desenho/specs/2026-10-16-oraculo-valor-design.md`
 
 ## Global Constraints
 
@@ -1654,4 +1654,4 @@ Expected: nenhuma falha.
 Run: `pylint src/research_pipeline/verify/value_oracle.py src/research_pipeline/verify/spec.py src/research_pipeline/verify/render.py src/research_pipeline/verify/loop.py --disable=all --enable=E,W`
 Expected: nenhum erro novo nos trechos alterados.
 
-- [ ] **Ponto de parada (sem commit).** Registrar no `docs/projeto/PLANO_GERAL_2026-10-15.md`, item 5, que o oráculo está implementado e que a medição fica para o item 6 (comando previsto: detecção com `--v2-variants A15` e verify com `--fixed-sources dataset/bugs_reais/arquivo_corrigido`).
+- [ ] **Ponto de parada (sem commit).** Registrar no `docs/historico/PLANO_GERAL_2026-10-15.md`, item 5, que o oráculo está implementado e que a medição fica para o item 6 (comando previsto: detecção com `--v2-variants A15` e verify com `--fixed-sources dataset/bugs_reais/arquivo_corrigido`).

@@ -282,7 +282,7 @@ def main(argv=None) -> int:
     parser.add_argument("--model", default="claude-sonnet-5-5")
     parser.add_argument("--llm-timeout", type=int, default=300)
     parser.add_argument("--reviews", type=Path, nargs="*", default=[])
-    parser.add_argument("--out", type=Path, default=ROOT / "docs/projeto/revisao_linha_da_quebra_2026-10-15.md")
+    parser.add_argument("--out", type=Path, default=ROOT / "docs/historico/revisao_linha_da_quebra_2026-10-15.md")
     args = parser.parse_args(argv)
     truths = json.loads(DOCUMENTS["ground_truths"].read_text(encoding="utf-8"))["items"]
     if args.command == "causes":

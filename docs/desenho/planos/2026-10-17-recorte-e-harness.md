@@ -2,7 +2,7 @@
 
 > Executado inline (superpowers:executing-plans), TDD em cada tarefa.
 
-**Spec:** `docs/superpowers/specs/2026-10-17-recorte-e-harness-design.md`
+**Spec:** `docs/desenho/specs/2026-10-17-recorte-e-harness-design.md`
 
 ## Global Constraints
 

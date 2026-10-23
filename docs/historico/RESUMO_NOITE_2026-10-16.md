@@ -1,16 +1,16 @@
 # Resumo da noite 15 para 16/10/2026
 
-Plano em vigor: `docs/projeto/PLANO_GERAL_2026-10-15.md`. Nada foi commitado, nenhum e2e ou experimento
+Plano em vigor: `docs/historico/PLANO_GERAL_2026-10-15.md`. Nada foi commitado, nenhum e2e ou experimento
 rodou, o gabarito não foi aplicado. Suíte: **1058 testes passando** (era 808 no começo), duas rodadas seguidas.
 
 ## Esperando a Fernanda
 
-1. **Revisar a tabela do gabarito:** `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`. No topo está a
+1. **Revisar a tabela do gabarito:** `docs/historico/revisao_linha_da_quebra_2026-10-15.md`. No topo está a
    lista do que olhar primeiro (8 quebras em dúvida, 5 rejeitadas, 14 corrigidas, 47 causas corrigidas).
    Depois da revisão: `PYTHONPATH=src .venv/bin/python scripts/propose_crash_lines.py apply`.
 2. **Decidir o commit** de tudo (73 arquivos novos ou alterados).
 3. **Aprovar ou ajustar as decisões** listadas na seção "Decisões tomadas sem a Fernanda" de cada spec
-   em `docs/superpowers/specs/2026-10-16-*.md`.
+   em `docs/desenho/specs/2026-10-16-*.md`.
 
 ## O que ficou pronto
 

@@ -9,7 +9,7 @@ bibliográficas centradas em smells foram removidas (ficam no histórico do git)
 > **Nota de 29/09/2026:** as seções que citam o modo `scan`, o harness escalar e os módulos
 > `compat.py`, `guards.py` e `ablation.py` descrevem o desenho anterior da V2, removido do código.
 > As leituras continuam valendo; a correspondência com o motor atual
-> (`src/research_pipeline/verify/`, desenho em `docs/v2/desenho_motor_verify.md`) é:
+> (`src/research_pipeline/verify/`, desenho em `docs/desenho/motor_verify.md`) é:
 > harness escalar sintetizado pela LLM → função original sem alteração e harness montado por
 > código; `compat.py` (validar o harness gerado) → `verify/spec.py` (validar o JSON de tipos) e
 > `verify/render.py`; `guards.py` (pré-condições tiradas do código) → pré-condições da LLM

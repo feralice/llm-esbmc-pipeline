@@ -1,6 +1,6 @@
 # Variantes de prompt (item 4 do PLANO_GERAL)
 
-Data: 16/10/2026. Item 4 de `docs/projeto/PLANO_GERAL_2026-10-15.md`. Este documento cobre só a
+Data: 16/10/2026. Item 4 de `docs/historico/PLANO_GERAL_2026-10-15.md`. Este documento cobre só a
 implementação. A comparação entre variantes roda no item 6, com o gabarito já corrigido (item 1), e
 nenhuma chamada a LLM acontece aqui.
 

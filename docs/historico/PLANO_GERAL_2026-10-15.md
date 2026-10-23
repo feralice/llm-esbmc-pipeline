@@ -28,7 +28,7 @@ rodada completa: 19 de 230 bugs exercitados tiveram alguma confirmação (8,3%),
 
 Ideia central: não perseguir os 62 tipos de recusa nem técnicas novas de LLM. Descobrir, num grupo pequeno
 de bugs, o que separa uma hipótese promissora de um bug confirmado, atacar só 2 ou 3 obstáculos e medir.
-Prompt da consulta: `docs/projeto/prompt_segunda_opiniao.md`.
+Prompt da consulta: `docs/historico/prompt_segunda_opiniao.md`.
 
 Perguntas de pesquisa:
 - **QP1:** quantos bugs reais o LLM detecta na linha certa?
@@ -79,8 +79,8 @@ Cronograma até a qualificação (fevereiro de 2027): item 6 nos próximos dias 
 
 ## 1. Corrigir o gabarito
 
-Spec `docs/superpowers/specs/2026-10-15-linha-da-quebra-design.md`, plano
-`docs/superpowers/plans/2026-10-15-linha-da-quebra.md`.
+Spec `docs/desenho/specs/2026-10-15-linha-da-quebra-design.md`, plano
+`docs/desenho/planos/2026-10-15-linha-da-quebra.md`.
 
 - [x] Script e testes (`scripts/propose_crash_lines.py`, 24 testes; suíte 817).
 - [x] Causa pelo patch, sem LLM, para os 289 bugs (convenção da área: linhas que a correção muda).
@@ -88,7 +88,7 @@ Spec `docs/superpowers/specs/2026-10-15-linha-da-quebra-design.md`, plano
 - [x] Causas gravadas para os 289 (213 claras, 41 ambíguas, 33 só inserção, 2 sem casamento).
 - [x] Claude propôs a linha da quebra dos 84 bugs de exceção.
 - [x] Conferência por revisores (143 casos): quebra 57 aceitas, 14 corrigidas, 5 rejeitadas, 8 dúvidas; causa 96 aceitas, 47 corrigidas.
-- [x] Revisão da Fernanda na tabela `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`.
+- [x] Revisão da Fernanda na tabela `docs/historico/revisao_linha_da_quebra_2026-10-15.md`.
 - [x] Aplicado no gabarito (289 com causa, 58 com quebra própria; Fase 17 do README).
 
 **Pronto quando:** tabela revisada e gabarito aplicado. Sem medição agora: todos os experimentos ficam para o item 6.
@@ -97,7 +97,7 @@ Spec `docs/superpowers/specs/2026-10-15-linha-da-quebra-design.md`, plano
 
 Cada regra do harness ganha um programa mínimo que testa se o ESBMC instalado aceita a construção; a
 regra só liga quando o ESBMC recusa. Os reprodutores de `docs/projeto/possiveis_problemas/` viram as
-sondas. Inclui aplicar o patch `docs/projeto/regras_pos_congelamento_2026-10-15.patch`.
+sondas. Inclui aplicar o patch `docs/historico/regras_pos_congelamento_2026-10-15.patch`.
 
 **Pronto quando:** spec e plano aprovados, sondas rodando antes de cada verificação, testes passando.
 
@@ -108,8 +108,8 @@ LLM, para reduzir recusas do ESBMC por tipo errado (ex.: ip_real_32, `int` usado
 
 **Pronto quando:** spec e plano aprovados, implementado com testes.
 
-- [x] Spec `docs/superpowers/specs/2026-10-16-spec-com-contexto-design.md`, plano
-  `docs/superpowers/plans/2026-10-16-spec-com-contexto.md`.
+- [x] Spec `docs/desenho/specs/2026-10-16-spec-com-contexto-design.md`, plano
+  `docs/desenho/planos/2026-10-16-spec-com-contexto.md`.
 - [x] `--spec-context callers` (padrão) mostra chamadas, referências e fatos de uso ao LLM do spec e
   rejeita tipo contrariado pelo uso; `--spec-context none` é a linha de base para o item 6.
 - Retomada: o prompt de sistema do spec não mudou, mas `spec_context` entrou no `config` do fingerprint,
@@ -121,7 +121,7 @@ Comparar variantes do prompt de detecção no gabarito já corrigido, medidas co
 
 **Pronto quando:** variantes implementadas e testadas; a comparação roda no item 6.
 
-- [x] Spec `docs/superpowers/specs/2026-10-16-variantes-prompt-design.md`, plano `docs/superpowers/plans/2026-10-16-variantes-prompt.md`.
+- [x] Spec `docs/desenho/specs/2026-10-16-variantes-prompt-design.md`, plano `docs/desenho/planos/2026-10-16-variantes-prompt.md`.
 - [x] A13 (exemplos reais por similaridade, sem o projeto do bug) e A14 (linha citada e condição de disparo), com testes.
 - [x] `scripts/print_detection_prompt.py` (prompts sem LLM) e `BACKEND`/`MODEL` em `run_detection_variants.sh`.
 - Para o item 6: comparar A5, A5+A9, A5+A13, A5+A14 com `BACKEND=claude_cli`.
@@ -134,8 +134,8 @@ errado para a métrica de confirmação.
 
 **Pronto quando:** spec e plano aprovados, implementado com testes; a medição roda no item 6.
 
-- [x] Spec `docs/superpowers/specs/2026-10-16-oraculo-valor-design.md`, plano
-  `docs/superpowers/plans/2026-10-16-oraculo-valor.md`.
+- [x] Spec `docs/desenho/specs/2026-10-16-oraculo-valor-design.md`, plano
+  `docs/desenho/planos/2026-10-16-oraculo-valor.md`.
 - [x] Variante A15 (`metadata.failure_mode`), propriedade na etapa de spec, `assert` no driver, replay e
   controle com a versão corrigida; vereditos `VALUE_CONFIRMED`, `VALUE_VIOLATION`, `PROPERTY_REJECTED`;
   métrica à parte (`value_confirmed_at_bug`, `confirmed_at_bug_with_value`).

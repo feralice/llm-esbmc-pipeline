@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3 do `.venv`, `ast`, `hashlib`, pytest.
 
-**Spec:** `docs/superpowers/specs/2026-10-16-variantes-prompt-design.md`
+**Spec:** `docs/desenho/specs/2026-10-16-variantes-prompt-design.md`
 
 ## Global Constraints
 
@@ -864,7 +864,7 @@ Mostrar à Fernanda a saída da inspeção do `bip_pandas_84`; não commitar.
 
 **Files:**
 - Test: `tests/test_prompt_variants.py`
-- Modify: `docs/projeto/PLANO_GERAL_2026-10-15.md`
+- Modify: `docs/historico/PLANO_GERAL_2026-10-15.md`
 - Modify: `docs/experimentos/README.md`
 
 **Interfaces:**
@@ -899,7 +899,7 @@ Em 16/10 o `pylint` não estava no PATH do WSL nem no `.venv`; se continuar assi
 
 - [ ] **Passo 4: registro**
 
-Em `docs/projeto/PLANO_GERAL_2026-10-15.md`, na tabela, trocar a linha do item 4 por:
+Em `docs/historico/PLANO_GERAL_2026-10-15.md`, na tabela, trocar a linha do item 4 por:
 
 ```markdown
 | 4 | Variantes de prompt | implementado (A13, A14, inspeção sem LLM); comparação no item 6 |
@@ -908,7 +908,7 @@ Em `docs/projeto/PLANO_GERAL_2026-10-15.md`, na tabela, trocar a linha do item 4
 E acrescentar ao fim da seção "## 4. Variantes de prompt":
 
 ```markdown
-- [x] Spec `docs/superpowers/specs/2026-10-16-variantes-prompt-design.md`, plano `docs/superpowers/plans/2026-10-16-variantes-prompt.md`.
+- [x] Spec `docs/desenho/specs/2026-10-16-variantes-prompt-design.md`, plano `docs/desenho/planos/2026-10-16-variantes-prompt.md`.
 - [x] A13 (exemplos reais por similaridade, sem o projeto do bug) e A14 (linha citada e condição de disparo), com testes.
 - [x] `scripts/print_detection_prompt.py` (prompts sem LLM) e `BACKEND`/`MODEL` em `run_detection_variants.sh`.
 - Para o item 6: comparar A5, A5+A9, A5+A13, A5+A14 com `BACKEND=google MODEL=gemini-2.5-flash`.

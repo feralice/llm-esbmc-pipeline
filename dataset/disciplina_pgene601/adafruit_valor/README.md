@@ -46,6 +46,6 @@ bordas incluídas):
 Hoje o oráculo de valor (variante A15) pede à LLM a pós-condição. Para testar a hipótese, o pipeline
 precisa receber a pós-condição e a pré-condição do campo `datasheet`, e o harness precisa montar o
 registrador como bytes livres sob a pré-condição. Fica para depois da rodada final da dissertação, porque
-mexe no código compartilhado. As sondas de 18/10 (`docs/projeto/pgene601_sondas_e_mypy_2026-10-18.md`)
+mexe no código compartilhado. As sondas de 18/10 (`docs/pgene601/pgene601_sondas_e_mypy_2026-10-18.md`)
 mostram que `struct.unpack` e `unpack_from` são recusados pelo ESBMC v8.6, o que afeta o SHTC3 e o
 MAX31855.

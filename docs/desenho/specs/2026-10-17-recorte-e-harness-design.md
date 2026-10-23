@@ -1,6 +1,6 @@
 # Semana 3 do item 6: recorte pelo caminho e correções do harness
 
-Origem: piloto da semana 2 (`docs/projeto/piloto_semana2_2026-10-16.md`). Dos 84 obstáculos em 19 bugs, as
+Origem: piloto da semana 2 (`docs/historico/piloto_semana2_2026-10-16.md`). Dos 84 obstáculos em 19 bugs, as
 correções A (recorte) e B (erros do harness) apareceram em 10 e 5 bugs e são do próprio pipeline, sem LLM.
 Esta spec escolhe as regras dessas duas correções que são seguras (não mudam o que o CPython faria) e
 baratas, mais a parte trivial de C (aliases de builtin).

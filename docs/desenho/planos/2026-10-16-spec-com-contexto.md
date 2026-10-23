@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3 do `.venv`, `ast`, pytest, `research_pipeline.scan.callgraph`, `research_pipeline.scan.context`, `research_pipeline.verify.{grounding,spec,loop}`.
 
-**Spec:** `docs/superpowers/specs/2026-10-16-spec-com-contexto-design.md`
+**Spec:** `docs/desenho/specs/2026-10-16-spec-com-contexto-design.md`
 
 ## Global Constraints
 
@@ -907,7 +907,7 @@ Expected: todos passam.
 ### Tarefa 6: suíte completa, lint e registro
 
 **Files:**
-- Modify: `docs/projeto/PLANO_GERAL_2026-10-15.md`
+- Modify: `docs/historico/PLANO_GERAL_2026-10-15.md`
 - Modify: `docs/experimentos/README.md`
 
 **Interfaces:**
@@ -923,14 +923,14 @@ Expected: nenhuma falha nova em relação à suíte antes da Tarefa 1 (anotar o 
 Run: `.venv/bin/python -m ruff check --line-length 120 src/research_pipeline/verify/caller_facts.py src/research_pipeline/scan/callgraph.py src/research_pipeline/scan/context.py tests/test_verify_caller_facts.py tests/test_verify_usage_problems.py`
 Expected: `All checks passed!` (o `I001` que já existe em `loop.py` antes deste item não é deste item).
 
-- [ ] **Passo 3: registrar.** Em `docs/projeto/PLANO_GERAL_2026-10-15.md`, trocar a linha da tabela
+- [ ] **Passo 3: registrar.** Em `docs/historico/PLANO_GERAL_2026-10-15.md`, trocar a linha da tabela
 `| 3 | Spec com contexto dos chamadores | a fazer |` por
 `| 3 | Spec com contexto dos chamadores | feito (sem medição; mede no item 6) |`, e no fim da seção
 `## 3. Spec com contexto dos chamadores` acrescentar:
 
 ```markdown
-- [x] Spec `docs/superpowers/specs/2026-10-16-spec-com-contexto-design.md`, plano
-  `docs/superpowers/plans/2026-10-16-spec-com-contexto.md`.
+- [x] Spec `docs/desenho/specs/2026-10-16-spec-com-contexto-design.md`, plano
+  `docs/desenho/planos/2026-10-16-spec-com-contexto.md`.
 - [x] `--spec-context callers` (padrão) mostra chamadas, referências e fatos de uso ao LLM do spec e
   rejeita tipo contrariado pelo uso; `--spec-context none` é a linha de base para o item 6.
 - Retomada: o prompt do spec mudou, então rodadas V2 anteriores não retomam com este código.

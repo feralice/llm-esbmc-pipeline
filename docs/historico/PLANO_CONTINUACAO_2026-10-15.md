@@ -1,6 +1,6 @@
 # Plano de continuação (15/10/2026) para o Codex
 
-> **Substituído em 15/10/2026 por `docs/projeto/PLANO_GERAL_2026-10-15.md`**, que é o plano em vigor.
+> **Substituído em 15/10/2026 por `docs/historico/PLANO_GERAL_2026-10-15.md`**, que é o plano em vigor.
 
 Repositório: `/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc`, branch `master` (trabalhar direto em
 master, sem branch nova). Regras da Fernanda: não usar travessão, não commitar sem ela pedir, nunca pôr
@@ -53,7 +53,7 @@ experimentos (a seção já existe, completar).
 
 ## Tarefa 2: regras novas do harness (feitas depois do congelamento, NÃO aplicadas em master)
 
-Estão no patch `docs/projeto/regras_pos_congelamento_2026-10-15.patch` (também no worktree
+Estão no patch `docs/historico/regras_pos_congelamento_2026-10-15.patch` (também no worktree
 `../llm_esbmc-rules`, HEAD destacado em 88ad57a; pode remover com `git worktree remove ../llm_esbmc-rules`
 depois de aplicar). Conteúdo:
 
@@ -86,7 +86,7 @@ linha, outro defeito). Nenhuma perda. **Métrica segue 12; regras neutras.** UNS
 MISSING_DEPENDENCY 44 → 40: casos que passaram do erro antigo e pararam no seguinte.
 
 Como as regras não reduzem a métrica, aplicar o patch em master **depois** que a rodada final terminar
-(`git apply docs/projeto/regras_pos_congelamento_2026-10-15.patch`), escrever os testes, rodar a suíte
+(`git apply docs/historico/regras_pos_congelamento_2026-10-15.patch`), escrever os testes, rodar a suíte
 (`timeout 10m .venv/bin/python -m pytest -q tests --ignore=tests/test_verify_esbmc_integration.py`) e
 reaplicar sobre os specs da rodada final sem LLM:
 

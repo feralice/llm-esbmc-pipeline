@@ -1,6 +1,6 @@
 # Oráculo de valor errado no harness (item 5 do plano geral)
 
-Data: 16/10/2026. Item 5 de `docs/projeto/PLANO_GERAL_2026-10-15.md`. Sem experimento nem medição neste
+Data: 16/10/2026. Item 5 de `docs/historico/PLANO_GERAL_2026-10-15.md`. Sem experimento nem medição neste
 item: a rodada que mede o efeito é a do item 6.
 
 ## Objetivo

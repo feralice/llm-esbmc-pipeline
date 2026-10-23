@@ -1,4 +1,4 @@
-# Regra project_decorators_removed. Origem: docs/projeto/regras_pos_congelamento_2026-10-15.patch.
+# Regra project_decorators_removed. Origem: docs/historico/regras_pos_congelamento_2026-10-15.patch.
 def logged(func):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)

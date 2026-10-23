@@ -3,7 +3,7 @@
 Desenho do motor de verificação da V2 (`src/research_pipeline/verify/`), definido em 29/09/2026.
 Ele substituiu a cascata anterior de estratégias (harness escalar, driver escrito pela LLM,
 reescrita pela LLM), removida do código; o histórico fica no git. Guia de uso em
-[`README.md`](README.md).
+[`README.md`](../projeto/guia_v2.md).
 
 ## 1. Fluxo
 

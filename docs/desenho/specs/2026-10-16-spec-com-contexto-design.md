@@ -1,7 +1,7 @@
 # Spec com contexto dos chamadores (item 3 do plano geral)
 
-Data: 16/10/2026. Plano de implementação: `docs/superpowers/plans/2026-10-16-spec-com-contexto.md`.
-Item 3 de `docs/projeto/PLANO_GERAL_2026-10-15.md`. Sem experimento neste item: a medição fica para o
+Data: 16/10/2026. Plano de implementação: `docs/desenho/planos/2026-10-16-spec-com-contexto.md`.
+Item 3 de `docs/historico/PLANO_GERAL_2026-10-15.md`. Sem experimento neste item: a medição fica para o
 item 6 (rodada final e2e).
 
 ## Objetivo
@@ -245,7 +245,7 @@ Todos com AST e LLM falso, sem ESBMC real (os testes do laço trocam `run_esbmc_
 - "Could not resolve type of receiver" em cadeias de atributos e stubs (`bip_pandas_133`
   `cls._AXIS_ALIASES.get`, `bip_thefuck_4` `proc.stdout.read()`): o tipo que falta é de membro de
   biblioteca ou de atributo de classe, não de parâmetro, e o contexto dos chamadores quase não ajuda.
-  Continua na Tarefa 3 de `docs/projeto/PLANO_CONTINUACAO_2026-10-15.md`.
+  Continua na Tarefa 3 de `docs/historico/PLANO_CONTINUACAO_2026-10-15.md`.
 - `Optional[tuple[...]]` para entrada desempacotada sob guarda `is not None` (`d_m_y` de `ip_real_32`,
   que hoje para em `spec_problems`, `spec.py:259-263`): é regra de desempacotamento, não de contexto.
 - Inferência de tipo entre funções (seguir o valor do chamador até a origem), tipos de argumentos não

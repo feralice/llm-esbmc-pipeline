@@ -1,7 +1,7 @@
 # V2: detectar bugs em código Python real e confirmá-los com o ESBMC
 
 Guia de uso. O desenho do método (regras, tipos aceitos, vereditos, limitações e referências) está
-em [`desenho_motor_verify.md`](desenho_motor_verify.md).
+em [`desenho_motor_verify.md`](../desenho/motor_verify.md).
 
 ## Fluxo
 
@@ -67,4 +67,4 @@ altera o corpo da função é contado à parte (`AGENT_REWRITE_CONFIRMED`).
 
 ## Limites conhecidos do ESBMC-Python 8.5
 
-Reprodutores mínimos em [`../projeto/repro_esbmc_none/`](../projeto/repro_esbmc_none/).
+Reprodutores mínimos em [`possiveis_problemas/`](possiveis_problemas/).

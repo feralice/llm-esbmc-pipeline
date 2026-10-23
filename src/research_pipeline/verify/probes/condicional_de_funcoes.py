@@ -1,4 +1,4 @@
-# Regra conditional_assignments_split. Origem: docs/projeto/regras_pos_congelamento_2026-10-15.patch.
+# Regra conditional_assignments_split. Origem: docs/historico/regras_pos_congelamento_2026-10-15.patch.
 def scale(c: int, w: int) -> int:
     return 10 // w
 

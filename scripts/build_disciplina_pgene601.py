@@ -1,5 +1,5 @@
-"""Build dataset/disciplina_pgene601/ from the accepted fix PRs: 20 in docs/projeto/cps_preselecao_2026-10-12.md
-and 27 of the 30 approved in docs/projeto/cps_candidatos_extra_2026-10-12.md (see the note in SPECS).
+"""Build dataset/disciplina_pgene601/ from the accepted fix PRs: 20 in docs/pgene601/cps_preselecao_2026-10-12.md
+and 27 of the 30 approved in docs/pgene601/cps_candidatos_extra_2026-10-12.md (see the note in SPECS).
 
 Same layout as dataset/bugs_reais/ (funcao_com_bug/, arquivo_com_bug/, arquivo_corrigido/, patches/,
 ground_truths.json, manifest.json, manifest_full.json) and never touches it. The buggy file is the
@@ -392,7 +392,7 @@ SPECS = [
         "note": "TypeError: __str__ returned non-string (type NoneType), em str(flags) no relatório",
         "caveat": "incerto se o ESBMC-Python checa o tipo de retorno de __str__",
     },
-    # Approved in docs/projeto/cps_candidatos_extra_2026-10-12.md. Left out: scapy#5089 (the bug lives
+    # Approved in docs/pgene601/cps_candidatos_extra_2026-10-12.md. Left out: scapy#5089 (the bug lives
     # in lambdas of a class body, no function to label) and dronekit#431 and #611 (the file uses
     # `await` as a variable name, which Python 3.7+ refuses to parse).
     {

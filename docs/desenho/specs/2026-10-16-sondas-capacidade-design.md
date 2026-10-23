@@ -1,7 +1,7 @@
 # Sondas de capacidade do ESBMC (self-healing): desenho
 
-Data: 16/10/2026. Item 2 do `docs/projeto/PLANO_GERAL_2026-10-15.md`.
-Plano de implementação: `docs/superpowers/plans/2026-10-16-sondas-capacidade.md`.
+Data: 16/10/2026. Item 2 do `docs/historico/PLANO_GERAL_2026-10-15.md`.
+Plano de implementação: `docs/desenho/planos/2026-10-16-sondas-capacidade.md`.
 
 ## Objetivo
 
@@ -14,7 +14,7 @@ Este item dá a cada uma dessas regras um ou mais programas mínimos (sondas). A
 verificação, o pipeline roda as sondas no ESBMC configurado, guarda o resultado num cache por binário,
 flags e versão, e liga só as regras cuja construção o ESBMC ainda não trata. Quando o ESBMC evoluir, a
 sonda passa e a regra se desliga sozinha, sem editar código. Junto vai a aplicação do patch
-`docs/projeto/regras_pos_congelamento_2026-10-15.patch` (três regras novas e seus testes), e as duas
+`docs/historico/regras_pos_congelamento_2026-10-15.patch` (três regras novas e seus testes), e as duas
 regras de reescrita que ele cria também ganham sondas.
 
 Nenhuma medição de efeito na métrica entra aqui: rodar sondas faz parte do funcionamento, mas comparar

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3 do `.venv`, `ast`, `research_pipeline.verify.llm_client.LLMClient` (backend `claude_cli`), `research_pipeline.v2_evaluator`, pytest.
 
-**Spec:** `docs/superpowers/specs/2026-10-15-linha-da-quebra-design.md`
+**Spec:** `docs/desenho/specs/2026-10-15-linha-da-quebra-design.md`
 
 ## Global Constraints
 
@@ -400,7 +400,7 @@ def main(argv=None) -> int:
     parser.add_argument("--proposals", type=Path, default=DATASET / "crash_proposals.json")
     parser.add_argument("--backend", default="claude_cli")
     parser.add_argument("--model", default="claude-sonnet-5-5")
-    parser.add_argument("--out", type=Path, default=ROOT / "docs/projeto/revisao_linha_da_quebra_2026-10-15.md")
+    parser.add_argument("--out", type=Path, default=ROOT / "docs/historico/revisao_linha_da_quebra_2026-10-15.md")
     args = parser.parse_args(argv)
     truths = json.loads(DOCUMENTS["ground_truths"].read_text(encoding="utf-8"))["items"]
     if args.command == "propose":
@@ -660,7 +660,7 @@ Mutação: tirar `*item.get("cause_expressions", [])` da linha 83 e confirmar qu
 ### Tarefa 7: rodada real, conferência e revisão (operacional)
 
 **Files:**
-- Create: `dataset/bugs_reais/crash_proposals.json` (gerado), `docs/projeto/revisao_linha_da_quebra_2026-10-15.md` (gerado)
+- Create: `dataset/bugs_reais/crash_proposals.json` (gerado), `docs/historico/revisao_linha_da_quebra_2026-10-15.md` (gerado)
 
 - [ ] **Passo 0:** `PYTHONPATH=src .venv/bin/python scripts/propose_crash_lines.py causes` (sem LLM) e conferir os `ambigua`, `so_insercao` e `sem_casamento` na revisão.
 - [ ] **Passo 1:** rodar `PYTHONPATH=src .venv/bin/python scripts/propose_crash_lines.py propose` (84 chamadas ao `claude_cli`). Se parar por limite, rodar de novo depois; a retomada não refaz.

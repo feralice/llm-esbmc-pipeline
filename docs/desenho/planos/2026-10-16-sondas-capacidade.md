@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.12 do `.venv`, `ast`, `hashlib`, `subprocess`, pytest; ESBMC só no teste de integração opcional.
 
-**Spec:** `docs/superpowers/specs/2026-10-16-sondas-capacidade-design.md`
+**Spec:** `docs/desenho/specs/2026-10-16-sondas-capacidade-design.md`
 
 ## Global Constraints
 
@@ -38,19 +38,19 @@
 - Test: `tests/test_verify_compat.py` (pelo patch)
 
 **Interfaces:**
-- Consumes: `docs/projeto/regras_pos_congelamento_2026-10-15.patch` (base: `compat.py` 1552903, `render.py` 6de09c9, `pytest_gen.py` 228138b, `tests/test_verify_compat.py` eee11a8; `git apply --check` passou em 16/10/2026).
+- Consumes: `docs/historico/regras_pos_congelamento_2026-10-15.patch` (base: `compat.py` 1552903, `render.py` 6de09c9, `pytest_gen.py` 228138b, `tests/test_verify_compat.py` eee11a8; `git apply --check` passou em 16/10/2026).
 - Produces: `drop_project_decorators(source: str) -> tuple[str, list[str]]`; `split_conditional_assignments(source: str) -> tuple[str, list[str]]`; `_unused_definitions` ignora autorreferência; `pytest_gen._source_without_driver(source: str) -> list[str]`; `render_program` devolve `target_range` do código reescrito quando a separação acrescenta linhas.
 
 O código desta tarefa é o próprio patch, versionado no repo; ele não é reescrito aqui. Conteúdo: em `compat.py`, `_unused_definitions` passa a registrar quem carrega cada nome (uma definição que só se nomeia não conta como usada), mais as funções `drop_project_decorators` e `split_conditional_assignments`; em `render.py`, as duas funções entram depois de `rewrite_compat` e o intervalo do alvo é recalculado quando a separação acrescenta linhas; em `pytest_gen.py`, o driver é achado pelo nome `_esbmc_main`; em `tests/test_verify_compat.py`, três testes novos.
 
 - [ ] **Passo 1: conferir que o patch aplica**
 
-Run: `git apply --check docs/projeto/regras_pos_congelamento_2026-10-15.patch`
+Run: `git apply --check docs/historico/regras_pos_congelamento_2026-10-15.patch`
 Expected: nenhuma saída, código 0.
 
 - [ ] **Passo 2: aplicar só os testes**
 
-Run: `git apply --include='tests/test_verify_compat.py' docs/projeto/regras_pos_congelamento_2026-10-15.patch`
+Run: `git apply --include='tests/test_verify_compat.py' docs/historico/regras_pos_congelamento_2026-10-15.patch`
 Expected: nenhuma saída.
 
 - [ ] **Passo 3: rodar e ver falhar**
@@ -60,7 +60,7 @@ Expected: FAIL na coleta com `ImportError: cannot import name 'drop_project_deco
 
 - [ ] **Passo 4: aplicar o resto do patch**
 
-Run: `git apply --exclude='tests/test_verify_compat.py' docs/projeto/regras_pos_congelamento_2026-10-15.patch`
+Run: `git apply --exclude='tests/test_verify_compat.py' docs/historico/regras_pos_congelamento_2026-10-15.patch`
 Expected: nenhuma saída.
 
 - [ ] **Passo 5: rodar e ver passar**
@@ -870,7 +870,7 @@ main()
 `decorador_do_projeto.py`:
 
 ```python
-# Regra project_decorators_removed. Origem: docs/projeto/regras_pos_congelamento_2026-10-15.patch.
+# Regra project_decorators_removed. Origem: docs/historico/regras_pos_congelamento_2026-10-15.patch.
 def logged(func):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
@@ -892,7 +892,7 @@ main()
 `condicional_de_funcoes.py`:
 
 ```python
-# Regra conditional_assignments_split. Origem: docs/projeto/regras_pos_congelamento_2026-10-15.patch.
+# Regra conditional_assignments_split. Origem: docs/historico/regras_pos_congelamento_2026-10-15.patch.
 def scale(c: int, w: int) -> int:
     return 10 // w
 
@@ -1747,7 +1747,7 @@ Expected: PASS.
 - Modify: `src/main.py`
 - Create: `tests/conftest.py`
 - Modify: `tests/test_main_v2.py`, `tests/test_verify_esbmc_integration.py`
-- Modify: `docs/projeto/PLANO_GERAL_2026-10-15.md` (estado do item 2)
+- Modify: `docs/historico/PLANO_GERAL_2026-10-15.md` (estado do item 2)
 
 **Interfaces:**
 - Consumes: `resolve_rules(...) -> dict`, `all_rules_report(reason) -> dict`, `probe_capabilities(...)` (Tarefa 6); `run_verify(..., **kwargs)` repassa `rules` a `verify_hypothesis` (Tarefa 3); `_save_checkpoint(path, payload)` em `main.py`.
@@ -1917,6 +1917,6 @@ Expected: PASS, ou SKIPPED se o wrapper ou o binário não existirem.
 
 - [ ] **Passo 5: atualizar o estado do item 2**
 
-Em `docs/projeto/PLANO_GERAL_2026-10-15.md`, na tabela de estado, trocar a célula do item 2 de `a fazer` para `implementado, falta rodar as sondas no primeiro lote do item 6`.
+Em `docs/historico/PLANO_GERAL_2026-10-15.md`, na tabela de estado, trocar a célula do item 2 de `a fazer` para `implementado, falta rodar as sondas no primeiro lote do item 6`.
 
 - [ ] **Passo 6: ponto de parada (sem commit)**

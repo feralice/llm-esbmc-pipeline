@@ -77,7 +77,7 @@ Critério: ganho por dia, só o que é do pipeline e não depende de LLM.
 
 ## Resultado da semana 3 (17/10)
 
-As regras R1 a R7 (`docs/superpowers/specs/2026-10-17-recorte-e-harness-design.md`), medidas nos 29 bugs com os
+As regras R1 a R7 (`docs/desenho/specs/2026-10-17-recorte-e-harness-design.md`), medidas nos 29 bugs com os
 specs gravados: veredito do ESBMC 7 → 8, 4 bugs avançam um obstáculo, nenhuma confirmação nova e nenhuma
 perda. Confirma a leitura do piloto: com 2 a 4 grupos de correção por bug, duas intervenções isoladas movem
 os bugs para o obstáculo seguinte, não até a confirmação. O próximo ganho exige o grupo D (reescritas para o

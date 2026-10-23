@@ -12,7 +12,7 @@ checkout do ESBMC, refeito quando o commit muda.
 
 **Tech Stack:** Python 3.12, `ast`, pytest, `LLMClient` (`claude_cli`), ESBMC master `5d17828`.
 
-**Spec:** `docs/superpowers/specs/2026-10-19-self-healing-design.md`
+**Spec:** `docs/desenho/specs/2026-10-19-self-healing-design.md`
 
 ## Global Constraints
 

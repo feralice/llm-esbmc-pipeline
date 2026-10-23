@@ -23,10 +23,10 @@ O campo `provenance.buggy_commit_rule` diz qual das duas regras valeu em cada it
 ## Critério de seleção
 
 A montagem teve duas rodadas. Na primeira, os 45 PRs candidatos de
-`docs/projeto/cps_candidatos_2026-10-08.md` foram lidos um a um (título, descrição, diff e, quando
+`docs/pgene601/cps_candidatos_2026-10-08.md` foram lidos um a um (título, descrição, diff e, quando
 faltava o traceback, a issue ligada); a pré-seleção e os 25 descartes, cada um com o motivo, estão em
-`docs/projeto/cps_preselecao_2026-10-12.md`, de onde saíram 20 itens. Na segunda, uma busca em 60
-repositórios do domínio rendeu os 30 candidatos de `docs/projeto/cps_candidatos_extra_2026-10-12.md`,
+`docs/pgene601/cps_preselecao_2026-10-12.md`, de onde saíram 20 itens. Na segunda, uma busca em 60
+repositórios do domínio rendeu os 30 candidatos de `docs/pgene601/cps_candidatos_extra_2026-10-12.md`,
 todos aprovados, dos quais 27 puderam ser montados (os 3 restantes estão explicados mais abaixo).
 Valeram, nas duas rodadas, as mesmas quatro condições:
 

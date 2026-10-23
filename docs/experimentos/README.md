@@ -119,7 +119,7 @@ erro do recorte ou dos stubs.
 | 01/10 | `engine-fixed-2026-10-01` | controle nas versões corrigidas | 0 `CONFIRMED` |
 | 01/10 | reavaliação de `agent-arm-2026-09-29-oracle` | harnesses do agente com a reexecução nova | `CONFIRMED` 4 → 6 |
 
-Detalhes: `docs/projeto/harness_oraculo_esbmc_2026-10-01.md`.
+Detalhes: `docs/historico/harness_oraculo_esbmc_2026-10-01.md`.
 
 ## Fases 7 e 8 (04 a 06/10)
 
@@ -486,7 +486,7 @@ completo da versão com bug).
 
 ## Fase 12 (13/10): contornos no harness sugeridos pela segunda opinião
 
-Prompt em `docs/projeto/segunda_opiniao_2026-10-12.md`, respondido pelo Codex (gpt-6-astra): 11 ideias,
+Prompt em `docs/historico/segunda_opiniao_2026-10-12.md`, respondido pelo Codex (gpt-6-astra): 11 ideias,
 estimativa de 2 a 5 bugs a mais. Regra nova: reescrever a função vale se preservar o comportamento,
 porque a confirmação continua exigindo que o código original quebre no CPython na linha do bug.
 
@@ -694,7 +694,7 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
   - depois: orquestrador com `dynamic,llm_input,pinned` e o agente, LLM pelo Codex CLI, controle na
     versão corrigida.
 
-- **15/10, regras depois do congelamento** (patch `docs/projeto/regras_pos_congelamento_2026-10-15.patch`,
+- **15/10, regras depois do congelamento** (patch `docs/historico/regras_pos_congelamento_2026-10-15.patch`,
   ainda fora do master): decoradores do projeto tirados da cópia do ESBMC, `x = a if c else lambda`
   reescrito como if/else, autorreferência não conta como uso. Medição sem LLM nos specs gravados
   (`artifacts/v2/rules-after-freeze-2026-10-15/full`, 2 shards, timeout 180) contra o lote 5:
@@ -758,7 +758,7 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 
 ## Fase 17 (16/10): gabarito com causas do patch e linhas da quebra (item 1 do plano geral), sem rodada
 
-- **O que mudou:** depois da revisão da Fernanda na tabela `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`,
+- **O que mudou:** depois da revisão da Fernanda na tabela `docs/historico/revisao_linha_da_quebra_2026-10-15.md`,
   `scripts/propose_crash_lines.py apply` gravou em `ground_truths.json`, `manifest.json`, `manifest_full.json`
   e `coleta_bugsinpy/labels.json`.
 - **Resultado:** 289 itens alterados. Todos os 289 têm `cause_expressions` (242 `patch`, 47 `patch_revisado`).
@@ -805,16 +805,16 @@ Rodadas (ESBMC master 333d07cc8a, `--no-pointer-check --no-align-check`, sem LLM
 
 ## Fase 20 (16 e 17/10): passos 1 a 3 do item 6, sem rodada de LLM
 
-- **Passo 1, auditoria** (`docs/projeto/auditoria_semana1_2026-10-16.md`): funil por bug da rodada final
+- **Passo 1, auditoria** (`docs/historico/auditoria_semana1_2026-10-16.md`): funil por bug da rodada final
   (`scripts/v2_funnel.py`, `artifacts/v2/funil-2026-10-16/`). Nos 111 bugs de exceção: 38 com a hipótese fora
   da linha, 31 nunca verificados por falta de limite do LLM, 26 recusados pelo ESBMC, 5 confirmados. Controle
   com a versão corrigida (`scripts/v2_audit_control.py`, regra: cai só se a corrigida levanta a mesma
   exceção): nenhuma confirmação da métrica cai; fora da linha, 10 de 17 quebram igual na corrigida.
   ESBMC v8.6 sozinho: **ip_real_17** passa a CONFIRMED na linha (controle: "correção muda o comportamento").
-- **Passo 2, piloto manual** (`docs/projeto/piloto_semana2_2026-10-16.md`, `artifacts/v2/piloto-manual/`):
+- **Passo 2, piloto manual** (`docs/historico/piloto_semana2_2026-10-16.md`, `artifacts/v2/piloto-manual/`):
   19 bugs travados, 4 agentes. 13 chegam à exceção na linha do bug com o CPython confirmando no original
   (12 com o controle), 84 obstáculos (4,4 por bug), 17 falsos vereditos do ESBMC v8.6 com reprodutor.
-- **Passo 3, recorte e harness** (spec `docs/superpowers/specs/2026-10-17-recorte-e-harness-design.md`): R1
+- **Passo 3, recorte e harness** (spec `docs/desenho/specs/2026-10-17-recorte-e-harness-design.md`): R1
   guardas mortas (`verify/dead_guards.py`), R2 métodos especiais sem gatilho, R3 sem chamada órfã, R4
   atributos de classe sem uso, R5 anotação `None`, R6 anotações em texto, R7 `compat_chr` (wrapper tipado) e
   `compat_str` (`str`).

@@ -1,6 +1,6 @@
 # V2 Real-World Dataset
 
-Implements the direction proposed in [`docs/v2/harness_synthesis.md`](../../docs/v2/harness_synthesis.md):
+Implements the direction proposed in `docs/v2/harness_synthesis.md` (removido no commit 4daca12; o motor atual está em [`docs/desenho/motor_verify.md`](../../docs/desenho/motor_verify.md)):
 real bugs from [BugsInPy](https://github.com/soarsmu/BugsInPy), abstracted by hand into
 self-contained, ESBMC-verifiable harnesses. Complements the synthetic, controlled V1 dataset at
 `dataset/v1_sintetico/` — V1 answers "can the pipeline confirm a known bug shape", V2 answers "does that

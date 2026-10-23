@@ -50,7 +50,7 @@ principal), mudar a regra de exceção esperada da métrica, rodar o pipeline de
    bruta, o resultado da validação e o modelo). Retomável: bug já proposto não é refeito.
 3. **Conferência do Claude Code.** Leio cada proposta contra o código e o patch e preencho
    `review: aceita | rejeitada | duvida` e `review_note` no mesmo arquivo.
-4. **Revisão da Fernanda.** Tabela em `docs/projeto/revisao_linha_da_quebra_2026-10-15.md`: bug, causa,
+4. **Revisão da Fernanda.** Tabela em `docs/historico/revisao_linha_da_quebra_2026-10-15.md`: bug, causa,
    quebra proposta, exceção, parecer. Ela marca as que discorda.
 5. **Aplicar.** `cause_expressions` entra para todo bug com causa `ok` (determinística) ou `ambigua` aceita
    na revisão, com `label_sources.cause_expressions = "patch"`. A avaliação (`at_bug_line` e a localização

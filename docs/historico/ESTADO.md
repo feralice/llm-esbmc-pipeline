@@ -76,7 +76,7 @@ Depois de terminar:
 6. **Skill unificada e agente único**: as regras do harness numa pasta só do repo
    (`skills/esbmc-python-harness/`), e um único caminho "agente" no orquestrador em que a pessoa escolhe
    a LLM (Claude Code, Codex, Gemini CLI ou qualquer API). Especificação:
-   `docs/superpowers/specs/2026-10-07-skill-unificada-design.md`.
+   `docs/desenho/specs/2026-10-07-skill-unificada-design.md`.
 7. **Grafo dentro do arquivo**: quem chama a função e com que contrato (falsos alarmes, falta de
    contexto).
 8. **Harness para bugs de resultado errado** (`assert` da propriedade, validado pela versão corrigida).
