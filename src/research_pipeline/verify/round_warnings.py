@@ -20,7 +20,7 @@ def _mypy_command() -> list[str]:
     return [sys.executable, "-m", "mypy", "--strict", "--no-error-summary"]
 
 
-def _mypy_messages(source: str, timeout: int) -> list[str] | None:
+def mypy_messages(source: str, timeout: int) -> list[str] | None:
     with tempfile.TemporaryDirectory() as folder:
         path = Path(folder) / "program.py"
         path.write_text(source, encoding="utf-8")
@@ -34,10 +34,15 @@ def _mypy_messages(source: str, timeout: int) -> list[str] | None:
     return [_LOCATION.sub("", line) for line in run.stdout.splitlines() if ": error: " in line or ": note: " in line]
 
 
-def mypy_new_errors(original: str, harness: str, timeout: int = 60) -> list[str] | None:
-    """Errors mypy reports for the harness and not for the original; None when mypy could not be run."""
-    before = _mypy_messages(original, timeout)
-    after = _mypy_messages(harness, timeout)
+_UNSET: list[str] = []
+
+
+def mypy_new_errors(original: str, harness: str, timeout: int = 60,
+                    original_messages: list[str] | None = _UNSET) -> list[str] | None:
+    """Errors mypy reports for the harness and not for the original; None when mypy could not be run.
+    ``original_messages`` carries a prior ``mypy_messages(original)`` (None included) so a case measures it once."""
+    before = mypy_messages(original, timeout) if original_messages is _UNSET else original_messages
+    after = mypy_messages(harness, timeout)
     if before is None or after is None:
         return None
     return [message for message in dict.fromkeys(after) if message not in before]
@@ -51,11 +56,12 @@ def _body(source: str, function: str) -> list[str] | None:
     return None if target is None else body_signature(target)
 
 
-def round_warnings(source: str, original: str, function: str, mypy_timeout: int = 60) -> list[str]:
+def round_warnings(source: str, original: str, function: str, mypy_timeout: int = 60,
+                   original_messages: list[str] | None = _UNSET) -> list[str]:
     warnings = []
     if _body(source, function) != _body(original, function):
         warnings.append("body_changed")
-    errors = mypy_new_errors(original, source, mypy_timeout)
+    errors = mypy_new_errors(original, source, mypy_timeout, original_messages)
     if errors is None:
         warnings.append(NOT_MEASURED)
     else:

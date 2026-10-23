@@ -30,7 +30,7 @@ from .esbmc_run import VERDICT_KINDS, check, esbmc_output
 from .outcome import CONFIRMED, final_verdict
 from .procs import run_group
 from .render import Program
-from .round_warnings import round_warnings
+from .round_warnings import mypy_messages, round_warnings
 from .rounds import install_round_logger, read_rounds
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 
@@ -255,13 +255,18 @@ def run_agent_arm(
     return finish(verdict, reason)
 
 
+MYPY_TIMEOUT = 60
+
+
 def record_rounds(case_dir: Path, result: dict, log_rounds: bool, original: str, function: str) -> bool:
     """Copy the recorded rounds into ``result``; returns whether the last one was an ESBMC crash."""
     if not log_rounds:
         return False
     rounds = read_rounds(case_dir)
+    original_messages = mypy_messages(original, MYPY_TIMEOUT) if any(r.source for r in rounds) else None
     result["rounds"] = [{"index": r.index, "kind": r.kind,
-                         "warnings": round_warnings(r.source, original, function) if r.source else []}
+                         "warnings": round_warnings(r.source, original, function, MYPY_TIMEOUT, original_messages)
+                         if r.source else []}
                         for r in rounds]
     result["esbmc_crash"] = bool(rounds) and rounds[-1].kind == "crash"
     return result["esbmc_crash"]
