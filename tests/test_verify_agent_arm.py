@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 from research_pipeline.verify import esbmc_run
@@ -214,3 +215,20 @@ def test_knowledge_from_the_esbmc_checkout_joins_the_notes(tmp_path, monkeypatch
                   knowledge="### README: Limitations\nNo async.")
     written = next((tmp_path / "work").glob("*/ESBMC_PYTHON_NOTES.md")).read_text(encoding="utf-8")
     assert written.startswith("# hand notes") and "No async." in written
+
+
+def test_project_skills_are_installed_in_the_case_folder(tmp_path):
+    versions = agent_arm.install_project_skills(tmp_path)
+    for name in ("regras-harness", "reparos-aprendidos"):
+        assert (tmp_path / ".claude" / "skills" / name / "SKILL.md").is_file()
+        assert re.fullmatch(r"[0-9a-f]{12}", versions[name])
+    assert set(versions) == {"regras-harness", "reparos-aprendidos"}
+
+
+def test_run_agent_arm_records_skill_versions(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    agent = _agent(PRESERVED)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30, project_skills=True)
+    assert set(result["skills"]) == {"regras-harness", "reparos-aprendidos"}
+    assert "regras-harness" in agent.calls[0]

@@ -8,9 +8,11 @@ whose target body differs from the original is reported apart.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import textwrap
 import time
@@ -42,6 +44,8 @@ STUB_INDUCED = "STUB_INDUCED"
 FIXED_ALSO_FAILS = "FIXED_ALSO_FAILS"
 PLUGIN_DIR = Path.home() / ".claude/plugins/cache/esbmc-marketplace/esbmc-plugin/1.1.0"
 
+SKILLS_DIR = Path(__file__).with_name("skills")
+
 RunAgent = Callable[[str, Path, int], str]
 
 _SKILL = "Use the esbmc-verification skill. "
@@ -51,13 +55,7 @@ only (keep the function's name, signature, the suspect expression and the branch
 The original body is replayed later with ESBMC's counterexample values, so a simplification that
 changes behaviour simply fails to confirm.
 """
-_PROMPT = """{skill}In this directory, original.py is real production code.
-{notes}
-Goal: make ESBMC-Python run the function `{function}` so that this bug hypothesis is exercised.
-- suspect expression: {expression}
-- hypothesis: {trigger}
-
-Write harness.py here. It must contain the code of `{function}` copied from original.py with its
+_RULES = """Write harness.py here. It must contain the code of `{function}` copied from original.py with its
 body unchanged (you may add type annotations to its signature), plus whatever minimal stubs,
 classes or helper definitions ESBMC needs, and a driver that calls `{function}` with nondet inputs
 and runs at module level. Keep every stub inside harness.py: do not create or import other local
@@ -65,9 +63,26 @@ modules (the CPython replay runs harness.py alone). Do not add assert statements
 the suspect expression. Classes you write for the inputs must support every operation the target
 applies to them (len, iteration, indexing, comparison) and must not raise: an exception raised inside
 your stubs, or caused by an operation a stub lacks, is rejected as an artefact of the harness.
-{simplify}Run `{esbmc} harness.py --unwind {bound} --multi-property` (always this binary) and fix harness.py until ESBMC reaches a
+"""
+_SKILL_RULES = "Follow the regras-harness and reparos-aprendidos skills to write harness.py here.\n"
+_PROMPT = """{skill}In this directory, original.py is real production code.
+{notes}
+Goal: make ESBMC-Python run the function `{function}` so that this bug hypothesis is exercised.
+- suspect expression: {expression}
+- hypothesis: {trigger}
+
+{rules}{simplify}Run `{esbmc} harness.py --unwind {bound} --multi-property` (always this binary) and fix harness.py until ESBMC reaches a
 verdict (VERIFICATION FAILED or SUCCESSFUL) instead of a conversion error. Then reply DONE.
 """
+
+
+def install_project_skills(case_dir: Path, skills_dir: Path = SKILLS_DIR) -> dict[str, str]:
+    """Copy the project's skills into the case folder, where ``--setting-sources project`` loads them;
+    returns each skill's name and the hash of its SKILL.md, to record which rules a run followed."""
+    target = Path(case_dir) / ".claude" / "skills"
+    shutil.copytree(skills_dir, target, dirs_exist_ok=True)
+    return {path.parent.name: hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+            for path in sorted(Path(skills_dir).glob("*/SKILL.md"))}
 
 
 def claude_agent(claude_command: str = "claude", model: str | None = None,
@@ -177,12 +192,13 @@ def run_agent_arm(
     h: BugHypothesis, *, work_dir: Path, run_agent: RunAgent, esbmc_command: list[str] | None,
     bound: int, timeout_seconds: int, agent_timeout: int = 900, source_path: Path | None = None,
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
-    fixed_path: Path | None = None, knowledge: str = "",
+    fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
     ``plugin_command`` (verify or audit) runs on the harness afterwards and its report is kept;
-    ``fixed_path``, the fixed version of the source, turns on the evaluation control."""
+    ``fixed_path``, the fixed version of the source, turns on the evaluation control;
+    ``project_skills`` installs the regras-harness skills in the case folder and records their versions."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -200,7 +216,10 @@ def run_agent_arm(
         if knowledge:
             text += "\n\n## From the installed ESBMC's own README and regression tests\n\n" + knowledge + "\n"
         (case_dir / "ESBMC_PYTHON_NOTES.md").write_text(text, encoding="utf-8")
-    prompt = _PROMPT.format(skill=_SKILL if skill else "", notes=_NOTES if notes is not None else "",
+    if project_skills:
+        result["skills"] = install_project_skills(case_dir)
+    prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
+                            notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
                             function=h.function, expression=h.suspect_expression,
                             trigger=h.trigger_condition or "not given", bound=bound,
