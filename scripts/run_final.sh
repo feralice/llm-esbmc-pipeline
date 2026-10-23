@@ -6,7 +6,7 @@
 # Usage: scripts/run_final.sh <tag>      e.g. scripts/run_final.sh 2026-10-08
 set -u
 cd "$(dirname "$0")/.."
-PY=${PY:-/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.venv/bin/python}
+PY=${PY:-.venv/bin/python}
 ARMS=${ARMS:-dynamic,pinned}
 OUT=artifacts/v2/final-$1
 GT=dataset/bugs_reais/ground_truths.json

@@ -5,7 +5,7 @@
 # A variant "A0-rN" is a repeat of the baseline prompt.
 set -u
 cd "$(dirname "$0")/.."
-PY=${PY:-/mnt/c/Users/ferna/Documents/mestrado/llm_esbmc/.venv/bin/python}
+PY=${PY:-.venv/bin/python}
 BACKEND=${BACKEND:-claude_cli}
 MODEL=${MODEL:-claude-sonnet-5-5}
 tag=$1; sample=$2; shift 2
