@@ -11,9 +11,10 @@ from pathlib import Path
 
 from ..models import ESBMCDirectResult
 
-# ESBMC master build behind a wrapper adding --no-pointer-check --no-align-check, the flags of every run
-# since phase 13; without them 8.6 times out on small list programs (measured 16/10/2026). The item 6 number
-# used the v8.6 release (~/esbmc-releases/v8.6/esbmc.sh). LLM_ESBMC overrides.
+# ESBMC master build with Bitwuzla (~/esbmc-master/build-bw) behind a wrapper adding --no-pointer-check
+# --no-align-check, the flags of every run since phase 13; without them 8.6 times out on small list
+# programs (measured 16/10/2026). The item 6 number used the v8.6 release (~/esbmc-releases/v8.6/esbmc.sh).
+# LLM_ESBMC overrides.
 DEFAULT_ESBMC = os.environ.get("LLM_ESBMC", str(Path.home() / "esbmc-master" / "esbmc.sh"))
 
 

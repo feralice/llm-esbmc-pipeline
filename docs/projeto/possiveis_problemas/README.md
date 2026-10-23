@@ -152,6 +152,9 @@ no histórico do git):
 | 42 | `ip_real_11` (`scheme, credentials = get_authorization_scheme_param(...)`) |
 | 43 | `nm_real_04` (`allowed_domains: list[Optional[str]]`) |
 | 44 | `oob_real_10` (`_expand_iterable` definida depois de `_wrap_text_to_colwidths`) |
+| 48 | `nm_real_12` (`current_line.prev.next = ...`, com `prev` iniciado em `None`) |
+| 49 | `ip_real_15` (`Factory(dict)` que o harness carregou do `attr.dataclass`; no caso, o campo nem fica no caminho do bug) |
+| 50 | `ip_real_15` (`maybe_empty_lines` desempacota o retorno de `_maybe_empty_lines`, definido depois) |
 
 O 13 apareceu na geração de stubs, antes de chegar ao dataset: o motor deixou de gerar classe
 aninhada.
@@ -341,3 +344,37 @@ para ela.
 
 Bitwuzla: única diferença em relação ao Z3 é o 29, que troca o erro do Z3 por SIGSEGV ao codificar o claim
 de `__ESBMC_list_contains`.
+
+## Achados dos pareceres do teste A/B (22/10/2026)
+
+Os pareceres do consultor sobre `nm_real_12` e `ip_real_15` (`artifacts/v2/teste-ab-2026-10-22/C/`) rodaram no
+`build` com o patch de `async`. As sondas foram refeitas no master limpo `7da3564` (Z3 e Bitwuzla) e dão o mesmo
+resultado. A falta de `AttributeError` ao ler ou escrever atributo de `None` (sondas `sonda_l.py` e `sonda_m.py`)
+é o 25. A regra é abrir issue só do que não dá para contornar simplificando a função sem mudar o comportamento. O 48 e o 50 têm contorno assim e vão para o filtro do `verify/compat.py`; o 49 não tem, e virou a #9093.
+
+| Arquivo | CPython | Z3 | Bitwuzla | Issue existente | Contorno sem mudar o comportamento |
+|---|---|---|---|---|---|
+| `48_atributo_aninhado_campo_none.py` | `AttributeError` | `Cannot resolve nested attribute: next` | igual | #9075 tem a mesma mensagem, mas outra causa (`__class__.__name__`) | `self.prev = self` logo antes de `self.prev = None` no `__init__`; depois ainda é preciso o guard de `None` do 25 |
+| `49_dict_como_valor.py` | executa | FAILED com `KeyError` em `defaultdict(dict)` (falso positivo); `f(dict)` dá `Variable 'dict' is not defined` | igual | #4356 (fechada) corrigiu a fábrica de `defaultdict` para `list` e `int`, não para `dict` | nenhum: `lambda: {}` no lugar de `dict` aborta. Aberta como #9093 |
+| `50_desempacotar_funcao_definida_depois.py` | executa | `Cannot unpack empty` | igual | #8918 é outro caso de unpack | definir a função chamada antes de quem chama (move linhas). Guardar o retorno numa variável anotada é aceito mas dá valor errado, falso positivo |
+
+## Gerador de pytest no master (22/10/2026)
+
+`--generate-pytest-testcase --pytest-output-dir <pasta> --unwind 5`, master `7da3564` com Bitwuzla
+(`~/esbmc-master/esbmc.sh`). Formato de entrada da documentação
+([pytest-testgen](https://esbmc.github.io/docs/python/pytest-testgen/)): o `nondet_*` vai direto na chamada, e a
+linha da chamada sai do programa antes de rodar o `pytest` (o `from prog import *` reexecuta o módulo). O nome
+do arquivo precisa ser módulo Python válido (não pode começar com dígito).
+
+| Arquivo | Teste gerado | Roda e reproduz? | Com ajuste |
+|---|---|---|---|
+| `51_pytest_metodo.py` | `media(n)`, sem o objeto | não: `NameError` | `--no-slice` piora: `Conta(ctor_self, n)`, `TypeError`. Sem ajuste no gerador |
+| `52_pytest_varios_args.py` | só `c`: `f(c)` | não: `TypeError` (faltam `a`, `b`) | `--no-slice`: `f(a, b, c)`, reproduz o `ZeroDivisionError` |
+| `53_pytest_str.py` | `""` (pegou o `unwinding assertion` do `strlen`) | não | `--no-unwinding-assertions`: `"ab"`, reproduz o `ValueError` |
+
+Também: guardar o `nondet` numa variável antes da chamada gera nomes internos (`k&0#1`) que não são Python.
+
+Decisão para a Tarefa 7 do plano do harness de agente: **função livre com vários argumentos, sim** (com
+`--no-slice` e o `nondet` direto na chamada); **método com receptor, não**: vai pela rota `free_function`
+(`pytest_reproducer`). Pela regra das issues (só o que não dá para contornar), nenhum dos três vira issue por
+enquanto: todos têm contorno do lado do pipeline. O 51 é o candidato mais forte se ela decidir reportar.
