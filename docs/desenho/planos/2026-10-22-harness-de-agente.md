@@ -142,6 +142,21 @@ da comparação; abrir as issues no ESBMC segue o fluxo de `possiveis_problemas`
   não é `CONFIRMED` e `result["esbmc_crash"]` é `True`.
 - [ ] **Passo 6:** rodar os testes (passam) e a suíte; commit.
 
+### Tarefa 3b: Dica do ESBMC a cada rodada (24/10, lacuna do item 1 do self-healing no spec)
+
+O spec pede que o agente receba, a cada rodada, os trechos do conhecimento do checkout que casam com o erro; até
+aqui ele recebia só uma vez, no começo, e o `scripts/v2_agent_arm.py` não passava conhecimento nenhum.
+
+- [x] A fachada `bin/esbmc` roda `python -m research_pipeline.verify.rounds` depois de cada chamada: numa recusa,
+  acrescenta à saída os trechos de `esbmc_knowledge.lookup` (README e testes de regressão que passam); num crash,
+  manda parar e não contornar no harness. A dica fica em `rounds/NNN/hint.txt`; `output.txt` continua sendo só a
+  saída do ESBMC, e o código de saída é o do ESBMC.
+- [x] `run_agent_arm(knowledge_index=...)` e o script carregam o índice do checkout quando `--log-rounds`.
+- [x] Corrigido junto: em `run_agent_fallback` o laço `for index, ...` sobrescrevia o índice de conhecimento, e
+  todo caso do agente no pipeline virava `AGENT_FAILED` (`'int' object has no attribute 'sections'`) quando o
+  checkout do ESBMC era encontrado.
+- [x] Testes em `tests/test_verify_rounds.py` e `tests/test_verify_agent_arm.py`.
+
 ### Tarefa 4: Avisos baratos por rodada (corpo, stub, mypy)
 
 **Arquivos:**

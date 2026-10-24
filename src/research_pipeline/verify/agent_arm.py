@@ -23,7 +23,7 @@ from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
 from .astutil import body_signature, expression_nodes, find_function
 from .context import context_module
-from .esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root_of, load_index, lookup
+from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, load_index, lookup
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output
@@ -211,6 +211,7 @@ def run_agent_arm(
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
     fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
     log_rounds: bool = False, differential: bool = True, pytest: bool = True,
+    knowledge_index: KnowledgeIndex | None = None,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
@@ -218,7 +219,8 @@ def run_agent_arm(
     ``fixed_path``, the fixed version of the source, turns on the evaluation control;
     ``project_skills`` installs the regras-harness skills in the case folder and records their versions;
     ``log_rounds`` installs the recording ``esbmc``, names it in the prompt (the agent must put it first on
-    PATH, as claude_agent(log_rounds=True) does) and keeps every call as ``result["rounds"]``;
+    PATH, as claude_agent(log_rounds=True) does) and keeps every call as ``result["rounds"]``, each refusal
+    hinted from ``knowledge_index``;
     ESBMC_CRASH looks only at the agent's last recorded call (conservative: it may drop a confirmation);
     ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest."""
     started = time.monotonic()
@@ -245,7 +247,7 @@ def run_agent_arm(
     for stale in ["harness.py", *(p.name for p in case_dir.glob("plugin_*.md"))]:
         (case_dir / stale).unlink(missing_ok=True)
     if log_rounds:
-        install_round_logger(case_dir, esbmc_command or [DEFAULT_ESBMC])
+        install_round_logger(case_dir, esbmc_command or [DEFAULT_ESBMC], knowledge_index)
     prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
                             notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
@@ -465,11 +467,11 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
     root = esbmc_root_of(esbmc_command or [DEFAULT_ESBMC])
     index = load_index(root, KNOWLEDGE_CACHE) if root is not None else None
     print(f"\nAgente: {len(pending)} hipótese(s) sem veredito do ESBMC no motor")
-    for index, result in enumerate(pending, 1):
+    for number, result in enumerate(pending, 1):
         h = BugHypothesis(**{k: v for k, v in result["hypothesis"].items() if k != "hypothesis_id"})
         if h.hypothesis_id in done:
             continue
-        print(f"[agente {index}/{len(pending)}] {Path(h.file).name}::{h.function}", flush=True)
+        print(f"[agente {number}/{len(pending)}] {Path(h.file).name}::{h.function}", flush=True)
         try:
             data = run_agent_arm(h, work_dir=work_dir, run_agent=run_agent, esbmc_command=esbmc_command,
                                  bound=bound, timeout_seconds=timeout_seconds, agent_timeout=agent_timeout,

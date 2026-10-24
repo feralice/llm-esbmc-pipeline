@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from research_pipeline.verify.agent_arm import (  # noqa: E402
     AGENT_VERDICTS, NOTES_PATH, make_agent, run_agent_arm, skill_versions)
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E402
-from research_pipeline.verify.esbmc_knowledge import esbmc_root_of  # noqa: E402
+from research_pipeline.verify.esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root_of, load_index  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 
@@ -174,6 +174,8 @@ def main(argv: list[str] | None = None) -> int:
                               base_url=args.base_url, log_rounds=args.log_rounds)
     notes = Path(args.notes) if args.notes else (None if args.backend == "claude" else NOTES_PATH)
     sources = Path(args.verification_sources) if args.verification_sources else None
+    root = esbmc_root_of([args.esbmc]) if args.log_rounds else None
+    knowledge = load_index(root, KNOWLEDGE_CACHE) if root is not None else None
     for index, (h, previous) in enumerate(hypotheses, 1):
         if h.hypothesis_id in finished:
             continue
@@ -183,7 +185,8 @@ def main(argv: list[str] | None = None) -> int:
                                source_path=verification_source(h, sources), skill=skill,
                                notes=notes, plugin_command=args.plugin_command if args.backend == "claude" else "",
                                allow_simplify=args.allow_simplify, project_skills=args.project_skills,
-                               log_rounds=args.log_rounds, differential=args.differential, pytest=args.pytest)
+                               log_rounds=args.log_rounds, differential=args.differential, pytest=args.pytest,
+                               knowledge_index=knowledge)
         result["engine_verdict"], result["variant"] = previous, variant
         print(f"    -> {result['verdict']} preserved={result['target_preserved']} {result['reason'][:100]}", flush=True)
         done.append(result)

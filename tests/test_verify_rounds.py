@@ -3,6 +3,7 @@ from pathlib import Path
 
 from research_pipeline.verify import esbmc_run
 from research_pipeline.verify.agent_arm import AGENT_FAILED, ESBMC_CRASH, run_agent_arm
+from research_pipeline.verify.esbmc_knowledge import KnowledgeIndex, Snippet
 from research_pipeline.verify.rounds import install_round_logger, read_rounds
 from tests.test_verify_agent_arm import PRESERVED, _esbmc, _hypothesis
 
@@ -113,3 +114,56 @@ def test_logger_runs_the_configured_command_with_its_flags(tmp_path):
     done = _call(install_round_logger(tmp_path, [fake, "--python-strict-types"]), tmp_path / "h.py", tmp_path)
     assert done.stdout.startswith(f"args: --python-strict-types {tmp_path / 'h.py'} --unwind 5")
     assert [r.kind for r in read_rounds(tmp_path)] == ["verdict"]
+
+
+ANNOTATIONS = KnowledgeIndex("abc", [Snippet("README.md", "Type Annotations",
+                                             "Add a type annotation to every parameter.")])
+
+
+def test_refused_round_gets_the_matching_esbmc_knowledge(tmp_path):
+    (tmp_path / "h.py").write_text("pass\n")
+    fake = _fake_esbmc(tmp_path, "echo 'ERROR: missing type annotation for parameter x'; exit 1")
+    done = _call(install_round_logger(tmp_path, fake, knowledge=ANNOTATIONS), tmp_path / "h.py", tmp_path)
+    assert done.stdout.startswith("ERROR: missing type annotation for parameter x\n")
+    assert "Add a type annotation to every parameter." in done.stdout and done.returncode == 1
+    assert "Add a type annotation" in (tmp_path / "rounds" / "001" / "hint.txt").read_text(encoding="utf-8")
+    assert [r.kind for r in read_rounds(tmp_path)] == ["refused"]
+
+
+def test_crash_round_tells_the_agent_to_stop(tmp_path):
+    (tmp_path / "h.py").write_text("pass\n")
+    done = _call(install_round_logger(tmp_path, _fake_esbmc(tmp_path, "exit 139"), knowledge=ANNOTATIONS),
+                 tmp_path / "h.py", tmp_path)
+    assert done.returncode == 139 and "do not work around it in the harness" in done.stdout
+
+
+def test_verdict_round_gets_no_hint(tmp_path):
+    (tmp_path / "h.py").write_text("pass\n")
+    fake = _fake_esbmc(tmp_path, "echo 'type annotation'; echo 'VERIFICATION FAILED'; exit 1")
+    done = _call(install_round_logger(tmp_path, fake, knowledge=ANNOTATIONS), tmp_path / "h.py", tmp_path)
+    assert done.stdout == "type annotation\nVERIFICATION FAILED\n"
+    assert not (tmp_path / "rounds" / "001" / "hint.txt").exists()
+
+
+def test_agent_arm_hands_the_knowledge_index_to_the_facade(tmp_path):
+    fake = _fake_esbmc(tmp_path, "echo 'ERROR: missing type annotation'; exit 1")
+    h = _hypothesis(tmp_path)
+    run_agent_arm(h, work_dir=tmp_path / "work", run_agent=_calling_agent(tmp_path, None), esbmc_command=[fake],
+                  bound=5, timeout_seconds=30, log_rounds=True, knowledge_index=ANNOTATIONS)
+    hint = tmp_path / "work" / h.hypothesis_id / "rounds" / "001" / "hint.txt"
+    assert "Add a type annotation" in hint.read_text(encoding="utf-8")
+
+
+def test_facade_works_from_a_folder_with_a_quote_in_its_name(tmp_path):
+    case = tmp_path / "it's here"
+    case.mkdir()
+    (case / "h.py").write_text("pass\n")
+    done = _call(install_round_logger(case, _fake_esbmc(tmp_path, "echo VERIFICATION SUCCESSFUL")), case / "h.py", case)
+    assert done.stdout == "VERIFICATION SUCCESSFUL\n" and [r.kind for r in read_rounds(case)] == ["verdict"]
+
+
+def test_crash_after_a_verdict_line_still_tells_the_agent_to_stop(tmp_path):
+    (tmp_path / "h.py").write_text("pass\n")
+    fake = _fake_esbmc(tmp_path, "echo 'VERIFICATION FAILED'; exit 139")
+    done = _call(install_round_logger(tmp_path, fake), tmp_path / "h.py", tmp_path)
+    assert "do not work around it in the harness" in done.stdout

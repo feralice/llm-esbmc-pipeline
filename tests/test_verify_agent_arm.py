@@ -353,3 +353,20 @@ def test_recheck_writes_its_pytest_under_its_own_output_dir(tmp_path, monkeypatc
                                             output_dir=tmp_path / "recheck")
     assert verdict == CONFIRMED
     assert _pytest_calls[0]["out_dir"] == tmp_path / "recheck" / "pytest"
+
+
+def test_fallback_with_an_esbmc_checkout_runs_the_agent(tmp_path):
+    from research_pipeline.verify.agent_arm import run_agent_fallback
+
+    checkout = tmp_path / "esbmc"
+    (checkout / "src/python-frontend").mkdir(parents=True)
+    (checkout / "src/python-frontend/README.md").write_text("## Types\n\nAnnotate parameters.\n", encoding="utf-8")
+    binary = checkout / "build" / "esbmc"
+    binary.parent.mkdir()
+    binary.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+    h = _hypothesis(tmp_path)
+    result = {"hypothesis": h.to_dict(), "verdict": "UNSUPPORTED", "reason": "ERROR: annotate parameters"}
+    [data] = run_agent_fallback([result], run_agent=lambda prompt, cwd, timeout: "DONE", work_dir=tmp_path / "work",
+                                esbmc_command=[str(binary)], bound=5, timeout_seconds=1, agent_timeout=1,
+                                sources=None, state={}, save=lambda: None, config={})
+    assert data["reason"] == "agent wrote no harness.py"
