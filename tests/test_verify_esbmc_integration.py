@@ -228,14 +228,14 @@ MASTER = Path("/home/fernanda/esbmc-master/build/src/esbmc/esbmc")
 
 
 @pytest.mark.skipif(not (WRAPPER.exists() and MASTER.exists()), reason="ESBMC master wrapper not available")
-def test_probes_on_master_keep_the_rules_its_known_gaps_need(tmp_path):
+def test_probes_on_master_switch_off_the_rules_of_fixed_gaps(tmp_path):
     from research_pipeline.verify.capabilities import ACEITA, probe_capabilities
     from research_pipeline.verify.rules import BUILTIN_NAMED_METHODS, NONE_ATTRIBUTE
 
     report = probe_capabilities([str(WRAPPER)], cache_dir=tmp_path)
-    # possiveis_problemas 25: SUCCESSFUL on master 333d07cc8a with the wrapper's flags, still a gap.
-    assert report["results"]["none_atributo_campo"]["outcome"] != ACEITA
-    assert NONE_ATTRIBUTE in report["active_rules"]
+    # possiveis_problemas 25 (esbmc#9078): fixed by master eaf90d73bb, so its rule switches itself off.
+    assert report["results"]["none_atributo_campo"]["outcome"] == ACEITA
+    assert NONE_ATTRIBUTE not in report["active_rules"]
     # possiveis_problemas 27: fixed by master 5d17828, so its rule switches itself off.
     assert report["results"]["metodo_append"]["outcome"] == ACEITA
     assert BUILTIN_NAMED_METHODS not in report["active_rules"]
