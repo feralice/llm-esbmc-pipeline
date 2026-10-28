@@ -28,9 +28,9 @@ SOURCE = (
 
 def test_context_shows_the_guard_before_the_call_and_renames_the_target(tmp_path: Path) -> None:
     text = caller_context(_graph(tmp_path, SOURCE), "m:ratio")
-    assert "# chamada em caller, m.py, linha 10:" in text
+    assert "# call in caller, m.py, line 10:" in text
     assert "    8 |     if n == 0:" in text and "   10 |     return target_function(1, n)" in text
-    assert "# chamada em nível de módulo, m.py, linha 11:" in text
+    assert "# call in module level, m.py, line 11:" in text
     assert "ratio" not in text
 
 
@@ -51,7 +51,7 @@ def test_context_is_capped_and_says_how_many_calls_were_left_out(tmp_path: Path)
     text = caller_context(_graph(tmp_path, "def f(x):\n    return x\ndef g():\n" + body), "m:f",
                           before=0, after=0, max_sites=50, max_chars=300)
     assert len(text) < 400
-    assert "chamada(s) omitida(s)" in text
+    assert "call(s) omitted" in text
 
 
 def test_context_without_callers_says_so(tmp_path: Path) -> None:
@@ -65,8 +65,8 @@ def _unit(context: str) -> CodeUnit:
 
 
 def test_a12_puts_the_caller_block_in_the_user_prompt_only_when_asked() -> None:
-    unit = _unit("# chamada em g, m.py, linha 9:")
-    assert "<UNTRUSTED_CONTEXT_CHAMADORES>\n# chamada em g" in build_user_prompt(
+    unit = _unit("# call in g, m.py, line 9:")
+    assert "<UNTRUSTED_CONTEXT_CALLERS>\n# call in g" in build_user_prompt(
         unit, include_smells=False, v2_variants=("A12",))
     assert "CHAMADORES" not in build_user_prompt(unit, include_smells=False)
     assert "CHAMADORES" not in build_user_prompt(_unit(""), include_smells=False, v2_variants=("A12",))

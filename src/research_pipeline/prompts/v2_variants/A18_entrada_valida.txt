@@ -1,0 +1,11 @@
+## VALID INPUT
+
+An input is valid when the code you received shows that it can reach the function:
+- the type hint admits it (`Optional[str]` admits None; `str` does not);
+- it is the parameter's default value (a None default admits None);
+- a caller shown in the context passes it, or passes something that may hold it;
+- the body itself handles it on some path (an `if x is None` means None is expected).
+Without any of this evidence, what is consistent with the body's use is valid: if the code calls
+`x.strip()`, x is a string of any content, empty included; if it does arithmetic with n, n is a number
+of any value, zero and negatives included. None, another type or a missing key without evidence
+are not valid inputs, and missing context for a helper does not change that.

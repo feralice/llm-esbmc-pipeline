@@ -23,28 +23,28 @@ def test_without_variants_the_prompt_is_the_baseline() -> None:
 
 def test_a1_asks_to_report_even_without_context() -> None:
     changed = apply_variants(BASE, ("A1",))
-    assert "prefira não reportar" not in changed and "quando apropriado, não reporte" not in changed
+    assert "prefer not to report" not in changed and "when appropriate, do not report" not in changed
 
 
 def test_a2_adds_the_input_checklist_before_the_output_section() -> None:
     changed = apply_variants(BASE, ("A2",))
-    assert changed.index("## PARTIÇÃO DE ENTRADAS") < changed.index("## SAÍDA")
+    assert changed.index("## INPUT PARTITION") < changed.index("## OUTPUT")
 
 
 def test_a3_asks_for_ranked_hypotheses() -> None:
-    assert "da mais para a menos provável" in apply_variants(BASE, ("A3",))
+    assert "from the most to the least likely" in apply_variants(BASE, ("A3",))
 
 
 def test_a6_makes_the_evidence_test_cover_any_wrong_behaviour() -> None:
     changed = apply_variants(BASE, ("A6",))
-    assert "bloqueia EXATAMENTE o valor problemático" not in changed
-    assert "3. A exceção é capturada" not in changed
-    assert "valor diferente do que o código" in changed and "4. Existe valor concreto" in changed
+    assert "blocks EXACTLY the problematic value" not in changed
+    assert "3. Is the exception caught" not in changed
+    assert "a value different from what the code" in changed and "4. Is there a concrete input value" in changed
 
 
 def test_variants_compose() -> None:
     both = apply_variants(BASE, ("A1", "A2"))
-    assert "## PARTIÇÃO DE ENTRADAS" in both and "prefira não reportar" not in both
+    assert "## INPUT PARTITION" in both and "prefer not to report" not in both
 
 
 def test_a_variant_whose_anchor_is_gone_fails_loudly() -> None:
@@ -58,7 +58,7 @@ def test_an_unknown_variant_fails() -> None:
 
 
 def test_load_system_prompt_applies_variants() -> None:
-    assert "## PARTIÇÃO DE ENTRADAS" in load_system_prompt(include_smells=False, v2_detection=True,
+    assert "## INPUT PARTITION" in load_system_prompt(include_smells=False, v2_detection=True,
                                                            v2_variants=("A2",))
 
 
@@ -69,7 +69,7 @@ def _unit(path: Path, source: str, name: str = "f", start: int = 1, end: int = 2
 
 def test_a7_asks_for_the_analysis_first_in_prompt_and_schema() -> None:
     changed = apply_variants(BASE, ("A7",))
-    assert "não produza uma cadeia de raciocínio" not in changed
+    assert "do not produce a generic chain of" not in changed
     assert changed.index('"analysis"') < changed.index('"findings": [')
     schema = v2_findings_schema(("A7",))["schema"]
     assert next(iter(schema["properties"])) == "analysis" and "analysis" in schema["required"]
@@ -81,7 +81,7 @@ def test_without_variants_the_schema_is_the_baseline() -> None:
 
 def test_a8_adds_worked_examples_before_the_output_section() -> None:
     changed = apply_variants(BASE, ("A8",))
-    assert changed.index("## EXEMPLOS RESOLVIDOS") < changed.index("## SAÍDA")
+    assert changed.index("## WORKED EXAMPLES") < changed.index("## OUTPUT")
 
 
 def test_a9_asks_for_the_crash_site_in_prompt_and_schema() -> None:
@@ -120,22 +120,22 @@ def test_a11_adds_imports_class_outline_and_callers_from_the_same_file(tmp_path:
     unit = _unit(path, "def size(self):\n    return len(self.items)\n", name="size", start=5, end=6,
                  qualname="Box.size")
     prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A11",))
-    block = prompt[prompt.index("<UNTRUSTED_CONTEXT_ARQUIVO>"):prompt.index("</UNTRUSTED_CONTEXT_ARQUIVO>")]
+    block = prompt[prompt.index("<UNTRUSTED_CONTEXT_FILE>"):prompt.index("</UNTRUSTED_CONTEXT_FILE>")]
     assert "import os" in block and "class Box(Base):" in block and "self.items = items" in block
-    assert "def report(box)" in block and "linha 8: return box.target_function() + 1" in block
+    assert "def report(box)" in block and "line 8: return box.target_function() + 1" in block
     assert "size" not in block
-    assert "<UNTRUSTED_CONTEXT_ARQUIVO>" not in build_user_prompt(unit, include_smells=False)
-    assert "## CONTEXTO DO ARQUIVO" in apply_variants(BASE, ("A11",))
+    assert "<UNTRUSTED_CONTEXT_FILE>" not in build_user_prompt(unit, include_smells=False)
+    assert "## FILE CONTEXT" in apply_variants(BASE, ("A11",))
 
 
 def test_a11_without_a_readable_file_adds_nothing(tmp_path: Path) -> None:
     unit = _unit(tmp_path / "missing.py", "def f(x):\n    return x\n")
-    assert "UNTRUSTED_CONTEXT_ARQUIVO" not in build_user_prompt(unit, include_smells=False, v2_variants=("A11",))
+    assert "UNTRUSTED_CONTEXT_FILE" not in build_user_prompt(unit, include_smells=False, v2_variants=("A11",))
 
 
 def test_all_new_variants_compose_with_a5() -> None:
     changed = apply_variants(BASE, ("A1", "A2", "A7", "A8", "A9", "A10", "A11"))
-    for marker in ("## PARTIÇÃO DE ENTRADAS", "## EXEMPLOS RESOLVIDOS", "## ONDE O BUG NASCE", "## CONTEXTO DO ARQUIVO",
+    for marker in ("## INPUT PARTITION", "## WORKED EXAMPLES", "## WHERE THE BUG STARTS", "## FILE CONTEXT",
                    '"analysis"', '"crash_expression"'):
         assert marker in changed
 
@@ -161,7 +161,7 @@ def test_a11_reads_the_context_from_the_full_file_when_detection_sees_a_slice(tm
 
 def test_a14_asks_for_the_quoted_line_and_trigger_in_prompt_and_schema() -> None:
     changed = apply_variants(BASE, ("A14",))
-    assert changed.index("## EVIDÊNCIA CITADA") < changed.index("## SAÍDA")
+    assert changed.index("## QUOTED EVIDENCE") < changed.index("## OUTPUT")
     assert '"quoted_line"' in changed and '"trigger"' in changed
     metadata = v2_findings_schema(("A14",))["schema"]["properties"]["findings"]["items"]["properties"]["metadata"]
     for field in ("quoted_line", "trigger"):
@@ -186,7 +186,7 @@ def test_a14_and_a9_compose_in_the_schema() -> None:
 def _example(item_id: str, project: str, source: str, name: str, expression: str) -> Example:
     return Example(id=item_id, project=project, file_stem=item_id, unit=_unit(Path(f"{item_id}.py"), source, name=name),
                    expression=expression, crash_expressions=(), verifiable=True,
-                   effect="levanta exceção dentro da função", tokens=code_tokens(source))
+                   effect="raises an exception inside the function", tokens=code_tokens(source))
 
 
 def test_a13_shows_examples_from_other_projects_only() -> None:
@@ -201,11 +201,11 @@ def test_a13_shows_examples_from_other_projects_only() -> None:
         prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A13",))
     finally:
         set_example_pool(None)
-    block = prompt[prompt.index("<UNTRUSTED_EXEMPLOS>"):prompt.index("</UNTRUSTED_EXEMPLOS>")]
+    block = prompt[prompt.index("<UNTRUSTED_EXAMPLES>"):prompt.index("</UNTRUSTED_EXAMPLES>")]
     assert "items[n + 1]" not in block
-    assert "Bug corrigido pelos mantenedores: `target_function(values[i + 1:], i)`" in block
+    assert "Bug fixed by the maintainers: `target_function(values[i + 1:], i)`" in block
     assert "def target_function(values, i):" in block and "verifiable: true" in block
-    assert "## EXEMPLOS DE BUGS REAIS" in apply_variants(BASE, ("A13",))
+    assert "## REAL BUG EXAMPLES" in apply_variants(BASE, ("A13",))
 
 
 def test_a13_without_a_pool_fails_loudly() -> None:
@@ -224,16 +224,16 @@ def test_a_pool_without_a13_adds_no_examples() -> None:
                                    v2_variants=("A1", "A2"))
     finally:
         set_example_pool(None)
-    assert "UNTRUSTED_EXEMPLOS" not in prompt
+    assert "UNTRUSTED_EXAMPLES" not in prompt
 
 
 def test_new_variants_compose_with_a5_and_a9() -> None:
     changed = apply_variants(BASE, ("A1", "A2", "A9", "A13", "A14"))
-    for marker in ("## PARTIÇÃO DE ENTRADAS", "## ONDE O BUG NASCE", "## EXEMPLOS DE BUGS REAIS",
-                   "## EVIDÊNCIA CITADA", '"crash_expression"', '"quoted_line"', '"trigger"'):
+    for marker in ("## INPUT PARTITION", "## WHERE THE BUG STARTS", "## REAL BUG EXAMPLES",
+                   "## QUOTED EVIDENCE", '"crash_expression"', '"quoted_line"', '"trigger"'):
         assert marker in changed
-    assert changed.count("## SAÍDA: JSON válido") == 1
-    assert changed.index("## EVIDÊNCIA CITADA") < changed.index("## SAÍDA")
+    assert changed.count("## OUTPUT: valid JSON") == 1
+    assert changed.index("## QUOTED EVIDENCE") < changed.index("## OUTPUT")
 
 
 def test_a13_renames_the_example_function_but_not_an_attribute_of_the_same_name() -> None:
@@ -246,7 +246,7 @@ def test_a13_renames_the_example_function_but_not_an_attribute_of_the_same_name(
                                    v2_variants=("A13",))
     finally:
         set_example_pool(None)
-    assert "Bug corrigido pelos mantenedores: `conf.update(kwargs) or target_function(conf, {})`" in prompt
+    assert "Bug fixed by the maintainers: `conf.update(kwargs) or target_function(conf, {})`" in prompt
 
 
 def test_a12_builds_the_callers_from_the_full_file_when_the_unit_has_none(tmp_path: Path) -> None:
@@ -262,7 +262,7 @@ def test_a12_builds_the_callers_from_the_full_file_when_the_unit_has_none(tmp_pa
         prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A12",))
     finally:
         set_context_sources(None)
-    assert "UNTRUSTED_CONTEXT_CHAMADORES" in prompt and "target_function(parts[0])" in prompt
+    assert "UNTRUSTED_CONTEXT_CALLERS" in prompt and "target_function(parts[0])" in prompt
 
 
 def test_a12_keeps_the_scan_callers_when_the_unit_brings_them(tmp_path: Path) -> None:
@@ -274,5 +274,76 @@ def test_a12_keeps_the_scan_callers_when_the_unit_brings_them(tmp_path: Path) ->
 
 def test_a16_adds_the_consistency_checklist_before_the_output_section() -> None:
     changed = apply_variants(BASE, ("A1", "A2", "A16"))
-    assert changed.index("## PARTIÇÃO DE ENTRADAS") < changed.index("## CONSISTÊNCIA INTERNA") < changed.index("## SAÍDA")
-    assert "parâmetro" in changed.split("## CONSISTÊNCIA INTERNA")[1]
+    assert changed.index("## INPUT PARTITION") < changed.index("## INTERNAL CONSISTENCY") < changed.index("## OUTPUT")
+    assert "parameter" in changed.split("## INTERNAL CONSISTENCY")[1]
+
+
+MEDIA = ('def media(valores):\n    """Média aritmética de valores."""\n'
+         '    # lista vazia nunca chega aqui: o chamador filtra\n    return sum(valores) / len(valores)\n')
+
+
+def test_a17_sends_the_function_as_written() -> None:
+    unit = _unit(Path("m.py"), MEDIA, name="media", end=4)
+    prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A17",))
+    assert "def media(valores):" in prompt and "Média aritmética" in prompt and "# lista vazia" in prompt
+    baseline = build_user_prompt(unit, include_smells=False)
+    assert "def target_function(valores):" in baseline and "# lista vazia" not in baseline
+    assert apply_variants(BASE, ("A17",)) == BASE
+
+
+def test_a17_keeps_the_real_name_in_the_context_sections(tmp_path: Path) -> None:
+    path = tmp_path / "m.py"
+    path.write_text(MEDIA + "\n\ndef relatorio(xs):\n    return media(xs) * 2\n", encoding="utf-8")
+    unit = _unit(path, MEDIA, name="media", end=4)
+    prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A11", "A12", "A17"))
+    assert "return media(xs) * 2" in prompt and "target_function" not in prompt
+
+
+def test_a18_defines_a_valid_input_on_top_of_a5() -> None:
+    with pytest.raises(ValueError, match="A18"):
+        apply_variants(BASE, ("A18",))
+    prompt = apply_variants(BASE, ("A1", "A2", "A18"))
+    assert "## VALID INPUT" in prompt
+    assert prompt.index("## VALID INPUT") < prompt.index("## OUTPUT: valid JSON")
+    assert "guards is a hypothesis." not in prompt and "valid input" in prompt.split("## INPUT PARTITION")[1]
+
+
+CALLEES_FILE = '''import os
+
+
+def _limpa(texto):
+    # tira espaços das pontas
+    return texto.strip()
+
+
+def sem_relacao():
+    return 1
+
+
+class Leitor:
+    def _campos(self, linha):
+        return linha.split(",")
+
+    def le(self, linha):
+        return _limpa(self._campos(linha)[1])
+'''
+
+
+def test_a19_adds_the_bodies_of_the_functions_it_calls(tmp_path: Path) -> None:
+    path = tmp_path / "m.py"
+    path.write_text(CALLEES_FILE, encoding="utf-8")
+    source = "    def le(self, linha):\n        return _limpa(self._campos(linha)[1])\n"
+    unit = _unit(path, source, name="le", qualname="Leitor.le", start=17, end=18)
+    prompt = build_user_prompt(unit, include_smells=False, v2_variants=("A19",))
+    block = prompt[prompt.index("<UNTRUSTED_CONTEXT_CALLEES>"):prompt.index("</UNTRUSTED_CONTEXT_CALLEES>")]
+    assert "# tira espaços das pontas" in block and "return texto.strip()" in block
+    assert 'return linha.split(",")' in block
+    assert "sem_relacao" not in block and "def le(" not in block
+    assert "## CALLED FUNCTIONS" in apply_variants(BASE, ("A19",))
+
+
+def test_a19_without_calls_into_the_file_adds_nothing(tmp_path: Path) -> None:
+    path = tmp_path / "m.py"
+    path.write_text("def f(x):\n    return len(x)\n", encoding="utf-8")
+    unit = _unit(path, "def f(x):\n    return len(x)\n")
+    assert "UNTRUSTED_CONTEXT_CALLEES" not in build_user_prompt(unit, include_smells=False, v2_variants=("A19",))

@@ -108,6 +108,6 @@ def test_section_is_bounded_and_says_when_there_are_no_callers():
     many = "def f(a):\n    return a[0]\n" + "".join(
         f"\ndef c{i}():\n    return f([{'1, ' * 60}1])\n" for i in range(30))
     big, _ = _facts(many, "f", "a[0]")
-    assert len(big.sites) <= MAX_CALLER_CHARS + 60 and "omitida" in big.sites
+    assert len(big.sites) <= MAX_CALLER_CHARS + 60 and "omitted" in big.sites
     lonely, grounded = _facts("def f(a):\n    return a[0]\n", "f", "a[0]")
     assert "# none found in the verification source" in render_section(lonely, grounded)

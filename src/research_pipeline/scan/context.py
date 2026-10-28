@@ -6,7 +6,7 @@ import re
 
 from .callgraph import MODULE_CALLER, CallGraph, CallSite
 
-NO_CALLERS = "# nenhuma chamada a esta função foi encontrada no repositório"
+NO_CALLERS = "# no call to this function was found in the repository"
 MAX_SITES = 8
 MAX_CHARS = 3_000
 
@@ -28,7 +28,7 @@ def caller_context(graph: CallGraph, key: str, *, before: int = 3, after: int = 
         text = f"{text}\n{block}" if text else block[:max_chars]
         shown += 1
     if shown < len(sites):
-        text += f"\n# [+{len(sites) - shown} chamada(s) omitida(s)]"
+        text += f"\n# [+{len(sites) - shown} call(s) omitted]"
     return re.sub(rf"\b{re.escape(function.name)}\b", "target_function", text) if rename else text
 
 
@@ -41,9 +41,9 @@ def _block(graph: CallGraph, site: CallSite, before: int, after: int) -> str:
         low, high = max(low, caller.start_line), min(high, caller.end_line)
         where = f"{caller.qualname}, {site.file}"
     else:
-        where = f"nível de módulo, {site.file}" if site.caller.endswith(MODULE_CALLER) else site.file
+        where = f"module level, {site.file}" if site.caller.endswith(MODULE_CALLER) else site.file
     low, high = max(low, 1), min(high, len(lines))
-    out = [f"# chamada em {where}, linha {site.line}:"]
+    out = [f"# call in {where}, line {site.line}:"]
     if caller is not None and caller.start_line < low:
         out.append(f"{caller.start_line:>5} | {lines[caller.start_line - 1].rstrip()}")
         if caller.start_line + 1 < low:

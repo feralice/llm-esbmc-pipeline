@@ -26,7 +26,7 @@ def test_prints_system_and_user_prompts(tmp_path: Path, capsys, no_llm) -> None:
     source.write_text("def head(xs):\n    return xs[0]\n", encoding="utf-8")
     assert pdp.main(["--input", str(source), "--v2-variants", "A1,A2,A14"]) == 0
     captured = capsys.readouterr()
-    assert "## EVIDÊNCIA CITADA" in captured.out and "return xs[0]" in captured.out
+    assert "## QUOTED EVIDENCE" in captured.out and "return xs[0]" in captured.out
     assert "=== m.py::head ===" in captured.out and "tokens" in captured.err
 
 
@@ -43,8 +43,8 @@ def test_writes_one_file_per_function_with_a13(tmp_path: Path, no_llm) -> None:
     out = tmp_path / "out"
     assert pdp.main(["--input", str(target), "--v2-variants", "A13", "--example-pool", str(ground_truth),
                      "--out", str(out)]) == 0
-    assert "## EXEMPLOS DE BUGS REAIS" in (out / "system.txt").read_text(encoding="utf-8")
-    assert "<UNTRUSTED_EXEMPLOS>" in (out / "m.py__head.txt").read_text(encoding="utf-8")
+    assert "## REAL BUG EXAMPLES" in (out / "system.txt").read_text(encoding="utf-8")
+    assert "<UNTRUSTED_EXAMPLES>" in (out / "m.py__head.txt").read_text(encoding="utf-8")
 
 
 def test_no_matching_function_returns_one(tmp_path: Path, no_llm) -> None:

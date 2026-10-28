@@ -47,7 +47,7 @@ def test_pool_skips_uncertain_labels_and_long_functions(tmp_path: Path) -> None:
 def test_example_carries_its_label_and_effect(tmp_path: Path) -> None:
     examples = {e.id: e for e in load_example_pool(_dataset(tmp_path)).examples}
     assert examples["a_1"].effect == "IndexError com xs vazio" and examples["a_1"].verifiable is True
-    assert examples["c_1"].verifiable is False and "nada quebra" in examples["c_1"].effect
+    assert examples["c_1"].verifiable is False and "nothing breaks" in examples["c_1"].effect
 
 
 def test_never_selects_the_bug_itself_or_its_project(tmp_path: Path) -> None:

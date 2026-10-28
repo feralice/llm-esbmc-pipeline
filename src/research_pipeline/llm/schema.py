@@ -114,7 +114,7 @@ def v2_findings_schema(variants: tuple[str, ...] = ()) -> dict:
         metadata["required"].append(name)
     if "A15" in variants:
         metadata["properties"]["failure_mode"] = {"type": "string",
-                                                  "enum": ["excecao", "resultado_errado", "outro"]}
+                                                  "enum": ["exception", "wrong_result", "other"]}
         metadata["required"].append("failure_mode")
     if "A7" in variants:
         # Declared first so the model writes its analysis before committing to findings.

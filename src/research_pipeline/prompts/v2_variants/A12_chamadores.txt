@@ -1,9 +1,9 @@
-## CHAMADAS NO REPOSITÓRIO
+## CALLS IN THE REPOSITORY
 
-Depois da função vem um bloco `UNTRUSTED_CONTEXT_CHAMADORES`, extraído do grafo de chamadas
-do repositório: cada lugar que chama a função, com algumas linhas em volta. Use-o para decidir
-que valores chegam de fato aos parâmetros (o chamador já filtra, converte ou garante algo?).
-Quando todos os chamadores bloqueiam o valor que quebra, não reporte o achado. Quando o bloco
-diz que nenhuma chamada foi encontrada, a função pode ser chamada de fora do repositório com
-qualquer entrada compatível com a assinatura. Ele não é a função analisada: não reporte
-achados sobre o código dos chamadores.
+After the function comes an `UNTRUSTED_CONTEXT_CALLERS` block, taken from the repository's
+call graph: each place that calls the function, with a few lines around it. Use it to decide
+which values actually reach the parameters (does the caller already filter, convert or ensure
+something?). When every caller blocks the value that breaks, do not report the finding. When the
+block says no call was found, the function may be called from outside the repository with any
+input compatible with its signature. It is not the function under analysis: do not report
+findings about the callers' code.

@@ -17,10 +17,10 @@ MAX_EXAMPLE_SOURCE_CHARS = 2_500
 MAX_EFFECT_CHARS = 200
 _COMMON_NODES = {"Name", "Attribute", "Constant", "Call", "Expr", "Assign"}
 _EFFECT = {
-    "excecao_local": "levanta exceção dentro da função",
-    "excecao_modelavel": "levanta exceção numa chamada cuja regra depende só dos argumentos",
-    "excecao_nao_modelavel": "levanta exceção que depende do ambiente ou de biblioteca",
-    "resultado_errado": "devolve valor errado; nada quebra",
+    "excecao_local": "raises an exception inside the function",
+    "excecao_modelavel": "raises an exception in a call whose rule depends only on the arguments",
+    "excecao_nao_modelavel": "raises an exception that depends on the environment or on a library",
+    "resultado_errado": "returns a wrong value; nothing breaks",
 }
 
 

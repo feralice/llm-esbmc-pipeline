@@ -87,7 +87,7 @@ def test_scan_prompt_is_a5_plus_the_caller_section() -> None:
     assert DEFAULT_VARIANTS == ("A1", "A2", "A12")
     prompt = load_system_prompt(include_smells=False, v2_detection=True, v2_variants=DEFAULT_VARIANTS)
     assert prompt == apply_variants(load_system_prompt(include_smells=False, v2_detection=True), DEFAULT_VARIANTS)
-    assert "## CHAMADAS NO REPOSITÓRIO" in prompt and "## PARTIÇÃO DE ENTRADAS" in prompt
+    assert "## CALLS IN THE REPOSITORY" in prompt and "## INPUT PARTITION" in prompt
 
 
 def test_execute_sends_caller_context_and_only_verifiable_findings_to_verify(tmp_path: Path) -> None:

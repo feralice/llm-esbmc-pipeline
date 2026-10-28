@@ -35,9 +35,9 @@ def test_candidates_carry_the_oracle_to_the_hypothesis():
 
 def test_a15_asks_how_the_bug_shows_in_prompt_and_schema():
     changed = apply_variants(BASE, ("A15",))
-    assert "## BUG DE RESULTADO ERRADO" in changed and '"failure_mode"' in changed
+    assert "## WRONG-RESULT BUG" in changed and '"failure_mode"' in changed
     metadata = v2_findings_schema(("A15",))["schema"]["properties"]["findings"]["items"]["properties"]["metadata"]
-    assert metadata["properties"]["failure_mode"]["enum"] == ["excecao", "resultado_errado", "outro"]
+    assert metadata["properties"]["failure_mode"]["enum"] == ["exception", "wrong_result", "other"]
     assert "failure_mode" in metadata["required"]
     assert "failure_mode" not in v2_findings_schema(())["schema"]["properties"]["findings"]["items"][
         "properties"]["metadata"]["properties"]
@@ -88,7 +88,7 @@ def _detected(tmp_path: Path, monkeypatch, failure_mode: str, variants: str) -> 
 
 
 def test_with_a15_a_wrong_result_finding_becomes_a_value_hypothesis(tmp_path, monkeypatch):
-    hypotheses = _detected(tmp_path, monkeypatch, "resultado_errado", "A15")
+    hypotheses = _detected(tmp_path, monkeypatch, "wrong_result", "A15")
     assert [(h.function, h.oracle) for h in hypotheses] == [("magnitude", VALUE_ORACLE)]
 
 
@@ -99,7 +99,7 @@ def test_without_a15_a_wrong_result_finding_is_still_held(tmp_path, monkeypatch)
 
 def test_a15_composes_with_the_other_variants():
     changed = apply_variants(BASE, ("A1", "A2", "A9", "A13", "A14", "A15"))
-    assert "## BUG DE RESULTADO ERRADO" in changed and '"quoted_line"' in changed and '"failure_mode"' in changed
+    assert "## WRONG-RESULT BUG" in changed and '"quoted_line"' in changed and '"failure_mode"' in changed
     metadata = v2_findings_schema(("A9", "A14", "A15"))["schema"]["properties"]["findings"]["items"][
         "properties"]["metadata"]
     assert {"crash_expression", "quoted_line", "trigger", "failure_mode"} <= set(metadata["required"])

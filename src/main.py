@@ -938,7 +938,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:
                 # With A15 the LLM says how the bug shows; a wrong result goes to the value oracle.
-                wrong_result = "A15" in variants and finding.metadata.get("failure_mode") == "resultado_errado"
+                wrong_result = "A15" in variants and finding.metadata.get("failure_mode") in ("wrong_result", "resultado_errado")
                 # Otherwise the LLM decides: only findings it marks formally verifiable reach ESBMC.
                 if not finding.verifiable and not wrong_result:
                     unit_rejections.append(

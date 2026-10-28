@@ -1,14 +1,14 @@
-## CONSISTÊNCIA INTERNA
+## INTERNAL CONSISTENCY
 
-Depois da partição de entradas, confira a função contra ela mesma. Um bug de
-resultado errado muitas vezes aparece só como incoerência, sem nenhuma exceção:
-- um parâmetro ou atributo é recebido, validado ou calculado, mas nunca afeta o
-  valor devolvido nem o estado alterado;
-- uma mensagem de erro, de aviso, um comentário ou a docstring descreve um
-  comportamento que o código não faz;
-- ramos parecidos (if/elif, try/except, casos de um mesmo dicionário) tratam
-  casos parecidos de jeitos diferentes, e um deles esquece uma condição, uma
-  conversão ou um valor que os outros têm;
-- um valor é atribuído duas vezes sem uso entre as atribuições, ou é sobrescrito
-  antes de ser lido.
-Cada incoerência que muda o resultado para alguma entrada é uma hipótese.
+After the input partition, check the function against itself. A wrong-result bug
+often shows only as an inconsistency, with no exception at all:
+- a parameter or attribute is received, validated or computed, but never affects
+  the returned value or the changed state;
+- an error message, a warning, a comment or the docstring describes behaviour the
+  code does not have;
+- similar branches (if/elif, try/except, cases of the same dict) handle similar
+  cases differently, and one of them forgets a condition, a conversion or a value
+  the others have;
+- a value is assigned twice with no use in between, or is overwritten before it
+  is read.
+Each inconsistency that changes the result for some input is a hypothesis.

@@ -1,8 +1,8 @@
-## EXEMPLOS RESOLVIDOS
+## WORKED EXAMPLES
 
-Os exemplos abaixo mostram o formato e o critério; não têm relação com a função que você vai analisar.
+The examples below show the format and the criterion; they are unrelated to the function you will analyse.
 
-Exemplo 1: exceção alcançável, reportada.
+Example 1: reachable exception, reported.
 
 def target_function(scores, k):
     top = sorted(scores, reverse=True)
@@ -10,11 +10,11 @@ def target_function(scores, k):
 
 {"findings": [{"finding_type": "suspected_bug", "metadata": {"expression": "top[k - 1]", "line": 3,
 "operands": ["top", "k"], "guard_evidence": "none", "missing_guard": "k <= len(scores)",
-"context_needed": []}, "explanation": "k vem de fora sem restrição e não há guarda sobre o tamanho de
-scores. Com scores vazio, ou k maior que len(scores), top[k - 1] lê fora da lista.",
-"violated_property": "IndexError em top[k - 1]", "verifiable": true}]}
+"context_needed": []}, "explanation": "k comes from outside with no restriction and there is no guard on the
+size of scores. With an empty scores, or k larger than len(scores), top[k - 1] reads outside the list.",
+"violated_property": "IndexError at top[k - 1]", "verifiable": true}]}
 
-Exemplo 2: operação perigosa protegida, nada a reportar.
+Example 2: dangerous operation that is guarded, nothing to report.
 
 def target_function(total, count):
     if count == 0:
@@ -22,17 +22,17 @@ def target_function(total, count):
     return total / count
 
 {"findings": []}
-A divisão só é alcançada com count diferente de zero: a guarda bloqueia exatamente o valor que quebra.
+The division is only reached with count different from zero: the guard blocks exactly the value that breaks.
 
-Exemplo 3: resultado errado sem exceção, reportado como não verificável.
+Example 3: wrong result with no exception, reported as not verifiable.
 
 def target_function(prices, discount):
-    """Aplica o desconto percentual a cada preço."""
+    """Applies the percentage discount to each price."""
     return [p - discount for p in prices]
 
 {"findings": [{"finding_type": "suspected_bug", "metadata": {"expression": "p - discount", "line": 3,
 "operands": ["p", "discount"], "guard_evidence": "none", "missing_guard": "p * (1 - discount / 100)",
-"context_needed": []}, "explanation": "A docstring pede desconto percentual, mas o código subtrai o valor
-absoluto: com p = 50 e discount = 10 devolve 40 em vez de 45. Nada quebra.",
-"violated_property": "resultado errado: subtrai o desconto em vez de aplicar a porcentagem",
+"context_needed": []}, "explanation": "The docstring asks for a percentage discount, but the code subtracts the
+absolute value: with p = 50 and discount = 10 it returns 40 instead of 45. Nothing breaks.",
+"violated_property": "wrong result: subtracts the discount instead of applying the percentage",
 "verifiable": false}]}

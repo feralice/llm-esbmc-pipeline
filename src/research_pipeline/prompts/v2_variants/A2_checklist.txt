@@ -1,11 +1,11 @@
-## PARTIÇÃO DE ENTRADAS
+## INPUT PARTITION
 
-Antes do item 1, percorra cada parâmetro e cada atributo de `self` que a função
-lê e pergunte, um por um, o que acontece quando ele é:
-- None (inclusive quando o padrão do parâmetro é None ou o nome sugere opcional);
-- vazio (string, lista, dicionário, conjunto);
-- zero ou negativo;
-- de outro tipo plausível (bytes no lugar de str, int no lugar de str, lista no lugar de tupla);
-- uma chave ausente num dicionário, ou um índice fora do intervalo.
-Cada caso que leva a uma exceção ou a um resultado errado e passa pelas guardas
-existentes é uma hipótese.
+Before item 1, go through each parameter and each attribute of `self` the function
+reads and ask, one by one, what happens when it is:
+- None (including when the parameter defaults to None or the name suggests it is optional);
+- empty (string, list, dict, set);
+- zero or negative;
+- of another plausible type (bytes instead of str, int instead of str, list instead of tuple);
+- a key missing from a dict, or an index out of range.
+Each case that leads to an exception or a wrong result and passes the existing
+guards is a hypothesis.
