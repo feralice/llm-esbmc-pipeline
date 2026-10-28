@@ -8,10 +8,10 @@ import ast
 
 import pytest
 
-from research_pipeline.verify.agent_arm import (AGENT_FAILED, BEHAVIOUR_CHANGED, FIXED_ALSO_FAILS, STUB_INDUCED,
-                                               run_agent_arm, stub_cause)
+from research_pipeline.verify.agent_arm import (AGENT_FAILED, BEHAVIOUR_CHANGED, FIXED_ALSO_FAILS,
+                                               NOT_CONFIRMED_VACUOUS, STUB_INDUCED, run_agent_arm, stub_cause)
 from research_pipeline.verify.hypothesis import BugHypothesis
-from research_pipeline.verify.outcome import CONFIRMED, UNVALIDATED
+from research_pipeline.verify.outcome import CONFIRMED, NOT_CONFIRMED, UNVALIDATED
 from research_pipeline.verify.replay import ReplayVerdict
 
 ORIGINAL = "import lib\n\n\ndef ratio(total, count):\n    lib.log(total)\n    return total // count\n"
@@ -370,3 +370,154 @@ def test_fallback_with_an_esbmc_checkout_runs_the_agent(tmp_path):
                                 esbmc_command=[str(binary)], bound=5, timeout_seconds=1, agent_timeout=1,
                                 sources=None, state={}, save=lambda: None, config={})
     assert data["reason"] == "agent wrote no harness.py"
+
+
+# The nm_real_12 shape: the target is intact, but the driver never calls it, so "safe" says nothing.
+VACUOUS = PRESERVED.replace("    ratio(t, c)\n", "    assume(t != t)\n    ratio(t, c)\n")
+
+
+def _agent_sequence(*harnesses: str):
+    calls = []
+
+    def run(prompt: str, cwd: Path, timeout_seconds: int) -> str:
+        calls.append(prompt)
+        (cwd / "harness.py").write_text(harnesses[min(len(calls), len(harnesses)) - 1], encoding="utf-8")
+        return "DONE"
+    run.calls = calls
+    return run
+
+
+def _reach(*answers: str):
+    seen = []
+
+    def reach(program, **_):
+        seen.append(program)
+        return answers[min(len(seen), len(answers)) - 1]
+    reach.seen = seen
+    return reach
+
+
+def test_safe_verdict_whose_bug_line_is_unreachable_is_vacuous(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    reach = _reach("unreachable")
+    monkeypatch.setattr(agent_arm, "reachability", reach)
+    agent = _agent_sequence(VACUOUS)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == NOT_CONFIRMED_VACUOUS, result
+    assert result["reachability"] == "unreachable"
+    target_line = VACUOUS.splitlines().index("    return total // count") + 1
+    assert reach.seen[0].target_spans[0][0] == target_line
+    assert "from esbmc import" in reach.seen[0].source  # ESBMC, not CPython, runs the probe
+
+
+def test_safe_verdict_that_reaches_the_bug_line_stays_not_confirmed(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    monkeypatch.setattr(agent_arm, "reachability", _reach("reachable"))
+    agent = _agent_sequence(VACUOUS)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == NOT_CONFIRMED, result
+    assert result["reachability"] == "reachable"
+    assert len(agent.calls) == 1
+
+
+def test_vacuous_harness_goes_back_to_the_agent_once_with_the_reason(tmp_path, monkeypatch):
+    safe, dirs = _esbmc("no_violation_found"), []
+
+    def recording(path, **kwargs):
+        dirs.append(kwargs["output_dir"])
+        return safe(path, **kwargs)
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", recording)
+    monkeypatch.setattr(agent_arm, "reachability", _reach("unreachable", "reachable"))
+    agent = _agent_sequence(VACUOUS, PRESERVED)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30, retry=True)
+    assert len(agent.calls) == 2
+    retry_prompt = agent.calls[1]
+    assert retry_prompt.startswith(agent.calls[0])  # a fresh session: the task and its rules come again
+    assert "never reaches" in retry_prompt and "assume(t != t)" in retry_prompt
+    # The retried driver reaches the division; the faked ESBMC says safe while CPython raises there.
+    assert result["verdict"] == "ESBMC_MISSED" and result["retried"] is True
+    assert result["first_attempt"]["verdict"] == NOT_CONFIRMED_VACUOUS
+    assert result["first_attempt"]["reachability"] == "unreachable" and "reachability" not in result
+    case = tmp_path / "work" / _hypothesis(tmp_path).hypothesis_id
+    assert (case / "harness_first.py").read_text(encoding="utf-8") == VACUOUS
+    assert [d.parent for d in dirs] == [case, case / "retry"]  # the retry keeps the first ESBMC logs
+
+
+def test_no_retry_unless_asked(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    monkeypatch.setattr(agent_arm, "reachability", _reach("unreachable"))
+    agent = _agent_sequence(VACUOUS)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert len(agent.calls) == 1 and result["retried"] is False
+    assert result["verdict"] == NOT_CONFIRMED_VACUOUS
+
+
+def test_retry_budget_is_one(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    monkeypatch.setattr(agent_arm, "reachability", _reach("unreachable"))
+    agent = _agent_sequence(VACUOUS)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30, retry=True)
+    assert len(agent.calls) == 2
+    assert result["verdict"] == NOT_CONFIRMED_VACUOUS
+
+
+def test_retry_that_does_not_finish_keeps_the_first_attempt(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    monkeypatch.setattr(agent_arm, "reachability", _reach("unreachable"))
+    first = _agent_sequence(VACUOUS)
+
+    def agent(prompt, cwd, timeout_seconds):
+        if first.calls:
+            raise agent_arm.subprocess.TimeoutExpired("claude", timeout_seconds)
+        return first(prompt, cwd, timeout_seconds)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30, retry=True)
+    assert result["verdict"] == NOT_CONFIRMED_VACUOUS and "retry did not finish" in result["reason"]
+    assert result["reachability"] == "unreachable" and result["target_preserved"] is True
+
+
+def test_changed_body_goes_back_unless_simplifying_is_allowed(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    rewritten = PRESERVED.replace("    return total // count", "    if count == 0:\n        count = 1\n    return total // count")
+
+    def run(work: str, **kwargs):
+        agent = _agent_sequence(rewritten, PRESERVED)
+        result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / work, run_agent=agent,
+                               esbmc_command=["esbmc"], bound=5, timeout_seconds=30, retry=True, **kwargs)
+        return result, agent
+    reach = _reach("unreachable")
+    monkeypatch.setattr(agent_arm, "reachability", reach)
+    result, agent = run("strict")
+    assert len(agent.calls) == 2 and "differs from original.py" in agent.calls[1]
+    assert result["first_attempt"]["target_preserved"] is False and result["target_preserved"] is True
+    assert "reachability" not in result["first_attempt"]  # the probe needs the original body
+    assert reach.seen == []  # and the retry reproduced the division, so it was not needed
+    result, agent = run("simplify", allow_simplify=True)
+    assert len(agent.calls) == 1 and result["retried"] is False
+
+
+def test_probe_uses_the_safe_run_unwind_and_every_occurrence(tmp_path, monkeypatch):
+    original = "def ratio(total, count):\n    if total:\n        return total // count\n    return total // count\n"
+    source = tmp_path / "two.py"
+    source.write_text(original, encoding="utf-8")
+    h = BugHypothesis(str(source), "ratio", "total // count", category="division_by_zero")
+    harness = ("from esbmc import nondet_int\n\n\n" + original +
+               "\n\ndef main() -> None:\n    ratio(nondet_int(), nondet_int())\n\n\nmain()\n")
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    calls = []
+
+    def reach(program, *, unwind, **_):
+        calls.append((program.target_spans, unwind))
+        return "unreachable" if len(calls) == 1 else "reachable"
+    monkeypatch.setattr(agent_arm, "reachability", reach)
+    monkeypatch.setattr(agent_arm, "concrete_replay", lambda *a, **k: ReplayVerdict("not_reproduced"))
+    result = run_agent_arm(h, work_dir=tmp_path / "work", run_agent=_agent_sequence(harness),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert [spans for spans, _ in calls] == [((6, 6),), ((7, 7),)]
+    assert {unwind for _, unwind in calls} == {5}
+    assert result["reachability"] == "reachable" and result["verdict"] == NOT_CONFIRMED

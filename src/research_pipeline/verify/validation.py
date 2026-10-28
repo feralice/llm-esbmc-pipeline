@@ -10,7 +10,7 @@ from typing import NamedTuple
 
 from .astutil import body_signature, expression_nodes, find_function
 from .esbmc_run import check, esbmc_output
-from .outcome import CONFIRMED
+from .outcome import CONFIRMED, NOT_CONFIRMED_VACUOUS
 from .procs import run_group
 from .render import Program
 from .replay import concrete_replay, counterexample_seeds
@@ -86,7 +86,8 @@ def read_reachability(output: str | None) -> str:
     return INCONCLUSIVE
 
 
-def reachability(program: Program, *, esbmc: str, unwind: int, timeout_seconds: int, work_dir: Path) -> str:
+def reachability(program: Program, *, esbmc: str | list[str], unwind: int, timeout_seconds: int,
+                 work_dir: Path) -> str:
     if not program.target_spans:
         return INCONCLUSIVE
     marked = with_unreachable_marker(program.source, program.target_spans[0][0])
@@ -95,7 +96,8 @@ def reachability(program: Program, *, esbmc: str, unwind: int, timeout_seconds: 
     work_dir.mkdir(parents=True, exist_ok=True)
     path = work_dir / "reach.py"
     path.write_text(marked, encoding="utf-8")
-    done = run_group([esbmc, path.name, "--enable-unreachability-intrinsic", "--unwind", str(unwind),
+    command = [esbmc] if isinstance(esbmc, str) else list(esbmc)
+    done = run_group([*command, path.name, "--enable-unreachability-intrinsic", "--unwind", str(unwind),
                       "--multi-property"], timeout_seconds=timeout_seconds, cwd=work_dir)
     return read_reachability(None if done is None else done.stdout + done.stderr)
 
@@ -249,7 +251,7 @@ def _validate_row(result: dict, row: dict, *, sources: Path, esbmc: str, timeout
                     for m in mutants(program.source, hypothesis["function"], program.target_spans[0][0])]
         row["mutants"] = {k: outcomes.count(k) for k in (KILLED, SURVIVED, NOT_COUNTED)}
     row["validated_verdict"] = ("TARGET_ALTERED" if row["preserved"] is False else
-                                "NOT_CONFIRMED_VACUOUS" if result["verdict"] == "NOT_CONFIRMED"
+                                NOT_CONFIRMED_VACUOUS if result["verdict"] == "NOT_CONFIRMED"
                                 and row.get("reachability") == UNREACHABLE else result["verdict"])
 
 
@@ -271,7 +273,7 @@ def validate_results(results: list[dict], *, sources: Path, esbmc: str, timeout_
     checked = [r for r in rows if r["checked"]]
     summary = {"results": len(rows), "with_program": len(checked), "errors": sum("error" in r for r in rows),
                "altered": sum(r["preserved"] is False for r in checked),
-               "vacuous": sum(r["validated_verdict"] == "NOT_CONFIRMED_VACUOUS" for r in checked),
+               "vacuous": sum(r["validated_verdict"] == NOT_CONFIRMED_VACUOUS for r in checked),
                "reachability": {k: sum(r.get("reachability") == k for r in checked)
                                 for k in (REACHABLE, UNREACHABLE, INCONCLUSIVE)}}
     if with_mutants:

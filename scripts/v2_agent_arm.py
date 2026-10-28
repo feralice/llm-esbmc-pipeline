@@ -29,7 +29,7 @@ from research_pipeline.verify.loop import verification_source  # noqa: E402
 
 COMPARED_FIELDS = ("backend", "plugin", "isolated", "notes", "model", "plugin_command", "allow_simplify",
                    "differential", "pytest", "log_rounds", "esbmc_commit", "skills", "bound", "timeout",
-                   "agent_timeout")
+                   "agent_timeout", "retry")
 DEFAULT_VERDICTS = ",".join(sorted(AGENT_VERDICTS))
 
 
@@ -112,6 +112,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="load the user's Claude Code settings too (global plugins, hooks); default: isolated")
     parser.add_argument("--plugin-command", choices=["verify", "audit"], default="",
                         help="after the harness is ready, run /esbmc-plugin:<command> on it and keep its report")
+    parser.add_argument("--retry", action="store_true",
+                        help="one more agent attempt, told why, when the harness never reached the hypothesis "
+                             "or changed the target body (the first attempt stays in first_attempt)")
     parser.add_argument("--allow-simplify", action="store_true",
                         help="let the agent simplify constructs ESBMC rejects inside the function; a confirmation "
                              "then needs ESBMC's inputs to break the ORIGINAL body (CONFIRMED_SIMPLIFIED)")
@@ -156,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
     finished = {r["hypothesis"]["hypothesis_id"] for r in done}
     variant = {"backend": args.backend, "plugin": not args.no_plugin and args.backend == "claude", "isolated": not args.not_isolated, "notes": args.notes,
                "model": args.model, "plugin_command": args.plugin_command,
-               "allow_simplify": args.allow_simplify, "differential": args.differential, "pytest": args.pytest,
+               "allow_simplify": args.allow_simplify, "retry": args.retry, "differential": args.differential, "pytest": args.pytest,
                "log_rounds": args.log_rounds, "bound": args.bound, "timeout": args.timeout,
                "agent_timeout": args.agent_timeout, **esbmc_identity(args.esbmc),
                "skills": skill_versions() if args.project_skills else {}}
@@ -186,7 +189,7 @@ def main(argv: list[str] | None = None) -> int:
                                notes=notes, plugin_command=args.plugin_command if args.backend == "claude" else "",
                                allow_simplify=args.allow_simplify, project_skills=args.project_skills,
                                log_rounds=args.log_rounds, differential=args.differential, pytest=args.pytest,
-                               knowledge_index=knowledge)
+                               knowledge_index=knowledge, retry=args.retry)
         result["engine_verdict"], result["variant"] = previous, variant
         print(f"    -> {result['verdict']} preserved={result['target_preserved']} {result['reason'][:100]}", flush=True)
         done.append(result)

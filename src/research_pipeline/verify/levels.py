@@ -17,6 +17,7 @@ from .outcome import (
     ESBMC_TIMEOUT,
     GROUNDING_FAILED,
     NO_SOURCE,
+    NOT_CONFIRMED_VACUOUS,
     PIPELINE_ERROR,
     SPEC_FAILED,
     VALUE_CONFIRMED,
@@ -36,9 +37,10 @@ LOCATE = "locate_function"       # the function or its source file was not found
 NETWORK = "network"
 PIPELINE = "pipeline_error"      # the pipeline itself failed on this hypothesis
 REWRITE = "agent_rewrote_function"
+VACUOUS = "harness_vacuous"      # ESBMC said safe, but no path of the harness reached the hypothesis
 OTHER = "other"                  # a reason no rule recognises: kept apart, never counted as an ESBMC limit
-LIMIT_GROUPS = (CONTEXT, LANGUAGE, CRASH, TIMEOUT, SPEC, LOCATE, NETWORK, PIPELINE, REWRITE, OTHER)
-_DEEPER = (LANGUAGE, CRASH, TIMEOUT, REWRITE)
+LIMIT_GROUPS = (CONTEXT, LANGUAGE, CRASH, TIMEOUT, SPEC, LOCATE, NETWORK, PIPELINE, REWRITE, VACUOUS, OTHER)
+_DEEPER = (LANGUAGE, CRASH, TIMEOUT, REWRITE, VACUOUS)
 
 _CRASH = re.compile(r"uncaught exception \[|json\.exception|Bitwuzla error|irep2|inconclusivo|inconclusive"
                     r"|Segmentation|core dumped")
@@ -64,6 +66,8 @@ def limit_group(verdict: str, reason: str) -> str:
         return NETWORK if _NETWORK.search(reason) else PIPELINE
     if verdict == ESBMC_TIMEOUT:
         return TIMEOUT
+    if verdict == NOT_CONFIRMED_VACUOUS:
+        return VACUOUS
     if verdict == ESBMC_ERROR or _CRASH.search(reason):
         return CRASH
     if _LANGUAGE.search(reason):

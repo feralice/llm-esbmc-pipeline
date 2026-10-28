@@ -27,13 +27,14 @@ from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, loa
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output
-from .outcome import CONFIRMED, final_verdict
+from .outcome import CONFIRMED, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS, final_verdict
 from .pytest_gen import esbmc_pytest, pytest_seeds
 from .procs import run_group
 from .render import Program
 from .round_warnings import mypy_messages, round_warnings
 from .rounds import install_round_logger, read_rounds
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
+from .validation import INCONCLUSIVE, REACHABLE, UNREACHABLE, reachability
 
 AGENT_FAILED = "AGENT_FAILED"
 # The agent simplified the target's body for ESBMC, and ESBMC's counterexample values, replayed on the
@@ -211,7 +212,7 @@ def run_agent_arm(
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
     fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
     log_rounds: bool = False, differential: bool = True, pytest: bool = True,
-    knowledge_index: KnowledgeIndex | None = None,
+    knowledge_index: KnowledgeIndex | None = None, retry: bool = False,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
@@ -222,14 +223,16 @@ def run_agent_arm(
     PATH, as claude_agent(log_rounds=True) does) and keeps every call as ``result["rounds"]``, each refusal
     hinted from ``knowledge_index``;
     ESBMC_CRASH looks only at the agent's last recorded call (conservative: it may drop a confirmation);
-    ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest."""
+    ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest;
+    ``retry`` gives the agent one more attempt, told why, when retry_reason finds a harness defect."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
     original = Path(source_path or h.file).read_text(encoding="utf-8", errors="replace")
     (case_dir / "original.py").write_text(original, encoding="utf-8")
     result = {"hypothesis": h.to_dict(), "verdict": AGENT_FAILED, "reason": "", "target_preserved": None,
-              "replay": {}, "esbmc_status": "", "harness_path": str(case_dir / "harness.py")}
+              "replay": {}, "esbmc_status": "", "harness_path": str(case_dir / "harness.py"), "retried": False}
+    blank = {key: result[key] for key in ("target_preserved", "replay", "esbmc_status")}
 
     def finish(verdict: str, reason: str = "") -> dict:
         result.update(verdict=verdict, reason=reason, seconds=round(time.monotonic() - started, 3))
@@ -263,12 +266,38 @@ def run_agent_arm(
     harness_path = case_dir / "harness.py"
     if not harness_path.exists():
         return finish(AGENT_FAILED, "agent wrote no harness.py")
-    harness = harness_path.read_text(encoding="utf-8", errors="replace")
     fixed = Path(fixed_path).read_text(encoding="utf-8", errors="replace") if fixed_path else None
-    verdict, reason = evaluate_harness(h, harness, original, case_dir, result, esbmc_command=esbmc_command,
-                                       bound=bound, timeout_seconds=timeout_seconds, fixed=fixed,
-                                       original_path=Path(source_path or h.file),
-                                       differential_test=differential, generate_pytest=pytest)
+
+    def evaluate(output_dir: Path | None = None) -> tuple[str, str, dict]:
+        """One attempt's fields go to a fresh dict, so a retry cannot inherit the first attempt's."""
+        attempt = dict(blank)
+        if not harness_path.exists():
+            return AGENT_FAILED, "agent wrote no harness.py", attempt
+        harness = harness_path.read_text(encoding="utf-8", errors="replace")
+        verdict, reason = evaluate_harness(h, harness, original, case_dir, attempt, esbmc_command=esbmc_command,
+                                           bound=bound, timeout_seconds=timeout_seconds, fixed=fixed,
+                                           output_dir=output_dir, original_path=Path(source_path or h.file),
+                                           differential_test=differential, generate_pytest=pytest)
+        return verdict, reason, attempt
+
+    verdict, reason, attempt = evaluate()
+    result.update(attempt)
+    back = retry_reason(verdict, reason, attempt, allow_simplify) if retry else ""
+    if back:
+        shutil.copy(harness_path, case_dir / "harness_first.py")
+        harness = harness_path.read_text(encoding="utf-8", errors="replace")
+        try:
+            run_agent(prompt + _RETRY.format(reason=back, function=h.function, expression=h.suspect_expression,
+                                             harness=harness), case_dir, agent_timeout)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            record_rounds(case_dir, result, log_rounds, original, h.function)
+            return finish(verdict, f"{reason}; the retry did not finish: {type(exc).__name__}")
+        crashed = record_rounds(case_dir, result, log_rounds, original, h.function)
+        result["first_attempt"] = {**attempt, "verdict": verdict, "reason": reason}
+        for key in attempt:
+            result.pop(key, None)
+        verdict, reason, attempt = evaluate(case_dir / "retry")
+        result.update(attempt, retried=True)
     if plugin_command and result.get("target_preserved"):
         result["plugin_report"] = plugin_report(run_agent, plugin_command, case_dir, agent_timeout)
     if crashed and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
@@ -277,6 +306,23 @@ def run_agent_arm(
 
 
 MYPY_TIMEOUT = 60
+
+_RETRY = ("\n\nYou already wrote this harness.py, and the pipeline cannot count it yet: {reason}.\n"
+          "```python\n{harness}```\n"
+          "Rewrite harness.py so that ESBMC reaches `{expression}` in {function}, keeping the body of {function} "
+          "identical to original.py. Drive it only with inputs and state a real caller could pass: never add an "
+          "input just to reach the line.\n")
+
+
+def retry_reason(verdict: str, reason: str, result: dict, allow_simplify: bool) -> str:
+    """Why the agent gets its one more attempt; empty when it does not. Only harness defects the agent can
+    fix go back: a safe verdict that never reached the line, or a target body changed when that is not
+    allowed and the original body did not confirm either."""
+    if verdict == NOT_CONFIRMED_VACUOUS:
+        return reason
+    if result.get("target_preserved") is False and not allow_simplify and verdict != CONFIRMED_SIMPLIFIED:
+        return "the body of the target function differs from original.py"
+    return ""
 
 
 def record_rounds(case_dir: Path, result: dict, log_rounds: bool, original: str, function: str) -> bool:
@@ -332,12 +378,11 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                                 timeout_seconds=timeout_seconds, work_dir=output_dir or case_dir)
     result.update(esbmc_status=esbmc.status, **how)
     seeds = counterexample_seeds(esbmc_output(esbmc), None)
+    spans = tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes}))
     if reading.kind not in VERDICT_KINDS:
         replay = ReplayVerdict("unavailable", reason="ESBMC produced no verdict to validate")
     elif result["target_preserved"]:
-        program = Program(_without_esbmc_imports(harness), 0,
-                          tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes})), (),
-                          (target.lineno, target.end_lineno))
+        program = Program(_without_esbmc_imports(harness), 0, spans, (), (target.lineno, target.end_lineno))
         replay = concrete_replay(program, target.name, seeds=seeds)
         replayed = harness_tree
     else:
@@ -346,6 +391,19 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         result["replayed_original_body"] = True
     result["replay"] = replay.to_dict()
     verdict = final_verdict(reading, replay)
+    if verdict == NOT_CONFIRMED and result["target_preserved"] and esbmc_command:
+        # Same run as the safe verdict; an incremental one falls back to the bound, which reads inconclusive.
+        command = [*esbmc_command, *([how["solver"]] if how.get("solver") else [])]
+        unwind = how["unwind"] if isinstance(how["unwind"], int) else bound
+        answers = [reachability(Program(harness, 0, (span,), (), (target.lineno, target.end_lineno)),
+                                esbmc=command, unwind=unwind, timeout_seconds=timeout_seconds,
+                                work_dir=(output_dir or case_dir) / f"reach_{span[0]}")
+                   for span in spans]
+        result["reachability"] = (REACHABLE if REACHABLE in answers else
+                                  UNREACHABLE if all(a == UNREACHABLE for a in answers) else INCONCLUSIVE)
+        if result["reachability"] == UNREACHABLE:
+            return NOT_CONFIRMED_VACUOUS, (f"ESBMC never reaches {h.suspect_expression!r} in {h.function}: "
+                                           "no path of the driver gets there, so the safe verdict checked nothing")
     if verdict == CONFIRMED:
         stub = stub_cause(replay, replayed, original_tree)
         if stub:
