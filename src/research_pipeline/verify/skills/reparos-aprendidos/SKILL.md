@@ -5,7 +5,12 @@ description: Repairs learned from earlier harness attempts that ESBMC-Python rej
 
 # Learned repairs
 
-No repairs recorded yet.
+### Annotate attributes that start as None with their class
+- Error: `ERROR: Cannot resolve nested attribute: <name>`
+- What to do: where `__init__` sets `self.x = None` and code later reads `obj.x.y`, annotate it with the
+  class it will hold, unquoted: `self.x: Node = None`. The value stays None, so behaviour is unchanged.
+- Source case: 6e33562fdd8f (nm_real_12), rounds 4 and 7.
+- Approval date: 2026-10-27.
 
 ## Format of an approved repair
 

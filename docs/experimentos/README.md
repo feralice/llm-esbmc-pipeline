@@ -1042,7 +1042,9 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   aborta; 55 `g(**{"a": 1})` dá `TypeError` falso; 56 atributo criado em outra instância esconde `AttributeError`;
   57 string nondet global lida em função aborta; 58 alias de função chamado dentro de argumento aborta; 59 alias
   de método sem anotação dá falso FAILED. Nenhuma issue aberta: ela avalia antes.
-- **Candidatos ao caderno:** `candidatos.md` na pasta da rodada, 5 candidatos (nm_real_08 e nm_real_12), a revisar.
+- **Caderno (passo 3, revisado com ela em 27/10):** dos 5 candidatos, 1 regra aprovada (os 2 do nm_real_12:
+  anotar com a classe, sem aspas, os atributos que começam em None; contorno do reprodutor 48). Recusados os 3 do
+  nm_real_08: um troca o harness por um programa sem relação e dois tiram o `**kwargs` ou parte do corpo do alvo.
 - **Leitura:** com o harness fiel, o obstáculo que sobra é o ESBMC (3 erros internos, 1 falso negativo), não a
   reescrita do corpo. No nm_real_12 o `PamdRule` real não chama `super().__init__`, então o `AttributeError` é do
   código real e o ESBMC o perde (reprodutor 56).
