@@ -9,16 +9,15 @@ Rodar com `./rodar.sh /caminho/do/esbmc "--no-pointer-check --no-align-check"`. 
 `--unwind 5 --multi-property`. As duas flags extras desligam as checagens de memória dos modelos em C;
 `--no-bounds-check` não pode entrar, porque troca o `IndexError` do Python por `out-of-bounds read in list`.
 
-## Situação no master `c0813af` (25/10/2026)
+## Situação no master `4a356e33eb` (27/10/2026)
 
 Build com Bitwuzla (`~/esbmc-master/build-bw`).
 
-| Arquivo | Construção | CPython | ESBMC `c0813af` | Issue |
+| Arquivo | Construção | CPython | ESBMC `4a356e33eb` | Issue |
 |---|---|---|---|---|
-| `19_args_em_atributo.py` | `self._args = args` com `*args` no `__init__` | `ZeroDivisionError` | `Variable args not found` | #9073 (aberta) |
 | `20_kwargs.py` | `kw.get('error')` com `**kw` no `__init__` | `ZeroDivisionError` | `Object "kw" not found` | #9074 (aberta) |
 | `24_numpy_shape_parametro.py` | `np.array(data).shape[1]` com `data: list[list[float]]` | `ZeroDivisionError` | recusa: `numpy.array() of a value that is not a numpy array or a list or tuple literal` | #9077 (fechada pelo #9141, que troca o erro por recusa explícita) |
-| `31_strip_split_laco.py` | `nondet_str().strip().split("\n")` e `split` dentro do laço | executa | sem veredito em 300 s; ignora o `SIGTERM` do `timeout`, só para com `kill -9` | nenhuma: escalonamento do solver com string nondet |
+| `31_strip_split_laco.py` | `nondet_str().strip().split("\n")` e `split` dentro do laço | executa | com `--unwind 5` termina só com `unwinding assertion` (laços 6 e 7), esperado para string de tamanho livre; com `--unwind 12` continua sem veredito em 300 s (em `c0813af` não terminava nem com `--unwind 5`) | nenhuma: escalonamento do solver com string nondet |
 | `33_atributo_ausente_uniao.py` | `x.size` com `x: Union[A, B]` valendo `B()` | `AttributeError` | recusa: `storing or passing 'x', which holds an instance of A or B` | #8408 (aberta), mesma construção |
 | `45_nondet_str_contraexemplo.py` | `assert s != "ab"` com `s = nondet_str()` | `AssertionError` com `"ab"` | FAILED, sem o valor de `s` no contraexemplo (o trace só tem o `State 1` da linha 5) | #9091 (fechada como "not planned": é apresentação, não verificação) |
 | `46_super_com_len_aborta.py` | `while len(self) >= self.limit` numa classe sem `__len__` | `TypeError` | FAILED com `AttributeError` (`self.limit`) | nenhuma ainda |
@@ -32,6 +31,12 @@ O que mudou no 46 e no 47: até o master `7da3564` a exceção na condição do 
 encoder (46), o que a #9092 corrigiu. Agora o ESBMC acusa, mas a exceção errada: o CPython avalia
 `len(self)` primeiro e para no `TypeError`, enquanto o ESBMC chega ao `self.limit` e acusa `AttributeError`.
 É um problema novo, de ordem de avaliação dos operandos, ainda sem issue.
+
+## Corrigidos entre 25/10 e 27/10
+
+| Reprodutor | Issue | Correção |
+|---|---|---|
+| 19 (`self._args = args` com `*args` no `__init__`) | #9073 (ainda aberta no GitHub em 27/10) | FAILED com `ZeroDivisionError`, igual ao CPython, no `4a356e33eb` |
 
 ## Corrigidos entre 22/10 e 25/10
 
@@ -74,7 +79,7 @@ o master já não tem (25, 26, 39). Vale remedir o filtro antes de removê-las.
 
 | Reprodutor | Casos de `dataset/bugs_reais` |
 |---|---|
-| 19, 20 | `vm_real_02` (schema, `Schema.validate`) |
+| 20 | `vm_real_02` (schema, `Schema.validate`; o 19, do mesmo caso, já passa) |
 | 24 | `dz_real_01` (matplotlib, `makeMappingArray`) |
 | 31 | `bip_thefuck_4` (aliases do fish) |
 | 33 | `nm_real_25` (`s.method` com `s` de uma união de classes) |
