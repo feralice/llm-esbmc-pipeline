@@ -1023,6 +1023,30 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
 - **Leitura:** o agente destrava mais casos que o motor de regras, mas sem bug confirmado ainda; os bloqueios
   restantes são limites do ESBMC (falso negativo do `None`, conversões) e harness que reescreve o corpo.
 
+## Fase 29 (27/10): Tarefa 10 passo 2, braço de agente com o portão de fidelidade (S1)
+
+- **Pergunta:** com o portão (sonda `__ESBMC_unreachable()` e segunda tentativa quando o harness é vazio ou
+  altera o corpo), o agente faz o ESBMC rodar os 5 casos do A/B sem mudar o comportamento no caminho do bug?
+- **Casos:** os 5 da Fase 28 (nm_real_12, bip_thefuck_4, ip_real_15, bip_pandas_7, nm_real_08), fora da amostra.
+- **Pasta:** `artifacts/v2/tarefa10-passo2-2026-10-27/` (fora do git). Código: commit `702c38a` (inclui o S1, `8693889`). Modelo
+  `claude-sonnet-5-5` via `claude -p` (assinatura). ESBMC: master `4a356e33eb` (`build-bw`, Bitwuzla) pelo
+  `~/esbmc-master/esbmc.sh`.
+- **Comando:** `scripts/v2_agent_arm.py --report artifacts/v2/teste-ab-2026-10-22/mini_report.json --backend claude
+  --model claude-sonnet-5-5 --project-skills --log-rounds --retry --differential --pytest --agent-timeout 1500`.
+- **Métrica final: 0 bugs confirmados** (Fase 28: 0).
+- **Preservação:** na 1a tentativa o agente alterou o corpo da função em 4 de 5 casos; com o motivo devolvido,
+  a 2a tentativa preservou o corpo nos 4. Corpo preservado no fim: 5 de 5 (Fase 28: 3 de 5). Nenhum seguro vazio.
+- **Vereditos:** nm_real_12 ESBMC_MISSED (ESBMC seguro, CPython `AttributeError`); ip_real_15 NOT_CONFIRMED com a
+  linha alcançável; bip_thefuck_4, bip_pandas_7 e nm_real_08 UNSUPPORTED por erro interno do ESBMC.
+- **Reprodutores novos** (`docs/projeto/possiveis_problemas/` 54 a 59, reduzidos dos harnesses): 54 `g(1, **d)`
+  aborta; 55 `g(**{"a": 1})` dá `TypeError` falso; 56 atributo criado em outra instância esconde `AttributeError`;
+  57 string nondet global lida em função aborta; 58 alias de função chamado dentro de argumento aborta; 59 alias
+  de método sem anotação dá falso FAILED. Nenhuma issue aberta: ela avalia antes.
+- **Candidatos ao caderno:** `candidatos.md` na pasta da rodada, 5 candidatos (nm_real_08 e nm_real_12), a revisar.
+- **Leitura:** com o harness fiel, o obstáculo que sobra é o ESBMC (3 erros internos, 1 falso negativo), não a
+  reescrita do corpo. No nm_real_12 o `PamdRule` real não chama `super().__init__`, então o `AttributeError` é do
+  código real e o ESBMC o perde (reprodutor 56).
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

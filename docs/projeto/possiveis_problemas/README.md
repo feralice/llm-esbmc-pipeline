@@ -26,6 +26,16 @@ Build com Bitwuzla (`~/esbmc-master/build-bw`).
 | `51_pytest_metodo.py` | gerador de pytest num método | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `52_pytest_varios_args.py` | gerador de pytest com vários argumentos | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `53_pytest_str.py` | gerador de pytest com `str` | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
+| `54_chamada_posicional_mais_kwargs.py` | `g(1, **d)`: argumento explícito seguido de `**dict` | executa | aborta: `json.exception.type_error.302` | nenhuma ainda |
+| `55_kwargs_falso_type_error.py` | `g(**d)` com `d = {"a": 1}` | executa | FAILED com `TypeError` (falso positivo) | nenhuma ainda |
+| `56_atributo_criado_em_outra_instancia.py` | `a.prev = None` em um objeto, leitura de `b.prev` em outro | `AttributeError` | SUCCESSFUL (falso negativo) | nenhuma ainda |
+| `57_global_nondet_str_lida_em_funcao.py` | função lê `len(s)` de um `s: str = nondet_str()` global | executa | aborta: `Unexpected index type in computer_pointer_offset` | nenhuma ainda |
+| `58_alias_de_funcao_como_argumento.py` | `op = f; f(op(1))`: alias de função chamado dentro de argumento | executa | aborta: `type mismatch: expected code` e core dump | nenhuma ainda |
+| `59_alias_de_metodo_sem_anotacao.py` | `op = obj.lt; op(x, y)` com `lt` sem anotação de tipo | executa | FAILED no `assert` (falso positivo) | nenhuma ainda |
+
+Os reprodutores 54 a 59 vieram da Tarefa 10, passo 2 (27/10): com o portão de fidelidade, o agente
+manteve o corpo da função nos 5 casos, e os obstáculos que sobraram são do ESBMC. O 55, o 56 e o 59 são os
+mais graves para o pipeline: dois falsos positivos e um falso negativo, não uma recusa.
 
 O que mudou no 46 e no 47: até o master `7da3564` a exceção na condição do `while` sumia (47) ou abortava o
 encoder (46), o que a #9092 corrigiu. Agora o ESBMC acusa, mas a exceção errada: o CPython avalia
@@ -81,10 +91,13 @@ o master já não tem (25, 26, 39). Vale remedir o filtro antes de removê-las.
 |---|---|
 | 20 | `vm_real_02` (schema, `Schema.validate`; o 19, do mesmo caso, já passa) |
 | 24 | `dz_real_01` (matplotlib, `makeMappingArray`) |
-| 31 | `bip_thefuck_4` (aliases do fish) |
+| 31, 57 | `bip_thefuck_4` (aliases do fish; com o corpo preservado, o 57 aparece antes do 31) |
 | 33 | `nm_real_25` (`s.method` com `s` de uma união de classes) |
 | 46, 47 | `nm_real_11` (`LocalCache`, base `OrderedDict` trocada por classe vazia pelo harness) |
 | 48 | `nm_real_12` (`current_line.prev.next = ...`, com `prev` iniciado em `None`) |
+| 58, 59 | `bip_pandas_7` (`np.where(op(l, r) | ...)` com `op = operator.lt` ou `operator.le`) |
+| 54, 55 | `nm_real_08` (`Request.url_for` repassa `**kwargs` a `app.url_for`) |
+| 56 | `nm_real_12` (o `PamdRule` real não chama `super().__init__`; o primeiro nó fica sem `prev`) |
 
 ## Gerador de pytest (medido no master `7da3564`, 22/10/2026; igual no `c0813af`)
 
