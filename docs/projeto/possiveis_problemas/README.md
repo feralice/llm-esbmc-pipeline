@@ -21,17 +21,17 @@ Build com Bitwuzla (`~/esbmc-master/build-bw`).
 | `33_atributo_ausente_uniao.py` | `x.size` com `x: Union[A, B]` valendo `B()` | `AttributeError` | recusa: `storing or passing 'x', which holds an instance of A or B` | #8408 (aberta), mesma construção |
 | `45_nondet_str_contraexemplo.py` | `assert s != "ab"` com `s = nondet_str()` | `AssertionError` com `"ab"` | FAILED, sem o valor de `s` no contraexemplo (o trace só tem o `State 1` da linha 5) | #9091 (fechada como "not planned": é apresentação, não verificação) |
 | `46_super_com_len_aborta.py` | `while len(self) >= self.limit` numa classe sem `__len__` | `TypeError` | FAILED com `AttributeError` (`self.limit`) | nenhuma ainda |
-| `47_len_sem_dunder_len.py` | mesma condição, sem `super` | `TypeError` | FAILED com `AttributeError` | nenhuma ainda |
+| `47_len_sem_dunder_len.py` | mesma condição, sem `super` | `TypeError` | FAILED com `AttributeError` | rascunho: `issues/47_len_without_dunder_len.md` |
 | `48_atributo_aninhado_campo_none.py` | `current.prev.next = ...` com `prev` iniciado em `None` | `AttributeError` | `Cannot resolve nested attribute: next` | nenhuma (contorno no `verify/compat.py`) |
 | `51_pytest_metodo.py` | gerador de pytest num método | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `52_pytest_varios_args.py` | gerador de pytest com vários argumentos | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `53_pytest_str.py` | gerador de pytest com `str` | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
-| `54_chamada_posicional_mais_kwargs.py` | `g(1, **d)`: argumento explícito seguido de `**dict` | executa | aborta: `json.exception.type_error.302` | nenhuma ainda |
-| `55_kwargs_falso_type_error.py` | `g(**d)` com `d = {"a": 1}` | executa | FAILED com `TypeError` (falso positivo) | nenhuma ainda |
-| `56_atributo_criado_em_outra_instancia.py` | `a.prev = None` em um objeto, leitura de `b.prev` em outro | `AttributeError` | SUCCESSFUL (falso negativo) | nenhuma ainda |
+| `54_chamada_posicional_mais_kwargs.py` | `g(1, **d)`: argumento explícito seguido de `**dict` | executa | aborta: `json.exception.type_error.302` | rascunho: `issues/54_positional_then_kwargs_crash.md` |
+| `55_kwargs_falso_type_error.py` | `g(**d)` com `d = {"a": 1}` | executa | FAILED com `TypeError` (falso positivo) | rascunho: `issues/55_kwargs_false_type_error.md` |
+| `56_atributo_criado_em_outra_instancia.py` | `a.prev = None` em um objeto, leitura de `b.prev` em outro | `AttributeError` | SUCCESSFUL (falso negativo) | rascunho: `issues/56_attribute_set_on_other_instance.md` |
 | `57_global_nondet_str_lida_em_funcao.py` | função lê `len(s)` de um `s: str = nondet_str()` global | executa | aborta: `Unexpected index type in computer_pointer_offset` | nenhuma ainda |
 | `58_alias_de_funcao_como_argumento.py` | `op = f; f(op(1))`: alias de função chamado dentro de argumento | executa | aborta: `type mismatch: expected code` e core dump | nenhuma ainda |
-| `59_alias_de_metodo_sem_anotacao.py` | `op = obj.lt; op(x, y)` com `lt` sem anotação de tipo | executa | FAILED no `assert` (falso positivo) | nenhuma ainda |
+| `59_alias_de_metodo_sem_anotacao.py` | `op = obj.lt; op(x, y)` com `lt` sem anotação de tipo | executa | FAILED no `assert` (falso positivo) | rascunho: `issues/59_method_alias_false_assert.md` |
 
 Os reprodutores 54 a 59 vieram da Tarefa 10, passo 2 (27/10): com o portão de fidelidade, o agente
 manteve o corpo da função nos 5 casos, e os obstáculos que sobraram são do ESBMC. O 55, o 56 e o 59 são os
@@ -41,6 +41,12 @@ O que mudou no 46 e no 47: até o master `7da3564` a exceção na condição do 
 encoder (46), o que a #9092 corrigiu. Agora o ESBMC acusa, mas a exceção errada: o CPython avalia
 `len(self)` primeiro e para no `TypeError`, enquanto o ESBMC chega ao `self.limit` e acusa `AttributeError`.
 É um problema novo, de ordem de avaliação dos operandos, ainda sem issue.
+
+## Rascunhos de issue
+
+`issues/` guarda rascunhos em inglês, nada postado: ela avalia antes de abrir. Em 27/10: 47, 54, 55, 56 e 59
+(os de veredito errado, 55, 56 e 59, primeiro). 57 e 58 não têm rascunho: têm contorno que preserva o comportamento
+(driver e filtro). Os rascunhos das issues já abertas (#9073, #9074, #9077, #9091) saíram da pasta.
 
 ## Corrigidos entre 25/10 e 27/10
 
