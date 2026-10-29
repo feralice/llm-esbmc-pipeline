@@ -71,7 +71,7 @@ def test_report_lists_confirmed_first_with_their_test():
 def test_report_counts_false_positives():
     report = render_run_report([_result("FIXED_ALSO_FAILS"), _result("BEHAVIOUR_CHANGED"), _result("CONFIRMED")])
     sections = [line for line in report.splitlines() if line.startswith("## ")]
-    assert sections[1].startswith("## Falsos positivos barrados pelos controles (2)")
+    assert "## Falsos positivos barrados pelos controles (2)" in sections
 
 
 def test_report_groups_llm_suspicions_by_limit():
@@ -85,3 +85,18 @@ def test_report_groups_llm_suspicions_by_limit():
 def test_report_keeps_harness_defects_apart_from_esbmc_limits():
     report = render_run_report([_result("HARNESS_BROKEN", "under CPython, harness.py raises NameError at line 3")])
     assert "### harness_broken (1)" in report and "esbmc_" not in report
+
+
+def test_report_lists_held_findings_apart_and_never_as_confirmed():
+    held = [{"file": "dataset/x.py", "function": "g", "expression": "round(x)", "explanation": "wrong rounding"}]
+    report = render_run_report([_result("CONFIRMED")], held=held)
+    section = report.split("## Suspeitas do LLM que o ESBMC não verifica (1)")[1]
+    assert "`x.py::g`" in section and "round(x)" in section and "wrong rounding" in section
+    assert report.index("## Confirmados (1)") < report.index("## Suspeitas do LLM que o ESBMC não verifica")
+
+
+def test_simplified_confirmations_are_not_counted_as_confirmed():
+    report = render_run_report([_result("CONFIRMED"), _result("CONFIRMED_SIMPLIFIED", "body changed")])
+    assert "## Confirmados (1)" in report and "1 confirmadas pelo ESBMC" in report
+    section = report.split("## Confirmados em código simplificado (1)")[1].split("## ")[0]
+    assert "body changed" in section

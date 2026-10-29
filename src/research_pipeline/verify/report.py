@@ -24,7 +24,9 @@ def summarize(results: list[dict]) -> dict:
     }
     return {
         "n": len(results),
-        "by_verdict": {verdict: counts.get(verdict, 0) for verdict in VERDICTS},
+        # The engine's verdicts always listed; any other (the agent's) only when it occurs.
+        "by_verdict": {**{verdict: counts.get(verdict, 0) for verdict in VERDICTS},
+                       **{verdict: n for verdict, n in counts.items() if verdict not in VERDICTS}},
         "reached_llm": len(reached),
         "success_at_k": success,
     }

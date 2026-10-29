@@ -23,6 +23,7 @@ from ..verify.hypothesis import BugHypothesis
 from ..verify.loop import run_verify
 from ..verify.outcome import CONFIRMED
 from ..verify.report import summarize
+from ..verify.run_report import render_run_report
 from .callgraph import CallGraph, build_callgraph
 from .context import caller_context
 from .graph_metrics import (
@@ -67,9 +68,10 @@ class ScanPlan:
     estimated_tokens: int
     candidates_total: int
     rank: str = "callers"
+    focus: str = ""
 
     def to_dict(self) -> dict:
-        return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "candidates_total": self.candidates_total,
+        return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus, "candidates_total": self.candidates_total,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets]}
 
@@ -120,11 +122,12 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 
 
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
-              variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False) -> ScanPlan:
+              variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
+              focus: str = "") -> ScanPlan:
     graph = build_callgraph(root, include_tests=include_tests)
     targets, total = select_targets(graph, limit=limit, rank=rank)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
-                    rank)
+                    rank, focus.strip())
     plan.output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
     if smells:
@@ -143,8 +146,9 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
     return plan
 
 
-def _fingerprint(plan: ScanPlan, model: str) -> str:
-    payload = json.dumps({"root": str(plan.root), "variants": plan.variants, "model": model,
+def _fingerprint(plan: ScanPlan, model: str, verifier: str = "engine") -> str:
+    payload = json.dumps({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
+                          "verifier": verifier,
                           "targets": [t.key for t in plan.targets]}, sort_keys=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
@@ -169,7 +173,8 @@ def _detect(analyzer, target: Target) -> dict:
 def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
                  verify: Callable[..., list[dict]] | None = None, **verify_kwargs) -> dict:
     checkpoint_path = plan.output_dir / "scan_checkpoint.json"
-    fingerprint = _fingerprint(plan, getattr(analyzer, "model", ""))
+    # A verifier names itself (agent_verifier does), so a resume never mixes the engine's verdicts with the agent's.
+    fingerprint = _fingerprint(plan, getattr(analyzer, "model", ""), getattr(verify, "label", "engine"))
     checkpoint = {"fingerprint": fingerprint, "detection": {}, "verify_results": {}}
     if resume and checkpoint_path.exists():
         saved = json.loads(checkpoint_path.read_text(encoding="utf-8"))
@@ -201,6 +206,12 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer)
     _write_json(plan.output_dir / "scan_report.json", report)
     (plan.output_dir / "scan_summary.md").write_text(summary_markdown(report), encoding="utf-8")
+    held = [{"file": t.file, "function": t.qualname, **entry}
+            for t in plan.targets for entry in checkpoint["detection"][t.key]["held"]]
+    errors = [f"{t.qualname}: {checkpoint['detection'][t.key]['error']}" for t in plan.targets
+              if checkpoint["detection"][t.key]["error"]]
+    (plan.output_dir / "relatorio.md").write_text(
+        render_run_report(results, held=held, detection=(len(plan.targets), errors)), encoding="utf-8")
     print(f"Relatório: {plan.output_dir / 'scan_report.json'}")
     return report
 
@@ -218,7 +229,9 @@ def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], re
                       "hypotheses": len(hypotheses), "held": sum(len(r["held"]) for r in rows),
                       "tokens": detection_tokens, "functions_detail": rows},
         "verification": summarize(results),
-        "verification_tokens": sum(int(r.get("tokens") or 0) for r in results),
+        # The agent's sessions report no tokens: unmeasured, not zero.
+        "verification_tokens": (sum(int(r.get("tokens") or 0) for r in results)
+                                if any("tokens" in r for r in results) else None),
         "results": results,
     }
 

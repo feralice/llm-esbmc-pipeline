@@ -1102,6 +1102,16 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   docstring na coluna 0; Feature Envy contava módulos e listas locais; o julgamento não retomava; a retomada
   recusava rodadas antigas), todos corrigidos com teste. Suíte: 1.298 testes.
 
+## S5, plano C (29/10): a extensão, sem rodada
+
+- **O que entrou** (`docs/desenho/planos/2026-10-29-s5-plano-c-extensao.md`): `--scan-verify agent` (as
+  hipóteses do scan vão ao agente do harness, com o grafo consultável, em vez do motor de regras);
+  `--scan-focus "texto"` (preferência de quem usa no prompt de detecção, dentro de um bloco marcado como dado);
+  o scan escreve `relatorio.md` com confirmados, barrados pelos controles, suspeitas que o ESBMC não verifica e
+  suspeitas não confirmadas; plugin do Claude Code em `extension/` com o comando `/verificar-repo`, que simula,
+  pede confirmação e só então gasta.
+- **Primeira rodada real:** o piloto AWS depois do congelamento (PyAthena `converter.py`, `--scan-limit 5`).
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

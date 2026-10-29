@@ -45,6 +45,7 @@ from research_pipeline.llm.example_pool import load_example_pool
 from research_pipeline.llm.prompts import (
     load_system_prompt,
     set_context_sources,
+    set_detection_focus,
     set_example_pool,
 )
 from research_pipeline.llm.schema import v2_findings_schema
@@ -55,6 +56,7 @@ from research_pipeline.verify.capabilities import resolve_rules
 from research_pipeline.verify.hypothesis import VALUE_ORACLE, BugHypothesis
 from research_pipeline.verify.llm_client import LLMClient
 from research_pipeline.verify.agent_arm import make_agent, run_agent_fallback
+from research_pipeline.verify.agent_scan import agent_verifier
 from research_pipeline.verify.levels import consolidate, level_summary
 from research_pipeline.verify.healing import HEAL_MODES, build_healer
 from research_pipeline.verify.loop import run_verify
@@ -306,6 +308,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scan-rank", choices=("callers", "pagerank"), default="callers",
                         help="Modo scan: ordena as funções pelo número de chamadores (padrão) ou pela centralidade "
                              "no grafo (PageRank).")
+    parser.add_argument("--scan-focus", default="",
+                        help="Modo scan: o que priorizar, em texto livre (ex.: \"só o parsing\"); entra no prompt de "
+                             "detecção como preferência, sem mudar as regras.")
+    parser.add_argument("--scan-verify", choices=("engine", "agent"), default="engine",
+                        help="Modo scan: confirma as hipóteses pelo motor de regras (padrão) ou pelo agente do "
+                             "harness (Claude Code com o plugin do ESBMC e o grafo consultável).")
     parser.add_argument("--scan-smells", action="store_true",
                         help="Modo scan: smells de arquitetura pelo grafo e candidatos a Feature Envy em "
                              "scan_smells.json; com --yes, o LLM julga cada candidato (exploratório, sem gabarito).")
@@ -712,7 +720,8 @@ def mode_scan(args: argparse.Namespace) -> int:
         return 1
     plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
                      include_tests=args.scan_include_tests, rank=args.scan_rank,
-                     smells=args.scan_smells)
+                     smells=args.scan_smells, focus=args.scan_focus)
+    set_detection_focus(plan.focus)
     if args.scan_smells and not args.yes:
         smells = json.loads((plan.output_dir / "scan_smells.json").read_text(encoding="utf-8"))
         print(f"Smells: {len(smells['architecture'])} de arquitetura; {len(smells['feature_envy'])} candidato(s) a "
@@ -738,10 +747,18 @@ def mode_scan(args: argparse.Namespace) -> int:
         return 1
     if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
         args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
+    verifier = {}
+    if args.scan_verify == "agent":
+        esbmc = (args.esbmc_command or [_VERIFY_DEFAULT_ESBMC])[0]
+        agent, _ = make_agent("claude", model=args.agent_model, esbmc=esbmc, bound=args.bound, log_rounds=True,
+                              graph_tool=True)
+        verifier["verify"] = agent_verifier(agent, esbmc_command=[esbmc], bound=args.bound,
+                                            timeout_seconds=args.timeout, agent_timeout=args.agent_timeout,
+                                            graph_tool=True, model=args.agent_model)
     try:
         if args.scan_smells:
             judge_smells(plan, spec_llm)
-        report = execute_scan(plan, analyzer=analyzer, spec_llm=spec_llm, resume=args.resume,
+        report = execute_scan(plan, analyzer=analyzer, spec_llm=spec_llm, resume=args.resume, **verifier,
                               esbmc_command=args.esbmc_command, bound=args.bound, timeout_seconds=args.timeout,
                               strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph,
                               healer=build_healer(args.heal, llm=spec_llm, esbmc_command=args.esbmc_command,

@@ -35,3 +35,8 @@ def test_unconfirmed_hypothesis_does_not_count_end_to_end():
                                 expression="assert isinstance(param, bool)")]
     evaluation = evaluate_verify([_result("UNVALIDATED", 1)], candidates, GT, [DETECTION], [])
     assert evaluation["confirmed_by_location"]["expression"]["tp"] == 0
+
+
+def test_summarize_keeps_verdicts_outside_the_engine_list():
+    summary = summarize([{"verdict": "AGENT_FAILED"}, {"verdict": "CONFIRMED_SIMPLIFIED"}])
+    assert summary["by_verdict"]["AGENT_FAILED"] == 1 and summary["by_verdict"]["CONFIRMED_SIMPLIFIED"] == 1

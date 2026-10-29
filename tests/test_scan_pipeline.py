@@ -20,6 +20,14 @@ REPO = {
 }
 
 
+@pytest.fixture(autouse=True)
+def _no_focus_leaks():
+    """--scan-focus sets a process-wide focus; no test may hand it to the next one."""
+    from research_pipeline.llm.prompts import set_detection_focus
+    yield
+    set_detection_focus("")
+
+
 def _repo(tmp_path: Path) -> Path:
     root = tmp_path / "repo"
     root.mkdir(exist_ok=True)
@@ -259,3 +267,77 @@ def test_default_selection_does_not_report_a_centrality_it_never_measured(tmp_pa
     plan_scan(_repo(tmp_path), tmp_path / "out")
     selection = json.loads((tmp_path / "out" / "scan_selection.json").read_text(encoding="utf-8"))
     assert selection["targets"][0]["centrality"] is None
+
+
+def test_cli_scan_verify_agent_uses_the_agent_verifier(tmp_path: Path, monkeypatch) -> None:
+    seen = {}
+
+    class Client:
+        def __init__(self, **kwargs):
+            self.model = kwargs["model"]
+
+    monkeypatch.setattr(main, "build_analyzer", lambda **kw: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", Client)
+    monkeypatch.setattr(main, "make_agent", lambda backend, **kw: seen.setdefault("agent", (backend, kw)) and
+                        ((lambda *a: "DONE"), True))
+    monkeypatch.setattr(main, "execute_scan", lambda plan, **kw: seen.setdefault("scan", kw) and
+                        {"detection": {"failed": 0}})
+    code = _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir",
+                                   str(tmp_path / "out"), "--backend", "openai", "--model", "gpt-5.5", "--yes",
+                                   "--esbmc-command", "esbmc", "--scan-verify", "agent"])
+    assert code == 0
+    assert seen["agent"][0] == "claude" and seen["agent"][1]["graph_tool"] is True
+    assert callable(seen["scan"]["verify"])
+
+
+def test_focus_changes_the_scan_fingerprint(tmp_path: Path) -> None:
+    from research_pipeline.scan.pipeline import _fingerprint
+    a = plan_scan(_repo(tmp_path), tmp_path / "a", focus="parsing")
+    b = plan_scan(_repo(tmp_path), tmp_path / "b", focus="math")
+    assert _fingerprint(a, "m") != _fingerprint(b, "m")
+
+
+def test_cli_scan_focus_reaches_the_selection(tmp_path: Path, monkeypatch) -> None:
+    out = tmp_path / "out"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir", str(out),
+                                   "--backend", "openai", "--scan-focus", "only parsing"]) == 0
+    assert json.loads((out / "scan_selection.json").read_text(encoding="utf-8"))["focus"] == "only parsing"
+
+
+def test_execute_scan_writes_relatorio_md(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]))
+    text = (tmp_path / "out" / "relatorio.md").read_text(encoding="utf-8")
+    assert "## Confirmados (1)" in text and "## Suspeitas do LLM que o ESBMC não verifica (1)" in text
+
+
+def test_agent_results_without_tokens_report_cost_as_unmeasured(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+
+    def verify(hypotheses, *, llm, output_dir, completed, on_result, **kw):
+        return [{"hypothesis": h.to_dict(), "verdict": "AGENT_FAILED", "reason": "x"} for h in hypotheses]
+
+    report = execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=verify)
+    assert report["verification_tokens"] is None
+    assert "AGENT_FAILED" in (tmp_path / "out" / "scan_summary.md").read_text(encoding="utf-8")
+
+
+def test_resume_refuses_a_different_verifier(tmp_path: Path) -> None:
+    from research_pipeline.verify.agent_scan import agent_verifier
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]))
+    agent = agent_verifier(lambda *a: "DONE", esbmc_command=["esbmc"], bound=5, timeout_seconds=1, agent_timeout=1)
+    with pytest.raises(ValueError, match="cannot resume"):
+        execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, resume=True, verify=agent)
+
+
+def test_failed_detection_is_reported_not_read_as_a_clean_repo(tmp_path: Path) -> None:
+    class Broken(_Analyzer):
+        def analyze(self, unit):
+            raise RuntimeError("usage limit")
+
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=Broken(), spec_llm=None, verify=_fake_verify([]))
+    text = (tmp_path / "out" / "relatorio.md").read_text(encoding="utf-8")
+    assert text.index("## A detecção falhou em 5 de 5 funções") < text.index("## Confirmados")
+    assert "usage limit" in text

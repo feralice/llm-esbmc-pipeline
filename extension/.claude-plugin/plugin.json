@@ -1,0 +1,5 @@
+{
+  "name": "llm-esbmc",
+  "version": "0.1.0",
+  "description": "Scan a Python repository: an LLM proposes runtime bugs, ESBMC-Python confirms them, and the report shows only confirmed bugs (with a failing test) apart from the LLM's unconfirmed suspicions."
+}
