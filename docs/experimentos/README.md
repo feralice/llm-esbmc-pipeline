@@ -1112,6 +1112,22 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   pede confirmação e só então gasta.
 - **Primeira rodada real:** o piloto AWS depois do congelamento (PyAthena `converter.py`, `--scan-limit 5`).
 
+## S6, item 1 (29/10, em andamento): S2 de novo, com a versão corrigida e com o grafo
+
+- **Pergunta:** com o plano A inteiro e o controle da versão corrigida ligado, quantos bugs da amostra o braço
+  de agente confirma (Fase 30: 3 de 30)? E o grafo consultável (`--graph-tool`) muda isso?
+- **Casos:** `dataset/bugs_reais/amostra_harness.json` (30 hipóteses; as 30 têm arquivo em
+  `dataset/bugs_reais/arquivo_corrigido/`, o padrão de `--fixed-sources`).
+- **Comando** (igual à Fase 30): `scripts/v2_agent_arm.py --sample dataset/bugs_reais/amostra_harness.json
+  --backend claude --model claude-sonnet-5-5 --project-skills --log-rounds --retry --differential --pytest
+  --agent-timeout 1500 --out <pasta>`, mais `--graph-tool` na segunda rodada.
+- **Pastas** (fora do git, só no notebook onde rodou): `artifacts/v2/s6-s2-base-2026-10-29/` (commit
+  `4a4f9a0`) e `artifacts/v2/s6-s2-grafo-2026-10-29/` (o commit está no `commit.txt` da pasta; o plano D
+  entrou no master durante a base e não toca nada que o braço de agente carrega). Estado de cada uma em
+  `artifacts/v2/s6-s2-status.txt`.
+- **Parcial em 29/10:** a base estava no caso 19 de 30; nm_real_23 de novo CONFIRMED com o corpo intacto.
+- **Resultado:** a preencher quando as duas terminarem (bugs do gabarito confirmados primeiro).
+
 ## S5, plano D (29/10): o scan pronto para repo real, sem rodada
 
 - **O que entrou** (`docs/desenho/planos/2026-10-29-s5-plano-d-scan-real.md`, itens 9a a 9c do plano): a
