@@ -32,6 +32,13 @@ Build com Bitwuzla (`~/esbmc-master/build-bw`).
 | `57_global_nondet_str_lida_em_funcao.py` | função lê `len(s)` de um `s: str = nondet_str()` global | executa | aborta: `Unexpected index type in computer_pointer_offset` | nenhuma ainda |
 | `58_alias_de_funcao_como_argumento.py` | `op = f; f(op(1))`: alias de função chamado dentro de argumento | executa | aborta: `type mismatch: expected code` e core dump | nenhuma ainda |
 | `59_alias_de_metodo_sem_anotacao.py` | `op = obj.lt; op(x, y)` com `lt` sem anotação de tipo | executa | FAILED no `assert` (falso positivo) | rascunho: `issues/59_method_alias_false_assert.md` |
+| `60_lista_em_valor_de_dict.py` | `d['p'] = []; d['p'].append("x")` | executa | recusa: `List variable not found:` | rascunho: `issues/60_list_in_dict_value.md` |
+| `61_or_com_atributo_inexistente.py` | `if nondet_bool() or c.limit:` com `limit` inexistente | executa | aborta: `Can't generate zero for type empty` | rascunho: `issues/61_or_missing_attribute.md` (cobre o 62) |
+| `62_or_atributo_inexistente_falso_negativo.py` | `x = False or c.limit` dentro de função | `AttributeError` | SUCCESSFUL (falso negativo) | junto com o 61 |
+| `63_getitem_tupla_em_atributo.py` | `fr.loc[0, 1]` com `__getitem__` na classe do atributo | executa | segfault no encoder (exit 139); com chave escalar, FAILED falso | rascunho: `issues/63_getitem_tuple_on_attribute_segfault.md` |
+| `64_lambda_em_metodo.py` | `apply(lambda p: p + 1, 1)` dentro de um método | executa | recusa: `Variable 'p' is not defined in function 'lam1'` | rascunho: `issues/64_lambda_in_method.md` |
+| `65_parametro_reatribuido_dict_get.py` | parâmetro `k` reatribuído a `d.get(k)` | executa | `Member 'is_none' is not a field of pointer_struct` e `SMT solver failed` | rascunho: `issues/65_param_reassigned_optional.md` |
+| `66_desempacotar_getitem_de_atributo.py` | `a, b = n.m[0]` com `__getitem__` na classe do atributo | executa | recusa: `Cannot unpack pointer` | rascunho: `issues/66_unpack_getitem_on_attribute.md` (tem contorno) |
 
 Os reprodutores 54 a 59 vieram da Tarefa 10, passo 2 (27/10): com o portão de fidelidade, o agente
 manteve o corpo da função nos 5 casos, e os obstáculos que sobraram são do ESBMC. O 55, o 56 e o 59 são os
@@ -42,11 +49,15 @@ encoder (46), o que a #9092 corrigiu. Agora o ESBMC acusa, mas a exceção errad
 `len(self)` primeiro e para no `TypeError`, enquanto o ESBMC chega ao `self.limit` e acusa `AttributeError`.
 É um problema novo, de ordem de avaliação dos operandos, ainda sem issue.
 
+Os reprodutores 60 a 66 vieram da triagem da Tarefa 10, passo 4 (28/10, 30 casos), reduzidos por três agentes.
+O 62 é o mais grave: falso negativo silencioso. No 60, 64 e 65 o contorno teria de mudar o corpo da função
+alvo, o que o portão de fidelidade não aceita; o 66 tem contorno que preserva o corpo.
+
 ## Rascunhos de issue
 
 `issues/` guarda rascunhos em inglês, nada postado: ela avalia antes de abrir. Em 27/10: 47, 54, 55, 56 e 59
 (os de veredito errado, 55, 56 e 59, primeiro). 57 e 58 não têm rascunho: têm contorno que preserva o comportamento
-(driver e filtro). Os rascunhos das issues já abertas (#9073, #9074, #9077, #9091) saíram da pasta.
+(driver e filtro). Em 28/10: 60, 61 (com o 62), 63, 64, 65 e 66, também sem postar. Os rascunhos das issues já abertas (#9073, #9074, #9077, #9091) saíram da pasta.
 
 ## Corrigidos entre 25/10 e 27/10
 
@@ -104,6 +115,12 @@ o master já não tem (25, 26, 39). Vale remedir o filtro antes de removê-las.
 | 58, 59 | `bip_pandas_7` (`np.where(op(l, r) | ...)` com `op = operator.lt` ou `operator.le`) |
 | 54, 55 | `nm_real_08` (`Request.url_for` repassa `**kwargs` a `app.url_for`) |
 | 56 | `nm_real_12` (o `PamdRule` real não chama `super().__init__`; o primeiro nó fica sem `prev`) |
+| 60 | `bip_ansible_16` (`cpu_facts['processor'].append(...)`) |
+| 61, 62 | `nm_real_25` (tornado `_can_keep_alive`: `or` com atributo que o stub não define) |
+| 63 | `bip_pandas_162` (`table.loc[:, margins_name]`) |
+| 64 | `dz_real_02` (`min(..., key=lambda p: ...)` dentro de método) |
+| 65 | `av_real_01` (youtube-dl `cli_bool_option`: `param = params.get(param)`) |
+| 66 | `dz_real_04` (nki-samples `interpolate_bilinear_2x_fwd`) |
 
 ## Gerador de pytest (medido no master `7da3564`, 22/10/2026; igual no `c0813af`)
 
