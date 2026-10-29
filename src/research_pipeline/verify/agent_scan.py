@@ -38,5 +38,5 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
             on_result(index, data)
             results.append(data)
         return results
-    verify.label = f"agent:{model or 'default'}:graph_tool={graph_tool}:retry={retry}"
+    verify.label = f"agent:{model or 'default'}:graph_tool={graph_tool}:retry={retry}:timeout={agent_timeout}"
     return verify

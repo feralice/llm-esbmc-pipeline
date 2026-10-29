@@ -20,6 +20,7 @@ from ..models import CodeUnit
 from ..preprocess import preprocess_file
 from ..verify.candidate import Candidate
 from ..verify.hypothesis import BugHypothesis
+from ..verify.levels import agent_levels, consolidate, level_summary
 from ..verify.loop import run_verify
 from ..verify.outcome import CONFIRMED
 from ..verify.report import summarize
@@ -39,6 +40,8 @@ DEFAULT_VARIANTS = ("A1", "A2", "A12")
 OUTPUT_TOKENS_PER_CALL = 1_500
 CHARS_PER_TOKEN = 4
 _RISKY_KINDS = {"division", "subscript"}
+# Code a repository ships for reading, not running: scanning it spends calls on tutorials.
+NON_PRODUCT_DIRS = frozenset({"examples", "example", "docs", "doc"})
 
 
 @dataclass
@@ -69,9 +72,11 @@ class ScanPlan:
     candidates_total: int
     rank: str = "callers"
     focus: str = ""
+    excluded: dict[str, int] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
-        return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus, "candidates_total": self.candidates_total,
+        return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus,
+                "candidates_total": self.candidates_total, "excluded": self.excluded,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets]}
 
@@ -97,14 +102,37 @@ def rank_key(target: Target, rank: str = "callers") -> tuple:
     return (target.risky_operations == 0, importance, -target.risky_operations, target.file, target.start_line)
 
 
-def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "callers") -> tuple[list[Target], int]:
-    """Returns the selection and how many functions were eligible before ``limit``."""
+def _exclusion(function, include_examples: bool) -> str:
+    """Why a function is left out of the selection (it stays in the graph as a caller), or ''."""
+    if function.is_async:
+        return "async"  # ESBMC-Python does not model coroutines
+    if include_examples:
+        return ""
+    parts = Path(function.file).parts
+    if any(part in NON_PRODUCT_DIRS for part in parts[:-1]):
+        return "examples"
+    return "setup" if parts == ("setup.py",) else ""
+
+
+def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "callers",
+                   include_examples: bool = False,
+                   excluded: dict[str, int] | None = None) -> tuple[list[Target], int]:
+    """Returns the selection and how many functions were eligible before ``limit``; ``excluded`` receives the
+    count left out per reason."""
     units = _units_by_location(graph)
     scores = pagerank(graph) if rank == "pagerank" else {}
+    counts = excluded if excluded is not None else {}
+    counts.update({"examples": 0, "setup": 0, "async": 0})
     targets = []
     for function in graph.functions.values():
+        if not function.verifiable:
+            continue
+        reason = _exclusion(function, include_examples)
+        if reason:
+            counts[reason] += 1
+            continue
         unit = units.get((function.file, function.start_line))
-        if not function.verifiable or unit is None:
+        if unit is None:
             continue
         unit = replace(unit, caller_context=caller_context(graph, function.key))
         risky = sum(1 for op in unit.operations if op.kind in _RISKY_KINDS)
@@ -123,11 +151,13 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
               variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
-              focus: str = "") -> ScanPlan:
+              focus: str = "", include_examples: bool = False) -> ScanPlan:
     graph = build_callgraph(root, include_tests=include_tests)
-    targets, total = select_targets(graph, limit=limit, rank=rank)
+    excluded: dict[str, int] = {}
+    targets, total = select_targets(graph, limit=limit, rank=rank, include_examples=include_examples,
+                                    excluded=excluded)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
-                    rank, focus.strip())
+                    rank, focus.strip(), excluded)
     plan.output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
     if smells:
@@ -143,12 +173,39 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
           f"{stats['call_sites']} chamada(s), {stats['resolved_calls']} resolvida(s) no repositório.")
     print(f"Selecionadas {len(targets)} de {total} função(ões). Estimativa da detecção: {len(targets)} chamada(s) "
           f"à LLM, ~{plan.estimated_tokens} tokens; a verificação gasta até 3 chamadas por hipótese a mais.")
+    if any(excluded.values()):
+        print(f"Fora da seleção: {excluded['examples']} em examples/docs, {excluded['setup']} no setup.py da raiz, "
+              f"{excluded['async']} async (o ESBMC-Python não modela)."
+              + (" Exemplos e setup.py entram com --scan-include-examples." if excluded["examples"] + excluded["setup"]
+                 else ""))
     return plan
 
 
-def _fingerprint(plan: ScanPlan, model: str, verifier: str = "engine") -> str:
+def _prompts_hash(plan: ScanPlan) -> str:
+    digest = hashlib.sha256(load_system_prompt(include_smells=False, v2_detection=True,
+                                               v2_variants=plan.variants).encode("utf-8"))
+    for target in plan.targets:
+        digest.update(build_user_prompt(target.unit, include_smells=False, v2_variants=plan.variants).encode("utf-8"))
+    return digest.hexdigest()
+
+
+def _plain_config(kwargs: dict) -> dict:
+    """Settings as values; an object (the graph, a healer) by its ``config_label`` or its type, so its address
+    never enters the hash."""
+    plain = (str, int, float, bool, type(None))
+
+    def value_of(value):
+        if isinstance(value, Path):
+            return str(value)
+        if isinstance(value, plain) or (isinstance(value, (list, tuple)) and all(isinstance(v, plain) for v in value)):
+            return value
+        return f"{type(value).__name__}:{getattr(value, 'config_label', '')}"
+    return {key: value_of(value) for key, value in kwargs.items()}
+
+
+def _fingerprint(plan: ScanPlan, model: str, verifier: str = "engine", verify_config: dict | None = None) -> str:
     payload = json.dumps({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
-                          "verifier": verifier,
+                          "verifier": verifier, "verify_config": _plain_config(verify_config or {}), "prompts": _prompts_hash(plan),
                           "targets": [t.key for t in plan.targets]}, sort_keys=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
@@ -174,12 +231,12 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
                  verify: Callable[..., list[dict]] | None = None, **verify_kwargs) -> dict:
     checkpoint_path = plan.output_dir / "scan_checkpoint.json"
     # A verifier names itself (agent_verifier does), so a resume never mixes the engine's verdicts with the agent's.
-    fingerprint = _fingerprint(plan, getattr(analyzer, "model", ""), getattr(verify, "label", "engine"))
+    fingerprint = _fingerprint(plan, getattr(analyzer, "model", ""), getattr(verify, "label", "engine"), verify_kwargs)
     checkpoint = {"fingerprint": fingerprint, "detection": {}, "verify_results": {}}
     if resume and checkpoint_path.exists():
         saved = json.loads(checkpoint_path.read_text(encoding="utf-8"))
         if saved.get("fingerprint") != fingerprint:
-            raise ValueError("cannot resume: repository selection, prompt variants or model changed")
+            raise ValueError("cannot resume: repository selection, prompts, model or verify settings changed")
         checkpoint = saved
 
     def save() -> None:
@@ -196,14 +253,18 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     candidates = [Candidate.from_dict(c) for t in plan.targets for c in checkpoint["detection"][t.key]["candidates"]]
     hypotheses = list({h.hypothesis_id: h for h in map(BugHypothesis.from_candidate, candidates)}.values())
 
+    # Saved by hypothesis_id: a detection retried on resume can add hypotheses and shift every position.
     def on_result(index: int, data: dict) -> None:
-        checkpoint["verify_results"][str(index)] = data
+        checkpoint["verify_results"][hypotheses[index].hypothesis_id] = data
         save()
 
-    completed = {int(i): d for i, d in checkpoint["verify_results"].items() if d.get("verdict") != "PIPELINE_ERROR"}
+    saved = checkpoint["verify_results"]
+    completed = {index: saved[h.hypothesis_id] for index, h in enumerate(hypotheses)
+                 if h.hypothesis_id in saved and saved[h.hypothesis_id].get("verdict") != "PIPELINE_ERROR"}
     results = (verify or run_verify)(hypotheses, llm=spec_llm, output_dir=plan.output_dir, completed=completed,
                      on_result=on_result, **verify_kwargs) if hypotheses else []
-    report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer)
+    report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer,
+                     agent=getattr(verify, "label", "").startswith("agent"))
     _write_json(plan.output_dir / "scan_report.json", report)
     (plan.output_dir / "scan_summary.md").write_text(summary_markdown(report), encoding="utf-8")
     held = [{"file": t.file, "function": t.qualname, **entry}
@@ -211,13 +272,14 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     errors = [f"{t.qualname}: {checkpoint['detection'][t.key]['error']}" for t in plan.targets
               if checkpoint["detection"][t.key]["error"]]
     (plan.output_dir / "relatorio.md").write_text(
-        render_run_report(results, held=held, detection=(len(plan.targets), errors)), encoding="utf-8")
+        render_run_report(results, held=held, detection=(len(plan.targets), errors), root=plan.root), encoding="utf-8")
     print(f"Relatório: {plan.output_dir / 'scan_report.json'}")
     return report
 
 
 def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], results: list[dict],
-            analyzer) -> dict:
+            analyzer, agent: bool = False) -> dict:
+    levels = agent_levels(results) if agent else consolidate(results)
     rows = [{**t.to_dict(), **detection[t.key]} for t in plan.targets]
     detection_tokens = sum(int(e.get("total_tokens") or 0) for e in getattr(analyzer, "telemetry_events", []))
     return {
@@ -232,6 +294,7 @@ def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], re
         # The agent's sessions report no tokens: unmeasured, not zero.
         "verification_tokens": (sum(int(r.get("tokens") or 0) for r in results)
                                 if any("tokens" in r for r in results) else None),
+        "levels": {"summary": level_summary(levels), "rows": levels},
         "results": results,
     }
 
@@ -247,6 +310,7 @@ def summary_markdown(report: dict) -> str:
         (f"- Detecção: {detection['functions']} funções analisadas ({detection['failed']} com erro), "
          f"{detection['hypotheses']} hipóteses enviadas ao ESBMC, {detection['held']} seguradas pela LLM."),
         f"- Vereditos: {verdicts or 'nenhum'}.",
+        f"- Nível que decidiu: {report['levels']['summary']['by_level'] or 'nenhum'}.",
         "",
         "## Confirmados (ESBMC e reexecução no CPython)",
         "",

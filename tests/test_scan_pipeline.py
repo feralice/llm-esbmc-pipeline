@@ -341,3 +341,120 @@ def test_failed_detection_is_reported_not_read_as_a_clean_repo(tmp_path: Path) -
     text = (tmp_path / "out" / "relatorio.md").read_text(encoding="utf-8")
     assert text.index("## A detecção falhou em 5 de 5 funções") < text.index("## Confirmados")
     assert "usage limit" in text
+
+
+class _FirstToo(_Analyzer):
+    def analyze(self, unit):
+        found = super().analyze(unit)
+        return [_finding("xs[0]")] if unit.qualname == "first" else found
+
+
+def test_resume_keeps_each_verdict_with_its_hypothesis_when_a_new_one_appears(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=_FirstToo(fail_on="ratio"), spec_llm=None, verify=_fake_verify([]))
+    calls = []
+    execute_scan(plan, analyzer=_FirstToo(), spec_llm=None, resume=True, verify=_fake_verify(calls))
+    [call] = calls
+    assert [h.function for h in call["hypotheses"]] == ["ratio", "first"]
+    assert list(call["completed"]) == [1]
+    assert call["completed"][1]["hypothesis"]["function"] == "first"
+
+
+def test_resume_refuses_a_checkpoint_saved_by_position(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    (tmp_path / "out" / "scan_checkpoint.json").write_text(json.dumps(
+        {"fingerprint": "old", "detection": {}, "verify_results": {"0": {"verdict": "CONFIRMED"}}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="cannot resume"):
+        execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, resume=True, verify=_fake_verify([]))
+
+
+def test_prompt_change_changes_the_scan_fingerprint(tmp_path: Path, monkeypatch) -> None:
+    from research_pipeline.scan import pipeline
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    before = pipeline._fingerprint(plan, "m")
+    monkeypatch.setattr(pipeline, "load_system_prompt", lambda **kw: "another prompt")
+    assert pipeline._fingerprint(plan, "m") != before
+
+
+def test_verify_config_changes_the_scan_fingerprint(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]), bound=5)
+    with pytest.raises(ValueError, match="cannot resume"):
+        execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, resume=True, verify=_fake_verify([]), bound=9)
+
+
+def test_verify_objects_do_not_break_a_resume(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]), graph=object(), healer=object())
+    execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, resume=True, verify=_fake_verify([]),
+                 graph=object(), healer=object())
+
+
+def _product_and_examples(tmp_path: Path) -> Path:
+    root = _repo(tmp_path)
+    for folder in ("examples", "docs"):
+        (root / folder).mkdir()
+        (root / folder / "demo.py").write_text("from calc import ratio\n\ndef demo(n):\n    return ratio(1, n)\n",
+                                               encoding="utf-8")
+    (root / "setup.py").write_text("def version(parts):\n    return parts[0]\n", encoding="utf-8")
+    (root / "aio.py").write_text("async def fetch(xs):\n    return xs[0]\n", encoding="utf-8")
+    return root
+
+
+def test_selection_skips_examples_docs_setup_and_async_but_keeps_them_as_callers(tmp_path: Path) -> None:
+    plan = plan_scan(_product_and_examples(tmp_path), tmp_path / "out")
+    assert sorted(t.qualname for t in plan.targets) == ["first", "head", "label", "mean", "ratio"]
+    assert plan.to_dict()["excluded"] == {"examples": 2, "setup": 1, "async": 1}
+    ratio = next(t for t in plan.targets if t.qualname == "ratio")
+    assert ratio.callers == 4
+
+
+def test_selection_with_only_examples_is_empty_and_says_how_to_include(tmp_path: Path, capsys) -> None:
+    root = tmp_path / "samples"
+    (root / "examples").mkdir(parents=True)
+    (root / "examples" / "s3.py").write_text("def size(xs):\n    return xs[0]\n", encoding="utf-8")
+    plan = plan_scan(root, tmp_path / "out")
+    assert plan.targets == [] and "--scan-include-examples" in capsys.readouterr().out
+    assert [t.qualname for t in plan_scan(root, tmp_path / "o2", include_examples=True).targets] == ["size"]
+
+
+def test_cli_scan_include_examples_reaches_the_selection(tmp_path: Path, monkeypatch) -> None:
+    out = tmp_path / "out"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_product_and_examples(tmp_path)), "--output-dir",
+                                   str(out), "--backend", "openai", "--scan-include-examples"]) == 0
+    assert json.loads((out / "scan_selection.json").read_text(encoding="utf-8"))["excluded"]["examples"] == 0
+
+
+def test_scan_report_has_levels_for_the_engine_and_for_the_agent(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    report = execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]))
+    assert report["levels"]["summary"]["by_level"] == {"esbmc_engine": 1}
+
+    def agent(hypotheses, *, completed, on_result, **kw):
+        return [{"hypothesis": h.to_dict(), "verdict": "CONFIRMED", "reason": "", "target_preserved": True}
+                for h in hypotheses]
+    agent.label = "agent:x"
+    report = execute_scan(plan_scan(_repo(tmp_path), tmp_path / "o2"), analyzer=_Analyzer(), spec_llm=None,
+                          verify=agent)
+    assert report["levels"]["summary"]["by_level"] == {"esbmc_agent": 1}
+    assert "esbmc_agent" in (tmp_path / "o2" / "scan_summary.md").read_text(encoding="utf-8")
+
+
+def test_heal_mode_and_paths_change_the_scan_fingerprint(tmp_path: Path) -> None:
+    from research_pipeline.scan.pipeline import _fingerprint
+    from research_pipeline.verify.healing import build_healer
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    error = build_healer("error", llm=None, esbmc_command=None)
+    kb = build_healer("error+kb", llm=None, esbmc_command=None, cache_dir=tmp_path / "kb")
+    assert _fingerprint(plan, "m", verify_config={"healer": error}) != _fingerprint(plan, "m", verify_config={"healer": kb})
+    assert (_fingerprint(plan, "m", verify_config={"p": tmp_path / "a"})
+            != _fingerprint(plan, "m", verify_config={"p": tmp_path / "b"}))
+
+
+def test_setup_py_is_left_out_only_at_the_root(tmp_path: Path) -> None:
+    root = _repo(tmp_path)
+    (root / "pkg").mkdir()
+    (root / "pkg" / "setup.py").write_text("def configure(xs):\n    return xs[0]\n", encoding="utf-8")
+    (root / "setup.py").write_text("def version(parts):\n    return parts[0]\n", encoding="utf-8")
+    names = [t.qualname for t in plan_scan(root, tmp_path / "out").targets]
+    assert "configure" in names and "version" not in names

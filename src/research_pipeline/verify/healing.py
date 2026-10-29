@@ -203,6 +203,11 @@ class Healer:
     def __init__(self, llm, knowledge: KnowledgeIndex | None, graph: CallGraph | None = None):
         self.llm, self.knowledge, self.graph = llm, knowledge, graph
 
+    @property
+    def config_label(self) -> str:
+        """The heal mode, for a scan's resume fingerprint."""
+        return "error+kb" if self.knowledge is not None else "error"
+
     def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str, previous: list[dict]) -> Patch | None:
         try:
             tree = ast.parse(source)

@@ -100,3 +100,33 @@ def test_simplified_confirmations_are_not_counted_as_confirmed():
     assert "## Confirmados (1)" in report and "1 confirmadas pelo ESBMC" in report
     section = report.split("## Confirmados em código simplificado (1)")[1].split("## ")[0]
     assert "body changed" in section
+
+
+def test_confirmed_are_listed_by_evidence_with_the_audit_note():
+    weak = _result("CONFIRMED", function="weak", replay={"exception_type": "KeyError", "inputs": []})
+    strong = _result("CONFIRMED", function="strong", replay={"exception_type": "ZeroDivisionError", "inputs": [0]},
+                     pytest={"status": "reproduces", "path": "t.py"}, control={"status": "not_reproduced"},
+                     differential={"level": "real", "preservation": "preservada"})
+    text = render_run_report([weak, strong])
+    assert text.index("strong") < text.index("weak")
+    assert "evidência: teste, versão corrigida passa, diferencial real" in text
+    assert "auditoria manual" in text
+
+
+def test_report_names_files_relative_to_the_scanned_root():
+    def at(path):
+        r = _result("CONFIRMED", replay={"exception_type": "KeyError", "inputs": []})
+        r["hypothesis"]["file"] = path
+        return r
+
+    held = [{"file": "/repo/pkg/b/__init__.py", "function": "g", "expression": "x", "explanation": "y"}]
+    text = render_run_report([at("/repo/pkg/a/__init__.py")], held=held, root="/repo")
+    assert "`pkg/a/__init__.py::f`" in text and "`pkg/b/__init__.py::g`" in text
+    assert "`__init__.py::f`" in render_run_report([at("/repo/pkg/a/__init__.py")])
+
+
+def test_an_unavailable_or_failing_control_is_not_evidence():
+    from research_pipeline.verify.run_report import evidence
+    for status in ("unavailable", "other_failure", "property_violated", "reproduced"):
+        assert evidence(_result("CONFIRMED", control={"status": status})) == []
+    assert evidence(_result("CONFIRMED", control={"status": "not_reproduced"})) == ["versão corrigida passa"]

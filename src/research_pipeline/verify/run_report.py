@@ -3,6 +3,7 @@ stayed an LLM suspicion with the reason ESBMC could not decide it. Reads results
 
 from __future__ import annotations
 
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -15,14 +16,31 @@ _SIMPLIFIED = ("CONFIRMED_SIMPLIFIED",)
 _REJECTED = ("FIXED_ALSO_FAILS", "BEHAVIOUR_CHANGED", "STUB_INDUCED")
 
 
-def _where(result: dict) -> str:
+def _where(result: dict, root: str | Path | None = None) -> str:
     h = result["hypothesis"]
-    return f"`{Path(h['file']).name}::{h['function']}`"
+    return _place(h["file"], h["function"], root)
 
 
-def _confirmed(result: dict) -> str:
+def _place(file: str, function: str, root: str | Path | None) -> str:
+    # A repository has many __init__.py: under a scanned root, the path relative to it tells them apart.
+    return f"`{os.path.relpath(file, root) if root else Path(file).name}::{function}`"
+
+
+def evidence(result: dict) -> list[str]:
+    """The checks a confirmation passed beyond ESBMC and the CPython replay, strongest audit first."""
+    # Only a clean run of the fixed version counts; an unavailable one says nothing (value_oracle.apply_control).
+    control, diff = result.get("control"), result.get("differential") or {}
+    return [label for label, passed in (
+        ("teste", (result.get("pytest") or {}).get("status") == "reproduces"),
+        ("versão corrigida passa", (control or {}).get("status") == "not_reproduced"),
+        ("diferencial real", diff.get("preservation") == "preservada")) if passed]
+
+
+def _confirmed(result: dict, root: str | Path | None = None) -> str:
     replay, test = result.get("replay") or {}, result.get("pytest") or {}
-    line = f"- {_where(result)}: `{result['hypothesis'].get('suspect_expression', '')}`"
+    checks = evidence(result)
+    line = (f"- {_where(result, root)}: `{result['hypothesis'].get('suspect_expression', '')}`"
+            f" (evidência: {', '.join(checks) if checks else 'só ESBMC e replay'})")
     if replay.get("exception_type"):
         line += f" levanta `{replay['exception_type']}` com as entradas `{replay.get('inputs')}`"
     if test.get("path"):
@@ -31,11 +49,11 @@ def _confirmed(result: dict) -> str:
 
 
 def render_run_report(results: list[dict], held: list[dict] | None = None,
-                      detection: tuple[int, list[str]] | None = None) -> str:
+                      detection: tuple[int, list[str]] | None = None, root: str | Path | None = None) -> str:
     """``held``: findings the detection itself marked as not verifiable by ESBMC (a wrong value, the
     environment), each with ``file``, ``function``, ``expression`` and ``explanation``. ``detection``: how many
     functions were analysed and the errors of those that failed, so a failed scan never reads as a clean one."""
-    confirmed = [r for r in results if r["verdict"] in _CONFIRMED]
+    confirmed = sorted((r for r in results if r["verdict"] in _CONFIRMED), key=lambda r: -len(evidence(r)))
     simplified = [r for r in results if r["verdict"] in _SIMPLIFIED]
     rejected = [r for r in results if r["verdict"] in _REJECTED]
     suspicions: dict[str, list[dict]] = defaultdict(list)
@@ -56,17 +74,19 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
               f"controles, {len(simplified)} confirmadas só em código simplificado, "
               f"{len(results) - len(confirmed) - len(rejected) - len(simplified)} não confirmadas (o ESBMC disse seguro, "
               "não decidiu, ou o harness não chegou a rodar)."), "",
-             f"## Confirmados ({len(confirmed)})", "", *map(_confirmed, confirmed), "",
+             f"## Confirmados ({len(confirmed)})", "",
+             "Do mais para o menos verificado. Cada um passa por auditoria manual antes de virar issue.", "",
+             *(_confirmed(r, root) for r in confirmed), "",
              f"## Confirmados em código simplificado ({len(simplified)})", "",
              "O agente mudou o corpo da função para o ESBMC aceitar: valem como pista, não como bug do código real.",
-             "", *(f"- {_where(r)}: {r.get('reason', '')}" for r in simplified), "",
+             "", *(f"- {_where(r, root)}: {r.get('reason', '')}" for r in simplified), "",
              f"## Falsos positivos barrados pelos controles ({len(rejected)})", "",
-             *(f"- {_where(r)}: {r['verdict']}, {r.get('reason', '')}" for r in rejected), "",
+             *(f"- {_where(r, root)}: {r['verdict']}, {r.get('reason', '')}" for r in rejected), "",
              *([f"## Suspeitas do LLM que o ESBMC não verifica ({len(held)})", "",
-                *(f"- `{Path(h['file']).name}::{h['function']}`: `{h['expression']}`. {h['explanation']}"
+                *(f"- {_place(h['file'], h['function'], root)}: `{h['expression']}`. {h['explanation']}"
                   for h in held), ""] if held is not None else []),
              "## Suspeitas do LLM", ""]
     for group in sorted(suspicions):
         lines += [f"### {group} ({len(suspicions[group])})", "",
-                  *(f"- {_where(r)}: {r['verdict']}, {r.get('reason', '')[:200]}" for r in suspicions[group]), ""]
+                  *(f"- {_where(r, root)}: {r['verdict']}, {r.get('reason', '')[:200]}" for r in suspicions[group]), ""]
     return "\n".join(lines)

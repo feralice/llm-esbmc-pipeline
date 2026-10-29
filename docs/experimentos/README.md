@@ -1112,6 +1112,18 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   pede confirmação e só então gasta.
 - **Primeira rodada real:** o piloto AWS depois do congelamento (PyAthena `converter.py`, `--scan-limit 5`).
 
+## S5, plano D (29/10): o scan pronto para repo real, sem rodada
+
+- **O que entrou** (`docs/desenho/planos/2026-10-29-s5-plano-d-scan-real.md`, itens 9a a 9c do plano): a
+  retomada do scan guarda cada veredito pelo `hypothesis_id` (antes, pela posição, que muda quando uma detecção
+  refeita traz hipótese nova) e o fingerprint inclui o hash dos prompts e a configuração do verify; a seleção
+  deixa de fora `examples/`, `docs/`, `setup.py` e funções `async`, que seguem no grafo como chamadores
+  (`--scan-include-examples` traz os exemplos de volta); o `scan_report.json` conta o nível que decidiu cada
+  hipótese, para o motor e para o agente; os confirmados do `relatorio.md` saem do mais para o menos verificado
+  (teste, versão corrigida, diferencial real) e o relatório usa o caminho relativo ao repo.
+- **Não muda** o braço de agente nem o motor: a rodada S6 em andamento segue válida.
+- **Falta antes do piloto AWS:** o item 14 (bug semeado nos repos reais).
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:

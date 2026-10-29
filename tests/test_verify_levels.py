@@ -97,3 +97,24 @@ def test_short_bound_is_its_own_limit_group():
     from research_pipeline.verify.outcome import BOUND_INCONCLUSIVE
     assert limit_group(BOUND_INCONCLUSIVE, "unwinding assertion loop 17") == BOUND
     assert BOUND in LIMIT_GROUPS
+
+
+def test_agent_levels_never_counts_a_rewritten_body_as_an_agent_verdict():
+    from research_pipeline.verify.levels import (
+        AGENT,
+        LLM_ONLY,
+        REWRITE,
+        SIMPLIFIED,
+        agent_levels,
+    )
+
+    def row(hid, verdict, preserved, reason=""):
+        return {"hypothesis": {"hypothesis_id": hid, "file": "a.py", "function": "f"}, "verdict": verdict,
+                "reason": reason, "target_preserved": preserved}
+
+    rows = {r["hypothesis_id"]: r for r in agent_levels([
+        row("ok", "CONFIRMED", True), row("rw", "NOT_CONFIRMED", False),
+        row("simp", "CONFIRMED_SIMPLIFIED", False), row("fail", "AGENT_FAILED", None, "agent did not finish: x")])}
+    assert rows["ok"]["level"] == AGENT and rows["simp"]["level"] == SIMPLIFIED
+    assert rows["rw"]["level"] == LLM_ONLY and rows["rw"]["limit"] == REWRITE
+    assert rows["fail"]["level"] == LLM_ONLY

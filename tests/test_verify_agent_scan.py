@@ -44,3 +44,11 @@ def test_an_agent_session_that_broke_is_retried_on_resume_but_a_timeout_is_not(t
                                        agent_timeout=60)
     results = verify([_h("a"), _h("b")], llm=None, output_dir=tmp_path, completed={}, on_result=lambda i, d: None)
     assert [r["verdict"] for r in results] == ["PIPELINE_ERROR", "AGENT_FAILED"]
+
+
+def test_agent_timeout_is_part_of_the_verifier_label():
+    from research_pipeline.verify.agent_scan import agent_verifier
+    def label(seconds):
+        return agent_verifier(lambda *a: "", esbmc_command=["esbmc"], bound=5, timeout_seconds=1,
+                              agent_timeout=seconds).label
+    assert label(100) != label(1500)

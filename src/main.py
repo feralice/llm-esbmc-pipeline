@@ -305,6 +305,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Modo scan: analisa só as N primeiras funções do ranking (padrão: todas).")
     parser.add_argument("--scan-include-tests", action="store_true",
                         help="Modo scan: inclui arquivos e pastas de teste no grafo e na seleção.")
+    parser.add_argument("--scan-include-examples", action="store_true",
+                        help="Modo scan: inclui na seleção examples/, docs/ e setup.py (ficam fora por padrão).")
     parser.add_argument("--scan-rank", choices=("callers", "pagerank"), default="callers",
                         help="Modo scan: ordena as funções pelo número de chamadores (padrão) ou pela centralidade "
                              "no grafo (PageRank).")
@@ -720,7 +722,8 @@ def mode_scan(args: argparse.Namespace) -> int:
         return 1
     plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
                      include_tests=args.scan_include_tests, rank=args.scan_rank,
-                     smells=args.scan_smells, focus=args.scan_focus)
+                     smells=args.scan_smells, focus=args.scan_focus,
+                     include_examples=args.scan_include_examples)
     set_detection_focus(plan.focus)
     if args.scan_smells and not args.yes:
         smells = json.loads((plan.output_dir / "scan_smells.json").read_text(encoding="utf-8"))

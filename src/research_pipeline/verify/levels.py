@@ -124,6 +124,24 @@ def consolidate(engine: list[dict], agent: list[dict] | None = None) -> list[dic
     return rows
 
 
+def agent_levels(agent: list[dict]) -> list[dict]:
+    """``consolidate``'s rows when the agent is the only level (the scan with ``--scan-verify agent``)."""
+    rows = []
+    for result in agent:
+        hypothesis, verdict, reason = result["hypothesis"], result["verdict"], result.get("reason", "")
+        row = {"hypothesis_id": hypothesis["hypothesis_id"], "file": hypothesis["file"],
+               "function": hypothesis["function"], "agent_verdict": verdict, "verdict": verdict, "reason": reason}
+        if verdict == CONFIRMED_SIMPLIFIED:
+            row["level"] = SIMPLIFIED
+        elif verdict in CHECKED and result.get("target_preserved") is not False:
+            row["level"] = AGENT
+        else:
+            row.update(level=LLM_ONLY, limit=REWRITE if result.get("target_preserved") is False
+                       else limit_group(verdict, reason))
+        rows.append(row)
+    return rows
+
+
 def level_summary(rows: list[dict]) -> dict:
     checked = [r for r in rows if r["level"] in (ENGINE, AGENT)]
     return {

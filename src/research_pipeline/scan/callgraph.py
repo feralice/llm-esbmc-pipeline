@@ -32,6 +32,7 @@ class FunctionNode:
     nested: bool = False
     top_level: bool = True
     ambiguous: bool = False
+    is_async: bool = False
 
     @property
     def key(self) -> str:
@@ -221,7 +222,8 @@ class _Builder:
             if isinstance(child, _FUNCTION_NODES):
                 qualname = ".".join([*scope, child.name])
                 function = FunctionNode(module.name, qualname, module.file, child.lineno,
-                                        child.end_lineno or child.lineno, owner, nested, direct)
+                                        child.end_lineno or child.lineno, owner, nested, direct,
+                                        is_async=isinstance(child, ast.AsyncFunctionDef))
                 if function.key in self.functions:
                     self.functions[function.key] = replace(self.functions[function.key], ambiguous=True)
                 else:
