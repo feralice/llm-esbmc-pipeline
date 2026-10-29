@@ -5,7 +5,7 @@ description: Fixed rules for writing harness.py so ESBMC-Python runs real code f
 
 # Rules for harness.py
 
-Version: 2
+Version: 3
 
 1. Copy the body of the target function from original.py unchanged, unless the task itself allows a simplification. You may add type annotations to its signature.
 2. Write the minimal stubs (classes, helper functions) the target needs. A stub must support every operation the target applies to its value (len, iteration, indexing, comparison, arithmetic) and must never raise.
@@ -16,3 +16,5 @@ Version: 2
 7. Run ESBMC on harness.py and fix it until it reaches VERIFICATION FAILED or VERIFICATION SUCCESSFUL instead of a conversion error.
 8. If ESBMC crashes (exit code 134 or 139, or the message "Couldn't convert expression"), stop and reply ESBMC_CRASH. Do not rewrite the harness to dodge a crash.
 9. Reading or writing an attribute of None does not raise AttributeError in ESBMC. Do not rely on it to expose a bug.
+10. In the driver, pass nondeterministic values as arguments or constructor fields. A module-level `s: str = nondet_str()` read inside a function aborts ESBMC ("Unexpected index type in computer_pointer_offset").
+11. In the driver, call a function by its own name, not through a module-level alias: `op = f; g(op(1))` aborts ESBMC ("type mismatch: expected code"). Both are the same function, so behaviour is unchanged.
