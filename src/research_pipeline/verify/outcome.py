@@ -19,6 +19,9 @@ NOT_CONFIRMED = "NOT_CONFIRMED"
 # ESBMC found the intact target safe, but no path of the harness reaches the suspect expression
 # (__ESBMC_unreachable() probe): the "safe" examined nothing.
 NOT_CONFIRMED_VACUOUS = "NOT_CONFIRMED_VACUOUS"
+# ESBMC reported only unwinding assertions, even after the bound was raised: it said neither safe nor
+# unsafe, so a replay that reproduces the failure is not ESBMC missing it.
+BOUND_INCONCLUSIVE = "BOUND_INCONCLUSIVE"
 GROUNDING_FAILED = "GROUNDING_FAILED"
 MISSING_DEPENDENCY = "MISSING_DEPENDENCY"
 UNSUPPORTED = "UNSUPPORTED"
@@ -39,7 +42,7 @@ LLM_ONLY = "LLM_ONLY"
 
 VERDICTS = (CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED, GROUNDING_FAILED,
             MISSING_DEPENDENCY, UNSUPPORTED, SPEC_FAILED, ESBMC_TIMEOUT, ESBMC_ERROR, PIPELINE_ERROR, NO_SOURCE,
-            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, LLM_ONLY)
+            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, LLM_ONLY, BOUND_INCONCLUSIVE)
 # Verdicts reached by a program ESBMC actually checked: the success@k numerator.
 CHECKED = frozenset({CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED,
                      VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED})
@@ -107,6 +110,8 @@ def final_verdict(reading: EsbmcReading, replay: ReplayVerdict) -> str:
             # ESBMC must have seen the same failure the replay reproduced at the hypothesis.
             return CONFIRMED if replay.exception_type in reading.exceptions else UNVALIDATED
         return OTHER_FAILURE if replay.status == "other_failure" else UNVALIDATED
-    if reading.kind in {"safe", "artifact"}:
+    if reading.kind == "artifact":
+        return BOUND_INCONCLUSIVE
+    if reading.kind == "safe":
         return ESBMC_MISSED if replay.status == "reproduced" else NOT_CONFIRMED
     return _TERMINAL[reading.kind]

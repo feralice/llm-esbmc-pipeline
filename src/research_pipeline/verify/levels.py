@@ -12,6 +12,7 @@ from collections import Counter
 
 from .agent_arm import AGENT_FAILED, CONFIRMED_SIMPLIFIED
 from .outcome import (
+    BOUND_INCONCLUSIVE,
     CHECKED,
     ESBMC_ERROR,
     ESBMC_TIMEOUT,
@@ -32,6 +33,7 @@ CONTEXT = "harness_context"      # what surrounds the function: names, library s
 LANGUAGE = "esbmc_language"      # a Python feature the function itself uses and ESBMC-Python lacks
 CRASH = "esbmc_crash"            # ESBMC or its solver failed internally
 TIMEOUT = "esbmc_timeout"
+BOUND = "esbmc_bound"              # only unwinding assertions, even at the raised bound
 SPEC = "llm_spec"                # the LLM gave no valid input types
 LOCATE = "locate_function"       # the function or its source file was not found
 NETWORK = "network"
@@ -39,8 +41,8 @@ PIPELINE = "pipeline_error"      # the pipeline itself failed on this hypothesis
 REWRITE = "agent_rewrote_function"
 VACUOUS = "harness_vacuous"      # ESBMC said safe, but no path of the harness reached the hypothesis
 OTHER = "other"                  # a reason no rule recognises: kept apart, never counted as an ESBMC limit
-LIMIT_GROUPS = (CONTEXT, LANGUAGE, CRASH, TIMEOUT, SPEC, LOCATE, NETWORK, PIPELINE, REWRITE, VACUOUS, OTHER)
-_DEEPER = (LANGUAGE, CRASH, TIMEOUT, REWRITE, VACUOUS)
+LIMIT_GROUPS = (CONTEXT, LANGUAGE, CRASH, TIMEOUT, BOUND, SPEC, LOCATE, NETWORK, PIPELINE, REWRITE, VACUOUS, OTHER)
+_DEEPER = (LANGUAGE, CRASH, TIMEOUT, BOUND, REWRITE, VACUOUS)
 
 _CRASH = re.compile(r"uncaught exception \[|json\.exception|Bitwuzla error|irep2|inconclusivo|inconclusive"
                     r"|Segmentation|core dumped")
@@ -66,6 +68,8 @@ def limit_group(verdict: str, reason: str) -> str:
         return NETWORK if _NETWORK.search(reason) else PIPELINE
     if verdict == ESBMC_TIMEOUT:
         return TIMEOUT
+    if verdict == BOUND_INCONCLUSIVE:
+        return BOUND
     if verdict == NOT_CONFIRMED_VACUOUS:
         return VACUOUS
     if verdict == ESBMC_ERROR or _CRASH.search(reason):

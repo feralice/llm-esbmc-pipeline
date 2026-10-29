@@ -90,3 +90,10 @@ def test_an_unclassified_agent_reason_does_not_override_the_engine_diagnosis():
     rows = consolidate([_result("a", "UNSUPPORTED", "undefined name(s): os")],
                        [_result("a", "UNSUPPORTED", "ERROR: something no rule knows")])
     assert rows[0]["limit"] == CONTEXT
+
+
+def test_short_bound_is_its_own_limit_group():
+    from research_pipeline.verify.levels import BOUND, LIMIT_GROUPS, limit_group
+    from research_pipeline.verify.outcome import BOUND_INCONCLUSIVE
+    assert limit_group(BOUND_INCONCLUSIVE, "unwinding assertion loop 17") == BOUND
+    assert BOUND in LIMIT_GROUPS

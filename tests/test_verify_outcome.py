@@ -2,6 +2,7 @@ import pytest
 
 from research_pipeline.models import ESBMCDirectResult
 from research_pipeline.verify.outcome import (
+    BOUND_INCONCLUSIVE,
     CONFIRMED,
     ESBMC_ERROR,
     ESBMC_MISSED,
@@ -72,8 +73,8 @@ R = ReplayVerdict
         ("safe", R("reproduced", "ZeroDivisionError"), ESBMC_MISSED),
         ("safe", R("not_reproduced"), NOT_CONFIRMED),
         ("safe", R("other_failure"), NOT_CONFIRMED),
-        ("artifact", R("reproduced", "ZeroDivisionError"), ESBMC_MISSED),
-        ("artifact", R("not_reproduced"), NOT_CONFIRMED),
+        ("artifact", R("reproduced", "ZeroDivisionError"), BOUND_INCONCLUSIVE),
+        ("artifact", R("not_reproduced"), BOUND_INCONCLUSIVE),
         ("timeout", R("not_reproduced"), ESBMC_TIMEOUT),
         ("missing_dependency", R("unavailable"), MISSING_DEPENDENCY),
         ("repairable", R("unavailable"), UNSUPPORTED),

@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 
 from .esbmc_run import check
-from .outcome import ESBMC_MISSED, NOT_CONFIRMED, final_verdict
+from .outcome import BOUND_INCONCLUSIVE, ESBMC_MISSED, NOT_CONFIRMED, final_verdict
 from .replay import concrete_replay
 from .validation import program_for_result, replay_program_path
 
@@ -105,7 +105,7 @@ def pinned_check(result: dict, *, work_dir: Path, esbmc: str, bound: int, timeou
                                        work_dir=case_dir)
     replay = concrete_replay(program, hypothesis["function"].split(".")[-1], inputs=inputs)
     verdict = final_verdict(reading, replay)
-    if verdict in {NOT_CONFIRMED, ESBMC_MISSED}:
+    if verdict in {NOT_CONFIRMED, ESBMC_MISSED, BOUND_INCONCLUSIVE}:
         verdict = PINNED_SAFE  # may be no path at all: never a safety verdict
     return {"verdict": verdict, "reason": reading.message, "inputs": inputs, "replay": replay.to_dict(),
             "esbmc_status": esbmc_result.status, "pinned_path": str(path), **how}

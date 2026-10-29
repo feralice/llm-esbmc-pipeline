@@ -42,7 +42,7 @@ def value_verdict(reading: EsbmcReading, property_hit: bool, replay: ReplayVerdi
         if replay.status == "property_violated":
             return VALUE_VIOLATION if property_hit else UNVALIDATED
         return OTHER_FAILURE if replay.status in {"reproduced", "other_failure"} else UNVALIDATED
-    if reading.kind in {"safe", "artifact"}:
+    if reading.kind == "safe":
         return ESBMC_MISSED if replay.status == "property_violated" else NOT_CONFIRMED
     return final_verdict(reading, replay)
 
