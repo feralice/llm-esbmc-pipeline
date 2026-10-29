@@ -1049,6 +1049,43 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   reescrita do corpo. No nm_real_12 o `PamdRule` real não chama `super().__init__`, então o `AttributeError` é do
   código real e o ESBMC o perde (reprodutor 56).
 
+## Fase 30 (28/10): Tarefa 10 passo 4, braço de agente na amostra de 30 (1a medição de S2)
+
+- **Pergunta:** com o portão de fidelidade (S1), as regras 10 e 11 e a segunda tentativa, quantos bugs da amostra
+  de 30 o agente faz o ESBMC confirmar com o corpo da função intacto?
+- **Casos:** `dataset/bugs_reais/amostra_harness.json` (30 hipóteses).
+- **Pasta:** `artifacts/v2/tarefa10-passo4-2026-10-28/` (fora do git), com `relatorio.md` gerado por
+  `scripts/v2_run_report.py`. Código no início: commit `eacaa0d` (skill `regras-harness` versão 3). Modelo
+  `claude-sonnet-5-5` via `claude -p` (assinatura). ESBMC: master `4a356e33eb` (`build-bw`, Bitwuzla).
+- **Comando:** `scripts/v2_agent_arm.py --sample dataset/bugs_reais/amostra_harness.json --backend claude --model
+  claude-sonnet-5-5 --project-skills --log-rounds --retry --differential --pytest --agent-timeout 1500`.
+- **Ressalvas:** a rodada caiu no caso 8 com o reinício da sessão e foi retomada; o replay ganhou a tradução
+  das funções `__ESBMC_*` (`5be80a0`) no meio dela, porque roda em processo separado. Sem o controle da versão
+  corrigida: o script não passava o arquivo (ligado depois, em `154485d`). Os 2 ESBMC_MISSED eram só limite de
+  laço; no código de hoje seriam `BOUND_INCONCLUSIVE` (`b31bf1f`).
+- **Métrica final: 3 bugs do gabarito confirmados** (Fase 29: 0 em 5): nm_real_23 (`TypeError` em
+  `tag in html_classes_from_tag`), oob_real_02 (`IndexError` em `command.script.split()[1]`) e av_real_02
+  (`AssertionError` em `assert self.stream is not None`). Um 4o CONFIRMED, ip_real_33, é outra exceção (`TypeError`
+  com um inteiro no lugar de um caminho de arquivo): entrada provavelmente inválida, vai para auditoria manual.
+- **Vereditos:** 4 CONFIRMED, 15 UNSUPPORTED, 3 UNVALIDATED, 3 AGENT_FAILED, 2 ESBMC_MISSED, 1 ESBMC_TIMEOUT,
+  1 STUB_INDUCED (bip_thefuck_3, barrado pelo controle de stub), 1 NOT_CONFIRMED.
+- **Preservação:** corpo intacto em 24 de 30, alterado em 3, não medido em 3 (agente sem harness). Segunda
+  tentativa em 13 casos. ESBMC travou na última chamada do agente em 3.
+- **Pytest:** nenhum dos 4 confirmados teve pytest do ESBMC ("harness shape not recognised"); o teste a partir
+  do replay entrou depois, em `154485d`.
+- **Caso `gamma` (ir_real_01):** UNVALIDATED porque o stub usou `__ESBMC_sqrt` e o replay não a conhecia. Reavaliado
+  com `5be80a0`, vira CONFIRMED (`OverflowError` com `x = 249.5`), mas o `math.gamma(249.5)` do Python também
+  levanta `OverflowError` e o bug do gabarito é de resultado errado: não conta.
+- **Triagem dos não confirmados (reprodutores 60 a 66):** lista dentro de dict, `or` com atributo inexistente
+  (e um falso negativo silencioso, o 62), `__getitem__` com tupla num atributo (segfault), lambda em método,
+  parâmetro reatribuído a `dict.get()`, desempacotar `__getitem__` de atributo. Rascunhos em
+  `possiveis_problemas/issues/`, nada postado. Dois casos de limite: o `fast_float` precisa de limite 33 num laço
+  do próprio harness; o `luigi` para no `list.insert` sobre lista de tamanho simbólico (nem com 200 passa).
+- **JSON inválido na detecção:** 0 em 1.080 chamadas do `claude_cli` (`llm_telemetry.json` das pastas
+  `artifacts/v2/det-*`, medido em 28/10). A estratégia de filtrar e pedir de novo não é necessária.
+- **Falta (S6):** refazer com o plano A (`154485d`) e a versão corrigida ligada; o braço do motor de regras
+  (reavaliado com `scripts/v2_agent_reverify.py`) ainda não foi rodado na amostra.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
