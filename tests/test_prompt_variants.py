@@ -347,3 +347,20 @@ def test_a19_without_calls_into_the_file_adds_nothing(tmp_path: Path) -> None:
     path.write_text("def f(x):\n    return len(x)\n", encoding="utf-8")
     unit = _unit(path, "def f(x):\n    return len(x)\n")
     assert "UNTRUSTED_CONTEXT_CALLEES" not in build_user_prompt(unit, include_smells=False, v2_variants=("A19",))
+
+
+def test_a20_sends_caller_slices_and_is_not_larger_than_a12_on_a_single_function_file(tmp_path: Path) -> None:
+    single = tmp_path / "one.py"
+    single.write_text("def scale(tag):\n    return 10 / len(tag)\n", encoding="utf-8")
+    unit = _unit(single, "def scale(tag):\n    return 10 / len(tag)\n", name="scale")
+    a12 = build_user_prompt(unit, include_smells=False, v2_variants=("A12",))
+    a20 = build_user_prompt(unit, include_smells=False, v2_variants=("A20",))
+    assert len(apply_variants(BASE, ("A20",))) + len(a20) <= len(apply_variants(BASE, ("A12",))) + len(a12)
+    full = tmp_path / "m.py"
+    full.write_text("def scale(tag):\n    return 10 / len(tag)\n\n\ndef parse(line):\n    parts = line.split(',')\n"
+                    "    noise = 1\n    return scale(parts[0])\n", encoding="utf-8")
+    prompt = build_user_prompt(_unit(full, "def scale(tag):\n    return 10 / len(tag)\n", name="scale"),
+                               include_smells=False, v2_variants=("A20",))
+    sliced = prompt.split("<UNTRUSTED_CONTEXT_CALLER_SLICES>")[1]
+    assert "parts = line.split(',')" in sliced and "noise" not in sliced
+    assert "## CALLER SLICES" in apply_variants(BASE, ("A20",))

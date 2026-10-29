@@ -1,0 +1,8 @@
+## CALLER SLICES
+
+After the function comes an `UNTRUSTED_CONTEXT_CALLER_SLICES` block from the repository's call
+graph: for each call, only the caller's lines its arguments depend on, the if/while/for/try lines
+around them, the call itself, and the caller parameters that feed it (values from further up, any
+value compatible with their use). Use it to decide which values reach the parameters: does the
+caller already filter or convert them? No block means no call was found. Do not report findings
+about the callers' code.

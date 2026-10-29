@@ -27,7 +27,9 @@ from research_pipeline.verify.esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 
-COMPARED_FIELDS = ("fixed_sources", "backend", "plugin", "isolated", "notes", "model", "plugin_command", "allow_simplify",
+# Flags added after earlier runs: a result recorded before the flag existed ran with it off.
+OFF_BY_DEFAULT = {"graph_tool": False}
+COMPARED_FIELDS = ("graph_tool", "fixed_sources", "backend", "plugin", "isolated", "notes", "model", "plugin_command", "allow_simplify",
                    "differential", "pytest", "log_rounds", "esbmc_commit", "skills", "bound", "timeout",
                    "agent_timeout", "retry")
 DEFAULT_VERDICTS = ",".join(sorted(AGENT_VERDICTS))
@@ -127,6 +129,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="differential test of a confirmation against the original (default: on)")
     parser.add_argument("--pytest", action=argparse.BooleanOptionalAction, default=True,
                         help="run ESBMC's generated pytest for a confirmation (default: on)")
+    parser.add_argument("--graph-tool", action="store_true",
+                        help="install graph.py, the call graph of original.py the agent can query (plan B, item 7)")
     parser.add_argument("--fixed-sources", default="dataset/bugs_reais/arquivo_corrigido",
                         help="fixed versions, one file per buggy file name: the control a confirmation must pass")
     parser.add_argument("--sample", default="", help="fixed sample (e.g. dataset/bugs_reais/amostra_harness.json): "
@@ -163,21 +167,22 @@ def main(argv: list[str] | None = None) -> int:
                "model": args.model, "plugin_command": args.plugin_command,
                "allow_simplify": args.allow_simplify, "retry": args.retry, "differential": args.differential, "pytest": args.pytest,
                "log_rounds": args.log_rounds, "bound": args.bound, "timeout": args.timeout,
-               "agent_timeout": args.agent_timeout, "fixed_sources": args.fixed_sources, **esbmc_identity(args.esbmc),
+               "agent_timeout": args.agent_timeout, "fixed_sources": args.fixed_sources, "graph_tool": args.graph_tool, **esbmc_identity(args.esbmc),
                "skills": skill_versions() if args.project_skills else {}}
     if variant["esbmc_commit"] is None:
         print("warning: no 'ESBMC built from' string in the binary; this run will not record the ESBMC build commit",
               file=sys.stderr)
     # Every compared field, so a result recorded before a field existed is not taken as agreeing with it.
     differing = sorted({key for r in done for key in COMPARED_FIELDS
-                        if variant.get(key) != r.get("variant", {}).get(key)})
+                        if variant.get(key) != r.get("variant", {}).get(key, OFF_BY_DEFAULT.get(key))})
     if differing:
         print(f"refusing to resume {results_path}: its results came from another engine; "
               f"differing fields: {', '.join(differing)}", file=sys.stderr)
         return 2
     agent, skill = make_agent(args.backend, model=args.model, esbmc=args.esbmc, bound=args.bound,
                               plugin=not args.no_plugin, isolated=not args.not_isolated, rounds=args.rounds,
-                              base_url=args.base_url, log_rounds=args.log_rounds)
+                              base_url=args.base_url, log_rounds=args.log_rounds,
+                              graph_tool=args.graph_tool)
     notes = Path(args.notes) if args.notes else (None if args.backend == "claude" else NOTES_PATH)
     sources = Path(args.verification_sources) if args.verification_sources else None
     root = esbmc_root_of([args.esbmc]) if args.log_rounds else None
@@ -194,7 +199,8 @@ def main(argv: list[str] | None = None) -> int:
                                notes=notes, plugin_command=args.plugin_command if args.backend == "claude" else "",
                                allow_simplify=args.allow_simplify, project_skills=args.project_skills,
                                log_rounds=args.log_rounds, differential=args.differential, pytest=args.pytest,
-                               knowledge_index=knowledge, retry=args.retry, fixed_path=fixed)
+                               knowledge_index=knowledge, retry=args.retry, fixed_path=fixed,
+                               graph_tool=args.graph_tool)
         result["engine_verdict"], result["variant"] = previous, variant
         result["fixed_control"] = "ran" if fixed else "missing"
         print(f"    -> {result['verdict']} preserved={result['target_preserved']} {result['reason'][:100]}", flush=True)

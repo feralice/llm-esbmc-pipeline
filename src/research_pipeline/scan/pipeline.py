@@ -25,6 +25,12 @@ from ..verify.outcome import CONFIRMED
 from ..verify.report import summarize
 from .callgraph import CallGraph, build_callgraph
 from .context import caller_context
+from .graph_metrics import (
+    architecture_smells,
+    envy_candidates,
+    feature_envy_metrics,
+    pagerank,
+)
 
 # A5 (the benchmark's detection prompt) plus the repository call sites.
 DEFAULT_VARIANTS = ("A1", "A2", "A12")
@@ -43,10 +49,12 @@ class Target:
     callers: int
     risky_operations: int
     unit: CodeUnit = field(repr=False)
+    centrality: float | None = None  # only measured with rank="pagerank"
 
     def to_dict(self) -> dict:
         return {"key": self.key, "file": self.file, "function": self.qualname, "line": self.start_line,
-                "callers": self.callers, "risky_operations": self.risky_operations}
+                "callers": self.callers, "risky_operations": self.risky_operations,
+                "centrality": None if self.centrality is None else round(self.centrality, 6)}
 
 
 @dataclass
@@ -58,9 +66,10 @@ class ScanPlan:
     variants: tuple[str, ...]
     estimated_tokens: int
     candidates_total: int
+    rank: str = "callers"
 
     def to_dict(self) -> dict:
-        return {"root": str(self.root), "variants": list(self.variants), "candidates_total": self.candidates_total,
+        return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "candidates_total": self.candidates_total,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets]}
 
@@ -78,16 +87,18 @@ def _units_by_location(graph: CallGraph) -> dict[tuple[str, int], CodeUnit]:
     return units
 
 
-def rank_key(target: Target) -> tuple:
+def rank_key(target: Target, rank: str = "callers") -> tuple:
     """Functions with a division or subscript first: the crashes ESBMC-Python checks live there. Then the
-    most called (more impact, and more caller context for the prompt), then source order for determinism."""
-    return (target.risky_operations == 0, -target.callers, -target.risky_operations, target.file,
-            target.start_line)
+    most called (more impact, and more caller context for the prompt), or with ``pagerank`` the most
+    central, then source order for determinism."""
+    importance = -(target.centrality or 0.0) if rank == "pagerank" else -target.callers
+    return (target.risky_operations == 0, importance, -target.risky_operations, target.file, target.start_line)
 
 
-def select_targets(graph: CallGraph, *, limit: int | None = None) -> tuple[list[Target], int]:
+def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "callers") -> tuple[list[Target], int]:
     """Returns the selection and how many functions were eligible before ``limit``."""
     units = _units_by_location(graph)
+    scores = pagerank(graph) if rank == "pagerank" else {}
     targets = []
     for function in graph.functions.values():
         unit = units.get((function.file, function.start_line))
@@ -96,8 +107,9 @@ def select_targets(graph: CallGraph, *, limit: int | None = None) -> tuple[list[
         unit = replace(unit, caller_context=caller_context(graph, function.key))
         risky = sum(1 for op in unit.operations if op.kind in _RISKY_KINDS)
         targets.append(Target(function.key, str(graph.root / function.file), function.qualname,
-                              function.start_line, len(graph.callers(function.key)), risky, unit))
-    targets.sort(key=rank_key)
+                              function.start_line, len(graph.callers(function.key)), risky, unit,
+                              scores.get(function.key, 0.0) if rank == "pagerank" else None))
+    targets.sort(key=lambda target: rank_key(target, rank))
     return (targets[:limit] if limit else targets), len(targets)
 
 
@@ -108,12 +120,19 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 
 
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
-              variants: tuple[str, ...] = DEFAULT_VARIANTS) -> ScanPlan:
+              variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False) -> ScanPlan:
     graph = build_callgraph(root, include_tests=include_tests)
-    targets, total = select_targets(graph, limit=limit)
-    plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total)
+    targets, total = select_targets(graph, limit=limit, rank=rank)
+    plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
+                    rank)
     plan.output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
+    if smells:
+        # No ground truth for smells: the file says so, and nothing here counts as a measured result.
+        _write_json(plan.output_dir / "scan_smells.json", {
+            "exploratory": True, "architecture": architecture_smells(graph),
+            "feature_envy": [{"method": key, "metrics": feature_envy_metrics(graph, key)}
+                             for key in envy_candidates(graph)]})
     _write_json(plan.output_dir / "scan_selection.json", plan.to_dict())
     stats = graph.stats()
     print(f"Grafo de {graph.root}: {stats['modules']} módulo(s), {stats['skipped_files']} ignorado(s) por erro, "
@@ -237,3 +256,29 @@ def _write_json(path: Path, payload: object) -> None:
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     tmp.replace(path)
+
+
+_ENVY_PROMPT = Path(__file__).resolve().parents[1] / "prompts" / "smell_feature_envy.txt"
+
+
+def judge_smells(plan: ScanPlan, llm) -> dict:
+    """Ask the LLM about each Feature Envy candidate in scan_smells.json, with the method, its class and the
+    graph metrics (iSMELL, ASE 2024); the answers are written back to the same file."""
+    path = plan.output_dir / "scan_smells.json"
+    report = json.loads(path.read_text(encoding="utf-8"))
+    system = _ENVY_PROMPT.read_text(encoding="utf-8")
+    for entry in report["feature_envy"]:
+        if "llm" in entry and "error" not in entry["llm"]:
+            continue  # answered by an earlier run: asking again only spends the API
+        function = plan.graph.functions[entry["method"]]
+        lines = plan.graph.sources.get(function.file, [])
+        user = (f"<UNTRUSTED_PYTHON_METHOD>\n{chr(10).join(lines[function.start_line - 1:function.end_line])}\n"
+                f"</UNTRUSTED_PYTHON_METHOD>\n\nClass: {function.class_qualname}\n\n"
+                f"Metrics: {json.dumps(entry['metrics'])}\n")
+        try:
+            answer = json.loads(llm.complete(system, user, json_mode=True).raw_response)
+            entry["llm"] = answer if isinstance(answer, dict) else {"error": f"not a JSON object: {answer!r}"[:300]}
+        except Exception as exc:  # noqa: BLE001 - each backend raises its own errors; one must not lose the rest
+            entry["llm"] = {"error": f"{type(exc).__name__}: {exc}"[:300]}
+        _write_json(path, report)
+    return report

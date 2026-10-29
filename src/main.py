@@ -49,7 +49,7 @@ from research_pipeline.llm.prompts import (
 )
 from research_pipeline.llm.schema import v2_findings_schema
 from research_pipeline.preprocess import preprocess_file
-from research_pipeline.scan.pipeline import execute_scan, plan_scan
+from research_pipeline.scan.pipeline import execute_scan, judge_smells, plan_scan
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.capabilities import resolve_rules
 from research_pipeline.verify.hypothesis import VALUE_ORACLE, BugHypothesis
@@ -303,6 +303,12 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Modo scan: analisa só as N primeiras funções do ranking (padrão: todas).")
     parser.add_argument("--scan-include-tests", action="store_true",
                         help="Modo scan: inclui arquivos e pastas de teste no grafo e na seleção.")
+    parser.add_argument("--scan-rank", choices=("callers", "pagerank"), default="callers",
+                        help="Modo scan: ordena as funções pelo número de chamadores (padrão) ou pela centralidade "
+                             "no grafo (PageRank).")
+    parser.add_argument("--scan-smells", action="store_true",
+                        help="Modo scan: smells de arquitetura pelo grafo e candidatos a Feature Envy em "
+                             "scan_smells.json; com --yes, o LLM julga cada candidato (exploratório, sem gabarito).")
     parser.add_argument("--yes", action="store_true",
                         help="Modo scan: confirma o gasto com a LLM; sem ele, só monta o grafo e a seleção.")
     return parser
@@ -705,7 +711,12 @@ def mode_scan(args: argparse.Namespace) -> int:
         print("O modo scan recebe um único diretório de repositório em --input.", file=sys.stderr)
         return 1
     plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
-                     include_tests=args.scan_include_tests)
+                     include_tests=args.scan_include_tests, rank=args.scan_rank,
+                     smells=args.scan_smells)
+    if args.scan_smells and not args.yes:
+        smells = json.loads((plan.output_dir / "scan_smells.json").read_text(encoding="utf-8"))
+        print(f"Smells: {len(smells['architecture'])} de arquitetura; {len(smells['feature_envy'])} candidato(s) a "
+              "Feature Envy, cada um uma chamada à LLM com --yes.")
     if not args.yes:
         print(f"Simulação: nenhuma chamada à LLM. Seleção em {plan.output_dir / 'scan_selection.json'}; "
               "rode de novo com --yes para gastar as chamadas.")
@@ -728,6 +739,8 @@ def mode_scan(args: argparse.Namespace) -> int:
     if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
         args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
     try:
+        if args.scan_smells:
+            judge_smells(plan, spec_llm)
         report = execute_scan(plan, analyzer=analyzer, spec_llm=spec_llm, resume=args.resume,
                               esbmc_command=args.esbmc_command, bound=args.bound, timeout_seconds=args.timeout,
                               strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph,

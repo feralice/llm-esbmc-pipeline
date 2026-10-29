@@ -595,3 +595,36 @@ def test_reachability_probe_runs_with_the_library_unwinding(tmp_path, monkeypatc
     harness = PRESERVED.replace("    ratio(t, c)", "    if c != 0:\n        ratio(t, c)")
     _evaluate(tmp_path, harness)
     assert seen and seen[0][-2:] == ["--unwindsetname", "strlen:0:64"]
+
+
+@pytest.mark.parametrize("graph_tool", [True, False])
+def test_graph_tool_is_installed_and_named_in_the_prompt(tmp_path, monkeypatch, graph_tool):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    prompts = []
+
+    def agent(prompt, cwd, timeout):
+        prompts.append(prompt)
+        (cwd / "harness.py").write_text(PRESERVED, encoding="utf-8")
+        return "DONE"
+
+    h = _hypothesis(tmp_path)
+    run_agent_arm(h, work_dir=tmp_path / "work", run_agent=agent, esbmc_command=["esbmc"], bound=5,
+                  timeout_seconds=30, graph_tool=graph_tool)
+    case = tmp_path / "work" / h.hypothesis_id
+    assert (case / "graph.py").exists() is graph_tool and (case / "graph.json").exists() is graph_tool
+    assert ("python3 graph.py" in prompts[0]) is graph_tool
+
+
+@pytest.mark.parametrize("graph_tool", [True, False])
+def test_claude_agent_may_run_graph_py_only_with_the_graph_tool(tmp_path, monkeypatch, graph_tool):
+    seen = []
+    monkeypatch.setattr(agent_arm, "run_group", lambda command, **kw: seen.append(command) or None)
+    run = agent_arm.claude_agent(esbmc="/x/esbmc", graph_tool=graph_tool)
+    with pytest.raises(Exception):
+        run("p", tmp_path, 1)
+    assert ("Bash(python3 graph.py:*)" in seen[0]) is graph_tool
+
+
+def test_api_agent_refuses_the_graph_tool():
+    with pytest.raises(ValueError, match="graph"):
+        agent_arm.make_agent("openai", model="m", esbmc="esbmc", bound=5, graph_tool=True)

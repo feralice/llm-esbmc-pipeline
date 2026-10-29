@@ -176,3 +176,86 @@ def test_cli_with_yes_runs_detection_and_verify(tmp_path: Path, monkeypatch) -> 
 def test_cli_rejects_more_than_one_input(tmp_path: Path, monkeypatch) -> None:
     root = _repo(tmp_path)
     assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(root), str(root)]) == 1
+
+
+def test_select_targets_by_pagerank_keeps_risky_first(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out", rank="pagerank")
+    names = [t.qualname for t in plan.targets]
+    assert names[-1] == "label" and set(names[:2]) == {"ratio", "first"}
+    assert plan.targets[0].centrality >= plan.targets[1].centrality
+    selection = json.loads((tmp_path / "out" / "scan_selection.json").read_text(encoding="utf-8"))
+    assert selection["rank"] == "pagerank" and "centrality" in selection["targets"][0]
+
+
+def test_default_rank_is_unchanged(tmp_path: Path) -> None:
+    assert [t.qualname for t in plan_scan(_repo(tmp_path), tmp_path / "out").targets] == \
+        ["ratio", "first", "mean", "head", "label"]
+
+
+def test_cli_scan_rank_reaches_the_selection(tmp_path: Path, monkeypatch) -> None:
+    out = tmp_path / "out"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir", str(out),
+                                   "--backend", "openai", "--scan-rank", "pagerank"]) == 0
+    assert json.loads((out / "scan_selection.json").read_text(encoding="utf-8"))["rank"] == "pagerank"
+
+
+def test_scan_smells_sends_only_candidates_to_the_llm(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+
+    from research_pipeline.scan.pipeline import judge_smells
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "loja.py").write_text("class Pedido:\n    def total(self, c):\n        return c.a + c.b\n\n"
+                                  "    def ok(self):\n        return self.x\n", encoding="utf-8")
+    plan = plan_scan(root, tmp_path / "out", smells=True)
+    asked = []
+
+    class LLM:
+        def complete(self, system, user, *, json_mode=False):
+            asked.append(user)
+            return SimpleNamespace(raw_response='{"feature_envy": true, "move_to": "c", "reason": "uses c"}')
+
+    report = judge_smells(plan, LLM())
+    assert len(asked) == 1 and "total" in asked[0]
+    saved = json.loads((tmp_path / "out" / "scan_smells.json").read_text(encoding="utf-8"))
+    assert saved["exploratory"] is True and saved["feature_envy"][0]["llm"]["move_to"] == "c" == \
+        report["feature_envy"][0]["llm"]["move_to"]
+
+
+def test_cli_scan_smells_dry_run_writes_the_candidates_without_an_llm(tmp_path: Path, monkeypatch) -> None:
+    out = tmp_path / "out"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir", str(out),
+                                   "--backend", "openai", "--scan-smells"]) == 0
+    saved = json.loads((out / "scan_smells.json").read_text(encoding="utf-8"))
+    assert saved["exploratory"] is True and saved["architecture"] == [] and saved["feature_envy"] == []
+
+
+def test_judge_smells_saves_each_answer_and_resumes_without_asking_again(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+
+    from research_pipeline.scan.pipeline import judge_smells
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "loja.py").write_text("class P:\n    def a(self, c):\n        return c.x + c.y\n\n"
+                                  "    def b(self, d):\n        return d.x + d.y\n", encoding="utf-8")
+    plan = plan_scan(root, tmp_path / "out", smells=True)
+    asked = []
+
+    class Flaky:
+        def complete(self, system, user, *, json_mode=False):
+            asked.append(user)
+            if len(asked) == 2:
+                raise KeyError("backend broke")
+            return SimpleNamespace(raw_response='{"feature_envy": true, "move_to": "c", "reason": "r"}')
+
+    report = judge_smells(plan, Flaky())
+    assert "error" in report["feature_envy"][1]["llm"]
+    asked.clear()
+    judge_smells(plan, Flaky())
+    assert len(asked) == 1  # only the entry that failed is asked again
+
+
+def test_default_selection_does_not_report_a_centrality_it_never_measured(tmp_path: Path) -> None:
+    plan_scan(_repo(tmp_path), tmp_path / "out")
+    selection = json.loads((tmp_path / "out" / "scan_selection.json").read_text(encoding="utf-8"))
+    assert selection["targets"][0]["centrality"] is None

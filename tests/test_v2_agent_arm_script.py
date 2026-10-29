@@ -167,3 +167,16 @@ def test_resume_refuses_results_recorded_before_a_compared_field_existed(script,
     argv = ["--esbmc", str(esbmc_checkout), "--out", str(tmp_path / "out"), "--verdicts", "AGENT_NEEDED",
             "--report", str(report)]
     assert script.main(argv) == 2
+
+
+def test_graph_tool_flag_reaches_the_arm(script, tmp_path, esbmc_checkout, calls):
+    results = _run(script, tmp_path, esbmc_checkout, "--graph-tool", report=_report(tmp_path / "report.json", ["a"]))
+    assert calls[0][1]["graph_tool"] is True and results[0]["variant"]["graph_tool"] is True
+
+
+def test_resume_reads_a_missing_off_by_default_flag_as_off(script, tmp_path, esbmc_checkout, calls):
+    report = _report(tmp_path / "report.json", ["a", "b"])
+    results = _run(script, tmp_path, esbmc_checkout, "--limit", "1", report=report)
+    del results[0]["variant"]["graph_tool"]
+    (tmp_path / "out" / "agent_results.json").write_text(json.dumps(results), encoding="utf-8")
+    assert len(_run(script, tmp_path, esbmc_checkout, report=report)) == 2

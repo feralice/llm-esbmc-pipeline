@@ -195,13 +195,19 @@ def _callees(prompt: str) -> str:
     return _swap("A19", prompt, "## OUTPUT: valid JSON", _CALLEES + "\n## OUTPUT: valid JSON")
 
 
+def _caller_slices(prompt: str) -> str:
+    slices = (_DIR / "A20_fatias_chamadores.txt").read_text(encoding="utf-8")
+    return _swap("A20", prompt, "## OUTPUT: valid JSON", slices + "\n## OUTPUT: valid JSON")
+
+
 VARIANTS: dict[str, Callable[[str], str]] = {"A1": _report_without_context, "A2": _input_checklist, "A3": _ranked,
                                              "A6": _any_wrong_behaviour, "A7": _reason_first,
                                              "A8": _worked_examples, "A9": _cause_and_crash,
                                              "A10": _keep_docstring, "A11": _file_context,
                                              "A12": _repo_callers, "A13": _real_examples, "A14": _quoted_evidence,
                                              "A15": _wrong_result, "A16": _consistency,
-                                             "A17": _real_names, "A18": _valid_input, "A19": _callees}
+                                             "A17": _real_names, "A18": _valid_input, "A19": _callees,
+                                             "A20": _caller_slices}
 
 
 def apply_variants(prompt: str, names: tuple[str, ...]) -> str:

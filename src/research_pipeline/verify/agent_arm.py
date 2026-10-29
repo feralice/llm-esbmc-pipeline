@@ -23,6 +23,7 @@ from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
 from .astutil import body_signature, expression_nodes, find_function
 from .context import context_module
+from .graph_tool import write_graph
 from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, load_index, lookup
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
@@ -77,6 +78,9 @@ the suspect expression. Classes you write for the inputs must support every oper
 applies to them (len, iteration, indexing, comparison) and must not raise: an exception raised inside
 your stubs, or caused by an operation a stub lacks, is rejected as an artefact of the harness.
 """
+_GRAPH_TOOL = ("Before writing a stub, ask the call graph of original.py how the code really uses a name: "
+               "`python3 graph.py callers NAME`, `callees NAME`, `class NAME`, `where NAME`. Build stubs and inputs "
+               "from what real callers pass.\n")
 _SKILL_RULES = "Follow the regras-harness and reparos-aprendidos skills to write harness.py here.\n"
 _PROMPT = """{skill}In this directory, original.py is real production code.
 {notes}
@@ -104,8 +108,9 @@ def skill_versions(skills_dir: Path = SKILLS_DIR) -> dict[str, str]:
 
 def claude_agent(claude_command: str = "claude", model: str | None = None,
                  esbmc: str = DEFAULT_ESBMC, *, plugin: bool = True, isolated: bool = True,
-                 log_rounds: bool = False) -> RunAgent:
-    """``log_rounds`` puts the case folder's recording ``esbmc`` (run_agent_arm installs it) first on PATH.
+                 log_rounds: bool = False, graph_tool: bool = False) -> RunAgent:
+    """``graph_tool`` lets the agent run the case folder's graph.py (run_agent_arm installs it).
+    ``log_rounds`` puts the case folder's recording ``esbmc`` (run_agent_arm installs it) first on PATH.
     ``isolated`` loads no user settings (globally enabled plugins, hooks), so the ESBMC plugin is
     present exactly when ``plugin`` asks for it: the variants of an experiment differ in one thing."""
     def run(prompt: str, cwd: Path, timeout_seconds: int) -> str:
@@ -115,6 +120,7 @@ def claude_agent(claude_command: str = "claude", model: str | None = None,
                    # Plain `esbmc` (the plugin's commands; the prompt under log_rounds) resolves through PATH
                    # below: the case's recording facade first when log_rounds, then this binary's folder.
                    "--allowedTools", "Read", "Write", "Edit", f"Bash({esbmc}:*)", "Bash(esbmc:*)", "Bash(which:*)",
+                   *(["Bash(python3 graph.py:*)"] if graph_tool else []),
                    *(["Skill", "Agent", "Task"] if plugin else []),
                    "--permission-mode", "acceptEdits"]
         if model:
@@ -215,7 +221,7 @@ def run_agent_arm(
     skill: bool = True, notes: Path | None = None, plugin_command: str = "", allow_simplify: bool = False,
     fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
     log_rounds: bool = False, differential: bool = True, pytest: bool = True,
-    knowledge_index: KnowledgeIndex | None = None, retry: bool = False,
+    knowledge_index: KnowledgeIndex | None = None, retry: bool = False, graph_tool: bool = False,
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
@@ -227,7 +233,8 @@ def run_agent_arm(
     hinted from ``knowledge_index``;
     ESBMC_CRASH looks only at the agent's last recorded call (conservative: it may drop a confirmation);
     ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest;
-    ``retry`` gives the agent one more attempt, told why, when retry_reason finds a harness defect."""
+    ``retry`` gives the agent one more attempt, told why, when retry_reason finds a harness defect;
+    ``graph_tool`` installs graph.py, the call graph of original.py the agent can query."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -250,7 +257,7 @@ def run_agent_arm(
         result["skills"] = install_project_skills(case_dir)
     for stale in ("rounds", "pytest"):  # a restarted case must not inherit an earlier attempt's artifacts
         shutil.rmtree(case_dir / stale, ignore_errors=True)
-    for stale in ["harness.py", *(p.name for p in case_dir.glob("plugin_*.md"))]:
+    for stale in ["harness.py", "graph.py", "graph.json", *(p.name for p in case_dir.glob("plugin_*.md"))]:
         (case_dir / stale).unlink(missing_ok=True)
     if log_rounds:
         install_round_logger(case_dir, esbmc_command or [DEFAULT_ESBMC], knowledge_index)
@@ -260,6 +267,9 @@ def run_agent_arm(
                             function=h.function, expression=h.suspect_expression,
                             trigger=h.trigger_condition or "not given", bound=bound,
                             esbmc="esbmc" if log_rounds else (esbmc_command or ["esbmc"])[0])
+    if graph_tool:
+        write_graph(case_dir, original)
+        prompt += _GRAPH_TOOL
     try:
         result["agent_output"] = run_agent(prompt, case_dir, agent_timeout)[-1000:]
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -575,13 +585,15 @@ _DEFAULT_URLS = {"google": "https://generativelanguage.googleapis.com/v1beta/ope
 
 def make_agent(backend: str, *, model: str | None, esbmc: str, bound: int, plugin: bool = True,
                isolated: bool = True, rounds: int = 8, base_url: str | None = None,
-               log_rounds: bool = False) -> tuple[RunAgent, bool]:
+               log_rounds: bool = False, graph_tool: bool = False) -> tuple[RunAgent, bool]:
     """The agent for ``backend``: "claude" is Claude Code with the ESBMC plugin; any LLMClient backend
     (openai, google, ollama, claude_cli, anthropic, codex) runs the API loop. Returns it and whether the prompt may name
     the plugin's skill (only Claude Code has it)."""
     if backend == "claude":
         return claude_agent(model=model, esbmc=esbmc, plugin=plugin, isolated=isolated,
-                            log_rounds=log_rounds), plugin
+                            log_rounds=log_rounds, graph_tool=graph_tool), plugin
+    if graph_tool:
+        raise ValueError("the graph tool needs an agent that runs commands; only the claude backend does")
     from .llm_client import LLMClient  # only the API agent needs a client (and its key)
 
     url = base_url or _DEFAULT_URLS.get(backend)

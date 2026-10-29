@@ -1086,6 +1086,22 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
 - **Falta (S6):** refazer com o plano A (`154485d`) e a versão corrigida ligada; o braço do motor de regras
   (reavaliado com `scripts/v2_agent_reverify.py`) ainda não foi rodado na amostra.
 
+## S5, plano B (28/10): grafo de chamadas, sem rodada
+
+- **O que entrou** (`docs/desenho/planos/2026-10-28-s5-plano-b-grafo.md`), tudo desligado por padrão:
+  `--scan-rank pagerank` (centralidade na ordenação do scan, Zimmermann e Nagappan, ICSE 2008); variante A20
+  (fatia dos chamadores: só as linhas de que os argumentos dependem e os `if`/`while`/`for`/`try` ao redor,
+  LLMxCPG, USENIX Security 2025); `--graph-tool` no braço de agente (`python3 graph.py callers|callees|class|where`,
+  LocAgent, ACL 2025; CKGFuzzer, ICSE 2025; só no backend `claude`); `--scan-smells` (ciclos e hubs entre módulos
+  pelo grafo, Arcan; Feature Envy com métricas no prompt e julgamento do LLM, iSMELL, ASE 2024).
+- **Como medir no S6:** A20 entra na comparação pareada do S3 contra A5 e A19; `--graph-tool` vira uma variante do
+  S2 na amostra de 30; `--scan-rank pagerank` e `--scan-smells` só no piloto do scan (AWS). Smells não têm
+  gabarito: o `scan_smells.json` sai marcado como exploratório.
+- **Revisão independente:** um crítico (o agente não tinha permissão para rodar `graph.py`) e seis importantes
+  (a fatia perdia o `if` que protege a chamada, pegava a chamada errada numa linha com duas, sumia com método de
+  docstring na coluna 0; Feature Envy contava módulos e listas locais; o julgamento não retomava; a retomada
+  recusava rodadas antigas), todos corrigidos com teste. Suíte: 1.298 testes.
+
 ## Resultado consolidado (até 06/10)
 
 Bugs do gabarito confirmados na linha (causa ou quebra), ESBMC mais CPython, função preservada:
