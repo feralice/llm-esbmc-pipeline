@@ -189,3 +189,25 @@ def test_variants_of_a_string_constant_join_the_replay_domain():
     program = Program(CONTAINS, 7, ((3, 3),), (), target_range=(1, 3))
     verdict = concrete_replay(program, "match")
     assert (verdict.status, verdict.exception_type, verdict.line) == ("reproduced", "ValueError", 3)
+
+
+POW = '''def pow(x: float, y: float) -> float:
+    return __ESBMC_pow(x, y)
+
+
+def grow(x: float) -> float:
+    return pow(10.0, x)
+
+
+def main() -> None:
+    x: float = nondet_float()
+    grow(x)
+
+
+main()
+'''
+
+
+def test_stub_calling_an_esbmc_math_intrinsic_replays_as_math():
+    verdict = concrete_replay(_program(POW, 6), "grow", seeds={"int": [], "float": [400.0]})
+    assert (verdict.status, verdict.exception_type) == ("reproduced", "OverflowError")

@@ -6,6 +6,7 @@ Standalone script (run with ``python -I -S``): argv = program, config JSON, outp
 import __future__
 import io
 import json
+import math
 import random
 import signal
 import sys
@@ -110,6 +111,11 @@ def _next_vector(vector, sizes):
     return None
 
 
+# ESBMC's math model implements math.<name> as __ESBMC_<name>; a stub that calls one replays as math.
+_MATH_INTRINSICS = {f"__ESBMC_{name}": getattr(math, name) for name in dir(math)
+                    if not name.startswith("_") and callable(getattr(math, name))}
+
+
 def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
     domains = domains or DOMAINS
 
@@ -134,6 +140,7 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
         "assume": assume,
         "esbmc_assert": _esbmc_assert,
         "__ESBMC_assert": _esbmc_assert,
+        **_MATH_INTRINSICS,
     }
 
 
