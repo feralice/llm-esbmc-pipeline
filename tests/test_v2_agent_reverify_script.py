@@ -62,5 +62,5 @@ def test_reverify_measures_like_the_agent_arm(script, tmp_path, monkeypatch):
     assert not (run / "cases" / hypothesis_id / "pytest").exists()
     row = json.loads(out.read_text(encoding="utf-8"))[0]
     assert row["after"] == "CONFIRMED", row
-    assert row["pytest"]["status"] == "not_generated"
+    assert row["pytest"]["route"] == "replay" and row["pytest"]["status"] == "reproduces"
     assert row["differential"]["level"] == "stubs"

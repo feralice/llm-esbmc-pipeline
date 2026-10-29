@@ -139,3 +139,31 @@ def test_missing_build_commit_warns_on_stderr(script, tmp_path, esbmc_checkout, 
     esbmc_checkout.write_text("#!/bin/sh\necho v\n", encoding="utf-8")
     _run(script, tmp_path, esbmc_checkout, report=_report(tmp_path / "report.json", ["a"]))
     assert "build commit" in capsys.readouterr().err
+
+
+def test_fixed_source_reaches_the_arm(script, tmp_path, esbmc_checkout, calls):
+    fixed = tmp_path / "fixed"
+    fixed.mkdir()
+    (fixed / "a.py").write_text("def f(a, b):\n    return a // b if b else 0\n", encoding="utf-8")
+    results = _run(script, tmp_path, esbmc_checkout, "--fixed-sources", str(fixed),
+                   report=_report(tmp_path / "report.json", ["a"]))
+    assert calls[0][1]["fixed_path"] == fixed / "a.py"
+    assert results[0]["fixed_control"] == "ran"
+    assert results[0]["variant"]["fixed_sources"] == str(fixed)
+
+
+def test_missing_fixed_source_runs_without_control(script, tmp_path, esbmc_checkout, calls):
+    results = _run(script, tmp_path, esbmc_checkout, "--fixed-sources", str(tmp_path / "none"),
+                   report=_report(tmp_path / "report.json", ["a"]))
+    assert calls[0][1]["fixed_path"] is None
+    assert results[0]["fixed_control"] == "missing"
+
+
+def test_resume_refuses_results_recorded_before_a_compared_field_existed(script, tmp_path, esbmc_checkout, calls):
+    report = _report(tmp_path / "report.json", ["a", "b"])
+    results = _run(script, tmp_path, esbmc_checkout, "--limit", "1", report=report)
+    del results[0]["variant"]["fixed_sources"]
+    (tmp_path / "out" / "agent_results.json").write_text(json.dumps(results), encoding="utf-8")
+    argv = ["--esbmc", str(esbmc_checkout), "--out", str(tmp_path / "out"), "--verdicts", "AGENT_NEEDED",
+            "--report", str(report)]
+    assert script.main(argv) == 2

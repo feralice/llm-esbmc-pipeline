@@ -26,9 +26,9 @@ from .context import context_module
 from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, load_index, lookup
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
-from .esbmc_run import VERDICT_KINDS, check, esbmc_output
+from .esbmc_run import VERDICT_KINDS, check, esbmc_output, library_flags
 from .outcome import CONFIRMED, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS, final_verdict
-from .pytest_gen import esbmc_pytest, pytest_seeds
+from .pytest_gen import esbmc_pytest, pytest_seeds, replay_pytest, run_replay_test
 from .procs import run_group
 from .render import Program
 from .round_warnings import mypy_messages, round_warnings
@@ -51,6 +51,9 @@ FIXED_ALSO_FAILS = "FIXED_ALSO_FAILS"
 # A confirmation the differential test overturned: on some input the harness and the original code
 # (the original body inside the harness, or the real module) end differently.
 BEHAVIOUR_CHANGED = "BEHAVIOUR_CHANGED"
+# Under CPython the harness raises outside the target (in a stub or the driver) before ESBMC runs:
+# a harness defect the agent can fix, never evidence about the target.
+HARNESS_BROKEN = "HARNESS_BROKEN"
 DIFFERENTIAL_RUNS = 100
 PLUGIN_DIR = Path.home() / ".claude/plugins/cache/esbmc-marketplace/esbmc-plugin/1.1.0"
 
@@ -318,7 +321,7 @@ def retry_reason(verdict: str, reason: str, result: dict, allow_simplify: bool) 
     """Why the agent gets its one more attempt; empty when it does not. Only harness defects the agent can
     fix go back: a safe verdict that never reached the line, or a target body changed when that is not
     allowed and the original body did not confirm either."""
-    if verdict == NOT_CONFIRMED_VACUOUS:
+    if verdict in (NOT_CONFIRMED_VACUOUS, HARNESS_BROKEN):
         return reason
     if result.get("target_preserved") is False and not allow_simplify and verdict != CONFIRMED_SIMPLIFIED:
         return "the body of the target function differs from original.py"
@@ -371,6 +374,17 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
     nodes = expression_nodes(target, h.suspect_expression)
     if not nodes:
         return AGENT_FAILED, "suspect expression missing from the harness target"
+    spans = tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes}))
+    # With the suspect lines the search goes on past a failure elsewhere until some input reaches them.
+    smoke = concrete_replay(Program(_without_esbmc_imports(harness), 0, spans, (), (target.lineno, target.end_lineno)),
+                            target.name)
+    result["smoke"] = smoke.to_dict()
+    # ``line`` falls inside the target whenever the traceback passes through it; a stub the target calls
+    # is left to the STUB_INDUCED check, which names the stub.
+    if smoke.status == "other_failure" and smoke.line is not None \
+            and not target.lineno <= smoke.line <= (target.end_lineno or target.lineno):
+        return HARNESS_BROKEN, (f"under CPython, harness.py raises {smoke.exception_type} at line {smoke.raised_at}, "
+                                f"outside {h.function}: fix the stub or the driver")
     original_target = _target(original_tree, h.function)
     result["target_preserved"] = original_target is not None and body_signature(original_target) == body_signature(target)
 
@@ -378,7 +392,6 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                                 timeout_seconds=timeout_seconds, work_dir=output_dir or case_dir)
     result.update(esbmc_status=esbmc.status, **how)
     seeds = counterexample_seeds(esbmc_output(esbmc), None)
-    spans = tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes}))
     if reading.kind not in VERDICT_KINDS:
         replay = ReplayVerdict("unavailable", reason="ESBMC produced no verdict to validate")
     elif result["target_preserved"]:
@@ -393,7 +406,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
     verdict = final_verdict(reading, replay)
     if verdict == NOT_CONFIRMED and result["target_preserved"] and esbmc_command:
         # Same run as the safe verdict; an incremental one falls back to the bound, which reads inconclusive.
-        command = [*esbmc_command, *([how["solver"]] if how.get("solver") else [])]
+        command = [*esbmc_command, *([how["solver"]] if how.get("solver") else []), *library_flags(how)]
         unwind = how["unwind"] if isinstance(how["unwind"], int) else bound
         answers = [reachability(Program(harness, 0, (span,), (), (target.lineno, target.end_lineno)),
                                 esbmc=command, unwind=unwind, timeout_seconds=timeout_seconds,
@@ -419,10 +432,18 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
     if not result["target_preserved"] and verdict == CONFIRMED:
         verdict = CONFIRMED_SIMPLIFIED
     if verdict == CONFIRMED and esbmc_command and generate_pytest:
-        result["pytest"] = esbmc_pytest(harness_path, esbmc_command=esbmc_command, bound=bound,
+        result["pytest"] = esbmc_pytest(harness_path, esbmc_command=[*esbmc_command, *library_flags(how)], bound=bound,
                                         out_dir=(output_dir or case_dir) / "pytest", exception=replay.exception_type or "",
                                         timeout_seconds=timeout_seconds)
-        if result["pytest"]["status"] == "reproduces":
+        test = (replay_pytest(_without_esbmc_imports(harness), h.function, result["replay"], spans=spans,
+                              target=(target.lineno, target.end_lineno))
+                if result["pytest"]["status"] != "reproduces" else None)
+        if test:
+            path = (output_dir or case_dir) / "pytest" / "test_replay.py"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(test, encoding="utf-8")
+            result["pytest_esbmc"], result["pytest"] = result["pytest"], run_replay_test(path)
+        elif result["pytest"]["status"] == "reproduces":
             first = pytest_seeds(result["pytest"]["path"])
             seeds = {kind: [*first.get(kind, []), *(v for v in seeds.get(kind, []) if v not in first.get(kind, []))]
                      for kind in {*first, *seeds}}

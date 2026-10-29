@@ -128,6 +128,11 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
         if not condition:
             raise _Discard()
 
+    unsigned = [v for v in domains[int] if v >= 0]
+
+    def nondet_dict():
+        return {chooser.pick(domains[str]): chooser.pick(domains[int]) for _ in range(chooser.pick_length(max_list))}
+
     return {
         "nondet_int": lambda: chooser.pick(domains[int]),
         "nondet_float": lambda: chooser.pick(domains[float]),
@@ -135,6 +140,11 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
         "nondet_str": lambda: chooser.pick(domains[str]),
         "nondet_list": nondet_list,
         "nondet_bytes": lambda size=2: bytes(chooser.pick(domains[int]) % 256 for _ in range(size)),
+        "nondet_dict": nondet_dict,
+        "nondet_double": lambda: chooser.pick(domains[float]),
+        # ESBMC's fixed-width integer names: signed ones draw from the int domain, unsigned ones never negative.
+        **{f"nondet_{name}": (lambda: chooser.pick(domains[int])) for name in ("char", "short", "long")},
+        **{f"nondet_{name}": (lambda: chooser.pick(unsigned)) for name in ("uchar", "ushort", "uint", "ulong", "size")},
         "__ESBMC_assume": assume,
         # Names an agent-written harness imports from ESBMC's Python module.
         "assume": assume,

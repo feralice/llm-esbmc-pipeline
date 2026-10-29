@@ -211,3 +211,26 @@ main()
 def test_stub_calling_an_esbmc_math_intrinsic_replays_as_math():
     verdict = concrete_replay(_program(POW, 6), "grow", seeds={"int": [], "float": [400.0]})
     assert (verdict.status, verdict.exception_type) == ("reproduced", "OverflowError")
+
+
+WIDE = '''def take(n: int, d: dict, x: float) -> int:
+    assert n >= 0
+    return len(d) + n
+
+
+def main() -> None:
+    n: int = nondet_uint()
+    d: dict = nondet_dict()
+    x: float = nondet_double()
+    c: int = nondet_char() + nondet_long() + nondet_short() + nondet_ulong() + nondet_ushort() + nondet_uchar() \\
+        + nondet_size()
+    take(n, d, x)
+
+
+main()
+'''
+
+
+def test_every_esbmc_nondet_name_replays_and_unsigned_stays_non_negative():
+    verdict = concrete_replay(_program(WIDE, 2), "take")
+    assert verdict.status == "not_reproduced", verdict

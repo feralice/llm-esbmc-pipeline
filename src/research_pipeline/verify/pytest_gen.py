@@ -11,6 +11,7 @@ fails with the bug's exception, which is how ESBMC's tests show a bug (they carr
 from __future__ import annotations
 
 import ast
+import json
 import os
 import re
 import subprocess
@@ -231,3 +232,52 @@ def pytest_seeds(path: str) -> dict[str, list]:
                     if kind and value not in seeds.setdefault(kind, []):
                         seeds[kind].append(value)
     return seeds
+
+
+_REPLAY_TEST = '''import json
+import sys
+
+sys.path.insert(0, {src!r})
+
+from research_pipeline.verify.render import Program  # noqa: E402
+from research_pipeline.verify.replay import concrete_replay  # noqa: E402
+
+SOURCE = {source!r}
+# JSON keeps NaN and infinities, which repr would write as bare names.
+INPUTS = json.loads({inputs!r})
+
+
+def test_{name}_raises_{exception}():
+    program = Program(SOURCE, 0, {spans!r}, (), {target!r})
+    verdict = concrete_replay(program, {function!r}, inputs=INPUTS)
+    assert (verdict.status, verdict.exception_type) == ("reproduced", {exception!r}), verdict
+'''
+
+
+def replay_pytest(harness: str, function: str, replay: dict, *, spans: tuple, target: tuple) -> str | None:
+    """A pytest that replays the harness with the replay's own inputs, through the same replay (so lists,
+    NaN and ESBMC's names are rebuilt exactly), and expects the same exception at the suspect lines;
+    None when the replay reproduced nothing to pin."""
+    if replay.get("status") != "reproduced" or "inputs" not in replay or not replay.get("exception_type"):
+        return None
+    name = re.sub(r"\W", "_", function.rsplit(".", 1)[-1])
+    return _REPLAY_TEST.format(src=str(Path(__file__).resolve().parents[2]), source=harness,
+                               inputs=json.dumps(list(replay["inputs"])), name=name,
+                               exception=replay["exception_type"], spans=tuple(spans), target=tuple(target),
+                               function=function.rsplit(".", 1)[-1])
+
+
+def run_replay_test(test: Path) -> dict:
+    """Run a ``replay_pytest`` test where it was written; it passes exactly when the exception reproduces."""
+    try:
+        done = subprocess.run([*_no_network_prefix(), sys.executable, "-m", "pytest", "-q", "--tb=short",
+                               "-p", "no:cacheprovider", test.name], cwd=test.parent, capture_output=True, text=True,
+                              timeout=60, check=False,
+                              env={key: os.environ[key] for key in ("PATH", "HOME") if key in os.environ})
+        # No process_limits: the test starts the replay worker, which applies its own.
+    except subprocess.TimeoutExpired:
+        return {"status": "invalid", "path": str(test), "reason": "pytest timed out", "route": "replay"}
+    tail = " ".join((done.stdout + done.stderr).strip().splitlines()[-2:])[:300]
+    # pytest exits 1 when a test fails; anything else (2 to 5) means the test never ran.
+    status = {0: "reproduces", 1: "does_not_reproduce"}.get(done.returncode, "invalid")
+    return {"status": status, "path": str(test), "reason": tail, "route": "replay"}

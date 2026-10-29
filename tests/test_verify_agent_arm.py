@@ -8,7 +8,7 @@ import ast
 
 import pytest
 
-from research_pipeline.verify.agent_arm import (AGENT_FAILED, BEHAVIOUR_CHANGED, FIXED_ALSO_FAILS,
+from research_pipeline.verify.agent_arm import (AGENT_FAILED, BEHAVIOUR_CHANGED, FIXED_ALSO_FAILS, HARNESS_BROKEN,
                                                NOT_CONFIRMED_VACUOUS, STUB_INDUCED, run_agent_arm, stub_cause)
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.outcome import CONFIRMED, NOT_CONFIRMED, UNVALIDATED
@@ -302,7 +302,7 @@ def test_a_pytest_that_does_not_reproduce_leaves_the_verdict_alone(tmp_path, mon
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
     assert result["verdict"] == CONFIRMED
-    assert result["pytest"]["status"] == "not_generated"
+    assert result["pytest_esbmc"]["status"] == "not_generated" and result["pytest"]["route"] == "replay"
     assert _pytest_calls[0]["exception"] == "ZeroDivisionError"
 
 
@@ -341,6 +341,13 @@ def test_simplification_is_allowed_only_by_allow_simplify(tmp_path, project_skil
 def test_harness_skill_grants_no_simplification():
     text = (agent_arm.SKILLS_DIR / "regras-harness" / "SKILL.md").read_text(encoding="utf-8")
     assert "simplify" not in text and "unchanged" in text
+
+
+def test_harness_rules_cover_the_2026_10_28_workarounds():
+    text = (agent_arm.SKILLS_DIR / "regras-harness" / "SKILL.md").read_text(encoding="utf-8")
+    assert "Version: 4" in text
+    for needle in ("__ESBMC_", "elif", "lambda", "dict.get", "local variable"):
+        assert needle in text
 
 
 def test_recheck_writes_its_pytest_under_its_own_output_dir(tmp_path, monkeypatch, _pytest_calls):
@@ -521,3 +528,70 @@ def test_probe_uses_the_safe_run_unwind_and_every_occurrence(tmp_path, monkeypat
     assert [spans for spans, _ in calls] == [((6, 6),), ((7, 7),)]
     assert {unwind for _, unwind in calls} == {5}
     assert result["reachability"] == "reachable" and result["verdict"] == NOT_CONFIRMED
+
+
+def _no_esbmc(*_args, **_kwargs):
+    raise AssertionError("ESBMC must not run on a harness that breaks under CPython")
+
+
+def _evaluate(tmp_path, harness):
+    case = tmp_path / "case"
+    case.mkdir()
+    (case / "harness.py").write_text(harness, encoding="utf-8")
+    result = {}
+    verdict, reason = agent_arm.evaluate_harness(_hypothesis(tmp_path), harness, ORIGINAL, case, result,
+                                                 esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    return verdict, reason, result
+
+
+def test_stub_that_raises_outside_the_target_is_harness_broken(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _no_esbmc)
+    harness = PRESERVED.replace("    ratio(t, c)", "    [][0]\n    ratio(t, c)")
+    verdict, reason, result = _evaluate(tmp_path, harness)
+    assert verdict == HARNESS_BROKEN
+    assert "IndexError at line 18" in reason
+    assert result["smoke"]["status"] == "other_failure"
+
+
+def test_exception_at_the_suspect_line_still_goes_to_esbmc(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    assert _evaluate(tmp_path, PRESERVED)[0] == CONFIRMED
+
+
+def test_exception_inside_the_target_off_the_suspect_line_is_not_harness_broken(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", lambda path, **kw: calls.append(path) or _esbmc()(path))
+    verdict, _, _ = _evaluate(tmp_path, PRESERVED.replace("    lib.log(total)\n", "    [][total]\n"))
+    assert verdict != HARNESS_BROKEN and calls
+
+
+def test_harness_broken_goes_back_to_the_agent():
+    assert agent_arm.retry_reason(HARNESS_BROKEN, "x", {}, False) == "x"
+
+
+def test_confirmation_without_esbmc_pytest_gets_one_from_the_replay(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    verdict, _, result = _evaluate(tmp_path, PRESERVED)
+    assert verdict == CONFIRMED
+    assert result["pytest"]["route"] == "replay" and result["pytest"]["status"] == "reproduces"
+    assert result["pytest_esbmc"]["status"] == "not_generated"
+    assert Path(result["pytest"]["path"]).name == "test_replay.py"
+
+
+def test_driver_that_breaks_on_one_input_but_reaches_the_bug_on_another_goes_to_esbmc(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    harness = PRESERVED.replace("    ratio(t, c)", "    if t == 0:\n        [][0]\n    ratio(t, c)")
+    assert _evaluate(tmp_path, harness)[0] == CONFIRMED
+
+
+def test_reachability_probe_runs_with_the_library_unwinding(tmp_path, monkeypatch):
+    seen = []
+    safe = ESBMCDirectResult(source_file="h.py", status="no_violation_found", command=["esbmc"], returncode=0,
+                             summary="", details={})
+    monkeypatch.setattr(agent_arm, "check", lambda *a, **k: (safe, esbmc_run.classify_esbmc(safe),
+                                                              {"unwind": 5, "library_unwind": 64,
+                                                               "library_loops": ["strlen:0"]}))
+    monkeypatch.setattr(agent_arm, "reachability", lambda program, **kw: seen.append(kw["esbmc"]) or "REACHABLE")
+    harness = PRESERVED.replace("    ratio(t, c)", "    if c != 0:\n        ratio(t, c)")
+    _evaluate(tmp_path, harness)
+    assert seen and seen[0][-2:] == ["--unwindsetname", "strlen:0:64"]
