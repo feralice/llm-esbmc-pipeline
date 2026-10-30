@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.verify.agent_arm import (  # noqa: E402
-    AGENT_VERDICTS, NOTES_PATH, make_agent, run_agent_arm, skill_versions)
+    AGENT_VERDICTS, NOTES_PATH, make_agent, run_agent_arm, session_failed, skill_versions)
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E402
 from research_pipeline.verify.esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root_of, load_index  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
@@ -162,7 +162,7 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(parents=True, exist_ok=True)
     results_path = out / "agent_results.json"
     done = json.loads(results_path.read_text(encoding="utf-8")) if results_path.exists() else []
-    finished = {r["hypothesis"]["hypothesis_id"] for r in done}
+    finished = {r["hypothesis"]["hypothesis_id"] for r in done if not session_failed(r)}
     variant = {"backend": args.backend, "plugin": not args.no_plugin and args.backend == "claude", "isolated": not args.not_isolated, "notes": args.notes,
                "model": args.model, "plugin_command": args.plugin_command,
                "allow_simplify": args.allow_simplify, "retry": args.retry, "differential": args.differential, "pytest": args.pytest,
@@ -204,7 +204,11 @@ def main(argv: list[str] | None = None) -> int:
         result["engine_verdict"], result["variant"] = previous, variant
         result["fixed_control"] = "ran" if fixed else "missing"
         print(f"    -> {result['verdict']} preserved={result['target_preserved']} {result['reason'][:100]}", flush=True)
-        done.append(result)
+        position = next((i for i, r in enumerate(done) if r["hypothesis"]["hypothesis_id"] == h.hypothesis_id), None)
+        if position is None:
+            done.append(result)
+        else:
+            done[position] = result
         results_path.write_text(json.dumps(done, indent=2), encoding="utf-8")
     print("\n", dict(Counter(r["verdict"] for r in done)))
     return 0

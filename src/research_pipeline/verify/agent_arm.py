@@ -28,7 +28,7 @@ from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, loa
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output, library_flags
-from .outcome import CONFIRMED, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS, final_verdict
+from .outcome import CONFIRMED, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS, PIPELINE_ERROR, final_verdict
 from .pytest_gen import esbmc_pytest, pytest_seeds, replay_pytest, run_replay_test
 from .procs import run_group
 from .render import Program
@@ -38,6 +38,15 @@ from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .validation import INCONCLUSIVE, REACHABLE, UNREACHABLE, reachability
 
 AGENT_FAILED = "AGENT_FAILED"
+# What Claude Code prints when its session never reached the model (network, DNS, an outage).
+_SESSION_ERROR = "API Error"
+
+
+def session_failed(result: dict) -> bool:
+    """The case says nothing about the hypothesis: a resume runs it again. Also reads results saved before
+    such sessions became PIPELINE_ERROR (S6, 29/10: they were AGENT_FAILED "agent wrote no harness.py")."""
+    return (result.get("verdict") == PIPELINE_ERROR
+            or str(result.get("agent_output", "")).lstrip().startswith(_SESSION_ERROR))
 # The agent simplified the target's body for ESBMC, and ESBMC's counterexample values, replayed on the
 # ORIGINAL body under CPython, raise the hypothesis's exception at the suspect expression.
 CONFIRMED_SIMPLIFIED = "CONFIRMED_SIMPLIFIED"
@@ -276,6 +285,8 @@ def run_agent_arm(
         record_rounds(case_dir, result, log_rounds, original, h.function)
         return finish(AGENT_FAILED, f"agent did not finish: {type(exc).__name__}")
     crashed = record_rounds(case_dir, result, log_rounds, original, h.function)
+    if session_failed(result):
+        return finish(PIPELINE_ERROR, f"agent session failed: {result['agent_output'].strip().splitlines()[0][:200]}")
     harness_path = case_dir / "harness.py"
     if not harness_path.exists():
         return finish(AGENT_FAILED, "agent wrote no harness.py")

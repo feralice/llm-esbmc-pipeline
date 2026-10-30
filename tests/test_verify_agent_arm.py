@@ -628,3 +628,11 @@ def test_claude_agent_may_run_graph_py_only_with_the_graph_tool(tmp_path, monkey
 def test_api_agent_refuses_the_graph_tool():
     with pytest.raises(ValueError, match="graph"):
         agent_arm.make_agent("openai", model="m", esbmc="esbmc", bound=5, graph_tool=True)
+
+
+def test_an_api_error_from_the_agent_session_is_a_pipeline_error(tmp_path):
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work",
+                           run_agent=lambda prompt, cwd, timeout: "API Error: Can't reach the API server (EAI_AGAIN)",
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == "PIPELINE_ERROR"
+    assert "EAI_AGAIN" in result["reason"]

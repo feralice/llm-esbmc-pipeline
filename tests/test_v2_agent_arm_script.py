@@ -180,3 +180,23 @@ def test_resume_reads_a_missing_off_by_default_flag_as_off(script, tmp_path, esb
     del results[0]["variant"]["graph_tool"]
     (tmp_path / "out" / "agent_results.json").write_text(json.dumps(results), encoding="utf-8")
     assert len(_run(script, tmp_path, esbmc_checkout, report=report)) == 2
+
+
+def test_resume_runs_again_a_case_the_network_cut(script, tmp_path, esbmc_checkout, calls, monkeypatch):
+    report = _report(tmp_path / "report.json", ["a", "b"])
+    real = script.run_agent_arm
+
+    def offline(h, **kwargs):
+        if h.trigger_condition == "a":
+            return {"hypothesis": h.to_dict(), "verdict": "AGENT_FAILED", "reason": "agent wrote no harness.py",
+                    "target_preserved": None, "agent_output": "API Error: Can't reach the API server (EAI_AGAIN)"}
+        return real(h, **kwargs)
+
+    monkeypatch.setattr(script, "run_agent_arm", offline)
+    _run(script, tmp_path, esbmc_checkout, report=report)
+    monkeypatch.setattr(script, "run_agent_arm", real)
+    calls.clear()
+    results = _run(script, tmp_path, esbmc_checkout, report=report)
+    assert [h.trigger_condition for h, _ in calls] == ["a"]
+    assert [(r["hypothesis"]["trigger_condition"], r["verdict"]) for r in results] == [("a", "NOT_CONFIRMED"),
+                                                                                     ("b", "NOT_CONFIRMED")]
