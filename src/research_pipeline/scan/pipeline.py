@@ -55,11 +55,13 @@ class Target:
     risky_operations: int
     unit: CodeUnit = field(repr=False)
     centrality: float | None = None  # only measured with rank="pagerank"
+    position: int | None = None  # 1-based rank among all eligible functions, kept when ``only`` narrows them
 
     def to_dict(self) -> dict:
         return {"key": self.key, "file": self.file, "function": self.qualname, "line": self.start_line,
                 "callers": self.callers, "risky_operations": self.risky_operations,
-                "centrality": None if self.centrality is None else round(self.centrality, 6)}
+                "centrality": None if self.centrality is None else round(self.centrality, 6),
+                "position": self.position}
 
 
 @dataclass
@@ -74,9 +76,11 @@ class ScanPlan:
     rank: str = "callers"
     focus: str = ""
     excluded: dict[str, int] = field(default_factory=dict)
+    only: tuple[str, ...] = ()
 
     def to_dict(self) -> dict:
         return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus,
+                "only": list(self.only),
                 "candidates_total": self.candidates_total, "excluded": self.excluded,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets]}
@@ -116,10 +120,11 @@ def _exclusion(function, include_examples: bool) -> str:
 
 
 def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "callers",
-                   include_examples: bool = False,
+                   include_examples: bool = False, only: tuple[str, ...] = (),
                    excluded: dict[str, int] | None = None) -> tuple[list[Target], int]:
     """Returns the selection and how many functions were eligible before ``limit``; ``excluded`` receives the
-    count left out per reason."""
+    count left out per reason. ``only`` (keys or qualified names) keeps just those functions, each with its
+    position in the full ranking, so a run on known functions still reports whether the ranking reaches them."""
     units = _units_by_location(graph)
     scores = pagerank(graph) if rank == "pagerank" else {}
     counts = excluded if excluded is not None else {}
@@ -141,7 +146,15 @@ def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "c
                               function.start_line, len(graph.callers(function.key)), risky, unit,
                               scores.get(function.key, 0.0) if rank == "pagerank" else None))
     targets.sort(key=lambda target: rank_key(target, rank))
-    return (targets[:limit] if limit else targets), len(targets)
+    for position, target in enumerate(targets, 1):
+        target.position = position
+    total = len(targets)
+    if only:
+        missing = [name for name in only if not any(name in (t.key, t.qualname) for t in targets)]
+        if missing:
+            raise ValueError(f"--scan-only names no selectable function: {', '.join(missing)}")
+        targets = [t for t in targets if t.key in only or t.qualname in only]
+    return (targets[:limit] if limit else targets), total
 
 
 def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
@@ -152,13 +165,13 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
               variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
-              focus: str = "", include_examples: bool = False) -> ScanPlan:
+              focus: str = "", include_examples: bool = False, only: tuple[str, ...] = ()) -> ScanPlan:
     graph = build_callgraph(root, include_tests=include_tests)
     excluded: dict[str, int] = {}
     targets, total = select_targets(graph, limit=limit, rank=rank, include_examples=include_examples,
-                                    excluded=excluded)
+                                    only=only, excluded=excluded)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
-                    rank, focus.strip(), excluded)
+                    rank, focus.strip(), excluded, only)
     plan.output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
     if smells:

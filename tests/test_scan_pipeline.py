@@ -475,3 +475,30 @@ def test_summary_lists_cpython_only_reproductions_apart_from_esbmc_confirmations
     text = summary_markdown(report)
     esbmc, cpython = text.split("## Reproduzidos só no CPython")
     assert "`f`" in esbmc and "`g`" not in esbmc and "`g`: `x[0]`; IndexError" in cpython
+
+
+def test_scan_only_keeps_the_named_functions_with_their_rank_in_the_full_selection(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out", only=("head", "mean"))
+    assert [(t.qualname, t.position) for t in plan.targets] == [("mean", 3), ("head", 4)]
+    assert plan.candidates_total == 5
+    selection = json.loads((tmp_path / "out" / "scan_selection.json").read_text(encoding="utf-8"))
+    assert selection["only"] == ["head", "mean"] and selection["targets"][0]["position"] == 3
+
+
+def test_scan_only_refuses_a_name_that_is_not_selectable(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="missing"):
+        plan_scan(_repo(tmp_path), tmp_path / "out", only=("missing",))
+
+
+def test_cli_scan_only_reaches_the_selection(tmp_path: Path, monkeypatch) -> None:
+    out = tmp_path / "out"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir", str(out),
+                                   "--backend", "openai", "--scan-only", "head", "--scan-only", "ratio"]) == 0
+    selection = json.loads((out / "scan_selection.json").read_text(encoding="utf-8"))
+    assert [t["function"] for t in selection["targets"]] == ["ratio", "head"]
+
+
+def test_cli_scan_only_with_an_unknown_name_fails_with_a_message(tmp_path: Path, monkeypatch, capsys) -> None:
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir",
+                                   str(tmp_path / "out"), "--backend", "openai", "--scan-only", "nope"]) == 1
+    assert "nope" in capsys.readouterr().err

@@ -310,6 +310,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scan-rank", choices=("callers", "pagerank"), default="callers",
                         help="Modo scan: ordena as funções pelo número de chamadores (padrão) ou pela centralidade "
                              "no grafo (PageRank).")
+    parser.add_argument("--scan-only", action="append", default=[], metavar="FUNÇÃO",
+                        help="Modo scan: analisa só esta função (nome qualificado, ex.: Classe.metodo, ou chave do "
+                             "grafo); repita para várias. A seleção guarda a posição de cada uma no ranking completo.")
     parser.add_argument("--scan-focus", default="",
                         help="Modo scan: o que priorizar, em texto livre (ex.: \"só o parsing\"); entra no prompt de "
                              "detecção como preferência, sem mudar as regras.")
@@ -720,10 +723,14 @@ def mode_scan(args: argparse.Namespace) -> int:
     if len(args.input) != 1 or not root.is_dir():
         print("O modo scan recebe um único diretório de repositório em --input.", file=sys.stderr)
         return 1
-    plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
-                     include_tests=args.scan_include_tests, rank=args.scan_rank,
-                     smells=args.scan_smells, focus=args.scan_focus,
-                     include_examples=args.scan_include_examples)
+    try:
+        plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
+                         include_tests=args.scan_include_tests, rank=args.scan_rank,
+                         smells=args.scan_smells, focus=args.scan_focus,
+                         include_examples=args.scan_include_examples, only=tuple(args.scan_only))
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 1
     set_detection_focus(plan.focus)
     if args.scan_smells and not args.yes:
         smells = json.loads((plan.output_dir / "scan_smells.json").read_text(encoding="utf-8"))
