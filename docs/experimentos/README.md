@@ -1146,6 +1146,18 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   (`commit_retomada2.txt`): ip_real_20 UNVALIDATED, ip_real_33 AGENT_FAILED (expressão suspeita alterada); os
   outros 3 também são do agente. A métrica final não mudou.
 
+## A5 em inglês (31/10): linha de base do prompt que vai ser congelado
+
+- **Pergunta:** os prompts de detecção passaram para inglês em 27/10 (`7be8ace`); a A5 em inglês fica na faixa
+  de ruído da A5 em português (22 a 26 de 48, Fase 27)?
+- **Comando:** `scripts/run_detection_variants.sh 2026-10-31-en-r<i> dataset/bugs_reais/amostra_deteccao.json A1,A2`,
+  i = 1, 2, em paralelo, claude_cli, Sonnet 5.5, commit `957461d`; avaliação por `scripts/v2_self_consistency.py`
+  (48 bugs, regra "na linha").
+- **Resultado:** **23 e 22 de 48**, 82 e 92 hipóteses, precisão 33% e 28%. Dentro da faixa da A5 em português
+  (22 a 26, precisão 29% a 32%). União das 6 rodadas da A5 (2 em inglês, 4 em português): 29.
+- **Decisão:** congelar com a A5 em inglês. O S3 (variantes contra a A5) vira experimento da Fase 3, sobre a
+  versão congelada.
+
 ## Nível "reproduzido só no CPython" (31/10): medido nos harnesses do S6, sem LLM
 
 - **Pergunta:** quando o ESBMC não chega a um veredito (UNSUPPORTED, ESBMC_TIMEOUT, ESBMC_ERROR,
@@ -1157,7 +1169,9 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   Um veredito do ESBMC (seguro ou violação) nunca é trocado. Nível `cpython_only` no `levels`, seção própria no
   relatório, abaixo dos confirmados.
 - **Comando:** `scripts/v2_agent_reverify.py artifacts/v2/s6-s2-{base,grafo}-2026-10-29 --out ...` (agora com
-  `--fixed-sources`), resultado em `artifacts/v2/s6-cpython-reverify-2026-10-31/`. Sem chamada de LLM.
+  `--fixed-sources`), resultado em `artifacts/v2/s6-cpython-reverify-2026-10-31/`. Sem chamada de LLM. ESBMC:
+  `build-bw` recompilado em 31/10 às 20:46 sobre a master `d520a903ae` (o S6 de 29/10 usou o binário anterior);
+  código do pipeline em `e594670`.
 - **Métrica final:** confirmados pelo ESBMC continuam **4 nos dois braços**. O nível novo soma **1 bug do
   gabarito em cada**: oob_real_14 (`lines[0]`, IndexError) na base e dz_real_02
   (`float(not_parsed)/float(num_substrings)`, ZeroDivisionError) no grafo; cada um tinha saído
