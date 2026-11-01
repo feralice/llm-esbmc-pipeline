@@ -47,3 +47,13 @@ Resultado em `artifacts/pgene601/mypy-2026-10-18/mypy_cps.json`.
 Leitura: o mypy aponta o bug com a mensagem certa em 3 de 47, e só em 1 a mensagem some na correção.
 Nos 17 itens de None, onde se esperava mais, ele quase não ajuda: sem anotação o valor é `Any`, e o
 mypy não sabe que o atributo pode ser None.
+
+## Sondas refeitas no master (27/10/2026)
+
+Mesmos cinco programas, `--unwind 5 --no-pointer-check --no-align-check`, em dois binários: master limpo
+`7da3564` (`~/.local/bin/esbmc-7da3564`, 22/10) e `build-bw` compilado em 27/10 sobre `c42f28b671`, que sai
+"dirty tree" por 177 linhas de patch local no frontend Python. Resultado idêntico nos dois e igual ao da v8.6:
+`struct.unpack` recusado (com 1 e com 2 bytes), `nondet_bytes(n)` exige tamanho constante, `bytes.fromhex`
+só com texto constante, e `b"\xff\xfe".decode("utf-8")` continua SUCCESSFUL (falso negativo). Busca no
+GitHub (`struct.unpack`, `nondet_bytes`, `decode UnicodeDecodeError`, `fromhex`) não achou issue aberta sobre
+nenhum dos cinco: são candidatos a issue, a abrir só com aprovação dela.

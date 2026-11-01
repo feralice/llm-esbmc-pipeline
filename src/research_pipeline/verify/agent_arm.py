@@ -38,15 +38,15 @@ from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .validation import INCONCLUSIVE, REACHABLE, UNREACHABLE, reachability
 
 AGENT_FAILED = "AGENT_FAILED"
-# What Claude Code prints when its session never reached the model (network, DNS, an outage).
-_SESSION_ERROR = "API Error"
+# What Claude Code prints when its session never reached the model (network, DNS, an outage, a usage limit).
+_SESSION_ERRORS = ("API Error", "You've hit your")
 
 
 def session_failed(result: dict) -> bool:
     """The case says nothing about the hypothesis: a resume runs it again. Also reads results saved before
     such sessions became PIPELINE_ERROR (S6, 29/10: they were AGENT_FAILED "agent wrote no harness.py")."""
     return (result.get("verdict") == PIPELINE_ERROR
-            or str(result.get("agent_output", "")).lstrip().startswith(_SESSION_ERROR))
+            or str(result.get("agent_output", "")).lstrip().startswith(_SESSION_ERRORS))
 # The agent simplified the target's body for ESBMC, and ESBMC's counterexample values, replayed on the
 # ORIGINAL body under CPython, raise the hypothesis's exception at the suspect expression.
 CONFIRMED_SIMPLIFIED = "CONFIRMED_SIMPLIFIED"

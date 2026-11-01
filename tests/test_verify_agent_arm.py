@@ -636,3 +636,10 @@ def test_an_api_error_from_the_agent_session_is_a_pipeline_error(tmp_path):
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
     assert result["verdict"] == "PIPELINE_ERROR"
     assert "EAI_AGAIN" in result["reason"]
+
+
+def test_a_usage_limit_from_the_agent_session_is_a_pipeline_error(tmp_path):
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work",
+                           run_agent=lambda prompt, cwd, timeout: "You've hit your monthly spend limit · raise it",
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == "PIPELINE_ERROR"

@@ -1112,7 +1112,7 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   pede confirmação e só então gasta.
 - **Primeira rodada real:** o piloto AWS depois do congelamento (PyAthena `converter.py`, `--scan-limit 5`).
 
-## S6, item 1 (29/10, em andamento): S2 de novo, com a versão corrigida e com o grafo
+## S6, item 1 (29/10): S2 de novo, com a versão corrigida e com o grafo
 
 - **Pergunta:** com o plano A inteiro e o controle da versão corrigida ligado, quantos bugs da amostra o braço
   de agente confirma (Fase 30: 3 de 30)? E o grafo consultável (`--graph-tool`) muda isso?
@@ -1125,8 +1125,26 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   `4a4f9a0`) e `artifacts/v2/s6-s2-grafo-2026-10-29/` (o commit está no `commit.txt` da pasta; o plano D
   entrou no master durante a base e não toca nada que o braço de agente carrega). Estado de cada uma em
   `artifacts/v2/s6-s2-status.txt`.
-- **Parcial em 29/10:** a base estava no caso 19 de 30; nm_real_23 de novo CONFIRMED com o corpo intacto.
-- **Resultado:** a preencher quando as duas terminarem (bugs do gabarito confirmados primeiro).
+- **Queda de rede:** 8 casos da base e 12 do grafo ficaram sem sessão (`API Error ... EAI_AGAIN`), registrados
+  como AGENT_FAILED; corrigido em `7214ebd` (vira PIPELINE_ERROR e a retomada refaz) e retomados na mesma noite
+  (`commit_retomada.txt`). Depois da retomada, nenhum caso com erro de rede nas duas pastas.
+- **Métrica final: 4 bugs do gabarito confirmados nas duas** (Fase 30: 3): nm_real_23, oob_real_02, av_real_02 e,
+  novo, oob_real_05. O grafo não mudou o número.
+- **Controle da versão corrigida:** barrou ip_real_33 na base (FIXED_ALSO_FAILS), o caso que a Fase 30 contou
+  como confirmado e mandou para auditoria; no grafo ele ficou AGENT_FAILED.
+- **Vereditos, base:** 4 CONFIRMED, 1 CONFIRMED_SIMPLIFIED (dz_real_02), 1 FIXED_ALSO_FAILS, 1 BEHAVIOUR_CHANGED,
+  2 BOUND_INCONCLUSIVE, 10 UNSUPPORTED, 5 AGENT_FAILED, 3 NOT_CONFIRMED, 1 ESBMC_MISSED, 1 ESBMC_TIMEOUT,
+  1 UNVALIDATED. **Grafo:** 4 CONFIRMED, 1 CONFIRMED_SIMPLIFIED (oob_real_14), 1 BEHAVIOUR_CHANGED,
+  1 STUB_INDUCED, 1 BOUND_INCONCLUSIVE, 13 UNSUPPORTED, 4 AGENT_FAILED, 2 NOT_CONFIRMED, 2 UNVALIDATED,
+  1 OTHER_FAILURE (depois da segunda retomada).
+- **Auditoria manual do oob_real_05 (black/17):** corpo de `lib2to3_parse` copiado sem mudança; com `""` o
+  CPython levanta `IndexError` em `src_txt[-1] != "\n"`, a falha do gabarito; a versão corrigida (`src_txt[-1:]`)
+  roda limpa com a mesma entrada; o pytest do replay reproduz. Conta como confirmado.
+- **Triagem dos AGENT_FAILED:** na base, os 5 são do agente (mexeu na expressão suspeita ou renomeou o alvo,
+  contra a regra 1). No grafo, 2 eram limite de gasto da assinatura ("You've hit your monthly spend limit"),
+  outra mensagem de sessão sem modelo: também vira PIPELINE_ERROR agora, e os dois foram refeitos
+  (`commit_retomada2.txt`): ip_real_20 UNVALIDATED, ip_real_33 AGENT_FAILED (expressão suspeita alterada); os
+  outros 3 também são do agente. A métrica final não mudou.
 
 ## S5, plano D (29/10): o scan pronto para repo real, sem rodada
 
