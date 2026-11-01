@@ -130,3 +130,14 @@ def test_an_unavailable_or_failing_control_is_not_evidence():
     for status in ("unavailable", "other_failure", "property_violated", "reproduced"):
         assert evidence(_result("CONFIRMED", control={"status": status})) == []
     assert evidence(_result("CONFIRMED", control={"status": "not_reproduced"})) == ["versão corrigida passa"]
+
+
+def test_cpython_only_reproductions_are_listed_below_esbmc_confirmations():
+    cpython = _result("REPRODUCED_CPYTHON", "ESBMC reached no decision", function="g",
+                      replay={"exception_type": "KeyError", "inputs": ["k"]}, pytest={"status": "reproduces", "path": "t.py"})
+    report = render_run_report([_result("CONFIRMED"), cpython])
+    assert "1 confirmadas pelo ESBMC" in report and "1 reproduzidas só no CPython" in report
+    section = report.split("## Reproduzidos só no CPython (1)")[1].split("## ")[0]
+    assert "x.py::g" in section and "KeyError" in section and "t.py" in section
+    assert report.index("## Confirmados (1)") < report.index("## Reproduzidos só no CPython")
+    assert "x.py::g" not in report.split("## Suspeitas do LLM")[1]

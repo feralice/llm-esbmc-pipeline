@@ -28,7 +28,8 @@ from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, loa
 
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output, library_flags
-from .outcome import CONFIRMED, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS, PIPELINE_ERROR, final_verdict
+from .outcome import (BOUND_INCONCLUSIVE, CONFIRMED, ESBMC_ERROR, ESBMC_TIMEOUT, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS,
+                      PIPELINE_ERROR, UNSUPPORTED, final_verdict)
 from .pytest_gen import esbmc_pytest, pytest_seeds, replay_pytest, run_replay_test
 from .procs import run_group
 from .render import Program
@@ -64,6 +65,11 @@ BEHAVIOUR_CHANGED = "BEHAVIOUR_CHANGED"
 # Under CPython the harness raises outside the target (in a stub or the driver) before ESBMC runs:
 # a harness defect the agent can fix, never evidence about the target.
 HARNESS_BROKEN = "HARNESS_BROKEN"
+# ESBMC reached no decision on a harness whose target body is the original, and CPython alone raised an
+# exception at the suspect expression: evidence from execution, reported below the ESBMC
+# confirmations and through the same stub, fixed-version and differential controls.
+REPRODUCED_CPYTHON = "REPRODUCED_CPYTHON"
+_NO_DECISION = frozenset({UNSUPPORTED, ESBMC_TIMEOUT, ESBMC_ERROR, BOUND_INCONCLUSIVE})
 DIFFERENTIAL_RUNS = 100
 PLUGIN_DIR = Path.home() / ".claude/plugins/cache/esbmc-marketplace/esbmc-plugin/1.1.0"
 
@@ -438,18 +444,17 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         if result["reachability"] == UNREACHABLE:
             return NOT_CONFIRMED_VACUOUS, (f"ESBMC never reaches {h.suspect_expression!r} in {h.function}: "
                                            "no path of the driver gets there, so the safe verdict checked nothing")
+    if verdict in _NO_DECISION and result["target_preserved"] and smoke.status == "reproduced":
+        return _cpython_only(h, harness, target, harness_tree, original_tree, original, fixed, smoke, spans, result,
+                             output_dir or case_dir, generate_pytest=generate_pytest, differential_test=differential_test,
+                             original_path=original_path, why=f"{verdict}: {reading.message}")
     if verdict == CONFIRMED:
         stub = stub_cause(replay, replayed, original_tree)
         if stub:
             return STUB_INDUCED, stub
-        if fixed is not None:
-            # The exact inputs that broke the original; the fix may rewrite the suspect expression, so any
-            # line of the fixed function counts.
-            control, _ = _replay_original(harness, target, fixed, _target(ast.parse(fixed), h.function), None,
-                                          seeds, inputs=replay.inputs or [])
-            result["control"] = control.to_dict()
-            if control.status == "reproduced" and control.exception_type == replay.exception_type:
-                return FIXED_ALSO_FAILS, f"the fixed version also raises {control.exception_type}"
+        also = _fixed_also_fails(harness, target, fixed, h.function, replay, result)
+        if also:
+            return FIXED_ALSO_FAILS, also
     if not result["target_preserved"] and verdict == CONFIRMED:
         verdict = CONFIRMED_SIMPLIFIED
     if verdict == CONFIRMED and esbmc_command and generate_pytest:
@@ -477,6 +482,51 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
             return BEHAVIOUR_CHANGED, (f"{diff.level} differential: {len(diff.divergences)} of {diff.total} "
                                        f"input sequences end differently, first {diff.divergences[0]['inputs']}")
     return verdict, reading.message
+
+
+def _fixed_also_fails(harness: str, target: ast.FunctionDef, fixed: str | None, function: str,
+                      replay: ReplayVerdict, result: dict) -> str:
+    """Replay the exact inputs that broke the original on the fixed version; the fix may rewrite the suspect
+    expression, so any line of the fixed function counts. Returns why the control rejects, or ""."""
+    if fixed is None:
+        return ""
+    control, _ = _replay_original(harness, target, fixed, _target(ast.parse(fixed), function), None, {},
+                                  inputs=replay.inputs or [])
+    result["control"] = control.to_dict()
+    if control.status == "reproduced" and control.exception_type == replay.exception_type:
+        return f"the fixed version also raises {control.exception_type}"
+    return ""
+
+
+def _cpython_only(h: BugHypothesis, harness: str, target: ast.FunctionDef, harness_tree: ast.Module,
+                  original_tree: ast.Module, original: str, fixed: str | None, smoke: ReplayVerdict, spans: tuple,
+                  result: dict, out_dir: Path, *, generate_pytest: bool, differential_test: bool,
+                  original_path: Path | None, why: str) -> tuple[str, str]:
+    result["replay"] = smoke.to_dict()
+    stub = stub_cause(smoke, harness_tree, original_tree)
+    if stub:
+        return STUB_INDUCED, stub
+    also = _fixed_also_fails(harness, target, fixed, h.function, smoke, result)
+    if also:
+        return FIXED_ALSO_FAILS, also
+    if differential_test:
+        from .differential import CHANGED, differential  # differential imports this module
+
+        diff = differential(harness, original, h, {}, runs=DIFFERENTIAL_RUNS, original_path=original_path)
+        result["differential"] = diff.to_dict()
+        if diff.preservation == CHANGED:
+            return BEHAVIOUR_CHANGED, (f"{diff.level} differential: {len(diff.divergences)} of {diff.total} "
+                                       f"input sequences end differently, first {diff.divergences[0]['inputs']}")
+    if generate_pytest:
+        test = replay_pytest(_without_esbmc_imports(harness), h.function, result["replay"], spans=spans,
+                             target=(target.lineno, target.end_lineno))
+        if test:
+            path = out_dir / "pytest" / "test_replay.py"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(test, encoding="utf-8")
+            result["pytest"] = run_replay_test(path)
+    return REPRODUCED_CPYTHON, (f"ESBMC reached no decision ({why[:200]}); under CPython {h.function} raises "
+                                f"{smoke.exception_type} at the suspect expression with inputs {smoke.inputs}")
 
 
 def _definitions(tree: ast.Module) -> dict[str, ast.AST]:

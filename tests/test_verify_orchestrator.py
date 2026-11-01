@@ -79,3 +79,10 @@ def test_resume_skips_finished_cases() -> None:
     _, state = _run([_r("a", "ESBMC_TIMEOUT")], arms)
     _run([_r("a", "ESBMC_TIMEOUT")], arms, state)
     assert calls == [1]
+
+
+def test_a_cpython_reproduction_is_not_hidden_by_a_later_arm_without_a_formal_verdict() -> None:
+    rows, _ = _run([_r("a", "MISSING_DEPENDENCY")],
+                   {"claude_agent": lambda r: {"verdict": "REPRODUCED_CPYTHON"},
+                    "dynamic": lambda r: {"verdict": "FUZZ_NOTHING"}})
+    assert rows[0]["final"] == "REPRODUCED_CPYTHON"

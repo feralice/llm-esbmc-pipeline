@@ -8,6 +8,8 @@ from .routing import route as default_route
 
 ARM_FAILED = "ARM_FAILED"
 _FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
+# Dynamic evidence of the bug, from the fuzzer or from the agent's harness under CPython.
+_EVIDENCE = {"FUZZ_FOUND", "REPRODUCED_CPYTHON"}
 
 
 def _finished(row: dict) -> bool:
@@ -40,7 +42,7 @@ def orchestrate(results: list[dict], *, arms: dict[str, Callable[[dict], dict]],
                     outcome = {"verdict": ARM_FAILED, "reason": f"{type(exc).__name__}: {exc}"}
             row["steps"].append({"arm": arm, **outcome})
             # A failed formal attempt must not hide the dynamic evidence that motivated it.
-            keeps_evidence = row["final"] == "FUZZ_FOUND" and outcome["verdict"] not in _FORMAL
+            keeps_evidence = row["final"] in _EVIDENCE and outcome["verdict"] not in _FORMAL
             if outcome["verdict"] != ARM_FAILED and not keeps_evidence:
                 row["final"] = outcome["verdict"]
             save()

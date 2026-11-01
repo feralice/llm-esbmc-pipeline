@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-from .agent_arm import AGENT_FAILED, CONFIRMED_SIMPLIFIED
+from .agent_arm import AGENT_FAILED, CONFIRMED_SIMPLIFIED, REPRODUCED_CPYTHON
 from .outcome import (
     BOUND_INCONCLUSIVE,
     CHECKED,
@@ -27,6 +27,8 @@ from .outcome import (
 ENGINE, AGENT, LLM_ONLY = "esbmc_engine", "esbmc_agent", "llm_only"
 # The agent simplified the function for ESBMC; ESBMC's inputs then broke the original under CPython.
 SIMPLIFIED = "esbmc_agent_simplified"
+# ESBMC decided nothing on the agent's harness; CPython alone raised the exception at the suspect expression.
+CPYTHON = "cpython_only"
 
 # Why a hypothesis stayed with the LLM alone.
 CONTEXT = "harness_context"      # what surrounds the function: names, library stubs, input types
@@ -106,6 +108,9 @@ def consolidate(engine: list[dict], agent: list[dict] | None = None) -> list[dic
         elif tried is not None and tried["verdict"] == CONFIRMED_SIMPLIFIED:
             row.update(level=SIMPLIFIED, verdict=CONFIRMED_SIMPLIFIED, reason=tried.get("reason", ""),
                        agent_verdict=tried["verdict"])
+        elif tried is not None and tried["verdict"] == REPRODUCED_CPYTHON:
+            row.update(level=CPYTHON, verdict=REPRODUCED_CPYTHON, reason=tried.get("reason", ""),
+                       agent_verdict=tried["verdict"])
         elif tried is not None and tried["verdict"] in CHECKED and tried.get("target_preserved") is not False:
             row.update(level=AGENT, verdict=tried["verdict"], reason=tried.get("reason", ""), agent_verdict=tried["verdict"])
         else:
@@ -133,6 +138,8 @@ def agent_levels(agent: list[dict]) -> list[dict]:
                "function": hypothesis["function"], "agent_verdict": verdict, "verdict": verdict, "reason": reason}
         if verdict == CONFIRMED_SIMPLIFIED:
             row["level"] = SIMPLIFIED
+        elif verdict == REPRODUCED_CPYTHON:
+            row["level"] = CPYTHON
         elif verdict in CHECKED and result.get("target_preserved") is not False:
             row["level"] = AGENT
         else:
@@ -155,5 +162,6 @@ def level_summary(rows: list[dict]) -> dict:
         "value_confirmed": sum(1 for r in checked if r["verdict"] == VALUE_CONFIRMED),
         "value_confirmed_by_level": dict(Counter(r["level"] for r in checked if r["verdict"] == VALUE_CONFIRMED)),
         "confirmed_simplified": sum(1 for r in rows if r["level"] == SIMPLIFIED),
+        "reproduced_cpython": sum(1 for r in rows if r["level"] == CPYTHON),
         "llm_only_by_limit": {group: sum(1 for r in rows if r.get("limit") == group) for group in LIMIT_GROUPS},
     }

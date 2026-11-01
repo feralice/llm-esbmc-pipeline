@@ -26,6 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("run", help="agent-arm output directory (agent_results.json + cases/)")
     parser.add_argument("--verification-sources", default="dataset/bugs_reais/arquivo_com_bug",
                         help="same as v2_agent_arm.py: the differential test's real level imports this file")
+    parser.add_argument("--fixed-sources", default="dataset/bugs_reais/arquivo_corrigido",
+                        help="same as v2_agent_arm.py: the control a confirmation must pass")
     parser.add_argument("--esbmc", default=DEFAULT_ESBMC)
     parser.add_argument("--bound", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=180)
@@ -39,13 +41,15 @@ def main(argv: list[str] | None = None) -> int:
         case_dir = run / "cases" / item["hypothesis"]["hypothesis_id"]
         harness, original = case_dir / "harness.py", case_dir / "original.py"
         result: dict = {}
+        fixed = Path(args.fixed_sources) / Path(h.file).name if args.fixed_sources else None
         if harness.exists() and original.exists():
             verdict, reason = evaluate_harness(
                 h, harness.read_text(encoding="utf-8", errors="replace"),
                 original.read_text(encoding="utf-8", errors="replace"), case_dir, result,
                 esbmc_command=[args.esbmc], bound=args.bound, timeout_seconds=args.timeout,
                 output_dir=Path(args.out).with_suffix("") / item["hypothesis"]["hypothesis_id"],
-                original_path=verification_source(h, sources))
+                original_path=verification_source(h, sources),
+                fixed=fixed.read_text(encoding="utf-8", errors="replace") if fixed and fixed.is_file() else None)
         else:
             verdict, reason = AGENT_FAILED, "no saved harness"
         rows.append({"hypothesis": item["hypothesis"], "verdict": verdict, "id": item["hypothesis"]["hypothesis_id"],

@@ -13,6 +13,8 @@ from .outcome import CHECKED
 _CONFIRMED = ("CONFIRMED",)
 # ESBMC confirmed it on a body the agent changed: evidence, never a confirmed bug of the real code.
 _SIMPLIFIED = ("CONFIRMED_SIMPLIFIED",)
+# ESBMC decided nothing; CPython alone raised the exception at the suspect expression, past the same controls.
+_CPYTHON = ("REPRODUCED_CPYTHON",)
 _REJECTED = ("FIXED_ALSO_FAILS", "BEHAVIOUR_CHANGED", "STUB_INDUCED")
 
 
@@ -40,7 +42,7 @@ def _confirmed(result: dict, root: str | Path | None = None) -> str:
     replay, test = result.get("replay") or {}, result.get("pytest") or {}
     checks = evidence(result)
     line = (f"- {_where(result, root)}: `{result['hypothesis'].get('suspect_expression', '')}`"
-            f" (evidência: {', '.join(checks) if checks else 'só ESBMC e replay'})")
+            f" (evidência: {', '.join(checks) if checks else 'só ESBMC e replay' if result['verdict'] in _CONFIRMED else 'só o CPython'})")
     if replay.get("exception_type"):
         line += f" levanta `{replay['exception_type']}` com as entradas `{replay.get('inputs')}`"
     if test.get("path"):
@@ -55,10 +57,11 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
     functions were analysed and the errors of those that failed, so a failed scan never reads as a clean one."""
     confirmed = sorted((r for r in results if r["verdict"] in _CONFIRMED), key=lambda r: -len(evidence(r)))
     simplified = [r for r in results if r["verdict"] in _SIMPLIFIED]
+    cpython = sorted((r for r in results if r["verdict"] in _CPYTHON), key=lambda r: -len(evidence(r)))
     rejected = [r for r in results if r["verdict"] in _REJECTED]
     suspicions: dict[str, list[dict]] = defaultdict(list)
     for r in results:
-        if r["verdict"] not in _CONFIRMED + _SIMPLIFIED + _REJECTED:
+        if r["verdict"] not in _CONFIRMED + _SIMPLIFIED + _CPYTHON + _REJECTED:
             # A harness defect is the agent's to fix, never a limit of ESBMC.
             group = (r["verdict"] if r["verdict"] in CHECKED else
                      "harness_broken" if r["verdict"] == "HARNESS_BROKEN" else limit_group(r["verdict"], r.get("reason", "")))
@@ -71,12 +74,16 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
                     *(f"- {error[:200]}" for error in errors[:10]), ""]
     lines = ["# Relatório da rodada", "", *failures,
              (f"{len(results)} hipóteses: {len(confirmed)} confirmadas pelo ESBMC, {len(rejected)} barradas pelos "
-              f"controles, {len(simplified)} confirmadas só em código simplificado, "
-              f"{len(results) - len(confirmed) - len(rejected) - len(simplified)} não confirmadas (o ESBMC disse seguro, "
+              f"controles, {len(simplified)} confirmadas só em código simplificado, {len(cpython)} reproduzidas só no "
+              f"CPython, {len(results) - len(confirmed) - len(rejected) - len(simplified) - len(cpython)} não confirmadas (o ESBMC disse seguro, "
               "não decidiu, ou o harness não chegou a rodar)."), "",
              f"## Confirmados ({len(confirmed)})", "",
              "Do mais para o menos verificado. Cada um passa por auditoria manual antes de virar issue.", "",
              *(_confirmed(r, root) for r in confirmed), "",
+             f"## Reproduzidos só no CPython ({len(cpython)})", "",
+             "O ESBMC não chegou a um veredito; o CPython levantou o erro na expressão suspeita, com o corpo original e",
+             "os mesmos controles. Evidência de execução, sem prova formal.", "",
+             *(_confirmed(r, root) for r in cpython), "",
              f"## Confirmados em código simplificado ({len(simplified)})", "",
              "O agente mudou o corpo da função para o ESBMC aceitar: valem como pista, não como bug do código real.",
              "", *(f"- {_where(r, root)}: {r.get('reason', '')}" for r in simplified), "",

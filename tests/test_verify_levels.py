@@ -118,3 +118,13 @@ def test_agent_levels_never_counts_a_rewritten_body_as_an_agent_verdict():
     assert rows["ok"]["level"] == AGENT and rows["simp"]["level"] == SIMPLIFIED
     assert rows["rw"]["level"] == LLM_ONLY and rows["rw"]["limit"] == REWRITE
     assert rows["fail"]["level"] == LLM_ONLY
+
+
+def test_a_cpython_only_reproduction_has_its_own_level_in_both_paths():
+    from research_pipeline.verify.levels import CPYTHON, agent_levels
+
+    tried = {**_result("a", "REPRODUCED_CPYTHON"), "target_preserved": True}
+    rows = consolidate([_result("a", "UNSUPPORTED", "x")], [tried])
+    assert rows[0]["level"] == CPYTHON and agent_levels([tried])[0]["level"] == CPYTHON
+    summary = level_summary(rows)
+    assert summary["confirmed"] == 0 and summary["reproduced_cpython"] == 1

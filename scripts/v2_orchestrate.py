@@ -50,6 +50,7 @@ def summarize(rows: list[dict], results: list[dict], ground_truth: dict, control
                "value_confirmed_at_bug": value,
                "confirmed_at_bug_with_value": confirmed + value,
                "fuzz_found_at_bug": len(found),
+               "reproduced_cpython_at_bug": sum(r["final"] == "REPRODUCED_CPYTHON" and at_bug(r) for r in rows),
                "confirmed_at_bug_by_pinned": sum(
                    r["final"] == "CONFIRMED" and at_bug(r) and bool(r["steps"]) and r["steps"][-1]["arm"] == "pinned"
                    for r in rows)}

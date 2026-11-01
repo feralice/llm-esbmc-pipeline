@@ -307,7 +307,7 @@ def test_a_pytest_that_does_not_reproduce_leaves_the_verdict_alone(tmp_path, mon
 
 
 def test_unconfirmed_case_does_not_run_the_pytest_generator(tmp_path, monkeypatch, _pytest_calls):
-    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation"))
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
     assert result["verdict"] != CONFIRMED and "pytest" not in result and not _pytest_calls
@@ -643,3 +643,41 @@ def test_a_usage_limit_from_the_agent_session_is_a_pipeline_error(tmp_path):
                            run_agent=lambda prompt, cwd, timeout: "You've hit your monthly spend limit · raise it",
                            esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
     assert result["verdict"] == "PIPELINE_ERROR"
+
+
+def test_cpython_reproduction_counts_apart_when_esbmc_reaches_no_verdict(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("tool_error"))
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == agent_arm.REPRODUCED_CPYTHON, result
+    assert result["replay"]["exception_type"] == "ZeroDivisionError"
+    assert result["pytest"]["status"] == "reproduces", result["pytest"]
+
+
+def test_cpython_reproduction_goes_through_the_fixed_version_control(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("tool_error"))
+    unguarded = tmp_path / "unguarded.py"
+    unguarded.write_text(ORIGINAL.replace("return total // count", "return (total // count)"))
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30, fixed_path=unguarded)
+    assert result["verdict"] == FIXED_ALSO_FAILS, result
+
+
+def test_cpython_reproduction_inside_an_invented_stub_is_rejected(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("tool_error"))
+    stubbed = PRESERVED.replace("def ratio(", """class Count:
+    def __rfloordiv__(self, other: int) -> int:
+        return other // 0
+
+
+def ratio(""").replace("    c: int = nondet_int()\n    ratio(t, c)", "    ratio(t, Count())")
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(stubbed),
+                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
+    assert result["verdict"] == STUB_INDUCED, result
+
+
+def test_a_safe_esbmc_verdict_is_not_overridden_by_cpython(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("no_violation_found"))
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=_agent(PRESERVED),
+                           esbmc_command=None, bound=5, timeout_seconds=30)
+    assert result["verdict"] != agent_arm.REPRODUCED_CPYTHON, result

@@ -1146,6 +1146,27 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   (`commit_retomada2.txt`): ip_real_20 UNVALIDATED, ip_real_33 AGENT_FAILED (expressão suspeita alterada); os
   outros 3 também são do agente. A métrica final não mudou.
 
+## Nível "reproduzido só no CPython" (31/10): medido nos harnesses do S6, sem LLM
+
+- **Pergunta:** quando o ESBMC não chega a um veredito (UNSUPPORTED, ESBMC_TIMEOUT, ESBMC_ERROR,
+  BOUND_INCONCLUSIVE), o CPython sozinho, com o corpo original, reproduz o bug? Decisão da Fernanda em 31/10:
+  ficar com CPython + LLM + AST onde o ESBMC não roda, contado à parte dos confirmados pelo ESBMC.
+- **Regra:** veredito `REPRODUCED_CPYTHON` quando o corpo do alvo é o original e o smoke (até 400 entradas no
+  CPython, antes do ESBMC) levanta a exceção na expressão suspeita; passa pelos mesmos controles dos
+  confirmados (stub inventado, versão corrigida com as mesmas entradas, diferencial) e gera o pytest do replay.
+  Um veredito do ESBMC (seguro ou violação) nunca é trocado. Nível `cpython_only` no `levels`, seção própria no
+  relatório, abaixo dos confirmados.
+- **Comando:** `scripts/v2_agent_reverify.py artifacts/v2/s6-s2-{base,grafo}-2026-10-29 --out ...` (agora com
+  `--fixed-sources`), resultado em `artifacts/v2/s6-cpython-reverify-2026-10-31/`. Sem chamada de LLM.
+- **Métrica final:** confirmados pelo ESBMC continuam **4 nos dois braços**. O nível novo soma **1 bug do
+  gabarito em cada**: oob_real_14 (`lines[0]`, IndexError) na base e dz_real_02
+  (`float(not_parsed)/float(num_substrings)`, ZeroDivisionError) no grafo; cada um tinha saído
+  CONFIRMED_SIMPLIFIED no outro braço. bip_luigi_21 sobe nos dois, mas fora da linha do gabarito.
+- **Controles:** 7 candidatos em cada braço, 5 barrados em cada. Base: STUB_INDUCED (nm_real_25, nm_real_04,
+  bip_scrapy_18), FIXED_ALSO_FAILS (tm_real_10), BEHAVIOUR_CHANGED (dz_real_04). Grafo: STUB_INDUCED
+  (nm_real_25, bip_pandas_162), FIXED_ALSO_FAILS (tm_real_10, bip_spacy_2), BEHAVIOUR_CHANGED (dz_real_04).
+- **Ressalva:** evidência de execução, sem prova formal; os dois do gabarito ainda pedem auditoria manual.
+
 ## S5, plano D (29/10): o scan pronto para repo real, sem rodada
 
 - **O que entrou** (`docs/desenho/planos/2026-10-29-s5-plano-d-scan-real.md`, itens 9a a 9c do plano): a
