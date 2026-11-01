@@ -1179,7 +1179,13 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
 - **Controles:** 7 candidatos em cada braço, 5 barrados em cada. Base: STUB_INDUCED (nm_real_25, nm_real_04,
   bip_scrapy_18), FIXED_ALSO_FAILS (tm_real_10), BEHAVIOUR_CHANGED (dz_real_04). Grafo: STUB_INDUCED
   (nm_real_25, bip_pandas_162), FIXED_ALSO_FAILS (tm_real_10, bip_spacy_2), BEHAVIOUR_CHANGED (dz_real_04).
-- **Ressalva:** evidência de execução, sem prova formal; os dois do gabarito ainda pedem auditoria manual.
+- **Ressalva:** evidência de execução, sem prova formal.
+- **Auditoria manual (31/10), os dois contam:** oob_real_14 (distro): corpo idêntico ao original; `lines = []`
+  levanta IndexError em `lines[0]`; entrada real (o chamador passa `uname -rs` quebrado em linhas, vazio quando o
+  comando não imprime nada, issues #304 e #264 do projeto); a correção acrescenta `if not lines: return {}`.
+  dz_real_02 (dateparser): corpo idêntico; uma opção de divisão vazia dá `num_substrings = 0` e
+  ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
+  `enumerate`. Os dois pytest do replay reproduzem.
 
 ## S5, plano D (29/10): o scan pronto para repo real, sem rodada
 

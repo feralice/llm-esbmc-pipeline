@@ -18,6 +18,7 @@ from pathlib import Path
 from ..llm.prompts import build_user_prompt, load_system_prompt
 from ..models import CodeUnit
 from ..preprocess import preprocess_file
+from ..verify.agent_arm import REPRODUCED_CPYTHON
 from ..verify.candidate import Candidate
 from ..verify.hypothesis import BugHypothesis
 from ..verify.levels import agent_levels, consolidate, level_summary
@@ -311,21 +312,21 @@ def summary_markdown(report: dict) -> str:
          f"{detection['hypotheses']} hipóteses enviadas ao ESBMC, {detection['held']} seguradas pela LLM."),
         f"- Vereditos: {verdicts or 'nenhum'}.",
         f"- Nível que decidiu: {report['levels']['summary']['by_level'] or 'nenhum'}.",
-        "",
-        "## Confirmados (ESBMC e reexecução no CPython)",
-        "",
     ]
-    confirmed = [r for r in report["results"] if r["verdict"] == CONFIRMED]
-    if not confirmed:
-        lines.append("Nenhum.")
-    for result in confirmed:
-        h = result["hypothesis"]
-        replay = result.get("replay") or {}
-        lines.append(f"- `{os.path.relpath(h['file'], report['config']['root'])}` `{h['function']}`: "
-                     f"`{h['suspect_expression']}`; {replay.get('exception_type') or result['reason'][:120]}"
-                     + (f"; entrada: `{replay['inputs']}`" if replay.get("inputs") else "")
-                     + (f"; programa: `{result['program_path']}`" if result.get("program_path") else "")
-                     + (f"; teste: `{result['pytest']['path']}`" if (result.get("pytest") or {}).get("path") else ""))
+    for title, verdict in (("Confirmados (ESBMC e reexecução no CPython)", CONFIRMED),
+                           ("Reproduzidos só no CPython (o ESBMC não decidiu)", REPRODUCED_CPYTHON)):
+        lines += ["", f"## {title}", ""]
+        found = [r for r in report["results"] if r["verdict"] == verdict]
+        if not found:
+            lines.append("Nenhum.")
+        for result in found:
+            h = result["hypothesis"]
+            replay = result.get("replay") or {}
+            lines.append(f"- `{os.path.relpath(h['file'], report['config']['root'])}` `{h['function']}`: "
+                         f"`{h['suspect_expression']}`; {replay.get('exception_type') or result['reason'][:120]}"
+                         + (f"; entrada: `{replay['inputs']}`" if replay.get("inputs") else "")
+                         + (f"; programa: `{result['program_path']}`" if result.get("program_path") else "")
+                         + (f"; teste: `{result['pytest']['path']}`" if (result.get("pytest") or {}).get("path") else ""))
     return "\n".join(lines) + "\n"
 
 

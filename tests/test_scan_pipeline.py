@@ -458,3 +458,20 @@ def test_setup_py_is_left_out_only_at_the_root(tmp_path: Path) -> None:
     (root / "setup.py").write_text("def version(parts):\n    return parts[0]\n", encoding="utf-8")
     names = [t.qualname for t in plan_scan(root, tmp_path / "out").targets]
     assert "configure" in names and "version" not in names
+
+
+def test_summary_lists_cpython_only_reproductions_apart_from_esbmc_confirmations() -> None:
+    from research_pipeline.scan.pipeline import summary_markdown
+
+    def result(verdict, function):
+        return {"verdict": verdict, "reason": "", "replay": {"exception_type": "IndexError", "inputs": [0]},
+                "hypothesis": {"file": "/r/a.py", "function": function, "suspect_expression": "x[0]"}}
+    report = {"config": {"root": "/r"},
+              "graph": {"functions": 1, "modules": 1, "resolved_calls": 0, "call_sites": 0},
+              "detection": {"functions": 1, "failed": 0, "hypotheses": 2, "held": 0},
+              "verification": {"by_verdict": {"CONFIRMED": 1, "REPRODUCED_CPYTHON": 1}},
+              "levels": {"summary": {"by_level": {}}},
+              "results": [result("CONFIRMED", "f"), result("REPRODUCED_CPYTHON", "g")]}
+    text = summary_markdown(report)
+    esbmc, cpython = text.split("## Reproduzidos só no CPython")
+    assert "`f`" in esbmc and "`g`" not in esbmc and "`g`: `x[0]`; IndexError" in cpython
