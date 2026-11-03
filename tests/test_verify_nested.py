@@ -1,6 +1,8 @@
 import ast
 
 from research_pipeline.verify.astutil import find_definition, outer_entry
+from research_pipeline.verify.grounding import Grounded, ground
+from research_pipeline.verify.hypothesis import BugHypothesis
 
 FOUR_LEVELS = '''class A:
     def f(self, n: int) -> int:
@@ -81,3 +83,28 @@ def test_outer_entry_picks_the_branch_holding_the_expression():
 
 def test_no_outer_entry_through_an_async_function():
     assert outer_entry(ast.parse(ASYNC_OUTER), "f.g") is None
+
+
+def _ground(name, expression, line, source) -> Grounded:
+    grounded = ground(BugHypothesis("x.py", name, expression, line=line), source)
+    assert isinstance(grounded, Grounded), grounded
+    return grounded
+
+
+def test_nonlocal_and_inner_class_ground_through_the_outer_function():
+    for source, name, expression in [(NONLOCAL, "f.add", "10 // x"), (INNER_CLASS, "f.C.m", "10 // k")]:
+        grounded = _ground(name, expression, 5, source)
+        assert grounded.transforms[0] == f"nested_entry_via_outer:{name}"
+        assert grounded.hypothesis.function == "f"
+
+
+def test_four_levels_enter_through_the_method():
+    grounded = _ground("A.f.g.h.i", "10 // (z - n + k)", 6, FOUR_LEVELS)
+    assert grounded.transforms[0] == "nested_entry_via_outer:A.f.g.h.i"
+    assert grounded.hypothesis.function == "A.f"
+    assert grounded.hypothesis.line == 6
+
+
+def test_callback_and_async_outer_still_hoist():
+    assert _ground("f.cb", "10 // x", 3, CALLBACK).transforms[0].startswith("nested_entry_hoisted:")
+    assert _ground("f.g", "10 // k", 3, ASYNC_OUTER).transforms[0].startswith("nested_entry_hoisted:")

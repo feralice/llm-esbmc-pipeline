@@ -8,7 +8,7 @@ import dataclasses
 import symtable
 from dataclasses import dataclass, field
 
-from .astutil import expression_nodes, find_function, nested_chain
+from .astutil import expression_nodes, find_function, nested_chain, outer_entry
 from .compat import remove_unused
 from .context import context_module
 from .dead_guards import fold_dead_guards
@@ -472,6 +472,12 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         name = h.function.split(".")[-1]
         if any(isinstance(n, ast.AsyncFunctionDef) and n.name == name for n in ast.walk(tree)):
             return GroundingFailure("async entry point is not supported", unsupported=True)
+        outer = outer_entry(tree, h.function, h.suspect_expression)
+        if outer is not None:
+            grounded = ground(dataclasses.replace(h, function=outer), source, refused, rules)
+            if isinstance(grounded, Grounded):
+                return dataclasses.replace(grounded, transforms=(f"nested_entry_via_outer:{h.function}",
+                                                                 *grounded.transforms))
         hoisted = _hoist_nested(tree, source, h)
         if hoisted is not None:
             grounded = ground(hoisted[1], hoisted[0], refused, rules)
