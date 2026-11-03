@@ -58,12 +58,12 @@ def test_super_call_resolves_to_the_base_method(tmp_path: Path) -> None:
     assert ("m:B.f", "m:A.f") in _edges(build_callgraph(root))
 
 
-def test_nested_function_is_indexed_but_not_reachable_by_the_engine(tmp_path: Path) -> None:
+def test_nested_function_is_indexed_and_reachable_by_the_engine(tmp_path: Path) -> None:
     root = _repo(tmp_path, {"m.py": "def outer(x):\n    def inner(y):\n        return 1 / y\n"
                                     "    return inner(x)\n"})
     graph = build_callgraph(root)
     inner = graph.functions["m:outer.inner"]
-    assert inner.nested and not inner.verifiable
+    assert inner.nested and inner.verifiable
     assert graph.functions["m:outer"].verifiable
     assert [s.caller for s in graph.callers("m:outer.inner")] == ["m:outer"]
     assert not graph.callees("m:outer.inner")
@@ -118,3 +118,16 @@ def test_a_root_that_is_a_package_resolves_its_absolute_self_imports(tmp_path: P
     root = _repo(tmp_path, {"lib/__init__.py": "", "lib/core.py": "def f(x):\n    return x\n",
                             "lib/use.py": "from lib.core import f\n\ndef g():\n    return f(1)\n"})
     assert ("lib.use:g", "lib.core:f") in _edges(build_callgraph(root / "lib"))
+
+
+def test_nested_sync_functions_are_selectable_and_async_ones_are_not(tmp_path):
+    from research_pipeline.scan.pipeline import select_targets
+
+    (tmp_path / "m.py").write_text("def f(n):\n    def g(k):\n        return 10 // k\n    return g(n)\n"
+                                   "async def a():\n    def b(x):\n        return 1 // x\n    return b(1)\n")
+    graph = build_callgraph(tmp_path)
+    assert graph.functions["m:f.g"].verifiable
+    counts = {}
+    keys = {t.key for t in select_targets(graph, excluded=counts)[0]}
+    assert "m:f.g" in keys and "m:a.b" not in keys
+    assert counts["async"] == 2

@@ -44,8 +44,9 @@ class FunctionNode:
 
     @property
     def verifiable(self) -> bool:
-        """What the verify engine can locate: a module function or a method of a module class, defined once."""
-        return self.top_level and not self.nested and not self.ambiguous and self.qualname.count(".") <= 1
+        """What the verify engine can locate: a module function or a method of a module class, defined once, or a
+        function nested in one (entered through the enclosing function or hoisted)."""
+        return not self.ambiguous and (self.nested or (self.top_level and self.qualname.count(".") <= 1))
 
 
 @dataclass(frozen=True)

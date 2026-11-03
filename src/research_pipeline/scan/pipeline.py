@@ -107,9 +107,15 @@ def rank_key(target: Target, rank: str = "callers") -> tuple:
     return (target.risky_operations == 0, importance, -target.risky_operations, target.file, target.start_line)
 
 
-def _exclusion(function, include_examples: bool) -> str:
+def _in_async(graph: CallGraph, function) -> bool:
+    parts = function.qualname.split(".")
+    enclosing = (graph.functions.get(f"{function.module}:{'.'.join(parts[:i])}") for i in range(1, len(parts)))
+    return function.is_async or any(f is not None and f.is_async for f in enclosing)
+
+
+def _exclusion(graph: CallGraph, function, include_examples: bool) -> str:
     """Why a function is left out of the selection (it stays in the graph as a caller), or ''."""
-    if function.is_async:
+    if _in_async(graph, function):
         return "async"  # ESBMC-Python does not model coroutines
     if include_examples:
         return ""
@@ -133,7 +139,7 @@ def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "c
     for function in graph.functions.values():
         if not function.verifiable:
             continue
-        reason = _exclusion(function, include_examples)
+        reason = _exclusion(graph, function, include_examples)
         if reason:
             counts[reason] += 1
             continue
@@ -187,6 +193,9 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
           f"{stats['call_sites']} chamada(s), {stats['resolved_calls']} resolvida(s) no repositório.")
     print(f"Selecionadas {len(targets)} de {total} função(ões). Estimativa da detecção: {len(targets)} chamada(s) "
           f"à LLM, ~{plan.estimated_tokens} tokens; a verificação gasta até 3 chamadas por hipótese a mais.")
+    nested = sum(graph.functions[t.key].nested for t in targets)
+    if nested:
+        print(f"{nested} função(ões) interna(s) incluída(s): entram pela função de fora ou levantadas.")
     if any(excluded.values()):
         print(f"Fora da seleção: {excluded['examples']} em examples/docs, {excluded['setup']} no setup.py da raiz, "
               f"{excluded['async']} async (o ESBMC-Python não modela)."
