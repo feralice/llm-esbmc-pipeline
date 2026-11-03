@@ -18,7 +18,7 @@ from pathlib import Path
 from ..llm.prompts import build_user_prompt, load_system_prompt
 from ..models import CodeUnit
 from ..preprocess import preprocess_file
-from ..smells.filter import filter_candidates, ruff_candidates
+from ..smells.filter import SmellCandidate, filter_candidates, ruff_candidates
 from ..verify.agent_arm import REPRODUCED_CPYTHON
 from ..verify.candidate import Candidate
 from ..verify.hypothesis import BugHypothesis
@@ -182,13 +182,20 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
     plan.output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
     if smells:
+        try:
+            tool, tool_error = ruff_candidates(graph.root), ""
+        except RuntimeError as exc:
+            tool, tool_error = [], str(exc)
         # No ground truth for smells: the file says so, and nothing here counts as a measured result.
+        # The code is kept so the LLM judges what the tool saw, even if the repository changes before --yes.
         _write_json(plan.output_dir / "scan_smells.json", {
             "exploratory": True, "architecture": architecture_smells(graph),
             "feature_envy": [{"method": key, "metrics": feature_envy_metrics(graph, key)}
                              for key in envy_candidates(graph)],
+            "tool_error": tool_error,
             "tool_candidates": [{"id": c.id, "smell": c.smell, "path": c.path, "line": c.line,
-                                 "rule": c.tool.removeprefix("ruff:")} for c in ruff_candidates(graph.root)]})
+                                 "rule": c.tool.removeprefix("ruff:"), "metrics": c.metrics, "code": c.code,
+                                 "first_line": c.first_line} for c in tool]})
     _write_json(plan.output_dir / "scan_selection.json", plan.to_dict())
     stats = graph.stats()
     print(f"Grafo de {graph.root}: {stats['modules']} módulo(s), {stats['skipped_files']} ignorado(s) por erro, "
@@ -367,7 +374,7 @@ _ENVY_PROMPT = Path(__file__).resolve().parents[1] / "prompts" / "smell_feature_
 
 def judge_smells(plan: ScanPlan, llm) -> dict:
     """Ask the LLM about each Feature Envy candidate in scan_smells.json, with the method, its class and the
-    graph metrics (iSMELL, ASE 2024); the answers are written back to the same file."""
+    graph metrics, and filter the ruff reports (iSMELL, ASE 2024); the answers are written back to the same file."""
     path = plan.output_dir / "scan_smells.json"
     report = json.loads(path.read_text(encoding="utf-8"))
     system = _ENVY_PROMPT.read_text(encoding="utf-8")
@@ -394,7 +401,8 @@ def judge_smells(plan: ScanPlan, llm) -> dict:
                 entries[candidate_id]["llm"] = answer
         _write_json(path, report)
 
-    candidates = [c for c in ruff_candidates(plan.root) if c.id in entries]
+    candidates = [SmellCandidate(e["id"], e["smell"], e["path"], e["line"], f"ruff:{e['rule']}", e.get("metrics", {}),
+                                 e.get("code", ""), e.get("first_line", e["line"])) for e in entries.values()]
     save(filter_candidates(candidates, llm, done=done, on_answer=save))
     return report
 
@@ -404,9 +412,17 @@ def smells_section(output_dir: Path) -> str:
     path = Path(output_dir) / "scan_smells.json"
     if not path.exists():
         return ""
-    entries = json.loads(path.read_text(encoding="utf-8")).get("tool_candidates", [])
-    kept = [e for e in entries if (e.get("llm") or {}).get("smell") is True]
-    lines = ["", "## Smells (exploratório, sem gabarito)", "",
-             f"{len(entries)} apontados pelo ruff, {len(kept)} mantidos pela LLM."]
-    lines += [f"- `{e['path']}:{e['line']}` {e['smell']} ({e['rule']}): {e['llm']['reason']}" for e in kept]
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    entries = saved.get("tool_candidates", [])
+    # The filter only removes: an entry the LLM did not answer keeps the tool's call and is counted apart.
+    kept = [e for e in entries if (e.get("llm") or {}).get("smell") is not False]
+    unanswered = [e for e in kept if (e.get("llm") or {}).get("smell") is not True]
+    lines = ["", "## Smells (exploratório, sem gabarito)", ""]
+    if saved.get("tool_error"):
+        lines.append(f"O ruff não rodou: {saved['tool_error']}")
+    lines.append(f"{len(entries)} apontados pelo ruff, {len(kept)} mantidos ({len(unanswered)} sem resposta da LLM, "
+                 "que ficam com a decisão da ferramenta).")
+    for e in kept:
+        reason = " ".join(str((e.get("llm") or {}).get("reason") or "sem resposta da LLM").split())
+        lines.append(f"- `{e['path']}:{e['line']}` {e['smell']} ({e['rule']}): {reason}")
     return "\n".join(lines) + "\n"

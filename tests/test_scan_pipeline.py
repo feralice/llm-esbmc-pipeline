@@ -526,3 +526,26 @@ def test_scan_smells_send_ruff_candidates_through_the_llm_filter(tmp_path: Path)
     assert saved["tool_candidates"][0]["llm"] == {"smell": True, "reason": "seven parameters"}
     section = smells_section(tmp_path / "out")
     assert "exploratório" in section and "LongParameterList" in section and "seven parameters" in section
+
+
+def test_scan_smells_judge_the_code_seen_at_plan_time_and_count_what_was_not_kept(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+
+    from research_pipeline.scan.pipeline import judge_smells, smells_section
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "m.py").write_text("def f(a, b, c, d, e, g, h):\n    return a\n", encoding="utf-8")
+    plan = plan_scan(root, tmp_path / "out", smells=True)
+    (root / "m.py").write_text("import os\n" + (root / "m.py").read_text(encoding="utf-8"), encoding="utf-8")
+
+    class LLM:
+        def complete(self, system, user, *, json_mode=False):
+            assert "def f(a, b" in user
+            return SimpleNamespace(raw_response="not json")
+
+    judge_smells(plan, LLM())
+    [entry] = json.loads((tmp_path / "out" / "scan_smells.json").read_text(encoding="utf-8"))["tool_candidates"]
+    assert "error" in entry["llm"]
+    section = smells_section(tmp_path / "out")
+    assert "1 mantidos" in section and "1 sem resposta da LLM" in section

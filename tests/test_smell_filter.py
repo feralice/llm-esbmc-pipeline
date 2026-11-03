@@ -42,12 +42,12 @@ def test_invalid_json_is_an_error_for_the_whole_group():
     assert all("error" in r for r in results.values())
 
 
-def test_extra_and_repeated_ids_are_ignored_and_only_a_boolean_counts():
+def test_extra_ids_are_ignored_and_the_first_boolean_answer_wins():
     answer = json.dumps({"verdicts": [{"id": "a", "smell": "false", "reason": "r"},
                                       {"id": "a", "smell": True, "reason": "second"},
                                       {"id": "zzz", "smell": True, "reason": "r"}]})
     results = filter_candidates([_candidate("a")], FakeLLM(answer))
-    assert results == {"a": {"smell": "false", "reason": "r"}}
+    assert results == {"a": {"smell": True, "reason": "second"}}
 
 
 def test_no_code_is_skipped_and_answered_candidates_are_not_asked_again():
@@ -105,3 +105,44 @@ def test_ruff_reports_become_candidates_with_their_enclosing_code(tmp_path):
     assert (candidate.smell, candidate.path, candidate.line, candidate.tool) == ("LongParameterList", "m.py", 4,
                                                                                 "ruff:PLR0913")
     assert candidate.code.startswith("def f(") and candidate.first_line == 4
+
+
+def test_only_a_boolean_answer_counts_and_a_malformed_id_spoils_nothing():
+    answer = json.dumps({"verdicts": [{"id": ["x"]}, {"id": "a", "smell": "false", "reason": "r"},
+                                      {"id": "b", "smell": None}, {"id": "c", "smell": False, "reason": "r"}]})
+    results = filter_candidates([_candidate("a"), _candidate("b"), _candidate("c")], FakeLLM(answer))
+    assert "error" in results["a"] and "error" in results["b"] and results["c"]["smell"] is False
+
+
+def test_unanswered_and_skipped_are_counted_per_smell_and_f1_is_zero_when_all_real_smells_go():
+    candidates = [_candidate("e"), _candidate("n", code=""), _candidate("gone", "LongMethod")]
+    labels = {"e": ("LongParameterList", 0), "n": ("LongParameterList", 1), "gone": ("LongMethod", 1)}
+    results = {"e": {"error": "x"}, "n": {"skipped": "no code"}, "gone": {"smell": False, "reason": ""}}
+    report = score(candidates, labels, results, scope="sampled candidates only")
+    assert report["per_smell"]["LongParameterList"]["llm_errors"] == 1
+    assert report["per_smell"]["LongParameterList"]["no_code"] == 1
+    assert report["per_smell"]["LongMethod"]["tool_llm"]["f1"] == 0.0
+    assert report["recall_scope"] == "sampled candidates only"
+
+
+def test_a_missing_or_failing_ruff_is_an_error_not_zero_smells(tmp_path):
+    from research_pipeline.smells.filter import ruff_candidates
+
+    (tmp_path / "m.py").write_text("x = 1\n", encoding="utf-8")
+    for command in ("no-such-ruff-binary", "false"):
+        with pytest.raises(RuntimeError):
+            ruff_candidates(tmp_path, ruff=command)
+
+
+def test_script_refuses_to_resume_answers_from_another_configuration(tmp_path, monkeypatch, capsys):
+    import sys
+
+    sys.path.insert(0, "scripts")
+    import smell_filter_pysmell as script
+
+    out = tmp_path / "o"
+    out.mkdir()
+    (out / "config.json").write_text(json.dumps({"backend": "claude_cli", "model": "other", "sample": 5, "seed": 42,
+                                                 "prompt": "x"}), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["x", "--out", str(out), "--sample", "5", "--yes"])
+    assert script.main() == 1 and "outra configuração" in capsys.readouterr().err

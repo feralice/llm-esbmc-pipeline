@@ -10,6 +10,7 @@ how many real smells the LLM drops. Without ``--yes`` it only counts the calls.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import random
 import sys
@@ -19,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from research_pipeline.smells.filter import (
+    PROMPT,
     SmellCandidate,
     filter_candidates,
     score,
@@ -40,7 +42,9 @@ def pysmell_candidates(rows: list[dict]) -> tuple[list[SmellCandidate], dict[str
 
 
 def _write(path: Path, data: dict) -> None:
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(path)
 
 
 def main() -> int:
@@ -66,15 +70,22 @@ def main() -> int:
     from research_pipeline.verify.llm_client import LLMClient
 
     args.out.mkdir(parents=True, exist_ok=True)
-    results_path = args.out / "results.json"
+    config = {"backend": args.backend, "model": args.model, "sample": args.sample, "seed": args.seed,
+              "prompt": hashlib.sha256(PROMPT.read_bytes()).hexdigest()[:12]}
+    config_path, results_path = args.out / "config.json", args.out / "results.json"
+    if config_path.exists() and json.loads(config_path.read_text(encoding="utf-8")) != config:
+        print(f"{args.out} tem respostas de outra configuração ({config_path}); use outra pasta.", file=sys.stderr)
+        return 1
+    _write(config_path, config)
     done = json.loads(results_path.read_text(encoding="utf-8")) if results_path.exists() else {}
     llm = LLMClient(backend=args.backend, model=args.model, timeout_seconds=300)
-    results = filter_candidates(candidates, llm, done=done, on_answer=lambda r: _write(results_path, r))
-    _write(results_path, results)
-    report = {"sample": args.sample, "seed": args.seed, "backend": args.backend, "model": args.model,
-              **score(candidates, labels, results)}
+    results = filter_candidates(candidates, llm, done=done,
+                                on_answer=lambda r: _write(results_path, {**done, **r}))
+    _write(results_path, {**done, **results})
+    scope = "sampled candidates only" if args.sample else "all labelled items"
+    report = {**config, **score(candidates, labels, results, scope=scope)}
     _write(args.out / "score.json", report)
-    print(json.dumps({k: report[k] for k in ("tool", "tool_llm", "llm_errors", "no_code")}, indent=1))
+    print(json.dumps({k: report[k] for k in ("recall_scope", "tool", "tool_llm", "llm_errors", "no_code")}, indent=1))
     return 0
 
 

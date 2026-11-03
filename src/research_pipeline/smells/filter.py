@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import ast
 import json
+import shutil
 import subprocess
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,8 +41,10 @@ def _answers(raw: str, asked: set[str]) -> dict[str, dict]:
         raise TypeError(f"no verdicts list: {raw[:200]!r}")
     found: dict[str, dict] = {}
     for verdict in verdicts:
-        if isinstance(verdict, dict) and verdict.get("id") in asked and verdict["id"] not in found:
-            found[verdict["id"]] = {"smell": verdict.get("smell"), "reason": str(verdict.get("reason", ""))}
+        # Only a boolean decides; anything else stays unanswered, so it is counted and asked again.
+        if isinstance(verdict, dict) and isinstance(verdict.get("id"), str) and verdict["id"] in asked \
+                and verdict["id"] not in found and isinstance(verdict.get("smell"), bool):
+            found[verdict["id"]] = {"smell": verdict["smell"], "reason": str(verdict.get("reason", ""))}
     return found
 
 
@@ -76,15 +80,18 @@ def filter_candidates(candidates: list[SmellCandidate], llm, *, done: dict | Non
 def _block(tp: int, fp: int, fn: int) -> dict:
     precision = tp / (tp + fp) if tp + fp else None
     recall = tp / (tp + fn) if tp + fn else None
-    if precision is None or recall is None:
+    if recall == 0.0:
+        f1 = 0.0
+    elif precision is None or recall is None:
         f1 = None
     else:
-        f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+        f1 = 2 * precision * recall / (precision + recall)
     return {"tp": tp, "fp": fp, "fn": fn, "precision": precision, "recall": recall, "f1": f1}
 
 
-def score(candidates: list[SmellCandidate], labels: dict[str, tuple[str, int]], results: dict[str, dict]) -> dict:
-    """Tool alone against tool plus LLM, overall and per smell; ``labels`` covers every labelled item
+def score(candidates: list[SmellCandidate], labels: dict[str, tuple[str, int]], results: dict[str, dict], *,
+          scope: str = "all labelled items") -> dict:
+    """Tool alone against tool plus LLM, overall and per smell; ``labels`` covers the labelled items in ``scope``
     (``id -> (smell, 1 or 0)``), so the positives the tool never reported count as misses for both."""
     reported = {c.id for c in candidates}
     kept = {c.id for c in candidates if results.get(c.id, {}).get("smell") is not False}
@@ -96,11 +103,14 @@ def score(candidates: list[SmellCandidate], labels: dict[str, tuple[str, int]], 
         fn = sum(1 for i in ids if i not in chosen and labels[i][1] == 1)
         return _block(tp, fp, fn)
 
+    def unsent(key: str, smell: str | None) -> int:
+        return sum(1 for c in candidates if key in results.get(c.id, {}) and (smell is None or c.smell == smell))
+
     smells = sorted({name for name, _ in labels.values()})
-    return {"tool": counts(reported, None), "tool_llm": counts(kept, None),
-            "per_smell": {s: {"tool": counts(reported, s), "tool_llm": counts(kept, s)} for s in smells},
-            "llm_errors": sum(1 for c in candidates if "error" in results.get(c.id, {})),
-            "no_code": sum(1 for c in candidates if "skipped" in results.get(c.id, {}))}
+    return {"recall_scope": scope, "tool": counts(reported, None), "tool_llm": counts(kept, None),
+            "per_smell": {s: {"tool": counts(reported, s), "tool_llm": counts(kept, s),
+                              "llm_errors": unsent("error", s), "no_code": unsent("skipped", s)} for s in smells},
+            "llm_errors": unsent("error", None), "no_code": unsent("skipped", None)}
 
 
 RUFF_SMELLS = {"PLR0913": "LongParameterList", "PLR0915": "LongMethod", "C901": "LongMethod", "PLR0904": "LargeClass"}
@@ -121,15 +131,28 @@ def _enclosing(source: str, line: int) -> tuple[str, int]:
     return "\n".join(source.splitlines()[first - 1:node.end_lineno]), first
 
 
-def ruff_candidates(root: Path, ruff: str = "ruff") -> list[SmellCandidate]:
-    """Size and complexity reports from ruff with its defaults (``--isolated``), named as PySmell's smells."""
-    root = Path(root)
+def _ruff() -> str:
+    """ruff on the PATH, else the one installed next to this Python (the venv's)."""
+    sibling = Path(sys.executable).with_name("ruff")
+    return shutil.which("ruff") or (str(sibling) if sibling.exists() else "ruff")
+
+
+def ruff_candidates(root: Path, ruff: str | None = None) -> list[SmellCandidate]:
+    """Size and complexity reports from ruff with its defaults (``--isolated``), named as PySmell's smells.
+    Raises RuntimeError when ruff is missing or fails, which is not the same as finding no smell."""
+    root = Path(root).resolve()
     try:
-        done = subprocess.run([ruff, "check", "--isolated", "--preview", "--select", ",".join(RUFF_SMELLS),
+        done = subprocess.run([ruff or _ruff(), "check", "--isolated", "--preview", "--select", ",".join(RUFF_SMELLS),
                                "--output-format", "json", str(root)], capture_output=True, text=True, check=False)
-        reports = json.loads(done.stdout or "[]")
-    except (OSError, json.JSONDecodeError):
-        return []
+    except OSError as exc:
+        raise RuntimeError(f"ruff did not run: {exc}") from exc
+    # ruff exits 0 with no finding and 1 with findings, printing the JSON list either way.
+    if done.returncode not in (0, 1) or not done.stdout.strip():
+        raise RuntimeError(f"ruff failed ({done.returncode}): {done.stderr.strip()[:300]}")
+    try:
+        reports = json.loads(done.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"ruff printed no JSON: {exc}") from exc
     candidates, sources = [], {}
     for report in reports:
         smell = RUFF_SMELLS.get(report.get("code") or "")
@@ -140,7 +163,7 @@ def ruff_candidates(root: Path, ruff: str = "ruff") -> list[SmellCandidate]:
         if path not in sources:
             sources[path] = path.read_text(encoding="utf-8", errors="replace")
         code, first = _enclosing(sources[path], line)
-        relative = path.relative_to(root.resolve()).as_posix() if path.is_absolute() else path.as_posix()
+        relative = path.relative_to(root).as_posix() if path.is_absolute() else path.as_posix()
         candidates.append(SmellCandidate(f"{relative}:{line}:{report['code']}", smell, relative, line,
                                          f"ruff:{report['code']}", {"message": report.get("message", "")}, code, first))
     return candidates
