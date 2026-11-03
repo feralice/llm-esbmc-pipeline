@@ -94,3 +94,14 @@ def test_pysmell_candidates_are_the_items_either_heuristic_reported(tmp_path, mo
     assert labels == {"p1": ("LongParameterList", 1), "p2": ("LongMethod", 0), "p3": ("LongMethod", 1)}
     monkeypatch.setattr(sys, "argv", ["x", "--out", str(tmp_path / "o"), "--sample", "5"])
     assert script.main() == 0 and "Simulação" in capsys.readouterr().out and not (tmp_path / "o").exists()
+
+
+def test_ruff_reports_become_candidates_with_their_enclosing_code(tmp_path):
+    from research_pipeline.smells.filter import ruff_candidates
+
+    (tmp_path / "m.py").write_text("x = 1\n\n\ndef f(a, b, c, d, e, g, h):\n    return a\n", encoding="utf-8")
+    (tmp_path / "broken.py").write_text("def g(:\n", encoding="utf-8")
+    [candidate] = ruff_candidates(tmp_path)
+    assert (candidate.smell, candidate.path, candidate.line, candidate.tool) == ("LongParameterList", "m.py", 4,
+                                                                                "ruff:PLR0913")
+    assert candidate.code.startswith("def f(") and candidate.first_line == 4

@@ -1187,6 +1187,21 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
   `enumerate`. Os dois pytest do replay reproduzem.
 
+## Smells: ferramenta aponta, LLM filtra (02/11), sem rodada
+
+- **Pergunta:** o LLM tira os alarmes falsos de uma ferramenta de smell sem perder os reais (iSMELL, Wu et al.,
+  ASE 2024, DOI 10.1145/3691620.3695508)? Desenho em `docs/superpowers/specs/2026-11-02-smells-ferramenta-llm-design.md`.
+- **Linha de base, medida sem LLM** no PySmell rotulado à mão (`dataset/code_smell/pysmell_manual.jsonl`, 2570 itens,
+  150 smells; Chen et al., SATE 2016, DOI 10.1109/SATE.2016.10): as duas heurísticas da ferramenta, juntas, apontam
+  1056 itens, 139 smells reais e 917 alarmes falsos (precisão 13%, recall 93%).
+- **O que entrou:** `research_pipeline.smells.filter` (uma chamada por trecho de código com todos os apontamentos
+  dele; o LLM só pode tirar; sem resposta válida fica a decisão da ferramenta, contada em `llm_errors`);
+  `scripts/smell_filter_pysmell.py` (medição; sem `--yes` só conta as chamadas: 1056 candidatos, 216 sem código,
+  787 chamadas; sorteio de 200: 157 chamadas); no scan, `--scan-smells` passa os apontamentos do ruff
+  (PLR0913, PLR0915, C901, PLR0904) pelo mesmo filtro e o `relatorio.md` ganha a seção de smells (exploratório).
+  No PyAthena, a simulação mostra 199 apontamentos do ruff.
+- **Falta:** a rodada de 200 candidatos, que gasta a assinatura (`claude_cli`): só com o ok da Fernanda.
+
 ## Funções aninhadas (02/11): entrada pela função de fora e validação, medido sem LLM
 
 - **Pergunta:** quantas funções internas de um repo real o motor verifica, e por qual caminho? Item do Depois

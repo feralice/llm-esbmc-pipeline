@@ -18,6 +18,7 @@ from pathlib import Path
 from ..llm.prompts import build_user_prompt, load_system_prompt
 from ..models import CodeUnit
 from ..preprocess import preprocess_file
+from ..smells.filter import filter_candidates, ruff_candidates
 from ..verify.agent_arm import REPRODUCED_CPYTHON
 from ..verify.candidate import Candidate
 from ..verify.hypothesis import BugHypothesis
@@ -185,7 +186,9 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
         _write_json(plan.output_dir / "scan_smells.json", {
             "exploratory": True, "architecture": architecture_smells(graph),
             "feature_envy": [{"method": key, "metrics": feature_envy_metrics(graph, key)}
-                             for key in envy_candidates(graph)]})
+                             for key in envy_candidates(graph)],
+            "tool_candidates": [{"id": c.id, "smell": c.smell, "path": c.path, "line": c.line,
+                                 "rule": c.tool.removeprefix("ruff:")} for c in ruff_candidates(graph.root)]})
     _write_json(plan.output_dir / "scan_selection.json", plan.to_dict())
     stats = graph.stats()
     print(f"Grafo de {graph.root}: {stats['modules']} módulo(s), {stats['skipped_files']} ignorado(s) por erro, "
@@ -295,7 +298,8 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     errors = [f"{t.qualname}: {checkpoint['detection'][t.key]['error']}" for t in plan.targets
               if checkpoint["detection"][t.key]["error"]]
     (plan.output_dir / "relatorio.md").write_text(
-        render_run_report(results, held=held, detection=(len(plan.targets), errors), root=plan.root), encoding="utf-8")
+        render_run_report(results, held=held, detection=(len(plan.targets), errors), root=plan.root)
+        + smells_section(plan.output_dir), encoding="utf-8")
     print(f"Relatório: {plan.output_dir / 'scan_report.json'}")
     return report
 
@@ -381,4 +385,28 @@ def judge_smells(plan: ScanPlan, llm) -> dict:
         except Exception as exc:  # noqa: BLE001 - each backend raises its own errors; one must not lose the rest
             entry["llm"] = {"error": f"{type(exc).__name__}: {exc}"[:300]}
         _write_json(path, report)
+    entries = {entry["id"]: entry for entry in report.get("tool_candidates", [])}
+    done = {i: e["llm"] for i, e in entries.items() if "llm" in e}
+
+    def save(results: dict) -> None:
+        for candidate_id, answer in results.items():
+            if candidate_id in entries:
+                entries[candidate_id]["llm"] = answer
+        _write_json(path, report)
+
+    candidates = [c for c in ruff_candidates(plan.root) if c.id in entries]
+    save(filter_candidates(candidates, llm, done=done, on_answer=save))
     return report
+
+
+def smells_section(output_dir: Path) -> str:
+    """The relatorio.md section for the tool's smell reports the LLM kept; exploratory, no ground truth."""
+    path = Path(output_dir) / "scan_smells.json"
+    if not path.exists():
+        return ""
+    entries = json.loads(path.read_text(encoding="utf-8")).get("tool_candidates", [])
+    kept = [e for e in entries if (e.get("llm") or {}).get("smell") is True]
+    lines = ["", "## Smells (exploratório, sem gabarito)", "",
+             f"{len(entries)} apontados pelo ruff, {len(kept)} mantidos pela LLM."]
+    lines += [f"- `{e['path']}:{e['line']}` {e['smell']} ({e['rule']}): {e['llm']['reason']}" for e in kept]
+    return "\n".join(lines) + "\n"

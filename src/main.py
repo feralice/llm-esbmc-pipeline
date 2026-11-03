@@ -735,7 +735,8 @@ def mode_scan(args: argparse.Namespace) -> int:
     if args.scan_smells and not args.yes:
         smells = json.loads((plan.output_dir / "scan_smells.json").read_text(encoding="utf-8"))
         print(f"Smells: {len(smells['architecture'])} de arquitetura; {len(smells['feature_envy'])} candidato(s) a "
-              "Feature Envy, cada um uma chamada à LLM com --yes.")
+              f"Feature Envy e {len(smells['tool_candidates'])} apontado(s) pelo ruff, que a LLM filtra com --yes "
+              "(uma chamada por Feature Envy e por trecho de código do ruff).")
     if not args.yes:
         print(f"Simulação: nenhuma chamada à LLM. Seleção em {plan.output_dir / 'scan_selection.json'}; "
               "rode de novo com --yes para gastar as chamadas.")

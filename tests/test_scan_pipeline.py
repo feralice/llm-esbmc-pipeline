@@ -502,3 +502,27 @@ def test_cli_scan_only_with_an_unknown_name_fails_with_a_message(tmp_path: Path,
     assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir",
                                    str(tmp_path / "out"), "--backend", "openai", "--scan-only", "nope"]) == 1
     assert "nope" in capsys.readouterr().err
+
+
+def test_scan_smells_send_ruff_candidates_through_the_llm_filter(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+
+    from research_pipeline.scan.pipeline import judge_smells, smells_section
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "m.py").write_text("def f(a, b, c, d, e, g, h):\n    return a\n", encoding="utf-8")
+    plan = plan_scan(root, tmp_path / "out", smells=True)
+    [entry] = json.loads((tmp_path / "out" / "scan_smells.json").read_text(encoding="utf-8"))["tool_candidates"]
+    assert entry["smell"] == "LongParameterList" and entry["rule"] == "PLR0913"
+
+    class LLM:
+        def complete(self, system, user, *, json_mode=False):
+            return SimpleNamespace(raw_response=json.dumps(
+                {"verdicts": [{"id": entry["id"], "smell": True, "reason": "seven parameters"}]}))
+
+    judge_smells(plan, LLM())
+    saved = json.loads((tmp_path / "out" / "scan_smells.json").read_text(encoding="utf-8"))
+    assert saved["tool_candidates"][0]["llm"] == {"smell": True, "reason": "seven parameters"}
+    section = smells_section(tmp_path / "out")
+    assert "exploratório" in section and "LongParameterList" in section and "seven parameters" in section

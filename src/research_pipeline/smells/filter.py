@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import ast
 import json
+import subprocess
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -99,3 +101,46 @@ def score(candidates: list[SmellCandidate], labels: dict[str, tuple[str, int]], 
             "per_smell": {s: {"tool": counts(reported, s), "tool_llm": counts(kept, s)} for s in smells},
             "llm_errors": sum(1 for c in candidates if "error" in results.get(c.id, {})),
             "no_code": sum(1 for c in candidates if "skipped" in results.get(c.id, {}))}
+
+
+RUFF_SMELLS = {"PLR0913": "LongParameterList", "PLR0915": "LongMethod", "C901": "LongMethod", "PLR0904": "LargeClass"}
+_ENCLOSING = (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+
+
+def _enclosing(source: str, line: int) -> tuple[str, int]:
+    """The innermost function or class that starts at ``line`` or holds it, and its first line."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return "", line
+    holders = [n for n in ast.walk(tree) if isinstance(n, _ENCLOSING) and n.lineno <= line <= (n.end_lineno or n.lineno)]
+    if not holders:
+        return "", line
+    node = max(holders, key=lambda n: n.lineno)
+    first = min([node.lineno, *(d.lineno for d in node.decorator_list)])
+    return "\n".join(source.splitlines()[first - 1:node.end_lineno]), first
+
+
+def ruff_candidates(root: Path, ruff: str = "ruff") -> list[SmellCandidate]:
+    """Size and complexity reports from ruff with its defaults (``--isolated``), named as PySmell's smells."""
+    root = Path(root)
+    try:
+        done = subprocess.run([ruff, "check", "--isolated", "--preview", "--select", ",".join(RUFF_SMELLS),
+                               "--output-format", "json", str(root)], capture_output=True, text=True, check=False)
+        reports = json.loads(done.stdout or "[]")
+    except (OSError, json.JSONDecodeError):
+        return []
+    candidates, sources = [], {}
+    for report in reports:
+        smell = RUFF_SMELLS.get(report.get("code") or "")
+        if smell is None:
+            continue
+        path = Path(report["filename"])
+        line = report["location"]["row"]
+        if path not in sources:
+            sources[path] = path.read_text(encoding="utf-8", errors="replace")
+        code, first = _enclosing(sources[path], line)
+        relative = path.relative_to(root.resolve()).as_posix() if path.is_absolute() else path.as_posix()
+        candidates.append(SmellCandidate(f"{relative}:{line}:{report['code']}", smell, relative, line,
+                                         f"ruff:{report['code']}", {"message": report.get("message", "")}, code, first))
+    return candidates
