@@ -1187,6 +1187,25 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
   `enumerate`. Os dois pytest do replay reproduzem.
 
+## Funções aninhadas (02/11): entrada pela função de fora e validação, medido sem LLM
+
+- **Pergunta:** quantas funções internas de um repo real o motor verifica, e por qual caminho? Item do Depois
+  puxado antes da tag nova (decisão da Fernanda); desenho em
+  `docs/superpowers/specs/2026-11-02-funcoes-aninhadas-design.md`, plano em
+  `docs/superpowers/plans/2026-11-02-funcoes-aninhadas.md`.
+- **O que entrou:** (a) quando cada definição no caminho chama a próxima, o motor entra pela função de fora e as
+  variáveis capturadas recebem os valores do código real (transform `nested_entry_via_outer:`); (b) sem chamada
+  direta (callback, função devolvida) segue o levantamento de 15/10. A validação (`target_preserved`, sonda do S1,
+  diferencial) dava `False` para qualquer interna, mesmo intacta; agora localiza pelo caminho ou pelo nome
+  levantado. O scan passa a selecionar internas não async; o prompt do agente diz onde a interna está definida.
+- **Comando:** `python scripts/nested_grounding_census.py ~/alvos/PyAthena-limpo` (hipótese sintética na primeira
+  divisão ou subscrito de cada interna), antes (`27df744`) e depois (`340a92b`).
+- **Resultado:** 44 internas. Antes: 22 levantadas, 3 falhas, 13 async, 6 sem expressão-alvo. Depois:
+  **10 pela função de fora**, 12 levantadas, as mesmas 3 falhas (2 passadas como callback ao retry, 1 em que o
+  censo não acha a expressão), 13 async, 6 sem alvo. Nenhuma piora.
+- **Alcance:** 0 casos nas amostras de 48 e 30 e nos 47 da disciplina; o efeito é no scan de repos reais.
+- **Testes:** suíte inteira passando (ver commit).
+
 ## Congelamento (02/11): versão usada daqui em diante
 
 - **Tag:** `v2-congelado-2026-11` (S4 do `docs/projeto/PLANO_2026-10-19.md`). Toda rodada da Fase 3, da
