@@ -1,7 +1,7 @@
 import ast
 
 from research_pipeline.verify.agent_arm import nested_hint
-from research_pipeline.verify.astutil import find_definition, outer_entry
+from research_pipeline.verify.astutil import find_definition, locate, outer_entry
 from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.render import render_program
@@ -138,3 +138,73 @@ def test_agent_prompt_says_where_a_nested_target_lives():
     assert "defined inside `f`" in nested_hint(CALLBACK, "f.cb")
     assert nested_hint(CALLBACK, "f") == ""
     assert nested_hint("def broken(:\n", "f.cb") == ""
+
+
+GUARDED = '''def f(n: int) -> int:
+    if n == 0:
+        return 0
+    def g(k: int) -> int:
+        return 10 // k
+    return g(n)
+'''
+
+
+def test_preservation_also_holds_the_enclosing_entry_function():
+    unguarded = GUARDED.replace("    if n == 0:\n        return 0\n", "")
+    assert target_preserved(GUARDED, GUARDED, "f.g")
+    assert not target_preserved(GUARDED, unguarded, "f.g")
+
+
+def test_a_module_level_copy_is_the_target_even_with_the_original_outer_present():
+    altered = CALLBACK + "\n\ndef cb(x: int) -> int:\n    return 10 // (x if x else 1)\n"
+    assert locate(ast.parse(altered), "f.cb").lineno > 4
+    assert not target_preserved(CALLBACK, altered, "f.cb")
+    intact = CALLBACK + "\n\ndef cb(x: int) -> int:\n    return 10 // x\n"
+    assert target_preserved(CALLBACK, intact, "f.cb")
+
+
+GENERATOR_OUTER = "def f(n):\n    def g(k):\n        return 10 // k\n    yield g(n)\n"
+GENERATOR_INNER = "def f(n):\n    def g(k):\n        yield 10 // k\n    return g(n)\n"
+ASYNC_MIDDLE = "def f(n):\n    async def g(k):\n        def h(m):\n            return 10 // m\n        return h(k)\n    return g(n)\n"
+SHADOWED = "def f(n):\n    def g(k):\n        return 10 // k\n    g = abs\n    return g(n)\n"
+LAMBDA_ONLY = "def f(n):\n    def g(k):\n        return 10 // k\n    return lambda: g(n)\n"
+OTHER_OBJECT = ("def f(n, other):\n    class K:\n        def m(self):\n            return 10 // n\n"
+                "    K()\n    return other.m()\n")
+INSTANCE = ("def f(n):\n    class K:\n        def m(self):\n            return 10 // n\n"
+            "    k = K()\n    return k.m()\n")
+
+
+def test_no_outer_entry_when_calling_the_outer_runs_nothing():
+    for source, name in [(GENERATOR_OUTER, "f.g"), (GENERATOR_INNER, "f.g"), (ASYNC_MIDDLE, "f.g.h"),
+                         (SHADOWED, "f.g"), (LAMBDA_ONLY, "f.g"), (OTHER_OBJECT, "f.K.m")]:
+        assert outer_entry(ast.parse(source), name) is None, name
+    assert outer_entry(ast.parse(INSTANCE), "f.K.m") == "f"
+    assert _ground("f.g", "10 // k", 3, GENERATOR_OUTER).transforms[0].startswith("nested_entry_hoisted:")
+
+
+NEW_DEFINES = '''class A:
+    def __new__(cls, n: int):
+        def g(k: int) -> int:
+            return 10 // k
+        g(n)
+        return super().__new__(cls)
+    def f(self, n: int) -> int:
+        return A(n)
+'''
+
+
+def test_an_unsupported_entry_through_the_outer_falls_back_to_hoisting():
+    grounded = _ground("A.__new__.g", "10 // k", 4, NEW_DEFINES)
+    assert grounded.transforms[0].startswith("nested_entry_hoisted:") and not grounded.unsupported
+
+
+def test_validation_finds_a_target_defined_once_per_branch(tmp_path):
+    assert target_preserved(TWO_BRANCHES, TWO_BRANCHES, "f.g", "10 // k")
+    path = tmp_path / "p.py"
+    path.write_text(TWO_BRANCHES)
+    assert program_for_result(path, {"function": "f.g", "suspect_expression": "10 // k"}) is not None
+
+
+def test_nested_hint_names_the_callable_entry():
+    assert "defined inside `A.f`" in nested_hint(FOUR_LEVELS, "A.f.g.h.i")
+    assert "defined inside `f`" in nested_hint(TWO_BRANCHES, "f.g", "10 // k")

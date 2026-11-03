@@ -8,7 +8,7 @@ import copy
 from pathlib import Path
 from typing import NamedTuple
 
-from .astutil import body_signature, expression_nodes, locate
+from .astutil import body_signature, entry_of, expression_nodes, find_function, locate
 from .esbmc_run import check, esbmc_output
 from .outcome import CONFIRMED, NOT_CONFIRMED_VACUOUS
 from .procs import run_group
@@ -21,7 +21,7 @@ _REACH = "reachability: unreachable code reached"
 
 def program_for_result(path: Path, hypothesis: dict) -> Program | None:
     source = path.read_text(encoding="utf-8")
-    function = locate(ast.parse(source), hypothesis["function"])
+    function = locate(ast.parse(source), hypothesis["function"], hypothesis.get("suspect_expression", ""))
     if function is None:
         return None
     nodes = expression_nodes(function, hypothesis["suspect_expression"])
@@ -46,14 +46,21 @@ class _AsStubs(ast.NodeTransformer):
         return self.generic_visit(node)
 
 
-def target_preserved(original_source: str, program_source: str, function: str) -> bool:
-    original = locate(ast.parse(original_source), function)
-    checked = locate(ast.parse(program_source), function)
-    if original is None or checked is None:
-        return False
+def _as_original(original: ast.FunctionDef, checked: ast.FunctionDef) -> bool:
     names = {n.id for n in ast.walk(original) if isinstance(n, ast.Name)}
     stubs = {n.id for n in ast.walk(checked) if isinstance(n, ast.Name)} - names
     return body_signature(_AsStubs(stubs).visit(original)) == body_signature(checked)
+
+
+def target_preserved(original_source: str, program_source: str, function: str, expression: str = "") -> bool:
+    original_tree, program_tree = ast.parse(original_source), ast.parse(program_source)
+    original = locate(original_tree, function, expression)
+    checked = locate(program_tree, function, expression)
+    if original is None or checked is None or not _as_original(original, checked):
+        return False
+    entry = entry_of(original_tree, function, expression)
+    kept = find_function(program_tree, entry) if entry else None
+    return kept is None or _as_original(find_function(original_tree, entry), kept)
 
 
 def with_unreachable_marker(source: str, line: int) -> str | None:
@@ -237,7 +244,8 @@ def _validate_row(result: dict, row: dict, *, sources: Path, esbmc: str, timeout
     row["checked"] = True
     replay_path = replay_program_path(result)
     row["preserved"] = None if replay_path is None else target_preserved(
-        _original(hypothesis, sources), replay_path.read_text(encoding="utf-8"), hypothesis["function"])
+        _original(hypothesis, sources), replay_path.read_text(encoding="utf-8"), hypothesis["function"],
+        hypothesis.get("suspect_expression", ""))
     program = program_for_result(Path(result["program_path"]), hypothesis)
     attempt = (result.get("attempts") or [{}])[-1]
     unwind = attempt.get("unwind") if isinstance(attempt.get("unwind"), int) else 5

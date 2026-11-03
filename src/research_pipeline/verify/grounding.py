@@ -475,7 +475,7 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         outer = outer_entry(tree, h.function, h.suspect_expression)
         if outer is not None:
             grounded = ground(dataclasses.replace(h, function=outer), source, refused, rules)
-            if isinstance(grounded, Grounded):
+            if isinstance(grounded, Grounded) and not grounded.unsupported:
                 return dataclasses.replace(grounded, transforms=(f"nested_entry_via_outer:{h.function}",
                                                                  *grounded.transforms))
         hoisted = _hoist_nested(tree, source, h)

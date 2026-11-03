@@ -51,12 +51,12 @@ def census(root: Path) -> tuple[Counter, list[dict]]:
             continue
         h = BugHypothesis(function.file, function.qualname, ast.unparse(suspect), line=suspect.lineno)
         grounded = ground(h, source)
-        if isinstance(grounded, Grounded):
+        if isinstance(grounded, Grounded) and not grounded.unsupported:
             path = next((t.split(":")[0] for t in grounded.transforms if t.startswith("nested_entry_")), "other")
             kind = {"nested_entry_via_outer": "via_outer", "nested_entry_hoisted": "hoisted"}.get(path, "other")
             reason = ""
         else:
-            kind, reason = "failed", grounded.reason
+            kind, reason = "failed", grounded.unsupported if isinstance(grounded, Grounded) else grounded.reason
         counts[kind] += 1
         rows.append({"function": f"{function.file}::{function.qualname}", "kind": kind, "reason": reason})
     return counts, rows

@@ -1199,10 +1199,16 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   diferencial) dava `False` para qualquer interna, mesmo intacta; agora localiza pelo caminho ou pelo nome
   levantado. O scan passa a selecionar internas não async; o prompt do agente diz onde a interna está definida.
 - **Comando:** `python scripts/nested_grounding_census.py ~/alvos/PyAthena-limpo` (hipótese sintética na primeira
-  divisão ou subscrito de cada interna), antes (`27df744`) e depois (`340a92b`).
+  divisão ou subscrito de cada interna), antes (`27df744`) e depois (commit da revisão).
 - **Resultado:** 44 internas. Antes: 22 levantadas, 3 falhas, 13 async, 6 sem expressão-alvo. Depois:
-  **10 pela função de fora**, 12 levantadas, as mesmas 3 falhas (2 passadas como callback ao retry, 1 em que o
-  censo não acha a expressão), 13 async, 6 sem alvo. Nenhuma piora.
+  **5 pela função de fora**, 17 levantadas, as mesmas 3 falhas (2 passadas como callback ao retry, 1 em que o
+  censo não acha a expressão), 13 async, 6 sem alvo. A primeira medição dava 10 pela função de fora; a revisão
+  mostrou que 5 não valiam: 3 eram geradores ou só chamadas por outra interna (chamar a de fora não roda a linha)
+  e 2 entravam pela de fora num formato que o motor marca como não suportado (agora caem no levantamento).
+- **Revisão (02/11), corrigido:** a preservação passou a exigir também o corpo da função de fora (um harness que
+  apagasse uma guarda dela saía CONFIRMED com corpo preservado); a cópia levantada pelo agente é a que conta,
+  não a interna morta; geradores, coroutines no caminho, nome rebatizado depois do `def`, chamada só dentro de
+  lambda e método chamado em outro objeto não entram pela de fora.
 - **Alcance:** 0 casos nas amostras de 48 e 30 e nos 47 da disciplina; o efeito é no scan de repos reais.
 - **Testes:** suíte inteira passando (ver commit).
 

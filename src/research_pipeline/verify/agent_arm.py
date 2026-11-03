@@ -21,7 +21,7 @@ from typing import Callable
 
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
-from .astutil import body_signature, expression_nodes, find_function, locate, nested_chain
+from .astutil import body_signature, entry_of, entry_preserved, expression_nodes, find_function, locate
 from .context import context_module
 from .graph_tool import write_graph
 from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, load_index, lookup
@@ -216,21 +216,19 @@ def _source_for(cwd: Path, prompt: str) -> str:
     return sliced or source[:_SOURCE_LIMIT]
 
 
-def nested_hint(source: str, function: str) -> str:
+def nested_hint(source: str, function: str, expression: str = "") -> str:
     """The prompt line for a target defined inside another function, which no harness can call directly."""
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return ""
-    chain = None if find_function(tree, function) else nested_chain(tree, function)
-    if chain is None:
+    outer = None if find_function(tree, function) else entry_of(tree, function, expression)
+    if outer is None:
         return ""
-    names = function.split(".")
-    inside = max(i for i, n in enumerate(chain[:-1]) if not isinstance(n, ast.ClassDef))
-    outer, name = ".".join(names[:inside + 1]), names[-1]
+    name = function.split(".")[-1]
     return (f"`{function}` is defined inside `{outer}`: call `{outer}` so it runs `{name}`, or copy `{name}` to "
-            f"module level with the names it takes from `{outer}` as keyword-only parameters. "
-            "Never change its body.\n")
+            "module level with the names it takes from the functions around it as keyword-only parameters. "
+            "Never change its body, nor the body of the functions around it.\n")
 
 
 def _without_esbmc_imports(source: str) -> str:
@@ -288,7 +286,7 @@ def run_agent_arm(
                             notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
                             function=h.function, expression=h.suspect_expression,
-                            nested=nested_hint(original, h.function),
+                            nested=nested_hint(original, h.function, h.suspect_expression),
                             trigger=h.trigger_condition or "not given", bound=bound,
                             esbmc="esbmc" if log_rounds else (esbmc_command or ["esbmc"])[0])
     if graph_tool:
@@ -404,7 +402,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         harness_tree, original_tree = ast.parse(harness), ast.parse(original)
     except SyntaxError as exc:
         return AGENT_FAILED, f"harness does not parse: {exc.msg}"
-    target = locate(harness_tree, h.function)
+    target = locate(harness_tree, h.function, h.suspect_expression)
     if target is None:
         return AGENT_FAILED, f"target {h.function} missing from the harness"
     nodes = expression_nodes(target, h.suspect_expression)
@@ -421,8 +419,9 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
             and not target.lineno <= smoke.line <= (target.end_lineno or target.lineno):
         return HARNESS_BROKEN, (f"under CPython, harness.py raises {smoke.exception_type} at line {smoke.raised_at}, "
                                 f"outside {h.function}: fix the stub or the driver")
-    original_target = locate(original_tree, h.function)
-    result["target_preserved"] = original_target is not None and body_signature(original_target) == body_signature(target)
+    original_target = locate(original_tree, h.function, h.suspect_expression)
+    result["target_preserved"] = original_target is not None and body_signature(original_target) == body_signature(
+        target) and entry_preserved(original_tree, harness_tree, h.function, h.suspect_expression)
 
     esbmc, reading, how = check(harness_path, esbmc_command=esbmc_command, bound=bound,
                                 timeout_seconds=timeout_seconds, work_dir=output_dir or case_dir)

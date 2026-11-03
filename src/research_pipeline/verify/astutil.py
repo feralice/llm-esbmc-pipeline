@@ -6,6 +6,7 @@ import ast
 import builtins
 import symtable
 import textwrap
+from itertools import pairwise
 
 _INTRINSICS = {
     "nondet_int", "nondet_float", "nondet_bool", "nondet_str",
@@ -80,59 +81,109 @@ def find_definition(tree: ast.Module, qualified: str, expression: str = "") -> a
     return chain[-1] if chain and isinstance(chain[-1], ast.FunctionDef) else None
 
 
-def locate(tree: ast.Module, qualified: str) -> ast.FunctionDef | None:
-    """The target in a program that may have hoisted or nested it: by path first, then the only function
-    with that name anywhere in the file."""
-    found = find_function(tree, qualified) or find_definition(tree, qualified)
-    if found is not None:
-        return found
-    name = qualified.split(".")[-1]
-    matches = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == name]
-    return matches[0] if len(matches) == 1 else None
-
-
-def _own_calls(scope: ast.AST) -> list[ast.Call]:
-    """Calls in the scope's body, not in the definitions nested in it."""
-    calls, pending = [], list(ast.iter_child_nodes(scope))
-    while pending:
-        node = pending.pop()
-        if isinstance(node, _DEFINITIONS):
-            continue
-        if isinstance(node, ast.Call):
-            calls.append(node)
-        pending += ast.iter_child_nodes(node)
-    return calls
-
-
-def _runs(scope: ast.AST, link: ast.AST, after: ast.AST | None) -> bool:
-    """Whether ``scope`` runs ``link``: calls the function, or for a class, builds it and calls ``after`` on it."""
-    calls = _own_calls(scope)
-    called = {c.func.id for c in calls if isinstance(c.func, ast.Name)}
-    if not isinstance(link, ast.ClassDef):
-        return link.name in called
-    return link.name in called and after is not None and any(
-        isinstance(c.func, ast.Attribute) and c.func.attr == after.name for c in calls)
-
-
-def outer_entry(tree: ast.Module, qualified: str, expression: str = "") -> str | None:
-    """For a function nested in another: the outermost enclosing function ``find_function`` locates, when
-    every definition on the way runs the next one. Entering there keeps the captured values real."""
+def entry_of(tree: ast.Module, qualified: str, expression: str = "") -> str | None:
+    """For a nested target, the outermost function on its path that ``find_function`` locates (the one a
+    harness can call); None when the target is not nested or nothing on the path is callable."""
     chain = nested_chain(tree, qualified, expression)
     if chain is None:
         return None
     names = qualified.split(".")
-    entry = next((i for i in range(len(chain) - 1)
-                  if not isinstance(chain[i], ast.ClassDef) and find_function(tree, ".".join(names[:i + 1]))), None)
+    return next((".".join(names[:i + 1]) for i in range(len(chain) - 1)
+                 if not isinstance(chain[i], ast.ClassDef) and find_function(tree, ".".join(names[:i + 1]))), None)
+
+
+def locate(tree: ast.Module, qualified: str, expression: str = "") -> ast.FunctionDef | None:
+    """The target in a program that may have hoisted or nested it: a module-level copy of a nested target
+    first (that is the code that runs), then the path, then the only function with that name in the file."""
+    found = find_function(tree, qualified)
+    if found is not None:
+        return found
+    name = qualified.split(".")[-1]
+    if "." in qualified:
+        copies = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == name]
+        if len(copies) == 1:
+            return copies[0]
+    found = find_definition(tree, qualified, expression)
+    if found is not None:
+        return found
+    matches = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == name]
+    return matches[0] if len(matches) == 1 else None
+
+
+def _own_nodes(scope: ast.AST) -> list[ast.AST]:
+    """Nodes of the scope's body that run when it runs: not those in nested definitions or lambdas."""
+    nodes, pending = [], list(ast.iter_child_nodes(scope))
+    while pending:
+        node = pending.pop()
+        if isinstance(node, (*_DEFINITIONS, ast.Lambda)):
+            continue
+        nodes.append(node)
+        pending += ast.iter_child_nodes(node)
+    return nodes
+
+
+def _is_generator(function: ast.AST) -> bool:
+    return any(isinstance(n, (ast.Yield, ast.YieldFrom)) for n in _own_nodes(function))
+
+
+def _rebound(nodes: list[ast.AST], name: str) -> bool:
+    """The name is stored again in the scope (``g = abs``, a loop variable), so a later ``g()`` may be another."""
+    return any(isinstance(n, ast.Name) and n.id == name and isinstance(n.ctx, ast.Store) for n in nodes)
+
+
+def _runs(scope: ast.AST, link: ast.AST, after: ast.AST | None) -> bool:
+    """Whether running ``scope`` runs ``link``: calls the function, or for a class, calls ``after`` on an
+    instance of it (``K().m()`` or ``k = K()`` then ``k.m()``)."""
+    nodes = _own_nodes(scope)
+    if _rebound(nodes, link.name):
+        return False
+    calls = [n for n in nodes if isinstance(n, ast.Call)]
+    if not isinstance(link, ast.ClassDef):
+        return any(isinstance(c.func, ast.Name) and c.func.id == link.name for c in calls)
+    if after is None:
+        return False
+
+    def builds(node: ast.AST) -> bool:
+        return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == link.name
+
+    instances = {target.id for n in nodes if isinstance(n, ast.Assign) and builds(n.value)
+                 for target in n.targets if isinstance(target, ast.Name)}
+    return any(isinstance(c.func, ast.Attribute) and c.func.attr == after.name and (
+        builds(c.func.value) or (isinstance(c.func.value, ast.Name) and c.func.value.id in instances)) for c in calls)
+
+
+def outer_entry(tree: ast.Module, qualified: str, expression: str = "") -> str | None:
+    """For a function nested in another: the entry (``entry_of``) when calling it runs every definition on the
+    way to the target, so the captured values are the ones real code computes. Generators and coroutines on
+    the way only build an object when called, so they never qualify."""
+    entry = entry_of(tree, qualified, expression)
     if entry is None:
         return None
-    for position in range(entry, len(chain) - 1):
-        scope, link = chain[position], chain[position + 1]
+    chain = nested_chain(tree, qualified, expression)
+    start = entry.count(".")
+    path = chain[start:]
+    if any(isinstance(n, ast.AsyncFunctionDef) or (isinstance(n, ast.FunctionDef) and _is_generator(n))
+           for n in path):
+        return None
+    for position, (scope, link) in enumerate(pairwise(path)):
         if isinstance(scope, ast.ClassDef):
             continue
-        after = chain[position + 2] if position + 2 < len(chain) else None
+        after = path[position + 2] if position + 2 < len(path) else None
         if not _runs(scope, link, after):
             return None
-    return ".".join(names[:entry + 1])
+    return entry
+
+
+def entry_preserved(original: ast.Module, program: ast.Module, qualified: str, expression: str = "") -> bool:
+    """For a nested target, the entry function holds the guards and the captured values on the bug path: when the
+    program still has it, its body must be unchanged too."""
+    entry = entry_of(original, qualified, expression)
+    if entry is None:
+        return True
+    checked = find_function(program, entry)
+    if checked is None:
+        return True
+    return body_signature(find_function(original, entry)) == body_signature(checked)
 
 
 _HEADERS = ("if ", "elif ", "while ", "return ", "assert ")
