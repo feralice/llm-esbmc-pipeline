@@ -21,7 +21,7 @@ from typing import Callable
 
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
-from .astutil import body_signature, expression_nodes, find_function
+from .astutil import body_signature, expression_nodes, find_function, locate, nested_chain
 from .context import context_module
 from .graph_tool import write_graph
 from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, load_index, lookup
@@ -100,7 +100,7 @@ _SKILL_RULES = "Follow the regras-harness and reparos-aprendidos skills to write
 _PROMPT = """{skill}In this directory, original.py is real production code.
 {notes}
 Goal: make ESBMC-Python run the function `{function}` so that this bug hypothesis is exercised.
-- suspect expression: {expression}
+{nested}- suspect expression: {expression}
 - hypothesis: {trigger}
 
 {rules}{simplify}Run `{esbmc} harness.py --unwind {bound} --multi-property` (always this binary) and fix harness.py until ESBMC reaches a
@@ -216,13 +216,21 @@ def _source_for(cwd: Path, prompt: str) -> str:
     return sliced or source[:_SOURCE_LIMIT]
 
 
-def _target(tree: ast.Module, qualified: str) -> ast.FunctionDef | None:
-    found = find_function(tree, qualified)
-    if found is not None:
-        return found
-    name = qualified.split(".")[-1]
-    matches = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == name]
-    return matches[0] if len(matches) == 1 else None
+def nested_hint(source: str, function: str) -> str:
+    """The prompt line for a target defined inside another function, which no harness can call directly."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return ""
+    chain = None if find_function(tree, function) else nested_chain(tree, function)
+    if chain is None:
+        return ""
+    names = function.split(".")
+    inside = max(i for i, n in enumerate(chain[:-1]) if not isinstance(n, ast.ClassDef))
+    outer, name = ".".join(names[:inside + 1]), names[-1]
+    return (f"`{function}` is defined inside `{outer}`: call `{outer}` so it runs `{name}`, or copy `{name}` to "
+            f"module level with the names it takes from `{outer}` as keyword-only parameters. "
+            "Never change its body.\n")
 
 
 def _without_esbmc_imports(source: str) -> str:
@@ -280,6 +288,7 @@ def run_agent_arm(
                             notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
                             function=h.function, expression=h.suspect_expression,
+                            nested=nested_hint(original, h.function),
                             trigger=h.trigger_condition or "not given", bound=bound,
                             esbmc="esbmc" if log_rounds else (esbmc_command or ["esbmc"])[0])
     if graph_tool:
@@ -395,7 +404,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         harness_tree, original_tree = ast.parse(harness), ast.parse(original)
     except SyntaxError as exc:
         return AGENT_FAILED, f"harness does not parse: {exc.msg}"
-    target = _target(harness_tree, h.function)
+    target = locate(harness_tree, h.function)
     if target is None:
         return AGENT_FAILED, f"target {h.function} missing from the harness"
     nodes = expression_nodes(target, h.suspect_expression)
@@ -412,7 +421,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
             and not target.lineno <= smoke.line <= (target.end_lineno or target.lineno):
         return HARNESS_BROKEN, (f"under CPython, harness.py raises {smoke.exception_type} at line {smoke.raised_at}, "
                                 f"outside {h.function}: fix the stub or the driver")
-    original_target = _target(original_tree, h.function)
+    original_target = locate(original_tree, h.function)
     result["target_preserved"] = original_target is not None and body_signature(original_target) == body_signature(target)
 
     esbmc, reading, how = check(harness_path, esbmc_command=esbmc_command, bound=bound,
@@ -474,7 +483,10 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
             seeds = {kind: [*first.get(kind, []), *(v for v in seeds.get(kind, []) if v not in first.get(kind, []))]
                      for kind in {*first, *seeds}}
     if differential_test and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
-        from .differential import CHANGED, differential  # differential imports this module
+        from .differential import (  # differential imports this module
+            CHANGED,
+            differential,
+        )
 
         diff = differential(harness, original, h, seeds, runs=DIFFERENTIAL_RUNS, original_path=original_path)
         result["differential"] = diff.to_dict()
@@ -490,7 +502,7 @@ def _fixed_also_fails(harness: str, target: ast.FunctionDef, fixed: str | None, 
     expression, so any line of the fixed function counts. Returns why the control rejects, or ""."""
     if fixed is None:
         return ""
-    control, _ = _replay_original(harness, target, fixed, _target(ast.parse(fixed), function), None, {},
+    control, _ = _replay_original(harness, target, fixed, locate(ast.parse(fixed), function), None, {},
                                   inputs=replay.inputs or [])
     result["control"] = control.to_dict()
     if control.status == "reproduced" and control.exception_type == replay.exception_type:
@@ -510,7 +522,10 @@ def _cpython_only(h: BugHypothesis, harness: str, target: ast.FunctionDef, harne
     if also:
         return FIXED_ALSO_FAILS, also
     if differential_test:
-        from .differential import CHANGED, differential  # differential imports this module
+        from .differential import (  # differential imports this module
+            CHANGED,
+            differential,
+        )
 
         diff = differential(harness, original, h, {}, runs=DIFFERENTIAL_RUNS, original_path=original_path)
         result["differential"] = diff.to_dict()
@@ -607,7 +622,9 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
                        state: dict, save: Callable[[], None], config: dict, skill: bool = True) -> list[dict]:
     """Run the agent on every engine result without an ESBMC verdict; ``state`` keeps finished cases
     for resuming, and is cleared when ``config`` differs from the run that filled it."""
-    from .loop import verification_source  # loop imports this module's siblings; keep the edge one-way
+    from .loop import (
+        verification_source,  # loop imports this module's siblings; keep the edge one-way
+    )
 
     if state.get("agent_config") != config:
         state["agent_config"], state["agent_results"] = config, {}

@@ -1,8 +1,12 @@
 import ast
 
+from research_pipeline.verify.agent_arm import nested_hint
 from research_pipeline.verify.astutil import find_definition, outer_entry
 from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
+from research_pipeline.verify.render import render_program
+from research_pipeline.verify.spec import InputSpec
+from research_pipeline.verify.validation import program_for_result, target_preserved
 
 FOUR_LEVELS = '''class A:
     def f(self, n: int) -> int:
@@ -108,3 +112,29 @@ def test_four_levels_enter_through_the_method():
 def test_callback_and_async_outer_still_hoist():
     assert _ground("f.cb", "10 // x", 3, CALLBACK).transforms[0].startswith("nested_entry_hoisted:")
     assert _ground("f.g", "10 // k", 3, ASYNC_OUTER).transforms[0].startswith("nested_entry_hoisted:")
+
+
+def test_target_preserved_sees_an_untouched_nested_function():
+    assert target_preserved(FOUR_LEVELS, FOUR_LEVELS, "A.f.g.h.i")
+    assert not target_preserved(FOUR_LEVELS, FOUR_LEVELS.replace("10 //", "11 //"), "A.f.g.h.i")
+
+
+def test_target_preserved_matches_the_hoisted_copy():
+    grounded = _ground("f.cb", "10 // x", 3, CALLBACK)
+    program = render_program(grounded, InputSpec({p.name: "int" for p in grounded.params}, {}, ()))
+    assert target_preserved(CALLBACK, program.source, grounded.hypothesis.function)
+    assert not target_preserved(CALLBACK, program.source.replace("10 // x", "10 // (x + 1)"),
+                                grounded.hypothesis.function)
+
+
+def test_program_for_result_finds_a_nested_target(tmp_path):
+    path = tmp_path / "p.py"
+    path.write_text(FOUR_LEVELS)
+    program = program_for_result(path, {"function": "A.f.g.h.i", "suspect_expression": "10 // (z - n + k)"})
+    assert program is not None and program.target_spans == ((6, 6),)
+
+
+def test_agent_prompt_says_where_a_nested_target_lives():
+    assert "defined inside `f`" in nested_hint(CALLBACK, "f.cb")
+    assert nested_hint(CALLBACK, "f") == ""
+    assert nested_hint("def broken(:\n", "f.cb") == ""

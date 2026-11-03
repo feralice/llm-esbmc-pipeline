@@ -8,7 +8,7 @@ import copy
 from pathlib import Path
 from typing import NamedTuple
 
-from .astutil import body_signature, expression_nodes, find_function
+from .astutil import body_signature, expression_nodes, locate
 from .esbmc_run import check, esbmc_output
 from .outcome import CONFIRMED, NOT_CONFIRMED_VACUOUS
 from .procs import run_group
@@ -21,7 +21,7 @@ _REACH = "reachability: unreachable code reached"
 
 def program_for_result(path: Path, hypothesis: dict) -> Program | None:
     source = path.read_text(encoding="utf-8")
-    function = find_function(ast.parse(source), hypothesis["function"])
+    function = locate(ast.parse(source), hypothesis["function"])
     if function is None:
         return None
     nodes = expression_nodes(function, hypothesis["suspect_expression"])
@@ -47,8 +47,8 @@ class _AsStubs(ast.NodeTransformer):
 
 
 def target_preserved(original_source: str, program_source: str, function: str) -> bool:
-    original = find_function(ast.parse(original_source), function)
-    checked = find_function(ast.parse(program_source), function)
+    original = locate(ast.parse(original_source), function)
+    checked = locate(ast.parse(program_source), function)
     if original is None or checked is None:
         return False
     names = {n.id for n in ast.walk(original) if isinstance(n, ast.Name)}
@@ -163,7 +163,7 @@ def _lt_to_le(statement: ast.stmt) -> bool:
 def mutants(source: str, function: str, near_line: int, *, window: int = 5, per_operator: int = 2) -> list[Mutant]:
     """Faults that raise when reached, injected near the hypothesis: they show whether the harness
     exercises that code. Line numbers do not move."""
-    target = find_function(ast.parse(source), function)
+    target = locate(ast.parse(source), function)
     if target is None:
         return []
     found: list[Mutant] = []

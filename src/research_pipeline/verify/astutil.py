@@ -80,6 +80,17 @@ def find_definition(tree: ast.Module, qualified: str, expression: str = "") -> a
     return chain[-1] if chain and isinstance(chain[-1], ast.FunctionDef) else None
 
 
+def locate(tree: ast.Module, qualified: str) -> ast.FunctionDef | None:
+    """The target in a program that may have hoisted or nested it: by path first, then the only function
+    with that name anywhere in the file."""
+    found = find_function(tree, qualified) or find_definition(tree, qualified)
+    if found is not None:
+        return found
+    name = qualified.split(".")[-1]
+    matches = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == name]
+    return matches[0] if len(matches) == 1 else None
+
+
 def _own_calls(scope: ast.AST) -> list[ast.Call]:
     """Calls in the scope's body, not in the definitions nested in it."""
     calls, pending = [], list(ast.iter_child_nodes(scope))

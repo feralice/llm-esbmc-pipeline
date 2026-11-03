@@ -17,6 +17,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from . import agent_arm
+from .astutil import locate
 from .hypothesis import BugHypothesis
 from .render import Program
 from .replay import ReplayVerdict, _no_network_prefix, concrete_replay
@@ -194,8 +195,8 @@ def differential(harness: str, original: str, h: BugHypothesis, seeds: dict[str,
                  original_path: Path | None = None) -> DiffResult:
     """Any divergence is ``alterada``; without one the stubs level leaves preservation ``nao_medida``."""
     try:
-        target = agent_arm._target(ast.parse(harness), h.function)
-        original_target = agent_arm._target(ast.parse(original), h.function)
+        target = locate(ast.parse(harness), h.function)
+        original_target = locate(ast.parse(original), h.function)
     except SyntaxError as exc:
         return DiffResult("stubs", 0, 0, reason=f"does not parse: {exc.msg}")
     if target is None or original_target is None:
