@@ -1187,6 +1187,47 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
   `enumerate`. Os dois pytest do replay reproduzem.
 
+## Congelamento (02/11): versão usada daqui em diante
+
+- **Tag:** `v2-congelado-2026-11` (S4 do `docs/projeto/PLANO_2026-10-19.md`). Toda rodada da Fase 3, da
+  disciplina PGENE601 e dos repos reais usa esta versão; mudança no pipeline depois disso vira variante medida
+  contra ela.
+- **ESBMC:** master `d520a903aef7f9585355e07e1fb92cb16982c588` (31/10), `~/esbmc-master/build-bw`, ESBMC 8.6.0,
+  Bitwuzla por padrão.
+- **Detecção:** prompt A5 em inglês (A1 + A2), Sonnet 5.5 via `claude_cli`; linha de base 23 e 22 de 48.
+- **Verify:** bounds 5, 10, 20, incremental-BMC, k-induction; braço de agente com portão de alcançabilidade (S1),
+  versão corrigida, diferencial e nível `REPRODUCED_CPYTHON` contado à parte.
+- **Testes:** 1349 passando.
+
+## k-induction depois do incremental-BMC (02/11), sem rodada
+
+- **O que entrou:** quando os bounds 5, 10, 20 e o `--incremental-bmc` só param em unwinding assertion, o verify
+  tenta `--k-induction` (sem `--unwind` nem `--unwindsetname`). Veredito seguro ou violação substitui o limite
+  (`how["unwind"] = "k-induction"`); `UNKNOWN` mantém o `BOUND_INCONCLUSIVE` de antes. Decisão da Fernanda em
+  02/11: tirar o item de "Depois" e entrar antes do congelamento.
+- **Sonda no ESBMC** `d520a903ae` (`build-bw`), programas de 10 linhas com laço até 1000:
+  divisão protegida depois do laço: `--unwind 20` para em unwinding assertion, `--incremental-bmc` UNKNOWN,
+  `--k-induction` **SUCCESSFUL no passo indutivo, k = 2, 0,9 s**; ZeroDivisionError em i = 3: FAILED nos dois;
+  ZeroDivisionError em i = 50 e invariante não indutivo (`total == i`): UNKNOWN (o `--max-k-step` padrão é 50;
+  com 60 o bug aparece). Pela função `verify.esbmc_run.check` ponta a ponta: o primeiro vira `safe` via
+  k-induction e o não indutivo segue no bound 20, como antes.
+- **Alcance:** só muda casos que hoje terminam em `BOUND_INCONCLUSIVE`; o custo é uma execução a mais do ESBMC
+  (até o timeout) nesses casos, sem chamada de LLM. Um seguro vindo da k-induction ainda passa pelo portão de
+  alcançabilidade do S1.
+- **Testes:** 1349 passando.
+
+## Item 14, bug semeado no PyAthena (31/10): piloto, rodada não válida
+
+- **Montagem:** cópia `~/alvos/PyAthena` com 3 guardas removidas (commits `666bbfb` seed 1, `_parse_utc_offset`;
+  `6650167` seed 2, tipos map em `parser.py`; `a2097e2` seed 3, `=` ausente em `_parse_map_native`) e cópia
+  limpa `~/alvos/PyAthena-limpo`. Scan com `--scan-only` nas 3 funções, 2 repetições por cópia, em paralelo,
+  código `bcde343`, saída em `artifacts/semeado/`.
+- **Resultado:** semeado r1 achou o **seed 3** (`REPRODUCED_CPYTHON`: ValueError em `pair.split('=', 1)` com
+  `['a']`, ESBMC estourou 60 s, pytest gerado); as hipóteses dos seeds 1 e 2 deram `PIPELINE_ERROR` (limite de
+  5 h da assinatura). Limpo r1: 1 hipótese, nada confirmado. As duas r2 falharam nas 3 detecções
+  (`claude -p` código 1, mesmo limite).
+- **Decisão:** não conta como medição. Refazer depois do congelamento, uma rodada por vez.
+
 ## S5, plano D (29/10): o scan pronto para repo real, sem rodada
 
 - **O que entrou** (`docs/desenho/planos/2026-10-29-s5-plano-d-scan-real.md`, itens 9a a 9c do plano): a
