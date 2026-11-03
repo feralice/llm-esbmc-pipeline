@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import ast
 import difflib
+import hashlib
 import json
 import re
 import textwrap
@@ -26,6 +27,7 @@ from .esbmc_knowledge import (
     lookup,
 )
 from .hypothesis import BugHypothesis
+from .lessons import approved_repairs
 from .loop import VerifyResult, verify_hypothesis
 from .outcome import ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
 
@@ -200,13 +202,19 @@ def _function_code(source: str, tree: ast.Module, qualified: str) -> str:
 class Healer:
     """Proposes one patch per call; the caller validates it with ``patch_problems`` and verifies again."""
 
-    def __init__(self, llm, knowledge: KnowledgeIndex | None, graph: CallGraph | None = None):
+    def __init__(self, llm, knowledge: KnowledgeIndex | None, graph: CallGraph | None = None,
+                 lessons: str | None = None):
+        """``lessons``: the repairs the researcher approved (default: the notebook the agent arm also reads)."""
         self.llm, self.knowledge, self.graph = llm, knowledge, graph
+        self.lessons = approved_repairs() if lessons is None else lessons
 
     @property
     def config_label(self) -> str:
-        """The heal mode, for a scan's resume fingerprint."""
-        return "error+kb" if self.knowledge is not None else "error"
+        """The heal mode and the approved repairs' version, for a scan's resume fingerprint."""
+        mode = "error+kb" if self.knowledge is not None else "error"
+        if not self.lessons:
+            return mode
+        return f"{mode}+notes:{hashlib.sha256(self.lessons.encode('utf-8')).hexdigest()[:12]}"
 
     def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str, previous: list[dict]) -> Patch | None:
         try:
@@ -259,6 +267,8 @@ class Healer:
                 f"trigger: {h.trigger_condition}\nTarget code:\n```python\n{code}\n```\n")
         if names:
             task += f"Names to stub: {', '.join(sorted(names))}. How the file uses them:\n{_usage_lines(source, names)}\n"
+        if self.lessons:
+            task += f"\nRepairs the researcher approved for earlier cases:\n{self.lessons}\n"
         if knowledge:
             task += f"\nESBMC-Python documentation and examples it accepts:\n{knowledge}\n"
         task += '\nGive "edits" and/or "definitions".'

@@ -87,3 +87,42 @@ def test_add_repair_script_writes_the_rule(tmp_path):
                            "--error", "ERROR: x", "--what", "do it", "--case", "c1"],
                           capture_output=True, text=True, check=False)
     assert done.returncode == 0 and "### Fine" in path.read_text(encoding="utf-8")
+
+
+class _AskedLLM:
+    def __init__(self):
+        self.tasks = []
+
+    def complete(self, system, user, *, json_mode=False):
+        from types import SimpleNamespace
+
+        self.tasks.append(user)
+        return SimpleNamespace(harness='{"edits": [], "definitions": ""}')
+
+
+def _propose(lessons):
+    from research_pipeline.verify.healing import Healer
+    from research_pipeline.verify.hypothesis import BugHypothesis
+
+    llm = _AskedLLM()
+    healer = Healer(llm, None, lessons=lessons)
+    healer.propose(BugHypothesis("x.py", "f", "10 // x", line=2), "def f(x):\n    return 10 // x\n",
+                   "ESBMC_ERROR", "ERROR: Cannot resolve nested attribute: y", [])
+    return healer, llm.tasks[0]
+
+
+def test_batch_healing_sees_the_approved_repairs_and_records_their_version():
+    healer, task = _propose("### Annotate attributes\n- What to do: annotate.")
+    assert "Repairs the researcher approved for earlier cases" in task and "### Annotate attributes" in task
+    assert "+notes:" in healer.config_label
+
+
+def test_no_section_and_no_version_without_approved_repairs():
+    healer, task = _propose("")
+    assert "Repairs the researcher approved" not in task and "notes" not in healer.config_label
+
+
+def test_healer_reads_the_notebook_by_default():
+    from research_pipeline.verify.healing import Healer
+
+    assert Healer(_AskedLLM(), None).lessons == approved_repairs()
