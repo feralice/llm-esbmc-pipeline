@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,7 +23,7 @@ def main() -> int:
     parser.add_argument("--notebook", type=Path, default=NOTEBOOK)
     args = parser.parse_args()
     try:
-        add_repair(args.title, args.error, args.what, args.case, path=args.notebook, today=date.today())
+        add_repair(args.title, args.error, args.what, args.case, path=args.notebook, today=datetime.now().astimezone().date())
     except ValueError as exc:
         print(f"Regra recusada: {exc}", file=sys.stderr)
         return 1
