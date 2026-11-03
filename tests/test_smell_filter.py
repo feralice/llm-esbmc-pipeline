@@ -74,3 +74,23 @@ def test_score_keeps_every_candidate_the_llm_did_not_reject():
 def test_score_without_candidates_has_no_precision():
     report = score([], {"x": ("LongMethod", 1)}, {})
     assert report["tool"]["precision"] is None and report["tool"]["recall"] == 0.0
+
+
+def test_pysmell_candidates_are_the_items_either_heuristic_reported(tmp_path, monkeypatch, capsys):
+    import sys
+
+    sys.path.insert(0, "scripts")
+    import smell_filter_pysmell as script
+
+    rows = [{"id": "p1", "smell": "LongParameterList", "label": 1, "path": "a.py", "line": 3, "snippet": "def f(): pass",
+             "snippet_start": 3, "tool_experience_based": 1, "tool_statistics_based": 0, "metrics": {"PAR": 9}},
+            {"id": "p2", "smell": "LongMethod", "label": 0, "path": "a.py", "line": 9, "snippet": None,
+             "tool_experience_based": 0, "tool_statistics_based": 1, "metrics": {}},
+            {"id": "p3", "smell": "LongMethod", "label": 1, "path": "b.py", "line": 1,
+             "tool_experience_based": 0, "tool_statistics_based": 0}]
+    candidates, labels = script.pysmell_candidates(rows)
+    assert [(c.id, c.tool, c.code) for c in candidates] == [("p1", "pysmell:experience", "def f(): pass"),
+                                                          ("p2", "pysmell:statistics", "")]
+    assert labels == {"p1": ("LongParameterList", 1), "p2": ("LongMethod", 0), "p3": ("LongMethod", 1)}
+    monkeypatch.setattr(sys, "argv", ["x", "--out", str(tmp_path / "o"), "--sample", "5"])
+    assert script.main() == 0 and "Simulação" in capsys.readouterr().out and not (tmp_path / "o").exists()
