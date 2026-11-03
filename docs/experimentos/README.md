@@ -1187,6 +1187,18 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
   `enumerate`. Os dois pytest do replay reproduzem.
 
+## Self-healing interativo e caderno compartilhado (02/11), sem rodada
+
+- **O que entrou:** comando `/self-healing` da extensão (`extension/commands/self-healing.md`): uma reescrita por
+  vez numa cópia do harness, com explicação; `scripts/check_preserved.py` desfaz a que muda o corpo da função alvo
+  ou da de fora; a lição só entra no caderno (`verify/skills/reparos-aprendidos/SKILL.md`) com o "sim" da
+  Fernanda, por `scripts/add_repair.py`, que confere o formato. O self-healing do lote (`verify/healing.py`) passa a
+  receber as regras aprovadas no prompt, e a versão delas entra no `config_label` (a retomada do scan não mistura
+  versões do caderno). Desenho em `docs/superpowers/specs/2026-11-02-self-healing-interativo-design.md`.
+- **Conferido sem LLM:** `check_preserved.py` nos 3 primeiros `UNSUPPORTED` do S6 base
+  (`artifacts/v2/s6-s2-base-2026-10-29`) dá `preservado`, igual ao `target_preserved` gravado na rodada.
+- **Falta:** medir o efeito do caderno no lote (Fase 3, gasta LLM).
+
 ## Smells: ferramenta aponta, LLM filtra (02/11), sem rodada
 
 - **Pergunta:** o LLM tira os alarmes falsos de uma ferramenta de smell sem perder os reais (iSMELL, Wu et al.,

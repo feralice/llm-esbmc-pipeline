@@ -4,6 +4,12 @@ Comando `/verificar-repo <pasta> [foco]`: o grafo de chamadas escolhe as funçõ
 possíveis bugs de execução, o agente escreve o harness e o ESBMC-Python confirma. O relatório separa os bugs
 confirmados (cada um com o teste que falha) das suspeitas do LLM que não foram confirmadas.
 
+Comando `/self-healing <rodada ou caso>`: pega um caso que parou sem veredito do ESBMC (por exemplo
+`UNSUPPORTED`), roda o ESBMC numa cópia do harness, propõe uma reescrita por vez explicando por que o
+comportamento não muda, confere o corpo da função com `scripts/check_preserved.py` e, quando o ESBMC chega a
+veredito, propõe a lição para o caderno (`verify/skills/reparos-aprendidos/SKILL.md`). Só grava com o seu "sim"
+(`scripts/add_repair.py`). O self-healing do lote e o braço de agente leem o mesmo caderno.
+
 ## Instalar
 
 ```bash
