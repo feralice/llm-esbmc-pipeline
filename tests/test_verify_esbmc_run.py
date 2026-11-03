@@ -9,6 +9,8 @@ UNWIND = ("violation_found", ["unwinding assertion loop 3"])
 BUG = ("violation_found", ["uncaught exception: ZeroDivisionError"])
 TIMEOUT = ("timeout", [])
 CRASH = ("tool_error", [])
+SAFE = ("no_violation_found", [])
+UNKNOWN = ("inconclusive", [])
 
 
 def _runner(*outcomes):
@@ -29,7 +31,10 @@ def _runner(*outcomes):
     ((UNWIND, BUG), "uncaught exception: ZeroDivisionError", {"unwind": 10}),
     ((UNWIND, UNWIND, BUG), "uncaught exception: ZeroDivisionError", {"unwind": 20}),
     ((UNWIND, UNWIND, UNWIND, BUG), "uncaught exception: ZeroDivisionError", {"unwind": "incremental"}),
-    ((UNWIND, UNWIND, UNWIND, UNWIND), "unwinding assertion loop 3", {"unwind": 20}),
+    # Incremental BMC still short: k-induction may prove the program safe or find the bug; UNKNOWN keeps the bound.
+    ((UNWIND, UNWIND, UNWIND, UNWIND, UNKNOWN), "unwinding assertion loop 3", {"unwind": 20}),
+    ((UNWIND, UNWIND, UNWIND, UNWIND, SAFE), "no_violation_found", {"unwind": "k-induction"}),
+    ((UNWIND, UNWIND, UNWIND, UNWIND, BUG), "uncaught exception: ZeroDivisionError", {"unwind": "k-induction"}),
     # A larger bound that crashes or times out leaves the valid reading of the smaller one standing.
     ((UNWIND, CRASH), "unwinding assertion loop 3", {"unwind": 5}),
     ((UNWIND, TIMEOUT), "unwinding assertion loop 3", {"unwind": 5}),
@@ -114,3 +119,17 @@ def test_library_flags_travel_in_how_but_not_into_incremental_bmc(tmp_path):
     assert library_flags(how) == ["--unwindsetname", "__python_str_concat:0:64,strlen:0:64"]
     incremental = [flags for flags in calls if "--incremental-bmc" in flags]
     assert incremental and all("--unwindsetname" not in flags for flags in incremental)
+
+
+def test_k_induction_runs_without_a_fixed_bound(tmp_path):
+    flags = []
+
+    def run(path, *, esbmc_command, bound, timeout_seconds, output_dir, bound_flags, extra_flags):
+        flags.append((list(bound_flags), list(extra_flags or [])))
+        status, kinds = SAFE if "--k-induction" in (extra_flags or []) else UNWIND
+        return ESBMCDirectResult(source_file=str(path), status=status, command=["esbmc"], returncode=0,
+                                 summary=status, details={"violated_properties": kinds,
+                                                          "violated_files": ["p.py"] * len(kinds)})
+
+    check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=1, work_dir=tmp_path, runner=run)
+    assert flags[-1] == ([], ["--k-induction"])

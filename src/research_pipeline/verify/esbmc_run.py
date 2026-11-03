@@ -18,6 +18,7 @@ from research_pipeline.verification.esbmc_runner import run_esbmc_direct
 from .outcome import EsbmcReading, classify_esbmc
 
 VERDICT_KINDS = frozenset({"violation", "artifact", "safe"})
+_UNBOUNDED = frozenset({"--incremental-bmc", "--k-induction"})
 # Solvers differ per program: Boolector and Z3 finished some programs Bitwuzla did not (2026-09-30).
 FALLBACK_SOLVERS = ("--boolector", "--z3")
 _SOLVER_FLAGS = {"--boolector", "--z3", "--bitwuzla", "--cvc5", "--cvc4", "--yices", "--mathsat", "--smtlib"}
@@ -66,10 +67,11 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
 
     def run(unwind: int, solver: str = "", tag_suffix: str = "") -> tuple[ESBMCDirectResult, EsbmcReading]:
         tag = f"esbmc_unwind{unwind}{solver.replace('--', '_')}{tag_suffix}"
-        bound_flags = [] if solver == "--incremental-bmc" else ["--unwind", str(unwind)]
+        unbounded = solver in _UNBOUNDED
+        bound_flags = [] if unbounded else ["--unwind", str(unwind)]
         extra = [solver] if solver else []
-        # Incremental BMC raises every loop itself; a fixed library bound would cap it.
-        if library and solver != "--incremental-bmc":
+        # Incremental BMC and k-induction raise every loop themselves; a fixed library bound would cap them.
+        if library and not unbounded:
             extra += ["--unwindsetname", ",".join(f"{loop}:{LIBRARY_UNWIND}" for loop in library)]
         result = runner(path, esbmc_command=esbmc_command, bound=unwind, timeout_seconds=timeout_seconds,
                         output_dir=Path(work_dir) / tag, bound_flags=bound_flags, extra_flags=extra or None)
@@ -100,6 +102,11 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
         result, result_reading = run(0, "--incremental-bmc")
         if result_reading.kind in VERDICT_KINDS and not only_unwinding(result_reading):
             esbmc, reading, how = result, result_reading, {**how, "unwind": "incremental"}
+        else:
+            # The inductive step can prove safety where no bound reaches every iteration; UNKNOWN keeps the bound.
+            result, result_reading = run(0, "--k-induction")
+            if result_reading.kind in VERDICT_KINDS and not only_unwinding(result_reading):
+                esbmc, reading, how = result, result_reading, {**how, "unwind": "k-induction"}
     if reading.kind == "timeout" and not _SOLVER_FLAGS.intersection(esbmc_command or []):
         for solver in FALLBACK_SOLVERS:
             result, result_reading = run(how["unwind"], solver)
