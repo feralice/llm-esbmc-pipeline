@@ -28,6 +28,102 @@ def find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | No
     return matches[0] if len(matches) == 1 and isinstance(matches[0], ast.FunctionDef) else None
 
 
+_DEFINITIONS = (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+
+
+def definitions_in(body: list[ast.stmt], name: str) -> list[ast.AST]:
+    """Classes and functions called ``name`` in a scope, also under if/try/with/for (Keras' ``rnn`` and
+    pandas' ``dispatch_to_series`` define one helper per branch), never inside another definition."""
+    found, pending = [], list(body)
+    while pending:
+        node = pending.pop(0)
+        if isinstance(node, _DEFINITIONS):
+            if node.name == name:
+                found.append(node)
+            continue
+        for field in ("body", "orelse", "finalbody", "handlers"):
+            pending += [n for n in getattr(node, field, []) if isinstance(n, ast.AST)]
+        if isinstance(node, ast.ExceptHandler):
+            pending += node.body
+    return found
+
+
+def _definition_path(tree: ast.Module, qualified: str, expression: str = "") -> list[ast.AST] | None:
+    """The definitions along ``a.b.c``; when branches define the last name more than once, the one
+    holding ``expression`` is it."""
+    chain, scope = [], tree.body
+    names = qualified.split(".")
+    for position, name in enumerate(names):
+        found = definitions_in(scope, name) if chain else [
+            n for n in scope if isinstance(n, _DEFINITIONS) and n.name == name]
+        if len(found) > 1 and expression and position == len(names) - 1:
+            found = [n for n in found if isinstance(n, ast.FunctionDef) and expression_nodes(n, expression)]
+        if len(found) != 1:
+            return None
+        chain.append(found[0])
+        scope = found[0].body
+    return chain if isinstance(chain[-1], (ast.FunctionDef, ast.AsyncFunctionDef)) else None
+
+
+def nested_chain(tree: ast.Module, qualified: str, expression: str = "") -> list[ast.AST] | None:
+    """``outer.Inner.method`` or ``outer.inner``: the nodes along the name, when one of them sits
+    inside a function (the LLM located it, but it only exists once outer runs)."""
+    chain = _definition_path(tree, qualified, expression)
+    if chain is None or all(isinstance(n, ast.ClassDef) for n in chain[:-1]):
+        return None
+    return chain
+
+
+def find_definition(tree: ast.Module, qualified: str, expression: str = "") -> ast.FunctionDef | None:
+    """Like ``find_function``, at any depth: functions inside functions and classes inside functions."""
+    chain = _definition_path(tree, qualified, expression)
+    return chain[-1] if chain and isinstance(chain[-1], ast.FunctionDef) else None
+
+
+def _own_calls(scope: ast.AST) -> list[ast.Call]:
+    """Calls in the scope's body, not in the definitions nested in it."""
+    calls, pending = [], list(ast.iter_child_nodes(scope))
+    while pending:
+        node = pending.pop()
+        if isinstance(node, _DEFINITIONS):
+            continue
+        if isinstance(node, ast.Call):
+            calls.append(node)
+        pending += ast.iter_child_nodes(node)
+    return calls
+
+
+def _runs(scope: ast.AST, link: ast.AST, after: ast.AST | None) -> bool:
+    """Whether ``scope`` runs ``link``: calls the function, or for a class, builds it and calls ``after`` on it."""
+    calls = _own_calls(scope)
+    called = {c.func.id for c in calls if isinstance(c.func, ast.Name)}
+    if not isinstance(link, ast.ClassDef):
+        return link.name in called
+    return link.name in called and after is not None and any(
+        isinstance(c.func, ast.Attribute) and c.func.attr == after.name for c in calls)
+
+
+def outer_entry(tree: ast.Module, qualified: str, expression: str = "") -> str | None:
+    """For a function nested in another: the outermost enclosing function ``find_function`` locates, when
+    every definition on the way runs the next one. Entering there keeps the captured values real."""
+    chain = nested_chain(tree, qualified, expression)
+    if chain is None:
+        return None
+    names = qualified.split(".")
+    entry = next((i for i in range(len(chain) - 1)
+                  if not isinstance(chain[i], ast.ClassDef) and find_function(tree, ".".join(names[:i + 1]))), None)
+    if entry is None:
+        return None
+    for position in range(entry, len(chain) - 1):
+        scope, link = chain[position], chain[position + 1]
+        if isinstance(scope, ast.ClassDef):
+            continue
+        after = chain[position + 2] if position + 2 < len(chain) else None
+        if not _runs(scope, link, after):
+            return None
+    return ".".join(names[:entry + 1])
+
+
 _HEADERS = ("if ", "elif ", "while ", "return ", "assert ")
 
 
