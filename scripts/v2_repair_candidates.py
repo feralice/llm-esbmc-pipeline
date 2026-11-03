@@ -1,7 +1,8 @@
 """Mine an agent run for repair candidates: a round ESBMC refused followed by one that reached a verdict.
 
 Nothing enters the notebook (src/research_pipeline/verify/skills/reparos-aprendidos/SKILL.md) by itself: this
-writes candidatos.md next to agent_results.json for the researcher to review and approve by hand.
+writes candidatos.md next to agent_results.json for the researcher to review; an approved rule enters through
+scripts/add_repair.py.
 
     python scripts/v2_repair_candidates.py artifacts/v2/<agent-run>
 """
@@ -56,8 +57,8 @@ def write_candidates(run_dir: Path, out: Path) -> int:
                   for c in repair_candidates(case, results)]
     lines = ["# Candidatos ao caderno de reparos", "",
              "Pares de rodadas em que o ESBMC recusou e a rodada seguinte chegou a um veredito. "
-             "Nada daqui entra no caderno sem aprovação: copie a regra escolhida para o SKILL.md "
-             "de reparos-aprendidos (a versão é o hash do arquivo, registrado a cada rodada).", ""]
+             "Nada daqui entra no caderno sem aprovação: a regra escolhida entra por scripts/add_repair.py "
+             "(a versão é o hash do arquivo, registrado a cada rodada).", ""]
     for c in candidates:
         lines += [f"## {c['caso']}, rodada {c['rodada']}", "", f"Erro: `{c['erro']}`", "",
                   "```diff", c["diff"].rstrip("\n"), "```", ""]

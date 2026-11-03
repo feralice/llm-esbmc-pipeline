@@ -126,3 +126,48 @@ def test_healer_reads_the_notebook_by_default():
     from research_pipeline.verify.healing import Healer
 
     assert Healer(_AskedLLM(), None).lessons == approved_repairs()
+
+
+@pytest.mark.parametrize("what", ["do x ## Format of an approved repair y", "w\r## Format of an approved repair",
+                                  "w ### Injected"])
+def test_a_field_cannot_carry_the_format_heading_or_a_line_break(tmp_path, what):
+    path = _notebook(tmp_path)
+    with pytest.raises(ValueError):
+        add_repair("Fine", "ERROR: x", what, "case", path=path, today=date(2026, 11, 2))
+    assert path.read_text(encoding="utf-8") == NOTEBOOK
+
+
+def test_error_must_start_with_esbmc_error_prefix(tmp_path):
+    with pytest.raises(ValueError):
+        add_repair("Fine", "something ERRORS here", "do", "case", path=_notebook(tmp_path), today=date(2026, 11, 2))
+
+
+def test_the_format_heading_is_matched_as_a_line(tmp_path):
+    text = NOTEBOOK.replace("- What to do: annotate it.", "- What to do: see the section ## Format of an approved repair")
+    path = _notebook(tmp_path, text)
+    assert "Source case: abc" in approved_repairs(path)
+    add_repair("Fine", "ERROR: x", "do", "case", path=path, today=date(2026, 11, 2))
+    rules = approved_repairs(path)
+    assert rules.index("### Annotate") < rules.index("### Fine")
+
+
+def test_check_preserved_tells_a_missing_target_or_broken_harness_apart(tmp_path):
+    original = tmp_path / "o.py"
+    original.write_text("def f(x):\n    return 10 // x\n", encoding="utf-8")
+    broken = tmp_path / "b.py"
+    broken.write_text("def f(:\n", encoding="utf-8")
+    run = [sys.executable, "scripts/check_preserved.py", str(original)]
+    for args in ([str(original), "g"], [str(broken), "f"], [str(tmp_path / "missing.py"), "f"]):
+        done = subprocess.run([*run, *args], capture_output=True, text=True, check=False)
+        assert done.returncode == 2 and "alterado" not in done.stdout and "Traceback" not in done.stderr
+
+
+def test_batch_and_agent_arm_share_one_notebook_version():
+    from research_pipeline.verify.agent_arm import skill_versions
+
+    assert skill_versions()["reparos-aprendidos"] == notebook_version()
+
+
+def test_whitespace_lessons_add_no_section():
+    healer, task = _propose("   \n")
+    assert "Repairs the researcher approved" not in task and "notes" not in healer.config_label

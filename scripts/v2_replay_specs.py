@@ -120,7 +120,8 @@ def main() -> int:
         row = {"id": item["hypothesis"]["hypothesis_id"], "file": Path(h.file).name, "function": h.function,
                "before": item["verdict"], "after": data["verdict"], "reason": data["reason"][:300],
                "recorded_specs": len(recorded), "filled": getattr(llm, "filled", 0), "transforms": data.get("transforms", []),
-               "healing_rounds": len(data.get("healing", []))}
+               "healing_rounds": len(data.get("healing", [])),
+               "heal": healer.config_label if healer is not None else "none"}
         rows.append(row)
         results.append({"hypothesis": item["hypothesis"], **{k: v for k, v in data.items() if k != "hypothesis"}})
         print(f"{row['file']:16s} {row['before']:18s} -> {row['after']:18s} {row['reason'][:80]}", flush=True)

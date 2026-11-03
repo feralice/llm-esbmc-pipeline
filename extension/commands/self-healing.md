@@ -54,6 +54,8 @@ jargão desnecessário. Uma reescrita por vez; nunca várias de uma vez.
 
    - `alterado` (saída 1): o corpo da função alvo, ou da função de fora que a chama, mudou. Desfaça a reescrita,
      explique o que mudou e volte ao passo 6 com outra proposta.
+   - Saída 2: não deu para conferir (arquivo faltando, harness que não é Python válido, função não encontrada).
+     Mostre a mensagem e conserte isso primeiro; não conte como reescrita que mudou o corpo.
    - `preservado`: rode o ESBMC de novo (passo 5).
 
 8. **Parar.** Pare quando o ESBMC chegar a `VERIFICATION FAILED` ou `VERIFICATION SUCCESSFUL`, ou depois de 5
@@ -69,6 +71,8 @@ jargão desnecessário. Uma reescrita por vez; nunca várias de uma vez.
      --what "<o que fazer>" --case "<id> (<bug>), reescrita <n>"
    ```
 
-   Se o script recusar (formato ou título repetido), mostre o motivo e corrija com quem usa. Sem "sim", não grave.
+   Se o script recusar (formato ou título repetido), mostre o motivo e corrija com quem usa; a regra corrigida
+   precisa de um novo "sim" antes de rodar o script de novo. Nunca edite o caderno à mão (Edit ou Write): só pelo
+   script, e só com "sim".
 
 10. **Resumo.** Diga o que foi tentado, o que funcionou, se a lição foi gravada e onde está a cópia do harness.

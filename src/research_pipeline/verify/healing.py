@@ -27,7 +27,7 @@ from .esbmc_knowledge import (
     lookup,
 )
 from .hypothesis import BugHypothesis
-from .lessons import approved_repairs
+from .lessons import approved_repairs, notebook_version
 from .loop import VerifyResult, verify_hypothesis
 from .outcome import ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
 
@@ -206,15 +206,15 @@ class Healer:
                  lessons: str | None = None):
         """``lessons``: the repairs the researcher approved (default: the notebook the agent arm also reads)."""
         self.llm, self.knowledge, self.graph = llm, knowledge, graph
-        self.lessons = approved_repairs() if lessons is None else lessons
+        self.lessons = (approved_repairs() if lessons is None else lessons).strip()
+        self.lessons_version = (notebook_version() if lessons is None
+                                else hashlib.sha256(self.lessons.encode("utf-8")).hexdigest()[:12])
 
     @property
     def config_label(self) -> str:
-        """The heal mode and the approved repairs' version, for a scan's resume fingerprint."""
+        """The heal mode and the notebook version (the hash the agent arm records), for a scan's resume fingerprint."""
         mode = "error+kb" if self.knowledge is not None else "error"
-        if not self.lessons:
-            return mode
-        return f"{mode}+notes:{hashlib.sha256(self.lessons.encode('utf-8')).hexdigest()[:12]}"
+        return f"{mode}+notes:{self.lessons_version}" if self.lessons else mode
 
     def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str, previous: list[dict]) -> Patch | None:
         try:

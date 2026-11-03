@@ -49,7 +49,7 @@ def _repo(tmp_path, util="def scale(tag):\n    return len(tag) - 2\n"):
 
 def test_grounding_patch_keeps_literal_expression():
     llm = FakeLLM([{"function": "Reader.parse", "expression": "int(parts[1]) / scale(parts[0])"}])
-    patch = Healer(llm, None).propose(_h("parse", "parts[1] / scale"), SOURCE, GROUNDING_FAILED,
+    patch = Healer(llm, None, lessons="").propose(_h("parse", "parts[1] / scale"), SOURCE, GROUNDING_FAILED,
                                       "function 'parse' not found (or ambiguous)", [])
     assert (patch.hypothesis_function, patch.hypothesis_expression) == ("Reader.parse", "int(parts[1]) / scale(parts[0])")
     assert "Reader.parse" in llm.prompts[0]
@@ -57,12 +57,12 @@ def test_grounding_patch_keeps_literal_expression():
 
 def test_grounding_patch_with_invented_expression_is_dropped():
     llm = FakeLLM([{"function": "Reader.parse", "expression": "x / y"}])
-    assert Healer(llm, None).propose(_h("parse"), SOURCE, GROUNDING_FAILED, "not found", []) is None
+    assert Healer(llm, None, lessons="").propose(_h("parse"), SOURCE, GROUNDING_FAILED, "not found", []) is None
 
 
 def test_missing_dependency_uses_graph_before_llm(tmp_path):
     llm = FakeLLM([])
-    patch = Healer(llm, None, _repo(tmp_path)).propose(_h(), SOURCE, MISSING_DEPENDENCY,
+    patch = Healer(llm, None, _repo(tmp_path), lessons="").propose(_h(), SOURCE, MISSING_DEPENDENCY,
                                                       "undefined name(s): scale", [])
     assert "return len(tag) - 2" in patch.real_code
     assert patch.definitions == "" and llm.prompts == []
@@ -97,13 +97,13 @@ def test_unsupported_prompt_carries_knowledge():
 
 def test_previous_rounds_are_shown():
     llm = FakeLLM([{"edits": []}])
-    Healer(llm, None).propose(_h(), SOURCE, UNSUPPORTED, "ERROR: x", [{"problems": ["the body changed"]}])
+    Healer(llm, None, lessons="").propose(_h(), SOURCE, UNSUPPORTED, "ERROR: x", [{"problems": ["the body changed"]}])
     assert "the body changed" in llm.prompts[0]
 
 
 def test_unparseable_reply_returns_none():
     llm = FakeLLM(["not json at all"])
-    assert Healer(llm, None).propose(_h(), SOURCE, UNSUPPORTED, "ERROR: x", []) is None
+    assert Healer(llm, None, lessons="").propose(_h(), SOURCE, UNSUPPORTED, "ERROR: x", []) is None
 
 
 def test_empty_reply_returns_none():

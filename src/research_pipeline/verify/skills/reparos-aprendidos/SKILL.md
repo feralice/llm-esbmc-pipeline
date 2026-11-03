@@ -14,8 +14,9 @@ description: Repairs learned from earlier harness attempts that ESBMC-Python rej
 
 ## Format of an approved repair
 
-Candidates come from `scripts/v2_repair_candidates.py` (candidatos.md). A repair is approved only when the
-researcher copies it here by hand; its version is the hash of this file that each run records. Each rule:
+Candidates come from `scripts/v2_repair_candidates.py` (candidatos.md) or the `/self-healing` command. A repair
+enters only after the researcher approves it, through `scripts/add_repair.py`, which checks this format; never
+edit this file by hand. Its version is the hash of this file, which each run records. Each rule:
 
 ### <short title>
 - Error: the first `ERROR:` line ESBMC printed for the refused harness.
