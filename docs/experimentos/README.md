@@ -1187,6 +1187,17 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
   `enumerate`. Os dois pytest do replay reproduzem.
 
+## Congelamento b (02/11): versão que vale para as rodadas
+
+- **Tag:** `v2-congelado-2026-11b`. Substitui a `v2-congelado-2026-11` (que fica como marco): entraram os itens
+  da seção Depois (k-induction, funções aninhadas, smells ferramenta + LLM, self-healing interativo com caderno
+  compartilhado) e a amostra dos 30 achados fora da linha para rotular. Cada item passou por revisão
+  independente, com as correções registradas nos commits.
+- **ESBMC:** o mesmo, master `d520a903aef7f9585355e07e1fb92cb16982c588`, `~/esbmc-master/build-bw`, 8.6.0.
+- **Testes:** 1403 passando.
+- **Próximas rodadas:** smells no PySmell (200 candidatos), disciplina PGENE601 (47 bugs), item 14 (bug semeado),
+  Fase 3.
+
 ## Self-healing interativo e caderno compartilhado (02/11), sem rodada
 
 - **O que entrou:** comando `/self-healing` da extensão (`extension/commands/self-healing.md`): uma reescrita por
