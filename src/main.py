@@ -244,8 +244,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--heal",
         choices=list(HEAL_MODES),
-        default="none",
-        help="Motor verify: self-healing quando o ESBMC não chega a veredito; 'error' devolve a mensagem do ESBMC "
+        default="error+kb",
+        help="Motor verify: self-healing quando o ESBMC não chega a veredito (ligado por padrão; 'none' desliga); "
+             "'error' devolve a mensagem do ESBMC "
              "ao LLM, 'error+kb' também o README e os testes de regressão do checkout do ESBMC",
     )
     parser.add_argument("--heal-rounds", type=int, default=3, help="Rodadas de self-healing por hipótese")

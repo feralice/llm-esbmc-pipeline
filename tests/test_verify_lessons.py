@@ -171,3 +171,9 @@ def test_batch_and_agent_arm_share_one_notebook_version():
 def test_whitespace_lessons_add_no_section():
     healer, task = _propose("   \n")
     assert "Repairs the researcher approved" not in task and "notes" not in healer.config_label
+
+
+def test_self_healing_is_on_by_default_in_every_flow():
+    import main
+
+    assert main.build_parser().parse_args(["--mode", "hybrid", "--input", "x.py"]).heal == "error+kb"

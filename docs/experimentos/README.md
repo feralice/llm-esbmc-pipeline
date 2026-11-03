@@ -1187,6 +1187,14 @@ Commit do código: d7c18ff. Régua: amostra de detecção, 48 bugs; base A5 (`de
   ZeroDivisionError; a correção protege exatamente essa divisão; o ESBMC recusou por não modelar o resultado do
   `enumerate`. Os dois pytest do replay reproduzem.
 
+## Self-healing ligado por padrão (02/11)
+
+- **Decisão da Fernanda:** o self-healing faz parte do fluxo normal, não de um comando à parte. Até aqui o
+  `--heal` vinha desligado (`none`) e só rodava quando alguém passava a flag; agora o padrão é `error+kb` (o LLM
+  recebe a mensagem do ESBMC, as regras aprovadas do caderno e a documentação e os testes do checkout do ESBMC)
+  em `--mode hybrid` e no scan. `--heal none` desliga. O braço de agente já se corrige sozinho com o ESBMC.
+  O `/self-healing` da extensão continua como ferramenta manual para estudar um caso e aprovar lições.
+
 ## Congelamento b (02/11): versão que vale para as rodadas
 
 - **Tag:** `v2-congelado-2026-11b`. Substitui a `v2-congelado-2026-11` (que fica como marco): entraram os itens
