@@ -24,6 +24,8 @@ from .oracle import convert, refusals
 from .pytest_gen import pytest_reproducer
 from .outcome import (
     CONFIRMED,
+    ESBMC_TIMEOUT,
+    ESBMC_TIMEOUT,
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
     NO_SOURCE,
@@ -259,13 +261,24 @@ def verify_hypothesis(
                   else _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc)))
         if replay.status == "not_reproduced" and reading.kind == "violation" and esbmc_command \
                 and "nondet_str()" in program.source:
+            witness_timeout = min(timeout_seconds, 30) if how.get("partial_timeout") else timeout_seconds
             strings = string_witness(path, esbmc_command=esbmc_command,
                                      bound=how["unwind"] if isinstance(how["unwind"], int) and how["unwind"] else bound,
-                                     timeout_seconds=timeout_seconds, work_dir=work_dir / path.stem)
+                                     timeout_seconds=witness_timeout, work_dir=work_dir / path.stem)
             record["witness_strings"] = strings
             if strings:
                 replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc), strings)
         result.replay = replay.to_dict()
+        if how.get("partial_timeout"):
+            if replay.status == "reproduced" and replay.exception_type in reading.exceptions:
+                if grounded.entry == "function" and esbmc_command:
+                    result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command,
+                                                how["unwind"] if isinstance(how["unwind"], int) else bound,
+                                                work_dir)
+                return finish(CONFIRMED, "timeout após contraexemplo parcial; exceção reproduzida no CPython: "
+                                          + replay.exception_type)
+            return finish(ESBMC_TIMEOUT, "ESBMC excedeu o tempo limite; contraexemplo parcial não reproduzido "
+                                         "no CPython.")
         if value:
             return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source))
         verdict = final_verdict(reading, replay)

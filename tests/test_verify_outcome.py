@@ -56,6 +56,15 @@ def test_other_conversion_error_is_repairable_with_message():
     assert "Type inference failed" in reading.message
 
 
+@pytest.mark.parametrize("status", ["tool_error", "inconclusive"])
+def test_esbmc_sigsegv_is_terminal_tool_error_not_repairable(status):
+    reading = classify_esbmc(_result(
+        status, stdout="ESBMC caught SIGSEGV: this is an internal error, not a verification result."))
+    assert reading.kind == "error"
+    assert "SIGSEGV" in reading.message
+    assert final_verdict(reading, ReplayVerdict("unavailable")) == ESBMC_ERROR
+
+
 def test_esbmc_not_found_is_an_error():
     assert classify_esbmc(_result("skipped")).kind == "error"
 

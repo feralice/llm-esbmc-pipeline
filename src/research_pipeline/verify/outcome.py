@@ -79,6 +79,10 @@ def _python_exceptions(kind: str) -> set[str]:
 
 def classify_esbmc(result: ESBMCDirectResult) -> EsbmcReading:
     status = result.status
+    if status in {"tool_error", "inconclusive"} and (
+        "ESBMC caught SIGSEGV" in f"{result.stdout}\n{result.stderr}" or result.returncode in {-11, 139}
+    ):
+        return EsbmcReading("error", "ESBMC caught SIGSEGV: internal verifier error")
     if status == "violation_found":
         if only_verifier_artifacts(result.details):
             return EsbmcReading("artifact", "; ".join(result.details.get("violated_properties") or []))

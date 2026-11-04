@@ -94,3 +94,20 @@ def test_diagnosis_reads_raw_log_when_output_was_summarized(tmp_path):
 ])
 def test_converter_errors_seen_on_eligible_dataset_are_named(error, kind):
     assert diagnose_esbmc("tool_error", error, "").kind == kind
+
+
+def test_direct_runner_keeps_violated_properties_printed_before_the_timeout(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "probe.py"
+    source.write_text("pass\n", encoding="utf-8")
+    partial = (f"[Counterexample]\n\nViolated property:\n  file {source} line 1 column 0 function f\n"
+               "  uncaught exception: ZeroDivisionError\n\n").encode()
+
+    def timeout(command, **kwargs):
+        raise subprocess.TimeoutExpired(command, kwargs["timeout"], output=partial, stderr=b"")
+
+    monkeypatch.setattr(esbmc_runner.subprocess, "run", timeout)
+    result = esbmc_runner.run_esbmc_direct(source, esbmc_command=["/bin/true"], output_dir=tmp_path / "logs")
+    assert result.status == "timeout"
+    records = result.details["violated_property_records"]
+    assert [(Path(r["file"]).name, r["kind"]) for r in records] == [
+        ("probe.py", "uncaught exception: ZeroDivisionError")]

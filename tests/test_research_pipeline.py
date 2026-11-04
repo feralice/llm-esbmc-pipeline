@@ -191,6 +191,14 @@ def test_classify_tool_error() -> None:
     assert _classify_esbmc_direct_result(output, 1) == "tool_error"
 
 
+def test_esbmc_sigsegv_without_error_prefix_is_tool_error() -> None:
+    output = (
+        "Encoding remaining VCC(s) using bit-vector/floating-point arithmetic\n"
+        "ESBMC caught SIGSEGV: this is an internal error, not a verification result.\n"
+    )
+    assert _classify_esbmc_direct_result(output, 139) == "tool_error"
+
+
 def test_classify_unsupported_case() -> None:
     """Cannot open file → unsupported_case."""
     output = "Parsing /tmp/test.py\nERROR: Cannot open file 'numpy'\n"

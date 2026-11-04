@@ -11,6 +11,7 @@ from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.llm_client import SynthResult
 from research_pipeline.verify.outcome import (
     CONFIRMED,
+    ESBMC_TIMEOUT,
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
     NOT_CONFIRMED,
@@ -258,3 +259,24 @@ def test_the_caller_context_rule_reaches_only_the_callers_arm(tmp_path, monkeypa
     none = SystemRecordingLLM([GOOD])
     _run_context(tmp_path / "none", monkeypatch, none, CALLED, "ratio", "total // count")
     assert rule not in none.prompts[0] and rule not in none.systems[0]
+
+
+def _partial_timeout_esbmc():
+    def run(path, esbmc_command=None, bound=5, timeout_seconds=30, output_dir=None, bound_flags=None, **_):
+        record = {"kind": "uncaught exception: ZeroDivisionError", "file": Path(path).name}
+        return ESBMCDirectResult(source_file=str(path), status="timeout", command=["esbmc"], returncode=None,
+                                 summary="timeout", stdout="[Counterexample]\n\nViolated property:\n  x\n",
+                                 details={"violated_property_records": [record]})
+    return run
+
+
+def test_partial_timeout_counterexample_reproduced_in_cpython_is_confirmed(tmp_path, monkeypatch):
+    result = _run(tmp_path, monkeypatch, FakeLLM([GOOD]), _partial_timeout_esbmc())
+    assert result.verdict == CONFIRMED
+    assert "contraexemplo parcial" in result.reason
+
+
+@pytest.mark.parametrize("replay", [ReplayVerdict("not_reproduced"), ReplayVerdict("reproduced", "ValueError", 2)])
+def test_partial_timeout_counterexample_not_reproduced_stays_a_timeout(tmp_path, monkeypatch, replay):
+    result = _run(tmp_path, monkeypatch, FakeLLM([GOOD]), _partial_timeout_esbmc(), replay=replay)
+    assert result.verdict == ESBMC_TIMEOUT

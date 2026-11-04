@@ -133,3 +133,47 @@ def test_k_induction_runs_without_a_fixed_bound(tmp_path):
 
     check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=1, work_dir=tmp_path, runner=run)
     assert flags[-1] == ([], ["--k-induction"])
+
+
+PARTIAL_LOG = "[Counterexample]\nState 1 file p.py line 2\n\nViolated property:\n  file p.py line 2\n"
+
+
+def _partial_timeout_runner(record_file):
+    calls = []
+
+    def run(path, *, esbmc_command, bound, timeout_seconds, output_dir, bound_flags, extra_flags):
+        calls.append((extra_flags or [""])[0])
+        record = {"kind": "uncaught exception: ZeroDivisionError", "file": record_file}
+        return ESBMCDirectResult(source_file=str(path), status="timeout", command=["esbmc"], returncode=None,
+                                 summary="timeout", stdout=PARTIAL_LOG,
+                                 details={"violated_property_records": [record]})
+    run.calls = calls
+    return run
+
+
+def test_timeout_with_a_target_counterexample_is_read_as_a_partial_violation(tmp_path):
+    runner = _partial_timeout_runner("p.py")
+    _, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=1,
+                            work_dir=tmp_path, runner=runner)
+    assert reading.kind == "violation" and reading.exceptions == {"ZeroDivisionError"}
+    assert how["partial_timeout"] is True
+    # The fallback solvers still run first: a full verdict always beats a partial one.
+    assert runner.calls == ["", "--boolector", "--z3"]
+
+
+def test_partial_counterexample_outside_the_program_stays_a_timeout(tmp_path):
+    _, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=1,
+                            work_dir=tmp_path, runner=_partial_timeout_runner("python_models.py"))
+    assert reading.kind == "timeout" and "partial_timeout" not in how
+
+
+def test_full_verdict_from_a_fallback_solver_beats_a_partial_one(tmp_path):
+    partial = _partial_timeout_runner("p.py")
+    full = _runner(BUG)
+
+    def run(path, **kwargs):
+        return partial(path, **kwargs) if not kwargs["extra_flags"] else full(path, **kwargs)
+
+    _, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=1,
+                            work_dir=tmp_path, runner=run)
+    assert reading.kind == "violation" and how == {"unwind": 5, "solver": "--boolector"}

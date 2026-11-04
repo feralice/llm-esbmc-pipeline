@@ -89,11 +89,13 @@ def run_esbmc_direct(
     except subprocess.TimeoutExpired as exc:
         partial_stdout = _timeout_text(exc.stdout)
         partial_stderr = _timeout_text(exc.stderr)
+        partial_output = f"{partial_stdout}\n{partial_stderr}"
         raw_log_path = _write_direct_log(
-            file_path, f"{partial_stdout}\n{partial_stderr}".strip(), output_dir
+            file_path, partial_output.strip(), output_dir
         )
         details = _verification_metadata("timeout", bound, timeout_seconds)
         details["partial_output_available"] = bool(partial_stdout or partial_stderr)
+        details.update(_extract_esbmc_details(partial_output, file_path))
         return ESBMCDirectResult(
             source_file=str(file_path),
             status="timeout",
@@ -142,6 +144,8 @@ def run_esbmc_direct(
 
 def _classify_esbmc_direct_result(output: str, returncode: int | None) -> str:
     """Classify ESBMC output into one of the five canonical statuses for Flow A."""
+    if "ESBMC caught SIGSEGV" in output or returncode in {-11, 139}:
+        return "tool_error"
     if re.search(
         r"Undefined function .*replacing with assert\(false\)", output, re.IGNORECASE
     ):
