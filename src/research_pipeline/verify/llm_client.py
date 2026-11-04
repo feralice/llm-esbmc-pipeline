@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 from urllib import error, request
 
+from ..llm.backends.claude_cli import cli_failure_detail
 from ..llm.rate_limit import is_daily_quota_exhausted
 from ..llm.telemetry import response_event
 
@@ -272,7 +273,7 @@ class LLMClient:
         if completed.returncode != 0:
             raise RuntimeError(
                 f"{self.claude_command} -p saiu com código {completed.returncode}: "
-                f"{completed.stderr.strip()[:500]}"
+                f"{cli_failure_detail(completed.stdout, completed.stderr)}"
             )
         try:
             envelope = json.loads(completed.stdout)

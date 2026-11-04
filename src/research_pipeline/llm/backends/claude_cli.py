@@ -20,6 +20,19 @@ from ..telemetry import response_event
 _DENIED_TOOLS = "Read Write Edit Bash Glob Grep WebFetch WebSearch Task"
 
 
+def cli_failure_detail(stdout: str, stderr: str) -> str:
+    """Why ``claude -p`` exited non-zero: with ``--output-format json`` the reason (usage limit, unknown
+    model) is the envelope's ``result`` on stdout, and stderr is often empty."""
+    try:
+        envelope = json.loads(stdout)
+    except (json.JSONDecodeError, TypeError):
+        envelope = None
+    if isinstance(envelope, dict) and envelope.get("result"):
+        status = envelope.get("api_error_status")
+        return (f"[{status}] " if status else "") + str(envelope["result"])[:500]
+    return (stderr.strip() or stdout.strip())[:500]
+
+
 class ClaudeCliAnalyzer:
     """LLM analyzer backed by the local `claude -p` CLI (Claude Code).
 
@@ -111,7 +124,7 @@ class ClaudeCliAnalyzer:
         if completed.returncode != 0:
             raise RuntimeError(
                 f"{self.claude_command} -p saiu com código {completed.returncode}: "
-                f"{completed.stderr.strip()[:500]}"
+                f"{cli_failure_detail(completed.stdout, completed.stderr)}"
             )
         try:
             envelope = json.loads(completed.stdout)

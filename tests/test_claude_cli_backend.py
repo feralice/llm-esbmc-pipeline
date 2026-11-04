@@ -193,3 +193,26 @@ def test_llm_client_via_claude_cli_raises_on_is_error(monkeypatch):
     )
     with pytest.raises(RuntimeError, match="turno falhou"):
         LLMClient(backend="claude_cli").complete("system", "user")
+
+
+_LIMIT = json.dumps({"type": "result", "is_error": True, "api_error_status": 429,
+                     "result": "Claude usage limit reached."})
+
+
+def test_nonzero_exit_reports_the_reason_from_the_stdout_envelope(monkeypatch):
+    # Seen on 03/11: `claude -p` exits 1 with the reason in the JSON on stdout and an empty stderr.
+    monkeypatch.setattr(
+        "research_pipeline.llm.backends.claude_cli.subprocess.run",
+        lambda command, **kwargs: _FakeCompleted(_LIMIT, returncode=1, stderr=""),
+    )
+    with pytest.raises(RuntimeError, match=r"código 1: \[429\] Claude usage limit reached"):
+        ClaudeCliAnalyzer().analyze(_unit())
+
+
+def test_synthesis_nonzero_exit_reports_the_reason_from_the_stdout_envelope(monkeypatch):
+    monkeypatch.setattr(
+        "research_pipeline.verify.llm_client.subprocess.run",
+        lambda command, **kwargs: _FakeCompleted(_LIMIT, returncode=1, stderr=""),
+    )
+    with pytest.raises(RuntimeError, match=r"\[429\] Claude usage limit reached"):
+        LLMClient(backend="claude_cli").complete("system", "user", json_mode=True)
