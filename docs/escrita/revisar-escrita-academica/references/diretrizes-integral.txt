@@ -1,0 +1,177 @@
+ 
+1 
+Diretrizes para o Uso de LLMs na Escrita de Dissertações e Teses 
+LLMs servem como ferramentas para auxiliar na escrita de dissertações e teses. Use-as para 
+apoiar o seu trabalho, mas não deixe que elas substituam o seu pensamento crítico, a sua  
+aplicação do método científico (e.g., a criação de hipótese), a sua voz acadêmica ou sua 
+responsabilidade intelectual. O texto final precisa expressar as suas ideias originais, a sua 
+análise crítica e a sua autoria! 
+O que você NÃO deve fazer 
+1. Não delegue a escrita a LLMs.  Não peça para elas criarem textos, como “escreva um 
+capítulo sobre X”. Isso costuma gerar textos genéricos, pouco rigorosos e suscetíveis a 
+problemas de plágio, além do problema mais óbvio: o texto não será de sua autoria. De fato, 
+LLMs podem reproduzir ideias da literatura sem a devida atribuição, o que pode acarretar 
+problemas de integridade acadêmica. Mesmo quando o texto parece novo, elas podem usar 
+noções da literatura sem dar o devido crédito. Além disso, criar textos e desenvolver o 
+embasamento de uma ideia, hipótese ou percepção são tarefas suas e fazem parte do 
+amadurecimento científico esperado em cursos de pós-graduação. Lembre: a responsabilidade 
+pelo trabalho é sua! 
+2. Não use LLMs como direcionadores de pesquisa nem como pesquisadores. Os passos 
+do método científico devem ser executados por você, incluindo observação, formulação de 
+hipótese, levantamento de consequências, experimentação e análise de dados e de resultados. 
+Se esta cadeia não for exercitada, a sua formação será comprometida.  
+3. Não gere seções de referências com LLMs nem cite artigos que você não leu. LLMs 
+podem sugerir referências incorretas devido a alucinações. Só cite referências que você 
+identificou em plataformas convencionais, como ACM, IEEE, Springer e Scopus, e verifique 
+a existência, a relevância e a necessidade do conteúdo. Note que LLMs costumam errar em 
+referências, inventando autores, títulos ou conclusões. Todo artigo citado deve ser lido, 
+compreendido e avaliado por você. 
+4. Não aceite sugestões sobre sua pesquisa sem avaliação crítica. Sempre revise o que LLMs 
+produzem, pois elas podem apresentar erros técnicos, simplificações exageradas ou argumentos 
+que não combinam com a literatura da sua área. Em resumo, todos os argumentos, conclusões, 
+percepções e desenvolvimentos devem ser seus. Além disso, por mais que estejamos em uma 
+época de grandes avanços tecnológicos, um aspecto continua preponderante: analisar, checar e 
+rechecar tudo. 
+O que você PODE e DEVE fazer 
+1. Melhoria gramatical e clareza: Use LLMs para corrigir erros gramaticais, aprimorar a 
+fluidez e tornar o seu texto mais claro. Isto é especialmente útil para quem escreve em uma 
+segunda língua. Veja um exemplo de prompt eficaz: 
+“Revise o parágrafo abaixo, corrigindo erros gramaticais e melhorando a clareza, sem alterar 
+o conteúdo, o argumento ou o estilo de escrita do texto.” 
+
+ 
+2 
+2. Revisão de estrutura e coesão: Peça a LLMs que verifiquem se seus parágrafos seguem 
+uma ordem lógica, se as transições entre as partes são claras e se o argumento principal é 
+desenvolvido de forma coerente ao longo do texto. 
+“Atue como um revisor acadêmico. Analise o texto abaixo quanto à estrutura e coesão. Em 
+particular: (1) verifique se há progressão lógica entre os parágrafos,  (2) avalie se as 
+transições entre ideias estão claras, (3) identifique trechos redundantes ou desconectados e (4) 
+aponte possíveis quebras no desenvolvimento do argumento principal. Forneça comentários 
+específicos e sugestões de melhoria, sem alterar o conteúdo nem reescrever o texto 
+integralmente.” 
+3. Revisão crítica do conteúdo: Você pode pedir a LLMs para que elas ajam como revisores 
+rigorosos, questionando: 
+• 
+A solidez dos seus argumentos; 
+• 
+A originalidade da sua contribuição; 
+• 
+A consistência entre hipóteses, metodologia e conclusões; 
+• 
+Lacunas que um parecerista poderia apontar. 
+Exemplo de prompt: 
+ 
+“Leia o trecho abaixo e aponte possíveis fraquezas no argumento, inconsistências lógicas ou 
+pontos que um revisor acadêmico poderia questionar.” 
+4. Brainstorming e organização de ideias: LLMs podem ser boas interlocutoras para ajudá-
+lo a organizar seus pensamentos, explorar ângulos alternativos e identificar pontos que 
+merecem aprofundamento. Entretanto, as percepções fornecidas por elas devem ser usadas 
+apenas para estimular o seu processo criativo, e não para determinar o que você deve fazer. 
+Como já comentado: tudo deve ser analisado, checado e rechecado. 
+“Atue como um revisor acadêmico e analise minhas ideias abaixo, apontando: (1) possíveis 
+problemas de coerência, (2) alternativas de abordagem, (3) oportunidades de melhoria na 
+organização dos argumentos e de trabalhos futuros.” 
+6. Esclarecimentos pontuais: Você pode solicitar a LLMs explicações sobre conceitos da sua 
+área. No entanto, é importante verificar a fonte ou o artigo utilizado por elas para fundamentar 
+tais esclarecimentos, lendo exatamente as contribuições originais e tirando suas próprias 
+conclusões. Use LLMs apenas como pontos de partida e sempre valide as informações em 
+fontes acadêmicas confiáveis. 
+“Explique o conceito [X] e destaque: (1) definição formal, (2) principais variações e 
+interpretações na literatura e (3) limitações ou pontos controversos.  Indique referências 
+clássicas ou termos-chave para busca em bases de dados, como IEEE, ACM ou Springer.” 
+Boas Práticas Gerais 
+• 
+Seja específico em prompts. Quanto mais contexto e instruções você fornecer, mais 
+útil a resposta será. 
+
+ 
+3 
+• 
+Não utilize IAs como base de estudo para algo que você desconhece 
+completamente. Se houver alucinações, você conseguirá descartar as respostas 
+erradas? Primeiro, ganhe alguma familiaridade. 
+• 
+Preserve sua voz. Após quaisquer edições feitas por LLMs, releia o texto e ajuste o 
+que soar artificial ou distante do seu estilo. 
+• 
+Documente o uso. O uso de ferramentas de IA deve ser explicitamente declarado no 
+trabalho, conforme exigido pelo CNPq (Portaria 2664/2026), indicando a ferramenta 
+empregada e a sua finalidade. 
+• 
+Não terceirize o julgamento. LLMs não conhecem a sua área com a profundidade de 
+um especialista e carecem de contexto. As decisões sobre relevância, interpretação e 
+contribuição são sempre suas. 
+Mecanismos de Detecção de Texto Gerado por IA 
+Periódicos e bancas de defesa utilizam ferramentas e práticas combinadas para identificar o uso 
+excessivo ou não declarado de IA na escrita científica. 
+1. Ferramentas automatizadas: Plataformas como Turnitin (módulo AI Writing 
+Detection), iThenticate, Copyleaks, Grammarly, quillbot e GPTZero analisam padrões 
+estatísticos do texto, como uniformidade de estilo, baixa variação lexical e 
+“perplexidade” reduzida, características típicas de textos gerados por LLMs. Note que 
+essas ferramentas não são totalmente confiáveis e devem ser usadas em conjunto com 
+a boa e velha avaliação humana. 
+2. Revisão qualitativa por pares: Revisores experientes identificam argumentação 
+genérica, sem ancoragem nos dados do estudo, citações inexistentes ou incorretas 
+(alucinações da LLM) e ausência de posicionamento crítico. Além disso, as bancas de 
+defesa confrontam os candidatos oralmente. Sendo assim, as inconsistências entre o 
+texto e o que o respectivo pesquisador consegue explicar constituem fortes indícios de 
+autoria delegada. 
+3. Políticas editoriais: Periódicos como Nature, Elsevier e IEEE já exigem uma 
+declaração explícita sobre o uso de IA. A COPE (Committee on Publication Ethics) 
+estabelece que IAs não podem figurar como coautoras e que a omissão do uso de IAs 
+pode ser considerada desonestidade acadêmica. 
+4. Análise de metadados e histórico de versões: Algumas instituições verificam se o 
+texto surgiu de forma abrupta e uniforme, o que indica um padrão de geração 
+automática, ou evoluiu progressivamente, como ocorre na escrita humana. 
+Consequências do Uso Excessivo de IA em Pesquisa 
+O uso não declarado ou excessivo de IA na produção científica acarreta consequências que vão 
+além de uma punição individual, afetando a integridade do conhecimento produzido. 
+1. Para o pesquisador: A retratação de artigos é uma das consequências mais graves. O 
+trabalho é retirado do registro científico, e os nomes dos respectivos autores ficam 
+publicamente associados à irregularidade (registrada em bases de dados, como o 
+Retraction Watch - https://retractionwatch.com/). Em defesas, as bancas podem 
+reprovar candidatos ou exigir a reescrita integral. Em casos severos, pode haver o 
+cancelamento de títulos ou desligamentos de programas. 
+2. Para a qualidade da ciência: Quando LLMs escrevem conteúdo livremente, erros 
+factuais, afirmações não fundamentadas e citações inventadas entram na literatura sem 
+
+ 
+4 
+um filtro crítico. Esses erros se propagam quando outros autores citam tais trabalhos 
+sem perceberem os problemas que eles introduzem. 
+3. Para terapias ou técnicas aplicadas na prática: Quando LLMs fabricam dados, 
+estudos, conclusões e, como resultado, evidências falsas, protocolos científicos ou 
+tomadas de decisão podem ser comprometidos, levando a situações de risco ou até 
+mesmo ameaçam vidas.  
+4. Para a formação acadêmica, a dissertação e a tese existem para desenvolver, em 
+pesquisadores, a capacidade de construir argumentos originais e de produzir 
+conhecimento novo. Terceirizar essa jornada a IAs priva estudantes desse aprendizado 
+essencial, com consequências práticas em suas vidas profissionais. 
+5. Para a confiança institucional: Programas de pós-graduação que não controlam o uso 
+de IA correm o risco de ver seus títulos desvalorizados perante a comunidade científica 
+e as agências de fomento, o que corrói a credibilidade institucional. 
+Quando utilizadas de forma responsável, LLMs podem ser ferramentas valiosas no processo 
+acadêmico. 
+Sugestão de protocolo 
+Todos os alunos de pós-graduação devem seguir os passos abaixo: 
+• 
+Ler este documento; 
+• 
+Seguir estritamente as orientações dadas aqui; 
+• 
+Apresentar laudos de duas ou mais ferramentas indicando menos de 20% de conteúdo 
+de IA; 
+• 
+Apresentar os links de todas as referências utilizadas; 
+• 
+Incluir uma seção de declaração de uso de IA. 
+Declaração do uso de IA 
+Durante a preparação deste guia, os autores utilizaram o ChatGPT, o Claude, e o Gemini para 
+revisar a redação e melhorar a clareza linguística do texto, o que foi seguido de revisão humana. 
+As ferramentas citadas foram aplicadas especificamente para correções gramaticais e ajustes 
+de estilo, sem interferir no conteúdo intelectual, na análise de dados ou nas conclusões 
+apresentadas. Os autores assumem total responsabilidade pelo conteúdo final deste manuscrito. 
+ 
+03/08/2026 
+Lucas C. Cordeiro, Pierre Dantas e Eddie B. de Lima Filho 
