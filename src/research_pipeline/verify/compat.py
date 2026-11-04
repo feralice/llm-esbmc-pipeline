@@ -22,6 +22,7 @@ from .rules import (
     NONE_ORDERING,
     NONE_SUBSCRIPT,
     PERCENT_FORMAT,
+    REBOUND_PARAMETER,
 )
 
 _NUMERIC = {"int", "float", "bool"}
@@ -268,6 +269,45 @@ def _method_alias_edits(tree: ast.Module) -> list[tuple[int, int, int, str]]:
     return edits
 
 
+_SCOPE_TRICKS = {"locals", "vars", "eval", "exec", "globals"}
+
+
+def _rebound_parameter_edits(tree: ast.Module) -> list[tuple[int, int, int, int, str]]:
+    """``k = d.get(k)``: ESBMC keeps typing the rebound parameter as the argument it received
+    (possiveis_problemas/65, av_real_01). A single rebinding at the top of the body runs before every
+    later statement, so renaming it and every later read is exact; the right-hand side keeps ``k``."""
+    taken = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+    taken |= {node.arg for node in ast.walk(tree) if isinstance(node, ast.arg)}
+    edits = []
+    for function in ast.walk(tree):
+        if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        inner = [node for body in function.body for node in ast.walk(body)]
+        if any(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef,
+                                 ast.Global, ast.Nonlocal)) for node in inner) or any(
+                isinstance(node, ast.Name) and node.id in _SCOPE_TRICKS for node in inner):
+            continue
+        args = function.args
+        parameters = {a.arg for a in [*args.posonlyargs, *args.args, *args.kwonlyargs]}
+        stores = [node for node in inner if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del))]
+        for index, statement in enumerate(function.body):
+            if not (isinstance(statement, ast.Assign) and len(statement.targets) == 1
+                    and isinstance(statement.targets[0], ast.Name) and statement.targets[0].id in parameters):
+                continue
+            target = statement.targets[0]
+            if sum(node.id == target.id for node in stores) != 1:
+                continue
+            new = f"{target.id}_esbmc"
+            while new in taken:
+                new += "_"
+            taken.add(new)
+            later = [node for body in function.body[index + 1:] for node in ast.walk(body)
+                     if isinstance(node, ast.Name) and node.id == target.id]
+            for node in [target, *later]:
+                edits.append((node.lineno, node.col_offset, node.end_lineno, node.end_col_offset, new))
+    return edits
+
+
 def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | None = None,
                    rules: frozenset[str] = ALL_RULES) -> tuple[str, list[str]]:
     try:
@@ -276,18 +316,23 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
         return source, []
     percent = _percent_format_edits(tree, parameter_types or {}) if PERCENT_FORMAT in rules else []
     aliases = _method_alias_edits(tree) if METHOD_ALIAS in rules else []
-    if not percent and not aliases:
+    renames = _rebound_parameter_edits(tree) if REBOUND_PARAMETER in rules else []
+    if not percent and not aliases and not renames:
         return source, []
     offsets = [0]
     for line in source.splitlines(keepends=True):
         offsets.append(offsets[-1] + len(line.encode("utf-8")))
-    edits = [*percent, *((line, start, line, end, text) for line, start, end, text in aliases)]
+    # A rename inside a rewritten % expression would be lost: the percent edit replaces its whole span.
+    renames = [r for r in renames if not any(p[:2] <= r[:2] and r[2:4] <= p[2:4] for p in percent)]
+    edits = [*percent, *((line, start, line, end, text) for line, start, end, text in aliases), *renames]
     raw = source.encode("utf-8")
     for line, start, end_line, end, text in sorted(edits, reverse=True):
         raw = raw[:offsets[line - 1] + start] + text.encode("utf-8") + raw[offsets[end_line - 1] + end:]
     transforms = [f"compat_percent_format:{len(percent)}"] if percent else []
     if aliases:
         transforms.append(f"compat_method_alias:{len(aliases)}")
+    if renames:
+        transforms.append(f"{REBOUND_PARAMETER}:{len({text for *_, text in renames})}")
     return raw.decode("utf-8"), transforms
 
 

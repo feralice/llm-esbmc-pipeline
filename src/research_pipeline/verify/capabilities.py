@@ -35,6 +35,7 @@ from .rules import (
     PERCENT_FORMAT,
     PROJECT_DECORATORS,
     PROPERTIES_AS_ATTRIBUTES,
+    REBOUND_PARAMETER,
 )
 
 PROBE_DIR = Path(__file__).resolve().parent / "probes"
@@ -76,6 +77,8 @@ PROBES = (
     Probe("alias_de_metodo", METHOD_ALIAS, "ZeroDivisionError"),
     Probe("alias_repr_divisao", METHOD_ALIAS, "ZeroDivisionError"),
     Probe("alias_repr_valor", METHOD_ALIAS, None),
+    Probe("parametro_reatribuido_valor", REBOUND_PARAMETER, None),
+    Probe("parametro_reatribuido_violacao", REBOUND_PARAMETER, "AssertionError"),
     Probe("metodo_append", BUILTIN_NAMED_METHODS, "ZeroDivisionError"),
     Probe("metodo_get", BUILTIN_NAMED_METHODS, "ZeroDivisionError"),
     Probe("property_decorador", PROPERTIES_AS_ATTRIBUTES, "ZeroDivisionError"),

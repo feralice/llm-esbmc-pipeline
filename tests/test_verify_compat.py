@@ -1,5 +1,7 @@
 import ast
 
+import pytest
+
 from research_pipeline.verify.compat import (
     NONE_GUARDS,
     cut_after_suspect,
@@ -18,6 +20,7 @@ from research_pipeline.verify.rules import (
     NONE_ATTRIBUTE,
     NONE_GUARD_KINDS,
     PERCENT_FORMAT,
+    REBOUND_PARAMETER,
 )
 
 
@@ -322,7 +325,7 @@ def test_a_definition_named_only_by_itself_is_unused():
 
 
 def test_rule_names_cover_every_none_guard_kind():
-    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 12
+    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 13
 
 
 def test_rewrite_compat_skips_a_disabled_percent_rule():
@@ -354,3 +357,33 @@ def test_guards_of_a_for_header_go_inside_its_iterable():
     guarded, transforms = none_guards(source, "f", ((2, 2),))
     ast.parse(guarded)
     assert transforms and guarded.splitlines()[1].lstrip().startswith("for h in _esbmc_none_type(")
+
+
+def test_a_parameter_rebound_once_at_the_top_is_renamed_from_there_on():
+    source = "def f(d, k):\n    print(k)\n    k = d.get(k)\n    return k is not None and f'{k}'\n"
+    rewritten, transforms = rewrite_compat(source)
+    assert rewritten == ("def f(d, k):\n    print(k)\n    k_esbmc = d.get(k)\n"
+                         "    return k_esbmc is not None and f'{k_esbmc}'\n")
+    assert transforms == ["compat_rebound_parameter:1"]
+
+
+@pytest.mark.parametrize("body", [
+    "    if d:\n        k = d.get(k)\n    return k\n",           # not every path rebinds it
+    "    k = d.get(k)\n    k = str(k)\n    return k\n",        # rebound twice
+    "    for k in d:\n        pass\n    return k\n",           # not a plain assignment
+    "    k = d.get(k)\n    return lambda: k\n",               # a closure reads it by name
+    "    k = d.get(k)\n    return locals()\n",                # the name itself is observable
+])
+def test_a_rebinding_the_rename_cannot_make_exact_is_left_alone(body):
+    source = "def f(d, k):\n" + body
+    assert rewrite_compat(source) == (source, [])
+
+
+def test_the_new_name_avoids_one_already_used():
+    source = "def f(d, k):\n    k_esbmc = 1\n    k = d.get(k)\n    return k, k_esbmc\n"
+    assert "k_esbmc_ = d.get(k)" in rewrite_compat(source)[0]
+
+
+def test_rewrite_compat_skips_a_disabled_rebound_rule():
+    source = "def f(d, k):\n    k = d.get(k)\n    return k\n"
+    assert rewrite_compat(source, rules=ALL_RULES - {REBOUND_PARAMETER}) == (source, [])

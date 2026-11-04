@@ -8,6 +8,7 @@ from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.render import render_program
 from research_pipeline.verify.replay import concrete_replay
+from research_pipeline.verify.rules import ALL_RULES, REBOUND_PARAMETER
 from research_pipeline.verify.spec import InputSpec
 
 
@@ -105,7 +106,7 @@ def test_uncertain_or_unsupported_formats_are_unchanged(body, types):
 ])
 def test_rebound_parameter_does_not_inherit_driver_type(prefix):
     source = f'def f(x):\n{prefix}    return "%s" % x\n'
-    assert rewrite_compat(source, parameter_types={'f': {'x': 'str'}}) == (source, [])
+    assert rewrite_compat(source, parameter_types={'f': {'x': 'str'}}, rules=ALL_RULES - {REBOUND_PARAMETER}) == (source, [])
 
 
 def test_annotations_and_recursive_calls_are_not_type_guarantees():
