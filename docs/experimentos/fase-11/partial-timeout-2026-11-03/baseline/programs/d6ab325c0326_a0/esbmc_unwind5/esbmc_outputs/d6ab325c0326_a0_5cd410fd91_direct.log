@@ -1,0 +1,2497 @@
+WARNING: typing.Optional module-file-not-found
+ESBMC version 8.6.0 64-bit x86_64 linux
+
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.712s
+GOTO program processing time: 0.006s
+Starting Bounded Model Checking
+Unwinding loop 2 iteration 1   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 2   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 3   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 4   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Not unwinding loop 2 iteration 5   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 1   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 2   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 3   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Unwinding loop 2 iteration 4   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Not unwinding loop 2 iteration 5   file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+Symex completed in: 0.039s (1348 assignments)
+Caching time: 0.000s (removed 157 assertions)
+Slicing time: 0.003s (removed 940 assignments)
+Generated 845 VCC(s), 175 remaining after simplification (251 assignments)
+No solver specified; defaulting to bitwuzla
+Slicing time: 0.000s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 19 column 8 function _Obj_command' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.000s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 23 column 8 function _Obj_command' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.000s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 48 column 4 function match' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.000s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 49 column 54 function match' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.000s (removed 47 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 49 column 128 function match' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'uncaught exception: AttributeError at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 4 column 8 function _esbmc_none_attribute' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+
+[Counterexample]
+
+
+State 1 file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 19 column 8 function _Obj_command thread 0
+----------------------------------------------------
+  self->stderr = { .stderr=0, .stdout={ .pointer_object=nil, .pointer_offset=nil } }
+
+State 2 file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 23 column 8 function _Obj_command thread 0
+----------------------------------------------------
+  self->stdout = { .stderr = 0 }
+
+State 3 file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 4 column 8 function _esbmc_none_attribute thread 0
+----------------------------------------------------
+Violated property:
+  file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 4 column 8 function _esbmc_none_attribute
+  uncaught exception: AttributeError
+  !(c:@__ESBMC_exc_thrown && c:@__ESBMC_exc_typeid == 16 && c:@__ESBMC_exc_site == 1)
+
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'uncaught exception: TypeError at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'uncaught exception: IndexError at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 48 column 4 function match' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'uncaught exception at file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 75 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 97 column 3 function __ESBMC_list_create' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 75 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 98 column 14 function __ESBMC_list_create' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 74 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 99 column 3 function __ESBMC_list_create' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 74 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 100 column 3 function __ESBMC_list_create' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 73 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 72 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 71 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 70 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.001s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.001s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 69 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 195 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.001s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 195 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 196 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 196 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 197 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 197 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.001s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 67 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.001s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.003s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.001s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.001s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.000s (removed 60 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.005s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 190 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 190 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 191 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 191 column 5 function __ESBMC_copy_value' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.000s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.001s (removed 59 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.008s
+Slicing time: 0.001s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.008s
+Slicing time: 0.000s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.006s
+Slicing time: 0.001s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.001s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.001s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.008s
+Slicing time: 0.000s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.001s (removed 57 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.000s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.008s
+Slicing time: 0.001s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.001s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.007s
+Slicing time: 0.000s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.000s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.008s
+Slicing time: 0.001s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.000s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.000s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.001s (removed 56 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.008s
+Slicing time: 0.001s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.000s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.000s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.000s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.001s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.001s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.001s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.001s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.000s (removed 55 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.000s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /esbmc-vfs/libc/library/string.c line 343 column 3 function memcpy' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.005s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.001s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.001s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 236 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.001s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 237 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.000s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 238 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.009s
+Slicing time: 0.001s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 239 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.001s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 240 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.001s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.010s
+Slicing time: 0.000s (removed 54 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 241 column 3 function __ESBMC_list_push' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.001s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 119 column 3 function __ESBMC_list_size' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 119 column 3 function __ESBMC_list_size' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.011s
+Slicing time: 0.000s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 697 column 3 function __ESBMC_list_at' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.001s (removed 53 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/list.c line 698 column 3 function __ESBMC_list_at' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.006s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 68 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 41 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.001s (removed 41 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 41 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 41 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 66 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 40 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 40 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 40 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.001s (removed 40 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 65 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 39 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 39 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 39 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 39 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 64 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 38 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 38 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 38 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 38 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 63 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.001s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 37 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 37 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.007s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 543 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.000s (removed 37 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.001s (removed 37 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 61 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 62 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'unwinding assertion loop 2 at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+
+[Counterexample]
+
+
+State 1 file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 19 column 8 function _Obj_command thread 0
+----------------------------------------------------
+  self->stderr = { .stderr=&/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py:18$nondet_str$1[0], .stdout={ .pointer_object=nil, .pointer_offset=nil } }
+
+State 2 file /tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py line 23 column 8 function _Obj_command thread 0
+----------------------------------------------------
+  self->stdout = { .stderr=&/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py:18$nondet_str$1[0], .stdout=0 }
+
+State 3 file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower thread 0
+----------------------------------------------------
+Violated property:
+  file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower
+  unwinding assertion loop 2
+
+Slicing time: 0.000s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 551 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.002s
+Slicing time: 0.001s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: NULL pointer at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 551 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.001s
+Slicing time: 0.001s (removed 58 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'String too long for lower() - exceeds 255 characters at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 551 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.001s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.004s
+Slicing time: 0.000s (removed 34 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 554 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 34 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 554 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.183s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.021s
+Slicing time: 0.002s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.017s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.018s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.003s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.002s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.013s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.012s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.002s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.019s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.002s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.010s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.016s
+Slicing time: 0.002s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 540 column 3 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.013s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.015s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 542 column 5 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.012s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.013s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.011s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.000s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.009s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.014s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: invalidated dynamic object at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.020s
+Slicing time: 0.001s (removed 42 assignments)
+No solver specified; defaulting to bitwuzla
+Solving claim 'dereference failure: array bounds violated at file /home/fernanda/esbmc-master/src/c2goto/library/python/string.c line 545 column 7 function __python_str_lower' with solver Bitwuzla 0.9.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Bitwuzla 0.9.0
+Runtime decision procedure: 0.017s
+BMC program time: 4.705s
+
+** Results:
+/esbmc-vfs/libc/library/string.c, function memcpy
+  PASSED       [memcpy.null-pointer-dereference.1]                 line 343  dereference failure: NULL pointer on DST
+  PASSED       [memcpy.null-pointer-dereference.2]                 line 343  dereference failure: NULL pointer on SRC
+  PASSED       [memcpy.invalidated-dynamic-object.1]               line 343  dereference failure: invalidated dynamic object
+/home/fernanda/esbmc-master/src/c2goto/library/python/list.c, function __ESBMC_copy_value
+  PASSED       [__ESBMC_copy_value.object-out-of-bounds.1]         line 146  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_copy_value.assertion.1]                    line 146  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_copy_value.assertion.2]                    line 190  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_copy_value.array-bounds-violated.1]        line 190  dereference failure: array bounds violated
+  PASSED       [__ESBMC_copy_value.invalidated-dynamic-object.1]   line 190  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_copy_value.assertion.3]                    line 191  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_copy_value.array-bounds-violated.2]        line 191  dereference failure: array bounds violated
+  PASSED       [__ESBMC_copy_value.invalidated-dynamic-object.2]   line 191  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_copy_value.assertion.4]                    line 195  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_copy_value.array-bounds-violated.3]        line 195  dereference failure: array bounds violated
+  PASSED       [__ESBMC_copy_value.invalidated-dynamic-object.3]   line 195  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_copy_value.assertion.5]                    line 196  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_copy_value.array-bounds-violated.4]        line 196  dereference failure: array bounds violated
+  PASSED       [__ESBMC_copy_value.invalidated-dynamic-object.4]   line 196  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_copy_value.assertion.6]                    line 197  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_copy_value.array-bounds-violated.5]        line 197  dereference failure: array bounds violated
+  PASSED       [__ESBMC_copy_value.invalidated-dynamic-object.5]   line 197  dereference failure: invalidated dynamic object
+/home/fernanda/esbmc-master/src/c2goto/library/python/list.c, function __ESBMC_list_at
+  PASSED       [__ESBMC_list_at.object-out-of-bounds.1]            line 697  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_at.assertion.1]                       line 697  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_at.invalidated-dynamic-object.1]      line 697  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_at.assertion.2]                       line 697  out-of-bounds read in list
+  PASSED       [__ESBMC_list_at.object-out-of-bounds.2]            line 698  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_at.assertion.3]                       line 698  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_at.invalidated-dynamic-object.2]      line 698  dereference failure: invalidated dynamic object
+/home/fernanda/esbmc-master/src/c2goto/library/python/list.c, function __ESBMC_list_create
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.1]        line  97  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.1]                   line  97  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.1]  line  97  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.2]        line  98  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.2]                   line  98  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.2]  line  98  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.3]        line  99  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.3]                   line  99  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.3]  line  99  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_create.object-out-of-bounds.4]        line 100  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_create.assertion.4]                   line 100  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_create.invalidated-dynamic-object.4]  line 100  dereference failure: invalidated dynamic object
+/home/fernanda/esbmc-master/src/c2goto/library/python/list.c, function __ESBMC_list_push
+  PASSED       [__ESBMC_list_push.object-out-of-bounds.1]          line 236  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_push.assertion.1]                     line 236  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.1]    line 236  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.2]    line 237  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.assertion.2]                     line 238  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.3]    line 238  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.assertion.3]                     line 239  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.4]    line 239  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.assertion.4]                     line 240  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.5]    line 240  dereference failure: invalidated dynamic object
+  PASSED       [__ESBMC_list_push.object-out-of-bounds.2]          line 241  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_push.assertion.5]                     line 241  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_push.invalidated-dynamic-object.6]    line 241  dereference failure: invalidated dynamic object
+/home/fernanda/esbmc-master/src/c2goto/library/python/list.c, function __ESBMC_list_size
+  PASSED       [__ESBMC_list_size.assertion.1]                     line 113  TypeError: object of this type has no len()
+  PASSED       [__ESBMC_list_size.object-out-of-bounds.1]          line 119  dereference failure: Access to object out of bounds
+  PASSED       [__ESBMC_list_size.assertion.2]                     line 119  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__ESBMC_list_size.invalidated-dynamic-object.1]    line 119  dereference failure: invalidated dynamic object
+/home/fernanda/esbmc-master/src/c2goto/library/python/string.c, function __python_str_lower
+  PASSED       [__python_str_lower.assertion.1]                    line 540  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__python_str_lower.null-pointer-dereference.1]     line 540  dereference failure: NULL pointer
+  PASSED       [__python_str_lower.array-bounds-violated.1]        line 540  dereference failure: array bounds violated
+  PASSED       [__python_str_lower.invalidated-dynamic-object.1]   line 540  dereference failure: invalidated dynamic object
+  FAILED       [__python_str_lower.assertion.2]                    line 540  unwinding assertion loop 2
+  PASSED       [__python_str_lower.assertion.3]                    line 542  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__python_str_lower.null-pointer-dereference.2]     line 542  dereference failure: NULL pointer
+  PASSED       [__python_str_lower.array-bounds-violated.2]        line 542  dereference failure: array bounds violated
+  PASSED       [__python_str_lower.invalidated-dynamic-object.2]   line 542  dereference failure: invalidated dynamic object
+  PASSED       [__python_str_lower.assertion.4]                    line 543  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__python_str_lower.null-pointer-dereference.3]     line 543  dereference failure: NULL pointer
+  PASSED       [__python_str_lower.array-bounds-violated.3]        line 543  dereference failure: array bounds violated
+  PASSED       [__python_str_lower.invalidated-dynamic-object.3]   line 543  dereference failure: invalidated dynamic object
+  PASSED       [__python_str_lower.assertion.5]                    line 545  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__python_str_lower.null-pointer-dereference.4]     line 545  dereference failure: NULL pointer
+  PASSED       [__python_str_lower.array-bounds-violated.4]        line 545  dereference failure: array bounds violated
+  PASSED       [__python_str_lower.invalidated-dynamic-object.4]   line 545  dereference failure: invalidated dynamic object
+  PASSED       [__python_str_lower.assertion.6]                    line 551  String too long for lower() - exceeds 255 characters
+  PASSED       [__python_str_lower.assertion.7]                    line 551  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__python_str_lower.null-pointer-dereference.5]     line 551  dereference failure: NULL pointer
+  PASSED       [__python_str_lower.array-bounds-violated.5]        line 551  dereference failure: array bounds violated
+  PASSED       [__python_str_lower.assertion.8]                    line 554  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [__python_str_lower.array-bounds-violated.6]        line 554  dereference failure: array bounds violated
+  PASSED       [__python_str_lower.invalidated-dynamic-object.5]   line 554  dereference failure: invalidated dynamic object
+/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py
+  PASSED       [global.assertion.1]                                line   0  uncaught exception
+  PASSED       [global.assertion.2]                                line   0  uncaught exception: AttributeError
+  PASSED       [global.assertion.3]                                line   0  uncaught exception: TypeError
+/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py, function _Obj_command
+  PASSED       [_Obj_command.heap-object-out-of-bounds.1]          line  19  dereference failure: Access to object out of bounds: heap object
+  PASSED       [_Obj_command.assertion.1]                          line  19  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [_Obj_command.invalidated-dynamic-object.1]         line  19  dereference failure: invalidated dynamic object
+  PASSED       [_Obj_command.heap-object-out-of-bounds.2]          line  23  dereference failure: Access to object out of bounds: heap object
+  PASSED       [_Obj_command.assertion.2]                          line  23  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [_Obj_command.invalidated-dynamic-object.2]         line  23  dereference failure: invalidated dynamic object
+/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py, function _esbmc_none_attribute
+  FAILED       [_esbmc_none_attribute.assertion.1]                 line   4  uncaught exception: AttributeError
+/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py, function match
+  PASSED       [match.invalidated-dynamic-object.1]                line  48  dereference failure: invalidated dynamic object
+  PASSED       [match.assertion.1]                                 line  48  uncaught exception: IndexError
+  PASSED       [match.assertion.2]                                 line  49  uncaught exception: AttributeError
+  PASSED       [match.heap-object-out-of-bounds.1]                 line  49  dereference failure: Access to object out of bounds: heap object
+  PASSED       [match.assertion.3]                                 line  49  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [match.invalidated-dynamic-object.2]                line  49  dereference failure: invalidated dynamic object
+  PASSED       [match.heap-object-out-of-bounds.2]                 line  49  dereference failure: Access to object out of bounds: heap object
+  PASSED       [match.assertion.4]                                 line  49  dereference failure: Incorrect alignment when accessing data object
+  PASSED       [match.invalidated-dynamic-object.3]                line  49  dereference failure: invalidated dynamic object
+
+** 2 of 99 properties failed, 97 passed
+Solver: Bitwuzla 0.9.0 • Decision procedure total time: 3.556s • Avg: 0.035s/property
+
+VERIFICATION FAILED

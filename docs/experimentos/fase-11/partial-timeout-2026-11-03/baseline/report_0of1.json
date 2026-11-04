@@ -1,0 +1,112 @@
+{
+  "results": [
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/ip_real_22.py",
+        "function": "match",
+        "suspect_expression": "pattern.lower() in command.stderr.lower() or pattern.lower() in command.stdout.lower()",
+        "line": 0,
+        "trigger_condition": "`command` is a free parameter. If `patterns` is non-empty and `command.stderr` is None (stream not captured), `command.stderr.lower()` runs on the first iteration and raises. If stderr is a str that lacks the pattern, `command.stdout.lower()` is evaluated and raises when stdout is None. No guard or try/except covers either case.",
+        "category": "",
+        "hypothesis_id": "91509f265939"
+      },
+      "verdict": "CONFIRMED",
+      "reason": "uncaught exception: AttributeError; unwinding assertion loop 2",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"command.stderr\": \"Optional[str]\", \"command.stdout\": \"Optional[str]\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "violation",
+          "message": "uncaught exception: AttributeError; unwinding assertion loop 2",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "typing_import_added",
+        "cut_after_suspect:1",
+        "none_guards:2"
+      ],
+      "program_path": "/tmp/partial-timeout-experiment/baseline-paired/programs/d6ab325c0326_a0.py",
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "AttributeError",
+        "line": 49,
+        "runs": 1,
+        "reason": "",
+        "inputs": [
+          false,
+          false
+        ],
+        "message": "'NoneType' object has no attribute 'lower'",
+        "raised_at": 49
+      },
+      "tokens": 0,
+      "seconds": 6.226,
+      "pytest": {
+        "status": "unsupported_shape",
+        "path": "",
+        "reason": "ESBMC's generator here needs scalar inputs"
+      }
+    },
+    {
+      "hypothesis": {
+        "file": "dataset/bugs_reais/funcao_com_bug/oob_real_03.py",
+        "function": "get_new_command",
+        "suspect_expression": "command.script_parts.pop(upstream_option_index)",
+        "line": 0,
+        "trigger_condition": "script_parts is a free parameter. The guard only checks that the option was found, not that a value follows it. For script_parts == ['git','push','-u'], index is 2. The first pop removes '-u' and the list becomes ['git','push']. The second pop(2) is then out of range.",
+        "category": "",
+        "hypothesis_id": "57916072238c"
+      },
+      "verdict": "CONFIRMED",
+      "reason": "dereference failure: array bounds violated; unwinding assertion loop 5; unwinding assertion loop 4; IndexError: pop from empty list; IndexError: pop index out of range",
+      "attempts": [
+        {
+          "attempt": 0,
+          "spec": "{\"params\": {\"command\": \"object\"}, \"attributes\": {}, \"stubs\": {\"replace_argument\": \"str\", \"command.script_parts\": \"list[str]\", \"command.stderr\": \"str\"}, \"assumptions\": []}",
+          "feedback_given": "",
+          "replay_program_path": "/tmp/partial-timeout-experiment/baseline-paired/programs/d752a68385a7_a0_replay.py",
+          "esbmc_status": "violation_found",
+          "reading": "violation",
+          "message": "dereference failure: array bounds violated; unwinding assertion loop 5; unwinding assertion loop 4; IndexError: pop from empty list; IndexError: pop index out of range",
+          "unwind": 5
+        }
+      ],
+      "llm_calls": 1,
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument",
+        "cut_after_suspect:2",
+        "unused_definitions_removed:replace_argument",
+        "none_guards:1"
+      ],
+      "program_path": "/tmp/partial-timeout-experiment/baseline-paired/programs/d752a68385a7_a0.py",
+      "replay": {
+        "status": "reproduced",
+        "exception_type": "IndexError",
+        "line": 43,
+        "runs": 131,
+        "reason": "",
+        "inputs": [
+          "",
+          1,
+          "-u",
+          ""
+        ],
+        "message": "pop from empty list",
+        "raised_at": 43
+      },
+      "tokens": 0,
+      "seconds": 65.255,
+      "pytest": {
+        "status": "unsupported_shape",
+        "path": "",
+        "reason": "ESBMC's generator here needs scalar inputs"
+      }
+    }
+  ]
+}

@@ -9,40 +9,42 @@ Rodar com `./rodar.sh /caminho/do/esbmc "--no-pointer-check --no-align-check"`. 
 `--unwind 5 --multi-property`. As duas flags extras desligam as checagens de memória dos modelos em C;
 `--no-bounds-check` não pode entrar, porque troca o `IndexError` do Python por `out-of-bounds read in list`.
 
-## Situação no master `4a356e33eb` (27/10/2026)
+## Situação no master `0945ac9` (03/11/2026)
 
-Build com Bitwuzla (`~/esbmc-master/build-bw`).
+Build com Bitwuzla (`/tmp/esbmc-master-0945ac9`). Saída completa em
+`artifacts/esbmc-master-0945ac9-2026-11-03/possiveis_problemas.txt`. Nenhum dos 21 que ficaram mudou de resultado
+em relação ao `4a356e33eb` (27/10).
 
-| Arquivo | Construção | CPython | ESBMC `4a356e33eb` | Issue |
+| Arquivo | Construção | CPython | ESBMC `0945ac9` | Issue |
 |---|---|---|---|---|
 | `20_kwargs.py` | `kw.get('error')` com `**kw` no `__init__` | `ZeroDivisionError` | `Object "kw" not found` | #9074 (aberta) |
 | `24_numpy_shape_parametro.py` | `np.array(data).shape[1]` com `data: list[list[float]]` | `ZeroDivisionError` | recusa: `numpy.array() of a value that is not a numpy array or a list or tuple literal` | #9077 (fechada pelo #9141, que troca o erro por recusa explícita) |
 | `31_strip_split_laco.py` | `nondet_str().strip().split("\n")` e `split` dentro do laço | executa | com `--unwind 5` termina só com `unwinding assertion` (laços 6 e 7), esperado para string de tamanho livre; com `--unwind 12` continua sem veredito em 300 s (em `c0813af` não terminava nem com `--unwind 5`) | nenhuma: escalonamento do solver com string nondet |
 | `33_atributo_ausente_uniao.py` | `x.size` com `x: Union[A, B]` valendo `B()` | `AttributeError` | recusa: `storing or passing 'x', which holds an instance of A or B` | #8408 (aberta), mesma construção |
 | `45_nondet_str_contraexemplo.py` | `assert s != "ab"` com `s = nondet_str()` | `AssertionError` com `"ab"` | FAILED, sem o valor de `s` no contraexemplo (o trace só tem o `State 1` da linha 5) | #9091 (fechada como "not planned": é apresentação, não verificação) |
-| `46_super_com_len_aborta.py` | `while len(self) >= self.limit` numa classe sem `__len__` | `TypeError` | FAILED com `AttributeError` (`self.limit`) | nenhuma ainda |
-| `47_len_sem_dunder_len.py` | mesma condição, sem `super` | `TypeError` | FAILED com `AttributeError` | rascunho: `issues/47_len_without_dunder_len.md` |
+| `46_super_com_len_aborta.py` | `while len(self) >= self.limit` numa classe sem `__len__` | `TypeError` | FAILED com `AttributeError` (`self.limit`) | #9835 (aberta em 03/11) |
+| `47_len_sem_dunder_len.py` | mesma condição, sem `super` | `TypeError` | FAILED com `AttributeError` | #9835 (aberta em 03/11) |
 | `48_atributo_aninhado_campo_none.py` | `current.prev.next = ...` com `prev` iniciado em `None` | `AttributeError` | `Cannot resolve nested attribute: next` | nenhuma (contorno no `verify/compat.py`) |
 | `51_pytest_metodo.py` | gerador de pytest num método | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `52_pytest_varios_args.py` | gerador de pytest com vários argumentos | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `53_pytest_str.py` | gerador de pytest com `str` | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
-| `54_chamada_posicional_mais_kwargs.py` | `g(1, **d)`: argumento explícito seguido de `**dict` | executa | aborta: `json.exception.type_error.302` | rascunho: `issues/54_positional_then_kwargs_crash.md` |
-| `55_kwargs_falso_type_error.py` | `g(**d)` com `d = {"a": 1}` | executa | FAILED com `TypeError` (falso positivo) | rascunho: `issues/55_kwargs_false_type_error.md` |
-| `56_atributo_criado_em_outra_instancia.py` | `a.prev = None` em um objeto, leitura de `b.prev` em outro | `AttributeError` | SUCCESSFUL (falso negativo) | rascunho: `issues/56_attribute_set_on_other_instance.md` |
+| `56_atributo_criado_em_outra_instancia.py` | `a.prev = None` em um objeto, leitura de `b.prev` em outro | `AttributeError` | SUCCESSFUL (falso negativo) | #9836 (aberta em 03/11) |
 | `57_global_nondet_str_lida_em_funcao.py` | função lê `len(s)` de um `s: str = nondet_str()` global | executa | aborta: `Unexpected index type in computer_pointer_offset` | nenhuma ainda |
 | `58_alias_de_funcao_como_argumento.py` | `op = f; f(op(1))`: alias de função chamado dentro de argumento | executa | aborta: `type mismatch: expected code` e core dump | nenhuma ainda |
-| `59_alias_de_metodo_sem_anotacao.py` | `op = obj.lt; op(x, y)` com `lt` sem anotação de tipo | executa | FAILED no `assert` (falso positivo) | rascunho: `issues/59_method_alias_false_assert.md` |
-| `60_lista_em_valor_de_dict.py` | `d['p'] = []; d['p'].append("x")` | executa | recusa: `List variable not found:` | rascunho: `issues/60_list_in_dict_value.md` |
-| `61_or_com_atributo_inexistente.py` | `if nondet_bool() or c.limit:` com `limit` inexistente | executa | aborta: `Can't generate zero for type empty` | rascunho: `issues/61_or_missing_attribute.md` (cobre o 62) |
-| `62_or_atributo_inexistente_falso_negativo.py` | `x = False or c.limit` dentro de função | `AttributeError` | SUCCESSFUL (falso negativo) | junto com o 61 |
-| `63_getitem_tupla_em_atributo.py` | `fr.loc[0, 1]` com `__getitem__` na classe do atributo | executa | segfault no encoder (exit 139); com chave escalar, FAILED falso | rascunho: `issues/63_getitem_tuple_on_attribute_segfault.md` |
-| `64_lambda_em_metodo.py` | `apply(lambda p: p + 1, 1)` dentro de um método | executa | recusa: `Variable 'p' is not defined in function 'lam1'` | rascunho: `issues/64_lambda_in_method.md` |
+| `60_lista_em_valor_de_dict.py` | `d['p'] = []; d['p'].append("x")` | executa | recusa: `List variable not found:` | #9837 (aberta em 03/11) |
+| `61_or_com_atributo_inexistente.py` | `if nondet_bool() or c.limit:` com `limit` inexistente | executa | aborta: `Can't generate zero for type empty` | #9838 (aberta em 03/11) |
+| `62_or_atributo_inexistente_falso_negativo.py` | `x = False or c.limit` dentro de função | `AttributeError` | SUCCESSFUL (falso negativo) | #9838 (aberta em 03/11) |
+| `63_getitem_tupla_em_atributo.py` | `fr.loc[0, 1]` com `__getitem__` na classe do atributo | executa | segfault no encoder (exit 139); com chave escalar, FAILED falso | #9839 (aberta em 03/11) |
+| `64_lambda_em_metodo.py` | `apply(lambda p: p + 1, 1)` dentro de um método | executa | recusa: `Variable 'p' is not defined in function 'lam1'` | #9840 (aberta em 03/11) |
 | `65_parametro_reatribuido_dict_get.py` | parâmetro `k` reatribuído a `d.get(k)` | executa | `Member 'is_none' is not a field of pointer_struct` e `SMT solver failed` | rascunho: `issues/65_param_reassigned_optional.md` |
 | `66_desempacotar_getitem_de_atributo.py` | `a, b = n.m[0]` com `__getitem__` na classe do atributo | executa | recusa: `Cannot unpack pointer` | rascunho: `issues/66_unpack_getitem_on_attribute.md` (tem contorno) |
+| `67_parametro_de_metodo_float_sem_anotacao.py` | `int(tnow - 1.5)` com `tnow` parâmetro de método sem anotação, chamado por `self.g(...)` | executa | SIGSEGV (exit 139); com `--z3`, `rm and fp sorts expected` | #9841 (aberta em 03/11) |
+| `68_percent_precisao_operando_nao_constante.py` | `"v %.1f" % x` com `x: float` | executa | recusa: `non-constant argument in str % formatting` | #9842 (aberta em 03/11) |
+| `69_tupla_opcional_comparada.py` | elemento de `Optional[tuple[float, float]]` anotado e atribuído num ramo, comparado | executa | Bitwuzla `term with unexpected sort` (exit 70); `--z3`: `Sorts Optional_struct` | #9843 (aberta em 03/11) |
 
 Os reprodutores 54 a 59 vieram da Tarefa 10, passo 2 (27/10): com o portão de fidelidade, o agente
-manteve o corpo da função nos 5 casos, e os obstáculos que sobraram são do ESBMC. O 55, o 56 e o 59 são os
-mais graves para o pipeline: dois falsos positivos e um falso negativo, não uma recusa.
+manteve o corpo da função nos 5 casos, e os obstáculos que sobraram são do ESBMC. O 54, o 55 e o 59 foram
+corrigidos no master até 03/11; dos que ficaram, o 56 é o mais grave: falso negativo, não uma recusa.
 
 O que mudou no 46 e no 47: até o master `7da3564` a exceção na condição do `while` sumia (47) ou abortava o
 encoder (46), o que a #9092 corrigiu. Agora o ESBMC acusa, mas a exceção errada: o CPython avalia
@@ -50,14 +52,27 @@ encoder (46), o que a #9092 corrigiu. Agora o ESBMC acusa, mas a exceção errad
 É um problema novo, de ordem de avaliação dos operandos, ainda sem issue.
 
 Os reprodutores 60 a 66 vieram da triagem da Tarefa 10, passo 4 (28/10, 30 casos), reduzidos por três agentes.
-O 62 é o mais grave: falso negativo silencioso. No 60, 64 e 65 o contorno teria de mudar o corpo da função
-alvo, o que o portão de fidelidade não aceita; o 66 tem contorno que preserva o corpo.
+O 62 é o mais grave: falso negativo silencioso. No 60 e 64 o contorno teria de mudar a estrutura da função alvo; o 65 se contorna renomeando a variável
+reatribuída (regra `compat_rebound_parameter` do `compat.py`, desde 03/11), e o 66 tem contorno que preserva o corpo.
 
 ## Rascunhos de issue
 
-`issues/` guarda rascunhos em inglês, nada postado: ela avalia antes de abrir. Em 27/10: 47, 54, 55, 56 e 59
-(os de veredito errado, 55, 56 e 59, primeiro). 57 e 58 não têm rascunho: têm contorno que preserva o comportamento
-(driver e filtro). Em 28/10: 60, 61 (com o 62), 63, 64, 65 e 66, também sem postar. Os rascunhos das issues já abertas (#9073, #9074, #9077, #9091) saíram da pasta.
+`issues/` guarda rascunhos em inglês, nada postado: ela avalia antes de abrir. Em 03/11 ela aprovou e foram
+abertas #9835 a #9843 (47 com o 46, 56, 60, 61 com o 62, 63, 64, 67, 68 e 69); os rascunhos saíram da pasta.
+Ficam o 65 e o 66, que têm contorno que preserva o comportamento (renomear a variável reatribuída; alias local
+anotado). 57 e 58 não têm rascunho: têm contorno (driver e filtro). Os rascunhos das issues abertas antes
+(#9073, #9074, #9077, #9091) também saíram da pasta.
+
+## Corrigidos entre 27/10 e 03/11
+
+Saíram da pasta, com os rascunhos de issue, que não chegaram a ser postados. Conferido com um `assert` do valor
+esperado: SUCCESSFUL com o valor certo, FAILED com o valor trocado.
+
+| Reprodutor | Issue | Situação no `0945ac9` |
+|---|---|---|
+| 54 (`g(1, **d)`) | | SUCCESSFUL, sem abortar |
+| 55 (`g(**d)` com falso `TypeError`) | #9329 (de outra pessoa, fechada em 30/10) | SUCCESSFUL |
+| 59 (alias de método sem anotação) | | SUCCESSFUL, sem o falso positivo no `assert` |
 
 ## Corrigidos entre 25/10 e 27/10
 
@@ -112,8 +127,7 @@ o master já não tem (25, 26, 39). Vale remedir o filtro antes de removê-las.
 | 33 | `nm_real_25` (`s.method` com `s` de uma união de classes) |
 | 46, 47 | `nm_real_11` (`LocalCache`, base `OrderedDict` trocada por classe vazia pelo harness) |
 | 48 | `nm_real_12` (`current_line.prev.next = ...`, com `prev` iniciado em `None`) |
-| 58, 59 | `bip_pandas_7` (`np.where(op(l, r) | ...)` com `op = operator.lt` ou `operator.le`) |
-| 54, 55 | `nm_real_08` (`Request.url_for` repassa `**kwargs` a `app.url_for`) |
+| 58 | `bip_pandas_7` (`np.where(op(l, r) | ...)` com `op = operator.lt` ou `operator.le`) |
 | 56 | `nm_real_12` (o `PamdRule` real não chama `super().__init__`; o primeiro nó fica sem `prev`) |
 | 60 | `bip_ansible_16` (`cpu_facts['processor'].append(...)`) |
 | 61, 62 | `nm_real_25` (tornado `_can_keep_alive`: `or` com atributo que o stub não define) |
@@ -121,6 +135,9 @@ o master já não tem (25, 26, 39). Vale remedir o filtro antes de removê-las.
 | 64 | `dz_real_02` (`min(..., key=lambda p: ...)` dentro de método) |
 | 65 | `av_real_01` (youtube-dl `cli_bool_option`: `param = params.get(param)`) |
 | 66 | `dz_real_04` (nki-samples `interpolate_bilinear_2x_fwd`) |
+| 69 | PGENE601 `cps_mavproxy_1380` (`self.click_pos: Optional[tuple[float, float]]`; 1 hipótese na rodada Codex de 03/11) |
+| 68 | PGENE601 `cps_mavproxy_1380` (`' %.1fm' % (terrain_height,)`; as 2 hipóteses que pararam no `%` na rodada Codex de 03/11) |
+| 67 | PGENE601 `cps_mavproxy_1032` (`get_gps_time(self, tnow)` chamado por `idle_task`; os 5 SIGSEGV da rodada Codex de 03/11) |
 
 ## Gerador de pytest (medido no master `7da3564`, 22/10/2026; igual no `c0813af`)
 

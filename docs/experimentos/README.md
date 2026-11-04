@@ -1321,3 +1321,123 @@ bip_thefuck_11, ir_real_03.
 Evidência dinâmica (CPython quebra na linha do bug só na versão com bug, sem prova formal), fase 10:
 dz_real_02, ip_real_22, oob_real_05, oob_real_12 (dz_real_02 e oob_real_12 com a versão corrigida
 executada sem quebrar ali).
+
+## PGENE601: comparação preliminar com mypy (03/11)
+
+- **Corpus e versão:** os 47 casos de `dataset/disciplina_pgene601/`, no commit `6c13902`; mypy 2.1.0.
+- **Comando:** `.venv/bin/python scripts/pgene601_mypy_baseline.py dataset/disciplina_pgene601 artifacts/pgene601/mypy-2026-11-03/mypy_cps.json`.
+  A medição roda cada arquivo com e sem `--check-untyped-defs`, `--ignore-missing-imports` e `--follow-imports=skip`.
+  Um caso conta como apontado quando mypy emite erro na linha do gabarito ou numa linha listada em `crash_expressions`.
+- **Resultado:** sem `--check-untyped-defs`, mypy apontou 2/47 casos (`cps_pythoncan_1293` e `cps_gps_127`).
+  Com a opção, apontou 5/47 (`cps_pythoncan_1293`, `cps_mavproxy_881`, `cps_blinka_434`, `cps_gps_127` e
+  `cps_pyspartn_4`). Só em `cps_pyspartn_4` a mensagem correspondente deixa de aparecer na versão corrigida;
+  em três casos a mesma mensagem permanece, e em `cps_pythoncan_1293` ela também não descreve a falha do gabarito.
+  O mypy produziu 290 diagnósticos no modo padrão e 619 com a opção.
+- **Arquivos de saída:** `artifacts/pgene601/mypy-2026-11-03/mypy_cps.json`, `mypy_version.txt` e `commit.txt`.
+- **Limite desta etapa:** isso mede apontamentos estáticos nas linhas selecionadas e sua persistência na versão corrigida;
+  não é uma execução dos testes de cada projeto. A comparação dos testes listados nas PRs está registrada abaixo.
+  A rodada Claude + ESBMC também não está concluída: o relatório atual contém 118 `PIPELINE_ERROR` durante a síntese.
+
+## PGENE601: comparação com os testes das PRs (03/11)
+
+- **Método:** para cada PR com arquivo de teste Python listado em `artifacts/pgene601/e2-2026-11-02/pr_tests.json`,
+  rodei esse arquivo no commit bugado e no commit corrigido registrados no gabarito. Como alguns testes foram
+  introduzidos pela própria correção, copiei o teste e os dados listados pela PR do commit corrigido para a cópia do
+  commit bugado. Usei worktrees isoladas em `/tmp` e Python 3.12.3. Comando: `python -m pytest -q -o addopts= <arquivos>`;
+  nos três casos de Pymodbus, acrescentei `-n 0` para desativar os workers do xdist.
+- **Cobertura:** havia 11 seleções com arquivo `.py` em 11 dos 47 casos. Uma PR lista somente um fixture `.arxml`, que
+  não é executável pelo pytest; os outros 35 casos não têm teste Python da PR no manifesto.
+- **Resultado:** em 10 casos, o teste falhou na versão com bug por um comportamento ligado ao defeito rotulado e passou
+  na versão corrigida: `cps_pymodbus_2980`, `cps_opcua_1955`, `cps_cantools_804`, `cps_pythoncan_1599`,
+  `cps_pymodbus_2921`, `cps_pymodbus_2977`, `cps_umqtt_1149`, `cps_pyrtcm_34`, `cps_pycomm3_331` e
+  `cps_pyspartn_4`. O caso `cps_opcua_1955` detecta a sequência `65536` em vez de `1` por asserção; o teste não observa
+  a exceção `struct.error` do gabarito.
+- **Caso não contado:** `cps_gpiozero_716` também falhou no commit bugado e passou no corrigido, mas o teste esperava
+  `ValueError` e recebeu `FileNotFoundError` porque o ambiente não tinha `/sys/class/thermal/thermal_zone0/temp`.
+  Não contei isso como detecção do defeito rotulado.
+- **Saídas:** `artifacts/pgene601/pytest-2026-11-03/pytest_results.json` contém os resultados completos por versão;
+  `environment_versions.json` registra Python e pytest usados; `pr_tests.json` preserva o mapeamento das PRs.
+- **Limite desta comparação:** são os arquivos de teste alterados/listados nas PRs, não as suítes completas dos projetos.
+  O resultado mede somente os 11 casos com teste Python disponível. A rodada Claude + ESBMC segue incompleta, com
+  118 `PIPELINE_ERROR` durante a síntese; portanto, ainda não há comparação final entre os três métodos.
+
+## PGENE601: detecção do LLM na linha do gabarito (03/11), sem chamada nova
+
+- **Pergunta:** nas rodadas já feitas sobre os 47 bugs, em quantos o LLM apontou a linha do gabarito, antes do ESBMC?
+- **Medição:** regra "na linha" de `research_pipeline.v2_evaluator.at_bug_line`, hipóteses distintas por
+  `hypotheses()` de `scripts/v2_self_consistency.py`, sobre o `v2_checkpoint.json` de cada pasta. Sem LLM.
+- **Claude** (`artifacts/pgene601/e2e-2026-11-02`, Sonnet 5.5, A1+A2): 53 funções, 118 hipóteses distintas,
+  **36 de 47 bugs na linha**, 40 hipóteses na linha, precisão 34%.
+- **Codex** (`artifacts/pgene601/codex-2026-11-03`, gpt-6.1-sol, A1+A2): 53 funções, 232 hipóteses distintas,
+  **39 de 47 bugs na linha**, 54 hipóteses na linha, precisão 23%.
+- **Verificação, estado parcial (14h):** Codex com 36 hipóteses verificadas; 3 CONFIRMED, das quais 2 na linha do
+  gabarito, as duas do mesmo bug (`cps_gpiozero_716`, ZeroDivisionError); a terceira (`cps_blinka_434`,
+  `GPIO.cleanup(self._pin.id)`) está fora da linha. Claude: 118 PIPELINE_ERROR na síntese, rodada retomada às 14:02.
+- **Leitura:** "na linha" mede só o apontamento do LLM, sem prova formal; mypy (5/47) e testes das PRs (10/11)
+  estão nas seções acima.
+
+## PGENE601: melhorias do pipeline, análise parcial (03/11)
+
+- Os três harnesses GPS que excederam 180 s foram repetidos com limite de 300 s. Todos terminaram;
+  dois mostraram o `IndexError` na expressão do defeito rotulado, e o outro mostrou uma `ValueError` diferente.
+- A análise offline manteve os 39 bugs apontados com 222 das 232 hipóteses ao limitar a 12 por função,
+  mas esse limite foi escolhido na mesma amostra e ainda não é uma regra validada.
+- O reparo por LLM foi interrompido após Fernanda esclarecer que a LLM deve somente apontar o possível erro.
+  Uma falha interna do ESBMC com tupla opcional foi reproduzida em programa mínimo; há um rascunho de issue,
+  sem publicação.
+- Método, comandos, logs e limitações: [resultados das melhorias](RESULTADOS_MELHORIAS_PIPELINE_PGENE601_2026-11-03.md).
+
+## PGENE601: contraexemplo parcial após timeout, 3 casos GPS a 180 s (03/11)
+
+- **Código:** working tree sobre `6c13902` com o patch de timeout parcial (Codex) e duas correções feitas antes da rodada:
+  import de `ESBMC_TIMEOUT` em `verify/loop.py` (a falta dele dava `NameError` quando o replay não reproduzia;
+  2 `PIPELINE_ERROR` da rodada Claude vieram daí) e leitura da saída do timeout sem `strip()` em `esbmc_runner.py`.
+  7 testes novos; suíte com 1414 testes passando.
+- **Comando:** `.venv/bin/python scripts/v2_replay_specs.py artifacts/pgene601/melhorias-2026-11-03/baseline_partial_report.json
+  --esbmc ~/esbmc-master/esbmc.sh --timeout 180 --sources dataset/disciplina_pgene601/arquivo_com_bug
+  --only 67e38056f77f,0f099ccc2b47,ea8f3d26e5fe --out artifacts/pgene601/melhorias-2026-11-03/partial-timeout-180`.
+  ESBMC 8.6.0 `d520a903ae`, bound 5, sem chamada ao LLM (specs gravados). 18 min 49 s.
+- **Resultado:** `67e38056f77f` (`int(raw[0])`) passou de `ESBMC_TIMEOUT` a `CONFIRMED` com `ValueError`, que não é o
+  defeito do gabarito. `0f099ccc2b47` e `ea8f3d26e5fe` continuam `ESBMC_TIMEOUT`: o log parcial já tinha o `IndexError`
+  em `raw[1]` aos 180 s, mas o replay usou a string `"0<4"`, tirada do programa, e parou num `ValueError` antes da
+  linha do bug (`other_failure`). A extração das strings do witness só roda após `not_reproduced`, então não rodou.
+- **Leitura:** o timeout parcial recupera veredito, mas nos casos do bug oficial o gargalo é obter a string concreta
+  do witness; o contraexemplo do ESBMC não mostra o valor de `nondet_str` (#9091, fechada como "not planned").
+
+## Catálogo `possiveis_problemas` e obstáculos PGENE601 no master `0945ac9` (03/11)
+
+- **Binário:** master `0945ac9` (o mais recente no GitHub em 03/11), compilado pelo Codex em `/tmp/esbmc-master-0945ac9`.
+- **Comandos:** `docs/projeto/possiveis_problemas/rodar.sh /tmp/esbmc-master-0945ac9/build/src/esbmc/esbmc
+  "--no-pointer-check --no-align-check"` (5 min 30 s) e `artifacts/pgene601/melhorias-2026-11-03/recheck_esbmc_master.py`
+  (13 harnesses de obstáculo, 60 s cada). Saídas em `artifacts/esbmc-master-0945ac9-2026-11-03/` e
+  `artifacts/pgene601/melhorias-2026-11-03/esbmc-master-0945ac9/`.
+- **Catálogo:** 54, 55 e 59 corrigidos (conferido com `assert` do valor certo e do trocado) e retirados, com os
+  rascunhos; o 55 tinha sido reportado por outra pessoa na #9329. Os outros 21 têm o mesmo resultado de 27/10.
+- **Obstáculos PGENE601, ainda falhando no master:** 5 SIGSEGV em `cps_mavproxy_1032`, reduzidos ao reprodutor 67
+  (parâmetro de método sem anotação, chamado por `self.g(...)`, em `int(tnow - 1.5)`; o `time.time()` do caso real
+  não é necessário). Sem contorno genérico: o harness teria de inferir o tipo do parâmetro de um método auxiliar,
+  então vira rascunho de issue. `%` com precisão e operando não constante (`"%.1f" % x`; `"%f" % x` e
+  `"%.1f" % 2.5` funcionam): `f"{x:.1f}"` funciona, mas o contorno exige provar que o operando é numérico, e nos
+  dois casos MAVProxy os operandos vêm de stubs e subscritos. Tupla opcional (`Optional[tuple[float, float]]`
+  anotado e elemento comparado): sem a anotação o ESBMC dá o veredito certo, conferido por mutação.
+- **Modelo de `time.time()`:** devolve 0.0, 1.0, 2.0... em sequência (`models/time.py`); código que depende do
+  valor do relógio só é explorado com tempo perto de zero.
+- **Issues abertas em 03/11, aprovadas por Fernanda:** #9835 (47/46, `len` sem `__len__`), #9836 (56, falso negativo),
+  #9837 (60), #9838 (61/62, `or` com atributo inexistente, falso negativo), #9839 (63, segfault), #9840 (64, lambda
+  em método), #9841 (67, SIGSEGV de `cps_mavproxy_1032`), #9842 (68, `%.1f`), #9843 (69, `Optional[tuple]`, que
+  substitui o rascunho do Codex). O reproducer de cada rascunho foi rodado no `0945ac9` antes de postar; as
+  variações descritas nos rascunhos antigos foram medidas no `4a356e33eb`. 65 e 66 ficaram sem issue: têm contorno.
+
+## Pipeline: melhorias de 03/11 (commits `be9a846`, `b5b7226`, `176ecb9`, `61d1c60`)
+
+- **Timeout parcial** (`be9a846`): contraexemplo de exceção impresso antes do timeout vira `CONFIRMED` só com
+  reprodução no CPython; SIGSEGV do ESBMC é erro da ferramenta, não erro reparável.
+- **Erro do `claude -p`** (`b5b7226`): a mensagem de falha passa a trazer o motivo que o CLI grava no JSON do stdout.
+  As 103 `PIPELINE_ERROR` da rodada Claude de 03/11 não tinham motivo registrado.
+- **Witness por propriedade** (`176ecb9`): após `not_reproduced` ou `other_failure` com `nondet_str`, uma segunda
+  extração com `--multi-property`. Nos dois programas GPS do bug oficial, a extração de uma propriedade deu
+  `' \n..'` e `'\x08\x0e\x0f\x01'` (param no `ValueError` de `int(raw[0])`); a de todas as propriedades deu
+  `"\t8\n"`, que leva ao `IndexError` em `raw[1]`. A rodada com o pipeline completo ainda não foi feita.
+- **Parâmetro reatribuído** (`61d1c60`): regra `compat_rebound_parameter` para o 65 (`av_real_01`), com dois
+  probes; no `d520a903ae` e no `0945ac9` os dois dão "recusa", então a regra fica ligada.
+- Suíte: 1428 testes passando antes dos commits.

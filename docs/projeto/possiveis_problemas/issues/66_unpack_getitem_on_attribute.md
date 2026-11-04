@@ -57,4 +57,4 @@ ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
 Same result with Bitwuzla and `--z3`.
 
 ### Version
-ESBMC master 4a356e33eb (28 Oct 2026), Bitwuzla build, x86_64 Linux.
+ESBMC master 0945ac9 (3 Nov 2026; main reproducer re-checked, same result as on 4a356e33eb, 28 Oct), Bitwuzla build, x86_64 Linux.

@@ -1,0 +1,43 @@
+{
+  "counts": {
+    "CONFIRMED": 2
+  },
+  "rows": [
+    {
+      "id": "91509f265939",
+      "file": "ip_real_22.py",
+      "function": "match",
+      "before": "ESBMC_TIMEOUT",
+      "after": "CONFIRMED",
+      "reason": "uncaught exception: AttributeError; unwinding assertion loop 2",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "typing_import_added",
+        "cut_after_suspect:1",
+        "none_guards:2"
+      ],
+      "healing_rounds": 0,
+      "heal": "none"
+    },
+    {
+      "id": "57916072238c",
+      "file": "oob_real_03.py",
+      "function": "get_new_command",
+      "before": "ESBMC_TIMEOUT",
+      "after": "CONFIRMED",
+      "reason": "dereference failure: array bounds violated; unwinding assertion loop 5; unwinding assertion loop 4; IndexError: pop from empty list; IndexError: pop index out of range",
+      "recorded_specs": 1,
+      "filled": 0,
+      "transforms": [
+        "decorators_removed:git_support",
+        "stubbed_imports:replace_argument",
+        "cut_after_suspect:2",
+        "unused_definitions_removed:replace_argument",
+        "none_guards:1"
+      ],
+      "healing_rounds": 0,
+      "heal": "none"
+    }
+  ]
+}

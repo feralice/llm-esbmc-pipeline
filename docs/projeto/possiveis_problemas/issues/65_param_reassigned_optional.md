@@ -54,4 +54,4 @@ Same result with the Z3 build option `--z3`, with `--unwind 10` and without `--m
 Reduced from a harness of youtube-dl's `cli_bool_option`, which does `param = params.get(param)`.
 
 ### Version
-ESBMC master 4a356e33eb (27 Oct 2026), Bitwuzla build, x86_64 Linux.
+ESBMC master 0945ac9 (3 Nov 2026; main reproducer re-checked, same result as on 4a356e33eb, 27 Oct), Bitwuzla build, x86_64 Linux.
