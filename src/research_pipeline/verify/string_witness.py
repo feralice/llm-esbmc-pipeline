@@ -36,15 +36,18 @@ def parse_witness(text: str) -> list:
 
 
 def string_witness(path: Path, *, esbmc_command: list[str], bound: int, timeout_seconds: int, work_dir: Path,
-                   runner: Runner | None = None) -> list[str]:
+                   runner: Runner | None = None, multi_property: bool = False) -> list[str]:
     """Run ESBMC again for its witness. It only extracts values: the verdict comes from the first run,
-    so stopping at the first violation and dropping unwinding assertions here changes no verdict."""
-    out = work_dir / "pytest_witness"
+    so stopping at the first violation and dropping unwinding assertions here changes no verdict.
+    ``multi_property`` records one witness per violated property: the first violation found may be
+    another exception raised before the suspect line (GPS ``int(raw[0])`` before ``raw[1]``, 03/11)."""
+    tag = "_multi" if multi_property else ""
+    out = work_dir / f"pytest_witness{tag}"
     (runner or run_esbmc_direct)(path, esbmc_command=esbmc_command, bound=bound, timeout_seconds=timeout_seconds,
-                                 output_dir=work_dir / "esbmc_witness",
+                                 output_dir=work_dir / f"esbmc_witness{tag}",
                                  bound_flags=["--unwind", str(bound), "--no-unwinding-assertions"],
                                  extra_flags=["--generate-pytest-testcase", "--pytest-values-only",
                                               "--pytest-output-dir", str(out)],
-                                 multi_property=False)
+                                 multi_property=multi_property)
     values = [v for f in sorted(out.glob("test_*.py")) for v in parse_witness(f.read_text(encoding="utf-8"))]
     return [v for v in values if isinstance(v, str)]

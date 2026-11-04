@@ -25,7 +25,6 @@ from .pytest_gen import pytest_reproducer
 from .outcome import (
     CONFIRMED,
     ESBMC_TIMEOUT,
-    ESBMC_TIMEOUT,
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
     NO_SOURCE,
@@ -259,15 +258,22 @@ def verify_hypothesis(
             continue
         replay = (ReplayVerdict("unavailable", reason=no_replay) if no_replay
                   else _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc)))
-        if replay.status == "not_reproduced" and reading.kind == "violation" and esbmc_command \
+        if replay.status in {"not_reproduced", "other_failure"} and reading.kind == "violation" and esbmc_command \
                 and "nondet_str()" in program.source:
+            witness_bound = how["unwind"] if isinstance(how["unwind"], int) and how["unwind"] else bound
             witness_timeout = min(timeout_seconds, 30) if how.get("partial_timeout") else timeout_seconds
-            strings = string_witness(path, esbmc_command=esbmc_command,
-                                     bound=how["unwind"] if isinstance(how["unwind"], int) and how["unwind"] else bound,
-                                     timeout_seconds=witness_timeout, work_dir=work_dir / path.stem)
-            record["witness_strings"] = strings
-            if strings:
-                replay = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc), strings)
+            for multi, seconds in ((False, witness_timeout), (True, timeout_seconds)):
+                strings = string_witness(path, esbmc_command=esbmc_command, bound=witness_bound,
+                                         timeout_seconds=seconds, work_dir=work_dir / path.stem, multi_property=multi)
+                record["witness_strings_multi" if multi else "witness_strings"] = strings
+                if not strings:
+                    continue
+                retried = _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc), strings)
+                # Only a reproduction replaces an other_failure: a miss would turn OTHER_FAILURE into UNVALIDATED.
+                if retried.status == "reproduced" or replay.status == "not_reproduced":
+                    replay = retried
+                if replay.status == "reproduced":
+                    break
         result.replay = replay.to_dict()
         if how.get("partial_timeout"):
             if replay.status == "reproduced" and replay.exception_type in reading.exceptions:
