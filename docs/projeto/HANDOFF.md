@@ -46,6 +46,25 @@ Issues abertas por nós em 05/11: #9953 e #9954 (Optional[tuple], sem PR, parada
   rodar a suíte em pedaços e commitar. **Feito e commitado em 05/11** (73 para 52 recusas no agente, 86 para 6 no motor).
 - **Lições automáticas do self-healing:** feito e commitado (`764fe85`).
 
+## PARADO AQUI (05/11, 16:20, tokens acabando; tudo parado por pedido dela)
+
+- **ESBMC novo compilado:** `~/esbmc-master/build-bw` = master `451f54cab6` (8.6.0); d520 guardado em
+  `~/esbmc-bin/esbmc-d520a903ae`. Passo 3 da ordem (compilar) feito.
+- **Com o binário novo, 2 testes falham** em `tests/test_verify_esbmc_integration.py`
+  (`test_confirmed_free_function_gets_a_pytest_reproducer_from_esbmc`, `test_a_coroutine_is_verified_through_asyncio_run`):
+  o pytest que o ESBMC gera chama a função com aridade errada (`TypeError: inverse() takes...`; o master agora
+  gera `f(arg0, arg1, ...)`, ver reproducer 52). Um subagente começou a adaptar `verify/pytest_gen.py` e foi
+  parado no meio: conferir `git diff` (pode haver edição parcial em `pytest_gen.py`/testes), terminar ou
+  descartar, e se o formato novo for bug do ESBMC, marcar 'invalid' com motivo e rascunhar issue (só se não
+  houver PR). Depois rodar a suíte em 6 pedaços e só então congelar (tag `v2-congelado-2026-11c`, push com ok).
+- **#9074:** subagente parado no meio do conserto dos achados C1/M1/M2 (último passo dele: "CPython check,
+  formatting e subset"). Worktree `~/esbmc-wt/issue-9074`: +195/−46 em 2 arquivos, binário recompilado 16:10,
+  testes novos `github_9074_{str_get,str_get_fail,str_value_unsupported,mutated_unsupported,collision_unsupported}`.
+  Falta: rodar todos `github_9074*` (Bitwuzla e `--z3`), `scripts/check_python_tests.sh github_9074`, subconjunto
+  `regression/python/.*(dict|get|kwarg|vararg|9073|9074|optional|class|init|attr|none)`, clang-format 23.1.1,
+  `code-reviewer` e `esbmc-coverage-pr` Mode B. Se passar: ela autorizou abrir o PR (ver acima).
+- Depois: rever `possiveis_problemas` com o binário novo (`rodar.sh`, checagem de assert trocado).
+
 ## O que falta, NESTA ORDEM (ordem dela)
 
 1. **Terminar a #9074** (`**kwargs` no `__init__`, sem PR). Worktree `~/esbmc-wt/issue-9074`, branch
