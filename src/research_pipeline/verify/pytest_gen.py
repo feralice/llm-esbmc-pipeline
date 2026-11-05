@@ -3,7 +3,7 @@
 ESBMC's --generate-pytest-testcase (https://esbmc.github.io/docs/python/pytest-testgen/) writes a
 parametrized test from its counterexample. Measured on ESBMC 8.5 and master (2026-10-01), it only
 emits a usable test for a free function called with ``__VERIFIER_nondet_*()`` arguments: with a
-receiver it prints internal names (``x&0#1``), and with several arguments it may drop some. So the
+receiver it prints internal names (``x&0#1``), and it can produce calls with the wrong arity. So the
 program is rewritten into that shape, the test is run under pytest, and it is kept only when it
 fails with the bug's exception, which is how ESBMC's tests show a bug (they carry no assert).
 """
@@ -24,6 +24,7 @@ from .sandbox import host_replay_problem, process_limits
 from .spec import parse_type
 
 _SCALARS = {"int", "float", "bool", "str"}
+ESBMC_WRONG_ARITY = "ESBMC's test passes"
 
 
 def _source_without_driver(source: str) -> list[str]:
@@ -63,11 +64,23 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
         ast.parse(test.read_text(encoding="utf-8"))
     except SyntaxError as exc:
         return {"status": "invalid", "path": str(test), "reason": f"ESBMC wrote invalid Python: {exc.msg}"}
+    wrong_arity = _arity_problem(test.read_text(encoding="utf-8"), function, len(types))
+    if wrong_arity:
+        return {"status": "invalid", "path": str(test), "reason": wrong_arity}
     if coroutine:
         test.write_text(awaited_test(test.read_text(encoding="utf-8"), function), encoding="utf-8")
     # The test imports the module: CPython gets the replayed program (real exceptions), without the call.
     library = "\n".join(_source_without_driver(program.replay_source or program.source)) + "\n"
     return _run_generated_test(test, module, library, exception)
+
+
+def _arity_problem(test: str, function: str, arity: int) -> str | None:
+    """Report calls with a different number of positional arguments than expected."""
+    for node in ast.walk(ast.parse(test)):
+        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == function
+                and len(node.args) != arity):
+            return f"{ESBMC_WRONG_ARITY} {len(node.args)} arguments to {function}(), which takes {arity}"
+    return None
 
 
 def awaited_test(test: str, function: str) -> str:
@@ -169,6 +182,9 @@ def _direct_test(tree: ast.Module, *, name: str, esbmc_command: list[str], bound
         ast.parse(test.read_text(encoding="utf-8"))
     except SyntaxError as exc:
         return {"status": "invalid", "path": str(test), "reason": f"ESBMC wrote invalid Python: {exc.msg}"}
+    wrong_arity = _arity_problem(test.read_text(encoding="utf-8"), inline.func.id, len(inline.args))
+    if wrong_arity:
+        return {"status": "invalid", "path": str(test), "reason": wrong_arity}
     library = _cpython_source(rest)
     return _run_generated_test(test, module, library + "\n", exception)
 
@@ -176,7 +192,8 @@ def _direct_test(tree: ast.Module, *, name: str, esbmc_command: list[str], bound
 def _ran(outcome: dict) -> bool:
     """The generated test was executed (a test that fails otherwise is "invalid" in ``pytest_reproducer``)."""
     return outcome["status"] in ("reproduces", "does_not_reproduce") or (
-        outcome["status"] == "invalid" and not outcome["reason"].startswith("ESBMC wrote invalid Python"))
+        outcome["status"] == "invalid"
+        and not outcome["reason"].startswith(("ESBMC wrote invalid Python", ESBMC_WRONG_ARITY)))
 
 
 def _verdict(outcome: dict) -> str:

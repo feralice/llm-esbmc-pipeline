@@ -1,4 +1,34 @@
-# Handoff (05/11/2026, fim da sessão)
+# Handoff (05/11/2026)
+
+## PARADO AQUI: atualização mais recente
+
+Fernanda pediu para **parar e esquecer o PR da #9074** e focar no pipeline. Não retomar essa issue nem abrir PR sem novo pedido. O worktree `~/esbmc-wt/issue-9074` permanece com alterações e testes sem commit. As instruções antigas abaixo para retomar a #9074 estão superadas.
+
+O ESBMC `~/esbmc-master/build-bw` foi compilado no master `451f54cab68f22261aad0f53ea8236261d8384a5`, versão 8.6.0. O master remoto foi consultado e estava nesse commit; `ninja -C build-bw esbmc` terminou com sucesso. Antes de congelar ou rodar experimentos, conferir novamente o master mais recente. O binário anterior está em `~/esbmc-bin/esbmc-d520a903ae`.
+
+### Próximos passos do pipeline
+
+1. Rever `docs/projeto/possiveis_problemas/` com o ESBMC atualizado: executar `rodar.sh`, trocar o valor das asserções nos casos que passarem, conferir e registrar os resultados. Explicar o que foi observado para Fernanda avaliar.
+2. Revisar as alterações sem commit e, para congelar, registrar em `docs/experimentos/README.md` os commits do pipeline e do ESBMC. A tag planejada é `v2-congelado-2026-11c`; commit, tag e push só com pedido explícito dela.
+3. Depois, os experimentos escolhidos são os 47 bugs da disciplina PGENE601 (prazo registrado: 08/12), o item 14 (bug semeado) e 200 smells. Os demais itens continuam na seção histórica abaixo.
+
+### Estado local e verificações
+
+- As 25 melhorias do pipeline, as lições automáticas do self-healing (`764fe85`) e a comparação de AST menos restrita (`c74c900`) foram concluídas e commitadas localmente, sem push.
+- `src/research_pipeline/verify/pytest_gen.py` está sem commit: chamadas geradas pelo ESBMC com quantidade incorreta de argumentos são identificadas como inválidas. `tests/test_verify_esbmc_integration.py` e `tests/test_verify_pytest_gen.py` também foram alterados, com teste específico da contagem e expectativas adaptadas. Revisar os diffs antes de congelar.
+- Os 12 testes diretamente relacionados ao gerador e às duas integrações passaram. A suíte completa passou em seis grupos: **1.599 testes** (230, 233, 211, 381, 160 e 384). O terceiro grupo precisou ser repetido com acesso ao cache em `~/.cache/llm_esbmc`.
+- `docs/projeto/possiveis_problemas/issues/73_pytest_argumentos_extras.md` é um rascunho sem commit. O defeito foi reproduzido isoladamente: o ESBMC gerou `inverse(arg0, arg1)` para uma função de um argumento, e o pytest terminou com `TypeError`. A issue fechada #7188 também relata argumentos incorretos; conferir se é a mesma causa e verificar PRs antes de propor uma nova issue.
+- Os dois PDFs não rastreados na raiz não devem ser adicionados ao Git. A branch `feat/harness-de-agente` estava 23 commits à frente da origem, sem push, nesta atualização.
+
+### Registro da #9074, suspensa por pedido de Fernanda
+
+A sessão corrigiu uma colisão de nomes gerados. Passaram 285 testes relacionados, 24 casos específicos com Z3 e os novos pares com Bitwuzla; a checagem dos exemplos Python também passou. A revisão refeita não encontrou outro bloqueio concreto. O portão de cobertura **não passou**: as 40 linhas executáveis adicionadas foram alcançadas, mas uma campanha ampliada mostrou queda local de 30,03% para 29,95% e avisos de incompatibilidade de hash. Mode C-Live ficou inconclusivo porque o parser do ESBMC não analisou o cabeçalho real. A investigação foi interrompida por pedido dela. Não retomar sem novo pedido.
+
+## Histórico da sessão anterior
+
+O texto abaixo preserva decisões e contexto anteriores. Onde houver conflito, a atualização PARADO AQUI acima prevalece.
+
+### Handoff anterior
 
 Para outra IA continuar. Leia antes o CLAUDE.md do repo e a memória em
 `~/.claude/projects/-home-fernanda-mestrado-llm-esbmc/memory/` (em especial `feedback_esbmc_always_newest.md`,

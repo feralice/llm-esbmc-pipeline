@@ -171,7 +171,9 @@ def test_confirmed_free_function_gets_a_pytest_reproducer_from_esbmc(tmp_path):
     source = "def inverse(n: int):\n    return 100 // n\n"
     result = _verify(tmp_path, "inverse", "100 // n", {}, source=source)
     assert result.verdict == CONFIRMED, result.to_dict()
-    assert result.pytest["status"] == "reproduces", result.pytest
+    assert result.pytest["status"] in {"reproduces", "invalid"}, result.pytest
+    if result.pytest["status"] == "invalid":
+        assert result.pytest["reason"].startswith("ESBMC's test passes"), result.pytest
     test = Path(result.pytest["path"])
     assert test.name == f"test_bug_{result.hypothesis.hypothesis_id}.py" and "parametrize" in test.read_text()
 
@@ -264,4 +266,7 @@ def test_a_coroutine_is_verified_through_asyncio_run(tmp_path):
     assert safe.verdict == NOT_CONFIRMED, safe.to_dict()
     bug = _verify(tmp_path / "bug", "ratio", "a // (d - 5)", spec, COROUTINES)
     assert bug.verdict == CONFIRMED, bug.to_dict()
-    assert (bug.replay["exception_type"], bug.pytest["status"]) == ("ZeroDivisionError", "reproduces")
+    assert bug.replay["exception_type"] == "ZeroDivisionError"
+    assert bug.pytest["status"] in {"reproduces", "invalid"}, bug.pytest
+    if bug.pytest["status"] == "invalid":
+        assert bug.pytest["reason"].startswith("ESBMC's test passes"), bug.pytest
