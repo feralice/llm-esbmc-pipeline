@@ -48,6 +48,15 @@ def test_exception_on_another_line_is_other_failure():
     assert (verdict.status, verdict.exception_type, verdict.line) == ("other_failure", "IndexError", 3)
 
 
+def test_an_other_failure_carries_the_target_range_the_report_counts_by():
+    source = DIV.replace("        return 0", "        return [][0]").replace("if count > 5:", "if count > 0:") \
+        .replace("    return total // count", "    return 1")
+    lines = source.splitlines()
+    program = Program(source, lines.index("def main() -> None:") + 1, ((4, 4),), (), (1, 4))
+    verdict = concrete_replay(program, "ratio")
+    assert (verdict.status, verdict.line, verdict.target_range) == ("other_failure", 3, (1, 4))
+
+
 def test_optional_none_first_reaches_attribute_error():
     source = '''from typing import Optional
 

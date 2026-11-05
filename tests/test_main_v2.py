@@ -465,7 +465,61 @@ def test_a13_with_a_missing_pool_exits_with_error(tmp_path: Path, monkeypatch) -
     assert main.mode_v2(args) == 1
 
 
-def test_fingerprint_keeps_its_keys_for_earlier_variants() -> None:
-    keys = set(main._v2_fingerprint({"v2_variants": ["A1", "A2"]}, []))
+def test_fingerprint_without_variants_keeps_its_keys() -> None:
+    keys = set(main._v2_fingerprint({"v2_variants": []}, []))
     assert keys == {"config", "sources", "detector_prompt", "detector_schema", "spec_prompt"}
-    assert "detector_system_prompt" in main._v2_fingerprint({"v2_variants": ["A1", "A2", "A14"]}, [])
+
+
+@pytest.mark.parametrize("variant, text_file", [("A2", "A2_checklist.txt"), ("A8", "A8_exemplos.txt"),
+                                                ("A12", "A12_chamadores.txt"), ("A16", "A16_consistencia.txt"),
+                                                ("A20", "A20_fatias_chamadores.txt")])
+def test_fingerprint_changes_with_the_text_file_of_a_variant(tmp_path: Path, monkeypatch, variant: str,
+                                                             text_file: str) -> None:
+    from research_pipeline.llm import prompt_variants, prompts
+
+    config = {"v2_variants": ["A1", variant]}
+    before = main._v2_fingerprint(config, [])
+    copy = tmp_path / "v2_variants"
+    copy.mkdir()
+    for path in prompt_variants._DIR.iterdir():
+        (copy / path.name).write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+    monkeypatch.setattr(prompt_variants, "_DIR", copy)
+    prompts._load_system_prompt.cache_clear()
+    assert main._v2_fingerprint(config, []) == before
+    (copy / text_file).write_text((copy / text_file).read_text(encoding="utf-8") + "\nOne more rule.\n",
+                                  encoding="utf-8")
+    prompts._load_system_prompt.cache_clear()
+    try:
+        assert main._v2_fingerprint(config, []) != before
+    finally:
+        prompts._load_system_prompt.cache_clear()
+
+
+def _resume_with_saved_fingerprint(tmp_path: Path, monkeypatch, capsys, edit) -> tuple[int, str]:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", _Synthesizer)
+    out = tmp_path / "out"
+    assert main.mode_v2(_detection_args(source, out, "--v2-variants", "A1,A2")) == 0
+    checkpoint_path = out / "v2_checkpoint.json"
+    checkpoint = json.loads(checkpoint_path.read_text())
+    edit(checkpoint["fingerprint"])
+    checkpoint_path.write_text(json.dumps(checkpoint))
+    capsys.readouterr()
+    code = main.mode_v2(_detection_args(source, out, "--v2-variants", "A1,A2", "--resume"))
+    return code, capsys.readouterr().err
+
+
+def test_a_checkpoint_from_the_old_fingerprint_format_is_refused_saying_so(tmp_path: Path, monkeypatch,
+                                                                         capsys) -> None:
+    code, err = _resume_with_saved_fingerprint(tmp_path, monkeypatch, capsys,
+                                               lambda fp: fp.pop("detector_system_prompt"))
+    assert code == 1 and "formato da impressão digital mudou" in err
+
+
+def test_a_changed_prompt_with_the_same_format_is_refused_as_before(tmp_path: Path, monkeypatch, capsys) -> None:
+    code, err = _resume_with_saved_fingerprint(tmp_path, monkeypatch, capsys,
+                                               lambda fp: fp.update(detector_system_prompt="0" * 64))
+    assert code == 1 and "configuração, prompt ou fontes mudaram" in err

@@ -60,6 +60,7 @@ from research_pipeline.verify.agent_scan import agent_verifier
 from research_pipeline.verify.levels import consolidate, level_summary
 from research_pipeline.verify.healing import HEAL_MODES, build_healer
 from research_pipeline.verify.loop import run_verify
+from research_pipeline.hypothesis_cap import cap_per_function
 from research_pipeline.v2_evaluator import evaluate_detection
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.verify.rules import ALL_RULES
@@ -289,6 +290,9 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="JSON",
         help="Variante A13: gabarito de onde saem os exemplos (funções em funcao_com_bug/ ao lado dele).",
     )
+    parser.add_argument("--max-hypotheses-per-function", type=_positive_int, default=None, metavar="N",
+                        help="Envia ao ESBMC só as N primeiras expressões distintas de cada função, na ordem "
+                             "em que o LLM as escreveu (padrão: sem limite). As outras ficam no relatório.")
     parser.add_argument("--example-k", type=_positive_int, default=3, metavar="K",
                         help="Variante A13: quantos exemplos por função (padrão: 3).")
     parser.add_argument(
@@ -493,9 +497,8 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
             (REPO_ROOT / "src/research_pipeline/prompts/input_spec_prompt.txt").read_bytes()
         ).hexdigest(),
     }
-    # Only for A13 onwards, which keeps the fingerprint of earlier variants as it was. That no longer makes old
-    # checkpoints resume: config always carries spec_context and the spec prompt changed on 16/10.
-    if {"A13", "A14", "A15"} & set(variants):
+    # The composed prompt covers every v2_variants/*.txt a variant reads; with no variant it is system_prompt_v2.txt.
+    if variants:
         system = load_system_prompt(include_smells=False, v2_detection=True, v2_variants=variants)
         fingerprint["detector_system_prompt"] = sha256(system.encode()).hexdigest()
     if "A15" in variants:
@@ -873,6 +876,9 @@ def mode_v2(args: argparse.Namespace) -> int:
         "llm_timeout": args.llm_timeout,
         "esbmc_command": args.esbmc_command or ["esbmc"],
     }
+    if args.max_hypotheses_per_function:
+        # Only when given, like fixed_sources: verify_results are indexed by the capped list.
+        config["max_hypotheses_per_function"] = args.max_hypotheses_per_function
     if args.fixed_sources:
         # Only when given, so a run without it keeps the same fingerprint (no pre-16/10 checkpoint resumes).
         config["fixed_sources"] = args.fixed_sources
@@ -886,7 +892,12 @@ def mode_v2(args: argparse.Namespace) -> int:
             print(f"Checkpoint V2 não encontrado: {checkpoint_path}", file=sys.stderr)
             return 1
         checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
-        if checkpoint.get("fingerprint") != fingerprint:
+        saved = checkpoint.get("fingerprint") or {}
+        if set(saved) != set(fingerprint):
+            print("Não é seguro retomar a V2: o formato da impressão digital mudou (desde 04/11 ela inclui o "
+                  "texto de prompt de toda variante). Rode de novo, sem --resume, em outra pasta.", file=sys.stderr)
+            return 1
+        if saved != fingerprint:
             print("Não é seguro retomar a V2: configuração, prompt ou fontes mudaram.", file=sys.stderr)
             return 1
     else:
@@ -1017,6 +1028,12 @@ def mode_v2(args: argparse.Namespace) -> int:
             capture_telemetry()
             _save_checkpoint(checkpoint_path, checkpoint)
 
+    capped: list[Candidate] = []
+    if args.max_hypotheses_per_function and args.v2_stage != "synthesis":
+        candidates, capped = cap_per_function(candidates, args.max_hypotheses_per_function)
+        print(f"Limite de {args.max_hypotheses_per_function} por função: {len(capped)} hipótese(s) fora da fila.")
+    capped_dicts = [_v2_candidate_dict(c) for c in capped]
+
     if detection_errors:
         checkpoint["status"] = "partial_detection"
         checkpoint["detection_errors"] = detection_errors
@@ -1037,6 +1054,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "failed_units": len(detection_errors),
                     "errors": detection_errors,
                     "candidates": [_v2_candidate_dict(c) for c in candidates],
+                    "capped_candidates": capped_dicts,
                     "rejected_findings": rejected_findings,
                     "trace": detection_trace,
                     "trace_summary": _summarize_detection_trace(detection_trace),
@@ -1065,6 +1083,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "failed_units": 0,
                     "errors": [],
                     "candidates": [_v2_candidate_dict(c) for c in candidates],
+                    "capped_candidates": capped_dicts,
                     "rejected_findings": rejected_findings,
                     "trace": detection_trace,
                     "trace_summary": _summarize_detection_trace(detection_trace),
@@ -1098,6 +1117,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             "hypotheses": len(candidates),
             "failed_units": len(detection_errors),
             "candidates": [_v2_candidate_dict(c) for c in candidates],
+            "capped_candidates": capped_dicts,
             "rejected_findings": rejected_findings,
             "trace_summary": _summarize_detection_trace(detection_trace),
         },

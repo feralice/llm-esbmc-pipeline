@@ -40,3 +40,28 @@ def test_unconfirmed_hypothesis_does_not_count_end_to_end():
 def test_summarize_keeps_verdicts_outside_the_engine_list():
     summary = summarize([{"verdict": "AGENT_FAILED"}, {"verdict": "CONFIRMED_SIMPLIFIED"}])
     assert summary["by_verdict"]["AGENT_FAILED"] == 1 and summary["by_verdict"]["CONFIRMED_SIMPLIFIED"] == 1
+
+
+def _other_failure(line, target_range=(10, 20), function="cli_bool_option"):
+    return {**_result("OTHER_FAILURE", 1, expression="param.lower()", function=function),
+            "replay": {"status": "other_failure", "line": line, "target_range": list(target_range)}}
+
+
+def test_an_other_failure_inside_the_function_gets_its_own_bucket():
+    results = [_other_failure(12), _other_failure(30), _other_failure(12, target_range=(0, 0)),
+               _result("NOT_CONFIRMED", 1)]
+    assert summarize(results)["same_function_other_line"] == 1
+    assert summarize(results)["by_verdict"]["OTHER_FAILURE"] == 3
+
+
+def test_the_bucket_counts_the_bug_apart_and_leaves_the_main_metric_alone():
+    candidates = [Candidate(str(DETECTION), "cli_bool_option", "", expression="param.lower()")]
+    evaluation = evaluate_verify([_other_failure(12)], candidates, GT, [DETECTION], [])
+    assert evaluation["confirmed_by_location"]["location"]["tp"] == 0
+    assert evaluation["same_function_other_line"] == {"hypotheses": 1, "bugs": 1, "bugs_not_confirmed_at_line": 1,
+                                                      "bug_ids": ["av_real_01"]}
+    both = evaluate_verify([_other_failure(12), _result("CONFIRMED", 1)], candidates, GT, [DETECTION], [])
+    assert both["confirmed_by_location"]["expression"]["tp"] == 1
+    assert both["same_function_other_line"]["bugs_not_confirmed_at_line"] == 0
+    elsewhere = evaluate_verify([_other_failure(12, function="other")], candidates, GT, [DETECTION], [])
+    assert elsewhere["same_function_other_line"]["bugs"] == 0

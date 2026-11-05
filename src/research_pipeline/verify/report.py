@@ -6,11 +6,23 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from research_pipeline.v2_evaluator import _bug_detection_metrics, evaluate_detection
+from research_pipeline.v2_evaluator import (
+    _bug_detection_metrics,
+    at_bug_line,
+    evaluate_detection,
+)
 
-from .outcome import CHECKED, CONFIRMED, VALUE_CONFIRMED, VERDICTS
+from .outcome import CHECKED, CONFIRMED, OTHER_FAILURE, VALUE_CONFIRMED, VERDICTS
 
 MAX_CALLS = 3
+
+
+def failed_in_function(result: dict) -> bool:
+    """An OTHER_FAILURE whose replay raised inside the hypothesis's function, at a line other than its own."""
+    replay = result.get("replay") or {}
+    line, span = replay.get("line"), replay.get("target_range")
+    return (result["verdict"] == OTHER_FAILURE and isinstance(line, int) and bool(span) and bool(span[1])
+            and span[0] <= line <= span[1])
 
 
 def summarize(results: list[dict]) -> dict:
@@ -27,6 +39,8 @@ def summarize(results: list[dict]) -> dict:
         # The engine's verdicts always listed; any other (the agent's) only when it occurs.
         "by_verdict": {**{verdict: counts.get(verdict, 0) for verdict in VERDICTS},
                        **{verdict: n for verdict, n in counts.items() if verdict not in VERDICTS}},
+        # Inside by_verdict's OTHER_FAILURE, never added to CONFIRMED.
+        "same_function_other_line": sum(failed_in_function(r) for r in results),
         "reached_llm": len(reached),
         "success_at_k": success,
     }
@@ -55,6 +69,27 @@ def _confirmed_by_location(results: list[dict], verdict: str, items: list[dict],
     return metrics
 
 
+def _bugs_hit(results: list[dict], items: list[dict], base: Path, *, at_line: bool) -> set[str]:
+    def hits(item: dict, hypothesis: dict) -> bool:
+        if str(Path(hypothesis["file"]).resolve()) != str((base / item["detection_file"]).resolve()):
+            return False
+        if at_line:
+            return at_bug_line(hypothesis, item)
+        return hypothesis["function"] in {f.strip() for f in str(item.get("function", "")).split("/")}
+
+    return {str(item["id"]) for item in items if item.get("categories")
+            and any(hits(item, r["hypothesis"]) for r in results)}
+
+
+def _same_function_other_line(results: list[dict], items: list[dict], base: Path) -> dict:
+    """Labelled bugs whose function failed under ESBMC and the replay at another line than the hypothesis."""
+    other = [r for r in results if failed_in_function(r)]
+    bugs = _bugs_hit(other, items, base, at_line=False)
+    confirmed = _bugs_hit([r for r in results if r["verdict"] == CONFIRMED], items, base, at_line=True)
+    return {"hypotheses": len(other), "bugs": len(bugs), "bugs_not_confirmed_at_line": len(bugs - confirmed),
+            "bug_ids": sorted(bugs)}
+
+
 def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: str | Path,
                 evaluated_sources: list, rejected_findings: list[dict]) -> dict:
     detection = evaluate_detection(candidates=candidates, ground_truth_path=ground_truth_path,
@@ -66,4 +101,6 @@ def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: st
         "confirmed_by_location": _confirmed_by_location(results, CONFIRMED, items, base),
         # Kept apart: a wrong-result confirmation rests on an LLM-written property and the fixed-version control.
         "value_confirmed_by_location": _confirmed_by_location(results, VALUE_CONFIRMED, items, base),
+        # A separate bucket: the main metric stays confirmed_by_location.
+        "same_function_other_line": _same_function_other_line(results, items, base),
     }
