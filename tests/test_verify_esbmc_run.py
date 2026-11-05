@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from research_pipeline.models import ESBMCDirectResult
-from research_pipeline.verify.esbmc_run import check
+from research_pipeline.verify.esbmc_run import ESCALATED_TIMEOUT, check
 
 UNWIND = ("violation_found", ["unwinding assertion loop 3"])
 BUG = ("violation_found", ["uncaught exception: ZeroDivisionError"])
@@ -143,11 +143,12 @@ def _partial_timeout_runner(record_file):
 
     def run(path, *, esbmc_command, bound, timeout_seconds, output_dir, bound_flags, extra_flags):
         calls.append((extra_flags or [""])[0])
+        run.timeouts.append(timeout_seconds)
         record = {"kind": "uncaught exception: ZeroDivisionError", "file": record_file}
         return ESBMCDirectResult(source_file=str(path), status="timeout", command=["esbmc"], returncode=None,
                                  summary="timeout", stdout=PARTIAL_LOG,
                                  details={"violated_property_records": [record]})
-    run.calls = calls
+    run.calls, run.timeouts = calls, []
     return run
 
 
@@ -157,8 +158,39 @@ def test_timeout_with_a_target_counterexample_is_read_as_a_partial_violation(tmp
                             work_dir=tmp_path, runner=runner)
     assert reading.kind == "violation" and reading.exceptions == {"ZeroDivisionError"}
     assert how["partial_timeout"] is True
-    # The fallback solvers still run first: a full verdict always beats a partial one.
-    assert runner.calls == ["", "--boolector", "--z3"]
+    # The fallback solvers still run first: a full verdict always beats a partial one. Then one rerun
+    # at ESCALATED_TIMEOUT with the solver that printed the counterexample last.
+    assert runner.calls == ["", "--boolector", "--z3", "--z3"]
+    assert runner.timeouts == [1, 1, 1, ESCALATED_TIMEOUT]
+    assert "timeout_escalated" not in how
+
+
+def test_a_partial_counterexample_earns_one_longer_run_that_can_finish(tmp_path):
+    partial = _partial_timeout_runner("p.py")
+    full = _runner(BUG)
+
+    def run(path, **kwargs):
+        return full(path, **kwargs) if kwargs["timeout_seconds"] == ESCALATED_TIMEOUT else partial(path, **kwargs)
+
+    esbmc, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=180,
+                                work_dir=tmp_path, runner=run)
+    assert reading.kind == "violation" and esbmc.status == "violation_found"
+    assert how == {"unwind": 5, "timeout_escalated": ESCALATED_TIMEOUT, "solver": "--z3"}
+
+
+@pytest.mark.parametrize("seconds", [ESCALATED_TIMEOUT, 900])
+def test_no_escalation_at_or_above_the_escalated_timeout(tmp_path, seconds):
+    runner = _partial_timeout_runner("p.py")
+    check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=seconds, work_dir=tmp_path,
+          runner=runner)
+    assert runner.timeouts == [seconds] * 3
+
+
+def test_a_plain_timeout_is_not_escalated(tmp_path):
+    runner = _runner(TIMEOUT, TIMEOUT, TIMEOUT)
+    _, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=180,
+                            work_dir=tmp_path, runner=runner)
+    assert reading.kind == "timeout" and len(runner.calls) == 3 and "timeout_escalated" not in how
 
 
 def test_partial_counterexample_outside_the_program_stays_a_timeout(tmp_path):

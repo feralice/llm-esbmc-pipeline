@@ -30,14 +30,14 @@ em relação ao `4a356e33eb` (27/10).
 | `53_pytest_str.py` | gerador de pytest com `str` | ver seção abaixo | mesmo teste gerado de 22/10 | nenhuma |
 | `56_atributo_criado_em_outra_instancia.py` | `a.prev = None` em um objeto, leitura de `b.prev` em outro | `AttributeError` | SUCCESSFUL (falso negativo) | #9836 (aberta em 03/11) |
 | `57_global_nondet_str_lida_em_funcao.py` | função lê `len(s)` de um `s: str = nondet_str()` global | executa | aborta: `Unexpected index type in computer_pointer_offset` | nenhuma ainda |
-| `58_alias_de_funcao_como_argumento.py` | `op = f; f(op(1))`: alias de função chamado dentro de argumento | executa | aborta: `type mismatch: expected code` e core dump | nenhuma ainda |
+| `58_alias_de_funcao_como_argumento.py` | `op = f; f(op(1))`: alias de função chamado dentro de argumento | executa | aborta: `type mismatch: expected code` e core dump | nenhuma (contorno no `verify/compat.py`, regra `compat_function_alias`, desde 04/11) |
 | `60_lista_em_valor_de_dict.py` | `d['p'] = []; d['p'].append("x")` | executa | recusa: `List variable not found:` | #9837 (aberta em 03/11) |
 | `61_or_com_atributo_inexistente.py` | `if nondet_bool() or c.limit:` com `limit` inexistente | executa | aborta: `Can't generate zero for type empty` | #9838 (aberta em 03/11) |
 | `62_or_atributo_inexistente_falso_negativo.py` | `x = False or c.limit` dentro de função | `AttributeError` | SUCCESSFUL (falso negativo) | #9838 (aberta em 03/11) |
 | `63_getitem_tupla_em_atributo.py` | `fr.loc[0, 1]` com `__getitem__` na classe do atributo | executa | segfault no encoder (exit 139); com chave escalar, FAILED falso | #9839 (aberta em 03/11) |
 | `64_lambda_em_metodo.py` | `apply(lambda p: p + 1, 1)` dentro de um método | executa | recusa: `Variable 'p' is not defined in function 'lam1'` | #9840 (aberta em 03/11) |
 | `65_parametro_reatribuido_dict_get.py` | parâmetro `k` reatribuído a `d.get(k)` | executa | `Member 'is_none' is not a field of pointer_struct` e `SMT solver failed` | rascunho: `issues/65_param_reassigned_optional.md` |
-| `66_desempacotar_getitem_de_atributo.py` | `a, b = n.m[0]` com `__getitem__` na classe do atributo | executa | recusa: `Cannot unpack pointer` | rascunho: `issues/66_unpack_getitem_on_attribute.md` (tem contorno) |
+| `66_desempacotar_getitem_de_atributo.py` | `a, b = n.m[0]` com `__getitem__` na classe do atributo | executa | recusa: `Cannot unpack pointer` | rascunho: `issues/66_unpack_getitem_on_attribute.md` (contorno no `verify/compat.py`, regra `compat_attribute_item`, desde 04/11) |
 | `67_parametro_de_metodo_float_sem_anotacao.py` | `int(tnow - 1.5)` com `tnow` parâmetro de método sem anotação, chamado por `self.g(...)` | executa | SIGSEGV (exit 139); com `--z3`, `rm and fp sorts expected` | #9841 (aberta em 03/11) |
 | `68_percent_precisao_operando_nao_constante.py` | `"v %.1f" % x` com `x: float` | executa | recusa: `non-constant argument in str % formatting` | #9842 (aberta em 03/11) |
 | `69_tupla_opcional_comparada.py` | elemento de `Optional[tuple[float, float]]` anotado e atribuído num ramo, comparado | executa | Bitwuzla `term with unexpected sort` (exit 70); `--z3`: `Sorts Optional_struct` | #9843 (aberta em 03/11) |
@@ -115,7 +115,10 @@ a linha responsável é a do `symex_dead`: o DEAD de uma variável local passou 
 membros (`value_set.erase_object`). Voltando só essa linha para `value_set.erase`, o teste passa de novo.
 
 Consequência para o pipeline: as regras `none_guards_*` do `verify/compat.py` contornam falsos negativos que
-o master já não tem (25, 26, 39). Vale remedir o filtro antes de removê-las.
+o master já não tem (25, 26, 39). Remedido em 04/11 no `d520a903ae` (`docs/experimentos/melhorias_2026-11-04/lote_C.md`):
+saíram as guardas de `in`, comparação de ordem e aritmética (sondas aceitas e os mesmos vereditos nos 19 casos reais
+medidos). Ficam a de atributo (o ESBMC ainda perde o `AttributeError` de método chamado no fim de uma cadeia de
+campos, sonda nova `none_metodo_cadeia`; sem a guarda, 3 confirmações caem), a de índice e a de `len`/`int`/`float`.
 
 ## Casos do dataset afetados
 

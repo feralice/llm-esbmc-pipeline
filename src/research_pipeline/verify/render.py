@@ -8,9 +8,11 @@ from dataclasses import dataclass, replace
 
 from .astutil import expression_nodes, find_function, undefined_globals
 from .compat import (
+    CLOCK_MODEL,
     NONE_GUARDS,
     cut_after_suspect,
     drop_project_decorators,
+    nondet_clock,
     none_guards,
     remove_unused,
     rename_builtin_named_methods,
@@ -23,6 +25,7 @@ from .rules import (
     ALL_RULES,
     BUILTIN_NAMED_METHODS,
     CONDITIONAL_ASSIGNMENTS,
+    NONDET_CLOCK,
     NONE_GUARD_KINDS,
     PROJECT_DECORATORS,
 )
@@ -507,13 +510,15 @@ def render_program(grounded: Grounded, spec: InputSpec, rules: frozenset[str] = 
     never_none = {key for key, text in input_types(spec, grounded).items()
                   if (shape := parse_type(text)) is not None and not shape.optional and shape.kind != "none"}
     rewritten, guards = none_guards(rewritten, target, rewritten_spans, never_none, kinds=rules & NONE_GUARD_KINDS)
-    compat += [*renamed, *cut, *unused, *guards]
-    if guards:
+    rewritten, clock = nondet_clock(rewritten) if NONDET_CLOCK in rules else (rewritten, [])
+    compat += [*renamed, *cut, *unused, *guards, *clock]
+    prelude = [*(NONE_GUARDS if guards else ()), *(CLOCK_MODEL if clock else ())]
+    if prelude:
         # Into both copies (blank in the replay) after the leading import, like the exception stubs:
         # the lines still match.
-        k = len(NONE_GUARDS)
+        k = len(prelude)
         head = len("from typing import Optional\n") if rewritten.startswith("from typing import Optional\n") else 0
-        rewritten = rewritten[:head] + "\n".join(NONE_GUARDS) + "\n" + rewritten[head:]
+        rewritten = rewritten[:head] + "\n".join(prelude) + "\n" + rewritten[head:]
         replay = replay[:head] + "\n" * k + replay[head:]
         driver_start, target_range = driver_start + k, (target_range[0] + k, target_range[1] + k)
         spans, rewritten_spans = _shifted(spans, k), _shifted(rewritten_spans, k)

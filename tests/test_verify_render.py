@@ -8,6 +8,7 @@ from research_pipeline.verify.render import RenderError, render_program
 from research_pipeline.verify.rules import (
     ALL_RULES,
     BUILTIN_NAMED_METHODS,
+    NONDET_CLOCK,
     NONE_GUARD_KINDS,
 )
 from research_pipeline.verify.spec import InputSpec
@@ -247,6 +248,8 @@ def test_builtin_named_rule_off_keeps_the_method_name():
 def test_none_guards_follow_the_enabled_rules():
     grounded = _ground("ratio", "total // count")
     spec = InputSpec({"total": "Optional[int]", "count": "int"}, {}, ())
+    assert "_esbmc_none_type" not in render_program(grounded, spec, rules=ALL_RULES).source
+    grounded = ground(BugHypothesis("x.py", "ratio", "int(total)"), "def ratio(total, count):\n    return int(total)\n")
     assert "_esbmc_none_type(total is None)" in render_program(grounded, spec).source
     off = render_program(grounded, spec, rules=ALL_RULES - NONE_GUARD_KINDS)
     assert "_esbmc_none_type" not in off.source
@@ -260,3 +263,18 @@ def test_a_parameter_typed_none_is_annotated_None():
     program = render_program(grounded, InputSpec({"tasks": "int", "factory": "None"}, {}, ()))
     assert "factory: None=None" in program.source
     assert "none" not in program.source.replace("None", "")
+
+
+def test_the_esbmc_copy_reads_the_nondet_clock_and_the_replay_the_real_one():
+    source = "import time\n\n\ndef waited(start):\n    return 10 // int(time.time() - start)\n"
+    grounded = ground(BugHypothesis("x.py", "waited", "10 // int(time.time() - start)"), source)
+    program = render_program(grounded, InputSpec({"start": "float"}, {}, ()))
+    assert "_esbmc_clock() - start" in program.source and "def _esbmc_clock() -> float:" in program.source
+    assert "time.time() - start" in program.replay_source and "_esbmc_clock" not in program.replay_source
+    assert len(program.source.splitlines()) == len(program.replay_source.splitlines())
+    lines, replay = program.source.splitlines(), program.replay_source.splitlines()
+    assert [lines[a - 1].strip() for a, _ in program.target_spans] == ["return 10 // int(_esbmc_clock() - start)"]
+    assert [replay[a - 1].strip() for a, _ in program.replay_target_spans] == ["return 10 // int(time.time() - start)"]
+    assert any(t.startswith("nondet_clock") for t in program.transforms)
+    off = render_program(grounded, InputSpec({"start": "float"}, {}, ()), rules=ALL_RULES - {NONDET_CLOCK})
+    assert "_esbmc_clock" not in off.source

@@ -28,6 +28,9 @@ Runner = Callable[..., ESBMCDirectResult]
 # ESBMC's string model loops once per character: a nondet string needs more unwinding than the program's
 # own loops, and raising every loop to that bound is what timed out (fast_float, 2026-10-28).
 LIBRARY_UNWIND = 64
+# A run killed after printing the target exception gets one rerun this long: at 300 s the three GPS
+# programs that timed out at 180 s reached a full verdict (RESULTADOS_MELHORIAS_PIPELINE_PGENE601_2026-11-03).
+ESCALATED_TIMEOUT = 300
 _LOOP = re.compile(r"goto-loop Loop \d+ \(([^():]+:\d+)\):\s*\n\s*file (\S+)")
 
 
@@ -91,7 +94,8 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
     library: list[str] = []
     partial_timeout: tuple[ESBMCDirectResult, EsbmcReading, str] | None = None
 
-    def run(unwind: int, solver: str = "", tag_suffix: str = "") -> tuple[ESBMCDirectResult, EsbmcReading]:
+    def run(unwind: int, solver: str = "", tag_suffix: str = "",
+            seconds: int = timeout_seconds) -> tuple[ESBMCDirectResult, EsbmcReading]:
         tag = f"esbmc_unwind{unwind}{solver.replace('--', '_')}{tag_suffix}"
         unbounded = solver in _UNBOUNDED
         bound_flags = [] if unbounded else ["--unwind", str(unwind)]
@@ -99,7 +103,7 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
         # Incremental BMC and k-induction raise every loop themselves; a fixed library bound would cap them.
         if library and not unbounded:
             extra += ["--unwindsetname", ",".join(f"{loop}:{LIBRARY_UNWIND}" for loop in library)]
-        result = runner(path, esbmc_command=esbmc_command, bound=unwind, timeout_seconds=timeout_seconds,
+        result = runner(path, esbmc_command=esbmc_command, bound=unwind, timeout_seconds=seconds,
                         output_dir=Path(work_dir) / tag, bound_flags=bound_flags, extra_flags=extra or None)
         return result, classify_esbmc(result)
 
@@ -151,6 +155,18 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
             if result_reading.kind in VERDICT_KINDS:
                 esbmc, reading, how = result, result_reading, {**how, "solver": solver}
                 break
+    if reading.kind == "timeout" and partial_timeout is not None and timeout_seconds < ESCALATED_TIMEOUT \
+            and isinstance(how["unwind"], int):
+        # Only here, never as the global bound: the exception is already in the log, the rest is the solver.
+        result, result_reading = run(how["unwind"], partial_timeout[2], f"_{ESCALATED_TIMEOUT}s", ESCALATED_TIMEOUT)
+        if result_reading.kind in VERDICT_KINDS:
+            esbmc, reading = result, result_reading
+            how = {**how, "timeout_escalated": ESCALATED_TIMEOUT,
+                   **({"solver": partial_timeout[2]} if partial_timeout[2] else {})}
+        else:
+            partial = _partial_exception_violation(result, path)
+            if partial is not None:
+                partial_timeout = (result, partial, partial_timeout[2])
     if reading.kind == "timeout" and partial_timeout is not None:
         esbmc, partial_reading, solver = partial_timeout
         reading = partial_reading

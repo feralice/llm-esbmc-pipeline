@@ -13,13 +13,12 @@ import ast
 from .astutil import find_function
 from .rules import (
     ALL_RULES,
+    ATTRIBUTE_ITEM,
+    FUNCTION_ALIAS,
     METHOD_ALIAS,
-    NONE_ARITHMETIC,
     NONE_ATTRIBUTE,
     NONE_CALL,
     NONE_GUARD_KINDS,
-    NONE_MEMBERSHIP,
-    NONE_ORDERING,
     NONE_SUBSCRIPT,
     PERCENT_FORMAT,
     REBOUND_PARAMETER,
@@ -308,6 +307,128 @@ def _rebound_parameter_edits(tree: ast.Module) -> list[tuple[int, int, int, int,
     return edits
 
 
+def _annotated_class(annotation: ast.expr | None) -> str:
+    if isinstance(annotation, ast.Constant) and isinstance(annotation.value, str):
+        return annotation.value
+    return annotation.id if isinstance(annotation, ast.Name) else ""
+
+
+def _attribute_classes(tree: ast.Module) -> dict[str, str]:
+    """Attribute name -> the one class every binding of it is annotated with (``m: M = ...`` in a class
+    body, ``self.m: M = ...``). An attribute also bound without that annotation gets none."""
+    found: dict[str, set[str]] = {}
+    annotated = {id(n.target): n.annotation for n in ast.walk(tree) if isinstance(n, ast.AnnAssign)}
+    for cls in (n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)):
+        for statement in cls.body:
+            for target in getattr(statement, "targets", [getattr(statement, "target", None)]):
+                for name in ast.walk(target) if target is not None else ():
+                    if isinstance(name, ast.Name):
+                        found.setdefault(name.id, set()).add(_annotated_class(annotated.get(id(name))))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and isinstance(node.ctx, (ast.Store, ast.Del)):
+            found.setdefault(node.attr, set()).add(_annotated_class(annotated.get(id(node))))
+    return {attr: next(iter(classes)) for attr, classes in found.items() if len(classes) == 1 and "" not in classes}
+
+
+def _attribute_item_edits(tree: ast.Module, source: str) -> list[tuple[int, int, int, int, str]]:
+    """``a, b = n.m[k]`` with ``m`` an instance of a class that defines ``__getitem__``: ESBMC refuses
+    to unpack it ("Cannot unpack pointer", possiveis_problemas/66, dz_real_04) but accepts the same
+    subscript of an annotated local, ``t: M = n.m; a, b = t[k]``, which CPython evaluates in the
+    same order. Only for a class nothing subclasses, so the annotation names the exact class."""
+    if any(isinstance(node, ast.Name) and node.id in {"setattr", "delattr", "__dict__", *_SCOPE_TRICKS}
+           for node in ast.walk(tree)):
+        return []
+    classes = {n.name: n for n in tree.body if isinstance(n, ast.ClassDef)}
+    subclassed = {base.id for cls in classes.values() for base in cls.bases if isinstance(base, ast.Name)}
+    indexable = {name for name, cls in classes.items() if name not in subclassed and any(
+        isinstance(m, ast.FunctionDef) and m.name == "__getitem__" for m in cls.body)}
+    typed = {attr: cls for attr, cls in _attribute_classes(tree).items() if cls in indexable}
+    if not typed:
+        return []
+    taken = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+    in_class_body = {id(s) for cls in ast.walk(tree) if isinstance(cls, ast.ClassDef) for s in cls.body}
+    lines = source.splitlines()
+    edits = []
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Assign) and len(node.targets) == 1
+                and isinstance(node.targets[0], (ast.Tuple, ast.List))
+                and isinstance(node.value, ast.Subscript) and isinstance(node.value.value, ast.Attribute)
+                and node.value.value.attr in typed and id(node) not in in_class_body
+                and not lines[node.lineno - 1].encode("utf-8")[:node.col_offset].strip()):
+            continue
+        attribute = node.value.value
+        local = f"_esbmc_item{len(edits) // 2 + 1}"
+        while local in taken:
+            local += "_"
+        taken.add(local)
+        text = ast.get_source_segment(source, attribute)
+        if text is None or "\n" in text:
+            continue
+        edits.append((attribute.lineno, attribute.col_offset, attribute.end_lineno, attribute.end_col_offset, local))
+        edits.append((node.lineno, node.col_offset, node.lineno, node.col_offset,
+                      f"{local}: {typed[attribute.attr]} = {text}; "))
+    return edits
+
+
+def _runs_no_code(statement: ast.stmt) -> bool:
+    """Defining it calls nothing but nondet_* (the harness's stubs and constants)."""
+    if isinstance(statement, (ast.Import, ast.ImportFrom)):
+        return True
+    if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        return not statement.decorator_list and not any(
+            isinstance(n, ast.Call) for d in statement.args.defaults + statement.args.kw_defaults if d
+            for n in ast.walk(d))
+    if isinstance(statement, ast.ClassDef):
+        return not statement.decorator_list and all(_runs_no_code(s) for s in statement.body)
+    if isinstance(statement, ast.Expr):
+        return isinstance(statement.value, ast.Constant)
+    if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.Pass)):
+        return all(isinstance(n.func, ast.Name) and n.func.id.startswith("nondet_")
+                   for n in ast.walk(statement) if isinstance(n, ast.Call))
+    return False
+
+
+def _binding_counts(tree: ast.Module) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for node in ast.walk(tree):
+        names: list[str] = []
+        if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)):
+            names = [node.id]
+        elif isinstance(node, ast.arg):
+            names = [node.arg]
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names = [node.name]
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            names = [(alias.asname or alias.name).split(".")[0] for alias in node.names]
+        elif isinstance(node, (ast.Global, ast.Nonlocal)):
+            names = [*node.names, *node.names]
+        for name in names:
+            counts[name] = counts.get(name, 0) + 1
+    return counts
+
+
+def _function_alias_edits(tree: ast.Module) -> list[tuple[int, int, int, int, str]]:
+    """``op = f`` at module level, then ``g(op(1))``: ESBMC aborts on the call through the alias
+    ("type mismatch: expected code", possiveis_problemas/58, bip_pandas_7) and accepts ``g(f(1))``.
+    Exact when both names are bound once and nothing that runs before the alias could call it."""
+    if any(isinstance(node, ast.Name) and node.id in _SCOPE_TRICKS for node in ast.walk(tree)):
+        return []
+    counts = _binding_counts(tree)
+    functions = {n.name for n in tree.body if isinstance(n, ast.FunctionDef) and not n.decorator_list}
+    aliases: dict[str, str] = {}
+    for statement in tree.body:
+        if (isinstance(statement, ast.Assign) and len(statement.targets) == 1
+                and isinstance(statement.targets[0], ast.Name) and isinstance(statement.value, ast.Name)
+                and statement.value.id in functions and counts.get(statement.targets[0].id) == 1
+                and counts.get(statement.value.id) == 1):
+            aliases[statement.targets[0].id] = statement.value.id
+        elif not _runs_no_code(statement):
+            break
+    return [(node.func.lineno, node.func.col_offset, node.func.end_lineno, node.func.end_col_offset,
+             aliases[node.func.id]) for node in ast.walk(tree)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in aliases]
+
+
 def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | None = None,
                    rules: frozenset[str] = ALL_RULES) -> tuple[str, list[str]]:
     try:
@@ -317,14 +438,22 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
     percent = _percent_format_edits(tree, parameter_types or {}) if PERCENT_FORMAT in rules else []
     aliases = _method_alias_edits(tree) if METHOD_ALIAS in rules else []
     renames = _rebound_parameter_edits(tree) if REBOUND_PARAMETER in rules else []
-    if not percent and not aliases and not renames:
+    items = _attribute_item_edits(tree, source) if ATTRIBUTE_ITEM in rules else []
+    calls = _function_alias_edits(tree) if FUNCTION_ALIAS in rules else []
+    if not percent and not aliases and not renames and not items and not calls:
         return source, []
     offsets = [0]
     for line in source.splitlines(keepends=True):
         offsets.append(offsets[-1] + len(line.encode("utf-8")))
     # A rename inside a rewritten % expression would be lost: the percent edit replaces its whole span.
     renames = [r for r in renames if not any(p[:2] <= r[:2] and r[2:4] <= p[2:4] for p in percent)]
-    edits = [*percent, *((line, start, line, end, text) for line, start, end, text in aliases), *renames]
+    # The alias local copies the attribute's text: no other edit may touch that statement.
+    touched = {line for line, *_ in [*percent, *aliases, *renames, *calls]}
+    pairs = [items[i:i + 2] for i in range(0, len(items), 2)]
+    items = [e for pair in pairs if not {e[0] for e in pair} & touched for e in pair]
+    calls = [c for c in calls if not any(p[:2] <= c[:2] and c[2:4] <= p[2:4] for p in percent)]
+    edits = [*percent, *((line, start, line, end, text) for line, start, end, text in aliases), *renames,
+             *items, *calls]
     raw = source.encode("utf-8")
     for line, start, end_line, end, text in sorted(edits, reverse=True):
         raw = raw[:offsets[line - 1] + start] + text.encode("utf-8") + raw[offsets[end_line - 1] + end:]
@@ -333,6 +462,10 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
         transforms.append(f"compat_method_alias:{len(aliases)}")
     if renames:
         transforms.append(f"{REBOUND_PARAMETER}:{len({text for *_, text in renames})}")
+    if items:
+        transforms.append(f"{ATTRIBUTE_ITEM}:{len(items) // 2}")
+    if calls:
+        transforms.append(f"{FUNCTION_ALIAS}:{len(calls)}")
     return raw.decode("utf-8"), transforms
 
 
@@ -485,8 +618,6 @@ NONE_GUARDS = (
     "",
 )
 _TYPE_CALLS = frozenset({"len", "int", "float"})
-_ORDERING = (ast.Lt, ast.LtE, ast.Gt, ast.GtE)
-_ARITHMETIC = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.Pow)
 
 
 def _is_chain(node: ast.expr, names: set[str], receiver: str | None) -> bool:
@@ -531,14 +662,6 @@ def _guarded_values(evaluated: list[ast.AST], names: set[str], receiver: str | N
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _TYPE_CALLS \
                 and len(node.args) == 1 and _chain(node.args[0]):
             found.append((node.args[0], "_esbmc_none_type", NONE_CALL))
-        elif isinstance(node, ast.Compare):
-            op, right = node.ops[0], node.comparators[0]
-            if isinstance(op, (ast.In, ast.NotIn)) and _chain(right):
-                found.append((right, "_esbmc_none_type", NONE_MEMBERSHIP))
-            elif isinstance(op, _ORDERING):
-                found += [(side, "_esbmc_none_type", NONE_ORDERING) for side in (node.left, right) if _chain(side)]
-        elif isinstance(node, ast.BinOp) and isinstance(node.op, _ARITHMETIC):
-            found += [(side, "_esbmc_none_type", NONE_ARITHMETIC) for side in (node.left, node.right) if _chain(side)]
     return found
 
 
@@ -574,8 +697,7 @@ def none_guards(source: str, function: str, spans: tuple[tuple[int, int], ...],
                 never_none: frozenset[str] | set[str] = frozenset(),
                 kinds: frozenset[str] = NONE_GUARD_KINDS) -> tuple[str, list[str]]:
     """Before the suspect statement, raise what CPython raises when a value it uses unconditionally is
-    None: AttributeError for an attribute, TypeError for ``in``, indexing, ``len``/``int``/``float``,
-    ordering and arithmetic. ``never_none`` names inputs (``x``, ``self.x``) whose type excludes None;
+    None: AttributeError for an attribute, TypeError for indexing and ``len``/``int``/``float``. ``never_none`` names inputs (``x``, ``self.x``) whose type excludes None;
     on any other value that is never None a guard is a no-op. ``kinds`` names the rules
     (rules.NONE_GUARD_KINDS) whose guards are kept."""
     try:
@@ -620,6 +742,53 @@ def none_guards(source: str, function: str, spans: tuple[tuple[int, int], ...],
         row = stmt.lineno - 1
         lines[row] = lines[row][:stmt.col_offset] + "; ".join(calls) + "; " + lines[row][stmt.col_offset:]
     return "\n".join(lines) + "\n", [f"none_guards:{len(calls)}"]
+
+
+# ESBMC's time.time() returns 0.0, 1.0, 2.0... (models/time.py): code that compares clock readings only
+# runs with a clock near zero. This one starts anywhere at or above zero and never goes back. The
+# CPython replay keeps the real clock, so a bug that needs a particular time is not reproduced there.
+CLOCK_MODEL = (
+    "_esbmc_clock_now: float = 0.0",
+    "",
+    "",
+    "def _esbmc_clock() -> float:",
+    "    global _esbmc_clock_now",
+    "    step: float = nondet_float()",
+    "    __ESBMC_assume(step >= 0.0 and step <= 1e10)",
+    "    _esbmc_clock_now = _esbmc_clock_now + step",
+    "    return _esbmc_clock_now",
+    "",
+    "",
+)
+
+
+def nondet_clock(source: str) -> tuple[str, list[str]]:
+    """``time.time()`` (``import time``) and ``time()`` (``from time import time``) become
+    ``_esbmc_clock()``; only where the name is bound by that import alone."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return source, []
+    counts = _binding_counts(tree)
+    modules = {alias.asname or alias.name for node in tree.body if isinstance(node, ast.Import)
+               for alias in node.names if alias.name == "time"}
+    functions = {alias.asname or alias.name for node in tree.body if isinstance(node, ast.ImportFrom)
+                 and node.module == "time" and node.level == 0 for alias in node.names if alias.name == "time"}
+    modules = {name for name in modules if counts.get(name) == 1}
+    functions = {name for name in functions if counts.get(name) == 1}
+    calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call) and not node.args and not node.keywords
+             and ((isinstance(node.func, ast.Attribute) and node.func.attr == "time"
+                   and isinstance(node.func.value, ast.Name) and node.func.value.id in modules)
+                  or (isinstance(node.func, ast.Name) and node.func.id in functions))]
+    if not calls or "_esbmc_clock" in counts:
+        return source, []
+    lines = source.splitlines()
+    for node in sorted(calls, key=lambda n: (n.lineno, n.col_offset), reverse=True):
+        raw = lines[node.lineno - 1].encode("utf-8")
+        end = raw if node.end_lineno == node.lineno else lines[node.end_lineno - 1].encode("utf-8")
+        merged = raw[:node.col_offset] + b"_esbmc_clock()" + end[node.end_col_offset:]
+        lines[node.lineno - 1:node.end_lineno] = [merged.decode("utf-8")] + [""] * (node.end_lineno - node.lineno)
+    return "\n".join(lines) + "\n", [f"nondet_clock:{len(calls)}"]
 
 
 # Methods ESBMC dispatches by name to its list/dict/str model whatever the receiver's class

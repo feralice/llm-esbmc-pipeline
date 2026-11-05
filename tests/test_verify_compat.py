@@ -3,9 +3,11 @@ import ast
 import pytest
 
 from research_pipeline.verify.compat import (
+    CLOCK_MODEL,
     NONE_GUARDS,
     cut_after_suspect,
     drop_project_decorators,
+    nondet_clock,
     none_guards,
     remove_unused,
     rename_builtin_named_methods,
@@ -16,6 +18,8 @@ from research_pipeline.verify.grounding import Grounded, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.rules import (
     ALL_RULES,
+    ATTRIBUTE_ITEM,
+    FUNCTION_ALIAS,
     METHOD_ALIAS,
     NONE_ATTRIBUTE,
     NONE_GUARD_KINDS,
@@ -158,7 +162,7 @@ def test_no_cut_for_a_recursive_function_a_generator_or_a_last_statement():
 
 
 GUARDED = '''def f(node, key, table, count):
-    node.next.prev = table[key] if key in table else count + 1
+    node.next.prev = table[key] if int(key) else count[0]
     return node
 '''
 
@@ -177,9 +181,9 @@ def test_none_guards_raise_what_cpython_raises_before_the_suspect():
     guarded, transforms = none_guards(GUARDED, "f", ((2, 2),))
     assert transforms == ["none_guards:3"]
     assert guarded.splitlines()[1] == ("    _esbmc_none_attribute(node is None); _esbmc_none_attribute(node.next is None); "
-                                       "_esbmc_none_type(table is None); node.next.prev = "
-                                       "table[key] if key in table else count + 1")
-    assert "key is None" not in guarded and "count is None" not in guarded  # only one branch runs
+                                       "_esbmc_none_type(key is None); node.next.prev = "
+                                       "table[key] if int(key) else count[0]")
+    assert "table is None" not in guarded and "count is None" not in guarded  # only one branch runs
 
     class Node:
         next = None
@@ -187,17 +191,17 @@ def test_none_guards_raise_what_cpython_raises_before_the_suspect():
     linked = Node()
     linked.next = Node()
     guarded = "\n".join(NONE_GUARDS) + "\n" + guarded
-    for args in [(None, 1, {}, 0), (Node(), 1, {}, 0), (linked, 1, None, 0), (linked, 1, {}, None),
-                 (linked, 1, {1: 2}, None), (linked, 1, {}, 3)]:
+    for args in [(None, 1, {1: 2}, 0), (Node(), 1, {1: 2}, 0), (linked, None, {}, 0), (linked, 0, {}, None),
+                 (linked, 1, {1: 2}, None), (linked, 0, {}, [3])]:
         assert _raised(guarded, *args) == _raised(GUARDED, *args), args
 
 
 def test_an_if_test_gets_its_guards_inside_and_keeps_its_line():
-    source = "def f(x, n):\n    if '//' in x.url and\\\n            n > 0:\n        return 1\n    return 0\n"
+    source = "def f(x, n):\n    if x.url[0] and\\\n            n > 0:\n        return 1\n    return 0\n"
     guarded, transforms = none_guards(source, "f", ((2, 2),))
     assert transforms == ["none_guards:2"] and len(guarded.splitlines()) == len(source.splitlines())
     assert guarded.splitlines()[1] == ("    if _esbmc_none_attribute(x is None) and _esbmc_none_type(x.url is None) and "
-                                       "bool('//' in x.url and\\")
+                                       "bool(x.url[0] and\\")
     assert guarded.splitlines()[2] == "            n > 0):"
 
 
@@ -207,11 +211,11 @@ def test_operands_that_short_circuit_may_skip_get_no_guard():
 
 
 def test_a_methods_receiver_gets_no_guard_but_its_attributes_do():
-    source = "class K:\n    @classmethod\n    def m(cls, x):\n        return cls.a.b + x.c\n"
+    source = "class K:\n    @classmethod\n    def m(cls, x):\n        return cls.a.b[0], len(x.c)\n"
     guarded, _ = none_guards(source, "K.m", ((4, 4),))
     assert guarded.splitlines()[3] == (
         "        _esbmc_none_attribute(cls.a is None); _esbmc_none_type(cls.a.b is None); "
-        "_esbmc_none_attribute(x is None); _esbmc_none_type(x.c is None); return cls.a.b + x.c")
+        "_esbmc_none_attribute(x is None); _esbmc_none_type(x.c is None); return cls.a.b[0], len(x.c)")
 
 
 def test_unreached_methods_and_display_dunders_leave_the_esbmc_copy():
@@ -342,7 +346,7 @@ def test_rewrite_compat_skips_a_disabled_alias_rule():
 
 
 def test_none_guards_keep_only_the_enabled_kinds():
-    source = "def f(a, xs):\n    y = a.size, 'k' in xs\n    return y\n"
+    source = "def f(a, xs):\n    y = a.size, len(xs)\n    return y\n"
     both, transforms = none_guards(source, "f", ((2, 2),))
     assert "_esbmc_none_attribute(a is None)" in both and "_esbmc_none_type(xs is None)" in both
     assert transforms == ["none_guards:2"]
@@ -353,7 +357,7 @@ def test_none_guards_keep_only_the_enabled_kinds():
 
 
 def test_guards_of_a_for_header_go_inside_its_iterable():
-    source = "def f(total, size, step):\n    for h in range((total - size) // step):\n        pass\n"
+    source = "def f(total, size, step):\n    for h in range(int(total)):\n        pass\n"
     guarded, transforms = none_guards(source, "f", ((2, 2),))
     ast.parse(guarded)
     assert transforms and guarded.splitlines()[1].lstrip().startswith("for h in _esbmc_none_type(")
@@ -387,3 +391,93 @@ def test_the_new_name_avoids_one_already_used():
 def test_rewrite_compat_skips_a_disabled_rebound_rule():
     source = "def f(d, k):\n    k = d.get(k)\n    return k\n"
     assert rewrite_compat(source, rules=ALL_RULES - {REBOUND_PARAMETER}) == (source, [])
+
+
+ITEM = """class M:
+    def __getitem__(self, idx: int) -> tuple[int, int]:
+        return idx, idx + 1
+
+
+class N:
+    m: M = M()
+
+
+def f(n: N, k: int) -> int:
+    a, b = n.m[k]
+    return a + b
+"""
+
+
+def test_unpacking_an_item_of_an_attribute_goes_through_an_annotated_local():
+    rewritten, transforms = rewrite_compat(ITEM)
+    assert rewritten.splitlines()[10] == "    _esbmc_item1: M = n.m; a, b = _esbmc_item1[k]"
+    assert transforms == ["compat_attribute_item:1"] and len(rewritten.splitlines()) == len(ITEM.splitlines())
+    for source in (ITEM, rewritten):
+        namespace: dict = {}
+        exec(source, namespace)  # noqa: S102 - the test's own program
+        assert namespace["f"](namespace["N"](), 3) == 7
+
+
+@pytest.mark.parametrize("change", [
+    ("class N:\n", "class O(M):\n    pass\n\n\nclass N:\n"),             # M has a subclass
+    ("    a, b = n.m[k]\n", "    n.m = M()\n    a, b = n.m[k]\n"),        # m also bound unannotated
+    ("    def __getitem__", "    def get"),                                  # no __getitem__
+    ("    a, b = n.m[k]\n", "    if k: a, b = n.m[k]\n    return 0\n"),   # not alone on its line
+    ("    a, b = n.m[k]\n", "    a, b = n.m[k]\n    setattr(n, 'm', 1)\n"),
+])
+def test_an_attribute_whose_exact_class_is_unknown_is_left_alone(change):
+    source = ITEM.replace(*change)
+    assert not any(t.startswith(ATTRIBUTE_ITEM) for t in rewrite_compat(source)[1])
+
+
+def test_rewrite_compat_skips_a_disabled_attribute_item_rule():
+    assert rewrite_compat(ITEM, rules=ALL_RULES - {ATTRIBUTE_ITEM}) == (ITEM, [])
+
+
+ALIAS = "def f(a: int) -> int:\n    return a\n\n\nop = f\nf(op(1))\n"
+
+
+def test_a_call_through_a_module_function_alias_calls_the_function():
+    assert rewrite_compat(ALIAS) == (ALIAS.replace("f(op(1))", "f(f(1))"), ["compat_function_alias:1"])
+
+
+@pytest.mark.parametrize("source", [
+    ALIAS + "op = abs\n",                                                     # alias rebound
+    ALIAS.replace("op = f\n", "op = f\nf = abs\n"),                         # function rebound
+    "def f(a):\n    return a\n\n\ndef g():\n    return op(1)\n\n\ng()\nop = f\n",  # called before the alias exists
+    "def f(a):\n    return a\n\n\ndef g(op):\n    return op(1)\n\n\nop = f\n",       # a parameter shadows it
+    "def d(x):\n    return x\n\n\n@d\ndef f(a):\n    return a\n\n\nop = f\nf(op(1))\n",  # decorated
+])
+def test_an_alias_that_may_not_be_the_function_is_left_alone(source):
+    assert not any(t.startswith(FUNCTION_ALIAS) for t in rewrite_compat(source)[1])
+
+
+def test_rewrite_compat_skips_a_disabled_function_alias_rule():
+    assert rewrite_compat(ALIAS, rules=ALL_RULES - {FUNCTION_ALIAS}) == (ALIAS, [])
+
+
+def test_clock_reads_become_the_nondet_clock():
+    source = "import time\n\n\ndef f():\n    t0 = time.time()\n    return time.time() - t0\n"
+    rewritten, transforms = nondet_clock(source)
+    assert rewritten == source.replace("time.time()", "_esbmc_clock()") and transforms == ["nondet_clock:2"]
+    source = "from time import time as now\n\n\ndef f():\n    return now()\n"
+    assert nondet_clock(source)[0].endswith("    return _esbmc_clock()\n")
+
+
+@pytest.mark.parametrize("source", [
+    "import time\n\n\ndef f(time):\n    return time.time()\n",         # another value named time
+    "import time\n\n\ndef f():\n    return time.time(1)\n",           # not the clock's signature
+    "import datetime as time\n\n\ndef f():\n    return time.time()\n",
+    "import time\n\n\ndef f():\n    return time.monotonic()\n",
+])
+def test_other_calls_keep_their_clock(source):
+    assert nondet_clock(source) == (source, [])
+
+
+def test_the_nondet_clock_starts_at_zero_or_later_and_never_goes_back():
+    namespace: dict = {}
+    steps = iter([5.0, 0.0, 2.5])
+    namespace.update({"nondet_float": lambda: next(steps), "__ESBMC_assume": lambda c: None})
+    exec("\n".join(CLOCK_MODEL), namespace)  # noqa: S102 - the model's own source
+    assert [namespace["_esbmc_clock"]() for _ in range(3)] == [5.0, 5.0, 7.5]
+    assert "__ESBMC_assume(step >= 0.0" in "\n".join(CLOCK_MODEL)

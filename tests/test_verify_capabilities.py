@@ -63,7 +63,7 @@ def test_every_rule_has_a_probe_and_every_probe_a_known_rule():
 def test_every_none_probe_has_a_safe_twin_on_the_non_none_branch():
     by_name = {p.name: p for p in PROBES}
     detecting = [p for p in PROBES if p.rule in NONE_GUARD_KINDS and p.exception is not None]
-    assert len(detecting) == 17
+    assert len(detecting) == 9
     for probe in detecting:
         twin = by_name.get(f"{probe.name}_seguro")
         assert twin is not None and twin.rule == probe.rule and twin.exception is None, probe.name
