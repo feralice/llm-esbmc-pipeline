@@ -1,28 +1,26 @@
-# Extensão llm-esbmc para o Claude Code
+# llm-esbmc extension for Claude Code
 
-Comando `/verificar-repo <pasta> [foco]`: o grafo de chamadas escolhe as funções do repositório, o LLM aponta
-possíveis bugs de execução, o agente escreve o harness e o ESBMC-Python confirma. O relatório separa os bugs
-confirmados (cada um com o teste que falha) das suspeitas do LLM que não foram confirmadas.
+Command `/verify-repo <folder> [focus]`: the call graph picks the repository's functions, the LLM points out
+possible runtime bugs, the agent writes the harness and ESBMC-Python confirms them. The report separates the
+confirmed bugs (each with the failing test) from the LLM's suspicions that were not confirmed.
 
-Comando `/self-healing <rodada ou caso>`: pega um caso que parou sem veredito do ESBMC (por exemplo
-`UNSUPPORTED`), roda o ESBMC numa cópia do harness, propõe uma reescrita por vez explicando por que o
-comportamento não muda, confere o corpo da função com `scripts/check_preserved.py` e, quando o ESBMC chega a
-veredito, propõe a lição para o caderno (`verify/skills/reparos-aprendidos/SKILL.md`). Só grava com o seu "sim"
-(`scripts/add_repair.py`). O self-healing do lote e o braço de agente leem o mesmo caderno.
+Self-healing is part of the run: when ESBMC stops without a verdict, the agent rewrites the harness from the
+ESBMC message, following the rules in the repair notebook (`verify/skills/reparos-aprendidos/SKILL.md`), and
+each repair that works is added to the notebook for the next case.
 
-## Instalar
+## Install
 
 ```bash
-export LLM_ESBMC_HOME=/caminho/para/llm_esbmc
+export LLM_ESBMC_HOME=/path/to/llm_esbmc
 claude --plugin-dir "$LLM_ESBMC_HOME/extension"
 ```
 
-No Claude Code, o comando aparece como `/verificar-repo` (ou `/llm-esbmc:verificar-repo`, com o nome do plugin).
+In Claude Code, the command appears as `/verify-repo` (or `/llm-esbmc:verify-repo`, with the plugin name).
 
-Requisitos: o ambiente do pipeline (`$LLM_ESBMC_HOME/.venv`), o ESBMC no `PATH` (ou `--esbmc-command`) e o
-Claude Code com login (a detecção e o agente usam a assinatura, `claude_cli`).
+Requirements: the pipeline environment (`$LLM_ESBMC_HOME/.venv`), ESBMC on the `PATH` (or `--esbmc-command`) and
+Claude Code with a login (detection and the agent use the subscription, `claude_cli`).
 
-## Custo
+## Cost
 
-O comando sempre simula primeiro e só gasta depois de você confirmar. A detecção faz uma chamada por função
-escolhida; a confirmação, uma sessão do agente por hipótese.
+The command always does a dry run first and only spends after you confirm. Detection makes one call per chosen
+function; confirmation, one agent session per hypothesis.

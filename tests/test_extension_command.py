@@ -5,7 +5,7 @@ from pathlib import Path
 from main import build_parser
 
 EXTENSION = Path(__file__).resolve().parents[1] / "extension"
-COMMAND = EXTENSION / "commands" / "verificar-repo.md"
+COMMAND = EXTENSION / "commands" / "verify-repo.md"
 
 
 def test_plugin_manifest_names_the_extension():
@@ -26,5 +26,5 @@ def test_command_flags_exist_and_it_asks_before_spending():
 def test_command_resolves_the_folder_before_cd_and_quotes_the_focus():
     text = COMMAND.read_text(encoding="utf-8")
     assert text.index("realpath") < text.index('cd "$HOME_P"')
-    assert '--scan-focus "$FOCO"' in text and "FOCO='" in text
-    assert "código de saída" in " ".join(text.split())
+    assert '--scan-focus "$FOCUS"' in text and "FOCUS='" in text
+    assert "exit code" in " ".join(text.split())

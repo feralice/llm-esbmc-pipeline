@@ -1558,3 +1558,12 @@ executada sem quebrar ali).
   `verify/skills/reparos-aprendidos/SKILL.md`, e o resultado de um caso passa a depender dos casos rodados antes.
 - **Próximas rodadas:** disciplina PGENE601 (47 bugs, prazo 08/12), item 14 (bug semeado), smells no PySmell
   (200 candidatos).
+
+## Extensão em inglês e sem `/self-healing` (05/11), sem rodada
+
+- **Decisão da Fernanda:** o self-healing fica só dentro do fluxo (padrão `--heal error+kb` no pipeline; no
+  `/verify-repo`, o agente corrige o harness pela mensagem do ESBMC e grava as lições no caderno), sem comando
+  separado. O comando `/self-healing` saiu de `extension/commands/`; `scripts/add_repair.py` e
+  `scripts/check_preserved.py` continuam para aprovar uma lição à mão.
+- **Inglês:** `/verificar-repo` virou `/verify-repo` e o README da extensão foi traduzido. Não muda o pipeline
+  congelado (a extensão só chama `src/main.py`); `tests/test_extension_command.py` passa.
