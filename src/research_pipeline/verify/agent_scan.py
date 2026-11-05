@@ -6,6 +6,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+from ..llm.rate_limit import UsageLimitReached
 from .agent_arm import AGENT_FAILED, RunAgent, run_agent_arm
 from .hypothesis import BugHypothesis
 from .outcome import PIPELINE_ERROR
@@ -29,6 +30,8 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
                                      esbmc_command=esbmc_command, bound=bound, timeout_seconds=timeout_seconds,
                                      agent_timeout=agent_timeout, project_skills=True, log_rounds=True,
                                      retry=retry, graph_tool=graph_tool)
+            except UsageLimitReached:
+                raise
             except Exception as exc:  # noqa: BLE001 - one broken case must not stop the scan
                 data = {"hypothesis": h.to_dict(), "verdict": PIPELINE_ERROR, "reason": f"{type(exc).__name__}: {exc}"}
             reason = data.get("reason", "")

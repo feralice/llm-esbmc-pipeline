@@ -27,6 +27,7 @@ from research_pipeline.verify.llm_input import llm_input_check  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 from research_pipeline.verify.orchestrator import orchestrate  # noqa: E402
 from research_pipeline.verify.pinned import pinned_check  # noqa: E402
+from research_pipeline.llm.rate_limit import exit_on_usage_limit  # noqa: E402
 
 _FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED", "VALUE_CONFIRMED", "VALUE_VIOLATION", "PROPERTY_REJECTED"}
 
@@ -157,4 +158,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(exit_on_usage_limit(main))

@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Any
 from urllib import error, request
 
-from ..llm.backends.claude_cli import cli_failure_detail
-from ..llm.rate_limit import is_daily_quota_exhausted
+from ..llm.backends.claude_cli import cli_failure, turn_failure
+from ..llm.rate_limit import UsageLimitReached, call_failure, is_daily_quota_exhausted
 from ..llm.telemetry import response_event
 
 _FENCE = re.compile(r"```(?:python|json)?\s*\n(.*?)```", re.DOTALL)
@@ -209,7 +209,7 @@ class LLMClient:
                     usage = event.get("usage") or {}
                 elif event.get("type") == "turn.failed":
                     detail = json.dumps(event.get("error") or event, ensure_ascii=False)
-                    raise RuntimeError(f"codex exec: turno falhou: {detail}")
+                    raise call_failure(f"codex exec: turno falhou: {detail}", detail)
                 if isinstance(event.get("model"), str):
                     returned_model = event["model"]
 
@@ -271,10 +271,7 @@ class LLMClient:
             raise RuntimeError(f"Comando {self.claude_command!r} não encontrado no PATH.") from exc
 
         if completed.returncode != 0:
-            raise RuntimeError(
-                f"{self.claude_command} -p saiu com código {completed.returncode}: "
-                f"{cli_failure_detail(completed.stdout, completed.stderr)}"
-            )
+            raise cli_failure(self.claude_command, completed.returncode, completed.stdout, completed.stderr)
         try:
             envelope = json.loads(completed.stdout)
         except json.JSONDecodeError as exc:
@@ -282,7 +279,7 @@ class LLMClient:
                 f"{self.claude_command} -p não retornou JSON válido: {completed.stdout[:500]}"
             ) from exc
         if envelope.get("is_error"):
-            raise RuntimeError(f"{self.claude_command} -p: turno falhou: {envelope.get('result')}")
+            raise turn_failure(self.claude_command, envelope.get("result"))
 
         usage = envelope.get("usage") or {}
         return {
@@ -315,7 +312,11 @@ class LLMClient:
                 if exc.code in (429, 500, 502, 503, 504, 529) and attempt < _retries - 1:
                     time.sleep(30 if exc.code == 429 else 2 ** (attempt + 2))
                     continue
-                raise RuntimeError(f"Falha ao chamar Anthropic Messages API: {exc.code} {details}") from exc
+                message = f"Falha ao chamar Anthropic Messages API: {exc.code} {details}"
+                # Still rate-limited or overloaded after the retries: the next hypotheses would fail the same way.
+                if exc.code in (429, 529):
+                    raise UsageLimitReached(message) from exc
+                raise call_failure(message, details) from exc
             except (error.URLError, TimeoutError) as exc:
                 if attempt < _retries - 1:
                     time.sleep(2 ** attempt)
@@ -346,12 +347,12 @@ class LLMClient:
             except error.HTTPError as exc:
                 details = exc.read().decode("utf-8", errors="replace")
                 if exc.code == 429 and is_daily_quota_exhausted(details):
-                    raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
+                    raise UsageLimitReached(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
                 if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
                     sleep_time = 45 if exc.code == 429 else 2 ** (attempt + 2)
                     time.sleep(sleep_time)
                     continue
-                raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
+                raise call_failure(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}", details) from exc
             except error.URLError as exc:
                 if attempt < _retries - 1:
                     time.sleep(2 ** attempt)

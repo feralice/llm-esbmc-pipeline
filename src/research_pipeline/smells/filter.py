@@ -12,6 +12,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
+from ..llm.rate_limit import UsageLimitReached
+
 PROMPT = Path(__file__).resolve().parents[1] / "prompts" / "smell_filter.txt"
 
 
@@ -66,6 +68,8 @@ def filter_candidates(candidates: list[SmellCandidate], llm, *, done: dict | Non
         asked = {c.id for c in group}
         try:
             found = _answers(llm.complete(system, _user_prompt(group), json_mode=True).raw_response, asked)
+        except UsageLimitReached:
+            raise
         except Exception as exc:  # noqa: BLE001 - each backend raises its own errors; one group must not lose the rest
             found, error = {}, f"{type(exc).__name__}: {exc}"[:300]
         else:

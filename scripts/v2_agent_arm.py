@@ -26,6 +26,7 @@ from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC  # noqa: E
 from research_pipeline.verify.esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root_of, load_index  # noqa: E402
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
+from research_pipeline.llm.rate_limit import exit_on_usage_limit  # noqa: E402
 
 # Flags added after earlier runs: a result recorded before the flag existed ran with it off.
 OFF_BY_DEFAULT = {"graph_tool": False}
@@ -215,4 +216,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(exit_on_usage_limit(main))

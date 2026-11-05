@@ -10,6 +10,7 @@ import pytest
 
 from research_pipeline.verify.agent_arm import (AGENT_FAILED, BEHAVIOUR_CHANGED, FIXED_ALSO_FAILS, HARNESS_BROKEN,
                                                NOT_CONFIRMED_VACUOUS, STUB_INDUCED, run_agent_arm, stub_cause)
+from research_pipeline.llm.rate_limit import UsageLimitReached
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.outcome import CONFIRMED, NOT_CONFIRMED, UNVALIDATED
 from research_pipeline.verify.replay import ReplayVerdict
@@ -638,11 +639,11 @@ def test_an_api_error_from_the_agent_session_is_a_pipeline_error(tmp_path):
     assert "EAI_AGAIN" in result["reason"]
 
 
-def test_a_usage_limit_from_the_agent_session_is_a_pipeline_error(tmp_path):
-    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work",
-                           run_agent=lambda prompt, cwd, timeout: "You've hit your monthly spend limit · raise it",
-                           esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
-    assert result["verdict"] == "PIPELINE_ERROR"
+def test_a_usage_limit_from_the_agent_session_stops_the_run(tmp_path):
+    with pytest.raises(UsageLimitReached, match="monthly spend limit"):
+        run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work",
+                      run_agent=lambda prompt, cwd, timeout: "You've hit your monthly spend limit · raise it",
+                      esbmc_command=["esbmc"], bound=5, timeout_seconds=30)
 
 
 def test_cpython_reproduction_counts_apart_when_esbmc_reaches_no_verdict(tmp_path, monkeypatch):

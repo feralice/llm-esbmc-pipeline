@@ -14,6 +14,7 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
+from ..rate_limit import call_failure
 from ..telemetry import response_event
 
 
@@ -117,7 +118,7 @@ class CodexAnalyzer:
                     usage = event.get("usage") or {}
                 elif event.get("type") == "turn.failed":
                     detail = json.dumps(event.get("error") or event, ensure_ascii=False)
-                    raise RuntimeError(f"codex exec: turno falhou: {detail}")
+                    raise call_failure(f"codex exec: turno falhou: {detail}", detail)
                 if isinstance(event.get("model"), str):
                     returned_model = event["model"]
 

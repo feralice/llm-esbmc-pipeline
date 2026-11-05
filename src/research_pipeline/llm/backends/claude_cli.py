@@ -8,6 +8,7 @@ import time
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
+from ..rate_limit import call_failure
 from ..schema import FINDINGS_JSON_SCHEMA, v2_findings_schema
 from ..telemetry import response_event
 
@@ -31,6 +32,16 @@ def cli_failure_detail(stdout: str, stderr: str) -> str:
         status = envelope.get("api_error_status")
         return (f"[{status}] " if status else "") + str(envelope["result"])[:500]
     return (stderr.strip() or stdout.strip())[:500]
+
+
+def cli_failure(command: str, returncode: int, stdout: str, stderr: str) -> RuntimeError:
+    """The error for a ``claude -p`` that exited non-zero; UsageLimitReached when the plan's limit stopped it."""
+    detail = cli_failure_detail(stdout, stderr)
+    return call_failure(f"{command} -p saiu com código {returncode}: {detail}", detail)
+
+
+def turn_failure(command: str, result: object) -> RuntimeError:
+    return call_failure(f"{command} -p: turno falhou: {result}", str(result))
 
 
 class ClaudeCliAnalyzer:
@@ -122,10 +133,7 @@ class ClaudeCliAnalyzer:
             raise RuntimeError(f"Comando {self.claude_command!r} não encontrado no PATH.") from exc
 
         if completed.returncode != 0:
-            raise RuntimeError(
-                f"{self.claude_command} -p saiu com código {completed.returncode}: "
-                f"{cli_failure_detail(completed.stdout, completed.stderr)}"
-            )
+            raise cli_failure(self.claude_command, completed.returncode, completed.stdout, completed.stderr)
         try:
             envelope = json.loads(completed.stdout)
         except json.JSONDecodeError as exc:
@@ -133,7 +141,7 @@ class ClaudeCliAnalyzer:
                 f"{self.claude_command} -p não retornou JSON válido: {completed.stdout[:500]}"
             ) from exc
         if envelope.get("is_error"):
-            raise RuntimeError(f"{self.claude_command} -p: turno falhou: {envelope.get('result')}")
+            raise turn_failure(self.claude_command, envelope.get("result"))
         if "structured_output" not in envelope:
             raise RuntimeError(
                 f"{self.claude_command} -p não retornou structured_output "

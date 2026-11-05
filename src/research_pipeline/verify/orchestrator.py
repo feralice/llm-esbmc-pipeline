@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Callable
 
+from ..llm.rate_limit import UsageLimitReached
 from .routing import route as default_route
 
 ARM_FAILED = "ARM_FAILED"
@@ -38,6 +39,8 @@ def orchestrate(results: list[dict], *, arms: dict[str, Callable[[dict], dict]],
             else:
                 try:
                     outcome = arms[arm]({**result, "steps": list(row["steps"])})
+                except UsageLimitReached:
+                    raise
                 except Exception as exc:  # noqa: BLE001 - one broken arm must not end the run
                     outcome = {"verdict": ARM_FAILED, "reason": f"{type(exc).__name__}: {exc}"}
             row["steps"].append({"arm": arm, **outcome})

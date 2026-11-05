@@ -50,6 +50,7 @@ from research_pipeline.llm.prompts import (
     set_detection_focus,
     set_example_pool,
 )
+from research_pipeline.llm.rate_limit import USAGE_LIMIT_EXIT, UsageLimitReached
 from research_pipeline.llm.schema import v2_findings_schema
 from research_pipeline.preprocess import preprocess_file
 from research_pipeline.scan.pipeline import execute_scan, judge_smells, plan_scan
@@ -527,7 +528,7 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
 
 
 def _summarize_v2_telemetry(events: list[dict]) -> dict:
-    by_stage: dict[str, dict[str, float | int]] = {}
+    by_stage: dict[str, dict[str, float | int | None]] = {}
     for event in events:
         stage = str(event["stage"])
         totals = by_stage.setdefault(
@@ -535,10 +536,15 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
             {
                 "calls": 0, "failed_calls": 0, "tokens": 0, "prompt_tokens": 0,
                 "cached_tokens": 0, "calls_with_cache_data": 0, "seconds": 0.0,
-                "localization_calls": 0, "classification_calls": 0,
+                "localization_calls": 0, "classification_calls": 0, "cost_usd": None, "calls_without_cost": 0,
             },
         )
         totals["calls"] += 1
+        cost = event.get("cost_usd")
+        if isinstance(cost, (int, float)):
+            totals["cost_usd"] = round((totals["cost_usd"] or 0.0) + cost, 6)
+        else:
+            totals["calls_without_cost"] += 1
         totals["failed_calls"] += int(event.get("status") != "success")
         if event.get("analysis_stage") == "localize":
             totals["localization_calls"] += 1
@@ -630,6 +636,11 @@ def _agent_fallback(args: argparse.Namespace, results: list[dict], output_path: 
                 "timeout": args.timeout, "esbmc": esbmc})
 
 
+def _usage_limit_message(exc: UsageLimitReached, checkpoint_path: Path) -> str:
+    return (f"Limite de uso da LLM atingido: {exc}\nExecução parada; checkpoint salvo em {checkpoint_path}. "
+            "Retome com --resume depois que o limite renovar.")
+
+
 def _resumable_results(checkpoint: dict) -> dict[int, dict]:
     """Saved verdicts a resume keeps; PIPELINE_ERROR (network, usage limit) is retried instead."""
     return {int(i): d for i, d in checkpoint.get("verify_results", {}).items() if d.get("verdict") != "PIPELINE_ERROR"}
@@ -679,15 +690,20 @@ def _mode_v2_verify(
             healer=build_healer(args.heal, llm=llm, esbmc_command=args.esbmc_command),
             heal_rounds=args.heal_rounds,
         )
-    except KeyboardInterrupt:
+        agent_results = (_agent_fallback(args, results, output_path, checkpoint, checkpoint_path)
+                         if args.agent_fallback else [])
+    except (KeyboardInterrupt, UsageLimitReached) as exc:
+        limit = isinstance(exc, UsageLimitReached)
         checkpoint["status"] = "interrupted"
         checkpoint["interrupted_at"] = datetime.now(timezone.utc).isoformat()
-        checkpoint["interruption_reason"] = "keyboard_interrupt"
+        checkpoint["interruption_reason"] = "usage_limit" if limit else "keyboard_interrupt"
         capture_telemetry()
         _write_json_atomic(checkpoint_path, checkpoint)
+        if limit:
+            print(_usage_limit_message(exc, checkpoint_path), file=sys.stderr)
+            return USAGE_LIMIT_EXIT
         print("Execução V2 interrompida; retome com --resume.", file=sys.stderr)
         return 2
-    agent_results = _agent_fallback(args, results, output_path, checkpoint, checkpoint_path) if args.agent_fallback else []
     capture_telemetry()
     checkpoint["status"] = "complete"
     _write_json_atomic(checkpoint_path, checkpoint)
@@ -811,6 +827,9 @@ def mode_scan(args: argparse.Namespace) -> int:
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
+    except UsageLimitReached as exc:
+        print(_usage_limit_message(exc, plan.output_dir / "scan_checkpoint.json"), file=sys.stderr)
+        return USAGE_LIMIT_EXIT
     return 2 if report["detection"]["failed"] else 0
 
 
@@ -969,12 +988,15 @@ def mode_v2(args: argparse.Namespace) -> int:
     detection_trace: list[dict] = []
     detection_errors: list[dict[str, str]] = []
     analyzed_units = 0
+    usage_limit: UsageLimitReached | None = None
     detection_inputs = [] if args.v2_stage == "synthesis" else input_paths
     if args.v2_stage == "synthesis":
         print(f"\nModo V2 — síntese isolada: {len(candidates)} hipótese(s) conhecida(s)")
     else:
         print(f"\nModo V2 — etapa 1: detecção em {len(input_paths)} arquivo(s)")
     for file_index, file_path in enumerate(detection_inputs, 1):
+        if usage_limit is not None:
+            break
         units = preprocess_file(file_path)
         for unit in units:
             analyzed_units += 1
@@ -1007,6 +1029,9 @@ def mode_v2(args: argparse.Namespace) -> int:
                 checkpoint["detection_trace"] = detection_trace
                 capture_telemetry()
                 _save_checkpoint(checkpoint_path, checkpoint)
+                if isinstance(exc, UsageLimitReached):
+                    usage_limit = exc
+                    break
                 continue
             analyzer_trace = getattr(analyzer, "detection_trace", [])
             trace = dict(analyzer_trace[-1]) if analyzer_trace else {
@@ -1066,6 +1091,8 @@ def mode_v2(args: argparse.Namespace) -> int:
     if detection_errors:
         checkpoint["status"] = "partial_detection"
         checkpoint["detection_errors"] = detection_errors
+        if usage_limit is not None:
+            checkpoint["interruption_reason"] = "usage_limit"
         _write_json_atomic(checkpoint_path, checkpoint)
         report_path = Path(args.report) if args.report else output_path / "v2_report.json"
         capture_telemetry()
@@ -1093,6 +1120,9 @@ def mode_v2(args: argparse.Namespace) -> int:
                 "results": [],
             },
         )
+        if usage_limit is not None:
+            print(_usage_limit_message(usage_limit, checkpoint_path), file=sys.stderr)
+            return USAGE_LIMIT_EXIT
         print("Execução V2 parcial na detecção; retome com --resume.", file=sys.stderr)
         return 2
 

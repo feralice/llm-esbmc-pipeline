@@ -228,6 +228,25 @@ def test_summarize_v2_telemetry_reports_cache_hit_rate_per_stage():
     assert summary["synthesis"]["cache_hit_rate"] is None
 
 
+@pytest.mark.parametrize("mode", ["hybrid", "scan"])
+def test_self_healing_is_on_by_default(mode):
+    # Decided on 04/11: self-healing keeps repairing the harness unless --heal none.
+    assert main.build_parser().parse_args(["--mode", mode, "--input", "x"]).heal == "error+kb"
+
+
+def test_summarize_v2_telemetry_adds_up_the_known_costs_only():
+    events = [
+        {"stage": "synthesis", "status": "success", "cost_usd": 0.25},
+        {"stage": "synthesis", "status": "success", "cost_usd": None},
+        {"stage": "synthesis", "status": "success", "cost_usd": 0.5},
+        {"stage": "detection", "status": "success", "cost_usd": None},
+    ]
+    summary = main._summarize_v2_telemetry(events)
+    assert summary["synthesis"]["cost_usd"] == 0.75
+    assert summary["synthesis"]["calls_without_cost"] == 1
+    assert summary["detection"]["cost_usd"] is None
+
+
 def test_summarize_detection_trace_keeps_failures_distinct():
     summary = main._summarize_detection_trace([
         {

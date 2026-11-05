@@ -8,7 +8,7 @@ from urllib import error, request
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
 from ..prompts import build_user_prompt, load_system_prompt
-from ..rate_limit import is_daily_quota_exhausted
+from ..rate_limit import UsageLimitReached, call_failure, is_daily_quota_exhausted
 from ..schema import FINDINGS_JSON_SCHEMA, v2_findings_schema
 from ..telemetry import response_event
 
@@ -91,11 +91,11 @@ class OpenAIResponsesAnalyzer:
             except error.HTTPError as exc:
                 details = exc.read().decode("utf-8", errors="replace")
                 if exc.code == 429 and is_daily_quota_exhausted(details):
-                    raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
+                    raise UsageLimitReached(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
                 if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
                     time.sleep(2 ** attempt)
                     continue
-                raise RuntimeError(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
+                raise call_failure(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}", details) from exc
             except error.URLError as exc:
                 if attempt < _retries - 1:
                     time.sleep(2 ** attempt)

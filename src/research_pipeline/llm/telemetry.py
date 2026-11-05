@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from .pricing import billing, call_cost
+
 
 def response_event(
     *,
@@ -18,16 +20,19 @@ def response_event(
         total = prompt + completion
     cached = _cached_tokens(usage)
     message = str(error) if error else ""
+    returned_model = response.get("model") if isinstance(response, dict) else None
     return {
         "provider": provider,
         "requested_model": requested_model,
-        "returned_model": response.get("model") if isinstance(response, dict) else None,
+        "returned_model": returned_model,
         "status": "timeout" if error and "timeout" in message.lower() else ("error" if error else "success"),
         "duration_seconds": round(duration_seconds, 6),
         "prompt_tokens": prompt,
         "completion_tokens": completion,
         "total_tokens": total,
         "cached_tokens": cached,
+        "cost_usd": call_cost(provider, returned_model or requested_model, usage),
+        "billing": billing(provider),
         "error": message or None,
     }
 

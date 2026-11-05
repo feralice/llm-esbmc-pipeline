@@ -13,6 +13,7 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
+from ..rate_limit import call_failure
 from ..telemetry import response_event
 
 
@@ -89,7 +90,7 @@ class AnthropicAnalyzer:
                 return json.loads(response.read().decode("utf-8"))
         except error.HTTPError as exc:
             details = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"Falha ao chamar Anthropic API: {exc.code} {details}") from exc
+            raise call_failure(f"Falha ao chamar Anthropic API: {exc.code} {details}", details) from exc
         except error.URLError as exc:
             raise RuntimeError(f"Falha de rede ao chamar Anthropic API: {exc.reason}") from exc
 

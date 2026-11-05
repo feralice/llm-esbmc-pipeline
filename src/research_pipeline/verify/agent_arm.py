@@ -19,6 +19,7 @@ import time
 from pathlib import Path
 from typing import Callable
 
+from research_pipeline.llm.rate_limit import UsageLimitReached, is_usage_limit
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
 from .astutil import body_signature, entry_of, entry_preserved, expression_nodes, find_function, locate
@@ -40,7 +41,7 @@ from .validation import INCONCLUSIVE, REACHABLE, UNREACHABLE, reachability
 
 AGENT_FAILED = "AGENT_FAILED"
 # What Claude Code prints when its session never reached the model (network, DNS, an outage, a usage limit).
-_SESSION_ERRORS = ("API Error", "You've hit your")
+_SESSION_ERRORS = ("API Error", "You've hit your", "You’ve hit your")
 
 
 def session_failed(result: dict) -> bool:
@@ -180,12 +181,15 @@ def api_agent(llm, *, rounds: int = 8, esbmc: str = DEFAULT_ESBMC, bound: int = 
                 return "out of time"
             try:
                 reply = llm.complete(system, task + feedback)
+            except UsageLimitReached:
+                raise
             except Exception as exc:  # noqa: BLE001 - an API failure ends this case, not the run
                 return f"API error: {type(exc).__name__}: {str(exc)[:200]}"
             usage = reply.telemetry or {}
             with (cwd / "llm_usage.jsonl").open("a", encoding="utf-8") as log:
                 log.write(json.dumps({"model": reply.model, "prompt_tokens": usage.get("prompt_tokens"),
-                                      "completion_tokens": usage.get("completion_tokens")}) + "\n")
+                                      "completion_tokens": usage.get("completion_tokens"),
+                                      "cost_usd": usage.get("cost_usd")}) + "\n")
             harness = reply.harness.strip()
             if not harness:
                 feedback = "\n\nYour reply had no python code block. Reply with the complete harness.py."
@@ -298,6 +302,7 @@ def run_agent_arm(
         record_rounds(case_dir, result, log_rounds, original, h.function)
         return finish(AGENT_FAILED, f"agent did not finish: {type(exc).__name__}")
     crashed = record_rounds(case_dir, result, log_rounds, original, h.function)
+    _stop_on_usage_limit(result["agent_output"])
     if session_failed(result):
         return finish(PIPELINE_ERROR, f"agent session failed: {result['agent_output'].strip().splitlines()[0][:200]}")
     harness_path = case_dir / "harness.py"
@@ -324,12 +329,14 @@ def run_agent_arm(
         shutil.copy(harness_path, case_dir / "harness_first.py")
         harness = harness_path.read_text(encoding="utf-8", errors="replace")
         try:
-            run_agent(prompt + _RETRY.format(reason=back, function=h.function, expression=h.suspect_expression,
-                                             harness=harness), case_dir, agent_timeout)
+            retry_output = run_agent(prompt + _RETRY.format(reason=back, function=h.function,
+                                                            expression=h.suspect_expression, harness=harness),
+                                     case_dir, agent_timeout)
         except (OSError, subprocess.TimeoutExpired) as exc:
             record_rounds(case_dir, result, log_rounds, original, h.function)
             return finish(verdict, f"{reason}; the retry did not finish: {type(exc).__name__}")
         crashed = record_rounds(case_dir, result, log_rounds, original, h.function)
+        _stop_on_usage_limit(retry_output)
         result["first_attempt"] = {**attempt, "verdict": verdict, "reason": reason}
         for key in attempt:
             result.pop(key, None)
@@ -340,6 +347,14 @@ def run_agent_arm(
     if crashed and verdict in (CONFIRMED, CONFIRMED_SIMPLIFIED):
         return finish(ESBMC_CRASH, "ESBMC crashed on the agent's last call")
     return finish(verdict, reason)
+
+
+def _stop_on_usage_limit(agent_output: str) -> None:
+    """A session the plan's limit stopped says nothing about the case, and every later session would stop the
+    same way."""
+    first = (agent_output.strip().splitlines() or [""])[0]
+    if first.startswith(_SESSION_ERRORS) and is_usage_limit(first):
+        raise UsageLimitReached(f"agent session failed: {first[:200]}")
 
 
 MYPY_TIMEOUT = 60
@@ -644,6 +659,8 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
                                  source_path=verification_source(h, sources), skill=skill,
                                  notes=None if skill else NOTES_PATH,
                                  knowledge=lookup(index, result.get("reason", ""), "") if index else "")
+        except UsageLimitReached:
+            raise
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the run
             data = {"hypothesis": h.to_dict(), "verdict": AGENT_FAILED, "reason": f"{type(exc).__name__}: {exc}"}
         data["engine_verdict"] = result["verdict"]

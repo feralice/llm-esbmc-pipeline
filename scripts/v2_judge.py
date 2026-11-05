@@ -23,6 +23,7 @@ from research_pipeline.v2_evaluator import at_bug_line  # noqa: E402
 from research_pipeline.verify.astutil import find_function  # noqa: E402
 from research_pipeline.verify.hypothesis import undo_prompt_rename  # noqa: E402
 from research_pipeline.verify.llm_client import LLMClient  # noqa: E402
+from research_pipeline.llm.rate_limit import UsageLimitReached, exit_on_usage_limit  # noqa: E402
 
 THRESHOLDS = (0.0, 0.3, 0.5, 0.7)
 SYSTEM = """Você revisa suspeitas de bug em código Python real. Para cada hipótese, tente construir uma entrada
@@ -103,6 +104,8 @@ def main() -> int:
             code = _function_code(ROOT / candidates[0]["file"], candidates[0]["function"])
             try:
                 reply = llm.complete(SYSTEM, _prompt(code, candidates), json_mode=True).harness
+            except UsageLimitReached:
+                raise
             except Exception as exc:  # noqa: BLE001 - a failed call keeps the hypotheses and the batch goes on
                 reply = f"error: {exc}"
             state[key] = {"reply": reply, "scores": parse_scores(reply, len(candidates))}
@@ -123,4 +126,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(exit_on_usage_limit(main))

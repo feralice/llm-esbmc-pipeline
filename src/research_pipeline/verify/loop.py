@@ -13,6 +13,7 @@ from typing import Protocol
 
 from research_pipeline.models import ESBMCDirectResult
 
+from ..llm.rate_limit import UsageLimitReached
 from ..scan.callgraph import CallGraph
 from .astutil import undefined_globals
 from .caller_facts import collect_facts, render_section, usage_problems
@@ -377,6 +378,8 @@ def run_verify(
                       "fixed_source": _fixed_source(h, fixed_sources), **kwargs}
             data = (verify_with_healing(h, healer=healer, source=source, rounds=heal_rounds, **common)
                     if healer is not None else verify_hypothesis(h, source=source, **common)).to_dict()
+        except UsageLimitReached:
+            raise
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
             data = VerifyResult(h, PIPELINE_ERROR, f"{type(exc).__name__}: {exc}").to_dict()
         print(f"    -> {data['verdict']} {data['reason'][:120]}")

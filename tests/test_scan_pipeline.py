@@ -648,3 +648,11 @@ def test_scan_smells_judge_the_code_seen_at_plan_time_and_count_what_was_not_kep
     assert "error" in entry["llm"]
     section = smells_section(tmp_path / "out")
     assert "1 mantidos" in section and "1 sem resposta da LLM" in section
+
+
+def test_scan_report_adds_up_the_cost_of_the_priced_calls(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+    spec_llm = SimpleNamespace(telemetry_events=[{"cost_usd": 0.5}, {"cost_usd": None}, {"cost_usd": 0.25}])
+    report = execute_scan(plan_scan(_repo(tmp_path), tmp_path / "out"), analyzer=_Analyzer(), spec_llm=spec_llm,
+                          verify=_fake_verify([]))
+    assert report["cost_usd"] == {"detection": None, "spec": 0.75}

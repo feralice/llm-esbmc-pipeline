@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from ..llm.prompts import build_user_prompt, load_system_prompt
+from ..llm.pricing import total_cost
+from ..llm.rate_limit import UsageLimitReached
 from ..models import CodeUnit
 from ..preprocess import preprocess_file
 from ..smells.filter import SmellCandidate, filter_candidates, ruff_candidates
@@ -293,6 +295,8 @@ def _resume(checkpoint_path: Path, detection: str, verify: str) -> dict:
 def _detect(analyzer, target: Target) -> dict:
     try:
         findings = analyzer.analyze(target.unit)
+    except UsageLimitReached:
+        raise
     except Exception as exc:  # noqa: BLE001 - one failed call must not end the scan
         return {"error": f"{type(exc).__name__}: {exc}", "candidates": [], "held": []}
     candidates, held = [], []
@@ -346,7 +350,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
                  if h.hypothesis_id in saved and saved[h.hypothesis_id].get("verdict") != "PIPELINE_ERROR"}
     results = (verify or run_verify)(hypotheses, llm=spec_llm, output_dir=plan.output_dir, completed=completed,
                      on_result=on_result, **verify_kwargs) if hypotheses else []
-    report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer,
+    report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer, spec_llm,
                      agent=getattr(verify, "label", "").startswith("agent"), capabilities=capabilities)
     _write_json(plan.output_dir / "scan_report.json", report)
     (plan.output_dir / "scan_summary.md").write_text(summary_markdown(report), encoding="utf-8")
@@ -362,7 +366,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
 
 
 def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], results: list[dict],
-            analyzer, agent: bool = False, capabilities: dict | None = None) -> dict:
+            analyzer, spec_llm=None, agent: bool = False, capabilities: dict | None = None) -> dict:
     levels = agent_levels(results) if agent else consolidate(results)
     rows = [{**t.to_dict(), **detection[t.key]} for t in plan.targets]
     detection_tokens = sum(int(e.get("total_tokens") or 0) for e in getattr(analyzer, "telemetry_events", []))
@@ -376,6 +380,9 @@ def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], re
                       "hypotheses": len(hypotheses), "held": sum(len(r["held"]) for r in rows),
                       "tokens": detection_tokens, "functions_detail": rows},
         "verification": summarize(results),
+        # This session's calls only, like the tokens: a resumed scan does not repeat the earlier calls.
+        "cost_usd": {"detection": total_cost(getattr(analyzer, "telemetry_events", [])),
+                     "spec": total_cost(getattr(spec_llm, "telemetry_events", []))},
         # The agent's sessions report no tokens: unmeasured, not zero.
         "verification_tokens": (sum(int(r.get("tokens") or 0) for r in results)
                                 if any("tokens" in r for r in results) else None),
@@ -449,6 +456,8 @@ def judge_smells(plan: ScanPlan, llm) -> dict:
         try:
             answer = json.loads(llm.complete(system, user, json_mode=True).raw_response)
             entry["llm"] = answer if isinstance(answer, dict) else {"error": f"not a JSON object: {answer!r}"[:300]}
+        except UsageLimitReached:
+            raise
         except Exception as exc:  # noqa: BLE001 - each backend raises its own errors; one must not lose the rest
             entry["llm"] = {"error": f"{type(exc).__name__}: {exc}"[:300]}
         _write_json(path, report)

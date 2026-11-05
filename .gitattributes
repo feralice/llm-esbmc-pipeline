@@ -1,0 +1,22 @@
+* text=auto eol=lf
+
+# A patch must keep the bytes of the file it applies to, CRLF included (dataset/disciplina_pgene601/patches).
+*.diff -text
+*.patch -text
+
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.zip binary
+*.gz binary
+*.bz2 binary
+*.xz binary
+*.tar binary
+*.pptx binary
+*.docx binary
+*.xlsx binary
+*.pyc binary

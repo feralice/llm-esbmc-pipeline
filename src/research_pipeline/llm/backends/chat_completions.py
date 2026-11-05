@@ -15,7 +15,7 @@ from ..findings import (
     strip_markdown_json,
 )
 from ..prompts import build_user_prompt, load_system_prompt
-from ..rate_limit import is_daily_quota_exhausted
+from ..rate_limit import UsageLimitReached, call_failure, is_daily_quota_exhausted
 from ..telemetry import response_event
 
 
@@ -92,12 +92,12 @@ class ChatCompletionsAnalyzer:
             except error.HTTPError as exc:
                 details = exc.read().decode("utf-8", errors="replace")
                 if exc.code == 429 and is_daily_quota_exhausted(details):
-                    raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
+                    raise UsageLimitReached(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
                 if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
                     sleep_time = 45 if exc.code == 429 else 2 ** (attempt + 2)
                     time.sleep(sleep_time)
                     continue
-                raise RuntimeError(f"Falha ao chamar API Chat Completions: {exc.code} {details}") from exc
+                raise call_failure(f"Falha ao chamar API Chat Completions: {exc.code} {details}", details) from exc
             except TimeoutError as exc:
                 if attempt < _retries - 1:
                     time.sleep(2 ** attempt)
