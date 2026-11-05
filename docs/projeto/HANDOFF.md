@@ -1,67 +1,58 @@
-# Handoff (05/11/2026, manhã)
+# Handoff (05/11/2026, fim da sessão)
 
 Para outra IA continuar. Leia antes o CLAUDE.md do repo e a memória em
-`~/.claude/projects/-home-fernanda-mestrado-llm-esbmc/memory/` (em especial `project_improvements_2026-11-04.md`).
-Existe também `docs/projeto/HANDOFF_2026-11-04_PIPELINE.md`, escrito pela sessão do Codex dela em 04/11:
-o estado descrito lá foi superado por este arquivo (a junção parcial que ele cita foi desfeita e refeita).
+`~/.claude/projects/-home-fernanda-mestrado-llm-esbmc/memory/` (em especial `feedback_esbmc_always_newest.md`,
+`feedback_auto_lessons.md`, `feedback_issue_only_without_pr.md`, `project_improvements_2026-11-04.md`).
+`docs/projeto/HANDOFF_2026-11-04_PIPELINE.md` (sessão do Codex de 04/11) está superado por este arquivo.
 
 ## Regras que valem sempre
 
-- Nenhum commit, push, tag ou PR sem pedido explícito dela. Sem coautoria de IA.
-- Nenhuma chamada de API paga sem o ok dela.
-- ESBMC congelado do pipeline: `~/esbmc-master` (build-bw, d520a903ae). Não mexer nesse checkout
-  (`verify/esbmc_knowledge.py` lê o git dele).
-- Português, palavras simples, nunca travessão. Branch: `feat/harness-de-agente`.
-- Backups desta sessão: `~/mestrado/backup_llm_esbmc_2026-11-05/` (junção parcial do Codex, skill V1, patch 9843).
+- Commit só com pedido dela (nesta sessão ela pediu para commitar as melhorias). Push, tag e PR só com pedido.
+  Sem coautoria de IA. Não adicionar os dois PDFs da raiz.
+- Nenhuma chamada de API paga sem ok dela.
+- ESBMC: **sempre o master mais novo** ao congelar ou rodar experimentos (decisão dela, 05/11).
+- Issue do ESBMC: só trabalhar (ou abrir) se **não existir PR** para ela, e só se for fácil.
+- Português, palavras simples, nunca travessão. Branch do repo: `feat/harness-de-agente`.
+- Backups desta sessão: `~/mestrado/backup_llm_esbmc_2026-11-05/`; binário antigo: `~/esbmc-bin/esbmc-d520a903ae`.
 
-## Estado
+## O que já está feito (commitado, sem push)
 
-1. **25 melhorias (lotes A a E) juntadas no checkout principal, sem commit.** Patches aplicados com
-   `git apply --3way` a partir dos worktrees `.claude/worktrees/agent-*` (ainda existem; podem ser apagados
-   depois do commit). 7 conflitos resolvidos mantendo os dois lados. Relatórios por lote em
-   `docs/experimentos/melhorias_2026-11-04/lote_{A..E}.md`. Skill V2 copiada para
-   `.claude/skills/llm-esbmc-pipeline/skill.md`.
-   - Suíte inteira rodando em duas metades (logs no scratchpad da sessão, `merge/h1.log`, `h2.log`).
-     Conferir que passa antes de qualquer commit. `pylint` não está instalado; os lotes usaram `ruff`.
-   - Não feitos por limite do ESBMC: itens 4 (57, 61/62), 10; item 17 parcial (async medido, nada reabilitado);
-     item 12 sem veredito novo medido (máquina carregada).
-2. **Decisões pendentes dela** (propostas padrão entre parênteses):
-   `.patch/.diff` sem conversão de fim de linha (sim); Codex como assinatura (sim); `--heal` no fingerprint
-   do hybrid (sim, ainda não implementado); checkpoint `artifacts/pgene601/codex-2026-11-03` não retoma com
-   o fingerprint novo (preservar, refazer se precisar); harness com `asyncio.run` (depois); hipótese de valor
-   no agente, item 7 (feito); `Optional[tuple]` item 10 (esperar ESBMC novo).
-3. **Ela quer congelar de novo.** Falta: suíte verde, revisão do diff junto, registro no
-   `docs/experimentos/README.md`, decidir se o novo congelamento usa ESBMC master novo (o professor corrigiu
-   #9835, #9836, #9838, #9840 a #9843 em 04 e 05/11) ou continua no d520, commit e tag com o ok dela.
-4. **ESBMC:** abertas só #9837 e #9839. Nossa correção da #9843 ficou sem uso (o professor fez o PR #9863).
-   Um subagente está atualizando `docs/projeto/possiveis_problemas/` contra o master novo, com checagem de
-   assert trocado, e vendo se dá para ajudar nas abertas; ele usa `~/esbmc-wt/issue-9843` atualizado para o
-   master. Achados F1/F2/F3 da revisão da 9843 (padding de tupla em `in`, desempacotar, `len`; int em tupla
-   de float) entram como candidatos no catálogo se ainda falharem.
+9 commits sobre `dc64068`, de `793cc12` a `f1e480b`: as 25 melhorias (lotes A a E), `--heal` no fingerprint do
+hybrid, item 17b (`async def` via `asyncio.run`), catálogo `possiveis_problemas` medido no master `451f54cab6`,
+docs (PLANO, README de experimentos). Suíte: **1546 passaram, 0 falharam** (rodar em pedaços de até 10 min:
+`ls tests/test_*.py | split -n r/6`, cada pedaço com `timeout 10m .venv/bin/python -m pytest -q -p no:cacheprovider`).
+Issues abertas por nós em 05/11: #9953 e #9954 (Optional[tuple], sem PR, paradas por falta de tokens).
 
-## Atualização 05/11 (tarde)
+## O que falta, NESTA ORDEM (ordem dela)
 
-- **Suíte com as 25 melhorias juntas: 1531 passaram, 0 falharam** (5 pedaços; um teste de integração foi
-  atualizado porque o lote C manteve a guarda de atributo `None` de propósito). Depois disso entrou
-  `"heal": args.heal` no config do fingerprint do hybrid (`src/main.py`, teste
-  `test_a_resume_under_another_heal_mode_is_refused`).
-- **Rodando quando esta nota foi escrita:** subagente do item 17b (harness chama `async def` com
-  `asyncio.run`, escreve no checkout principal e anexa seção ao `lote_B.md`) e subagente da **#9074** no
-  worktree `~/esbmc-wt/issue-9074` (WIP `daacfa453e` aplicado; falta o falso FAILED de `kw.get('error')`
-  sem default tipado `void *`, testes, Mode C, revisão, cobertura). Sem commit, sem PR.
-- **`possiveis_problemas` atualizado** contra o master `451f54cab6` (saíram 46, 47, 56, 61, 62, 64, 67, 68,
-  69; entraram 70, 71, 72). Issues novas abertas com o ok dela: **#9953** (70/71) e **#9954** (72).
-  Ela decidiu: issue que já tem PR não se mexe (#9837 tem #9864, #9839 tem #9861); #9953 e #9954 ficam
-  paradas por falta de tokens (avaliar antes se são fáceis; worktree `~/esbmc-wt/issue-9953` pode ter build
-  pela metade).
-- **Pedido dela para fechar:** depois da #9074, rever `possiveis_problemas` e as melhorias e **commitar tudo**
-  (autorizado): commits separados por lote (A, B, C, D, E, item 17b, heal no fingerprint, catálogo),
-  sem coautoria de IA, sem os dois PDFs da raiz. Antes: rodar a suíte de novo (em pedaços de até 10 min),
-  registrar no `docs/experimentos/README.md`. Push e tag só com pedido dela; congelamento novo ainda
-  depende de ela escolher o ESBMC (master novo, recomendado, ou d520).
+1. **Terminar a #9074** (`**kwargs` no `__init__`, sem PR). Worktree `~/esbmc-wt/issue-9074`, branch
+   `fix/issue-9074`, WIP `daacfa453e` aplicado sem commit. Falta: o falso FAILED de `Box(error=1)` +
+   `b._error == 1` (atributo de `kw.get('error')` sem default fica `void *`), testes `regression/python/github_9074*`
+   com pares `_fail`, `scripts/check_python_tests.sh github_9074`, subconjunto ctest (vararg, kwargs, 9073,
+   9002, 8497, 9341, 9304, 9539), clang-format 23.1.1, Mode C (Bitwuzla e Z3), `code-reviewer`,
+   `esbmc-coverage-pr` Mode B. Um subagente estava nisso; conferir o estado do worktree. Mostrar a ela antes
+   de abrir PR (label `python`, título `[python] ...`, `Fixes #9074`).
+2. **Ajustar o self-healing: lições automáticas** (decisão dela). Toda correção do harness que passa nas
+   checagens de candidata (`scripts/v2_repair_candidates.py`; sem `STUB_INDUCED`, sem mudar o comportamento
+   da função) entra no caderno na hora, com origem "automatica", data, rodada, caso e mensagem do ESBMC;
+   sem duplicatas; `notebook_version` por caso; flag `--no-auto-lessons` (entra no fingerprint do hybrid e do
+   scan); entrada no `docs/experimentos/README.md` avisando que o resultado passa a depender da ordem dos casos.
+   **Feito em 05/11** (commit logo após `f1e480b`; suíte 1566 passaram). Lições ficam em
+   `verify/skills/reparos-aprendidos/SKILL.md`, que é rastreado no git: rodadas normais vão deixá-lo modificado.
+3. **Compilar o ESBMC mais novo e conferir:** `~/esbmc-master` já está no código `451f54cab6` (o `pull` foi
+   feito), mas o binário `build-bw` ainda é o antigo (build interrompido). Fazer `git -C ~/esbmc-master pull
+   --ff-only origin master`, `ninja -C ~/esbmc-master/build-bw esbmc`, `--version`, e rodar
+   `tests/test_verify_esbmc_integration.py` (as sondas de capacidade podem ligar ou desligar regras com o
+   binário novo; ajustar testes só se a mudança for esperada e explicada).
+4. **Trocar o pipeline para o ESBMC novo e congelar:** o pipeline já usa `~/esbmc-master/esbmc.sh`, então basta o
+   binário novo. Registrar no `docs/experimentos/README.md` o commit do pipeline e do ESBMC; criar tag
+   `v2-congelado-2026-11c` e fazer push só com o ok dela.
+5. **Rever `docs/projeto/possiveis_problemas/`** com o binário novo: rodar `rodar.sh`, fazer a checagem de
+   trocar o valor do assert nos que passarem, tirar os corrigidos (como em 03/11 e 05/11), anotar o resto.
 
-## Depois do congelamento
+## Depois disso
 
-Ordem dela: 8a, 8b, 8c, 13 (grafo para o agente), 12 (extensão), porte para o Codex
-(`docs/superpowers/specs/2026-11-03-esbmc-codex-port-design.md`). Cada frente: brainstorming e plano antes,
-base na literatura. Depois os experimentos (47 da disciplina PGENE601, prazo 08/12).
+Experimentos (ela quer começar logo): 47 bugs da disciplina PGENE601 (prazo 08/12), item 14 (bug semeado),
+smells 200. Depois, na ordem dela: 8a, 8b, 8c, 13 (grafo para o agente), 12 (extensão), porte para o Codex
+(`docs/superpowers/specs/2026-11-03-esbmc-codex-port-design.md`); cada frente com brainstorming e plano antes.
+Atenção: o fingerprint novo recusa `--resume` de checkpoints antigos (ex.: `artifacts/pgene601/codex-2026-11-03`).
