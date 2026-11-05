@@ -269,6 +269,14 @@ def test_default_selection_does_not_report_a_centrality_it_never_measured(tmp_pa
     assert selection["targets"][0]["centrality"] is None
 
 
+def _fake_esbmc(tmp_path: Path) -> str:
+    binary = tmp_path / "bin" / "esbmc"
+    binary.parent.mkdir(exist_ok=True)
+    binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    binary.chmod(0o755)
+    return str(binary)
+
+
 def test_cli_scan_verify_agent_uses_the_agent_verifier(tmp_path: Path, monkeypatch) -> None:
     seen = {}
 
@@ -282,19 +290,58 @@ def test_cli_scan_verify_agent_uses_the_agent_verifier(tmp_path: Path, monkeypat
                         ((lambda *a: "DONE"), True))
     monkeypatch.setattr(main, "execute_scan", lambda plan, **kw: seen.setdefault("scan", kw) and
                         {"detection": {"failed": 0}})
+    monkeypatch.setattr(main, "agent_verifier", lambda agent, **kw: seen.setdefault("verifier", kw) and (lambda: 0))
+    esbmc = _fake_esbmc(tmp_path)
     code = _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir",
                                    str(tmp_path / "out"), "--backend", "openai", "--model", "gpt-5.5", "--yes",
-                                   "--esbmc-command", "esbmc", "--scan-verify", "agent"])
+                                   "--esbmc-command", f"{esbmc} --python python3", "--scan-verify", "agent"])
     assert code == 0
     assert seen["agent"][0] == "claude" and seen["agent"][1]["graph_tool"] is True
-    assert callable(seen["scan"]["verify"])
+    assert seen["agent"][1]["esbmc"] == esbmc
+    assert seen["verifier"]["esbmc_command"] == [esbmc, "--python", "python3"]
+    assert callable(seen["scan"]["verify"]) and "rules" not in seen["scan"]
+
+
+def test_cli_scan_verify_agent_fails_clearly_without_the_esbmc_binary(tmp_path: Path, monkeypatch, capsys) -> None:
+    monkeypatch.setattr(main, "build_analyzer", lambda **kw: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", lambda **kw: type("C", (), {"model": kw["model"]})())
+    monkeypatch.setattr(main, "make_agent", lambda *a, **kw: pytest.fail("agent built without an ESBMC"))
+    missing = str(tmp_path / "no" / "esbmc")
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir",
+                                   str(tmp_path / "out"), "--backend", "openai", "--model", "gpt-5.5", "--yes",
+                                   "--esbmc-command", missing, "--scan-verify", "agent"]) == 1
+    assert missing in capsys.readouterr().err
+
+
+def test_cli_scan_engine_uses_the_capability_probes_like_hybrid(tmp_path: Path, monkeypatch) -> None:
+    from research_pipeline.verify.rules import ALL_RULES
+    probed = {"reason": "sondas", "key": "k", "identity": {}, "active_rules": [],
+              "disabled_rules": ["compat_percent_format"], "results": {}}
+    seen, calls = {}, []
+
+    class Client:
+        def __init__(self, **kwargs):
+            self.model = kwargs["model"]
+
+    monkeypatch.setattr(main, "build_analyzer", lambda **kw: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", Client)
+    monkeypatch.setattr(main, "resolve_rules", lambda command, **kw: seen.setdefault("probe", (command, kw)) and probed)
+    monkeypatch.setattr("research_pipeline.scan.pipeline.run_verify", _fake_verify(calls))
+    out = tmp_path / "out"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir", str(out),
+                                   "--backend", "openai", "--model", "gpt-5.5", "--yes", "--bound", "4",
+                                   "--esbmc-command", "esbmc", "--no-capability-probes"]) == 0
+    command, kwargs = seen["probe"]
+    assert command == ["esbmc"] and kwargs["enabled"] is False and kwargs["bound"] == 4
+    assert calls[0]["kwargs"]["rules"] == ALL_RULES - {"compat_percent_format"}
+    assert json.loads((out / "scan_report.json").read_text(encoding="utf-8"))["config"]["capabilities"] == probed
 
 
 def test_focus_changes_the_scan_fingerprint(tmp_path: Path) -> None:
-    from research_pipeline.scan.pipeline import _fingerprint
+    from research_pipeline.scan.pipeline import _detection_fingerprint
     a = plan_scan(_repo(tmp_path), tmp_path / "a", focus="parsing")
     b = plan_scan(_repo(tmp_path), tmp_path / "b", focus="math")
-    assert _fingerprint(a, "m") != _fingerprint(b, "m")
+    assert _detection_fingerprint(a, "m") != _detection_fingerprint(b, "m")
 
 
 def test_cli_scan_focus_reaches_the_selection(tmp_path: Path, monkeypatch) -> None:
@@ -322,13 +369,19 @@ def test_agent_results_without_tokens_report_cost_as_unmeasured(tmp_path: Path) 
     assert "AGENT_FAILED" in (tmp_path / "out" / "scan_summary.md").read_text(encoding="utf-8")
 
 
-def test_resume_refuses_a_different_verifier(tmp_path: Path) -> None:
-    from research_pipeline.verify.agent_scan import agent_verifier
+def test_a_different_verifier_keeps_the_detection_and_reruns_verify_from_scratch(tmp_path: Path) -> None:
     plan = plan_scan(_repo(tmp_path), tmp_path / "out")
     execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]))
-    agent = agent_verifier(lambda *a: "DONE", esbmc_command=["esbmc"], bound=5, timeout_seconds=1, agent_timeout=1)
-    with pytest.raises(ValueError, match="cannot resume"):
-        execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, resume=True, verify=agent)
+    calls, analyzer = [], _Analyzer()
+
+    def agent(hypotheses, **kw):
+        calls.append(kw["completed"])
+        return _fake_verify([])(hypotheses, **kw)
+    agent.label = "agent:x"
+    execute_scan(plan, analyzer=analyzer, spec_llm=None, resume=True, verify=agent)
+    assert analyzer.units == [] and calls == [{}]
+    [moved] = (tmp_path / "out").glob("scan_verify_discarded_*.json")
+    assert json.loads(moved.read_text(encoding="utf-8"))["verify_results"]
 
 
 def test_failed_detection_is_reported_not_read_as_a_clean_repo(tmp_path: Path) -> None:
@@ -371,16 +424,37 @@ def test_resume_refuses_a_checkpoint_saved_by_position(tmp_path: Path) -> None:
 def test_prompt_change_changes_the_scan_fingerprint(tmp_path: Path, monkeypatch) -> None:
     from research_pipeline.scan import pipeline
     plan = plan_scan(_repo(tmp_path), tmp_path / "out")
-    before = pipeline._fingerprint(plan, "m")
+    before = pipeline._detection_fingerprint(plan, "m")
     monkeypatch.setattr(pipeline, "load_system_prompt", lambda **kw: "another prompt")
-    assert pipeline._fingerprint(plan, "m") != before
+    assert pipeline._detection_fingerprint(plan, "m") != before
 
 
-def test_verify_config_changes_the_scan_fingerprint(tmp_path: Path) -> None:
+def test_verify_config_change_reruns_verify_but_never_mixes_verdicts(tmp_path: Path) -> None:
     plan = plan_scan(_repo(tmp_path), tmp_path / "out")
     execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]), bound=5)
+    calls, analyzer = [], _Analyzer()
+    execute_scan(plan, analyzer=analyzer, spec_llm=None, resume=True, verify=_fake_verify(calls), bound=9)
+    assert analyzer.units == [] and calls[0]["completed"] == {}
+    calls.clear()
+    execute_scan(plan, analyzer=analyzer, spec_llm=None, resume=True, verify=_fake_verify(calls), bound=9)
+    assert list(calls[0]["completed"]) == [0]
+
+
+def test_spec_model_and_probe_rules_enter_the_verify_fingerprint() -> None:
+    from research_pipeline.scan.pipeline import _verify_fingerprint
+    assert _verify_fingerprint(spec_model="openai:a") != _verify_fingerprint(spec_model="openai:b")
+    assert (_verify_fingerprint(verify_config={"rules": frozenset({"x", "y"})})
+            != _verify_fingerprint(verify_config={"rules": frozenset({"x"})}))
+
+
+def test_a_detection_change_still_refuses_the_resume(tmp_path: Path) -> None:
+    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
+    execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]))
+
+    class Other(_Analyzer):
+        model = "another-model"
     with pytest.raises(ValueError, match="cannot resume"):
-        execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, resume=True, verify=_fake_verify([]), bound=9)
+        execute_scan(plan, analyzer=Other(), spec_llm=None, resume=True, verify=_fake_verify([]))
 
 
 def test_verify_objects_do_not_break_a_resume(tmp_path: Path) -> None:
@@ -397,14 +471,15 @@ def _product_and_examples(tmp_path: Path) -> Path:
         (root / folder / "demo.py").write_text("from calc import ratio\n\ndef demo(n):\n    return ratio(1, n)\n",
                                                encoding="utf-8")
     (root / "setup.py").write_text("def version(parts):\n    return parts[0]\n", encoding="utf-8")
-    (root / "aio.py").write_text("async def fetch(xs):\n    return xs[0]\n", encoding="utf-8")
+    (root / "aio.py").write_text("async def fetch(xs):\n    return xs[0]\n"
+                                 "class Client:\n    async def get(self, xs):\n        return xs[0]\n", encoding="utf-8")
     return root
 
 
 def test_selection_skips_examples_docs_setup_and_async_but_keeps_them_as_callers(tmp_path: Path) -> None:
     plan = plan_scan(_product_and_examples(tmp_path), tmp_path / "out")
     assert sorted(t.qualname for t in plan.targets) == ["first", "head", "label", "mean", "ratio"]
-    assert plan.to_dict()["excluded"] == {"examples": 2, "setup": 1, "async": 1}
+    assert plan.to_dict()["excluded"] == {"examples": 2, "setup": 1, "async_esbmc": 1, "async_harness": 1}
     ratio = next(t for t in plan.targets if t.qualname == "ratio")
     assert ratio.callers == 4
 
@@ -437,18 +512,42 @@ def test_scan_report_has_levels_for_the_engine_and_for_the_agent(tmp_path: Path)
     report = execute_scan(plan_scan(_repo(tmp_path), tmp_path / "o2"), analyzer=_Analyzer(), spec_llm=None,
                           verify=agent)
     assert report["levels"]["summary"]["by_level"] == {"esbmc_agent": 1}
-    assert "esbmc_agent" in (tmp_path / "o2" / "scan_summary.md").read_text(encoding="utf-8")
+    assert "- Nível que decidiu: ESBMC pelo agente: 1." in (tmp_path / "o2" / "scan_summary.md").read_text(
+        encoding="utf-8")
 
 
 def test_heal_mode_and_paths_change_the_scan_fingerprint(tmp_path: Path) -> None:
-    from research_pipeline.scan.pipeline import _fingerprint
+    from research_pipeline.scan.pipeline import _verify_fingerprint
     from research_pipeline.verify.healing import build_healer
-    plan = plan_scan(_repo(tmp_path), tmp_path / "out")
     error = build_healer("error", llm=None, esbmc_command=None)
     kb = build_healer("error+kb", llm=None, esbmc_command=None, cache_dir=tmp_path / "kb")
-    assert _fingerprint(plan, "m", verify_config={"healer": error}) != _fingerprint(plan, "m", verify_config={"healer": kb})
-    assert (_fingerprint(plan, "m", verify_config={"p": tmp_path / "a"})
-            != _fingerprint(plan, "m", verify_config={"p": tmp_path / "b"}))
+    assert _verify_fingerprint(verify_config={"healer": error}) != _verify_fingerprint(verify_config={"healer": kb})
+    assert (_verify_fingerprint(verify_config={"p": tmp_path / "a"})
+            != _verify_fingerprint(verify_config={"p": tmp_path / "b"}))
+
+
+def test_example_folders_are_excluded_whatever_their_case_and_samples_too(tmp_path: Path) -> None:
+    root = _repo(tmp_path)
+    for folder in ("Examples", "samples", "Sample", "pkg/Docs"):
+        (root / folder).mkdir(parents=True)
+        (root / folder / "demo.py").write_text("def demo(xs):\n    return xs[0]\n", encoding="utf-8")
+    plan = plan_scan(root, tmp_path / "out")
+    assert "demo" not in {t.qualname for t in plan.targets} and plan.excluded["examples"] == 4
+
+
+def test_caller_depth_reaches_the_prompt_context_and_the_selection(tmp_path: Path, monkeypatch) -> None:
+    root = _repo(tmp_path)
+    (root / "top.py").write_text("from app import mean\n\ndef report(xs):\n    return mean(xs)\n", encoding="utf-8")
+    shallow = next(t for t in plan_scan(root, tmp_path / "a").targets if t.qualname == "ratio")
+    deep_plan = plan_scan(root, tmp_path / "b", caller_depth=2)
+    deep = next(t for t in deep_plan.targets if t.qualname == "ratio")
+    assert "# call in report" not in shallow.unit.caller_context
+    assert "# call in report, top.py, line 4 (to mean" in deep.unit.caller_context
+    assert deep_plan.to_dict()["caller_depth"] == 2
+    out = tmp_path / "cli"
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(root), "--output-dir", str(out),
+                                   "--backend", "openai", "--scan-caller-depth", "2"]) == 0
+    assert json.loads((out / "scan_selection.json").read_text(encoding="utf-8"))["caller_depth"] == 2
 
 
 def test_setup_py_is_left_out_only_at_the_root(tmp_path: Path) -> None:

@@ -2,7 +2,8 @@
 
 Resolution is conservative: a call gets a callee only when the name can be bound without running
 the code (same-module definitions, imports of repository modules, ``self``/``cls``/``super()``
-inside a class, ``Class(...)`` to ``Class.__init__``). Everything else is recorded as external.
+inside a class, ``Class(...)`` to ``Class.__init__``, a local bound only to ``Class(...)`` or annotated
+``Class``). Everything else is recorded as external.
 """
 
 from __future__ import annotations
@@ -33,6 +34,7 @@ class FunctionNode:
     top_level: bool = True
     ambiguous: bool = False
     is_async: bool = False
+    async_limit: str = ""  # why ESBMC-Python refuses this async function; "" when it verifies the shape
 
     @property
     def key(self) -> str:
@@ -208,6 +210,10 @@ class _Builder:
         for module in self.modules.values():
             self._index(module, module.tree, [], "", nested=False, direct=True)
         calls = []
+        for key, node in self.ast_of.items():
+            if isinstance(node, ast.AsyncFunctionDef):
+                function = self.functions[key]
+                self.functions[key] = replace(function, async_limit=self._async_limit(function, node))
         for module in self.modules.values():
             calls.extend(self._module_calls(module))
             for key, node in self.ast_of.items():
@@ -309,17 +315,79 @@ class _Builder:
     def _function_calls(self, module: _Module, function: FunctionNode,
                         node: ast.FunctionDef | ast.AsyncFunctionDef) -> list[CallSite]:
         local = _local_names(node)
-        return [self._site(module, function.key, call, self._resolve(module, function, local, call))
+        types = self._local_types(module, node, local)
+        return [self._site(module, function.key, call, self._resolve(module, function, local, call, types))
                 for call in _own_calls(node.body)]
+
+    def _async_limit(self, function: FunctionNode, node: ast.AsyncFunctionDef) -> str:
+        """ESBMC-Python (measured on d520a903ae) runs a module-level ``async def`` awaited or passed to
+        ``asyncio.run``, and refuses methods, nested coroutines, decorators, ``async for``/``with`` and an
+        ``await`` of anything but a call to a module-level ``async def``."""
+        if function.nested or "." in function.qualname:
+            return "async method or nested coroutine"
+        if node.decorator_list:
+            return "decorated coroutine"
+        module = self.modules[function.module]
+        local = _local_names(node)
+        for child in _own_nodes(node.body):
+            if isinstance(child, (ast.AsyncFor, ast.AsyncWith)) or (
+                    isinstance(child, ast.comprehension) and child.is_async):
+                return "async for or async with"
+            if isinstance(child, ast.Await):
+                callee = (self._resolve(module, function, local, child.value)
+                          if isinstance(child.value, ast.Call) else "")
+                target = self.functions.get(callee)
+                if target is None or not target.is_async or "." in target.qualname:
+                    return "await of something other than a module-level async function"
+        return ""
+
+    def _local_types(self, module: _Module, node: ast.FunctionDef | ast.AsyncFunctionDef,
+                     local: set[str]) -> dict[str, str]:
+        """Locals whose every binding is ``Class(...)`` or an annotation ``Class``, all naming the same
+        repository class; a parameter, an import or any other binding of the name leaves it unknown."""
+        typed: dict[int, str | None] = {}
+        for child in _own_nodes(node.body):
+            if (isinstance(child, ast.Assign) and len(child.targets) == 1 and isinstance(child.targets[0], ast.Name)
+                    and isinstance(child.value, ast.Call)):
+                typed[id(child.targets[0])] = self._class_named(module, child.value.func, local)
+            elif isinstance(child, ast.AnnAssign) and isinstance(child.target, ast.Name):
+                typed[id(child.target)] = self._class_named(module, child.annotation, local)
+        args = node.args
+        found: dict[str, str | None] = {a.arg: None for a in [*args.posonlyargs, *args.args, *args.kwonlyargs,
+                                                               *(a for a in (args.vararg, args.kwarg) if a)]}
+        for child in _own_nodes(node.body):
+            if isinstance(child, ast.Name) and isinstance(child.ctx, (ast.Store, ast.Del)):
+                cls = typed.get(id(child))
+                found[child.id] = cls if found.get(child.id, cls) == cls else None
+            elif isinstance(child, (ast.Global, ast.Nonlocal)):
+                found.update(dict.fromkeys(child.names))
+            elif isinstance(child, (ast.Import, ast.ImportFrom)):
+                found.update(dict.fromkeys(a.asname or a.name.split(".")[0] for a in child.names))
+            elif isinstance(child, ast.ExceptHandler) and child.name:
+                found[child.name] = None
+        return {name: cls for name, cls in found.items() if cls}
+
+    def _class_named(self, module: _Module, expr: ast.expr, local: set[str]) -> str | None:
+        if isinstance(expr, ast.Constant) and isinstance(expr.value, str):
+            try:
+                expr = ast.parse(expr.value, mode="eval").body
+            except SyntaxError:
+                return None
+        dotted = _dotted(expr)
+        if dotted is None or dotted.split(".", 1)[0] in local:
+            return None
+        target = self._dotted_target(module, dotted)
+        return target[1] if target and target[0] == "class" else None
 
     def _site(self, module: _Module, caller: str, call: ast.Call, callee: str) -> CallSite:
         return CallSite(caller, callee, module.file, call.lineno, call.end_lineno or call.lineno,
                         _shorten(ast.unparse(call.func)))
 
-    def _resolve(self, module: _Module, function: FunctionNode | None, local: set[str], call: ast.Call) -> str:
+    def _resolve(self, module: _Module, function: FunctionNode | None, local: set[str], call: ast.Call,
+                 types: dict[str, str] | None = None) -> str:
         func = call.func
         if isinstance(func, ast.Attribute):
-            return self._resolve_attribute(module, function, local, func)
+            return self._resolve_attribute(module, function, local, func, types or {})
         if not isinstance(func, ast.Name):
             return ""
         if function is not None and f"{function.key}.{func.id}" in self.functions:
@@ -329,7 +397,7 @@ class _Builder:
         return self._callable(self._bindings(module.name).get(func.id))
 
     def _resolve_attribute(self, module: _Module, function: FunctionNode | None, local: set[str],
-                           func: ast.Attribute) -> str:
+                           func: ast.Attribute, types: dict[str, str]) -> str:
         receiver = func.value
         owner = self._enclosing_class(function)
         if owner and isinstance(receiver, ast.Name) and receiver.id in self._receiver_names(function):
@@ -337,6 +405,8 @@ class _Builder:
         if (owner and isinstance(receiver, ast.Call) and isinstance(receiver.func, ast.Name)
                 and receiver.func.id == "super"):
             return next((m for base in self._bases(owner) if (m := self._method(base, func.attr))), "")
+        if isinstance(receiver, ast.Name) and receiver.id in types:
+            return self._method(types[receiver.id], func.attr)
         dotted = _dotted(receiver)
         if dotted is None or dotted.split(".", 1)[0] in local:
             return ""
@@ -420,17 +490,20 @@ class _Builder:
         return out
 
 
-def _own_calls(body: list[ast.stmt]) -> list[ast.Call]:
-    """Calls executed by this body, not those inside nested functions or classes (they are nodes of their own)."""
+def _own_nodes(body: list[ast.stmt]) -> list[ast.AST]:
+    """The nodes this body executes, not those inside nested functions or classes (they are nodes of their own)."""
     found, pending = [], list(body)
     while pending:
         node = pending.pop()
         if isinstance(node, (*_FUNCTION_NODES, ast.ClassDef)):
             continue
-        if isinstance(node, ast.Call):
-            found.append(node)
+        found.append(node)
         pending.extend(ast.iter_child_nodes(node))
-    return sorted(found, key=lambda c: (c.lineno, c.col_offset))
+    return found
+
+
+def _own_calls(body: list[ast.stmt]) -> list[ast.Call]:
+    return sorted((n for n in _own_nodes(body) if isinstance(n, ast.Call)), key=lambda c: (c.lineno, c.col_offset))
 
 
 def _local_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> set[str]:

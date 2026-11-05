@@ -130,4 +130,47 @@ def test_nested_sync_functions_are_selectable_and_async_ones_are_not(tmp_path):
     counts = {}
     keys = {t.key for t in select_targets(graph, excluded=counts)[0]}
     assert "m:f.g" in keys and "m:a.b" not in keys
-    assert counts["async"] == 2
+    assert counts["async_harness"] == 2
+
+
+def test_a_local_built_by_a_constructor_or_annotated_resolves_to_the_class_method(tmp_path: Path) -> None:
+    root = _repo(tmp_path, {
+        "shapes.py": "class Box:\n    def area(self):\n        return 1\n",
+        "use.py": "import shapes\nfrom shapes import Box\n\n"
+                  "def built():\n    b = Box()\n    return b.area()\n\n"
+                  "def by_module():\n    b = shapes.Box()\n    return b.area()\n\n"
+                  "def annotated(make):\n    b: Box = make()\n    return b.area()\n\n"
+                  "def quoted(make):\n    b: 'Box' = make()\n    return b.area()\n",
+    })
+    edges = _edges(build_callgraph(root))
+    for caller in ("built", "by_module", "annotated", "quoted"):
+        assert (f"use:{caller}", "shapes:Box.area") in edges
+
+
+def test_a_local_with_another_binding_stays_external(tmp_path: Path) -> None:
+    root = _repo(tmp_path, {"m.py": "class A:\n    def f(self):\n        return 1\n"
+                                    "class B:\n    def f(self):\n        return 2\n"
+                                    "def two(flag):\n    x = A()\n    if flag:\n        x = B()\n    return x.f()\n"
+                                    "def param(x):\n    x = A()\n    return x.f()\n"
+                                    "def loop(xs):\n    x = A()\n    for x in xs:\n        pass\n    return x.f()\n"
+                                    "def call(make):\n    x = make()\n    return x.f()\n"})
+    graph = build_callgraph(root)
+    assert not graph.callers("m:A.f") and not graph.callers("m:B.f")
+
+
+def test_async_limit_names_the_shapes_esbmc_refuses(tmp_path: Path) -> None:
+    root = _repo(tmp_path, {"m.py": "import asyncio\n\n"
+                                    "async def ok(b):\n    return 10 // b\n"
+                                    "async def chained(b):\n    return await ok(b)\n"
+                                    "async def sleeps(b):\n    await asyncio.sleep(0)\n    return 1 // b\n"
+                                    "async def loops(xs):\n    async for x in xs:\n        pass\n"
+                                    "class C:\n    async def m(self, b):\n        return 1 // b\n"
+                                    "def deco(f):\n    return f\n"
+                                    "@deco\nasync def decorated(b):\n    return 1 // b\n"
+                                    "def outer(b):\n    async def inner(x):\n        return 1 // x\n"
+                                    "    return asyncio.run(inner(b))\n"})
+    limits = {key.split(":")[1]: f.async_limit for key, f in build_callgraph(root).functions.items() if f.is_async}
+    assert limits == {"ok": "", "chained": "",
+                      "sleeps": "await of something other than a module-level async function",
+                      "loops": "async for or async with", "C.m": "async method or nested coroutine",
+                      "decorated": "decorated coroutine", "outer.inner": "async method or nested coroutine"}

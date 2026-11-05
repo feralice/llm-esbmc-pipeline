@@ -22,7 +22,16 @@ from ..smells.filter import SmellCandidate, filter_candidates, ruff_candidates
 from ..verify.agent_arm import REPRODUCED_CPYTHON
 from ..verify.candidate import Candidate
 from ..verify.hypothesis import BugHypothesis
-from ..verify.levels import agent_levels, consolidate, level_summary
+from ..verify.levels import (
+    AGENT,
+    CPYTHON,
+    ENGINE,
+    LLM_ONLY,
+    SIMPLIFIED,
+    agent_levels,
+    consolidate,
+    level_summary,
+)
 from ..verify.loop import run_verify
 from ..verify.outcome import CONFIRMED
 from ..verify.report import summarize
@@ -42,8 +51,8 @@ DEFAULT_VARIANTS = ("A1", "A2", "A12")
 OUTPUT_TOKENS_PER_CALL = 1_500
 CHARS_PER_TOKEN = 4
 _RISKY_KINDS = {"division", "subscript"}
-# Code a repository ships for reading, not running: scanning it spends calls on tutorials.
-NON_PRODUCT_DIRS = frozenset({"examples", "example", "docs", "doc"})
+# Code a repository ships for reading, not running: scanning it spends calls on tutorials. Matched ignoring case.
+NON_PRODUCT_DIRS = frozenset({"examples", "example", "samples", "sample", "docs", "doc"})
 
 
 @dataclass
@@ -78,10 +87,11 @@ class ScanPlan:
     focus: str = ""
     excluded: dict[str, int] = field(default_factory=dict)
     only: tuple[str, ...] = ()
+    caller_depth: int = 1
 
     def to_dict(self) -> dict:
         return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus,
-                "only": list(self.only),
+                "only": list(self.only), "caller_depth": self.caller_depth,
                 "candidates_total": self.candidates_total, "excluded": self.excluded,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets]}
@@ -108,34 +118,39 @@ def rank_key(target: Target, rank: str = "callers") -> tuple:
     return (target.risky_operations == 0, importance, -target.risky_operations, target.file, target.start_line)
 
 
-def _in_async(graph: CallGraph, function) -> bool:
+def _async_exclusion(graph: CallGraph, function) -> str:
+    """``async_esbmc`` when ESBMC-Python refuses a coroutine on the way (the function or one enclosing it);
+    ``async_harness`` when ESBMC verifies the shape but neither verifier awaits the target: the engine refuses
+    an async entry point and the agent's notes tell it to stop."""
     parts = function.qualname.split(".")
-    enclosing = (graph.functions.get(f"{function.module}:{'.'.join(parts[:i])}") for i in range(1, len(parts)))
-    return function.is_async or any(f is not None and f.is_async for f in enclosing)
+    chain = [graph.functions.get(f"{function.module}:{'.'.join(parts[:i])}") for i in range(1, len(parts))]
+    coroutines = [f for f in [*chain, function] if f is not None and f.is_async]
+    if not coroutines:
+        return ""
+    return "async_esbmc" if any(f.async_limit for f in coroutines) else "async_harness"
 
 
 def _exclusion(graph: CallGraph, function, include_examples: bool) -> str:
     """Why a function is left out of the selection (it stays in the graph as a caller), or ''."""
-    if _in_async(graph, function):
-        return "async"  # ESBMC-Python does not model coroutines
-    if include_examples:
-        return ""
+    reason = _async_exclusion(graph, function)
+    if reason or include_examples:
+        return reason
     parts = Path(function.file).parts
-    if any(part in NON_PRODUCT_DIRS for part in parts[:-1]):
+    if any(part.lower() in NON_PRODUCT_DIRS for part in parts[:-1]):
         return "examples"
     return "setup" if parts == ("setup.py",) else ""
 
 
 def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "callers",
                    include_examples: bool = False, only: tuple[str, ...] = (),
-                   excluded: dict[str, int] | None = None) -> tuple[list[Target], int]:
+                   excluded: dict[str, int] | None = None, caller_depth: int = 1) -> tuple[list[Target], int]:
     """Returns the selection and how many functions were eligible before ``limit``; ``excluded`` receives the
     count left out per reason. ``only`` (keys or qualified names) keeps just those functions, each with its
     position in the full ranking, so a run on known functions still reports whether the ranking reaches them."""
     units = _units_by_location(graph)
     scores = pagerank(graph) if rank == "pagerank" else {}
     counts = excluded if excluded is not None else {}
-    counts.update({"examples": 0, "setup": 0, "async": 0})
+    counts.update({"examples": 0, "setup": 0, "async_esbmc": 0, "async_harness": 0})
     targets = []
     for function in graph.functions.values():
         if not function.verifiable:
@@ -147,7 +162,7 @@ def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "c
         unit = units.get((function.file, function.start_line))
         if unit is None:
             continue
-        unit = replace(unit, caller_context=caller_context(graph, function.key))
+        unit = replace(unit, caller_context=caller_context(graph, function.key, depth=caller_depth))
         risky = sum(1 for op in unit.operations if op.kind in _RISKY_KINDS)
         targets.append(Target(function.key, str(graph.root / function.file), function.qualname,
                               function.start_line, len(graph.callers(function.key)), risky, unit,
@@ -172,13 +187,16 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
               variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
-              focus: str = "", include_examples: bool = False, only: tuple[str, ...] = ()) -> ScanPlan:
+              focus: str = "", include_examples: bool = False, only: tuple[str, ...] = (),
+              caller_depth: int = 1) -> ScanPlan:
+    if caller_depth < 1:
+        raise ValueError("--scan-caller-depth must be at least 1")
     graph = build_callgraph(root, include_tests=include_tests)
     excluded: dict[str, int] = {}
     targets, total = select_targets(graph, limit=limit, rank=rank, include_examples=include_examples,
-                                    only=only, excluded=excluded)
+                                    only=only, excluded=excluded, caller_depth=caller_depth)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
-                    rank, focus.strip(), excluded, only)
+                    rank, focus.strip(), excluded, only, caller_depth)
     plan.output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
     if smells:
@@ -207,8 +225,10 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
     if nested:
         print(f"{nested} função(ões) interna(s) incluída(s): entram pela função de fora ou levantadas.")
     if any(excluded.values()):
-        print(f"Fora da seleção: {excluded['examples']} em examples/docs, {excluded['setup']} no setup.py da raiz, "
-              f"{excluded['async']} async (o ESBMC-Python não modela)."
+        print(f"Fora da seleção: {excluded['examples']} em examples/samples/docs, {excluded['setup']} no setup.py da "
+              f"raiz, {excluded['async_esbmc']} async que o ESBMC-Python recusa (método, aninhada, decorada, async "
+              f"for/with, await de outra coisa), {excluded['async_harness']} async que o ESBMC verifica mas o "
+              "harness não chama com await."
               + (" Exemplos e setup.py entram com --scan-include-examples." if excluded["examples"] + excluded["setup"]
                  else ""))
     return plan
@@ -230,17 +250,44 @@ def _plain_config(kwargs: dict) -> dict:
     def value_of(value):
         if isinstance(value, Path):
             return str(value)
+        if isinstance(value, (set, frozenset)):
+            return sorted(map(str, value))
         if isinstance(value, plain) or (isinstance(value, (list, tuple)) and all(isinstance(v, plain) for v in value)):
             return value
         return f"{type(value).__name__}:{getattr(value, 'config_label', '')}"
     return {key: value_of(value) for key, value in kwargs.items()}
 
 
-def _fingerprint(plan: ScanPlan, model: str, verifier: str = "engine", verify_config: dict | None = None) -> str:
-    payload = json.dumps({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
-                          "verifier": verifier, "verify_config": _plain_config(verify_config or {}), "prompts": _prompts_hash(plan),
-                          "targets": [t.key for t in plan.targets]}, sort_keys=True)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+def _hash(payload: dict) -> str:
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _detection_fingerprint(plan: ScanPlan, model: str) -> str:
+    return _hash({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
+                  "prompts": _prompts_hash(plan), "targets": [t.key for t in plan.targets]})
+
+
+def _verify_fingerprint(verifier: str = "engine", verify_config: dict | None = None, spec_model: str = "") -> str:
+    return _hash({"verifier": verifier, "verify_config": _plain_config(verify_config or {}), "spec_model": spec_model})
+
+
+def _resume(checkpoint_path: Path, detection: str, verify: str) -> dict:
+    """The saved detection is kept only for the same selection, prompts and model. Verify results are kept only
+    for the same verify settings; otherwise verify starts again from scratch (never mixed with the old verdicts),
+    and the old ones are moved to a file of their own."""
+    saved = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+    if saved.get("detection_fingerprint") != detection:
+        raise ValueError("cannot resume: repository selection, prompts or detection model changed "
+                         "(or the checkpoint predates the split fingerprint)")
+    if saved.get("verify_fingerprint") != verify:
+        old = saved.get("verify_fingerprint") or "unknown"
+        if saved.get("verify_results"):
+            moved = checkpoint_path.with_name(f"scan_verify_discarded_{old[:12]}.json")
+            _write_json(moved, {"verify_fingerprint": old, "verify_results": saved["verify_results"]})
+            print(f"As configurações da verificação mudaram: a detecção salva é reaproveitada e a verificação "
+                  f"recomeça do zero. Os {len(saved['verify_results'])} veredito(s) antigos foram para {moved}.")
+        saved.update(verify_fingerprint=verify, verify_results={})
+    return saved
 
 
 def _detect(analyzer, target: Target) -> dict:
@@ -261,16 +308,19 @@ def _detect(analyzer, target: Target) -> dict:
 
 
 def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
-                 verify: Callable[..., list[dict]] | None = None, **verify_kwargs) -> dict:
+                 verify: Callable[..., list[dict]] | None = None, capabilities: dict | None = None,
+                 **verify_kwargs) -> dict:
+    """``capabilities`` (the probes' report) only goes into the report; the rule set it gave reaches the
+    verifier as the ``rules`` verify setting."""
     checkpoint_path = plan.output_dir / "scan_checkpoint.json"
+    detection = _detection_fingerprint(plan, getattr(analyzer, "model", ""))
     # A verifier names itself (agent_verifier does), so a resume never mixes the engine's verdicts with the agent's.
-    fingerprint = _fingerprint(plan, getattr(analyzer, "model", ""), getattr(verify, "label", "engine"), verify_kwargs)
-    checkpoint = {"fingerprint": fingerprint, "detection": {}, "verify_results": {}}
+    spec_model = f"{getattr(spec_llm, 'backend', '')}:{getattr(spec_llm, 'model', '')}"
+    verify_fp = _verify_fingerprint(getattr(verify, "label", "engine"), verify_kwargs, spec_model)
+    checkpoint = {"detection_fingerprint": detection, "verify_fingerprint": verify_fp, "detection": {},
+                  "verify_results": {}}
     if resume and checkpoint_path.exists():
-        saved = json.loads(checkpoint_path.read_text(encoding="utf-8"))
-        if saved.get("fingerprint") != fingerprint:
-            raise ValueError("cannot resume: repository selection, prompts, model or verify settings changed")
-        checkpoint = saved
+        checkpoint = _resume(checkpoint_path, detection, verify_fp)
 
     def save() -> None:
         _write_json(checkpoint_path, checkpoint)
@@ -297,7 +347,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     results = (verify or run_verify)(hypotheses, llm=spec_llm, output_dir=plan.output_dir, completed=completed,
                      on_result=on_result, **verify_kwargs) if hypotheses else []
     report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer,
-                     agent=getattr(verify, "label", "").startswith("agent"))
+                     agent=getattr(verify, "label", "").startswith("agent"), capabilities=capabilities)
     _write_json(plan.output_dir / "scan_report.json", report)
     (plan.output_dir / "scan_summary.md").write_text(summary_markdown(report), encoding="utf-8")
     held = [{"file": t.file, "function": t.qualname, **entry}
@@ -312,14 +362,15 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
 
 
 def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], results: list[dict],
-            analyzer, agent: bool = False) -> dict:
+            analyzer, agent: bool = False, capabilities: dict | None = None) -> dict:
     levels = agent_levels(results) if agent else consolidate(results)
     rows = [{**t.to_dict(), **detection[t.key]} for t in plan.targets]
     detection_tokens = sum(int(e.get("total_tokens") or 0) for e in getattr(analyzer, "telemetry_events", []))
     return {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "config": {"root": str(plan.root), "variants": list(plan.variants),
-                   "model": getattr(analyzer, "model", "")},
+                   "model": getattr(analyzer, "model", ""), "caller_depth": plan.caller_depth,
+                   "capabilities": capabilities},
         "graph": plan.graph.stats(),
         "detection": {"functions": len(rows), "failed": sum(1 for r in rows if r["error"]),
                       "hypotheses": len(hypotheses), "held": sum(len(r["held"]) for r in rows),
@@ -333,6 +384,15 @@ def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], re
     }
 
 
+_LEVEL_NAMES = {ENGINE: "ESBMC pelo motor", AGENT: "ESBMC pelo agente",
+                SIMPLIFIED: "ESBMC pelo agente com a função simplificada", CPYTHON: "só o CPython",
+                LLM_ONLY: "só a LLM"}
+
+
+def _levels_text(by_level: dict[str, int]) -> str:
+    return "; ".join(f"{_LEVEL_NAMES.get(level, level)}: {count}" for level, count in by_level.items()) or "nenhum"
+
+
 def summary_markdown(report: dict) -> str:
     graph, detection = report["graph"], report["detection"]
     verdicts = {k: v for k, v in report["verification"]["by_verdict"].items() if v}
@@ -344,7 +404,7 @@ def summary_markdown(report: dict) -> str:
         (f"- Detecção: {detection['functions']} funções analisadas ({detection['failed']} com erro), "
          f"{detection['hypotheses']} hipóteses enviadas ao ESBMC, {detection['held']} seguradas pela LLM."),
         f"- Vereditos: {verdicts or 'nenhum'}.",
-        f"- Nível que decidiu: {report['levels']['summary']['by_level'] or 'nenhum'}.",
+        f"- Nível que decidiu: {_levels_text(report['levels']['summary']['by_level'])}.",
     ]
     for title, verdict in (("Confirmados (ESBMC e reexecução no CPython)", CONFIRMED),
                            ("Reproduzidos só no CPython (o ESBMC não decidiu)", REPRODUCED_CPYTHON)):

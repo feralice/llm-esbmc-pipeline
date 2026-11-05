@@ -18,6 +18,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
+import shutil
 import sys
 from hashlib import sha256
 from datetime import datetime, timezone
@@ -74,6 +76,15 @@ def _positive_int(value: str) -> int:
     if parsed < 1:
         raise argparse.ArgumentTypeError("deve ser um inteiro maior ou igual a 1")
     return parsed
+
+class _CommandWords(argparse.Action):
+    """argparse reads a word starting with ``-`` as an option, so flags for ESBMC arrive quoted in one word."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if len(values) == 1 and not Path(values[0]).exists():
+            values = shlex.split(values[0])
+        setattr(namespace, self.dest, values)
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -158,9 +169,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--esbmc-command",
         nargs="+",
+        action=_CommandWords,
         default=None,
         metavar="CMD",
-        help="Comando ESBMC customizado, ex: --esbmc-command esbmc --python python3",
+        help="Comando ESBMC customizado; flags vão entre aspas, ex: --esbmc-command \"esbmc --python python3\"",
     )
     parser.add_argument(
         "--anthropic-api-key",
@@ -311,7 +323,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scan-include-tests", action="store_true",
                         help="Modo scan: inclui arquivos e pastas de teste no grafo e na seleção.")
     parser.add_argument("--scan-include-examples", action="store_true",
-                        help="Modo scan: inclui na seleção examples/, docs/ e setup.py (ficam fora por padrão).")
+                        help="Modo scan: inclui na seleção examples/, samples/, docs/ e setup.py (ficam fora por "
+                             "padrão).")
+    parser.add_argument("--scan-caller-depth", type=_positive_int, default=1, metavar="N",
+                        help="Modo scan: níveis de chamadores no prompt de detecção; 2 mostra também quem chama os "
+                             "chamadores (padrão: 1, só as chamadas diretas). Aumenta o prompt.")
     parser.add_argument("--scan-rank", choices=("callers", "pagerank"), default="callers",
                         help="Modo scan: ordena as funções pelo número de chamadores (padrão) ou pela centralidade "
                              "no grafo (PageRank).")
@@ -731,7 +747,8 @@ def mode_scan(args: argparse.Namespace) -> int:
         plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
                          include_tests=args.scan_include_tests, rank=args.scan_rank,
                          smells=args.scan_smells, focus=args.scan_focus,
-                         include_examples=args.scan_include_examples, only=tuple(args.scan_only))
+                         include_examples=args.scan_include_examples, only=tuple(args.scan_only),
+                         caller_depth=args.scan_caller_depth)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 1
@@ -764,12 +781,24 @@ def mode_scan(args: argparse.Namespace) -> int:
         args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
     verifier = {}
     if args.scan_verify == "agent":
-        esbmc = (args.esbmc_command or [_VERIFY_DEFAULT_ESBMC])[0]
-        agent, _ = make_agent("claude", model=args.agent_model, esbmc=esbmc, bound=args.bound, log_rounds=True,
+        esbmc = args.esbmc_command or [_VERIFY_DEFAULT_ESBMC]
+        if not shutil.which(esbmc[0]):
+            print(f"Erro: o ESBMC do agente não existe ou não é executável: {esbmc[0]}", file=sys.stderr)
+            return 1
+        agent, _ = make_agent("claude", model=args.agent_model, esbmc=esbmc[0], bound=args.bound, log_rounds=True,
                               graph_tool=True)
-        verifier["verify"] = agent_verifier(agent, esbmc_command=[esbmc], bound=args.bound,
+        verifier["verify"] = agent_verifier(agent, esbmc_command=esbmc, bound=args.bound,
                                             timeout_seconds=args.timeout, agent_timeout=args.agent_timeout,
                                             graph_tool=True, model=args.agent_model)
+    else:
+        # The agent writes its own harness and ignores the rewrite rules: only the engine is probed.
+        verifier["capabilities"] = resolve_rules(args.esbmc_command or ["esbmc"],
+                                                 cache_dir=Path(args.capability_cache),
+                                                 enabled=args.capability_probes, bound=args.bound,
+                                                 timeout_seconds=min(args.timeout, 60))
+        verifier["rules"] = ALL_RULES - frozenset(verifier["capabilities"]["disabled_rules"])
+        if verifier["capabilities"]["disabled_rules"]:
+            print("Regras desligadas pelas sondas: " + ", ".join(verifier["capabilities"]["disabled_rules"]))
     try:
         if args.scan_smells:
             judge_smells(plan, spec_llm)

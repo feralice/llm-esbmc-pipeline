@@ -54,6 +54,16 @@ def test_context_is_capped_and_says_how_many_calls_were_left_out(tmp_path: Path)
     assert "call(s) omitted" in text
 
 
+def test_depth_two_adds_the_callers_of_the_callers_after_the_direct_ones(tmp_path: Path) -> None:
+    graph = _graph(tmp_path, SOURCE + "def top(xs):\n    return caller(xs)\n"
+                                      "def loop(n):\n    return loop(n - 1) + ratio(1, n)\n")
+    assert "# call in top" not in caller_context(graph, "m:ratio")
+    text = caller_context(graph, "m:ratio", depth=2)
+    assert text.index("# call in caller, m.py, line 10:") < text.index(
+        "# call in top, m.py, line 13 (to caller, 1 call(s) away from the target):")
+    assert text.count("# call in loop") == 1
+
+
 def test_context_without_callers_says_so(tmp_path: Path) -> None:
     assert caller_context(_graph(tmp_path, "def f(x):\n    return x\n"), "m:f") == NO_CALLERS
 
