@@ -538,6 +538,19 @@ def test_a_checkpoint_from_the_old_fingerprint_format_is_refused_saying_so(tmp_p
     assert code == 1 and "formato da impressão digital mudou" in err
 
 
+def test_a_resume_under_another_heal_mode_is_refused(tmp_path: Path, monkeypatch, capsys) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", _Synthesizer)
+    out = tmp_path / "out"
+    assert main.mode_v2(_detection_args(source, out)) == 0
+    capsys.readouterr()
+    assert main.mode_v2(_detection_args(source, out, "--heal", "none", "--resume")) == 1
+    assert "configuração, prompt ou fontes mudaram" in capsys.readouterr().err
+
+
 def test_a_changed_prompt_with_the_same_format_is_refused_as_before(tmp_path: Path, monkeypatch, capsys) -> None:
     code, err = _resume_with_saved_fingerprint(tmp_path, monkeypatch, capsys,
                                                lambda fp: fp.update(detector_system_prompt="0" * 64))

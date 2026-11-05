@@ -923,6 +923,8 @@ def mode_v2(args: argparse.Namespace) -> int:
         "timeout": args.timeout,
         "llm_timeout": args.llm_timeout,
         "esbmc_command": args.esbmc_command or ["esbmc"],
+        # A resume under another --heal would mix healed and unhealed verdicts.
+        "heal": args.heal,
     }
     if args.max_hypotheses_per_function:
         # Only when given, like fixed_sources: verify_results are indexed by the capped list.
