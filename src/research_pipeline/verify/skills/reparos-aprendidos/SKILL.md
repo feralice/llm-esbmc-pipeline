@@ -14,12 +14,18 @@ description: Repairs learned from earlier harness attempts that ESBMC-Python rej
 
 ## Format of an approved repair
 
-Candidates come from `scripts/v2_repair_candidates.py` (candidatos.md) or the `/self-healing` command. A repair
-enters only after the researcher approves it, through `scripts/add_repair.py`, which checks this format; never
-edit this file by hand. Its version is the hash of this file, which each run records. Each rule:
+Since 05/11 the hybrid and scan runs add a repair here by themselves (Origin: automatica) as soon as it made
+ESBMC reach a verdict on a harness it refused, unless the run passes `--no-auto-lessons`; the same rule is never
+added twice (Key). Older runs are reviewed with `scripts/v2_repair_candidates.py` (candidatos.md) or the
+`/self-healing` command, and a repair the researcher approves enters through `scripts/add_repair.py`, which checks
+this format; never edit this file by hand. Its version is the hash of this file, which each case records. Each
+approved rule:
 
 ### <short title>
 - Error: the first `ERROR:` line ESBMC printed for the refused harness.
 - What to do: the rewrite that made ESBMC reach a verdict without changing the function's behaviour.
 - Source case: the hypothesis id and round the pair came from.
 - Approval date: YYYY-MM-DD.
+
+An automatic rule has Origin, Error, What to do (with the change as a diff), Source case, Run (the output
+folder), Date and Key.

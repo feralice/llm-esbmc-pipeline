@@ -15,6 +15,7 @@ import json
 import re
 import textwrap
 from dataclasses import asdict, dataclass, replace
+from datetime import datetime
 from pathlib import Path
 
 from ..scan.callgraph import CallGraph, FunctionNode
@@ -27,9 +28,9 @@ from .esbmc_knowledge import (
     lookup,
 )
 from .hypothesis import BugHypothesis
-from .lessons import approved_repairs, notebook_version
+from .lessons import add_auto_lesson, first_error, obstacle, read_notebook, teaches_repair
 from .loop import VerifyResult, verify_hypothesis
-from .outcome import ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
+from .outcome import CHECKED, ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parents[1] / "prompts" / "healing_prompt.txt").read_text(encoding="utf-8")
 HEALABLE = frozenset({GROUNDING_FAILED, MISSING_DEPENDENCY, UNSUPPORTED})
@@ -199,22 +200,69 @@ def _function_code(source: str, tree: ast.Module, qualified: str) -> str:
     return ast.get_source_segment(source, function) or "" if function is not None else ""
 
 
+def _lesson_fix(patch: dict) -> str:
+    lines = [line for old, new in patch.get("edits") or ()
+             for line in [*(f"-{x}" for x in old.splitlines()), *(f"+{x}" for x in new.splitlines())]]
+    return "\n".join([*lines, *(f"+{x}" for x in str(patch.get("definitions") or "").splitlines())])
+
+
+_REFUSED = frozenset({MISSING_DEPENDENCY, UNSUPPORTED})
+
+
+def learned_repairs(log: list[dict]) -> list[tuple[dict, str]]:
+    """The rounds whose patch made ESBMC reach a verdict on a program it refused, with the patch as a diff.
+    Left out: a simplified target body, and patches without edits or stubs (a grounding repair moves the
+    hypothesis; code copied from the repository is no rewrite to learn)."""
+    found = []
+    for entry in log:
+        fix = _lesson_fix(entry.get("patch") or {})
+        if (entry.get("verdict_before") in _REFUSED and entry.get("verdict_after") in CHECKED
+                and not entry.get("simplified_body") and fix):
+            found.append((entry, fix))
+    return found
+
+
 class Healer:
     """Proposes one patch per call; the caller validates it with ``patch_problems`` and verifies again."""
 
     def __init__(self, llm, knowledge: KnowledgeIndex | None, graph: CallGraph | None = None,
-                 lessons: str | None = None):
-        """``lessons``: the repairs the researcher approved (default: the notebook the agent arm also reads)."""
+                 lessons: str | None = None, *, auto_lessons: bool = False, run_dir: Path | None = None):
+        """``lessons``: fixed repairs (default: the notebook the agent arm also reads); ``auto_lessons`` appends to
+        that notebook each repair that made ESBMC reach a verdict, naming ``run_dir``, and reads it for each case."""
         self.llm, self.knowledge, self.graph = llm, knowledge, graph
-        self.lessons = (approved_repairs() if lessons is None else lessons).strip()
-        self.lessons_version = (notebook_version() if lessons is None
-                                else hashlib.sha256(self.lessons.encode("utf-8")).hexdigest()[:12])
+        self.auto_lessons, self.run_dir = auto_lessons and lessons is None, run_dir
+        if lessons is None:
+            self.lessons, self.lessons_version = read_notebook()
+        else:
+            self.lessons = lessons.strip()
+            self.lessons_version = hashlib.sha256(self.lessons.encode("utf-8")).hexdigest()[:12]
+
+    def refresh(self) -> str:
+        """With automatic lessons, read the notebook again so a case sees what earlier cases added (a fixed
+        notebook stays as read at the start); returns the version this case reads."""
+        if self.auto_lessons:
+            self.lessons, self.lessons_version = read_notebook()
+        return self.lessons_version
 
     @property
     def config_label(self) -> str:
-        """The heal mode and the notebook version (the hash the agent arm records), for a scan's resume fingerprint."""
+        """The heal mode and the notebook version (the hash the agent arm records), for a scan's resume fingerprint.
+        A notebook that grows during the run is named by ``auto`` instead: each case records the version it read."""
         mode = "error+kb" if self.knowledge is not None else "error"
+        if self.auto_lessons:
+            return f"{mode}+notes:auto"
         return f"{mode}+notes:{self.lessons_version}" if self.lessons else mode
+
+    def learn(self, h: BugHypothesis, log: list[dict], result: dict) -> int:
+        """Append the case's successful repairs to the notebook; returns how many were new."""
+        if not self.auto_lessons or not teaches_repair(result):
+            return 0
+        today = datetime.now().astimezone().date()
+        return sum(add_auto_lesson(error=first_error(entry["reason_before"]), fix=fix,
+                                   reached=f"a verdict ({entry['verdict_after']})",
+                                   case=f"{h.hypothesis_id}, round {entry['round']}",
+                                   run=str(self.run_dir or ""), today=today)
+                   for entry, fix in learned_repairs(log))
 
     def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str, previous: list[dict]) -> Patch | None:
         try:
@@ -268,7 +316,7 @@ class Healer:
         if names:
             task += f"Names to stub: {', '.join(sorted(names))}. How the file uses them:\n{_usage_lines(source, names)}\n"
         if self.lessons:
-            task += f"\nRepairs the researcher approved for earlier cases:\n{self.lessons}\n"
+            task += f"\nRepairs learned on earlier cases (approved by the researcher or added automatically):\n{self.lessons}\n"
         if knowledge:
             task += f"\nESBMC-Python documentation and examples it accepts:\n{knowledge}\n"
         task += '\nGive "edits" and/or "definitions".'
@@ -288,11 +336,6 @@ _INTERNAL = re.compile(r"vector::_M_range_check|json\.exception|irep2_cast_error
                        r"|bad optional access|Z3 error|Incompatible struct in cast-to-struct|std::\w+")
 
 
-def _obstacle(reason: str) -> str:
-    """The refusal without numbers and paths: the same obstacle on another line is still the same obstacle."""
-    return re.sub(r"\S*/\S*|\d+", "", reason)[:200]
-
-
 def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str, rounds: int = 3,
                         spec_llm_after_heal=None, **verify_kwargs) -> VerifyResult:
     """``verify_hypothesis`` plus up to ``rounds`` repairs per obstacle, while the verdict is one ESBMC never
@@ -301,6 +344,7 @@ def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str,
     result = verify_hypothesis(h, source=source, **verify_kwargs)
     if healer is None:
         return result
+    version = healer.refresh()
     log: list[dict] = []
     current, text, replay_text = h, source, source
     spent: dict[str, int] = {}
@@ -310,10 +354,10 @@ def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str,
         if _INTERNAL.search(result.reason):
             result.reason, result.verdict = f"internal ESBMC error (tool bug): {result.reason}", ESBMC_ERROR
             break
-        obstacle = _obstacle(result.reason)
-        if spent.get(obstacle, 0) >= rounds:
+        seen = obstacle(result.reason)
+        if spent.get(seen, 0) >= rounds:
             break
-        spent[obstacle] = spent.get(obstacle, 0) + 1
+        spent[seen] = spent.get(seen, 0) + 1
         entry = {"round": number, "verdict_before": result.verdict, "reason_before": result.reason[:500]}
         log.append(entry)
         patch = healer.propose(current, text, result.verdict, result.reason, log[:-1])
@@ -340,7 +384,8 @@ def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str,
         entry["verdict_after"] = result.verdict
     if result.verdict in HEALABLE:
         result.reason, result.verdict = f"{result.verdict}: {result.reason}", LLM_ONLY
-    result.hypothesis, result.healing = h, log
+    result.hypothesis, result.healing, result.notebook_version = h, log, version
+    healer.learn(h, log, result.to_dict())
     return result
 
 
@@ -348,7 +393,8 @@ HEAL_MODES = ("none", "error", "error+kb")
 
 
 def build_healer(mode: str, *, llm, esbmc_command: list[str] | None, graph: CallGraph | None = None,
-                 cache_dir: Path = KNOWLEDGE_CACHE) -> Healer | None:
+                 cache_dir: Path = KNOWLEDGE_CACHE, auto_lessons: bool = False,
+                 run_dir: Path | None = None) -> Healer | None:
     """``error``: the LLM sees ESBMC's message only; ``error+kb``: also the checkout's README and tests."""
     if mode not in HEAL_MODES:
         raise ValueError(f"heal mode must be one of {HEAL_MODES}")
@@ -358,4 +404,4 @@ def build_healer(mode: str, *, llm, esbmc_command: list[str] | None, graph: Call
     if mode == "error+kb":
         root = esbmc_root_of(esbmc_command or ["esbmc"])
         knowledge = load_index(root, cache_dir) if root is not None else KnowledgeIndex("")
-    return Healer(llm, knowledge, graph)
+    return Healer(llm, knowledge, graph, auto_lessons=auto_lessons, run_dir=run_dir)

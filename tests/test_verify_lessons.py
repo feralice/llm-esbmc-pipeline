@@ -113,13 +113,13 @@ def _propose(lessons):
 
 def test_batch_healing_sees_the_approved_repairs_and_records_their_version():
     healer, task = _propose("### Annotate attributes\n- What to do: annotate.")
-    assert "Repairs the researcher approved for earlier cases" in task and "### Annotate attributes" in task
+    assert "Repairs learned on earlier cases" in task and "### Annotate attributes" in task
     assert "+notes:" in healer.config_label
 
 
 def test_no_section_and_no_version_without_approved_repairs():
     healer, task = _propose("")
-    assert "Repairs the researcher approved" not in task and "notes" not in healer.config_label
+    assert "Repairs learned" not in task and "notes" not in healer.config_label
 
 
 def test_healer_reads_the_notebook_by_default():
@@ -170,7 +170,7 @@ def test_batch_and_agent_arm_share_one_notebook_version():
 
 def test_whitespace_lessons_add_no_section():
     healer, task = _propose("   \n")
-    assert "Repairs the researcher approved" not in task and "notes" not in healer.config_label
+    assert "Repairs learned" not in task and "notes" not in healer.config_label
 
 
 def test_self_healing_is_on_by_default_in_every_flow():

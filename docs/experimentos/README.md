@@ -1461,3 +1461,23 @@ executada sem quebrar ali).
 - **Efeito em rodadas antigas:** o fingerprint novo (lote E e `--heal`) recusa o `--resume` de checkpoints
   feitos antes, entre eles `artifacts/pgene601/codex-2026-11-03` (ainda `running`).
 - **Suíte:** ver o resultado no fim da sessão de 05/11 (registrado no commit).
+
+## Lições automáticas no caderno de reparos (05/11)
+
+- **Decisão de Fernanda (05/11):** toda lição nova entra no caderno de reparos
+  (`src/research_pipeline/verify/skills/reparos-aprendidos/SKILL.md`) sozinha, sem esperar aprovação. Vale para
+  os modos `hybrid` e `scan` do `src/main.py`: no motor, quando um reparo do self-healing faz o ESBMC chegar a um
+  veredito num programa que ele recusava; no agente do scan, quando uma rodada recusada é seguida de uma que chega
+  a veredito. Os filtros são os mesmos do `scripts/v2_repair_candidates.py`: não entra caso `STUB_INDUCED`, caso
+  em que o teste diferencial deu `alterada`, harness com o corpo da função alvo diferente do original, nem reparo
+  que simplificou o corpo da função alvo.
+- **O que fica registrado em cada lição automática:** origem `automatica`, a mensagem de erro do ESBMC que o
+  reparo resolveu, a mudança em forma de diff, o caso (id da hipótese e rodada), a pasta de saída da rodada, a
+  data e uma chave. A mesma mudança para o mesmo erro (sem contar números de linha e caminhos) não entra duas
+  vezes.
+- **Para desligar:** `--no-auto-lessons` mantém o caderno fixo. A opção entra na impressão digital da rodada, então
+  um `--resume` nunca mistura os dois modos.
+- **Cuidado ao comparar resultados:** agora o resultado depende da ordem dos casos, porque um caso pode usar uma
+  lição aprendida num caso anterior da mesma rodada (ou de uma rodada anterior). Todo experimento deve informar o
+  `notebook_version` (gravado em cada caso, é a versão do caderno que aquele caso leu) e a ordem em que os casos
+  rodaram. Para medir sem esse efeito, use `--no-auto-lessons`.

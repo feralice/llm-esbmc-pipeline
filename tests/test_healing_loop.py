@@ -22,6 +22,12 @@ class ScriptedHealer:
         self.calls.append((h, source, verdict, list(previous)))
         return self.patches.pop(0) if self.patches else None
 
+    def refresh(self):
+        return ""
+
+    def learn(self, h, log, result):
+        return 0
+
 
 def _verify(verdicts, seen):
     def fake(h, *, source, llm, **kwargs):

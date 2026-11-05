@@ -265,6 +265,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--heal-rounds", type=int, default=3, help="Rodadas de self-healing por hipótese")
     parser.add_argument(
+        "--no-auto-lessons",
+        dest="auto_lessons",
+        action="store_false",
+        help="Motor verify e agente do scan: mantém o caderno de reparos fixo. Por padrão (decisão de 05/11), todo "
+             "reparo que fez o ESBMC chegar a um veredito entra no caderno na hora, e os casos seguintes o leem.",
+    )
+    parser.add_argument(
         "--spec-context",
         choices=["none", "callers"],
         default="callers",
@@ -687,7 +694,8 @@ def _mode_v2_verify(
             strict_sources=args.verification_sources_strict,
             fixed_sources=Path(args.fixed_sources) if args.fixed_sources else None,
             rules=ALL_RULES - frozenset(capabilities["disabled_rules"]),
-            healer=build_healer(args.heal, llm=llm, esbmc_command=args.esbmc_command),
+            healer=build_healer(args.heal, llm=llm, esbmc_command=args.esbmc_command,
+                                auto_lessons=args.auto_lessons, run_dir=output_path),
             heal_rounds=args.heal_rounds,
         )
         agent_results = (_agent_fallback(args, results, output_path, checkpoint, checkpoint_path)
@@ -805,7 +813,8 @@ def mode_scan(args: argparse.Namespace) -> int:
                               graph_tool=True)
         verifier["verify"] = agent_verifier(agent, esbmc_command=esbmc, bound=args.bound,
                                             timeout_seconds=args.timeout, agent_timeout=args.agent_timeout,
-                                            graph_tool=True, model=args.agent_model)
+                                            graph_tool=True, model=args.agent_model,
+                                            auto_lessons=args.auto_lessons)
     else:
         # The agent writes its own harness and ignores the rewrite rules: only the engine is probed.
         verifier["capabilities"] = resolve_rules(args.esbmc_command or ["esbmc"],
@@ -822,7 +831,8 @@ def mode_scan(args: argparse.Namespace) -> int:
                               esbmc_command=args.esbmc_command, bound=args.bound, timeout_seconds=args.timeout,
                               strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph,
                               healer=build_healer(args.heal, llm=spec_llm, esbmc_command=args.esbmc_command,
-                                                  graph=plan.graph),
+                                                  graph=plan.graph, auto_lessons=args.auto_lessons,
+                                                  run_dir=plan.output_dir),
                               heal_rounds=args.heal_rounds)
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
@@ -926,6 +936,9 @@ def mode_v2(args: argparse.Namespace) -> int:
         # A resume under another --heal would mix healed and unhealed verdicts.
         "heal": args.heal,
     }
+    if args.auto_lessons:
+        # Only when on, so a --no-auto-lessons run keeps the fingerprint of runs that read a fixed notebook.
+        config["auto_lessons"] = True
     if args.max_hypotheses_per_function:
         # Only when given, like fixed_sources: verify_results are indexed by the capped list.
         config["max_hypotheses_per_function"] = args.max_hypotheses_per_function

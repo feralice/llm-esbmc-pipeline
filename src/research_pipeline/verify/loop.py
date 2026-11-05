@@ -70,6 +70,7 @@ class VerifyResult:
     spec_context: dict = field(default_factory=dict)
     control: dict = field(default_factory=dict)
     healing: list[dict] = field(default_factory=list)
+    notebook_version: str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -81,6 +82,7 @@ class VerifyResult:
             **({"spec_context": self.spec_context} if self.spec_context else {}),
             **({"control": self.control} if self.control else {}),
             **({"healing": self.healing} if self.healing else {}),
+            **({"notebook_version": self.notebook_version} if self.notebook_version else {}),
         }
 
 

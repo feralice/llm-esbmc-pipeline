@@ -1,8 +1,9 @@
 """Mine an agent run for repair candidates: a round ESBMC refused followed by one that reached a verdict.
 
-Nothing enters the notebook (src/research_pipeline/verify/skills/reparos-aprendidos/SKILL.md) by itself: this
-writes candidatos.md next to agent_results.json for the researcher to review; an approved rule enters through
-scripts/add_repair.py.
+Since 05/11 the hybrid and scan modes of main.py add these repairs to the notebook
+(src/research_pipeline/verify/skills/reparos-aprendidos/SKILL.md) by themselves, unless --no-auto-lessons; this
+script stays for offline review of other runs (older ones, scripts/v2_agent_arm.py). It writes candidatos.md next to agent_results.json for the researcher to review; a rule she approves enters
+through scripts/add_repair.py.
 
     python scripts/v2_repair_candidates.py artifacts/v2/<agent-run>
 """
@@ -10,7 +11,6 @@ scripts/add_repair.py.
 from __future__ import annotations
 
 import argparse
-import difflib
 import json
 import sys
 from pathlib import Path
@@ -18,8 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from research_pipeline.verify.agent_arm import STUB_INDUCED  # noqa: E402
-from research_pipeline.verify.rounds import read_rounds  # noqa: E402
+from research_pipeline.verify.lessons import round_repairs  # noqa: E402
 
 
 def _load_results(run_dir: Path) -> dict[str, dict]:
@@ -30,28 +29,12 @@ def _load_results(run_dir: Path) -> dict[str, dict]:
             for entry in json.loads(results.read_text(encoding="utf-8"))}
 
 
-def _first_error(output: str) -> str:
-    lines = output.splitlines()
-    return next((line for line in lines if line.startswith("ERROR:")), lines[0] if lines else "")
-
-
 def repair_candidates(case_dir: Path, results: dict[str, dict] | None = None) -> list[dict]:
     """Only finished cases count: no entry in agent_results.json (or no file) means no candidates."""
     case_dir = Path(case_dir)
     if results is None:
         results = _load_results(case_dir.parents[1])
-    entry = results.get(case_dir.name)
-    # A harness whose confirmation came from its own stub, or that changed the behaviour, teaches no repair.
-    if entry is None or STUB_INDUCED in (entry.get("verdict"), (entry.get("first_attempt") or {}).get("verdict")) \
-            or (entry.get("differential") or {}).get("preservation") == "alterada":
-        return []
-    rounds = read_rounds(case_dir)
-    return [{"caso": case_dir.name, "rodada": first.index, "erro": _first_error(first.output),
-             "diff": "".join(difflib.unified_diff(first.source.splitlines(keepends=True),
-                                                  second.source.splitlines(keepends=True),
-                                                  f"rodada {first.index:03d}", f"rodada {second.index:03d}"))}
-            for first, second in zip(rounds, rounds[1:])
-            if first.kind == "refused" and second.kind == "verdict"]
+    return round_repairs(case_dir, results.get(case_dir.name))
 
 
 def write_candidates(run_dir: Path, out: Path) -> int:
@@ -72,7 +55,10 @@ def write_candidates(run_dir: Path, out: Path) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0],
+                                     epilog="Since 05/11 main.py's hybrid and scan runs add these lessons to the "
+                                            "notebook automatically (--no-auto-lessons keeps it fixed); this "
+                                            "script reviews other runs offline.")
     parser.add_argument("run_dir", help="agent-arm output folder (holds cases/ and agent_results.json)")
     args = parser.parse_args()
     out = Path(args.run_dir) / "candidatos.md"
