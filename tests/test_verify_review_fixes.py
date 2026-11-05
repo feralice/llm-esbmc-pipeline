@@ -129,8 +129,8 @@ def test_target_named_main_is_supported():
     assert concrete_replay(program, "main").status == "reproduced"
 
 
-def test_async_target_is_unsupported_not_a_hallucination():
-    result = ground(BugHypothesis("x.py", "f", "1 // a"), "async def f(a):\n    return 1 // a\n")
+def test_an_async_method_is_unsupported_not_a_hallucination():
+    result = ground(BugHypothesis("x.py", "C.f", "1 // a"), "class C:\n    async def f(self, a):\n        return 1 // a\n")
     assert isinstance(result, GroundingFailure) and result.unsupported
 
 

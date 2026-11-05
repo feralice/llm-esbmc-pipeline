@@ -6,6 +6,7 @@ import ast
 import builtins
 import symtable
 import textwrap
+from collections.abc import Callable
 from itertools import pairwise
 
 _INTRINSICS = {
@@ -14,7 +15,8 @@ _INTRINSICS = {
 }
 
 
-def find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | None:
+def find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    """A module-level function (``async def`` included) or a method of a module-level class, defined once."""
     parts = qualified_name.split(".")
     if len(parts) == 1:
         matches = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
@@ -26,7 +28,36 @@ def find_function(tree: ast.Module, qualified_name: str) -> ast.FunctionDef | No
                    and method.name == parts[1]]
     else:
         return None
-    return matches[0] if len(matches) == 1 and isinstance(matches[0], ast.FunctionDef) else None
+    if len(matches) != 1 or (len(parts) == 2 and isinstance(matches[0], ast.AsyncFunctionDef)):
+        return None
+    return matches[0]
+
+
+CROSS_MODULE_AWAIT = "await of a function from another module"
+
+
+def coroutine_limit(function: ast.AsyncFunctionDef, awaited: Callable[[ast.Call], str | None], *,
+                    module_level: bool) -> str:
+    """Why ESBMC-Python (measured on d520a903ae) or the single-module harness cannot run ``function``; ""
+    when it can. It runs a module-level undecorated ``async def`` awaited or passed to ``asyncio.run``, and
+    refuses methods, nested coroutines, decorators, ``async for``/``with`` and an ``await`` of anything but a
+    call to a module-level ``async def``. ``awaited`` gives the limit of the coroutine a call reaches ("" when
+    it has none, CROSS_MODULE_AWAIT when it lives in another module), or None when it is not one."""
+    if not module_level:
+        return "async method or nested coroutine"
+    if function.decorator_list:
+        return "decorated coroutine"
+    for child in _own_nodes(function):
+        if isinstance(child, (ast.AsyncFor, ast.AsyncWith)) or (
+                isinstance(child, ast.comprehension) and child.is_async):
+            return "async for or async with"
+        if isinstance(child, ast.Await):
+            limit = awaited(child.value) if isinstance(child.value, ast.Call) else None
+            if limit is None:
+                return "await of something other than a module-level async function"
+            if limit:
+                return limit
+    return ""
 
 
 _DEFINITIONS = (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
@@ -89,7 +120,7 @@ def entry_of(tree: ast.Module, qualified: str, expression: str = "") -> str | No
         return None
     names = qualified.split(".")
     return next((".".join(names[:i + 1]) for i in range(len(chain) - 1)
-                 if not isinstance(chain[i], ast.ClassDef) and find_function(tree, ".".join(names[:i + 1]))), None)
+                 if isinstance(find_function(tree, ".".join(names[:i + 1])), ast.FunctionDef)), None)
 
 
 def locate(tree: ast.Module, qualified: str, expression: str = "") -> ast.FunctionDef | None:

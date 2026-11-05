@@ -33,8 +33,9 @@ def _source_without_driver(source: str) -> list[str]:
 
 def pytest_reproducer(program: Program, *, function: str, params: dict[str, str], exception: str,
                       esbmc_command: list[str], bound: int, out_dir: Path, name: str,
-                      timeout_seconds: int = 120) -> dict:
-    """Try ESBMC's generator on the confirmed program; returns {"status", "path", "reason"}."""
+                      timeout_seconds: int = 120, coroutine: bool = False) -> dict:
+    """Try ESBMC's generator on the confirmed program; returns {"status", "path", "reason"}. A ``coroutine``
+    is called through ``asyncio.run`` in the program and in the test, which ESBMC writes as a plain call."""
     if "." in function:
         return {"status": "unsupported_shape", "path": "", "reason": "ESBMC's generator handles free functions only"}
     types = [parse_type(text) for text in params.values()]
@@ -43,6 +44,8 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
     out_dir.mkdir(parents=True, exist_ok=True)
     module = out_dir / f"{name}.py"
     call = f"{function}({', '.join(f'__VERIFIER_nondet_{t.kind}()' for t in types)})"
+    if coroutine:
+        call = f"asyncio.run({call})"
     module.write_text("\n".join([*_source_without_driver(program.source), call]) + "\n",
                       encoding="utf-8")
     test = out_dir / f"test_{name}.py"
@@ -60,9 +63,21 @@ def pytest_reproducer(program: Program, *, function: str, params: dict[str, str]
         ast.parse(test.read_text(encoding="utf-8"))
     except SyntaxError as exc:
         return {"status": "invalid", "path": str(test), "reason": f"ESBMC wrote invalid Python: {exc.msg}"}
+    if coroutine:
+        test.write_text(awaited_test(test.read_text(encoding="utf-8"), function), encoding="utf-8")
     # The test imports the module: CPython gets the replayed program (real exceptions), without the call.
     library = "\n".join(_source_without_driver(program.replay_source or program.source)) + "\n"
     return _run_generated_test(test, module, library, exception)
+
+
+def awaited_test(test: str, function: str) -> str:
+    """ESBMC's test with each statement-level call of ``function`` run by ``asyncio.run``."""
+    tree = ast.parse(test)
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Expr) and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name) and node.value.func.id == function):
+            node.value = ast.Call(ast.Attribute(ast.Name("asyncio", ast.Load()), "run", ast.Load()), [node.value], [])
+    return "import asyncio\n" + ast.unparse(ast.fix_missing_locations(tree)) + "\n"
 
 
 def _run_generated_test(test: Path, module: Path, library: str, exception: str) -> dict:

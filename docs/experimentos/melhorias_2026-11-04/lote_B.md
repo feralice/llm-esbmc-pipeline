@@ -197,3 +197,139 @@ Teste: `test_scan_report_has_levels_for_the_engine_and_for_the_agent` confere o 
   o `ruff` do `.venv`. Os arquivos do scan e os testes passam limpos. Em `src/main.py` sobram 3 avisos que
   já existiam antes desta mudança (ordem dos imports e um gerador em `set(...)`); não mexi neles.
 - Não houve commit.
+
+## Item 17b: harness com asyncio.run (05/11)
+
+Feito por um agente de IA (Claude) na cópia principal, sem commit e sem nenhuma chamada a LLM (a
+especificação de entrada foi escrita à mão, como nos testes). Continua o item 17: lá o ESBMC verificava
+certo um formato de função async, mas o motor não chamava a função com `await`. Agora chama.
+
+O que mudou:
+
+- O motor aceita como ponto de entrada uma `async def` do módulo, sem decorador, que o ESBMC consegue
+  rodar: sem `async for`/`async with`, e cujos `await` são todos chamadas a outra `async def` do mesmo
+  módulo que também segue essas regras. O harness chama a função com `asyncio.run(f(...))` e põe
+  `import asyncio` logo antes da função do driver (`_esbmc_main`), nas duas cópias do programa (a do ESBMC
+  e a do replay no CPython), então os números de linha continuam batendo. Numa hipótese de valor errado, o
+  resultado continua indo para `_esbmc_result`: `_esbmc_result: int = asyncio.run(f(...))`.
+- Os outros formatos async continuam recusados, agora com o motivo certo: "async entry point: async method
+  or nested coroutine", "decorated coroutine", "async for or async with", "await of something other than a
+  module-level async function" (por exemplo `await asyncio.sleep(0)`, ou `await` de uma `async def` que o
+  ESBMC recusa) e "await of a function from another module" (o harness do motor só tem um módulo; o nome
+  importado viraria um stub comum, que não pode receber `await`).
+- A regra que decide o formato ficou num lugar só (`coroutine_limit` em `verify/astutil.py`), usada pelo
+  grafo do scan e pelo motor. Antes ela ficava só no grafo (`_async_limit`). Ela agora também olha as
+  funções async que a função espera com `await`: se uma delas tem um formato recusado, a de fora herda o
+  motivo.
+- Replay no CPython: o programa do replay já tem o driver com `asyncio.run`, então a exceção sai de dentro
+  da função async, na mesma linha. O filtro do que pode rodar no host (`sandbox.py`) aceita `import asyncio`
+  só quando o programa usa apenas `asyncio.run`; qualquer outro uso (`asyncio.create_subprocess_shell`, o
+  módulo passado como valor, `import asyncio as x`, `import asyncio.subprocess as x`, `from asyncio...
+  import`) continua recusado.
+- Teste gerado pelo ESBMC (`--generate-pytest-testcase`): o programa dado ao gerador chama
+  `asyncio.run(f(__VERIFIER_nondet_int(), ...))`. O teste que o ESBMC escreve chama `f(a, b)` sem `await`
+  (o corpo não rodaria), então o pipeline reescreve essa chamada para `asyncio.run(f(a, b))` antes de rodar
+  o pytest.
+- Scan: a função async do módulo com formato aceito volta para a seleção, e também uma função comum
+  definida dentro dela (o motor a copia para o nível do módulo, como já fazia com outras funções internas).
+  O grupo `async_harness` agora conta só as funções async que fazem `await` de uma função de outro módulo;
+  `async_esbmc` continua com os formatos que o ESBMC recusa.
+
+O modo agente não mudou: as notas dele continuam mandando parar diante de `async`.
+
+Arquivos: `src/research_pipeline/verify/astutil.py` (`find_function` passa a achar uma `async def` do
+módulo, mas não um método async; `coroutine_limit`; `entry_of` continua só com funções comuns),
+`verify/grounding.py` (`Grounded.coroutine`, `_module_coroutine_limit`), `verify/render.py` (driver),
+`verify/sandbox.py` (`_only_asyncio_run`), `verify/pytest_gen.py` (`pytest_reproducer(coroutine=...)`,
+`awaited_test`), `verify/loop.py` (passa `coroutine`), `scan/callgraph.py` (`_async_limit` usa a regra
+comum), `scan/pipeline.py` (`_async_exclusion` e a frase do terminal).
+
+Testes novos ou alterados (pytest, sem LLM; os que rodam o ESBMC usam o build congelado):
+
+- `tests/test_verify_grounding.py`: `test_a_module_level_coroutine_grounds_as_a_coroutine_entry` e
+  `test_coroutine_shapes_esbmc_or_the_harness_cannot_run_stay_refused` (5 formatos recusados, com o motivo).
+- `tests/test_verify_render.py`: `test_a_coroutine_target_is_run_by_asyncio_in_both_copies` e
+  `test_a_coroutine_value_hypothesis_keeps_the_awaited_result`.
+- `tests/test_verify_replay.py`: `test_a_rendered_coroutine_replays_through_asyncio_run` (ZeroDivisionError
+  na linha da hipótese).
+- `tests/test_verify_sandbox.py`: `test_asyncio_may_run_a_coroutine_and_nothing_else`.
+- `tests/test_verify_pytest_gen.py`: `test_awaited_test_runs_each_call_of_the_coroutine_with_asyncio` e
+  `test_a_coroutine_reproducer_awaits_the_target` (roda o ESBMC e o pytest).
+- `tests/test_verify_esbmc_integration.py`: `test_a_coroutine_is_verified_through_asyncio_run` (uma
+  versão segura e uma com bug, do começo ao fim no motor).
+- `tests/test_scan_callgraph.py`: o teste de funções internas agora espera a async do módulo e a função
+  dentro dela na seleção (e o método async fora); o teste dos motivos ganhou o caso herdado;
+  `test_a_coroutine_awaiting_another_module_is_left_to_the_harness_bucket` é novo.
+- `tests/test_scan_pipeline.py`: `fetch` (async do módulo) entra na seleção; `async_harness` vai a 0.
+- `tests/test_verify_review_fixes.py`: o teste antigo dizia que toda função async era recusada; agora ele
+  confere que um método async é recusado.
+
+Checagem por mutação: 15 mutações, uma por mudança (tirar o `asyncio.run` do driver, tirar o `import
+asyncio`, ignorar o motivo da recusa, não marcar `coroutine`, não reconhecer o nome importado, não
+reescrever o teste gerado, não pôr `asyncio.run` no programa do gerador, a reescrita errar o nome, liberar
+todo o asyncio no sandbox, não liberar nenhum, aceitar `import asyncio.subprocess as x`, o scan tratar toda async como recusada, o grupo
+`async_harness` nunca ser usado, o grafo não herdar o motivo, o loop não passar `coroutine`). Todas foram
+pegas por algum teste. O script está no scratchpad da sessão (`a17b/mut.py`), não no repositório.
+
+Medições (ESBMC congelado d520a903ae). Primeiro, o motor do começo ao fim, sem LLM: o script `a17b/e2e.py`
+do scratchpad chama `verify_hypothesis` com uma especificação fixa (`a`, `b` inteiros; `xs` lista de
+inteiros) e `--unwind 5`, sobre este módulo:
+
+```
+async def scale(b):
+    return b * b + 1
+
+async def safe_ratio(a, b):     # seguro: b * b + 1 nunca é 0
+    d = await scale(b)
+    return a // d
+
+async def ratio(a, b):          # bug: d - 5 é 0 quando b é 2 ou -2
+    d = await scale(b)
+    return a // (d - 5)
+
+async def first(xs):            # bug: xs[0] com a lista vazia
+    total = 0
+    for x in xs:
+        total += await scale(x)
+    return xs[0] + total
+```
+
+| Alvo | ESBMC | Veredito do motor | Replay no CPython | Teste do ESBMC |
+|---|---|---|---|---|
+| `safe_ratio` | SUCCESSFUL | NOT_CONFIRMED | nada reproduzido | (não se aplica) |
+| `ratio` | FAILED (ZeroDivisionError, linha 7) | CONFIRMED | ZeroDivisionError na linha 7, entradas `[-2, -2]` | reproduz |
+| `first` | FAILED (IndexError, linha 9) | CONFIRMED | IndexError na linha 9, entradas `[0, 0]` (lista vazia) | não gerado: o gerador só aceita entradas escalares |
+
+Os mesmos harnesses gravados pelo motor, rodados à mão com
+
+```
+~/esbmc-master/esbmc.sh <harness>.py --unwind 5 --multi-property
+```
+
+deram SUCCESSFUL para `safe_ratio` e FAILED para `ratio` (`[ratio.assertion.1] line 7 uncaught exception:
+ZeroDivisionError`) e `first` (`[first.assertion.3] line 9 uncaught exception: IndexError`). No caso seguro,
+o log mostra que as propriedades da própria `safe_ratio` (divisão por zero na linha 7) foram checadas e
+passaram, então o SUCCESSFUL não vem de o ESBMC ter pulado o corpo. O ESBMC avisa "no operational model for
+module 'asyncio'", mas trata `asyncio.run` mesmo assim, como já mostrava a tabela do item 17. Rodar o
+harness de `ratio` no CPython com as entradas do replay (`a = -2`, `b = -2`) termina em
+`File "ratio_replay.py", line 7, in ratio` / `ZeroDivisionError: integer division or modulo by zero`, de
+dentro do `asyncio.run`.
+
+Scan num repositório real, sem LLM (só o grafo e a seleção), no PyAthena (`~/alvos/PyAthena`): nada muda.
+As 135 funções async de lá são 122 métodos ou funções internas, 12 com `await` de outra coisa e 1 decorada;
+nenhuma é uma `async def` do módulo com formato aceito. Com as funções comuns definidas dentro delas, 142
+ficam em `async_esbmc` e 0 em `async_harness`; 1662 funções selecionáveis, nenhuma async. Ou seja, nesse
+alvo a mudança não traz função nova; ela só vale para repositórios com funções async no nível do módulo.
+
+O que continua de fora: métodos async (`await c.m()`, `await self.helper()`), funções async internas,
+decoradas, com `async for`/`async with`, com `await` de qualquer coisa que não seja uma `async def` do
+mesmo módulo (inclusive `await asyncio.sleep(0)`) e com `await` de função de outro módulo. O teste gerado
+pelo ESBMC continua limitado a entradas escalares, como para funções comuns.
+
+Testes rodados (cada um com `timeout 10m`, `.venv/bin/python -m pytest -q -p no:cacheprovider`):
+`tests/test_scan_*.py` (93 passaram), `tests/test_verify_[a-l]*.py` (496 passaram),
+`tests/test_verify_[m-z]*.py` (481 passaram, depois de atualizar o teste antigo de
+`test_verify_review_fixes.py`), e os arquivos tocados de novo no fim (307 passaram). Lint: `ruff` do
+`.venv` nos arquivos alterados, sem aviso novo nas linhas desta mudança (os avisos que sobram já existiam:
+ordem de imports em `loop.py`, `scan/pipeline.py`, `test_verify_esbmc_integration.py` e
+`test_verify_review_fixes.py`, e `exec` em testes).

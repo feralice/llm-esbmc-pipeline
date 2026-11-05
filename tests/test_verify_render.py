@@ -278,3 +278,22 @@ def test_the_esbmc_copy_reads_the_nondet_clock_and_the_replay_the_real_one():
     assert any(t.startswith("nondet_clock") for t in program.transforms)
     off = render_program(grounded, InputSpec({"start": "float"}, {}, ()), rules=ALL_RULES - {NONDET_CLOCK})
     assert "_esbmc_clock" not in off.source
+
+
+COROUTINE = "async def scale(b):\n    return b * b + 1\n\n\nasync def ratio(a, b):\n    d = await scale(b)\n    return a // (d - 5)\n"
+
+
+def test_a_coroutine_target_is_run_by_asyncio_in_both_copies():
+    grounded = ground(BugHypothesis("m.py", "ratio", "a // (d - 5)"), COROUTINE)
+    program = render_program(grounded, InputSpec({"a": "int", "b": "int"}, {}, ()))
+    for source in (program.source, program.replay_source):
+        assert "import asyncio\n\n\ndef _esbmc_main() -> None:\n" in source
+        assert "    asyncio.run(ratio(a, b))\n" in source
+    assert program.source.splitlines()[program.target_spans[0][0] - 1].strip() == "return a // (d - 5)"
+
+
+def test_a_coroutine_value_hypothesis_keeps_the_awaited_result():
+    grounded = ground(BugHypothesis("m.py", "ratio", "a // (d - 5)", oracle="value"), COROUTINE)
+    spec = InputSpec({"a": "int", "b": "int"}, {}, (), returns="int", postcondition="result >= 0")
+    program = render_program(grounded, spec)
+    assert "    _esbmc_result: int = asyncio.run(ratio(a, b))\n    assert _esbmc_result >= 0\n" in program.source

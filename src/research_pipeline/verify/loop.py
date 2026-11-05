@@ -323,7 +323,8 @@ def _pytest_for(program: Program, grounded: Grounded, spec: InputSpec, replay: R
     params, _ = resolved_types(spec, grounded)
     name = f"bug_{grounded.hypothesis.hypothesis_id}"
     return pytest_reproducer(program, function=grounded.method_name, params=params, exception=replay.exception_type,
-                             esbmc_command=esbmc_command, bound=bound, out_dir=work_dir / "pytest" / name, name=name)
+                             esbmc_command=esbmc_command, bound=bound, out_dir=work_dir / "pytest" / name, name=name,
+                             coroutine=grounded.coroutine)
 
 
 def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Grounded, runs: int,

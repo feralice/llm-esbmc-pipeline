@@ -98,3 +98,55 @@ def test_pytest_seeds_read_the_generated_values(tmp_path):
     test.write_text('@pytest.mark.parametrize("a,b", [\n    (7, 0),\n    (2.5, -1),\n])\ndef test_f(a,b):\n    f(a,b)\n')
     assert pytest_seeds(str(test)) == {"int": [7, 0, -1], "float": [2.5]}
     assert pytest_seeds(str(tmp_path / "missing.py")) == {}
+
+
+ESBMC_TEST = '''from bug import *
+import pytest
+
+@pytest.mark.parametrize("a,b", [
+    (0, 2),
+])
+def test_ratio(a,b):
+    """Auto-generated test cases for ratio"""
+    ratio(a,b)
+'''
+
+
+def test_awaited_test_runs_each_call_of_the_coroutine_with_asyncio():
+    test = pytest_gen.awaited_test(ESBMC_TEST, "ratio")
+    assert test.startswith("import asyncio\n")
+    assert "    asyncio.run(ratio(a, b))" in test and "\n    ratio(a, b)" not in test
+
+
+COROUTINE_PROGRAM = '''async def scale(b: int) -> int:
+    return b * b + 1
+
+
+async def ratio(a: int, b: int) -> int:
+    d = await scale(b)
+    return a // (d - 5)
+
+
+import asyncio
+
+
+def _esbmc_main() -> None:
+    a: int = nondet_int()
+    b: int = nondet_int()
+    asyncio.run(ratio(a, b))
+
+
+_esbmc_main()
+'''
+
+
+@needs_esbmc
+def test_a_coroutine_reproducer_awaits_the_target(tmp_path):
+    from research_pipeline.verify.render import Program
+
+    result = pytest_gen.pytest_reproducer(Program(COROUTINE_PROGRAM, 13, ((7, 7),), ()), function="ratio",
+                                          params={"a": "int", "b": "int"}, exception="ZeroDivisionError",
+                                          esbmc_command=[str(ESBMC)], bound=5, out_dir=tmp_path, name="bug",
+                                          coroutine=True)
+    assert result["status"] == "reproduces", result
+    assert "asyncio.run(ratio(" in Path(result["path"]).read_text(encoding="utf-8")

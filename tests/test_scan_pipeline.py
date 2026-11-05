@@ -478,8 +478,8 @@ def _product_and_examples(tmp_path: Path) -> Path:
 
 def test_selection_skips_examples_docs_setup_and_async_but_keeps_them_as_callers(tmp_path: Path) -> None:
     plan = plan_scan(_product_and_examples(tmp_path), tmp_path / "out")
-    assert sorted(t.qualname for t in plan.targets) == ["first", "head", "label", "mean", "ratio"]
-    assert plan.to_dict()["excluded"] == {"examples": 2, "setup": 1, "async_esbmc": 1, "async_harness": 1}
+    assert sorted(t.qualname for t in plan.targets) == ["fetch", "first", "head", "label", "mean", "ratio"]
+    assert plan.to_dict()["excluded"] == {"examples": 2, "setup": 1, "async_esbmc": 1, "async_harness": 0}
     ratio = next(t for t in plan.targets if t.qualname == "ratio")
     assert ratio.callers == 4
 

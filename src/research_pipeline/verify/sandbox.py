@@ -38,16 +38,28 @@ _UNSAFE_NAMES = frozenset({
 })
 
 
+def _only_asyncio_run(tree: ast.Module) -> bool:
+    """The harness runs a coroutine with ``asyncio.run``; the rest of asyncio (subprocesses, sockets) stays out."""
+    runs = {id(n.value) for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "run"}
+    return all(id(n) in runs for n in ast.walk(tree) if isinstance(n, ast.Name) and n.id == "asyncio")
+
+
 def host_replay_problem(source: str) -> str:
     """Why ``source`` must not run on the host, or "" when it only computes."""
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
         return f"syntax error: {exc.msg}"
+    safe = _SAFE_MODULES | ({"asyncio"} if _only_asyncio_run(tree) else set())
     for node in ast.walk(tree):
+        if isinstance(node, ast.Import) and any(a.name.split(".")[0] == "asyncio" and a.asname not in (None, "asyncio")
+                                                for a in node.names):
+            return "imports asyncio under another name"
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             names = [alias.name for alias in node.names] if isinstance(node, ast.Import) else [node.module or ""]
-            unsafe = [name for name in names if name.split(".")[0] not in _SAFE_MODULES]
+            if isinstance(node, ast.ImportFrom) and names[0].split(".")[0] == "asyncio":
+                return "imports from asyncio"
+            unsafe = [name for name in names if name.split(".")[0] not in safe]
             if unsafe or (isinstance(node, ast.ImportFrom) and node.level):
                 return f"imports {', '.join(unsafe) or 'a relative module'}"
             if isinstance(node, ast.ImportFrom):

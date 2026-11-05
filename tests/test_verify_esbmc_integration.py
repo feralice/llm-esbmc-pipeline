@@ -233,9 +233,35 @@ def test_probes_on_master_switch_off_the_rules_of_fixed_gaps(tmp_path):
     from research_pipeline.verify.rules import BUILTIN_NAMED_METHODS, NONE_ATTRIBUTE
 
     report = probe_capabilities([str(WRAPPER)], cache_dir=tmp_path)
-    # possiveis_problemas 25 (esbmc#9078): fixed by master eaf90d73bb, so its rule switches itself off.
+    # possiveis_problemas 25 (esbmc#9078) is fixed by master eaf90d73bb, but a method at the end of a field
+    # chain whose last link is None is still missed (lote C, 05/11), so the attribute guard stays on.
     assert report["results"]["none_atributo_campo"]["outcome"] == ACEITA
-    assert NONE_ATTRIBUTE not in report["active_rules"]
+    assert report["results"]["none_metodo_cadeia"]["outcome"] != ACEITA
+    assert NONE_ATTRIBUTE in report["active_rules"]
     # possiveis_problemas 27: fixed by master 5d17828, so its rule switches itself off.
     assert report["results"]["metodo_append"]["outcome"] == ACEITA
     assert BUILTIN_NAMED_METHODS not in report["active_rules"]
+
+
+COROUTINES = '''async def scale(b):
+    return b * b + 1
+
+
+async def safe_ratio(a, b):
+    d = await scale(b)
+    return a // d
+
+
+async def ratio(a, b):
+    d = await scale(b)
+    return a // (d - 5)
+'''
+
+
+def test_a_coroutine_is_verified_through_asyncio_run(tmp_path):
+    spec = {"params": {"a": "int", "b": "int"}}
+    safe = _verify(tmp_path / "safe", "safe_ratio", "a // d", spec, COROUTINES)
+    assert safe.verdict == NOT_CONFIRMED, safe.to_dict()
+    bug = _verify(tmp_path / "bug", "ratio", "a // (d - 5)", spec, COROUTINES)
+    assert bug.verdict == CONFIRMED, bug.to_dict()
+    assert (bug.replay["exception_type"], bug.pytest["status"]) == ("ZeroDivisionError", "reproduces")

@@ -394,6 +394,8 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
         call = f"{grounded.class_name}.{grounded.method_name}({args})"
     else:
         call = f"{grounded.method_name}({args})"
+    if grounded.coroutine:
+        call = f"asyncio.run({call})"
     if not postcondition:
         return [*lines, f"    {call}"]
     shape = parse_type(returns)
@@ -477,7 +479,8 @@ def render_program(grounded: Grounded, spec: InputSpec, rules: frozenset[str] = 
     if any(OPAQUE in line for line in [*stubs, *driver]) or OPAQUE in module:
         stubs = [f"class {OPAQUE}:", "    pass", "", "", *stubs]
         transforms.append("opaque_values")
-    body = "\n".join(stubs) + module.rstrip("\n") + "\n\n\n" + "\n".join(driver) + f"\n\n\n{DRIVER}()\n"
+    runner = "import asyncio\n\n\n" if grounded.coroutine else ""
+    body = "\n".join(stubs) + module.rstrip("\n") + "\n\n\n" + runner + "\n".join(driver) + f"\n\n\n{DRIVER}()\n"
     # CPython has these exceptions: the replay gets blank lines instead, so line numbers still match.
     exceptions = "\n".join(_exception_stubs(body))
     replay = "\n" * exceptions.count("\n") + body

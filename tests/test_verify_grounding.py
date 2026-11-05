@@ -1,3 +1,5 @@
+import pytest
+
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.grounding import Grounded, GroundingFailure, ground
 from research_pipeline.verify.hypothesis import BugHypothesis
@@ -371,3 +373,64 @@ def test_a_block_of_several_statements_stays_rejected():
     from research_pipeline.verify.grounding import GroundingFailure, ground
     h = BugHypothesis(file="m.py", function="load", suspect_expression="data = fh.read()\n    data += 'x'")
     assert isinstance(ground(h, BLOCKS), GroundingFailure)
+
+
+ASYNC = '''import asyncio
+from other import fetch
+
+
+async def scale(b):
+    return b * b + 1
+
+
+async def ratio(a, b):
+    d = await scale(b)
+    return a // (d - 5)
+
+
+async def sleeps(b):
+    await asyncio.sleep(0)
+    return 1 // b
+
+
+async def remote(b):
+    return 1 // await fetch(b)
+
+
+async def via_sleeps(b):
+    return await sleeps(b)
+
+
+def deco(f):
+    return f
+
+
+@deco
+async def decorated(b):
+    return 1 // b
+
+
+class C:
+    async def m(self, b):
+        return 1 // b
+'''
+
+
+def test_a_module_level_coroutine_grounds_as_a_coroutine_entry():
+    grounded = ground(_h("ratio", "a // (d - 5)"), ASYNC)
+    assert isinstance(grounded, Grounded) and grounded.unsupported == ""
+    assert grounded.coroutine and grounded.entry == "function"
+    assert not ground(_h("scale", "b * b + 1"), "def scale(b):\n    return b * b + 1\n").coroutine
+
+
+@pytest.mark.parametrize(("function", "expression", "reason"), [
+    ("sleeps", "1 // b", "await of something other than a module-level async function"),
+    ("remote", "1 // await fetch(b)", "await of a function from another module"),
+    ("via_sleeps", "await sleeps(b)", "await of something other than a module-level async function"),
+    ("decorated", "1 // b", "decorated coroutine"),
+    ("C.m", "1 // b", "async method or nested coroutine"),
+])
+def test_coroutine_shapes_esbmc_or_the_harness_cannot_run_stay_refused(function, expression, reason):
+    failure = ground(_h(function, expression), ASYNC)
+    assert isinstance(failure, GroundingFailure) and failure.unsupported
+    assert failure.reason == f"async entry point: {reason}"

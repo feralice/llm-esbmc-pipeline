@@ -120,17 +120,19 @@ def test_a_root_that_is_a_package_resolves_its_absolute_self_imports(tmp_path: P
     assert ("lib.use:g", "lib.core:f") in _edges(build_callgraph(root / "lib"))
 
 
-def test_nested_sync_functions_are_selectable_and_async_ones_are_not(tmp_path):
+def test_supported_coroutines_and_the_sync_functions_they_nest_are_selectable(tmp_path):
     from research_pipeline.scan.pipeline import select_targets
 
     (tmp_path / "m.py").write_text("def f(n):\n    def g(k):\n        return 10 // k\n    return g(n)\n"
-                                   "async def a():\n    def b(x):\n        return 1 // x\n    return b(1)\n")
+                                   "async def a():\n    def b(x):\n        return 1 // x\n    return b(1)\n"
+                                   "class K:\n    async def m(self):\n        def c(x):\n            return 1 // x\n"
+                                   "        return c(1)\n")
     graph = build_callgraph(tmp_path)
     assert graph.functions["m:f.g"].verifiable
     counts = {}
     keys = {t.key for t in select_targets(graph, excluded=counts)[0]}
-    assert "m:f.g" in keys and "m:a.b" not in keys
-    assert counts["async_harness"] == 2
+    assert {"m:f.g", "m:a", "m:a.b"} <= keys and not keys & {"m:K.m", "m:K.m.c"}
+    assert (counts["async_esbmc"], counts["async_harness"]) == (2, 0)
 
 
 def test_a_local_built_by_a_constructor_or_annotated_resolves_to_the_class_method(tmp_path: Path) -> None:
@@ -162,6 +164,7 @@ def test_async_limit_names_the_shapes_esbmc_refuses(tmp_path: Path) -> None:
     root = _repo(tmp_path, {"m.py": "import asyncio\n\n"
                                     "async def ok(b):\n    return 10 // b\n"
                                     "async def chained(b):\n    return await ok(b)\n"
+                                    "async def via_sleeps(b):\n    return await sleeps(b)\n"
                                     "async def sleeps(b):\n    await asyncio.sleep(0)\n    return 1 // b\n"
                                     "async def loops(xs):\n    async for x in xs:\n        pass\n"
                                     "class C:\n    async def m(self, b):\n        return 1 // b\n"
@@ -172,5 +175,19 @@ def test_async_limit_names_the_shapes_esbmc_refuses(tmp_path: Path) -> None:
     limits = {key.split(":")[1]: f.async_limit for key, f in build_callgraph(root).functions.items() if f.is_async}
     assert limits == {"ok": "", "chained": "",
                       "sleeps": "await of something other than a module-level async function",
+                      "via_sleeps": "await of something other than a module-level async function",
                       "loops": "async for or async with", "C.m": "async method or nested coroutine",
                       "decorated": "decorated coroutine", "outer.inner": "async method or nested coroutine"}
+
+
+def test_a_coroutine_awaiting_another_module_is_left_to_the_harness_bucket(tmp_path: Path) -> None:
+    from research_pipeline.scan.pipeline import select_targets
+
+    root = _repo(tmp_path, {"lib.py": "async def fetch(b):\n    return b\n",
+                            "use.py": "from lib import fetch\n\nasync def ratio(b):\n    return 1 // await fetch(b)\n"})
+    graph = build_callgraph(root)
+    assert graph.functions["use:ratio"].async_limit == "await of a function from another module"
+    counts = {}
+    keys = {t.key for t in select_targets(graph, excluded=counts)[0]}
+    assert "lib:fetch" in keys and "use:ratio" not in keys
+    assert (counts["async_esbmc"], counts["async_harness"]) == (0, 1)

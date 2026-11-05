@@ -243,3 +243,17 @@ main()
 def test_every_esbmc_nondet_name_replays_and_unsigned_stays_non_negative():
     verdict = concrete_replay(_program(WIDE, 2), "take")
     assert verdict.status == "not_reproduced", verdict
+
+
+def test_a_rendered_coroutine_replays_through_asyncio_run():
+    from research_pipeline.verify.grounding import ground
+    from research_pipeline.verify.hypothesis import BugHypothesis
+    from research_pipeline.verify.render import render_program
+    from research_pipeline.verify.spec import InputSpec
+
+    source = "async def scale(b):\n    return b * b + 1\n\n\nasync def ratio(a, b):\n    d = await scale(b)\n    return a // (d - 5)\n"
+    program = render_program(ground(BugHypothesis("m.py", "ratio", "a // (d - 5)"), source),
+                             InputSpec({"a": "int", "b": "int"}, {}, ()))
+    verdict = concrete_replay(program, "ratio")
+    assert (verdict.status, verdict.exception_type, verdict.line) == ("reproduced", "ZeroDivisionError", 7)
+    assert verdict.inputs[1] in (2, -2)

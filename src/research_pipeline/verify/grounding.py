@@ -8,7 +8,14 @@ import dataclasses
 import symtable
 from dataclasses import dataclass, field
 
-from .astutil import expression_nodes, find_function, nested_chain, outer_entry
+from .astutil import (
+    CROSS_MODULE_AWAIT,
+    coroutine_limit,
+    expression_nodes,
+    find_function,
+    nested_chain,
+    outer_entry,
+)
 from .compat import remove_unused
 from .context import context_module
 from .dead_guards import fold_dead_guards
@@ -62,6 +69,8 @@ class Grounded:
     called_attrs: dict[str, CallShape] = field(default_factory=dict)
     # (input, helper, helper parameter) for each helper an input is passed on to.
     forwarded: tuple[tuple[str, str, str], ...] = ()
+    # A module-level ``async def``: the driver runs it with ``asyncio.run``.
+    coroutine: bool = False
 
     @property
     def stub_keys(self) -> tuple[str, ...]:
@@ -460,6 +469,30 @@ def _hoist_nested(tree: ast.Module, source: str, h: BugHypothesis) -> tuple[str,
     return hoisted, dataclasses.replace(h, function=name, line=line)
 
 
+def _bound_names(function: ast.AST) -> set[str]:
+    args = function.args
+    names = {a.arg for a in [*args.posonlyargs, *args.args, *args.kwonlyargs, *filter(None, (args.vararg, args.kwarg))]}
+    return names | {n.id for n in ast.walk(function) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store)}
+
+
+def _module_coroutine_limit(tree: ast.Module, function: ast.AsyncFunctionDef,
+                            seen: frozenset[str] = frozenset()) -> str:
+    """``coroutine_limit`` for a coroutine of this module, the coroutines it awaits checked the same way."""
+    imported = {(alias.asname or alias.name).split(".")[0] for n in ast.walk(tree)
+                if isinstance(n, (ast.Import, ast.ImportFrom)) for alias in n.names}
+    local, seen = _bound_names(function), seen | {function.name}
+
+    def awaited(call: ast.Call) -> str | None:
+        if not isinstance(call.func, ast.Name) or call.func.id in local:
+            return None
+        target = find_function(tree, call.func.id)
+        if not isinstance(target, ast.AsyncFunctionDef):
+            return CROSS_MODULE_AWAIT if target is None and call.func.id in imported else None
+        return "" if target.name in seen else _module_coroutine_limit(tree, target, seen)
+
+    return coroutine_limit(function, awaited, module_level=True)
+
+
 def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
            rules: frozenset[str] = ALL_RULES) -> Grounded | GroundingFailure:
     properties = PROPERTIES_AS_ATTRIBUTES in rules
@@ -471,7 +504,9 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
     if function is None:
         name = h.function.split(".")[-1]
         if any(isinstance(n, ast.AsyncFunctionDef) and n.name == name for n in ast.walk(tree)):
-            return GroundingFailure("async entry point is not supported", unsupported=True)
+            reason = ("async method or nested coroutine" if "." in h.function
+                      else "coroutine defined more than once")
+            return GroundingFailure(f"async entry point: {reason}", unsupported=True)
         outer = outer_entry(tree, h.function, h.suspect_expression)
         if outer is not None:
             grounded = ground(dataclasses.replace(h, function=outer), source, refused, rules)
@@ -489,6 +524,10 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
             return GroundingFailure("entry point is nested inside a function; the harness cannot call it",
                                     unsupported=True)
         return GroundingFailure(f"function {h.function!r} not found (or ambiguous)")
+    if isinstance(function, ast.AsyncFunctionDef):
+        limit = _module_coroutine_limit(tree, function)
+        if limit:
+            return GroundingFailure(f"async entry point: {limit}", unsupported=True)
     nodes = expression_nodes(function, h.suspect_expression)
     if not nodes:
         return GroundingFailure(f"suspect expression not found in {h.function}")
@@ -572,4 +611,5 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         unsupported=problem,
         receiver_subclass=subclass,
         called_attrs=_called_attrs(cls, function.name, receiver_attrs, properties) if receiver_attrs else {},
+        coroutine=isinstance(function, ast.AsyncFunctionDef),
     )

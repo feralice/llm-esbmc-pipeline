@@ -22,6 +22,7 @@ from ..models import CodeUnit
 from ..preprocess import preprocess_file
 from ..smells.filter import SmellCandidate, filter_candidates, ruff_candidates
 from ..verify.agent_arm import REPRODUCED_CPYTHON
+from ..verify.astutil import CROSS_MODULE_AWAIT
 from ..verify.candidate import Candidate
 from ..verify.hypothesis import BugHypothesis
 from ..verify.levels import (
@@ -122,14 +123,15 @@ def rank_key(target: Target, rank: str = "callers") -> tuple:
 
 def _async_exclusion(graph: CallGraph, function) -> str:
     """``async_esbmc`` when ESBMC-Python refuses a coroutine on the way (the function or one enclosing it);
-    ``async_harness`` when ESBMC verifies the shape but neither verifier awaits the target: the engine refuses
-    an async entry point and the agent's notes tell it to stop."""
+    ``async_harness`` when ESBMC could run it but the engine's single-module harness cannot (it awaits a
+    coroutine of another module). A supported coroutine is called through ``asyncio.run``, and a function
+    nested in one is hoisted."""
     parts = function.qualname.split(".")
     chain = [graph.functions.get(f"{function.module}:{'.'.join(parts[:i])}") for i in range(1, len(parts))]
-    coroutines = [f for f in [*chain, function] if f is not None and f.is_async]
-    if not coroutines:
+    limits = {f.async_limit for f in [*chain, function] if f is not None and f.is_async} - {""}
+    if not limits:
         return ""
-    return "async_esbmc" if any(f.async_limit for f in coroutines) else "async_harness"
+    return "async_harness" if limits == {CROSS_MODULE_AWAIT} else "async_esbmc"
 
 
 def _exclusion(graph: CallGraph, function, include_examples: bool) -> str:
@@ -229,8 +231,8 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
     if any(excluded.values()):
         print(f"Fora da seleção: {excluded['examples']} em examples/samples/docs, {excluded['setup']} no setup.py da "
               f"raiz, {excluded['async_esbmc']} async que o ESBMC-Python recusa (método, aninhada, decorada, async "
-              f"for/with, await de outra coisa), {excluded['async_harness']} async que o ESBMC verifica mas o "
-              "harness não chama com await."
+              f"for/with, await de outra coisa), {excluded['async_harness']} async que faz await de função de outro "
+              "módulo (o harness do motor tem um módulo só)."
               + (" Exemplos e setup.py entram com --scan-include-examples." if excluded["examples"] + excluded["setup"]
                  else ""))
     return plan

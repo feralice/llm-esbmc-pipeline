@@ -14,6 +14,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
+from ..verify.astutil import CROSS_MODULE_AWAIT, coroutine_limit
+
 SKIP_DIRS = frozenset({".git", "venv", ".venv", "build", "dist", "site-packages", "__pycache__",
                        "node_modules", ".tox", ".eggs", ".mypy_cache", ".pytest_cache"})
 TEST_DIRS = frozenset({"test", "tests", "testing"})
@@ -34,7 +36,7 @@ class FunctionNode:
     top_level: bool = True
     ambiguous: bool = False
     is_async: bool = False
-    async_limit: str = ""  # why ESBMC-Python refuses this async function; "" when it verifies the shape
+    async_limit: str = ""  # astutil.coroutine_limit: why no verifier runs this coroutine; "" when one can
 
     @property
     def key(self) -> str:
@@ -319,27 +321,22 @@ class _Builder:
         return [self._site(module, function.key, call, self._resolve(module, function, local, call, types))
                 for call in _own_calls(node.body)]
 
-    def _async_limit(self, function: FunctionNode, node: ast.AsyncFunctionDef) -> str:
-        """ESBMC-Python (measured on d520a903ae) runs a module-level ``async def`` awaited or passed to
-        ``asyncio.run``, and refuses methods, nested coroutines, decorators, ``async for``/``with`` and an
-        ``await`` of anything but a call to a module-level ``async def``."""
-        if function.nested or "." in function.qualname:
-            return "async method or nested coroutine"
-        if node.decorator_list:
-            return "decorated coroutine"
+    def _async_limit(self, function: FunctionNode, node: ast.AsyncFunctionDef,
+                     seen: frozenset[str] = frozenset()) -> str:
         module = self.modules[function.module]
         local = _local_names(node)
-        for child in _own_nodes(node.body):
-            if isinstance(child, (ast.AsyncFor, ast.AsyncWith)) or (
-                    isinstance(child, ast.comprehension) and child.is_async):
-                return "async for or async with"
-            if isinstance(child, ast.Await):
-                callee = (self._resolve(module, function, local, child.value)
-                          if isinstance(child.value, ast.Call) else "")
-                target = self.functions.get(callee)
-                if target is None or not target.is_async or "." in target.qualname:
-                    return "await of something other than a module-level async function"
-        return ""
+        seen = seen | {function.key}
+
+        def awaited(call: ast.Call) -> str | None:
+            key = self._resolve(module, function, local, call)
+            target = self.functions.get(key)
+            if target is None or not target.is_async or "." in target.qualname:
+                return None
+            if target.module != function.module:
+                return CROSS_MODULE_AWAIT
+            return "" if key in seen else self._async_limit(target, self.ast_of[key], seen)
+
+        return coroutine_limit(node, awaited, module_level=not function.nested and "." not in function.qualname)
 
     def _local_types(self, module: _Module, node: ast.FunctionDef | ast.AsyncFunctionDef,
                      local: set[str]) -> dict[str, str]:

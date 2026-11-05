@@ -40,3 +40,12 @@ def test_protocol_methods_are_ordinary_code():
 
 def test_literal_attribute_access_stays_allowed():
     assert host_replay_problem("class A:\n    x = 1\n\nv = getattr(A(), 'x', None)\nok = hasattr(A, 'x')\n") == ""
+
+
+def test_asyncio_may_run_a_coroutine_and_nothing_else():
+    assert host_replay_problem("import asyncio\n\nasync def f():\n    return 1\n\nasyncio.run(f())\n") == ""
+    assert "imports asyncio" in host_replay_problem("import asyncio\nasyncio.create_subprocess_shell('x')\n")
+    assert "imports asyncio" in host_replay_problem("import asyncio\nloop = asyncio\n")
+    assert "under another name" in host_replay_problem("import asyncio as aio\naio.run(f())\n")
+    assert "under another name" in host_replay_problem("import asyncio.subprocess as sp\n")
+    assert "imports from asyncio" in host_replay_problem("from asyncio.subprocess import create_subprocess_exec\n")
