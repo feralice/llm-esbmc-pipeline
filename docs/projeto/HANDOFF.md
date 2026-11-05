@@ -23,6 +23,26 @@ docs (PLANO, README de experimentos). Suíte: **1546 passaram, 0 falharam** (rod
 `ls tests/test_*.py | split -n r/6`, cada pedaço com `timeout 10m .venv/bin/python -m pytest -q -p no:cacheprovider`).
 Issues abertas por nós em 05/11: #9953 e #9954 (Optional[tuple], sem PR, paradas por falta de tokens).
 
+## Estado no fim da sessão (05/11, noite)
+
+- **#9074:** primeira versão pronta no worktree `~/esbmc-wt/issue-9074` (build em `build/`), mas a revisão
+  achou bloqueios: **C1** `d.get(k)` em `dict[str,str]` virou falso FAILED (`annotation_conversion.inl`
+  ~3649-3674 tipa todo `dict[K,V]` como `Optional[V]`; só int/float/bool ficam certos); **M1** `**kw` com
+  valor str/None/lista/float virou falso FAILED em vez de recusa (restringir a reescrita em `vararg_mixin.py`
+  a valores int/float/bool); **M2** recusa e mensagem devem vir do pré-processador, com teste do caso
+  `def __init__(self, error, **kw)` + `Box(error=1)`. Probes em
+  `/tmp/claude-1000/-home-fernanda-mestrado-llm-esbmc/e749d686-0c8c-42ab-8b15-f7fd382644e5/scratchpad/{p,q,r,s,t,u}/`
+  (temporário). Um subagente estava corrigindo; conferir o worktree, rodar `github_9074*` (Bitwuzla e
+  `--z3`), o subconjunto `regression/python/.*(dict|get|kwarg|vararg|9073|9074|optional|class|init|attr|none)`,
+  depois `code-reviewer` de novo e `esbmc-coverage-pr` Mode B (o portão foi parado antes de medir).
+- **AST menos restrita (pedido dela, 05/11):** `target_preserved`/`_as_original` em `verify/validation.py:49`
+  exige corpo idêntico. Decisão: afrouxar só o que não muda o caminho do bug (anotações, docstring, `pass`,
+  contornos do `compat.py`, renomeação consistente de locais); continuar recusando linha removida ou fora de
+  ordem, condição/operador/constante trocados, `raise`/`assert` removidos, chamada trocada por valor. Medir antes
+  e depois nos `artifacts/`. Um subagente estava nisso no checkout principal, sem commit: conferir `git diff`,
+  rodar a suíte em pedaços e commitar.
+- **Lições automáticas do self-healing:** feito e commitado (`764fe85`).
+
 ## O que falta, NESTA ORDEM (ordem dela)
 
 1. **Terminar a #9074** (`**kwargs` no `__init__`, sem PR). Worktree `~/esbmc-wt/issue-9074`, branch
