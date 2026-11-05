@@ -35,6 +35,9 @@ Issues abertas por nós em 05/11: #9953 e #9954 (Optional[tuple], sem PR, parada
   (temporário). Um subagente estava corrigindo; conferir o worktree, rodar `github_9074*` (Bitwuzla e
   `--z3`), o subconjunto `regression/python/.*(dict|get|kwarg|vararg|9073|9074|optional|class|init|attr|none)`,
   depois `code-reviewer` de novo e `esbmc-coverage-pr` Mode B (o portão foi parado antes de medir).
+- **#9074, autorização dela (05/11):** se a revisão (`code-reviewer`) não achar bloqueio e o portão de
+  cobertura (`esbmc-coverage-pr` Mode B) der PASS, commitar no worktree (`[python] ...`, `Fixes #9074`, sem
+  coautoria), dar push da branch `fix/issue-9074` e abrir o PR no esbmc/esbmc com label `python`.
 - **AST menos restrita (pedido dela, 05/11):** `target_preserved`/`_as_original` em `verify/validation.py:49`
   exige corpo idêntico. Decisão: afrouxar só o que não muda o caminho do bug (anotações, docstring, `pass`,
   contornos do `compat.py`, renomeação consistente de locais); continuar recusando linha removida ou fora de
