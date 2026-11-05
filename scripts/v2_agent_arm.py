@@ -27,6 +27,7 @@ from research_pipeline.verify.esbmc_knowledge import KNOWLEDGE_CACHE, esbmc_root
 from research_pipeline.verify.hypothesis import BugHypothesis  # noqa: E402
 from research_pipeline.verify.loop import verification_source  # noqa: E402
 from research_pipeline.llm.rate_limit import exit_on_usage_limit  # noqa: E402
+from research_pipeline.verify.value_oracle import engine_property  # noqa: E402
 
 # Flags added after earlier runs: a result recorded before the flag existed ran with it off.
 OFF_BY_DEFAULT = {"graph_tool": False}
@@ -144,7 +145,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.sample:
         for stored in json.loads(Path(args.sample).read_text(encoding="utf-8"))["hypotheses"]:
             h = _hypothesis(stored)
-            engine = next((i["verdict"] for i in items if _hypothesis(i["hypothesis"]).hypothesis_id == h.hypothesis_id), "")
+            engine = next((i for i in items if _hypothesis(i["hypothesis"]).hypothesis_id == h.hypothesis_id), {})
             hypotheses.append((h, engine))
     elif args.report:
         seen: set[str] = set()
@@ -153,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
             if (item["verdict"] in wanted and h.hypothesis_id not in seen
                     and re.search(args.reason, item.get("reason", ""))):
                 seen.add(h.hypothesis_id)
-                hypotheses.append((h, item["verdict"]))
+                hypotheses.append((h, item))
     else:
         parser.error("--report or --sample is required")
     if args.limit:
@@ -171,8 +172,10 @@ def main(argv: list[str] | None = None) -> int:
                "agent_timeout": args.agent_timeout, "fixed_sources": args.fixed_sources, "graph_tool": args.graph_tool, **esbmc_identity(args.esbmc),
                "skills": skill_versions() if args.project_skills else {}}
     if variant["esbmc_commit"] is None:
-        print("warning: no 'ESBMC built from' string in the binary; this run will not record the ESBMC build commit",
+        # A result without the build commit cannot be compared with any other run.
+        print(f"error: no 'ESBMC built from' string in {args.esbmc}; refusing to run without the ESBMC build commit",
               file=sys.stderr)
+        return 2
     # Every compared field, so a result recorded before a field existed is not taken as agreeing with it.
     differing = sorted({key for r in done for key in COMPARED_FIELDS
                         if variant.get(key) != r.get("variant", {}).get(key, OFF_BY_DEFAULT.get(key))})
@@ -188,9 +191,11 @@ def main(argv: list[str] | None = None) -> int:
     sources = Path(args.verification_sources) if args.verification_sources else None
     root = esbmc_root_of([args.esbmc]) if args.log_rounds else None
     knowledge = load_index(root, KNOWLEDGE_CACHE) if root is not None else None
-    for index, (h, previous) in enumerate(hypotheses, 1):
+    for index, (h, engine) in enumerate(hypotheses, 1):
         if h.hypothesis_id in finished:
             continue
+        previous = engine.get("verdict", "")
+        returns, postcondition = engine_property(engine)
         print(f"[{index}/{len(hypotheses)}] {Path(h.file).name}::{h.function} (engine: {previous})", flush=True)
         fixed = Path(args.fixed_sources) / Path(h.file).name
         fixed = fixed if fixed.is_file() else None
@@ -201,7 +206,7 @@ def main(argv: list[str] | None = None) -> int:
                                allow_simplify=args.allow_simplify, project_skills=args.project_skills,
                                log_rounds=args.log_rounds, differential=args.differential, pytest=args.pytest,
                                knowledge_index=knowledge, retry=args.retry, fixed_path=fixed,
-                               graph_tool=args.graph_tool)
+                               graph_tool=args.graph_tool, returns=returns, postcondition=postcondition)
         result["engine_verdict"], result["variant"] = previous, variant
         result["fixed_control"] = "ran" if fixed else "missing"
         print(f"    -> {result['verdict']} preserved={result['target_preserved']} {result['reason'][:100]}", flush=True)

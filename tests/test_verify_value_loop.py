@@ -161,3 +161,17 @@ def test_main_refuses_fixed_sources_that_also_feed_a_prompt(tmp_path, monkeypatc
                                                str(tmp_path / "out"), "--fixed-sources", str(tmp_path),
                                                flag, str(tmp_path) + "/"])
         assert main.mode_v2(args) == 1
+
+
+def test_a_caller_guard_reaches_the_harness_only_with_the_callers_context(tmp_path, monkeypatch):
+    source = SOURCE + "\n\ndef caller(x):\n    if x > 3:\n        return magnitude(x)\n"
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc_hits_the_assert)
+    monkeypatch.setattr(loop, "convert", lambda source, command: "")
+    h = BugHypothesis("m.py", "magnitude", "x if x > 0 else x", oracle=VALUE_ORACLE)
+    for context, expected in (("callers", True), ("none", False)):
+        result = loop.verify_hypothesis(h, llm=FakeLLM([GOOD]), source=source, esbmc_command=["esbmc"], bound=5,
+                                        timeout_seconds=30, work_dir=tmp_path / context, spec_context=context)
+        program = Path(result.program_path).read_text(encoding="utf-8")
+        assert ("__ESBMC_assume(x > 3)" in program) is expected
+        # With x > 3 the code returns x, which keeps the property.
+        assert (result.verdict != VALUE_VIOLATION) is expected

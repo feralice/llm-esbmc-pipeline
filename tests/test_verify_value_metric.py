@@ -19,9 +19,13 @@ def _result(hid, expression, verdict="VALUE_CONFIRMED", oracle="value"):
         "hypothesis_id": hid, "file": "d/a.py", "function": "f", "suspect_expression": expression, "oracle": oracle}}
 
 
-def test_value_hypotheses_get_no_arm_whatever_stopped_them():
+def test_value_hypotheses_go_only_to_the_agent_arms():
     assert route(_result("1", "x[i]", verdict="ESBMC_TIMEOUT")) == ()
     assert route(_result("1", "x[i]", verdict="ESBMC_TIMEOUT", oracle="")) != ()
+    assert route(_result("1", "x[i]", verdict="SPEC_FAILED")) == ("api_agent", "claude_agent")
+    assert route(_result("1", "x[i]", verdict="UNSUPPORTED")) == ("claude_agent",)
+    for verdict in ("VALUE_CONFIRMED", "VALUE_VIOLATION", "PROPERTY_REJECTED"):
+        assert route(_result("1", "x[i]", verdict=verdict)) == ()
 
 
 def test_the_orchestrator_keeps_the_engine_value_verdict():
@@ -42,8 +46,9 @@ def test_value_confirmations_count_apart_and_only_at_the_bug_line():
     assert summary["confirmed_at_bug_with_value"] == 2
 
 
-def test_the_api_agent_everywhere_route_skips_value_hypotheses():
-    assert v2_orchestrate.api_agent_everywhere(_result("1", "x[i]", verdict="ESBMC_TIMEOUT")) == ()
+def test_the_api_agent_everywhere_route_takes_value_hypotheses_without_a_formal_verdict():
+    assert v2_orchestrate.api_agent_everywhere(_result("1", "x[i]", verdict="ESBMC_TIMEOUT")) == ("api_agent",)
+    assert v2_orchestrate.api_agent_everywhere(_result("1", "x[i]", verdict="VALUE_VIOLATION")) == ()
     assert v2_orchestrate.api_agent_everywhere(_result("1", "x[i]", verdict="ESBMC_TIMEOUT", oracle="")) == ("api_agent",)
     assert v2_orchestrate.api_agent_everywhere(_result("1", "x[i]", verdict="PROPERTY_REJECTED", oracle="")) == ()
 
@@ -58,19 +63,19 @@ def test_the_report_counts_value_confirmations_by_location_apart():
     assert evaluation["confirmed_by_location"]["expression"]["tp"] == 0
 
 
-def test_the_agent_fallback_skips_value_hypotheses(tmp_path):
-    from research_pipeline.verify.agent_arm import run_agent_fallback
+def test_the_agent_fallback_hands_a_value_hypothesis_the_engine_property(tmp_path, monkeypatch):
+    from research_pipeline.verify import agent_arm
 
-    def agent(*args, **kwargs):
-        raise AssertionError("the agent must not run on a value hypothesis")
-
-    state = {}
-    for oracle in ("value", ""):
-        run_agent_fallback([_result("1", "x[i]", verdict="UNSUPPORTED", oracle=oracle)], run_agent=agent,
-                           work_dir=tmp_path, esbmc_command=["esbmc"], bound=5, timeout_seconds=1, agent_timeout=1,
-                           sources=None, state=state, save=lambda: None, config={})
-        tried = len(state["agent_results"])
-        assert tried == (0 if oracle else 1)
+    seen = []
+    monkeypatch.setattr(agent_arm, "run_agent_arm", lambda h, **kw: seen.append(kw) or {
+        "hypothesis": h.to_dict(), "verdict": "AGENT_FAILED", "reason": ""})
+    result = _result("1", "x[i]", verdict="UNSUPPORTED")
+    result["attempts"] = [{"spec": '{"returns": "int", "postcondition": "result > 0"}'},
+                          {"spec": '{"returns": "str", "postcondition": "len(result) > 0"}', "problems": ["bad"]}]
+    agent_arm.run_agent_fallback([result], run_agent=None, work_dir=tmp_path, esbmc_command=["esbmc"], bound=5,
+                                 timeout_seconds=1, agent_timeout=1, sources=None, state={}, save=lambda: None,
+                                 config={})
+    assert (seen[0]["returns"], seen[0]["postcondition"]) == ("int", "result > 0")
 
 
 def test_level_summary_counts_value_confirmations_apart():

@@ -8,7 +8,7 @@ from ..llm.rate_limit import UsageLimitReached
 from .routing import route as default_route
 
 ARM_FAILED = "ARM_FAILED"
-_FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
+_FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED", "VALUE_CONFIRMED", "VALUE_VIOLATION", "PROPERTY_REJECTED"}
 # Dynamic evidence of the bug, from the fuzzer or from the agent's harness under CPython.
 _EVIDENCE = {"FUZZ_FOUND", "REPRODUCED_CPYTHON"}
 

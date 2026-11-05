@@ -13,7 +13,7 @@ CLAUDE_AGENT = "claude_agent"
 PINNED = "pinned"
 LLM_INPUT = "llm_input"
 
-_DONE = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED"}
+_DONE = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED", "VALUE_CONFIRMED", "VALUE_VIOLATION", "PROPERTY_REJECTED"}
 # Context outside the function: an agent that can open the project may supply it.
 _CONTEXT = re.compile(r"not found|undefined name", re.I)
 # The harness itself was wrong: rewriting it is enough.
@@ -54,8 +54,13 @@ def limit_class(result: dict) -> str:
     return "esbmc_limit"
 
 
+# The only arms that assert a wrong-result hypothesis's postcondition (agent_arm.property_line); the
+# others look for an exception.
+_VALUE_ARMS = frozenset({API_AGENT, CLAUDE_AGENT})
+
+
 def route(result: dict) -> tuple[str, ...]:
-    # Every arm looks for an exception; none knows a wrong-result hypothesis's property.
+    arms = _ROUTES[limit_class(result)]
     if (result.get("hypothesis") or {}).get("oracle") == VALUE_ORACLE:
-        return ()
-    return _ROUTES[limit_class(result)]
+        return tuple(arm for arm in arms if arm in _VALUE_ARMS)
+    return arms

@@ -49,6 +49,8 @@ def main(argv: list[str] | None = None) -> int:
                 esbmc_command=[args.esbmc], bound=args.bound, timeout_seconds=args.timeout,
                 output_dir=Path(args.out).with_suffix("") / item["hypothesis"]["hypothesis_id"],
                 original_path=verification_source(h, sources),
+                returns=item.get("value_property", {}).get("returns", ""),
+                postcondition=item.get("value_property", {}).get("postcondition", ""),
                 fixed=fixed.read_text(encoding="utf-8", errors="replace") if fixed and fixed.is_file() else None)
         else:
             verdict, reason = AGENT_FAILED, "no saved harness"

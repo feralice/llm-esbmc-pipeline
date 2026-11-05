@@ -401,8 +401,13 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
         lines.append(f"    {call}")
     else:
         lines.append(f"    {RESULT_VAR}: {_annotation(shape)} = {call}")
+    return [*lines, f"    {property_assert(postcondition)}"]
+
+
+def property_assert(postcondition: str) -> str:
+    """The postcondition as a driver asserts it, ``result`` read from RESULT_VAR and ``self`` from RECEIVER."""
     tree = _ToResult().visit(_ToReceiver().visit(ast.parse(postcondition.strip(), mode="eval")))
-    return [*lines, f"    assert {ast.unparse(tree)}"]
+    return f"assert {ast.unparse(tree)}"
 
 
 def _annotate_inputs(module: str, annotations: dict[tuple[str, str], str]) -> str:

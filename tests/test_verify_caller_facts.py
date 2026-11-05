@@ -111,3 +111,57 @@ def test_section_is_bounded_and_says_when_there_are_no_callers():
     assert len(big.sites) <= MAX_CALLER_CHARS + 60 and "omitted" in big.sites
     lonely, grounded = _facts("def f(a):\n    return a[0]\n", "f", "a[0]")
     assert "# none found in the verification source" in render_section(lonely, grounded)
+
+
+GUARDED = (
+    "def head(s, n):\n"
+    "    return s[0] * n\n"
+    "\n"
+    "def a(s, n):\n"
+    "    if s is not None and len(s) > 0:\n"
+    "        return head(s, n)\n"
+    "\n"
+    "def b(s, n):\n"
+    "    if s is None or not s:\n"
+    "        return ''\n"
+    "    if n > 2:\n"
+    "        return head(s, n)\n"
+)
+ONE_CALLER = GUARDED.split("def b")[0]
+
+
+def _guards(source):
+    return _facts(source, function="head", expression="s[0]")[0].guards
+
+
+def test_only_the_guards_every_caller_has_are_kept():
+    # a: s not None and len(s) > 0; b: s not None, s truthy and n > 2. Only "s not None" is in both.
+    assert _guards(GUARDED) == (("s", "{} is not None"),)
+    assert _guards(ONE_CALLER) == (("s", "len({}) > 0"), ("s", "{} is not None"))
+
+
+def test_an_unguarded_caller_a_rebinding_or_a_use_as_value_leaves_no_guard():
+    assert _guards(GUARDED + "\ndef c(s):\n    return head(s, 1)\n") == ()
+    rebound = ONE_CALLER.replace("        return head(s, n)\n", "        s = None\n        return head(s, n)\n")
+    assert _guards(rebound) == ()
+    assert _guards(GUARDED + "\ndef d():\n    return list(map(head, [1]))\n") == ()
+
+
+def test_an_early_exit_guards_the_rest_of_the_block():
+    source = ("def f(x):\n    return x + 1\n\n"
+              "def g(x):\n    if not isinstance(x, int):\n        raise TypeError\n    return f(x)\n")
+    assert _facts(source, "f", "x + 1")[0].guards == (("x", "isinstance({}, int)"),)
+    source = source.replace("if not isinstance(x, int):", "if x is None:")
+    assert _facts(source, "f", "x + 1")[0].guards == (("x", "{} is not None"),)
+
+
+def test_guard_assumptions_follow_the_spec_types():
+    from research_pipeline.verify.caller_facts import guard_assumptions
+    from research_pipeline.verify.spec import InputSpec
+
+    facts, grounded = _facts(ONE_CALLER, "head", "s[0]")
+    spec = InputSpec({"s": "Optional[str]", "n": "int"}, {}, ())
+    assert guard_assumptions(facts, spec, grounded) == (("s is not None", "len(s) > 0"), [])
+    assert guard_assumptions(facts, InputSpec({"s": "str", "n": "int"}, {}, ()), grounded) == (("len(s) > 0",), [])
+    assumed, problems = guard_assumptions(facts, InputSpec({"s": "int", "n": "int"}, {}, ()), grounded)
+    assert "len(s) > 0" in problems[0]

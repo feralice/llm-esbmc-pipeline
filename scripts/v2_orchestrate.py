@@ -28,6 +28,7 @@ from research_pipeline.verify.loop import verification_source  # noqa: E402
 from research_pipeline.verify.orchestrator import orchestrate  # noqa: E402
 from research_pipeline.verify.pinned import pinned_check  # noqa: E402
 from research_pipeline.llm.rate_limit import exit_on_usage_limit  # noqa: E402
+from research_pipeline.verify.value_oracle import engine_property  # noqa: E402
 
 _FORMAL = {"CONFIRMED", "NOT_CONFIRMED", "ESBMC_MISSED", "VALUE_CONFIRMED", "VALUE_VIOLATION", "PROPERTY_REJECTED"}
 
@@ -71,11 +72,8 @@ def agent_outcome(data: dict) -> dict:
 
 
 def api_agent_everywhere(result: dict) -> tuple[str, ...]:
-    """--api-agent-everywhere: every result without a formal verdict goes to api_agent, except a
-    wrong-result hypothesis, whose property the agent does not know."""
-    if result["verdict"] in _FORMAL or result["hypothesis"].get("oracle") == "value":
-        return ()
-    return ("api_agent",)
+    """--api-agent-everywhere: every result without a formal verdict goes to api_agent."""
+    return () if result["verdict"] in _FORMAL else ("api_agent",)
 
 
 def _agent_arm(backend: str, args: argparse.Namespace):
@@ -85,10 +83,12 @@ def _agent_arm(backend: str, args: argparse.Namespace):
     def run(result: dict) -> dict:
         h = BugHypothesis(**{k: v for k, v in result["hypothesis"].items() if k != "hypothesis_id"})
         fixed = Path(args.fixed_sources) / Path(h.file).name if args.fixed_sources else None
+        returns, postcondition = engine_property(result)
         data = run_agent_arm(h, work_dir=Path(args.out) / f"{backend}_cases", run_agent=agent,
                              esbmc_command=[args.esbmc], bound=args.bound, timeout_seconds=args.timeout,
                              agent_timeout=args.agent_timeout, source_path=verification_source(h, sources),
-                             skill=skill, fixed_path=fixed if fixed and fixed.exists() else None)
+                             skill=skill, fixed_path=fixed if fixed and fixed.exists() else None,
+                             returns=returns, postcondition=postcondition)
         return agent_outcome(data)
     return run
 

@@ -30,6 +30,7 @@ class ReplayVerdict:
     message: str = ""
     raised_at: int | None = None  # innermost line of the program in the traceback
     target_range: tuple[int, int] | None = None  # the target function's lines in the replayed program
+    draws: list | None = None  # "function:intrinsic" of each nondet call, in call order
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -166,4 +167,5 @@ def concrete_replay(program: Program, function: str, *, max_runs: int = 400,
         message=str(data.get("message", "")),
         raised_at=data.get("raised_at"),
         target_range=tuple(target_range),
+        draws=data.get("draws"),
     )

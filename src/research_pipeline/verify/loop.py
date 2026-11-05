@@ -16,7 +16,7 @@ from research_pipeline.models import ESBMCDirectResult
 from ..llm.rate_limit import UsageLimitReached
 from ..scan.callgraph import CallGraph
 from .astutil import undefined_globals
-from .caller_facts import collect_facts, render_section, usage_problems
+from .caller_facts import collect_facts, guard_assumptions, render_section, usage_problems
 from .grounding import Grounded, GroundingFailure, ground
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .llm_client import SynthResult, _bound_untrusted
@@ -32,7 +32,6 @@ from .outcome import (
     PIPELINE_ERROR,
     SPEC_FAILED,
     UNSUPPORTED,
-    VALUE_VIOLATION,
     EsbmcReading,
     final_verdict,
 )
@@ -41,7 +40,7 @@ from .rules import ALL_RULES
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, shape_unpacked, spec_problems
 from .string_witness import string_witness
-from .value_oracle import apply_control, check_fixed, esbmc_hits_property, value_verdict
+from .value_oracle import value_outcome
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "input_spec_prompt.txt").read_text(encoding="utf-8")
 VALUE_PROMPT = (Path(__file__).resolve().parent.parent / "prompts" / "value_property_prompt.txt").read_text(encoding="utf-8")
@@ -211,6 +210,7 @@ def verify_hypothesis(
     context = render_section(facts, grounded) if facts is not None else ""
     if facts is not None:
         result.spec_context = {"call_sites": facts.site_count, "references": len(facts.references),
+                               "caller_guards": [f"{p}: {form}" for p, form in facts.guards],
                                "chars": len(context)}
     work_dir.mkdir(parents=True, exist_ok=True)
     previous, feedback, last_problems = "", "", []
@@ -225,8 +225,10 @@ def verify_hypothesis(
         try:
             spec = shape_unpacked(parse_spec(reply.harness), grounded)
             problems = spec_problems(spec, grounded, require_property=value)
+            assumed: tuple[str, ...] = ()
             if not problems and facts is not None:
-                problems = usage_problems(spec, grounded, facts)
+                assumed, contradicted = guard_assumptions(facts, spec, grounded)
+                problems = usage_problems(spec, grounded, facts) + contradicted
         except ValueError as exc:
             problems = [str(exc)]
         if problems:
@@ -235,6 +237,10 @@ def verify_hypothesis(
             last_problems = problems
             continue
         last_problems = []
+        if assumed:
+            # The callers' guards on the arguments, as the harness's assumptions (caller_facts.caller_guards).
+            spec = dataclasses.replace(spec, assumptions=(*spec.assumptions, *assumed))
+            record["caller_assumptions"] = list(assumed)
         ignored = ignored_keys(spec, grounded)
         if ignored:
             record["ignored"] = ignored
@@ -287,7 +293,8 @@ def verify_hypothesis(
             return finish(ESBMC_TIMEOUT, "ESBMC excedeu o tempo limite; contraexemplo parcial não reproduzido "
                                          "no CPython.")
         if value:
-            return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source))
+            return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source,
+                                           source if replay_source is None else replay_source))
         verdict = final_verdict(reading, replay)
         if verdict == CONFIRMED and esbmc_command:
             result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command, bound, work_dir)
@@ -299,15 +306,13 @@ def verify_hypothesis(
 
 
 def _value_outcome(result: VerifyResult, reading: EsbmcReading, esbmc: ESBMCDirectResult, program: Program,
-                   grounded: Grounded, replay: ReplayVerdict, fixed_source: str | None) -> tuple[str, str]:
-    verdict = value_verdict(reading, esbmc_hits_property(esbmc, program.property_line), replay)
-    if verdict != VALUE_VIOLATION or fixed_source is None:
-        return verdict, reading.message
-    control = check_fixed(program, grounded.hypothesis.function, grounded.method_name, fixed_source,
-                          replay.inputs)
-    result.control = control.to_dict()
-    verdict, why = apply_control(verdict, control)
-    return verdict, why or reading.message
+                   grounded: Grounded, replay: ReplayVerdict, fixed_source: str | None,
+                   source: str) -> tuple[str, str]:
+    verdict, reason, control = value_outcome(reading, esbmc, program, grounded.hypothesis.function,
+                                             grounded.method_name, replay, fixed_source, source)
+    if control is not None:
+        result.control = control.to_dict()
+    return verdict, reason
 
 
 def _pytest_for(program: Program, grounded: Grounded, spec: InputSpec, replay: ReplayVerdict,

@@ -37,6 +37,7 @@ class _Chooser:
         self.vector = vector
         self.sizes = []
         self.values = []
+        self.sites = []
 
     def pick(self, domain):
         index = len(self.sizes)
@@ -53,6 +54,7 @@ class _RandomChooser:
     def __init__(self, rng):
         self.rng = rng
         self.values = []
+        self.sites = []
 
     def pick(self, domain):
         value = self.rng.choice(domain)
@@ -70,6 +72,7 @@ class _FixedChooser:
     def __init__(self, inputs):
         self.inputs = list(inputs)
         self.values = []
+        self.sites = []
 
     def _next(self):
         if len(self.values) == len(self.inputs):
@@ -133,7 +136,7 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
     def nondet_dict():
         return {chooser.pick(domains[str]): chooser.pick(domains[int]) for _ in range(chooser.pick_length(max_list))}
 
-    return {
+    draws = {
         "nondet_int": lambda: chooser.pick(domains[int]),
         "nondet_float": lambda: chooser.pick(domains[float]),
         "nondet_bool": lambda: chooser.pick(domains[bool]),
@@ -145,6 +148,9 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
         # ESBMC's fixed-width integer names: signed ones draw from the int domain, unsigned ones never negative.
         **{f"nondet_{name}": (lambda: chooser.pick(domains[int])) for name in ("char", "short", "long")},
         **{f"nondet_{name}": (lambda: chooser.pick(unsigned)) for name in ("uchar", "ushort", "uint", "ulong", "size")},
+    }
+    return {
+        **{name: _recorded(chooser, name, draw) for name, draw in draws.items()},
         "__ESBMC_assume": assume,
         # Names an agent-written harness imports from ESBMC's Python module.
         "assume": assume,
@@ -152,6 +158,14 @@ def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
         "__ESBMC_assert": _esbmc_assert,
         **_MATH_INTRINSICS,
     }
+
+
+def _recorded(chooser, name, draw):
+    """Which function drew each value: two programs fed the same values must draw them in the same places."""
+    def recorded(*args, **kwargs):
+        chooser.sites.append(f"{sys._getframe(1).f_code.co_qualname}:{name}")
+        return draw(*args, **kwargs)
+    return recorded
 
 
 def _esbmc_assert(condition, message=""):
@@ -194,17 +208,20 @@ def _run_once(code, chooser, domains, max_list, target):
         return _DISCARDED
     except Exception as exc:  # noqa: BLE001 - every crash is evidence
         frames = [f for f in traceback.extract_tb(exc.__traceback__) if f.filename == "<program>"]
+        # By line alone: an agent's driver has a name of its own, and the line holds only the property's assert.
         if (property_line and isinstance(exc, AssertionError) and frames
-                and frames[-1].name == "_esbmc_main" and frames[-1].lineno == property_line):
+                and frames[-1].lineno == property_line):
             return {"status": "property_violated", "exception_type": "AssertionError", "line": property_line,
-                    "inputs": chooser.values, "message": str(exc)[:300], "raised_at": property_line}
+                    "inputs": chooser.values, "message": str(exc)[:300], "raised_at": property_line,
+                    "draws": chooser.sites}
         # Name and line range together: another class's method may share the name.
         in_target = [f for f in frames if f.name == function and (not last or first <= f.lineno <= last)]
         line = in_target[-1].lineno if in_target else (frames[-1].lineno if frames else None)
         reproduced = bool(in_target) and any(start <= line <= end for start, end in spans)
         return {"status": "reproduced" if reproduced else "other_failure",
                 "exception_type": type(exc).__name__, "line": line, "inputs": chooser.values,
-                "message": str(exc)[:300], "raised_at": frames[-1].lineno if frames else None}
+                "message": str(exc)[:300], "raised_at": frames[-1].lineno if frames else None,
+                "draws": chooser.sites}
     finally:
         signal.setitimer(signal.ITIMER_REAL, 0)
         sys.stdout = real_stdout
@@ -225,7 +242,8 @@ def _fixed(code, inputs, target):
         # With a property, a cut run would read as "the property held".
         return {"status": "unavailable", "reason": "the run was discarded (a failed assumption or the time limit)",
                 "inputs": inputs}
-    return outcome if isinstance(outcome, dict) else {"status": "not_reproduced", "inputs": chooser.values}
+    return outcome if isinstance(outcome, dict) else {"status": "not_reproduced", "inputs": chooser.values,
+                                                      "draws": chooser.sites}
 
 
 def main(program_path, config_path, output_path):

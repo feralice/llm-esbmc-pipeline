@@ -20,6 +20,7 @@ from research_pipeline.verify.render import Program
 from research_pipeline.verify.replay import ReplayVerdict, concrete_replay
 from research_pipeline.verify.value_oracle import (
     apply_control,
+    changed_helpers,
     check_fixed,
     control_program,
     esbmc_hits_property,
@@ -187,3 +188,78 @@ def test_annotations_the_harness_added_do_not_hide_an_unchanged_target():
     verdict = check_fixed(annotated, "magnitude", "magnitude", fixed, [-1])
     assert verdict.status == "unavailable" and "unchanged" in verdict.reason
     assert apply_control(VALUE_VIOLATION, verdict)[0] == VALUE_VIOLATION
+
+
+SHIFTED = '''def bias():
+    return -1
+
+
+def shifted(x):
+    return x * x + bias()
+
+
+def _esbmc_main() -> None:
+    x: int = nondet_int()
+    _esbmc_result: int = shifted(x)
+    assert _esbmc_result >= 0
+
+
+_esbmc_main()
+'''
+SHIFTED_ORIGINAL = SHIFTED.split("\n\n\ndef _esbmc_main")[0] + "\n"
+SHIFTED_FIXED = "def bias():\n    # the fix\n    return 0\n\n\ndef shifted(x):\n    return x * x + bias()\n"
+
+
+def _shifted():
+    return Program(SHIFTED, 9, ((6, 6),), (), (5, 6), property_line=12)
+
+
+def test_a_helper_the_fix_changed_is_swapped_with_the_target():
+    assert check_fixed(_shifted(), "shifted", "shifted", SHIFTED_FIXED, [0]).status == "unavailable"
+    verdict = check_fixed(_shifted(), "shifted", "shifted", SHIFTED_FIXED, [0], original_source=SHIFTED_ORIGINAL)
+    assert verdict.status == "not_reproduced" and "bias" in verdict.reason
+    control = control_program(_shifted(), "shifted", SHIFTED_FIXED, ("bias",))
+    assert control.source.splitlines()[control.property_line - 1] == "    assert _esbmc_result >= 0"
+
+
+def test_a_definition_the_harness_generated_is_never_swapped():
+    generated = SHIFTED.replace("    return -1\n", "    return nondet_int()\n")
+    assert changed_helpers(generated, "shifted", SHIFTED_FIXED, SHIFTED_ORIGINAL) == []
+    assert changed_helpers(SHIFTED, "shifted", SHIFTED_FIXED, SHIFTED_ORIGINAL) == ["bias"]
+
+
+DRAWS = '''def first() -> int:
+    return nondet_int()
+
+
+def second() -> int:
+    return nondet_int()
+
+
+def gap():
+    a = first()
+    b = second()
+    return a - b
+
+
+def _esbmc_main() -> None:
+    _esbmc_result: int = gap()
+    assert _esbmc_result >= 0
+
+
+_esbmc_main()
+'''
+DRAWS_FIXED = "def gap():\n    b = second()\n    a = first()\n    return a - b if a > b else b - a\n"
+
+
+def test_a_control_that_draws_the_values_in_another_order_is_inconclusive():
+    program = Program(DRAWS, 15, ((12, 12),), (), (9, 12), property_line=17)
+    original = concrete_replay(program, "gap", inputs=[0, 1])
+    assert original.status == "property_violated"
+    assert original.draws == ["first:nondet_int", "second:nondet_int"]
+    assert check_fixed(program, "gap", "gap", DRAWS_FIXED, [0, 1]).status == "not_reproduced"
+    verdict = check_fixed(program, "gap", "gap", DRAWS_FIXED, [0, 1], draws=original.draws)
+    assert verdict.status == "unavailable" and "order" in verdict.reason
+    assert apply_control(VALUE_VIOLATION, verdict)[0] == VALUE_VIOLATION
+    same_order = DRAWS_FIXED.replace("    b = second()\n    a = first()\n", "    a = first()\n    b = second()\n")
+    assert check_fixed(program, "gap", "gap", same_order, [0, 1], draws=original.draws).status == "not_reproduced"

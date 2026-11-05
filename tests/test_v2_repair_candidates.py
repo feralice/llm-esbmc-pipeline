@@ -12,7 +12,7 @@ VERDICT = "VERIFICATION FAILED\n"
 
 
 def _case(tmp_path: Path, rounds: list[tuple[str, str, int]], preservation: str | None = None,
-          results: bool = True, entry_id: str = "h1") -> Path:
+          results: bool = True, entry_id: str = "h1", verdict: str = "CONFIRMED") -> Path:
     case = tmp_path / "cases" / "h1"
     for number, (source, output, code) in enumerate(rounds, 1):
         folder = case / "rounds" / f"{number:03d}"
@@ -20,7 +20,7 @@ def _case(tmp_path: Path, rounds: list[tuple[str, str, int]], preservation: str 
         (folder / "input.py").write_text(source, encoding="utf-8")
         (folder / "output.txt").write_text(output, encoding="utf-8")
         (folder / "exit_code").write_text(str(code), encoding="utf-8")
-    entry = {"hypothesis": {"hypothesis_id": entry_id}}
+    entry = {"hypothesis": {"hypothesis_id": entry_id}, "verdict": verdict}
     if preservation:
         entry["differential"] = {"preservation": preservation}
     if results:
@@ -42,6 +42,12 @@ def test_changed_behaviour_is_never_a_candidate(tmp_path) -> None:
     case = _case(tmp_path, [("a\n", REFUSED, 1), ("b\n", VERDICT, 1)], "alterada")
 
     assert v2_repair_candidates.repair_candidates(case) == []
+
+
+def test_a_stub_induced_case_is_never_a_candidate(tmp_path) -> None:
+    rounds = [("a\n", REFUSED, 1), ("b\n", VERDICT, 1)]
+    assert v2_repair_candidates.repair_candidates(_case(tmp_path, rounds, verdict="STUB_INDUCED")) == []
+    assert v2_repair_candidates.repair_candidates(_case(tmp_path / "other", rounds)) != []
 
 
 def test_crash_is_never_a_candidate(tmp_path) -> None:

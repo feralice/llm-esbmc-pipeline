@@ -135,10 +135,23 @@ def test_resume_refuses_another_bound_or_timeout(script, tmp_path, esbmc_checkou
     assert calls == [] and flag.lstrip("-").replace("-", "_") in capsys.readouterr().err
 
 
-def test_missing_build_commit_warns_on_stderr(script, tmp_path, esbmc_checkout, calls, capsys):
+def test_missing_build_commit_refuses_to_run(script, tmp_path, esbmc_checkout, calls, capsys):
     esbmc_checkout.write_text("#!/bin/sh\necho v\n", encoding="utf-8")
-    _run(script, tmp_path, esbmc_checkout, report=_report(tmp_path / "report.json", ["a"]))
-    assert "build commit" in capsys.readouterr().err
+    argv = ["--report", str(_report(tmp_path / "report.json", ["a"])), "--esbmc", str(esbmc_checkout),
+            "--out", str(tmp_path / "out"), "--verdicts", "AGENT_NEEDED"]
+    assert script.main(argv) == 2
+    assert calls == [] and "build commit" in capsys.readouterr().err
+    assert not (tmp_path / "out" / "agent_results.json").exists()
+
+
+def test_a_value_hypothesis_gets_the_engines_property(script, tmp_path, esbmc_checkout, calls):
+    report = tmp_path / "report.json"
+    spec = '{"params": {"x": "int"}, "returns": "int", "postcondition": "result >= 0"}'
+    report.write_text(json.dumps({"results": [{"hypothesis": {**_hypothesis("a"), "oracle": "value"},
+                                               "verdict": "AGENT_NEEDED", "reason": "",
+                                               "attempts": [{"attempt": 0, "spec": spec}]}]}), encoding="utf-8")
+    _run(script, tmp_path, esbmc_checkout, report=report)
+    assert (calls[0][1]["returns"], calls[0][1]["postcondition"]) == ("int", "result >= 0")
 
 
 def test_fixed_source_reaches_the_arm(script, tmp_path, esbmc_checkout, calls):

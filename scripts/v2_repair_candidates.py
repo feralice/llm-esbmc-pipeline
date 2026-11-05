@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from research_pipeline.verify.agent_arm import STUB_INDUCED  # noqa: E402
 from research_pipeline.verify.rounds import read_rounds  # noqa: E402
 
 
@@ -40,7 +41,9 @@ def repair_candidates(case_dir: Path, results: dict[str, dict] | None = None) ->
     if results is None:
         results = _load_results(case_dir.parents[1])
     entry = results.get(case_dir.name)
-    if entry is None or (entry.get("differential") or {}).get("preservation") == "alterada":
+    # A harness whose confirmation came from its own stub, or that changed the behaviour, teaches no repair.
+    if entry is None or STUB_INDUCED in (entry.get("verdict"), (entry.get("first_attempt") or {}).get("verdict")) \
+            or (entry.get("differential") or {}).get("preservation") == "alterada":
         return []
     rounds = read_rounds(case_dir)
     return [{"caso": case_dir.name, "rodada": first.index, "erro": _first_error(first.output),

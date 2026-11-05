@@ -33,11 +33,12 @@ from .outcome import (BOUND_INCONCLUSIVE, CONFIRMED, ESBMC_ERROR, ESBMC_TIMEOUT,
                       PIPELINE_ERROR, UNSUPPORTED, final_verdict)
 from .pytest_gen import esbmc_pytest, pytest_seeds, replay_pytest, run_replay_test
 from .procs import run_group
-from .render import Program
+from .render import RECEIVER, RESULT_VAR, Program, property_assert
 from .round_warnings import mypy_messages, round_warnings
 from .rounds import install_round_logger, read_rounds
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
 from .validation import INCONCLUSIVE, REACHABLE, UNREACHABLE, reachability
+from .value_oracle import engine_property, value_outcome
 
 AGENT_FAILED = "AGENT_FAILED"
 # What Claude Code prints when its session never reached the model (network, DNS, an outage, a usage limit).
@@ -93,6 +94,11 @@ modules (the CPython replay runs harness.py alone). Do not add assert statements
 the suspect expression. Classes you write for the inputs must support every operation the target
 applies to them (len, iteration, indexing, comparison) and must not raise: an exception raised inside
 your stubs, or caused by an operation a stub lacks, is rejected as an artefact of the harness.
+"""
+_VALUE_RULES = """This hypothesis is a wrong result: nothing raises. The pipeline checks it with one assert, so
+harness.py has exactly one assert, this one: in the driver, {store}, name the receiver `{receiver}` when
+`{function}` is a method and each argument after the parameter it fills, and end the driver with
+    {assertion}
 """
 _GRAPH_TOOL = ("Before writing a stub, ask the call graph of original.py how the code really uses a name: "
                "`python3 graph.py callers NAME`, `callees NAME`, `class NAME`, `where NAME`. Build stubs and inputs "
@@ -247,6 +253,7 @@ def run_agent_arm(
     fixed_path: Path | None = None, knowledge: str = "", project_skills: bool = False,
     log_rounds: bool = False, differential: bool = True, pytest: bool = True,
     knowledge_index: KnowledgeIndex | None = None, retry: bool = False, graph_tool: bool = False,
+    returns: str = "", postcondition: str = "",
 ) -> dict:
     """``skill`` names the plugin's skill in the prompt; ``notes`` is copied next to original.py, followed by
     ``knowledge`` (verify/esbmc_knowledge.lookup: the ESBMC checkout's own docs and accepted tests);
@@ -259,7 +266,9 @@ def run_agent_arm(
     ESBMC_CRASH looks only at the agent's last recorded call (conservative: it may drop a confirmation);
     ``differential`` and ``pytest`` switch off the confirmation's differential test and generated pytest;
     ``retry`` gives the agent one more attempt, told why, when retry_reason finds a harness defect;
-    ``graph_tool`` installs graph.py, the call graph of original.py the agent can query."""
+    ``graph_tool`` installs graph.py, the call graph of original.py the agent can query;
+    ``returns`` and ``postcondition`` (value_oracle.engine_property) are a wrong-result hypothesis's property,
+    which the agent's driver must assert as the engine's would."""
     started = time.monotonic()
     case_dir = Path(work_dir) / h.hypothesis_id
     case_dir.mkdir(parents=True, exist_ok=True)
@@ -273,6 +282,11 @@ def run_agent_arm(
         result.update(verdict=verdict, reason=reason, seconds=round(time.monotonic() - started, 3))
         return result
 
+    value = h.oracle == VALUE_ORACLE
+    if value:
+        result["value_property"] = {"returns": returns, "postcondition": postcondition}
+        if not postcondition:
+            return finish(AGENT_FAILED, "wrong-result hypothesis without a postcondition from the engine's spec")
     if notes is not None:
         text = Path(notes).read_text(encoding="utf-8")
         if knowledge:
@@ -286,7 +300,13 @@ def run_agent_arm(
         (case_dir / stale).unlink(missing_ok=True)
     if log_rounds:
         install_round_logger(case_dir, esbmc_command or [DEFAULT_ESBMC], knowledge_index)
-    prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=_SKILL_RULES if project_skills else _RULES,
+    rules = _SKILL_RULES if project_skills else _RULES
+    if value:
+        store = (f"call `{h.function}` without keeping its value" if returns == "None"
+                 else f"keep what `{h.function}` returns as `{RESULT_VAR}: {returns} = ...`")
+        rules += _VALUE_RULES.format(store=store, receiver=RECEIVER, function=h.function,
+                                     assertion=property_assert(postcondition))
+    prompt = _PROMPT.format(skill=_SKILL if skill else "", rules=rules,
                             notes=_NOTES if notes is not None else "",
                             simplify=_SIMPLIFY if allow_simplify else "",
                             function=h.function, expression=h.suspect_expression,
@@ -319,7 +339,8 @@ def run_agent_arm(
         verdict, reason = evaluate_harness(h, harness, original, case_dir, attempt, esbmc_command=esbmc_command,
                                            bound=bound, timeout_seconds=timeout_seconds, fixed=fixed,
                                            output_dir=output_dir, original_path=Path(source_path or h.file),
-                                           differential_test=differential, generate_pytest=pytest)
+                                           differential_test=differential, generate_pytest=pytest,
+                                           returns=returns, postcondition=postcondition)
         return verdict, reason, attempt
 
     verdict, reason, attempt = evaluate()
@@ -407,11 +428,12 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
                      esbmc_command: list[str] | None, bound: int, timeout_seconds: int,
                      output_dir: Path | None = None, fixed: str | None = None,
                      original_path: Path | None = None, differential_test: bool = True,
-                     generate_pytest: bool = True) -> tuple[str, str]:
+                     generate_pytest: bool = True, returns: str = "", postcondition: str = "") -> tuple[str, str]:
     """Re-run ESBMC on an agent's harness and replay it; fills ``result`` and returns (verdict, reason).
     Also re-checks harnesses saved by earlier runs without calling the agent again; ``output_dir`` keeps
     that check's ESBMC logs and generated pytest apart from the original run's. A confirmation then goes through the
-    differential test, whose real level imports ``original_path`` when given."""
+    differential test, whose real level imports ``original_path`` when given. A wrong-result hypothesis is
+    judged by its ``postcondition``'s assert with the engine's rule (value_oracle.value_outcome)."""
     harness_path = case_dir / "harness.py"
     try:
         harness_tree, original_tree = ast.parse(harness), ast.parse(original)
@@ -424,9 +446,17 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
     if not nodes:
         return AGENT_FAILED, "suspect expression missing from the harness target"
     spans = tuple(sorted({(n.lineno, n.end_lineno or n.lineno) for n in nodes}))
+    value = h.oracle == VALUE_ORACLE
+    line = 0
+    if value:
+        found = property_line(harness_tree, original_tree, target, postcondition, returns)
+        if isinstance(found, str):
+            return AGENT_FAILED, found
+        line = result["property_line"] = found
+    program = Program(_without_esbmc_imports(harness), 0, spans, (), (target.lineno, target.end_lineno),
+                      property_line=line)
     # With the suspect lines the search goes on past a failure elsewhere until some input reaches them.
-    smoke = concrete_replay(Program(_without_esbmc_imports(harness), 0, spans, (), (target.lineno, target.end_lineno)),
-                            target.name)
+    smoke = concrete_replay(program, target.name)
     result["smoke"] = smoke.to_dict()
     # ``line`` falls inside the target whenever the traceback passes through it; a stub the target calls
     # is left to the STUB_INDUCED check, which names the stub.
@@ -445,15 +475,21 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
     if reading.kind not in VERDICT_KINDS:
         replay = ReplayVerdict("unavailable", reason="ESBMC produced no verdict to validate")
     elif result["target_preserved"]:
-        program = Program(_without_esbmc_imports(harness), 0, spans, (), (target.lineno, target.end_lineno))
         replay = concrete_replay(program, target.name, seeds=seeds)
         replayed = harness_tree
+    elif value:
+        replay = ReplayVerdict("unavailable", reason="a wrong result is replayed only on the unchanged target")
     else:
         # ESBMC checked a simplified body; only the original body, fed ESBMC's own values, can confirm.
         replay, replayed = _replay_original(harness, target, original, original_target, h.suspect_expression, seeds)
         result["replayed_original_body"] = True
     result["replay"] = replay.to_dict()
-    verdict = final_verdict(reading, replay)
+    verdict, message = final_verdict(reading, replay), reading.message
+    if value:
+        verdict, message, control = value_outcome(reading, esbmc, program, h.function, target.name, replay, fixed,
+                                                  original)
+        if control is not None:
+            result["control"] = control.to_dict()
     if verdict == NOT_CONFIRMED and result["target_preserved"] and esbmc_command:
         # Same run as the safe verdict; an incremental one falls back to the bound, which reads inconclusive.
         command = [*esbmc_command, *([how["solver"]] if how.get("solver") else []), *library_flags(how)]
@@ -467,6 +503,8 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         if result["reachability"] == UNREACHABLE:
             return NOT_CONFIRMED_VACUOUS, (f"ESBMC never reaches {h.suspect_expression!r} in {h.function}: "
                                            "no path of the driver gets there, so the safe verdict checked nothing")
+    if value:
+        return verdict, message
     if verdict in _NO_DECISION and result["target_preserved"] and smoke.status == "reproduced":
         return _cpython_only(h, harness, target, harness_tree, original_tree, original, fixed, smoke, spans, result,
                              output_dir or case_dir, generate_pytest=generate_pytest, differential_test=differential_test,
@@ -508,6 +546,34 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
             return BEHAVIOUR_CHANGED, (f"{diff.level} differential: {len(diff.divergences)} of {diff.total} "
                                        f"input sequences end differently, first {diff.divergences[0]['inputs']}")
     return verdict, reading.message
+
+
+def property_line(harness: ast.Module, original: ast.Module, target: ast.FunctionDef, postcondition: str,
+                  returns: str) -> int | str:
+    """The line of the postcondition's assert in an agent's harness, or why the harness cannot check it.
+    The agent writes the driver: the assert must be the engine's own, the only one added, and the value
+    it reads must come straight from the call of the target."""
+    if not postcondition:
+        return "wrong-result hypothesis without a postcondition from the engine's spec"
+    assertion = property_assert(postcondition)
+    expected = ast.dump(ast.parse(assertion).body[0].test)
+    real = {ast.dump(n.test) for n in ast.walk(original) if isinstance(n, ast.Assert)}
+    asserts = [n for n in ast.walk(harness) if isinstance(n, ast.Assert)]
+    found = [n for n in asserts if ast.dump(n.test) == expected]
+    if len(found) != 1 or any(ast.dump(n.test) not in real for n in asserts if n is not found[0]):
+        return f"harness.py must hold `{assertion}` once and no other assert of its own"
+    stores = sum(isinstance(n, ast.Name) and n.id == RESULT_VAR and isinstance(n.ctx, ast.Store)
+                 for n in ast.walk(harness))
+    if returns == "None":
+        return found[0].lineno if not stores else f"{RESULT_VAR} is assigned, but {target.name} returns None"
+    calls = [n for n in ast.walk(harness) if isinstance(n, (ast.Assign, ast.AnnAssign))
+             and [ast.unparse(t) for t in (n.targets if isinstance(n, ast.Assign) else [n.target])] == [RESULT_VAR]
+             and isinstance(n.value, ast.Call) and target.name in (getattr(n.value.func, "id", None),
+                                                                    getattr(n.value.func, "attr", None))
+             and n.lineno < found[0].lineno]
+    if stores != 1 or len(calls) != 1:
+        return f"{RESULT_VAR} must be assigned once, before the assert, straight from a call of {target.name}"
+    return found[0].lineno
 
 
 def _fixed_also_fails(harness: str, target: ast.FunctionDef, fixed: str | None, function: str,
@@ -643,8 +709,7 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
     if state.get("agent_config") != config:
         state["agent_config"], state["agent_results"] = config, {}
     done = state.setdefault("agent_results", {})
-    # The agent looks for an exception; it does not know a wrong-result hypothesis's property.
-    pending = [r for r in results if r["verdict"] in AGENT_VERDICTS and r["hypothesis"].get("oracle") != VALUE_ORACLE]
+    pending = [r for r in results if r["verdict"] in AGENT_VERDICTS]
     root = esbmc_root_of(esbmc_command or [DEFAULT_ESBMC])
     index = load_index(root, KNOWLEDGE_CACHE) if root is not None else None
     print(f"\nAgente: {len(pending)} hipótese(s) sem veredito do ESBMC no motor")
@@ -653,12 +718,14 @@ def run_agent_fallback(results: list[dict], *, run_agent: RunAgent, work_dir: Pa
         if h.hypothesis_id in done:
             continue
         print(f"[agente {number}/{len(pending)}] {Path(h.file).name}::{h.function}", flush=True)
+        returns, postcondition = engine_property(result)
         try:
             data = run_agent_arm(h, work_dir=work_dir, run_agent=run_agent, esbmc_command=esbmc_command,
                                  bound=bound, timeout_seconds=timeout_seconds, agent_timeout=agent_timeout,
                                  source_path=verification_source(h, sources), skill=skill,
                                  notes=None if skill else NOTES_PATH,
-                                 knowledge=lookup(index, result.get("reason", ""), "") if index else "")
+                                 knowledge=lookup(index, result.get("reason", ""), "") if index else "",
+                                 returns=returns, postcondition=postcondition)
         except UsageLimitReached:
             raise
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the run
