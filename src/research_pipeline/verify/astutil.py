@@ -205,18 +205,6 @@ def outer_entry(tree: ast.Module, qualified: str, expression: str = "") -> str |
     return entry
 
 
-def entry_preserved(original: ast.Module, program: ast.Module, qualified: str, expression: str = "") -> bool:
-    """For a nested target, the entry function holds the guards and the captured values on the bug path: when the
-    program still has it, its body must be unchanged too."""
-    entry = entry_of(original, qualified, expression)
-    if entry is None:
-        return True
-    checked = find_function(program, entry)
-    if checked is None:
-        return True
-    return body_signature(find_function(original, entry)) == body_signature(checked)
-
-
 _HEADERS = ("if ", "elif ", "while ", "return ", "assert ")
 
 

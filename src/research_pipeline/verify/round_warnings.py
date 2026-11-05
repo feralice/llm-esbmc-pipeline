@@ -10,7 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .astutil import body_signature, find_function
+from .astutil import find_function
+from .preservation import same_code
 
 NOT_MEASURED = "mypy: não medido"
 _LOCATION = re.compile(r"^.*?:\d+(:\d+)?: ")
@@ -48,18 +49,25 @@ def mypy_new_errors(original: str, harness: str, timeout: int = 60,
     return [message for message in dict.fromkeys(after) if message not in before]
 
 
-def _body(source: str, function: str) -> list[str] | None:
+def _target(source: str, function: str) -> tuple[ast.Module | None, ast.FunctionDef | None]:
     try:
-        target = find_function(ast.parse(source), function)
+        tree = ast.parse(source)
     except SyntaxError:
-        return None
-    return None if target is None else body_signature(target)
+        return None, None
+    return tree, find_function(tree, function)
+
+
+def _body_changed(source: str, original: str, function: str) -> bool:
+    (original_tree, before), (tree, after) = _target(original, function), _target(source, function)
+    if before is None or after is None:
+        return (before is None) != (after is None)
+    return not same_code(before, after, original_tree, tree)
 
 
 def round_warnings(source: str, original: str, function: str, mypy_timeout: int = 60,
                    original_messages: list[str] | None = _UNSET) -> list[str]:
     warnings = []
-    if _body(source, function) != _body(original, function):
+    if _body_changed(source, original, function):
         warnings.append("body_changed")
     errors = mypy_new_errors(original, source, mypy_timeout, original_messages)
     if errors is None:

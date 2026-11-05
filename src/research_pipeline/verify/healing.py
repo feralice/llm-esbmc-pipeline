@@ -19,7 +19,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ..scan.callgraph import CallGraph, FunctionNode
-from .astutil import body_signature, expression_nodes, find_function
+from .astutil import expression_nodes, find_function
 from .esbmc_knowledge import (
     KNOWLEDGE_CACHE,
     KnowledgeIndex,
@@ -31,6 +31,7 @@ from .hypothesis import BugHypothesis
 from .lessons import add_auto_lesson, first_error, obstacle, read_notebook, teaches_repair
 from .loop import VerifyResult, verify_hypothesis
 from .outcome import CHECKED, ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
+from .preservation import same_code
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parents[1] / "prompts" / "healing_prompt.txt").read_text(encoding="utf-8")
 HEALABLE = frozenset({GROUNDING_FAILED, MISSING_DEPENDENCY, UNSUPPORTED})
@@ -116,7 +117,7 @@ def patch_problems(original: str, patch: Patch, function: str, expression: str =
         return ["the patched source does not parse"]
     problems = stub_problems(patch.definitions) if patch.definitions.strip() else []
     old, new = find_function(before, function), find_function(after, function)
-    if old is not None and (new is None or body_signature(old) != body_signature(new)):
+    if old is not None and (new is None or not same_code(old, new, before, after)):
         if not expression:
             problems.append(f"the body of the target function {function!r} changed")
         elif new is None or not expression_nodes(new, expression):

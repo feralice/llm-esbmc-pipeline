@@ -8,9 +8,10 @@ import copy
 from pathlib import Path
 from typing import NamedTuple
 
-from .astutil import body_signature, entry_of, expression_nodes, find_function, locate
+from .astutil import expression_nodes, locate
 from .esbmc_run import check, esbmc_output
 from .outcome import CONFIRMED, NOT_CONFIRMED_VACUOUS
+from .preservation import preserved
 from .procs import run_group
 from .render import Program
 from .replay import concrete_replay, counterexample_seeds
@@ -31,36 +32,8 @@ def program_for_result(path: Path, hypothesis: dict) -> Program | None:
     return Program(source, 0, spans, (), (function.lineno, function.end_lineno))
 
 
-class _AsStubs(ast.NodeTransformer):
-    """Slicing's stub renames, applied to the original: ``re.sub`` -> ``_esbmc_re_sub`` (refused member)
-    and ``email.utils`` -> ``email_utils`` (flattened external chain), where the program uses that name."""
-
-    def __init__(self, stubs: set[str]) -> None:
-        self.stubs = stubs
-
-    def visit_Attribute(self, node: ast.Attribute) -> ast.AST:
-        flat = ast.unparse(node).replace(".", "_")
-        for name in ("_esbmc_" + flat, flat):
-            if name in self.stubs:
-                return ast.Name(name, node.ctx)
-        return self.generic_visit(node)
-
-
-def _as_original(original: ast.FunctionDef, checked: ast.FunctionDef) -> bool:
-    names = {n.id for n in ast.walk(original) if isinstance(n, ast.Name)}
-    stubs = {n.id for n in ast.walk(checked) if isinstance(n, ast.Name)} - names
-    return body_signature(_AsStubs(stubs).visit(original)) == body_signature(checked)
-
-
 def target_preserved(original_source: str, program_source: str, function: str, expression: str = "") -> bool:
-    original_tree, program_tree = ast.parse(original_source), ast.parse(program_source)
-    original = locate(original_tree, function, expression)
-    checked = locate(program_tree, function, expression)
-    if original is None or checked is None or not _as_original(original, checked):
-        return False
-    entry = entry_of(original_tree, function, expression)
-    kept = find_function(program_tree, entry) if entry else None
-    return kept is None or _as_original(find_function(original_tree, entry), kept)
+    return preserved(ast.parse(original_source), ast.parse(program_source), function, expression)
 
 
 def with_unreachable_marker(source: str, line: int) -> str | None:

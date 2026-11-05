@@ -1481,3 +1481,64 @@ executada sem quebrar ali).
   lição aprendida num caso anterior da mesma rodada (ou de uma rodada anterior). Todo experimento deve informar o
   `notebook_version` (gravado em cada caso, é a versão do caderno que aquele caso leu) e a ordem em que os casos
   rodaram. Para medir sem esse efeito, use `--no-auto-lessons`.
+
+## Conferência de "função alvo mantida" menos rígida (05/11)
+
+- **Decisão de Fernanda (05/11):** a conferência de que o harness manteve a função alvo igual ao original era
+  rígida demais (qualquer diferença na árvore do código contava como "corpo alterado"). Ela passa a aceitar só
+  diferenças que comprovadamente não mudam o que o código faz no caminho do bug. Feito por um agente de IA
+  (Claude) no checkout principal, sem commit, sem ESBMC e sem LLM paga.
+- **Onde:** um só normalizador em `src/research_pipeline/verify/preservation.py`, usado pela validação do motor
+  (`validation.target_preserved`, também usado por `scripts/check_preserved.py`), pelo braço do agente
+  (`target_preserved` do resultado, que alimenta `UNVALIDATED`/`CONFIRMED_SIMPLIFIED` e as lições via
+  `teaches_repair`), pela checagem da função de entrada de alvo aninhado, pelo aviso `body_changed` das rodadas
+  do agente, pela checagem de patch do self-healing e pelas chaves de alinhamento do teste diferencial.
+- **Agora aceito:** (1) anotações de tipo em parâmetros, retorno e variáveis locais (`x: int = 0` vale como
+  `x = 0`; `x: int` sozinho só some se `x` já recebe valor na função, porque sozinho ele tornaria `x` local);
+  (2) docstrings, também de funções e classes internas; (3) `pass` ao lado de outros comandos; (4) troca
+  consistente de nome de variável local (uma troca um para um em cada escopo, inclusive variáveis de list
+  comprehension e de closures); (5) as reescritas do catálogo `compat.py`, aplicadas ao original antes de
+  comparar; (6) as trocas que o fatiador faz por construção ao colocar stubs: `lib.f(a).x` virando
+  `lib.f__x(a)`, `lib.f(*a)` virando `lib.f(_star0=a)`, `compat_str` virando `str` quando o módulo só importa
+  `compat_str`, e `import` dentro da função removido quando o harness define aquele nome no nível do módulo.
+- **Continua recusado:** comando removido, acrescentado ou fora de ordem; condição, operador, constante ou limite
+  de laço trocado; `raise` ou `assert` removido; chamada trocada por valor; guarda ou `__ESBMC_assume` novo
+  dentro da função; troca de nome que junta duas variáveis numa só, que usa um nome global já lido, que troca
+  nome de parâmetro, ou em função que usa `locals()`, `vars()`, `eval`, `exec`, `globals()`, `dir()`, `global`,
+  `nonlocal`, `match` ou classe interna.
+- **Casos ambíguos, deixados recusados para Fernanda decidir:** anotações em função interna com decorador (o
+  decorador pode ler as anotações; 2 casos de `_period_array_cmp`); anotações em corpo de classe interna
+  (dataclass usa); `import` dentro de `try`; a mesma variável reaproveitada em vários laços e renomeada só em
+  alguns (não é troca um para um; casos de `Network.from_config`); `yield from` reescrito como laço; `'%s' % x`
+  reescrito à mão como `'' + x` sem prova de que `x` é texto (2 casos); `compat_str` trocado por `str` em módulo
+  que define `compat_str` num `try` de Python 2.
+- **Medição antes e depois (sem ESBMC, só a conferência, nos programas guardados em `artifacts/`):**
+  - braço do agente: 73 harnesses recusados antes, 52 depois (21 passaram a ser aceitos; em 8 dos 52 a
+    função alvo não foi encontrada). Os 21 aceitos: 7 só anotações, 1 só docstring interna, 6 só `import` interno virando
+    stub, 5 combinações de anotações, docstrings e `import`, 2 regra `compat_rebound_parameter` com troca de nome
+    (`cli_bool_option`, nas rodadas s6-s2-base e s6-s2-grafo). Entre os 44 que seguem recusados com a função
+    presente, as diferenças mais comuns são: comando acrescentado (17 casos), comando removido (14), valor ou
+    chamada trocado por constante (14), troca de nome que não é um para um (11), desempacotamento de tupla
+    dividido em vários comandos (8), condição trocada (7), mensagem de exceção trocada (6), `raise`/`assert`
+    removido (6), argumentos `*args`/`**kwargs` removidos de chamada (6). Um caso pode ter várias.
+  - motor (programas de replay das rodadas V2): 86 recusados antes, 6 depois. Os 80 aceitos: 38 por `import`
+    interno virando stub, 22 por `np.finfo(float).tiny` virando `np.finfo__tiny(float)`, 16 por `compat_str`
+    virando `str`, 4 por `*args` nomeado como `_star0`. Os 6 que seguem recusados ganharam guarda ou `try`
+    novo dentro da função (`cli_bool_option` 2, `url_concat` 1, `HashExpander.do` 2, `get_new_command` 1).
+  - nenhum caso aceito antes passou a ser recusado (243 do agente e 849 do motor).
+- **Conferência à mão de 3 aceitos:** `LinuxHardware.get_cpu_facts` (`dc76a7e3d21a`, só anotações), linha do bug
+  `sockets[physid] = int(val)` igual, dentro das mesmas guardas (`for line in get_file_lines(...)`,
+  `elif key == 'physical id'` etc.); `Network.from_config` (`8e58760d102e`, docstrings e `import` interno),
+  `raise ValueError('Improperly formatted model config.')` igual, dentro de `for input_data in node_data` e dos
+  mesmos `if len(input_data) == 3` / `elif == 4`; `cli_bool_option` (`91c7494248a2`), `param = params.get(param)`
+  virou `value = params.get(param)` e todos os usos seguintes trocaram junto, `assert isinstance(..., bool)` e os
+  dois `return` iguais. No motor, `nonsingular` muda só a linha `np.finfo(float).tiny`, que vira o stub do
+  fatiador.
+- **Comando:**
+  `git archive 3eee7a1 src | tar -x -C <pasta>` e então
+  `.venv/bin/python scripts/v2_preservation_recount.py --src <pasta>/src` (antes) e
+  `.venv/bin/python scripts/v2_preservation_recount.py` (depois).
+- **Testes:** `tests/test_verify_preservation.py` (um teste aceito por categoria aceita e um recusado por
+  categoria recusada); cada teste falha em pelo menos uma de 24 mutações do normalizador.
+- **Atenção ao comparar com rodadas antigas:** `target_preserved` guardado nos JSONs antigos foi calculado com a
+  regra rígida; reler com a regra nova pode mudar `UNVALIDATED` ou `CONFIRMED_SIMPLIFIED` desses casos.

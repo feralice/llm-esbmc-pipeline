@@ -40,7 +40,7 @@ Issues abertas por nós em 05/11: #9953 e #9954 (Optional[tuple], sem PR, parada
   contornos do `compat.py`, renomeação consistente de locais); continuar recusando linha removida ou fora de
   ordem, condição/operador/constante trocados, `raise`/`assert` removidos, chamada trocada por valor. Medir antes
   e depois nos `artifacts/`. Um subagente estava nisso no checkout principal, sem commit: conferir `git diff`,
-  rodar a suíte em pedaços e commitar.
+  rodar a suíte em pedaços e commitar. **Feito e commitado em 05/11** (73 para 52 recusas no agente, 86 para 6 no motor).
 - **Lições automáticas do self-healing:** feito e commitado (`764fe85`).
 
 ## O que falta, NESTA ORDEM (ordem dela)

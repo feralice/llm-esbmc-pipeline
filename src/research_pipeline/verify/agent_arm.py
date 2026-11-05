@@ -22,7 +22,7 @@ from typing import Callable
 from research_pipeline.llm.rate_limit import UsageLimitReached, is_usage_limit
 from research_pipeline.verification.esbmc_runner import DEFAULT_ESBMC
 
-from .astutil import body_signature, entry_of, entry_preserved, expression_nodes, find_function, locate
+from .astutil import entry_of, expression_nodes, find_function, locate
 from .context import context_module
 from .graph_tool import write_graph
 from .esbmc_knowledge import KNOWLEDGE_CACHE, KnowledgeIndex, esbmc_root_of, load_index, lookup
@@ -31,6 +31,7 @@ from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .esbmc_run import VERDICT_KINDS, check, esbmc_output, library_flags
 from .outcome import (BOUND_INCONCLUSIVE, CONFIRMED, ESBMC_ERROR, ESBMC_TIMEOUT, NOT_CONFIRMED, NOT_CONFIRMED_VACUOUS,
                       PIPELINE_ERROR, UNSUPPORTED, final_verdict)
+from .preservation import preserved
 from .pytest_gen import esbmc_pytest, pytest_seeds, replay_pytest, run_replay_test
 from .procs import run_group
 from .render import RECEIVER, RESULT_VAR, Program, property_assert
@@ -465,8 +466,7 @@ def evaluate_harness(h: BugHypothesis, harness: str, original: str, case_dir: Pa
         return HARNESS_BROKEN, (f"under CPython, harness.py raises {smoke.exception_type} at line {smoke.raised_at}, "
                                 f"outside {h.function}: fix the stub or the driver")
     original_target = locate(original_tree, h.function, h.suspect_expression)
-    result["target_preserved"] = original_target is not None and body_signature(original_target) == body_signature(
-        target) and entry_preserved(original_tree, harness_tree, h.function, h.suspect_expression)
+    result["target_preserved"] = preserved(original_tree, harness_tree, h.function, h.suspect_expression)
 
     esbmc, reading, how = check(harness_path, esbmc_command=esbmc_command, bound=bound,
                                 timeout_seconds=timeout_seconds, work_dir=output_dir or case_dir)

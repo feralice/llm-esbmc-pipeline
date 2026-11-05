@@ -19,6 +19,7 @@ from pathlib import Path
 from . import agent_arm
 from .astutil import locate
 from .hypothesis import BugHypothesis
+from .preservation import Cosmetic
 from .render import Program
 from .replay import ReplayVerdict, _no_network_prefix, concrete_replay
 from .sandbox import host_replay_problem, process_limits
@@ -45,25 +46,14 @@ def _statements(node: ast.FunctionDef) -> list[ast.stmt]:
     return sorted(found, key=lambda n: (n.lineno, n.col_offset))
 
 
-class _Normalized(ast.NodeTransformer):
-    """Drop what does not change behaviour: annotations, and a compound statement's nested bodies
-    (they are statements of their own)."""
-
-    def visit_AnnAssign(self, node: ast.AnnAssign) -> ast.stmt:
-        if node.value is None:
-            return ast.Pass()
-        return ast.Assign(targets=[self.visit(node.target)], value=self.visit(node.value))
-
-    def visit_arg(self, node: ast.arg) -> ast.arg:
-        node.annotation = None
-        return node
+class _Normalized(Cosmetic):
+    """``Cosmetic`` (what never runs is dropped) on one statement, without a compound statement's nested
+    bodies (they are statements of their own)."""
 
     def generic_visit(self, node: ast.AST) -> ast.AST:
         for name in ("body", "orelse", "finalbody", "handlers"):
             if isinstance(node, ast.stmt) and isinstance(getattr(node, name, None), list):
                 setattr(node, name, [])
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            node.returns = None
         return super().generic_visit(node)
 
 
