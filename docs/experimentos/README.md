@@ -1542,3 +1542,19 @@ executada sem quebrar ali).
   categoria recusada); cada teste falha em pelo menos uma de 24 mutações do normalizador.
 - **Atenção ao comparar com rodadas antigas:** `target_preserved` guardado nos JSONs antigos foi calculado com a
   regra rígida; reler com a regra nova pode mudar `UNVALIDATED` ou `CONFIRMED_SIMPLIFIED` desses casos.
+
+## Congelamento c (05/11): versão que vale para os experimentos
+
+- **Tag:** `v2-congelado-2026-11c`. Substitui a `v2-congelado-2026-11b`: entraram as 25 melhorias de 04 e 05/11,
+  as lições automáticas do caderno de reparos, a conferência de "função alvo mantida" menos rígida e o tratamento
+  das chamadas inválidas no pytest gerado pelo ESBMC (último commit de código: `428454f`).
+- **ESBMC:** master `451f54cab68f22261aad0f53ea8236261d8384a5`, `~/esbmc-master/build-bw`, 8.6.0 (o master
+  remoto estava nesse commit em 05/11). Já inclui as correções das issues #9835, #9836, #9838 e #9840 a #9843.
+  O binário anterior está em `~/esbmc-bin/esbmc-d520a903ae`.
+- **Testes:** 1599 passando, em seis pedaços (230, 233, 211, 381, 160 e 384).
+- **Catálogo `possiveis_problemas`:** `rodar.sh` neste ESBMC deu o mesmo resultado descrito no README do
+  catálogo; nenhum reprodutor passou a dar o resultado esperado.
+- **Atenção:** com as lições automáticas, cada rodada pode acrescentar regras em
+  `verify/skills/reparos-aprendidos/SKILL.md`, e o resultado de um caso passa a depender dos casos rodados antes.
+- **Próximas rodadas:** disciplina PGENE601 (47 bugs, prazo 08/12), item 14 (bug semeado), smells no PySmell
+  (200 candidatos).
