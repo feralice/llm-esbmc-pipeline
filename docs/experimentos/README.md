@@ -1385,6 +1385,8 @@ executada sem quebrar ali).
 - O reparo por LLM foi interrompido após Fernanda esclarecer que a LLM deve somente apontar o possível erro.
   Uma falha interna do ESBMC com tupla opcional foi reproduzida em programa mínimo; há um rascunho de issue,
   sem publicação.
+  - **Decisão da Fernanda em 04/11:** o self-healing continua corrigindo o harness, como decidido em 02/11
+    (`--heal error+kb` é o padrão em `--mode hybrid` e no scan); isso substitui a interrupção de 03/11.
 - Método, comandos, logs e limitações: [resultados das melhorias](RESULTADOS_MELHORIAS_PIPELINE_PGENE601_2026-11-03.md).
 
 ## PGENE601: contraexemplo parcial após timeout, 3 casos GPS a 180 s (03/11)
@@ -1441,3 +1443,21 @@ executada sem quebrar ali).
 - **Parâmetro reatribuído** (`61d1c60`): regra `compat_rebound_parameter` para o 65 (`av_real_01`), com dois
   probes; no `d520a903ae` e no `0945ac9` os dois dão "recusa", então a regra fica ligada.
 - Suíte: 1428 testes passando antes dos commits.
+
+## Melhorias de 04 e 05/11 (25 itens, antes do novo congelamento)
+
+- **Data:** 04 e 05/11/2026. **Base:** `dc64068` (branch `feat/harness-de-agente`). Feitas por agentes de IA
+  (Claude) em cinco lotes, em worktrees isolados, e juntadas no checkout principal em 05/11; os commits deste
+  registro são os que vêm logo depois de `dc64068`.
+- **Lista e lotes:** `docs/projeto/PLANO_2026-10-19.md`, seção "Melhorias encontradas em 04/11". O que cada
+  item mudou, os testes e as medições (com comando) estão em `docs/experimentos/melhorias_2026-11-04/lote_{A..E}.md`.
+- **Medições:** só no ESBMC congelado `d520a903ae` e sem LLM paga. Destaques: parar no limite da assinatura
+  (código de saída 3, retomável); guarda de atributo `None` mantida porque sem ela 3 confirmações se perdem
+  (lote C); 23 hipóteses com falha em outra linha da mesma função em `final-2026-10-17`, cobrindo 19 bugs
+  (lote E, contagem à parte, métrica principal igual: 12); `async def` de módulo verificada com `asyncio.run`
+  (lote B, item 17b).
+- **Fora:** itens 4 (57, 61/62) e 10 sem contorno que preserve o corpo no d520 (61/62 e o `Optional[tuple]`
+  foram corrigidos no ESBMC master, #9838 e #9843); item 12 sem veredito novo medido (máquina carregada).
+- **Efeito em rodadas antigas:** o fingerprint novo (lote E e `--heal`) recusa o `--resume` de checkpoints
+  feitos antes, entre eles `artifacts/pgene601/codex-2026-11-03` (ainda `running`).
+- **Suíte:** ver o resultado no fim da sessão de 05/11 (registrado no commit).
