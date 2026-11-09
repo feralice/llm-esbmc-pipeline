@@ -1618,3 +1618,12 @@ executada sem quebrar ali).
   comparativo com 06/11 é gerado ao fim em `resumo.md` (`scripts/compare_runs.py`).
 - **Comparabilidade:** o ESBMC mudou (`39590bbd26` para `822227ff96`, 55 commits) junto com as correções do pipeline; uma
   diferença de veredito não separa as duas causas.
+
+## PGENE601, rodada final dos 47 (08/11/2026, sem tag)
+
+- **Pergunta:** quantos dos 47 bugs o pipeline confirma depois dos consertos de 08/11, com o pipeline e o ESBMC fixos?
+- **Congelamento sem tag (decisão da Fernanda):** pipeline no commit `8579920` da branch `feat/harness-de-agente` (enviada ao GitHub); ESBMC master `95f025adf4` (8.6.0, compilado em 08/11, `~/esbmc-master/build-bw`); caderno de reparos do commit, sem lições automáticas.
+- **Comando:** `bash artifacts/pgene601/rodada-final-2026-11-08/run.sh` (A1+A2, `claude_cli`, `--bound 5 --timeout 180`, self-healing ligado). Retoma sozinho após o limite da assinatura (espera de 10 minutos). No fim gera `resumo.md`, `funil.txt` e `tabela.md` na pasta.
+- **Comparação:** com a rodada de 06/11 (`congelado-c-2026-11-06`), a única fora da amostra.
+- **Aviso de método:** os consertos desta rodada vieram de erros achados nesses mesmos 47, então ela mede o pipeline depois de uma análise de erros, não um teste fora da amostra. A rodada parcial de 08/11 (`rodada-2026-11-08`, 41 veredictos) foi parada por falta dos últimos consertos e não conta.
+- **Resultado:** a preencher quando a rodada fechar.
