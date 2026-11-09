@@ -64,6 +64,7 @@ from research_pipeline.verify.levels import consolidate, level_summary
 from research_pipeline.verify.healing import HEAL_MODES, build_healer
 from research_pipeline.verify.loop import run_verify
 from research_pipeline.hypothesis_cap import cap_per_function
+from research_pipeline.hypothesis_review import PROMPT_PATH as REVIEW_PROMPT_PATH, review_candidates, split_by_threshold
 from research_pipeline.v2_evaluator import evaluate_detection
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.verify.rules import ALL_RULES
@@ -77,6 +78,13 @@ def _positive_int(value: str) -> int:
     if parsed < 1:
         raise argparse.ArgumentTypeError("deve ser um inteiro maior ou igual a 1")
     return parsed
+
+def _review_score(value: str) -> float:
+    parsed = float(value)
+    if not 0 <= parsed <= 10:
+        raise argparse.ArgumentTypeError("deve estar entre 0 e 10")
+    return parsed
+
 
 class _CommandWords(argparse.Action):
     """argparse reads a word starting with ``-`` as an option, so flags for ESBMC arrive quoted in one word."""
@@ -313,6 +321,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-hypotheses-per-function", type=_positive_int, default=None, metavar="N",
                         help="Envia ao ESBMC só as N primeiras expressões distintas de cada função, na ordem "
                              "em que o LLM as escreveu (padrão: sem limite). As outras ficam no relatório.")
+    parser.add_argument("--review-threshold", type=_review_score, default=None, metavar="NOTA",
+                        help="Segundo passo de LLM: dá nota de 0 a 10 a cada hipótese e só envia à especificação "
+                             "e ao ESBMC as de nota maior ou igual a NOTA (padrão: desligado). Erro do revisor "
+                             "mantém a hipótese. As descartadas ficam no relatório (review_dropped).")
     parser.add_argument("--example-k", type=_positive_int, default=3, metavar="K",
                         help="Variante A13: quantos exemplos por função (padrão: 3).")
     parser.add_argument(
@@ -525,6 +537,8 @@ def _v2_fingerprint(config: dict, input_paths: list[Path]) -> dict:
     if variants:
         system = load_system_prompt(include_smells=False, v2_detection=True, v2_variants=variants)
         fingerprint["detector_system_prompt"] = sha256(system.encode()).hexdigest()
+    if config.get("review_threshold") is not None:
+        fingerprint["review_prompt"] = sha256(REVIEW_PROMPT_PATH.read_bytes()).hexdigest()
     if "A15" in variants:
         fingerprint["value_prompt"] = sha256(
             (REPO_ROOT / "src/research_pipeline/prompts/value_property_prompt.txt").read_bytes()
@@ -641,6 +655,25 @@ def _agent_fallback(args: argparse.Namespace, results: list[dict], output_path: 
         state=checkpoint, save=lambda: _save_checkpoint(checkpoint_path, checkpoint),
         config={"backend": args.agent_backend, "model": args.agent_model, "bound": args.bound,
                 "timeout": args.timeout, "esbmc": esbmc})
+
+
+def _apply_review(candidates, sources, llm, checkpoint, checkpoint_path, threshold):
+    """Second-pass scores and the drop decision live in the checkpoint, so a resume repeats neither."""
+    state = checkpoint.setdefault("review", {"scores": {}})
+    if "dropped" not in state:
+        try:
+            reviews = review_candidates(candidates, sources, llm, state["scores"])
+        finally:
+            _save_checkpoint(checkpoint_path, checkpoint)
+        _, dropped = split_by_threshold(candidates, reviews, threshold)
+        state["dropped"] = [
+            {**_v2_candidate_dict(c), "score": r.score, "guard_found": r.guard_found, "feasible": r.feasible,
+             "explanation": r.explanation} for c, r in dropped]
+        state["errors"] = sum(bool(r.error) for r in reviews)
+        _save_checkpoint(checkpoint_path, checkpoint)
+    dropped_ids = {(d["file"], d["function"], d["expression"], d["oracle"]) for d in state["dropped"]}
+    kept = [c for c in candidates if (c.file, c.function, c.expression, c.oracle) not in dropped_ids]
+    return kept, {"review_dropped": state["dropped"], "review_errors": state["errors"]}
 
 
 def _usage_limit_message(exc: UsageLimitReached, checkpoint_path: Path) -> str:
@@ -942,6 +975,9 @@ def mode_v2(args: argparse.Namespace) -> int:
     if args.max_hypotheses_per_function:
         # Only when given, like fixed_sources: verify_results are indexed by the capped list.
         config["max_hypotheses_per_function"] = args.max_hypotheses_per_function
+    if args.review_threshold is not None:
+        # Only when given: verify_results are indexed by the reviewed list.
+        config["review_threshold"] = args.review_threshold
     if args.fixed_sources:
         # Only when given, so a run without it keeps the same fingerprint (no pre-16/10 checkpoint resumes).
         config["fixed_sources"] = args.fixed_sources
@@ -1009,12 +1045,14 @@ def mode_v2(args: argparse.Namespace) -> int:
         print(f"\nModo V2 — síntese isolada: {len(candidates)} hipótese(s) conhecida(s)")
     else:
         print(f"\nModo V2 — etapa 1: detecção em {len(input_paths)} arquivo(s)")
+    unit_sources: dict[tuple[str, str], str] = {}
     for file_index, file_path in enumerate(detection_inputs, 1):
         if usage_limit is not None:
             break
         units = preprocess_file(file_path)
         for unit in units:
             analyzed_units += 1
+            unit_sources[(str(file_path), unit.qualname)] = unit.source
             unit_key = f"{file_path.resolve()}::{unit.qualname}"
             saved_unit = checkpoint["detection_units"].get(unit_key)
             if saved_unit is not None:
@@ -1103,6 +1141,17 @@ def mode_v2(args: argparse.Namespace) -> int:
         print(f"Limite de {args.max_hypotheses_per_function} por função: {len(capped)} hipótese(s) fora da fila.")
     capped_dicts = [_v2_candidate_dict(c) for c in capped]
 
+    review_report: dict = {}
+    if args.review_threshold is not None and args.v2_stage != "synthesis" and usage_limit is None:
+        try:
+            candidates, review_report = _apply_review(
+                candidates, unit_sources, synthesizer, checkpoint, checkpoint_path, args.review_threshold)
+        except UsageLimitReached as exc:
+            print(_usage_limit_message(exc, checkpoint_path), file=sys.stderr)
+            return USAGE_LIMIT_EXIT
+        print(f"Revisão (corte {args.review_threshold}): {len(review_report['review_dropped'])} hipótese(s) "
+              f"fora da fila, {review_report['review_errors']} sem nota.")
+
     if detection_errors:
         checkpoint["status"] = "partial_detection"
         checkpoint["detection_errors"] = detection_errors
@@ -1126,6 +1175,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "errors": detection_errors,
                     "candidates": [_v2_candidate_dict(c) for c in candidates],
                     "capped_candidates": capped_dicts,
+                    **review_report,
                     "rejected_findings": rejected_findings,
                     "trace": detection_trace,
                     "trace_summary": _summarize_detection_trace(detection_trace),
@@ -1158,6 +1208,7 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "errors": [],
                     "candidates": [_v2_candidate_dict(c) for c in candidates],
                     "capped_candidates": capped_dicts,
+                    **review_report,
                     "rejected_findings": rejected_findings,
                     "trace": detection_trace,
                     "trace_summary": _summarize_detection_trace(detection_trace),
@@ -1192,6 +1243,7 @@ def mode_v2(args: argparse.Namespace) -> int:
             "failed_units": len(detection_errors),
             "candidates": [_v2_candidate_dict(c) for c in candidates],
             "capped_candidates": capped_dicts,
+            **review_report,
             "rejected_findings": rejected_findings,
             "trace_summary": _summarize_detection_trace(detection_trace),
         },

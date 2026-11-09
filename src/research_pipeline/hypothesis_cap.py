@@ -10,7 +10,7 @@ from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.hypothesis import undo_prompt_rename
 
 
-def _syntax_key(candidate: Candidate) -> tuple[str, str, str, str]:
+def syntax_key(candidate: Candidate) -> tuple[str, str, str, str]:
     expression = undo_prompt_rename(candidate.expression, candidate.function)
     try:
         syntax = ast.dump(ast.parse(expression), include_attributes=False)
@@ -27,7 +27,7 @@ def cap_per_function(candidates: list[Candidate], limit: int) -> tuple[list[Cand
     kept: list[Candidate] = []
     dropped: list[Candidate] = []
     for candidate in candidates:
-        key = _syntax_key(candidate)
+        key = syntax_key(candidate)
         if key in seen or per_function[key[:2]] >= limit:
             dropped.append(candidate)
             continue
