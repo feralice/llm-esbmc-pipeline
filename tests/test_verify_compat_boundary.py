@@ -50,6 +50,8 @@ def test_host_safety_checks_the_source_that_will_run():
     ('%d', 'int', [-2, 0, 3]),
     ('%d', 'bool', [False, True]),
     ('%d', 'float', [-1.9, 0.0, 1.9, float('nan'), float('inf')]),
+    ('%u', 'int', [-2, 0, 3]),
+    ('%u', 'float', [-1.9, 0.0, 1.9, float('nan'), float('inf')]),
 ])
 def test_scalar_formats_preserve_values_and_exceptions(fmt, kind, values):
     source = f'def f(x):\n    return {fmt!r} % x\n'
@@ -229,3 +231,18 @@ def test_exact_strings_and_tuple_names_format_exactly_as_str(body):
 def test_values_not_proven_exact_str_are_left_alone(body):
     source = f'import re\n\n\ndef f(m, xs, n):\n    {body}\n'
     assert rewrite_compat(source) == (source, [])
+
+
+def test_async_to_sync_turns_coroutines_into_plain_functions():
+    from research_pipeline.verify.compat import async_to_sync
+    source = "class H:\n    async def read(self, r):\n        x = await self.g(r)\n        return (await r.f())[1]\n"
+    text, notes = async_to_sync(source)
+    assert text == "class H:\n    def read(self, r):\n        x = self.g(r)\n        return (r.f())[1]\n"
+    assert notes == ["async_to_sync:1"]
+
+
+def test_async_to_sync_refuses_constructs_without_a_sequential_reading():
+    from research_pipeline.verify.compat import async_to_sync
+    for body in ("async with a:\n        pass", "async for i in a:\n        pass", "yield 1"):
+        assert async_to_sync(f"async def f(a):\n    {body}\n") is None
+    assert async_to_sync("def f():\n    pass\n") is None

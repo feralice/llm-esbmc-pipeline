@@ -16,7 +16,7 @@ from .astutil import (
     nested_chain,
     outer_entry,
 )
-from .compat import remove_unused
+from .compat import async_to_sync, remove_unused
 from .context import context_module
 from .dead_guards import fold_dead_guards
 from .hypothesis import BugHypothesis
@@ -71,6 +71,8 @@ class Grounded:
     forwarded: tuple[tuple[str, str, str], ...] = ()
     # A module-level ``async def``: the driver runs it with ``asyncio.run``.
     coroutine: bool = False
+    # What the real __init__ rejects (``if bad: raise``), as conditions on ``self.attr`` the receiver satisfies.
+    init_guards: tuple[str, ...] = ()
 
     @property
     def stub_keys(self) -> tuple[str, ...]:
@@ -145,8 +147,7 @@ def _replaced(cls: ast.ClassDef, start: str, replace_properties: bool) -> set[st
 def _reachable_methods(cls: ast.ClassDef, start: str, replaced: frozenset[str] | set[str] = frozenset()) -> set[str]:
     """``start``, methods it calls through self, and methods the class body names (``property(f)``),
     ignoring the ``replaced`` properties."""
-    methods = {n.name: n for n in cls.body
-               if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name not in replaced}
+    methods = _definitions(cls, replaced)
     body = [stmt for stmt in cls.body if not isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
             and not (isinstance(stmt, ast.Assign) and _defined_by(stmt) & replaced)]
     named = {node.id for stmt in body for node in ast.walk(stmt)
@@ -154,12 +155,22 @@ def _reachable_methods(cls: ast.ClassDef, start: str, replaced: frozenset[str] |
     reached = {start} | named
     pending = list(reached)
     while pending:
-        for node in ast.walk(methods[pending.pop()]):
-            name = _self_attribute(node)
-            if name in methods and name not in reached:
-                reached.add(name)
-                pending.append(name)
+        for definition in methods[pending.pop()]:
+            for node in ast.walk(definition):
+                name = _self_attribute(node)
+                if name in methods and name not in reached:
+                    reached.add(name)
+                    pending.append(name)
     return reached
+
+
+def _definitions(cls: ast.ClassDef, replaced: frozenset[str] | set[str] = frozenset()) -> dict[str, list]:
+    """Every def of each method name: a property and its setter share one, and both bodies count."""
+    found: dict[str, list] = {}
+    for node in cls.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name not in replaced:
+            found.setdefault(node.name, []).append(node)
+    return found
 
 
 def _defined_by(stmt: ast.Assign) -> set[str]:
@@ -180,13 +191,57 @@ def _class_level_values(cls: ast.ClassDef) -> set[str]:
 
 
 def _loaded_self_attrs(cls: ast.ClassDef, method: str, replace_properties: bool = True) -> set[str]:
-    methods = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    methods = _definitions(cls)
     return {
         _self_attribute(node)
         for name in _reachable_methods(cls, method, _replaced(cls, method, replace_properties))
-        for node in ast.walk(methods[name])
+        for definition in methods[name]
+        for node in ast.walk(definition)
         if isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Load) and _self_attribute(node)
     }
+
+
+_GUARD_NODES = (ast.Compare, ast.BoolOp, ast.UnaryOp, ast.BinOp, ast.Constant, ast.Name, ast.Attribute, ast.Load,
+                ast.cmpop, ast.boolop, ast.unaryop, ast.operator)
+
+
+def constructor_guards(cls: ast.ClassDef, attrs: set[str]) -> tuple[str, ...]:
+    """Conditions the real ``__init__`` enforces before it stores a value (``if min_temp >= max_temp: raise``,
+    ``assert x > 0``), written on ``self.attr`` and limited to receiver attributes the shell sets. The shell
+    replaces ``__init__``, so without them the receiver could hold a state no construction reaches."""
+    init = next((n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == "__init__"), None)
+    if init is None:
+        return ()
+    names = {a.arg for a in init.args.args[1:]} | {a.arg for a in init.args.kwonlyargs}
+    stored = {n.value.id: t.attr for n in init.body if isinstance(n, ast.Assign) and isinstance(n.value, ast.Name)
+              and n.value.id in names for t in n.targets
+              if isinstance(t, ast.Attribute) and isinstance(t.value, ast.Name) and t.value.id == "self"}
+
+    class Rename(ast.NodeTransformer):
+        ok = True
+
+        def visit_Name(self, node):
+            if node.id in stored and stored[node.id] in attrs:
+                return ast.copy_location(ast.Attribute(ast.Name("self", ast.Load()), stored[node.id], ast.Load()), node)
+            if node.id != "self":
+                self.ok = False
+            return node
+
+    guards = []
+    for node in init.body:
+        if isinstance(node, ast.If) and not node.orelse and all(isinstance(b, ast.Raise) for b in node.body):
+            condition, negate = node.test, True
+        elif isinstance(node, ast.Assert):
+            condition, negate = node.test, False
+        else:
+            continue
+        if not all(isinstance(n, _GUARD_NODES) for n in ast.walk(condition)):
+            continue
+        rename = Rename()
+        renamed = rename.visit(copy.deepcopy(condition))
+        if rename.ok and any(isinstance(n, ast.Attribute) for n in ast.walk(renamed)):
+            guards.append(ast.unparse(ast.UnaryOp(ast.Not(), renamed) if negate else renamed))
+    return tuple(guards)
 
 
 def _receiver_attrs(cls: ast.ClassDef, method: str, replace_properties: bool = True) -> tuple[str, ...]:
@@ -506,6 +561,11 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         if any(isinstance(n, ast.AsyncFunctionDef) and n.name == name for n in ast.walk(tree)):
             reason = ("async method or nested coroutine" if "." in h.function
                       else "coroutine defined more than once")
+            sequential = async_to_sync(source)
+            if sequential is not None:
+                grounded = ground(h, sequential[0], refused, rules)
+                if isinstance(grounded, Grounded):
+                    return dataclasses.replace(grounded, transforms=(*sequential[1], *grounded.transforms))
             return GroundingFailure(f"async entry point: {reason}", unsupported=True)
         outer = outer_entry(tree, h.function, h.suspect_expression)
         if outer is not None:
@@ -612,4 +672,5 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         receiver_subclass=subclass,
         called_attrs=_called_attrs(cls, function.name, receiver_attrs, properties) if receiver_attrs else {},
         coroutine=isinstance(function, ast.AsyncFunctionDef),
+        init_guards=constructor_guards(cls, set(receiver_attrs)) if cls and receiver_attrs else (),
     )

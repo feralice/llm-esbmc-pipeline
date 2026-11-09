@@ -51,10 +51,10 @@ def test_check_keeps_the_best_reading(tmp_path, outcomes, kept, how):
 
 
 def test_no_solver_fallback_when_the_command_already_picks_one(tmp_path):
-    runner = _runner(TIMEOUT)
+    runner = _runner(TIMEOUT, TIMEOUT)
     _, reading, _ = check(tmp_path / "p.py", esbmc_command=["esbmc", "--z3"], bound=5, timeout_seconds=1,
                           work_dir=tmp_path, runner=runner)
-    assert reading.kind == "timeout" and len(runner.calls) == 1
+    assert reading.kind == "timeout" and [c["solver"] for c in runner.calls] == ["", ""]
 
 
 SHOW_LOOPS = """goto-loop Loop 1 (__python_str_concat:0):
@@ -186,11 +186,18 @@ def test_no_escalation_at_or_above_the_escalated_timeout(tmp_path, seconds):
     assert runner.timeouts == [seconds] * 3
 
 
-def test_a_plain_timeout_is_not_escalated(tmp_path):
-    runner = _runner(TIMEOUT, TIMEOUT, TIMEOUT)
+def test_a_plain_timeout_gets_one_longer_run_and_keeps_its_verdict_when_that_times_out(tmp_path):
+    runner = _runner(TIMEOUT, TIMEOUT, TIMEOUT, TIMEOUT)
     _, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=180,
                             work_dir=tmp_path, runner=runner)
-    assert reading.kind == "timeout" and len(runner.calls) == 3 and "timeout_escalated" not in how
+    assert reading.kind == "timeout" and len(runner.calls) == 4 and "timeout_escalated" not in how
+
+
+def test_a_plain_timeout_that_finishes_with_the_longer_limit_is_read(tmp_path):
+    runner = _runner(TIMEOUT, TIMEOUT, TIMEOUT, BUG)
+    _, reading, how = check(tmp_path / "p.py", esbmc_command=["esbmc"], bound=5, timeout_seconds=180,
+                            work_dir=tmp_path, runner=runner)
+    assert reading.kind == "violation" and how["timeout_escalated"] == ESCALATED_TIMEOUT
 
 
 def test_partial_counterexample_outside_the_program_stays_a_timeout(tmp_path):

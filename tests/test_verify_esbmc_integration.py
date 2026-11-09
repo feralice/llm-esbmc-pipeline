@@ -132,6 +132,16 @@ def test_percent_format_is_rewritten_and_the_bug_is_confirmed(tmp_path):
     assert source in Path(result.attempts[-1]["replay_program_path"]).read_text(encoding="utf-8")
 
 
+def test_external_constant_read_in_a_method_reaches_a_verdict(tmp_path):
+    source = ("import lib\n\nclass Car:\n    def __init__(self, kind: int):\n        self.kind = kind\n\n"
+              "    def ratio(self, n: int) -> int:\n        if self.kind == lib.PX4:\n            return 1\n"
+              "        return n // 0\n")
+    result = _verify(tmp_path, "Car.ratio", "n // 0", {"params": {"n": "int"}, "attributes": {"kind": "int"},
+                                                          "stubs": {"lib.PX4": "int"}}, source)
+    assert result.verdict != "UNSUPPORTED", result.to_dict()
+    assert "C@" not in json.dumps(result.to_dict())
+
+
 @pytest.mark.parametrize("fmt,kind,value,expected", [
     ("%d", "float", "-1.9", "-1"),
     ("%r", "int", "2", "2"),
@@ -270,3 +280,13 @@ def test_a_coroutine_is_verified_through_asyncio_run(tmp_path):
     assert bug.pytest["status"] in {"reproduces", "invalid"}, bug.pytest
     if bug.pytest["status"] == "invalid":
         assert bug.pytest["reason"].startswith("ESBMC's test passes"), bug.pytest
+
+
+def test_an_async_method_is_grounded_through_its_sequential_copy():
+    from research_pipeline.verify.grounding import Grounded, ground
+    from research_pipeline.verify.hypothesis import BugHypothesis
+    source = ("class H:\n    def __init__(self) -> None:\n        self.n: int = 3\n\n"
+              "    async def read(self, results: list[int]) -> int:\n        return results[self.n + 1]\n")
+    grounded = ground(BugHypothesis(file="m.py", function="H.read", suspect_expression="results[self.n + 1]"), source)
+    assert isinstance(grounded, Grounded)
+    assert "async_to_sync:1" in grounded.transforms and "async def" not in grounded.module

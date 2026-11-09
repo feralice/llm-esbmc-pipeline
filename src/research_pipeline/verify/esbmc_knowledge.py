@@ -12,6 +12,9 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 README = Path("src/python-frontend/README.md")
+# The website pages that list what ESBMC-Python refuses (limitations) and models (supported-features).
+DOCS = (Path("website/content/docs/python/limitations.md"), Path("website/content/docs/python/supported-features.md"))
+CACHE_FORMAT = "v2"
 REGRESSION = Path("regression/python")
 _PASSING = {"CORE", "THOROUGH"}
 KNOWLEDGE_CACHE = Path.home() / ".cache" / "llm_esbmc" / "esbmc_knowledge"
@@ -44,13 +47,13 @@ def _commit(root: Path) -> str:
     return done.stdout.strip() if done.returncode == 0 else ""
 
 
-def _sections(text: str) -> list[Snippet]:
+def _sections(text: str, source: Path = README) -> list[Snippet]:
     found, title, body = [], "", []
     for line in [*text.splitlines(), "## "]:
         heading = re.match(r"^#{2,3} (.*)$", line)
         if heading:
             if title and any(b.strip() for b in body):
-                found.append(Snippet(str(README), title, "\n".join(body).strip()))
+                found.append(Snippet(str(source), title, "\n".join(body).strip()))
             title, body = heading.group(1).strip(), []
         else:
             body.append(line)
@@ -69,14 +72,17 @@ def _tests(root: Path) -> list[Snippet]:
 
 
 def build_index(esbmc_root: Path) -> KnowledgeIndex:
-    readme = esbmc_root / README
-    sections = _sections(readme.read_text(encoding="utf-8", errors="replace")) if readme.exists() else []
+    sections: list[Snippet] = []
+    for page in (README, *DOCS):
+        path = esbmc_root / page
+        if path.exists():
+            sections += _sections(path.read_text(encoding="utf-8", errors="replace"), page)
     return KnowledgeIndex(_commit(esbmc_root), sections, _tests(esbmc_root))
 
 
 def load_index(esbmc_root: Path, cache_dir: Path) -> KnowledgeIndex:
     commit = _commit(esbmc_root)
-    cached = cache_dir / f"{commit}.json"
+    cached = cache_dir / f"{commit}-{CACHE_FORMAT}.json"
     if commit and cached.exists():
         data = json.loads(cached.read_text(encoding="utf-8"))
         return KnowledgeIndex(data["commit"], [Snippet(**s) for s in data["sections"]],

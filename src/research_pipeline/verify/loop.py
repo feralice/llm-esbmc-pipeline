@@ -29,6 +29,7 @@ from .outcome import (
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
     NO_SOURCE,
+    OTHER_FAILURE,
     PIPELINE_ERROR,
     SPEC_FAILED,
     UNSUPPORTED,
@@ -121,6 +122,14 @@ def _placeholder_spec(grounded: Grounded) -> InputSpec:
                                     (), {key: "int" for key in grounded.stub_keys}), grounded)
 
 
+def _with_exception_class_stubs(spec: InputSpec, grounded: Grounded) -> InputSpec:
+    """The original body may name library exception classes (``except json.JSONDecodeError``) that the simplified
+    copy dropped; they are never called, so the type given to them does not matter."""
+    missing = {key: "int" for key in grounded.stub_keys
+               if key not in spec.stubs and key.rsplit(".", 1)[-1].endswith(("Error", "Exception", "Warning"))}
+    return dataclasses.replace(spec, stubs={**spec.stubs, **missing}) if missing else spec
+
+
 def with_original_replay(program: Program, h: BugHypothesis, original: str, spec: InputSpec,
                          rules: frozenset[str] = ALL_RULES) -> Program | str:
     """``program`` with its replay copy rebuilt from ``original``, the source before self-healing simplified the
@@ -128,6 +137,7 @@ def with_original_replay(program: Program, h: BugHypothesis, original: str, spec
     grounded = ground(h, original, rules=rules)
     if isinstance(grounded, GroundingFailure):
         return f"original body cannot be grounded for the replay: {grounded.reason}"
+    spec = _with_exception_class_stubs(spec, grounded)
     try:
         twin = render_program(grounded, spec, rules=rules)
     except RenderError as exc:
@@ -216,7 +226,9 @@ def verify_hypothesis(
                                "chars": len(context)}
     work_dir.mkdir(parents=True, exist_ok=True)
     previous, feedback, last_problems = "", "", []
-    for attempt in range(1 + max_repairs):
+    refinements, limit, held, reached = 0, 1 + max_repairs, None, ""
+    attempt = -1
+    while (attempt := attempt + 1) < limit:
         shown_previous, shown_feedback = (previous, feedback) if strategy == "repair" else ("", "")
         reply = llm.complete(system, _user_prompt(grounded, shown_previous, shown_feedback, context),
                              json_mode=True)
@@ -262,8 +274,9 @@ def verify_hypothesis(
         esbmc, reading, how = check(path, esbmc_command=esbmc_command, bound=bound,
                                     timeout_seconds=timeout_seconds, work_dir=work_dir / path.stem)
         record.update({"esbmc_status": esbmc.status, "reading": reading.kind, "message": reading.message, **how})
-        if reading.kind == "repairable" and attempt < max_repairs:
+        if reading.kind == "repairable" and attempt - refinements < max_repairs:
             feedback = "ESBMC rejected the program: " + _with_line_context(reading.message, program)
+            reached = reading.message
             continue
         replay = (ReplayVerdict("unavailable", reason=no_replay) if no_replay
                   else _replay_if_checked(reading, program, grounded, replay_runs, esbmc_output(esbmc)))
@@ -298,13 +311,46 @@ def verify_hypothesis(
             return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source,
                                            source if replay_source is None else replay_source))
         verdict = final_verdict(reading, replay)
+        if verdict == OTHER_FAILURE and held is None and strategy == "repair" and refinements < MAX_REFINEMENTS \
+                and _failed_before_target(replay):
+            held = (replay.to_dict(), reading.message)
+        if held is not None and verdict != CONFIRMED:
+            if verdict == OTHER_FAILURE and refinements < MAX_REFINEMENTS and _failed_before_target(replay):
+                refinements, limit = refinements + 1, limit + 1
+                record["refinement"] = _refinement_feedback(replay)
+                feedback = record["refinement"]
+                continue
+            result.replay = held[0]
+            return finish(OTHER_FAILURE, held[1])
         if verdict == CONFIRMED and esbmc_command:
             result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command, bound, work_dir)
         return finish(verdict, reading.message)
+    if held is not None:
+        result.replay = held[0]
+        return finish(OTHER_FAILURE, held[1])
+    if reached and last_problems:
+        # An earlier attempt reached ESBMC and was refused; a later spec the checks reject does not undo that.
+        return finish(UNSUPPORTED, reached)
     if last_problems and all("unsupported type" in p for p in last_problems):
         # The model kept naming a real type the harness cannot build: a method limit, not a model error.
         return finish(UNSUPPORTED, "input type outside the supported subset: " + "; ".join(last_problems))
     return finish(SPEC_FAILED, feedback)
+
+
+MAX_REFINEMENTS = 2
+
+
+def _failed_before_target(replay: ReplayVerdict) -> bool:
+    """The replay raised inside the target function but not at the suspect expression."""
+    line, span = replay.line, replay.target_range
+    return replay.status == "other_failure" and isinstance(line, int) and bool(span) and span[0] <= line <= span[1]
+
+
+def _refinement_feedback(replay: ReplayVerdict) -> str:
+    return (f"ESBMC found a failure, but running the inputs it chose raised {replay.exception_type} "
+            f"({replay.message}) at line {replay.line}, not at the suspect expression. Keep the same types and add "
+            "an assumption (a condition on parameters or attributes) that excludes the input making that line "
+            "fail, so the only failure left is at the suspect expression.")
 
 
 def _value_outcome(result: VerifyResult, reading: EsbmcReading, esbmc: ESBMCDirectResult, program: Program,
@@ -337,7 +383,23 @@ def _replay_if_checked(reading: EsbmcReading, program: Program, grounded: Ground
     seeds = counterexample_seeds(log, DRIVER)
     if strings:
         seeds["str"] = strings
-    return concrete_replay(program, grounded.method_name, max_runs=runs, seeds=seeds)
+    return _without_missing_member(concrete_replay(program, grounded.method_name, max_runs=runs, seeds=seeds),
+                                   grounded)
+
+
+_NO_ATTRIBUTE = re.compile(r"has no attribute '(\w+)'")
+
+
+def _without_missing_member(replay: ReplayVerdict, grounded: Grounded) -> ReplayVerdict:
+    """An AttributeError for a member the suspect expression calls on ``self``, which the module never defines
+    (inherited from a base class the harness does not have), says nothing about the code: no replay."""
+    found = _NO_ATTRIBUTE.search(replay.message or "")
+    name = found.group(1) if found else ""
+    if (replay.status in {"reproduced", "other_failure"} and replay.exception_type == "AttributeError" and name
+            and f"self.{name}(" in grounded.hypothesis.suspect_expression
+            and not re.search(rf"\bdef {name}\b|\b{name}\s*=", grounded.module)):
+        return ReplayVerdict("unavailable", reason=f"member {name!r} comes from a base class the harness does not model")
+    return replay
 
 
 def verification_source(h: BugHypothesis, verification_sources: Path | None) -> Path:

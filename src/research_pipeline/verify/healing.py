@@ -55,6 +55,41 @@ def _insert_point(lines: list[str], tree: ast.Module) -> int:
     return max(imports, default=0)
 
 
+def _without_repeated_classes(added: str, source: str) -> str:
+    """ESBMC keys a class by name alone and refuses two. A class the source already defines identically is dropped
+    from ``added``, and of several definitions of one name in ``added`` only the last stays (as in Python)."""
+    try:
+        existing = {n.name: ast.dump(n) for n in ast.parse(source).body if isinstance(n, ast.ClassDef)}
+        classes = [n for n in ast.parse(added).body if isinstance(n, ast.ClassDef)]
+    except SyntaxError:
+        return added
+    last = {node.name: node for node in classes}
+    lines = added.splitlines()
+    for node in classes:
+        if existing.get(node.name) == ast.dump(node) or last[node.name] is not node:
+            for number in range(node.lineno - 1, node.end_lineno):
+                lines[number] = ""
+    return "\n".join(lines).strip("\n")
+
+
+_STUB_NAME = re.compile(r"^_\w*Stub\w*$")
+
+
+def _without_replaced_stubs(source: str, added: str) -> str:
+    """A stub class an earlier repair wrote and this one writes again under the same name, differently: the
+    newer one replaces it. Only ``_...Stub`` names, so a class of the project is never removed."""
+    try:
+        redefined = {n.name for n in ast.parse(added).body if isinstance(n, ast.ClassDef) and _STUB_NAME.match(n.name)}
+        old = [n for n in ast.parse(source).body if isinstance(n, ast.ClassDef) and n.name in redefined]
+    except SyntaxError:
+        return source
+    lines = source.splitlines()
+    for node in old:
+        for number in range(node.lineno - 1, node.end_lineno):
+            lines[number] = ""
+    return "\n".join(lines) + "\n"
+
+
 def apply_patch(source: str, patch: Patch) -> str:
     for old, new in patch.edits:
         count = source.count(old)
@@ -62,9 +97,11 @@ def apply_patch(source: str, patch: Patch) -> str:
             raise PatchError(f"edit text not found: {old[:60]!r}" if count == 0
                              else f"edit text appears {count} times: {old[:60]!r}")
         source = source.replace(old, new)
-    added = "\n\n".join(p.strip("\n") for p in (patch.real_code, patch.definitions) if p.strip())
-    if not added:
+    added = _without_repeated_classes("\n\n".join(p.strip("\n") for p in (patch.real_code, patch.definitions)
+                                                    if p.strip()), source)
+    if not added.strip():
         return source
+    source = _without_replaced_stubs(source, added)
     lines = source.splitlines()
     try:
         at = _insert_point(lines, ast.parse(source))
@@ -196,6 +233,26 @@ def _usage_lines(source: str, names: set[str], limit: int = 12) -> str:
     return "\n".join(lines[:limit])
 
 
+_QUOTED = re.compile(r"'([A-Za-z_][\w.]*)'|\.(\w+)\(")
+
+
+def _error_lines(source: str, reason: str, limit: int = 8) -> str:
+    """Source lines that name an identifier ESBMC's message quotes, with line numbers: an error often points at a
+    class attribute or a callee outside the target function, which the repair prompt would not otherwise show."""
+    names = {part for match in _QUOTED.findall(reason) for part in match if part}
+    names = {n.split(".")[-1] for n in names} - {"main", "self"}
+    found = [f"{number}: {line.rstrip()}" for number, line in enumerate(source.splitlines(), 1)
+             if any(re.search(rf"\b{re.escape(n)}\b", line) for n in names)]
+    return "\n".join(found[:limit])
+
+
+def _near_lines(source: str, text: str, count: int = 3) -> list[str]:
+    """The lines of ``source`` closest to a quoted edit text that was not found."""
+    first = text.strip().splitlines()[0] if text.strip() else ""
+    lines = [line.rstrip() for line in source.splitlines() if line.strip()]
+    return difflib.get_close_matches(first, lines, n=count, cutoff=0.4)
+
+
 def _function_code(source: str, tree: ast.Module, qualified: str) -> str:
     function = find_function(tree, qualified)
     return ast.get_source_segment(source, function) or "" if function is not None else ""
@@ -280,10 +337,16 @@ class Healer:
                 return Patch(real_code=real)
         return self._repair(h, source, tree, verdict, reason, names, previous)
 
-    def _ask(self, task: str, previous: list[dict]) -> dict | None:
+    def _ask(self, task: str, previous: list[dict], source: str = "") -> dict | None:
         if previous:
             task += "\n\nEarlier repairs were rejected:\n" + "\n".join(
                 f"- {'; '.join(p.get('problems') or [p.get('verdict_after', '')])}" for p in previous)
+            for problem in (q for p in previous for q in p.get("problems") or ()):
+                match = re.match(r"edit text not found: ('.*'|\".*\")$", problem)
+                if match and source:
+                    near = _near_lines(source, ast.literal_eval(match.group(1)))
+                    if near:
+                        task += "\nThe closest lines in the file are:\n" + "\n".join(near)
         reply = self.llm.complete(SYSTEM_PROMPT, task, json_mode=True)
         try:
             data = json.loads(reply.harness)
@@ -314,6 +377,9 @@ class Healer:
         task = (f"Task: ESBMC could not check the program ({verdict}).\nESBMC said:\n{reason[:1500]}\n"
                 f"Target function {h.function!r}, suspect expression {h.suspect_expression!r}, "
                 f"trigger: {h.trigger_condition}\nTarget code:\n```python\n{code}\n```\n")
+        around = _error_lines(source, reason)
+        if around:
+            task += f"Lines of the file that name what ESBMC mentions (copy edit text from here exactly):\n{around}\n"
         if names:
             task += f"Names to stub: {', '.join(sorted(names))}. How the file uses them:\n{_usage_lines(source, names)}\n"
         if self.lessons:
@@ -321,7 +387,7 @@ class Healer:
         if knowledge:
             task += f"\nESBMC-Python documentation and examples it accepts:\n{knowledge}\n"
         task += '\nGive "edits" and/or "definitions".'
-        data = self._ask(task, previous)
+        data = self._ask(task, previous, source)
         if not data:
             return None
         edits = tuple((str(e.get("old", "")), str(e.get("new", ""))) for e in data.get("edits") or []

@@ -428,9 +428,21 @@ def test_a_module_level_coroutine_grounds_as_a_coroutine_entry():
     ("remote", "1 // await fetch(b)", "await of a function from another module"),
     ("via_sleeps", "await sleeps(b)", "await of something other than a module-level async function"),
     ("decorated", "1 // b", "decorated coroutine"),
-    ("C.m", "1 // b", "async method or nested coroutine"),
 ])
 def test_coroutine_shapes_esbmc_or_the_harness_cannot_run_stay_refused(function, expression, reason):
     failure = ground(_h(function, expression), ASYNC)
     assert isinstance(failure, GroundingFailure) and failure.unsupported
     assert failure.reason == f"async entry point: {reason}"
+
+
+def test_an_async_method_grounds_through_its_sequential_copy():
+    grounded = ground(_h("C.m", "1 // b"), ASYNC)
+    assert isinstance(grounded, Grounded) and any(t.startswith("async_to_sync") for t in grounded.transforms)
+
+
+def test_a_property_getter_is_read_even_when_a_setter_of_the_same_name_follows():
+    source = ("class V:\n    def __init__(self):\n        self.mode = 'A'\n\n    @property\n    def mode(self):\n"
+              "        return self._flightmode\n\n    @mode.setter\n    def mode(self, value):\n        self._set(value)\n\n"
+              "    def armable(self, g):\n        return self.mode != 'B' and 1 // g\n")
+    grounded = ground(_h("V.armable", "1 // g"), source)
+    assert isinstance(grounded, Grounded) and "_flightmode" in grounded.receiver_attrs

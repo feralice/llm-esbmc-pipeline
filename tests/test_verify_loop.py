@@ -280,3 +280,66 @@ def test_partial_timeout_counterexample_reproduced_in_cpython_is_confirmed(tmp_p
 def test_partial_timeout_counterexample_not_reproduced_stays_a_timeout(tmp_path, monkeypatch, replay):
     result = _run(tmp_path, monkeypatch, FakeLLM([GOOD]), _partial_timeout_esbmc(), replay=replay)
     assert result.verdict == ESBMC_TIMEOUT
+
+
+EARLIER_LINE = ReplayVerdict("other_failure", "IndexError", 2, message="index out of range", target_range=(1, 3))
+
+
+def _replays(*verdicts):
+    queue = list(verdicts)
+    return lambda program, function, **_: queue.pop(0)
+
+
+def test_a_failure_before_the_target_is_refined_with_an_assumption(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("violation_found", "violation_found"))
+    monkeypatch.setattr(loop, "concrete_replay", _replays(EARLIER_LINE, REPRODUCED))
+    llm = FakeLLM([GOOD, GOOD])
+    h = BugHypothesis("r.py", "ratio", "total // count", category="division_by_zero")
+    result = loop.verify_hypothesis(h, llm=llm, source=SOURCE, esbmc_command=["esbmc"], bound=5,
+                                    timeout_seconds=30, work_dir=tmp_path, max_repairs=0)
+    assert result.verdict == CONFIRMED and len(result.attempts) == 2
+    assert "IndexError" in llm.prompts[1] and "add an assumption" in llm.prompts[1]
+    assert "refinement" in result.attempts[0]
+
+
+def test_a_refinement_that_gets_worse_keeps_the_other_failure(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("violation_found"))
+    monkeypatch.setattr(loop, "concrete_replay", _replays(EARLIER_LINE))
+    llm = FakeLLM([GOOD, json.dumps({"params": {"total": "dict"}})])
+    h = BugHypothesis("r.py", "ratio", "total // count", category="division_by_zero")
+    result = loop.verify_hypothesis(h, llm=llm, source=SOURCE, esbmc_command=["esbmc"], bound=5,
+                                    timeout_seconds=30, work_dir=tmp_path, max_repairs=0)
+    assert result.verdict == "OTHER_FAILURE" and result.replay["exception_type"] == "IndexError"
+
+
+def test_refinement_stops_after_two_rounds(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc(*["violation_found"] * 3))
+    monkeypatch.setattr(loop, "concrete_replay", _replays(EARLIER_LINE, EARLIER_LINE, EARLIER_LINE))
+    llm = FakeLLM([GOOD, GOOD, GOOD])
+    h = BugHypothesis("r.py", "ratio", "total // count", category="division_by_zero")
+    result = loop.verify_hypothesis(h, llm=llm, source=SOURCE, esbmc_command=["esbmc"], bound=5,
+                                    timeout_seconds=30, work_dir=tmp_path, max_repairs=0)
+    assert result.verdict == "OTHER_FAILURE" and len(result.attempts) == 3
+
+
+def test_a_rejected_last_spec_does_not_hide_that_an_earlier_attempt_reached_esbmc(tmp_path, monkeypatch):
+    refused = ESBMCDirectResult(source_file="p.py", status="tool_error", command=["esbmc"], returncode=1,
+                                summary="ERROR: bytearray is not supported", stdout="ERROR: bytearray is not supported")
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", lambda *a, **k: refused)
+    monkeypatch.setattr(loop, "concrete_replay", lambda program, function, **_: REPRODUCED)
+    llm = FakeLLM([GOOD, json.dumps({"params": {"total": "dict"}}), json.dumps({"params": {"total": "dict"}})])
+    h = BugHypothesis("r.py", "ratio", "total // count", category="division_by_zero")
+    result = loop.verify_hypothesis(h, llm=llm, source=SOURCE, esbmc_command=["esbmc"], bound=5,
+                                    timeout_seconds=30, work_dir=tmp_path)
+    assert result.verdict == UNSUPPORTED and "bytearray" in result.reason
+
+
+def test_a_missing_inherited_member_gives_no_replay():
+    from research_pipeline.verify.grounding import ground
+    source = "class C(Base):\n    def f(self, x):\n        self._fire_events()\n        return 1 // x\n"
+    grounded = ground(BugHypothesis("m.py", "C.f", "self._fire_events()"), source)
+    missing = ReplayVerdict("reproduced", "AttributeError", 3,
+                            message="'C' object has no attribute '_fire_events'", target_range=(2, 4))
+    assert loop._without_missing_member(missing, grounded).status == "unavailable"
+    other = ReplayVerdict("reproduced", "AttributeError", 3, message="'C' object has no attribute 'zzz'")
+    assert loop._without_missing_member(other, grounded).status == "reproduced"

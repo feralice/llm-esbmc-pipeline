@@ -129,8 +129,14 @@ def test_target_named_main_is_supported():
     assert concrete_replay(program, "main").status == "reproduced"
 
 
-def test_an_async_method_is_unsupported_not_a_hallucination():
+def test_an_async_method_is_grounded_through_its_sequential_copy():
     result = ground(BugHypothesis("x.py", "C.f", "1 // a"), "class C:\n    async def f(self, a):\n        return 1 // a\n")
+    assert not isinstance(result, GroundingFailure) and "async_to_sync:1" in result.transforms
+
+
+def test_an_async_method_with_async_for_stays_unsupported():
+    source = "class C:\n    async def f(self, a):\n        async for x in a:\n            return 1 // x\n"
+    result = ground(BugHypothesis("x.py", "C.f", "1 // x"), source)
     assert isinstance(result, GroundingFailure) and result.unsupported
 
 
@@ -212,7 +218,7 @@ def test_external_values_classes_and_warnings_get_stubs():
     assert "class Base:\n    pass" in program.source
     assert "class ScrapyDeprecationWarning(Exception):" in program.source
     assert "compat_os_name: str = nondet_str()" in program.source
-    assert "class six:\n    PY3: int = nondet_int()" in program.source
+    assert "class _ns_six:" in program.source and "six: _ns_six = _ns_six()" in program.source
     assert concrete_replay(program, "go").status == "reproduced"
 
 
@@ -717,3 +723,12 @@ def test_a_member_of_a_stub_result_gets_its_own_stub():
     assert "    tiny = np.finfo__tiny(float)\n" in grounded.module
     assert "    np.asarray(xs).sort()\n" in grounded.module
     assert "external_result_members_flattened:np.finfo__tiny" in grounded.transforms
+
+
+def test_an_opaque_value_accepts_logger_calls():
+    source = ("import logging\nlog = logging.getLogger('x')\n\n\ndef f(x):\n"
+              "    log.debug('fmt %s', x)\n    log.exception('a')\n    return 1 // x\n")
+    grounded = _ground(source, "f", "1 // x")
+    program = render_program(grounded, InputSpec({"x": "int"}, {}, (), {"logging.getLogger": "object"}))
+    assert "def debug(self" in program.source and "def exception(self" in program.source
+    assert concrete_replay(program, "f").status == "reproduced"

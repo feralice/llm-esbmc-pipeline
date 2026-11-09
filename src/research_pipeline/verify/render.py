@@ -46,6 +46,14 @@ from .spec import (
 RECEIVER = "_receiver"
 RECEIVER_CLASS = "_Receiver"
 OPAQUE = "_Opaque"
+# An opaque value is usually a logger (logging.getLogger); its calls do nothing. Up to three format arguments.
+_LOGGER_METHODS = ("debug", "info", "warning", "error", "exception", "critical")
+_OPAQUE_CLASS = [
+    f"class {OPAQUE}:",
+    *(line for name in _LOGGER_METHODS
+      for line in (f'    def {name}(self, msg: str = "", a: object = None, b: object = None, c: object = None) -> None:',
+                   "        pass", "")),
+]
 DRIVER = "_esbmc_main"
 RESULT_VAR = "_esbmc_result"
 
@@ -271,7 +279,19 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
     for namespace, attrs in sorted(plan.namespaces.items()):
         if any("_esbmc_end_path()" in line for attr in attrs for line in KNOWN_MEMBERS.get(namespace, {}).get(attr, ())):
             lines += END_PATH
-        lines.append(f"class {namespace}:")
+        # ESBMC cannot read a class attribute through the class name inside a method: a namespace
+        # with constants becomes an instance whose fields hold them.
+        constants = [a for a, shape in sorted(attrs.items()) if shape is None and "." not in a
+                     and a not in KNOWN_MEMBERS.get(namespace, {})]
+        as_instance = bool(constants) and namespace not in plan.constructors and namespace not in plan.classes
+        class_name = f"_ns_{namespace}" if as_instance else namespace
+        lines.append(f"class {class_name}:")
+        if as_instance:
+            lines.append("    def __init__(self) -> None:")
+            for attr in constants:
+                lines += decl.declare(f"_field_{attr}", types[f"{namespace}.{attr}"], "        ")
+                lines.append(f"        self.{attr} = _field_{attr}")
+            lines.append("")
         if namespace in plan.constructors:
             lines += [f"    def __init__({', '.join(['self', _stub_params(plan.constructors[namespace])]).rstrip(', ')}) -> None:",
                       "        pass"]
@@ -284,7 +304,8 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
                 inner, leaf = attr.split(".", 1)
                 nested.setdefault(inner, []).append((leaf, shape))
             elif shape is None:
-                lines += decl.declare(attr, types[key], "    ")
+                if not as_instance:
+                    lines += decl.declare(attr, types[key], "    ")
             else:
                 lines += ["    @staticmethod", *_stub_function(attr, shape, types[key], decl, "    ")]
         for inner, members in nested.items():
@@ -296,6 +317,8 @@ def _stubs(grounded: Grounded, types: dict[str, str], decl: _Declarer) -> list[s
                 else:
                     lines += ["        @staticmethod", *_stub_function(leaf, shape, types[key], decl, "        ")]
         lines += ["", ""]
+        if as_instance:
+            lines += [f"{namespace}: {class_name} = {class_name}()", "", ""]
     return lines
 
 
@@ -381,7 +404,7 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
     if receiver:
         receiver_class = RECEIVER_CLASS if grounded.receiver_subclass else grounded.class_name
         lines.append(f"    {RECEIVER} = {receiver_class}()")
-    for assumption in assumptions:
+    for assumption in (*(grounded.init_guards if receiver else ()), *assumptions):
         tree = _ToReceiver().visit(ast.parse(assumption.strip(), mode="eval"))
         lines.append(f"    __ESBMC_assume({ast.unparse(tree)})")
     keyword = {p.name for p in grounded.params if p.keyword}
@@ -477,7 +500,7 @@ def render_program(grounded: Grounded, spec: InputSpec, rules: frozenset[str] = 
     driver = _driver(grounded, params, spec.assumptions, decl,
                      spec.returns if value else "", spec.postcondition if value else "")
     if any(OPAQUE in line for line in [*stubs, *driver]) or OPAQUE in module:
-        stubs = [f"class {OPAQUE}:", "    pass", "", "", *stubs]
+        stubs = [*_OPAQUE_CLASS, "", *stubs]
         transforms.append("opaque_values")
     runner = "import asyncio\n\n\n" if grounded.coroutine else ""
     body = "\n".join(stubs) + module.rstrip("\n") + "\n\n\n" + runner + "\n".join(driver) + f"\n\n\n{DRIVER}()\n"

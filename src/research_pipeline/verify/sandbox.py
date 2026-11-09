@@ -7,7 +7,7 @@ import ast
 _SAFE_MODULES = frozenset({
     "abc", "bisect", "collections", "copy", "dataclasses", "decimal", "enum", "fractions",
     "functools", "heapq", "itertools", "json", "math", "numbers", "operator", "random", "re",
-    "statistics", "string", "textwrap", "typing", "typing_extensions", "unicodedata",
+    "statistics", "string", "textwrap", "time", "typing", "typing_extensions", "unicodedata",
 })
 
 
@@ -44,6 +44,11 @@ def _only_asyncio_run(tree: ast.Module) -> bool:
     return all(id(n) in runs for n in ast.walk(tree) if isinstance(n, ast.Name) and n.id == "asyncio")
 
 
+def _own_dict(node: ast.Attribute) -> bool:
+    """``self.__dict__`` only lists the instance's own attributes; on a module or function it would reach globals."""
+    return node.attr == "__dict__" and isinstance(node.value, ast.Name) and node.value.id == "self"
+
+
 def host_replay_problem(source: str) -> str:
     """Why ``source`` must not run on the host, or "" when it only computes."""
     try:
@@ -68,7 +73,7 @@ def host_replay_problem(source: str) -> str:
                     return f"imports {', '.join(hidden)} from {node.module}"
         elif isinstance(node, ast.Name) and node.id in _UNSAFE_NAMES:
             return f"uses {node.id}"
-        elif isinstance(node, ast.Attribute) and (node.attr in _UNSAFE_DUNDERS or node.attr in _UNSAFE_MEMBERS
+        elif isinstance(node, ast.Attribute) and not _own_dict(node) and (node.attr in _UNSAFE_DUNDERS or node.attr in _UNSAFE_MEMBERS
                                                   or node.attr.startswith(_UNSAFE_PREFIXES)):
             return f"uses introspection attribute {node.attr}"
         elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _NAMED_ACCESS

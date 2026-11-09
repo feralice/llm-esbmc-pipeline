@@ -205,3 +205,54 @@ def test_the_same_obstacle_gets_only_its_rounds(monkeypatch):
     monkeypatch.setattr(healing, "verify_hypothesis", _reasons([(UNSUPPORTED, "ERROR: same at line 3")] * 9, seen))
     result = verify_with_healing(H, healer=ScriptedHealer([STUB] * 9), source=SOURCE, llm="spec", rounds=2)
     assert result.verdict == LLM_ONLY and len(seen) == 3
+
+
+def test_the_replay_copy_accepts_library_exception_classes_the_simplified_body_dropped():
+    from research_pipeline.verify.grounding import ground
+    from research_pipeline.verify.loop import with_original_replay
+    from research_pipeline.verify.render import render_program
+    from research_pipeline.verify.spec import InputSpec
+    simplified = "def f(x):\n    return 1 / x\n"
+    original = ("import json\n\ndef f(x):\n    try:\n        json.loads('1')\n"
+                "    except json.JSONDecodeError:\n        return 0\n    return 1 / x\n")
+    h = BugHypothesis(file="m.py", function="f", suspect_expression="1 / x")
+    spec = InputSpec({"x": "int"}, {}, (), {"json.loads": "int"})
+    program = render_program(ground(h, simplified), spec)
+    replayed = with_original_replay(program, h, original, spec)
+    assert not isinstance(replayed, str), replayed
+    assert "JSONDecodeError" in replayed.replay_source
+
+
+def test_a_stub_class_the_source_already_defines_is_not_added_twice():
+    from research_pipeline.verify.healing import Patch, apply_patch
+    stub = "class _TimeStub:\n    def time(self) -> float:\n        return 1.0\n\n\ntime = _TimeStub()\n"
+    once = apply_patch("def f(x):\n    return 1 / x\n", Patch(definitions=stub))
+    twice = apply_patch(once, Patch(definitions=stub))
+    assert once.count("class _TimeStub") == 1 and twice.count("class _TimeStub") == 1
+    assert twice.count("time = _TimeStub()") == 2
+
+
+def test_the_repair_prompt_shows_the_file_lines_the_esbmc_message_names():
+    from research_pipeline.verify.healing import _error_lines, _near_lines
+    source = "class UART:\n    Parity = None\n\n    def read(self, n):\n        return 1 // n\n"
+    reason = "ERROR: Cannot infer type for class attribute 'Parity' in class 'UART'. Please add explicit type annotation."
+    assert "2:     Parity = None" in _error_lines(source, reason)
+    assert _near_lines(source, "Parity = None\n") == ["    Parity = None"]
+    assert _error_lines(source, "ERROR: something unrelated") == ""
+
+
+def test_a_class_defined_twice_in_one_patch_keeps_the_last_definition():
+    from research_pipeline.verify.healing import Patch, apply_patch
+    first = "class _OsStub:\n    def a(self) -> int:\n        return 1\n"
+    second = "class _OsStub:\n    def b(self) -> int:\n        return 2\n\n\nos = _OsStub()\n"
+    patched = apply_patch("def f(x):\n    return 1 / x\n", Patch(real_code=first, definitions=second))
+    assert patched.count("class _OsStub") == 1 and "def b(self)" in patched and "def a(self)" not in patched
+
+
+def test_a_stub_rewritten_by_a_later_repair_replaces_the_earlier_one_but_a_project_class_stays():
+    from research_pipeline.verify.healing import Patch, apply_patch
+    source = ("class _OsStub:\n    def a(self) -> int:\n        return 1\n\n\nclass Os:\n    pass\n\n\n"
+              "def f(x):\n    return 1 / x\n")
+    patched = apply_patch(source, Patch(definitions="class _OsStub:\n    def b(self) -> int:\n        return 2\n"))
+    assert patched.count("class _OsStub") == 1 and "def b(self)" in patched and "def a(self)" not in patched
+    assert "class Os:" in patched

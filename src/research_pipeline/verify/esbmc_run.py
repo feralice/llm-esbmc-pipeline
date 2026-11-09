@@ -167,6 +167,16 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
             partial = _partial_exception_violation(result, path)
             if partial is not None:
                 partial_timeout = (result, partial, partial_timeout[2])
+    if reading.kind == "timeout" and partial_timeout is None and timeout_seconds < ESCALATED_TIMEOUT \
+            and isinstance(how["unwind"], int):
+        # No partial counterexample either: one run with the longer limit before giving up on the hypothesis.
+        result, result_reading = run(how["unwind"], tag_suffix=f"_{ESCALATED_TIMEOUT}s", seconds=ESCALATED_TIMEOUT)
+        if result_reading.kind in VERDICT_KINDS:
+            esbmc, reading, how = result, result_reading, {**how, "timeout_escalated": ESCALATED_TIMEOUT}
+        else:
+            partial = _partial_exception_violation(result, path)
+            if partial is not None:
+                partial_timeout = (result, partial, "")
     if reading.kind == "timeout" and partial_timeout is not None:
         esbmc, partial_reading, solver = partial_timeout
         reading = partial_reading

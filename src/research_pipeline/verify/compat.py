@@ -165,14 +165,14 @@ def _percent_pieces(fmt: str, operands: list[ast.expr], domain: dict[str, str],
         if conversion == "%":
             literal += "%"
             continue
-        if conversion not in {"s", "r", "d"} or used == len(operands):
+        if conversion not in {"s", "r", "d", "u"} or used == len(operands):
             return None
         operand = operands[used]
         kind = _operand_kind(operand, domain)
         if kind not in _SCALAR and not (conversion == "s" and str_safe) and not (fmt == "%s" and len(operands) == 1):
             return None
         argument = ast.unparse(operand)
-        if conversion == "d":
+        if conversion in {"d", "u"}:
             if kind not in _NUMERIC:
                 return None
             converted = f"str(int({argument}))"
@@ -920,3 +920,39 @@ def split_conditional_assignments(source: str) -> tuple[str, list[str]]:
             f"{indent}if {segment(node.value.test)}: {name} = {segment(node.value.body)}",
             f"{indent}else: {name} = {segment(node.value.orelse)}"]
     return "\n".join(lines) + "\n", [f"conditional_assignments_split:{len(found)}"]
+
+
+def async_to_sync(source: str) -> tuple[str, list[str]] | None:
+    """Every ``async def`` becomes ``def`` and ``await x`` becomes ``x``: ESBMC awaits only module-level
+    functions, and a body that never runs concurrently computes the same thing. None when a construct has no
+    sequential reading (async for/with/comprehension, async generator) or an edit would span lines."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return None
+    coroutines = [n for n in ast.walk(tree) if isinstance(n, ast.AsyncFunctionDef)]
+    if not coroutines:
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.AsyncFor, ast.AsyncWith)) or (isinstance(node, ast.comprehension) and node.is_async):
+            return None
+    for function in coroutines:
+        if any(isinstance(n, (ast.Yield, ast.YieldFrom)) for n in ast.walk(function)):
+            return None
+    cuts: list[tuple[int, int, int]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.AsyncFunctionDef):
+            cuts.append((node.lineno, node.col_offset, len("async ")))
+        elif isinstance(node, ast.Await):
+            if node.value.lineno != node.lineno:
+                return None
+            cuts.append((node.lineno, node.col_offset, node.value.col_offset - node.col_offset))
+    lines = [line.encode() for line in source.splitlines()]
+    for lineno, col, length in sorted(cuts, reverse=True):
+        lines[lineno - 1] = lines[lineno - 1][:col] + lines[lineno - 1][col + length:]
+    text = b"\n".join(lines).decode() + "\n"
+    try:
+        ast.parse(text)
+    except SyntaxError:
+        return None
+    return text, [f"async_to_sync:{len(coroutines)}"]

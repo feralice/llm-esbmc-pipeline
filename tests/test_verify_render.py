@@ -297,3 +297,27 @@ def test_a_coroutine_value_hypothesis_keeps_the_awaited_result():
     spec = InputSpec({"a": "int", "b": "int"}, {}, (), returns="int", postcondition="result >= 0")
     program = render_program(grounded, spec)
     assert "    _esbmc_result: int = asyncio.run(ratio(a, b))\n    assert _esbmc_result >= 0\n" in program.source
+
+
+def test_constructor_guards_become_assumptions_on_the_receiver():
+    from research_pipeline.verify.grounding import Grounded, ground
+    from research_pipeline.verify.hypothesis import BugHypothesis
+    from research_pipeline.verify.render import render_program
+    from research_pipeline.verify.spec import InputSpec
+    source = ("class T:\n    def __init__(self, lo=0.0, hi=100.0):\n        if lo >= hi:\n"
+              "            raise ValueError('lo must be below hi')\n        self.lo = lo\n        self.hi = hi\n\n"
+              "    def scale(self, x):\n        return (x - self.lo) / (self.hi - self.lo)\n")
+    grounded = ground(BugHypothesis(file="m.py", function="T.scale", suspect_expression="(x - self.lo) / (self.hi - self.lo)"),
+                      source)
+    assert isinstance(grounded, Grounded) and grounded.init_guards == ("not self.lo >= self.hi",)
+    program = render_program(grounded, InputSpec({"x": "float"}, {"lo": "float", "hi": "float"}, ()))
+    assert "__ESBMC_assume(not _receiver.lo >= _receiver.hi)" in program.source
+
+
+def test_a_constructor_guard_on_something_else_is_ignored():
+    import ast
+
+    from research_pipeline.verify.grounding import constructor_guards
+    cls = ast.parse("class T:\n    def __init__(self, a, b):\n        if open(a):\n            raise ValueError\n"
+                    "        if b > other():\n            raise ValueError\n        self.a = a\n        self.b = b\n").body[0]
+    assert constructor_guards(cls, {"a", "b"}) == ()

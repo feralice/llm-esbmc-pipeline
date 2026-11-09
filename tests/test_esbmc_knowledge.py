@@ -77,7 +77,7 @@ def test_load_index_rebuilds_on_new_commit(tmp_path):
                     "--allow-empty", "-m", "b"], check=True)
     second = load_index(root, tmp_path / "cache")
     assert first.commit != second.commit
-    assert (tmp_path / "cache" / f"{second.commit}.json").exists()
+    assert (tmp_path / "cache" / f"{second.commit}-v2.json").exists()
 
 
 def test_missing_checkout_gives_empty_index(tmp_path):
@@ -93,3 +93,13 @@ def test_esbmc_root_of_walks_up_from_the_binary(tmp_path):
     binary.write_text("", encoding="utf-8")
     assert esbmc_root_of([str(binary), "--no-pointer-check"]) == root
     assert esbmc_root_of(["/nonexistent/esbmc"]) is None
+
+
+def test_build_index_reads_the_website_limitation_pages(tmp_path):
+    root = _checkout(tmp_path / "esbmc")
+    docs = root / "website/content/docs/python"
+    docs.mkdir(parents=True)
+    (docs / "limitations.md").write_text("# Limits\n\n## Strings\n\nbytearray is refused.\n", encoding="utf-8")
+    index = build_index(root)
+    assert any(s.title == "Strings" and "bytearray" in s.text and s.source.endswith("limitations.md")
+               for s in index.sections)

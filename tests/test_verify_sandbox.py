@@ -27,6 +27,8 @@ def test_pure_computation_may_run_on_the_host():
         ("x = getattr(object, '__dict__')\n", "getattr without a literal attribute name"),
         ("async def g():\n    yield 1\nc = g().ag_code\n", "introspection attribute ag_code"),
         ("def h():\n    pass\nc = h.co_names\n", "introspection attribute co_names"),
+        ("import math\nx = math.__dict__\n", "introspection attribute __dict__"),
+        ("import typing\nx = typing.__dict__['sys']\n", "introspection attribute __dict__"),
     ],
 )
 def test_host_access_is_refused(source, reason):
@@ -49,3 +51,8 @@ def test_asyncio_may_run_a_coroutine_and_nothing_else():
     assert "under another name" in host_replay_problem("import asyncio as aio\naio.run(f())\n")
     assert "under another name" in host_replay_problem("import asyncio.subprocess as sp\n")
     assert "imports from asyncio" in host_replay_problem("from asyncio.subprocess import create_subprocess_exec\n")
+
+
+def test_time_and_the_instance_own_dict_may_run_on_the_host():
+    assert host_replay_problem("import time\n\nclass A:\n    def f(self):\n        return time.time()\n") == ""
+    assert host_replay_problem("class A:\n    def f(self):\n        return list(self.__dict__)\n") == ""
