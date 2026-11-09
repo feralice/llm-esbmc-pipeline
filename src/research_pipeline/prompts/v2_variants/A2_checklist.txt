@@ -9,3 +9,11 @@ reads and ask, one by one, what happens when it is:
 - a key missing from a dict, or an index out of range.
 Each case that leads to an exception or a wrong result and passes the existing
 guards is a hypothesis.
+
+Then check two ways a failure hides from this partition:
+- A name assigned only inside some branches (if/elif, try, a loop body that may not run) and read after
+  them: on the path that skips every assignment it raises UnboundLocalError. Report the read.
+- A value this function stores in an attribute or a local (None, an empty default, a constant of the
+  wrong type) that a later expression in the same function, or another method of the class shown in the
+  context, cannot accept (arithmetic on None, indexing, calling a method). The expression that raises is the
+  hypothesis; name the assignment in the explanation as the origin.
