@@ -1567,3 +1567,54 @@ executada sem quebrar ali).
   `scripts/check_preserved.py` continuam para aprovar uma lição à mão.
 - **Inglês:** `/verificar-repo` virou `/verify-repo` e o README da extensão foi traduzido. Não muda o pipeline
   congelado (a extensão só chama `src/main.py`); `tests/test_extension_command.py` passa.
+
+## PGENE601 no congelamento c (05/11 e 06/11)
+
+- **Rodada perdida (`artifacts/pgene601/congelado-c-2026-11-05`):** a detecção dos 47 bugs terminou (123 hipóteses),
+  mas a pasta `~/esbmc-master/build-bw` foi apagada por volta das 22h22 de 05/11 (causa desconhecida). As 123
+  verificações saíram sem ESBMC (105 `ESBMC_ERROR` "ESBMC não encontrado no PATH"). Resultado inválido; a pasta
+  fica como registro.
+- **Rodada nova (`artifacts/pgene601/congelado-c-2026-11-06`, terminou às 22h38 de 06/11):** pipeline `d553e97` (código do
+  congelamento c), ESBMC master `39590bbd26` recompilado em `build-bw` (Bitwuzla e Z3). Detecção copiada do
+  checkpoint de 05/11, sem os vereditos; refaz só a verificação. Comando: `bash run.sh` da pasta.
+- **A melhorar depois:** o pipeline seguiu com o ESBMC ausente (sonda "unavailable: FileNotFoundError") em vez
+  de parar no início.
+- **Resultado (123 hipóteses, 47 bugs do gabarito):** ESBMC deu veredito em 28 de 120 e **confirmou 9**; 92 ficaram
+  só com a opinião do LLM, por limite do ESBMC com a linguagem (22), contexto do harness (16), especificação do LLM
+  (12), falha interna do ESBMC (7), tempo (5), laços (2) e outros (28). Os 9 confirmados caem em 8 dos 47 casos,
+  nenhum fora da função com bug; pela expressão equivalente, 5 dos 47 bugs foram confirmados. A detecção sozinha
+  achou a expressão equivalente em 38 dos 47 (recall 80,9%), com 96 hipóteses a mais (precisão 28,4%).
+  Funil: 38 detectados, 5 confirmados pelo ESBMC.
+- **O que a rodada não mostra:** quantos dos 42 bugs restantes seriam confirmados com harness melhor. Os motivos de
+  parada acima são a lista de trabalho das melhorias (`%u` no `compat_percent_format`, classe repetida no
+  `external_chains_flattened`, outros em triagem).
+- **Cuidado de leitura:** o notebook desligou uma vez (retomada pelo checkpoint) e a assinatura bateu o limite
+  algumas vezes. A retomada pelo checkpoint refaz só o que parou com erro de pipeline (não conferi caso a caso).
+
+## Ajustes de 07/11 e rodada dos 47 (PGENE601)
+
+- **O que mudou no pipeline (sem commit, diff em `artifacts/pgene601/ajustes-2026-11-07/pipeline_sem_commit.diff`):**
+  1. `compat_percent_format` aceita `%u` (igual a `%d`). Teste novo em `tests/test_verify_compat_boundary.py` (falhava antes).
+  2. Constante de namespace externo (`lib.CONST`) passa a ser campo de uma instância criada no módulo (`six: _ns_six = _ns_six()`).
+     Motivo, medido em 07/11 com programas mínimos: o ESBMC não lê atributo de classe pelo nome da classe dentro de método
+     (`Variable 'C@M' is not defined in function 'mode'`); em função solta funciona. A classe repetida do `mavutil_mavlink`
+     vinha do self-healing (uma cópia por rodada) e não era a causa. Contorno, sem issue (decisão dela).
+  3. Passo de revisão de hipóteses, **desligado por padrão** (`--review-threshold NOTA`): um segundo LLM dá nota de 0 a 10
+     a cada hipótese; abaixo do corte ela não vai à especificação nem ao ESBMC. Erro do revisor mantém a hipótese. Notas e
+     decisão ficam no checkpoint (retomada não repete chamadas); descartadas vão a `review_dropped` no relatório.
+     Plano: `docs/superpowers/plans/2026-11-07-passo-de-revisao-de-hipoteses.md`. Ainda sem corte escolhido e sem medição.
+  4. Ferramentas: `scripts/calibrate_review.py` (corte mais alto que não perde nenhum bug conhecido, divisão por projeto),
+     `scripts/make_review_sample.py` (100 bugs da V2 de projetos fora da disciplina; testado, não rodado),
+     `scripts/compare_runs.py` (comparação de duas rodadas).
+  Testes: 1609 passam em seis pedaços; 12 falhavam por causa do `SKILL.md` com as lições da rodada de 06/11 (voltei o
+  caderno ao commit para esta rodada; a cópia com as lições está na pasta da rodada).
+- **Por que o corte ainda não existe:** a literatura consultada (ZeroFalse, arXiv 2510.02534; Wagner et al., arXiv 2506.16899;
+  RepoAudit, arXiv 2501.18160, todos preprints/ICML, conferidos em 07/11 pelas páginas do arXiv e PDFs, sem Crossref) é toda em
+  Java ou C/C++ e nenhuma mede quantos bugs verdadeiros o filtro derruba. O corte vem de dados nossos (Tarefa 4 do plano).
+- **Rodada `artifacts/pgene601/ajustes-2026-11-07`:** os 47 bugs, pipeline `d553e97` + alterações acima, ESBMC master
+  `822227ff96` (8.6.0, Bitwuzla e Z3), A1+A2, `claude_cli` (`claude-sonnet-5-5`), self-healing ligado, **caderno de reparos do
+  commit** (sem as lições de 06/11, para os 47 seguirem como teste fora da amostra), sem passo de revisão. Detecção copiada de
+  `congelado-c-2026-11-06` (impressão digital igual); refaz só a verificação. Comando: `bash run.sh` da pasta. O resumo
+  comparativo com 06/11 é gerado ao fim em `resumo.md` (`scripts/compare_runs.py`).
+- **Comparabilidade:** o ESBMC mudou (`39590bbd26` para `822227ff96`, 55 commits) junto com as correções do pipeline; uma
+  diferença de veredito não separa as duas causas.

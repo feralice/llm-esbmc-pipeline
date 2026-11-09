@@ -9,6 +9,44 @@ Rodar com `./rodar.sh /caminho/do/esbmc "--no-pointer-check --no-align-check"`. 
 `--unwind 5 --multi-property`. As duas flags extras desligam as checagens de memória dos modelos em C;
 `--no-bounds-check` não pode entrar, porque troca o `IndexError` do Python por `out-of-bounds read in list`.
 
+## Situação no master `822227ff96` (08/11/2026)
+
+ESBMC 8.6.0 (build Bitwuzla em `~/esbmc-master/build-bw`, master `822227ff96`, compilado em 07/11), o mesmo que o
+pipeline usa agora. 95 commits depois do `451f54c`. Saída completa em
+`artifacts/esbmc-master-822227ff96-2026-11-08/saida.txt`, gerada com
+`./rodar.sh <esbmc> "--no-pointer-check --no-align-check"`. Para os que passaram a dar SUCCESSFUL, conferi também
+com o valor do `assert` trocado (60: `== 2`; 63: `== 1`; 70: `len == 3`; 71: `b == 3`; 72: `== 3.5`): os cinco dão
+FAILED, então o SUCCESSFUL é o veredito certo e não um erro que passa batido. Das 18 linhas da tabela de 05/11,
+5 mudaram para melhor e 13 ficaram iguais; nenhuma piorou.
+
+| Arquivo | Veredito em `822227ff96` | Desde `451f54c` | Issue |
+|---|---|---|---|
+| `20_kwargs.py` | `Object "kw" not found` | igual | #9074 (aberta) |
+| `24_numpy_shape_parametro.py` | recusa: `numpy.array() of a value that is not a numpy array or a list or tuple literal` | igual | #9077 (fechada pelo #9141, já era recusa explícita) |
+| `31_strip_split_laco.py` | só `unwinding assertion` (laços 6 e 7) | igual | nenhuma |
+| `33_atributo_ausente_uniao.py` | recusa: `storing or passing 'x', which holds an instance of A or B` | igual | #8408 (aberta) |
+| `45_nondet_str_contraexemplo.py` | FAILED (`return_value$_strcmp$1 != 0`), sem o valor de `s` | igual | #9091 (fechada, "not planned") |
+| `48_atributo_aninhado_campo_none.py` | `Cannot resolve nested attribute: next` | igual | nenhuma |
+| `51_pytest_metodo.py` | FAILED (`ZeroDivisionError`) | igual (gerador de pytest não remedido hoje) | nenhuma |
+| `52_pytest_varios_args.py` | FAILED (`ZeroDivisionError`) | igual (idem) | nenhuma |
+| `53_pytest_str.py` | FAILED (`ValueError`; `unwinding assertion` laço 2) | igual (idem) | nenhuma |
+| `57_global_nondet_str_lida_em_funcao.py` | aborta: `Unexpected index type in computer_pointer_offset` | igual | nenhuma ainda |
+| `58_alias_de_funcao_como_argumento.py` | aborta: `type mismatch: expected code` | igual | nenhuma (contorno no `compat.py`) |
+| `60_lista_em_valor_de_dict.py` | SUCCESSFUL | **corrigido** (era recusa `List variable not found`) | #9837 (fechada em 07/11, PR #9864) |
+| `63_getitem_tupla_em_atributo.py` | SUCCESSFUL | **corrigido** (era segfault) | #9839 (fechada em 06/11, PR #9861) |
+| `65_parametro_reatribuido_dict_get.py` | `Member 'is_none' is not a field of pointer_struct` | igual | rascunho em `issues/` |
+| `66_desempacotar_getitem_de_atributo.py` | recusa: `Cannot unpack pointer` | igual | rascunho em `issues/` |
+| `70_tupla_opcional_len.py` | SUCCESSFUL | **corrigido** (era FAILED falso) | #9953 (fechada em 06/11, PR #10000) |
+| `71_tupla_opcional_desempacotada.py` | SUCCESSFUL | **corrigido** (era recusa) | #9953 (PR #10000) |
+| `72_tupla_opcional_com_bool.py` | SUCCESSFUL | **corrigido** (era SIGSEGV) | #9954 (fechada em 07/11, PR #10020) |
+
+Ressalva sobre o 60: o reprodutor mínimo passa, mas o caso real (`bip_ansible_16`) mistura lista e `int` no mesmo
+dicionário, e esse continua recusado: `d['p'] = []; d['n'] = 1; d['p'].append("x")` dá `List variable not found:`
+no `822227ff96`. Então o 60 está corrigido, mas o `bip_ansible_16` não.
+
+Sobram 13 reprodutores. Dos 13, 2 têm issue aberta (20 e 33), 2 têm rascunho em `issues/` (65 e 66), 3 são do
+gerador de pytest e os outros 6 não têm issue (31, 45, 48, 57, 58 e o 24, que já é recusa explícita).
+
 ## Situação no master `451f54c` (05/11/2026)
 
 Build com Bitwuzla (worktree `~/esbmc-wt/issue-9843`, master `451f54cab6`). Saída completa em
@@ -54,6 +92,10 @@ correção, porque no master não aparecem: `t: tuple[float, float] = (1.5, 2.5)
 
 ## Issues abertas com PR em andamento (05/11)
 
+Atualização de 08/11: os dois PRs abaixo foram aceitos (#9861 em 06/11, #9864 em 07/11) e as issues #9837 e #9839
+estão fechadas. O texto abaixo é a medição de 05/11 e fica como histórico. A única issue desta pasta que segue aberta
+no GitHub é a #9074 (20), mais a #8408 (33). O PR #9849 (estender o `len(self)` para classe base) foi fechado sem merge.
+
 - #9837 (60): o PR #9864, do mantenedor, tipa o valor do dicionário como lista quando toda gravação nele é uma
   lista literal. Não aplica mais sobre o master `451f54c` (conflito em `dict_type_resolution.cpp` com o #9745),
   então não foi medido. Mesmo depois de entrar, não cobre o caso real (`bip_ansible_16`): lá o mesmo
@@ -75,6 +117,19 @@ desempacotamento por índices), mas muda o código alvo, então não entra no `c
 Ficam o 65 e o 66, que têm contorno que preserva o comportamento (renomear a variável reatribuída; alias local
 anotado). 57 e 58 não têm rascunho: têm contorno (driver e filtro). Os rascunhos das issues abertas antes
 (#9073, #9074, #9077, #9091) também saíram da pasta.
+
+## Corrigidos entre 05/11 e 08/11
+
+Conferidos no `822227ff96` com a regra de sempre: veredito certo no reprodutor e FAILED com o valor trocado. O
+reprodutor continua na pasta (fica como teste de regressão do que mudou) e na tabela acima; o histórico dele está
+na seção do `451f54c`.
+
+| Reprodutor | Issue | Correção (commit no master) | Situação no `822227ff96` | Caso do dataset |
+|---|---|---|---|---|
+| 60 (lista em valor de `dict`) | #9837 | #9864 (`4129f25d35`) | SUCCESSFUL; com `== 2`, FAILED. Só o caso de lista pura; o caso real mistura `int` e continua recusado | `bip_ansible_16` (ainda não) |
+| 63 (`__getitem__` com tupla em atributo) | #9839 | #9861 (`b9ebba04ac`) | SUCCESSFUL; com `== 1`, FAILED | `bip_pandas_162` |
+| 70 e 71 (`len`, `for` e desempacotar `Optional[tuple]`) | #9953 | #10000 (`39590bbd26`) | SUCCESSFUL nos dois; com o valor trocado, FAILED | nenhum medido |
+| 72 (`Optional[tuple[bool, float]]`) | #9954 | #10020 (`519a101a7b`) | SUCCESSFUL; com `== 3.5`, FAILED | nenhum medido |
 
 ## Corrigidos entre 03/11 e 05/11
 
@@ -187,3 +242,43 @@ Decisão para a Tarefa 7 do plano do harness de agente: **função livre com vá
 `--no-slice` e o `nondet` direto na chamada); **método com receptor, não**: vai pela rota `free_function`
 (`pytest_reproducer`). Pela regra das issues (só o que não dá para contornar), nenhum dos três vira issue por
 enquanto: todos têm contorno do lado do pipeline. O 51 é o candidato mais forte se ela decidir reportar.
+
+## Onde os bugs da disciplina param antes do ESBMC (rodada de 08/11/2026)
+
+Medido em `artifacts/pgene601/ajustes-2026-11-07` (ESBMC master `822227ff96`, 47 bugs). O detector acerta a
+expressão de 38 dos 47. Desses 38, só 17 chegam a um veredito do ESBMC e 5 viram `CONFIRMED`. Os outros 18 ficam em
+`LLM_ONLY` por recusa do ESBMC ou por recusa prévia do pipeline. Os motivos, por bug:
+
+| Motivo | Bugs | Causa | Contorno possível |
+|---|---|---|---|
+| `async` como ponto de entrada | `cps_opcua_1131`, `cps_opcua_1826` | recusa prévia do pipeline, sem tentar o ESBMC | gerar a versão síncrona do corpo (`await x` vira `x`) |
+| `array.array` chamado e lido | `cps_pymavlink_1058`, `cps_pymavlink_1259` | recusa prévia do pipeline | stub tipado de `array.array` |
+| `bytearray` não suportado | `cps_minimqtt_5`, `cps_pythoncan_225` | recusa do ESBMC | `bytes` onde só lê; lista de inteiros onde escreve |
+| `str %` com argumento não constante | `cps_mavproxy_1380`, `cps_mavproxy_1447` | recusa do ESBMC (`%f`, `%s` com valor livre) | já há regra `compat_percent_format` para `%s`, `%d` e `%u`; falta o caso com argumento não constante |
+| classe do stub definida 2 vezes | `cps_mavproxy_989` (`_TimeStub`); `cps_pyspartn_4` (`_HexBytesStub`) tem o mesmo defeito em uma hipótese, mas conta em `SPEC_FAILED` | defeito do renderizador do pipeline, não do ESBMC | dar nome único ao stub ou emitir uma vez só |
+| tipo do receptor não resolvido | `cps_cantools_595` (`.attrib.get()`), `cps_mavproxy_741` (`__python_dict__.get()`), `cps_pymavlink_1217` (`_instances` em `Subscript`) | recusa do ESBMC | variável local com anotação antes da cadeia |
+| atributo de classe sem tipo ou não definido | `cps_piouart_6` (`Parity`), `cps_udsoncan_291` (`C@AsciiCodec`) | recusa do ESBMC | mesma família do contorno de 07/11 (constante como campo de instância), agora para classe do próprio código |
+| outros | `cps_cantools_804`, `cps_pymodbus_2921`, `cps_pythoncan_1811`, `cps_ros2cli_1112` | tipos de stub, numpy, método sem definição convertida, `os.environ` | caso a caso |
+
+Em 14 dos 18 o self-healing tentou 3 vezes, mas só mudou o JSON de tipos do LLM, nunca o programa. Nos 4 de recusa
+prévia ele nem rodou. Ordem de ataque proposta: (1) os 2 defeitos do renderizador, (2) recusa prévia de `async` e
+`array.array`, (3) `bytearray`, (4) `str %`, (5) receptor e atributo de classe.
+
+Dos 20 restantes, 5 viram `CONFIRMED` e 15 param assim: 4 `UNVALIDATED` (o CPython não reproduz o contraexemplo), 3
+`SPEC_FAILED` (não chegam ao ESBMC), 2 `ESBMC_TIMEOUT` (`cps_gps_127`, `cps_pymodbus_2977`), 2 `ESBMC_ERROR` (`cps_mavproxy_1032` com
+SIGSEGV, `cps_ros2cli_370` com `irep2_cast_error`), 2 `OTHER_FAILURE`, 1 `ESBMC_MISSED` e 1 `NOT_CONFIRMED`.
+
+## Candidatos a issue (08/11/2026, nada foi aberto)
+
+Reduzidos de quatro programas da rodada dos 47. Conferido contra o CPython e contra as 851 issues com o rótulo `python` (título). Rascunhos em `issues/74` a `issues/77`.
+
+| Arquivo | Construção | ESBMC `822227ff96` | Issue parecida | Contorno |
+|---|---|---|---|---|
+| `74_float_variavel_passada_por_self.py` | `int(tnow - 1.5)` em parâmetro sem anotação, chamado por `self` com uma variável `float` | SIGSEGV interno | #9841 (fechada pela #9860, que cobre só o argumento literal) | anotar o parâmetro |
+| `75_staticmethod_dict_aninhado_irep2.py` | `@staticmethod` que devolve `dict[str, dict[str, str]]`, lido com `.items()` e `.get()` | `irep2_cast_error` | nenhuma igual (a #10121, aberta, é anotação entre aspas) | só parcial: sem a classe some, mas aparece um falso negativo à parte |
+| `76_bytes_vazio_indice_falso_negativo.py` | `d[0] == b"P"` com `d = b""` | 0 VCC, `SUCCESSFUL` (falso negativo) | nenhuma | `len(d) > 0 and d[0] == b"P"` |
+| `77_bytearray_nao_suportado.py` | `bytearray()` e `.append` | recusa: `bytearray is not supported` | nenhuma (a #5515 deu a mensagem clara) | nenhum fiel |
+
+Também medido e descartado: `'Click %.1f m' % (x,)` com `len(...) > 0` dava FAILED só por `--unwind 5` curto (o `strlen` precisa de mais voltas); com `--unwind 20` dá SUCCESSFUL, então não é defeito.
+O `array.array` já tem a #8222 (aberta, o Lucas comentou o modelo em classe).
+Nota: o reprodutor do subagente para o 76 usava `nondet_bool()` e não roda no CPython; esta versão foi trocada por `f(b"")`, que reproduz nos dois.

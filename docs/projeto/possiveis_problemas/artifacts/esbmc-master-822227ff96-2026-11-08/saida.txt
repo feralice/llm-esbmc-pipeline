@@ -1,0 +1,19 @@
+ESBMC version 8.6.0 64-bit x86_64 linux
+20_kwargs.py                         ERROR: Object "kw" not found.
+24_numpy_shape_parametro.py          ERROR: TypeError: numpy.array() of a value that is not a numpy array or a list or tuple literal is n
+31_strip_split_laco.py                (unwinding assertion loop 6; unwinding assertion loop 7)
+33_atributo_ausente_uniao.py         ERROR: 33_atributo_ausente_uniao.py:24:13: storing or passing 'x', which holds an instance of A or B
+45_nondet_str_contraexemplo.py       FAILED (assertion return_value$_strcmp$1 != 0)
+48_atributo_aninhado_campo_none.py   ERROR: Cannot resolve nested attribute: next
+51_pytest_metodo.py                  FAILED (uncaught exception: ZeroDivisionError)
+52_pytest_varios_args.py             FAILED (uncaught exception: ZeroDivisionError)
+53_pytest_str.py                     FAILED (uncaught exception: ValueError; unwinding assertion loop 2)
+57_global_nondet_str_lida_em_funcao.py ERROR: uncaught exception [St13runtime_error]: Unexpected index type in computer_pointer_offset
+58_alias_de_funcao_como_argumento.py ERROR: Function `py:58_alias_de_funcao_como_argumento.py@op' type mismatch: expected code
+60_lista_em_valor_de_dict.py         SUCCESSFUL
+63_getitem_tupla_em_atributo.py      SUCCESSFUL
+65_parametro_reatribuido_dict_get.py ERROR: Member 'is_none' is not a field of pointer_struct, whose members are: pointer_object, pointer
+66_desempacotar_getitem_de_atributo.py ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked
+70_tupla_opcional_len.py             SUCCESSFUL
+71_tupla_opcional_desempacotada.py   SUCCESSFUL
+72_tupla_opcional_com_bool.py        SUCCESSFUL
