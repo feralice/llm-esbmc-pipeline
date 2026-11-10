@@ -312,6 +312,25 @@ def spec_problems(spec: InputSpec, grounded: Grounded, *, require_property: bool
     """``require_property``: a wrong-result hypothesis must give ``returns`` and ``postcondition``. Without
     it they are checked only when given, so the precheck's placeholder spec renders."""
     problems: list[str] = []
+    # ctypes returns a mutable character array, not bytes. A bytes stub has no .raw;
+    # allowing it would manufacture an AttributeError in both verifier and replay.
+    if (spec.stubs.get("ctypes.create_string_buffer") == "bytes"
+            and "ctypes.create_string_buffer" in grounded.stub_keys):
+        tree = ast.parse(grounded.module)
+        for function in (n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))):
+            def buffer_call(node: ast.AST) -> bool:
+                return (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                        and node.func.attr == "create_string_buffer" and isinstance(node.func.value, ast.Name)
+                        and node.func.value.id == "ctypes")
+
+            names = {target.id for node in ast.walk(function) if isinstance(node, ast.Assign)
+                     and buffer_call(node.value) for target in node.targets if isinstance(target, ast.Name)}
+            if any(isinstance(node, ast.Attribute) and node.attr == "raw"
+                   and (buffer_call(node.value) or isinstance(node.value, ast.Name) and node.value.id in names)
+                   for node in ast.walk(function)):
+                problems.append("stub 'ctypes.create_string_buffer': bytes has no 'raw' attribute; "
+                                "a mutable buffer model is required")
+                break
     params, attributes = resolved_types(spec, grounded)
     for kind, types in (("parameter", params), ("attribute", attributes)):
         for name, text in types.items():
