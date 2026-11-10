@@ -421,6 +421,10 @@ def summary_markdown(report: dict) -> str:
         found = [r for r in report["results"] if r["verdict"] == verdict]
         if not found:
             lines.append("Nenhum.")
+        elif verdict == CONFIRMED:
+            lines.append("O replay executa o programa gerado. Ele não demonstra, sozinho, que o estado usado "
+                         "seja um estado alcançável no projeto.")
+            lines.append("")
         for result in found:
             h = result["hypothesis"]
             replay = result.get("replay") or {}
@@ -428,7 +432,17 @@ def summary_markdown(report: dict) -> str:
                          f"`{h['suspect_expression']}`; {replay.get('exception_type') or result['reason'][:120]}"
                          + (f"; entrada: `{replay['inputs']}`" if replay.get("inputs") else "")
                          + (f"; programa: `{result['program_path']}`" if result.get("program_path") else "")
-                         + (f"; teste: `{result['pytest']['path']}`" if (result.get("pytest") or {}).get("path") else ""))
+                         + (f"; teste: `{result['pytest']['path']}`" if (result.get("pytest") or {}).get("path") else "")
+                         + (f"; atributos gerados: `{result['harness_state']['generated_attributes']}`"
+                            if isinstance(result.get("harness_state"), dict)
+                            and "generated_attributes" in result["harness_state"]
+                            else "; estado do harness não registrado"))
+            assignments = (result.get("harness_state") or {}).get("dict_assignments") or []
+            if assignments:
+                lines.append("  Atribuições no código analisado, para conferir; não comprovam que foram executadas:")
+                for item in assignments:
+                    lines.append(f"  - `{item['method']}`, linha {item['line']}: "
+                                 f"`self.{item['attribute']}` inclui as chaves `{item['keys']}`.")
     return "\n".join(lines) + "\n"
 
 

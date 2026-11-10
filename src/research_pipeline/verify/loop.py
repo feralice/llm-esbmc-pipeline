@@ -72,6 +72,7 @@ class VerifyResult:
     control: dict = field(default_factory=dict)
     healing: list[dict] = field(default_factory=list)
     notebook_version: str = ""
+    harness_state: dict | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -84,6 +85,7 @@ class VerifyResult:
             **({"control": self.control} if self.control else {}),
             **({"healing": self.healing} if self.healing else {}),
             **({"notebook_version": self.notebook_version} if self.notebook_version else {}),
+            **({"harness_state": self.harness_state} if self.harness_state is not None else {}),
         }
 
 
@@ -259,6 +261,11 @@ def verify_hypothesis(
         if ignored:
             record["ignored"] = ignored
         program = render_program(grounded, spec, rules=rules)
+        _, attributes = resolved_types(spec, grounded)
+        result.harness_state = {"generated_attributes": {
+            name: kind for name, kind in attributes.items()
+            if grounded.has_receiver and name not in grounded.called_attrs
+        }, "dict_assignments": list(grounded.dict_assignments)}
         no_replay = ""
         if replay_source is not None:
             rebuilt = with_original_replay(program, h, replay_source, spec, rules)
@@ -313,7 +320,7 @@ def verify_hypothesis(
         verdict = final_verdict(reading, replay)
         if verdict == OTHER_FAILURE and held is None and strategy == "repair" and refinements < MAX_REFINEMENTS \
                 and _failed_before_target(replay):
-            held = (replay.to_dict(), reading.message)
+            held = (replay.to_dict(), reading.message, result.harness_state)
         if held is not None and verdict != CONFIRMED:
             if verdict == OTHER_FAILURE and refinements < MAX_REFINEMENTS and _failed_before_target(replay):
                 refinements, limit = refinements + 1, limit + 1
@@ -321,12 +328,14 @@ def verify_hypothesis(
                 feedback = record["refinement"]
                 continue
             result.replay = held[0]
+            result.harness_state = held[2]
             return finish(OTHER_FAILURE, held[1])
         if verdict == CONFIRMED and esbmc_command:
             result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command, bound, work_dir)
         return finish(verdict, reading.message)
     if held is not None:
         result.replay = held[0]
+        result.harness_state = held[2]
         return finish(OTHER_FAILURE, held[1])
     if reached and last_problems:
         # An earlier attempt reached ESBMC and was refused; a later spec the checks reject does not undo that.

@@ -576,6 +576,28 @@ def test_summary_lists_cpython_only_reproductions_apart_from_esbmc_confirmations
     assert "`f`" in esbmc and "`g`" not in esbmc and "`g`: `x[0]`; IndexError" in cpython
 
 
+def test_summary_identifies_harness_state_and_unknown_for_old_results() -> None:
+    from research_pipeline.scan.pipeline import summary_markdown
+
+    hypothesis = {"file": "/r/a.py", "function": "f", "suspect_expression": "self.options['control']"}
+    report = {"config": {"root": "/r"},
+              "graph": {"functions": 1, "modules": 1, "resolved_calls": 0, "call_sites": 0},
+              "detection": {"functions": 1, "failed": 0, "hypotheses": 2, "held": 0},
+              "verification": {"by_verdict": {"CONFIRMED": 2}},
+              "levels": {"summary": {"by_level": {}}},
+              "results": [{"verdict": "CONFIRMED", "reason": "", "hypothesis": hypothesis,
+                           "harness_state": {"generated_attributes": {"options": "dict[str, int]"},
+                                             "dict_assignments": [{"attribute": "options", "method": "open",
+                                                                   "line": 3, "keys": ["control"]}]}},
+                          {"verdict": "CONFIRMED", "reason": "", "hypothesis": hypothesis}]}
+    text = summary_markdown(report)
+    assert "estado alcançável" in text
+    assert "options" in text and "dict[str, int]" in text
+    assert "open" in text and "control" in text and "linha 3" in text
+    assert "não comprovam" in text
+    assert "estado do harness não registrado" in text
+
+
 def test_scan_only_keeps_the_named_functions_with_their_rank_in_the_full_selection(tmp_path: Path) -> None:
     plan = plan_scan(_repo(tmp_path), tmp_path / "out", only=("head", "mean"))
     assert [(t.qualname, t.position) for t in plan.targets] == [("mean", 3), ("head", 4)]

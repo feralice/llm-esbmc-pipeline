@@ -69,6 +69,41 @@ def test_first_attempt_confirmed(tmp_path, monkeypatch):
     assert "ratio(total, count)" in esbmc.calls[0]
 
 
+def test_result_records_receiver_fields_constructed_by_harness(tmp_path, monkeypatch):
+    source = "class A:\n    def read(self):\n        return self.options['control']\n"
+    spec = json.dumps({"params": {}, "attributes": {"options": "dict[str, int]"}, "assumptions": []})
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("violation_found"))
+    monkeypatch.setattr(loop, "concrete_replay", lambda *args, **kwargs: REPRODUCED)
+    result = loop.verify_hypothesis(BugHypothesis("r.py", "A.read", "self.options['control']"),
+        llm=FakeLLM([spec]), source=source, esbmc_command=["esbmc"], bound=5,
+        timeout_seconds=30, work_dir=tmp_path)
+    assert result.to_dict()["harness_state"]["generated_attributes"] == {"options": "dict[str, int]"}
+
+
+def test_result_records_literal_dict_assignment_as_evidence_not_a_precondition(tmp_path, monkeypatch):
+    source = ("class A:\n    def open(self):\n        self.options = {'control': 1, 'purge': 2}\n"
+              "    def read(self):\n        return self.options['control']\n")
+    spec = json.dumps({"params": {}, "attributes": {"options": "dict[str, int]"}, "assumptions": []})
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc("violation_found"))
+    monkeypatch.setattr(loop, "concrete_replay", lambda *args, **kwargs: REPRODUCED)
+    result = loop.verify_hypothesis(BugHypothesis("r.py", "A.read", "self.options['control']"),
+        llm=FakeLLM([spec]), source=source, esbmc_command=["esbmc"], bound=5,
+        timeout_seconds=30, work_dir=tmp_path)
+    evidence = result.to_dict()["harness_state"]["dict_assignments"]
+    assert evidence == [{"attribute": "options", "method": "open", "line": 3, "keys": ["control", "purge"]}]
+    assert "self.options['control'] =" not in Path(result.program_path).read_text()
+
+
+def test_evidence_skips_other_attributes_and_nested_functions():
+    source = ("class A:\n    def open(self):\n        self.other = {'x': 1}\n"
+              "        def later():\n            self.options = {'wrong': 2}\n"
+              "        if True:\n            self.options: dict = {'right': 1}\n"
+              "    def read(self):\n        return self.options['right']\n")
+    grounded = loop.ground(BugHypothesis("r.py", "A.read", "self.options['right']"), source)
+    assert grounded.dict_assignments == ({"attribute": "options", "method": "open", "line": 7,
+                                          "keys": ["right"]},)
+
+
 def test_invalid_spec_is_repaired_with_the_problem_list(tmp_path, monkeypatch):
     llm = FakeLLM([json.dumps({"params": {"total": "dict"}}), GOOD])
     result = _run(tmp_path, monkeypatch, llm, _esbmc("violation_found"))

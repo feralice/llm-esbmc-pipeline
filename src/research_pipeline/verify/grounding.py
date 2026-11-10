@@ -75,6 +75,8 @@ class Grounded:
     generator: bool = False
     # What the real __init__ rejects (``if bad: raise``), as conditions on ``self.attr`` the receiver satisfies.
     init_guards: tuple[str, ...] = ()
+    # Literal dictionary assignments are locations to inspect, not proven lifecycle invariants.
+    dict_assignments: tuple[dict, ...] = ()
 
     @property
     def stub_keys(self) -> tuple[str, ...]:
@@ -102,6 +104,46 @@ def _self_attribute(node: ast.AST) -> str | None:
     if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == "self":
         return node.attr
     return None
+
+
+def _dict_assignments(cls: ast.ClassDef, attrs: set[str]) -> tuple[dict, ...]:
+    found: list[dict] = []
+    for method in cls.body:
+        if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+
+        class Visitor(ast.NodeVisitor):
+            def visit_FunctionDef(self, node):
+                if node is method:
+                    self.generic_visit(node)
+
+            visit_AsyncFunctionDef = visit_FunctionDef
+
+            def visit_ClassDef(self, node):
+                return
+
+            def visit_Assign(self, node):
+                self._record(node.targets, node.value, node.lineno)
+                self.generic_visit(node)
+
+            def visit_AnnAssign(self, node):
+                self._record([node.target], node.value, node.lineno)
+                self.generic_visit(node)
+
+            def _record(self, targets, value, line):
+                if not isinstance(value, ast.Dict):
+                    return
+                keys = [key.value for key in value.keys if isinstance(key, ast.Constant)
+                        and type(key.value) in (str, int)]
+                if not keys:
+                    return
+                for target in targets:
+                    name = _self_attribute(target)
+                    if name in attrs:
+                        found.append({"attribute": name, "method": method.name, "line": line, "keys": keys})
+
+        Visitor().visit(method)
+    return tuple(found)
 
 
 def _class_of(tree: ast.Module, name: str) -> ast.ClassDef | None:
@@ -685,4 +727,5 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         coroutine=isinstance(function, ast.AsyncFunctionDef),
         generator=isinstance(function, ast.FunctionDef) and _is_generator(function),
         init_guards=constructor_guards(cls, set(receiver_attrs)) if cls and receiver_attrs else (),
+        dict_assignments=_dict_assignments(cls, set(receiver_attrs)) if cls and receiver_attrs else (),
     )

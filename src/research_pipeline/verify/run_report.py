@@ -45,6 +45,11 @@ def _confirmed(result: dict, root: str | Path | None = None) -> str:
             f" (evidência: {', '.join(checks) if checks else 'só ESBMC e replay' if result['verdict'] in _CONFIRMED else 'só o CPython'})")
     if replay.get("exception_type"):
         line += f" levanta `{replay['exception_type']}` com as entradas `{replay.get('inputs')}`"
+    state = result.get("harness_state")
+    if isinstance(state, dict) and "generated_attributes" in state:
+        line += f". Atributos gerados: `{state['generated_attributes']}`"
+    else:
+        line += ". Estado do harness não registrado"
     if test.get("path"):
         return line + f". Teste: `{test['path']}` ({test.get('status')})."
     return line + f". Sem teste: {test.get('reason') or 'nenhum gerado'}."
@@ -79,6 +84,7 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
               "não decidiu, ou o harness não chegou a rodar)."), "",
              f"## Confirmados ({len(confirmed)})", "",
              "Do mais para o menos verificado. Cada um passa por auditoria manual antes de virar issue.", "",
+             "O replay executa o programa gerado e não demonstra, sozinho, que seu estado é alcançável no projeto.", "",
              *(_confirmed(r, root) for r in confirmed), "",
              f"## Reproduzidos só no CPython ({len(cpython)})", "",
              "O ESBMC não chegou a um veredito; o CPython levantou o erro na expressão suspeita, com o corpo original e",
