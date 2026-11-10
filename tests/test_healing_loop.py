@@ -256,3 +256,12 @@ def test_a_stub_rewritten_by_a_later_repair_replaces_the_earlier_one_but_a_proje
     patched = apply_patch(source, Patch(definitions="class _OsStub:\n    def b(self) -> int:\n        return 2\n"))
     assert patched.count("class _OsStub") == 1 and "def b(self)" in patched and "def a(self)" not in patched
     assert "class Os:" in patched
+
+
+def test_a_stub_function_replaces_the_real_one_defined_later():
+    from research_pipeline.verify.healing import Patch, apply_patch
+
+    source = "def helper(x: int) -> str:\n    return str(x.y.z)\n\n\ndef target(x: int) -> int:\n    return helper(x)\n"
+    patch = Patch(edits=(), definitions="def helper(x: int = None) -> str:\n    return nondet_str()\n")
+    text = apply_patch(source, patch)
+    assert text.count("def helper") == 1 and "x.y.z" not in text and "def target" in text

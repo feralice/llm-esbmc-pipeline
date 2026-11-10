@@ -1,0 +1,63 @@
+% Esqueleto IEEE (conferência) para o artigo da disciplina PGENE601.
+% Só a estrutura: o texto, os argumentos e as conclusões são da autora.
+% Compilar no Overleaf (classe IEEEtran já vem instalada) ou localmente com pdflatex.
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{cite}
+
+\begin{document}
+
+\title{TÍTULO A DEFINIR}
+
+\author{\IEEEauthorblockN{Fernanda Alice}
+\IEEEauthorblockA{PPGINF, Universidade Federal do Amazonas\\
+fernandaalice2003@gmail.com}}
+
+\maketitle
+
+\begin{abstract}
+% Quatro a seis frases: problema, abordagem, dados, resultado principal, limite.
+\end{abstract}
+
+\begin{IEEEkeywords}
+% ESBMC, Python, verificação limitada de modelos, sistemas ciberfísicos, modelos de linguagem
+\end{IEEEkeywords}
+
+\section{Introdução}
+% Problema; lacuna; o que este trabalho faz; contribuições em lista curta.
+
+\section{Fundamentação e Trabalhos Relacionados}
+% ESBMC-Python; mypy; pytest; LLM para detectar bugs. Só citar o que foi conferido.
+
+\section{Método}
+\subsection{Conjunto de dados}
+% 47 bugs reais de 20 projetos ciberfísicos; como foram escolhidos; versão com bug e corrigida.
+\subsection{Pipeline}
+% Detector (LLM), grounding, harness, especificação de tipos, ESBMC, replay em CPython.
+\subsection{Linhas de comparação}
+% mypy (padrão e --check-untyped-defs); testes do PR; como cada um foi medido.
+\subsection{Critério de acerto}
+% Gabarito pela linha do patch; níveis expressão, função, arquivo.
+
+\section{Resultados}
+% Tabela comparativa; funil 47 -> hipótese certa -> chega ao ESBMC -> confirmado.
+
+\section{Discussão}
+% Por que o funil afunila; limites do ESBMC-Python; o que cada ferramenta pega que as outras não.
+
+\section{Ameaças à Validade}
+% Mesma amostra usada para corrigir erros; gabarito pela linha; um modelo; ESBMC mutável.
+
+\section{Conclusão}
+
+\section*{Declaração de uso de IA}
+% Declarar o uso real (código e análise de dados; revisão de texto), conforme as diretrizes.
+
+\bibliographystyle{IEEEtran}
+% \bibliography{referencias}
+
+\end{document}

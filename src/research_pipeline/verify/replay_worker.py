@@ -4,6 +4,7 @@ Standalone script (run with ``python -I -S``): argv = program, config JSON, outp
 """
 
 import __future__
+import builtins
 import io
 import json
 import math
@@ -12,6 +13,10 @@ import signal
 import sys
 import time
 import traceback
+import types
+from types import MappingProxyType
+import genericpath
+import posixpath
 
 DOMAINS = {
     int: [0, 1, -1, 2],
@@ -117,6 +122,13 @@ def _next_vector(vector, sizes):
 # ESBMC's math model implements math.<name> as __ESBMC_<name>; a stub that calls one replays as math.
 _MATH_INTRINSICS = {f"__ESBMC_{name}": getattr(math, name) for name in dir(math)
                     if not name.startswith("_") and callable(getattr(math, name))}
+_OS_PATH = types.ModuleType("os.path")
+for _name in ("basename", "dirname", "getsize", "isabs", "join", "normcase", "normpath", "split", "splitext"):
+    setattr(_OS_PATH, _name, getattr(genericpath if _name == "getsize" else posixpath, _name))
+_OS = types.ModuleType("os")
+_OS.environ = MappingProxyType({})
+_OS.getenv = lambda key, default=None: _OS.environ.get(key, default)
+_OS.path = _OS_PATH
 
 
 def _intrinsics(chooser, domains=None, max_list=MAX_LIST):
@@ -177,6 +189,12 @@ def _timeout(_signum, _frame):
     raise _Discard()
 
 
+def _sandbox_import(name, globals=None, locals=None, fromlist=(), level=0):
+    if (not level and (globals or {}).get("__name__") == "__main__" and name.split(".")[0] == "os"):
+        return _OS_PATH if name == "os.path" and fromlist else _OS
+    return builtins.__import__(name, globals, locals, fromlist, level)
+
+
 SEED_RUNS = 100
 
 
@@ -203,7 +221,10 @@ def _run_once(code, chooser, domains, max_list, target):
     sys.stdout = io.StringIO()
     signal.setitimer(signal.ITIMER_REAL, RUN_SECONDS)
     try:
-        exec(code, {"__name__": "__main__", **_intrinsics(chooser, domains, max_list)})  # noqa: S102 - the replay is the point; host_replay_problem gates it
+        safe_builtins = dict(vars(builtins))
+        safe_builtins["__import__"] = _sandbox_import
+        exec(code, {"__name__": "__main__", "__builtins__": safe_builtins,
+                    **_intrinsics(chooser, domains, max_list)})  # noqa: S102 - the replay is the point; host_replay_problem gates it
     except _Discard:
         return _DISCARDED
     except Exception as exc:  # noqa: BLE001 - every crash is evidence

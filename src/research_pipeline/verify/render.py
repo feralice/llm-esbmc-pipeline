@@ -394,7 +394,7 @@ class _ToResult(ast.NodeTransformer):
 
 
 def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, ...], decl: _Declarer,
-            returns: str = "", postcondition: str = "") -> list[str]:
+            returns: str = "", postcondition: str = "", *, exhaust_generator: bool = False) -> list[str]:
     """With ``postcondition``, the call's value goes to RESULT_VAR (unless ``returns`` is None) and the
     postcondition's ``assert`` is the driver's last line."""
     lines = [f"def {DRIVER}() -> None:"]
@@ -419,6 +419,8 @@ def _driver(grounded: Grounded, params: dict[str, str], assumptions: tuple[str, 
         call = f"{grounded.method_name}({args})"
     if grounded.coroutine:
         call = f"asyncio.run({call})"
+    elif exhaust_generator and grounded.generator and not postcondition:
+        call = f"for _item in {call}: pass"
     if not postcondition:
         return [*lines, f"    {call}"]
     shape = parse_type(returns)
@@ -497,16 +499,20 @@ def render_program(grounded: Grounded, spec: InputSpec, rules: frozenset[str] = 
     module = _annotate_inputs(module, _input_annotations(grounded, params))
     stubs = _stubs(grounded, spec.stubs, decl) + _object_classes(
         grounded, input_types(spec, grounded), member_types(spec, grounded), decl)
-    driver = _driver(grounded, params, spec.assumptions, decl,
-                     spec.returns if value else "", spec.postcondition if value else "")
+    returns, postcondition = (spec.returns, spec.postcondition) if value else ("", "")
+    driver = _driver(grounded, params, spec.assumptions, decl, returns, postcondition)
+    replay_driver = _driver(grounded, params, spec.assumptions, decl, returns, postcondition,
+                            exhaust_generator=True)
     if any(OPAQUE in line for line in [*stubs, *driver]) or OPAQUE in module:
         stubs = [*_OPAQUE_CLASS, "", *stubs]
         transforms.append("opaque_values")
     runner = "import asyncio\n\n\n" if grounded.coroutine else ""
-    body = "\n".join(stubs) + module.rstrip("\n") + "\n\n\n" + runner + "\n".join(driver) + f"\n\n\n{DRIVER}()\n"
+    header = "\n".join(stubs) + module.rstrip("\n") + "\n\n\n" + runner
+    body = header + "\n".join(driver) + f"\n\n\n{DRIVER}()\n"
+    replay_body = header + "\n".join(replay_driver) + f"\n\n\n{DRIVER}()\n"
     # CPython has these exceptions: the replay gets blank lines instead, so line numbers still match.
     exceptions = "\n".join(_exception_stubs(body))
-    replay = "\n" * exceptions.count("\n") + body
+    replay = "\n" * exceptions.count("\n") + replay_body
     if exceptions:
         body = exceptions + body
         names = (line.removeprefix("class ").split("(")[0].split(" =")[0]

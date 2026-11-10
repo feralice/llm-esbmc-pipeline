@@ -329,7 +329,7 @@ def test_a_definition_named_only_by_itself_is_unused():
 
 
 def test_rule_names_cover_every_none_guard_kind():
-    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 13
+    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 14
 
 
 def test_rewrite_compat_skips_a_disabled_percent_rule():
@@ -481,3 +481,33 @@ def test_the_nondet_clock_starts_at_zero_or_later_and_never_goes_back():
     exec("\n".join(CLOCK_MODEL), namespace)  # noqa: S102 - the model's own source
     assert [namespace["_esbmc_clock"]() for _ in range(3)] == [5.0, 5.0, 7.5]
     assert "__ESBMC_assume(step >= 0.0" in "\n".join(CLOCK_MODEL)
+
+
+def test_bytearray_constructors_become_int_lists():
+    from research_pipeline.verify.compat import rewrite_compat
+
+    source = ("def f(n, x):\n    a = bytearray()\n    b = bytearray(n)\n    c = bytearray(b'\\x10\\0')\n"
+              "    d = bytearray([0] * (5 - x))\n    e = bytearray(x)\n    g = bytearray(4)\n")
+    text, transforms = rewrite_compat(source, parameter_types={"f": {"n": "int"}})
+    assert "a = []" in text and "b = [0] * n" in text and "c = [16, 0]" in text
+    assert "d = [0] * (5 - x)" in text and "g = [0] * 4" in text
+    assert "e = bytearray(x)" in text
+    assert transforms == ["compat_bytearray:5"]
+
+
+def test_bytearray_passed_to_bytes_is_left_alone():
+    from research_pipeline.verify.compat import rewrite_compat
+
+    source = "def f():\n    a = bytearray()\n    b = bytearray()\n    return bytes(a), b\n"
+    text, _ = rewrite_compat(source)
+    assert "a = bytearray()" in text and "b = []" in text
+
+
+def test_bytearray_parameter_type_applies_before_later_reassignment():
+    from research_pipeline.verify.compat import rewrite_compat
+
+    source = "def read(n):\n    buf = bytearray(n)\n    n = self.readinto(buf)\n    return buf\n"
+    text, transforms = rewrite_compat(source, parameter_types={"read": {"n": "int"}})
+    assert "buf = [0] * n" in text
+    assert "n_esbmc = self.readinto(buf)" in text
+    assert "compat_bytearray:1" in transforms

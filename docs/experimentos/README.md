@@ -1,5 +1,7 @@
 # Registro de experimentos
 
+Rodada de 10/11/2026: [varredura do pyserial e revisão dos resultados](scan_pyserial_2026-11-10.md). A investigação dos crashes está em andamento.
+
 Toda rodada do pipeline entra aqui: o que foi, quando, com qual código, com qual comando, onde está a
 saída e o que deu. As saídas ficam em `artifacts/v2/<pasta>` (fora do git); este registro é a parte
 versionada. Rodada nova = linha nova na tabela e seção nova abaixo, antes de discutir o resultado.
@@ -1626,4 +1628,103 @@ executada sem quebrar ali).
 - **Comando:** `bash artifacts/pgene601/rodada-final-2026-11-08/run.sh` (A1+A2, `claude_cli`, `--bound 5 --timeout 180`, self-healing ligado). Retoma sozinho após o limite da assinatura (espera de 10 minutos). No fim gera `resumo.md`, `funil.txt` e `tabela.md` na pasta.
 - **Comparação:** com a rodada de 06/11 (`congelado-c-2026-11-06`), a única fora da amostra.
 - **Aviso de método:** os consertos desta rodada vieram de erros achados nesses mesmos 47, então ela mede o pipeline depois de uma análise de erros, não um teste fora da amostra. A rodada parcial de 08/11 (`rodada-2026-11-08`, 41 veredictos) foi parada por falta dos últimos consertos e não conta.
-- **Resultado:** a preencher quando a rodada fechar.
+- **Resultado (fechou em 09/11, 03:49):** pasta `artifacts/pgene601/rodada-final-2026-11-08`.
+  - Bugs confirmados pelo ESBMC, de 47: **9 pela expressão e 14 pela função** (06/11: 5 e 8).
+  - Funil: 36 de 47 com hipótese certa (06/11: 38); dos 36, 9 chegam a CONFIRMED.
+  - Subiram: dronekit_890, gps_126, pymodbus_2980, ros2cli_1112. Já estavam: blinka_434, gpiozero_716, paho_118, pythoncan_1293, simpleio_43.
+  - Por hipótese (06/11 → agora): CONFIRMED 9→17, UNVALIDATED 9→3, SPEC_FAILED 14→3, ESBMC_TIMEOUT 6→8, LLM_ONLY 69→73 (parte dos SPEC_FAILED parou aqui), OTHER_FAILURE 3, ESBMC_MISSED 3→2, ESBMC_ERROR 4→2.
+  - Ainda parados: 18 bugs em LLM_ONLY, 11 sem hipótese certa (opcua_1955, pyserial_149, mavproxy_1032/881/1572, opcua_1826/671, ros2cli_1026/646, udsoncan_198, pythoncan_713), 2 timeouts (gps_127, pymavlink_1217), 2 ESBMC_ERROR (ros2cli_370, pythoncan_1599).
+  - Tempo somado por hipótese: 2,6 h → 3,6 h.
+  - Limite do método: os consertos vieram dos mesmos 47, então o ganho não é fora da amostra. Só a rodada de 06/11 vale para isso.
+  - A fazer depois: bound decidido pela LLM e ajuste do timeout do ESBMC (pedido dela em 09/11).
+
+## PGENE601, scan do pyserial (09/11/2026, em andamento)
+
+- **Pergunta:** o modo scan acha bugs em um repositório inteiro da disciplina, sem versão corrigida?
+- **Alvo:** pyserial (clone raso em `~/alvos/pyserial`), 20 funções do topo da lista de 346 elegíveis. Simulação sem LLM em `artifacts/scan_pyserial_simulacao`.
+- **Comando:** `main.py --mode scan --input ~/alvos/pyserial --scan-limit 20 --backend claude_cli --model claude-sonnet-5-5 --bound 5 --timeout 180 --yes` (ESBMC `95f025adf4`, pipeline no commit `a347d3d`).
+- **Pasta:** `artifacts/scan_pyserial_2026-11-08` (log em `artifacts/scan_pyserial_2026-11-08.log`).
+- **Estado:** parou no limite de 5 horas da assinatura (renova 06:50); retomada com `--resume`. Resultado a preencher quando fechar.
+
+## Preparo dos alvos da Amazon (09/11/2026, sem LLM, nada rodado)
+
+Clones rasos em `~/alvos/` (commit entre parênteses). Grafo de chamadas, PageRank e smells de arquitetura rodaram sem erro nos quatro (menos de 2 s cada):
+
+| Repositório | Funções | Chamadas resolvidas | Smells de arquitetura | Feature Envy |
+|---|---|---|---|---|
+| pymodbus (referência) | 705 | 813 de 2636 | 21 | 16 |
+| aws-secrets-manager-rotation-lambdas (`aeffffa`) | 329 | 619 de 2650 | 0 | 6 |
+| aws-glue-samples (`406ae64`) | 294 | 417 de 3093 | 0 | 32 |
+| aws-cost-explorer-report (`fbb04e0`) | 7 | 23 de 169 | 0 | 0 |
+
+Só cerca de 1/4 das chamadas resolve dentro do repo: o resto vai a bibliotecas (boto3 etc.), então o harness precisará de stubs. Primeiro alvo sugerido: `aws-secrets-manager-rotation-lambdas` (pequeno, segurança, usado por muita gente). `run.sh` pronto em `artifacts/scan_aws_secrets_rotation_PREPARADO/` (40 funções por PageRank), não executado.
+
+## Rodada completa dos 47, 09/11/2026 (pipeline com regras novas)
+
+- **Pasta:** `artifacts/pgene601/rodada-final-2026-11-09/` (`run.sh`, `resumo.md`, `funil.txt`, `tabela.md`). Pipeline do commit em `commit.txt` mais alterações não commitadas (`pipeline_alteracoes.patch`); ESBMC `b76980aaa0`; A1+A2, `claude-sonnet-5-5`, bound 5, timeout 180, self-healing ligado, caderno de reparos limpo. Terminou 22:49 (parou no limite da assinatura às 17:17 e retomou do checkpoint).
+- **Resultado:** 37 de 47 com hipótese certa (antes 36). **9 confirmados pela expressão e 14 pela função, os mesmos números da rodada de 08/11.** Os melhoramentos de 09/11 (`compat_bytearray`, bound menor após timeout, stub que substitui função) **não aumentaram os confirmados**.
+- **O que mudou de lugar:** LLM_ONLY por bug caiu de 18 para 16. cantools_804 e pythoncan_225 saíram de LLM_ONLY para UNVALIDATED (o ESBMC agora alcança um veredito, mas o CPython não reproduz), pymodbus_2977 foi para NOT_CONFIRMED, pyserial_149 entrou como CONFIRMED. Em compensação dronekit_890 passou de CONFIRMED para UNVALIDATED. Por hipótese: UNVALIDATED de 3 para 14, LLM_ONLY de 73 para 54.
+- **Tempo:** 4,8 h somadas de verificação (antes 3,6 h): mais lento, por causa da escada com bound menor.
+- **Bloqueios que ficaram (LLM_ONLY, 16 bugs):** `str %` não constante, `symbolic_type_excp`, atributo `_sock`, elemento de contêiner sem classe, desempacotar. piouart_6 continua em `bytearray` porque o `n` é parâmetro reatribuído e a regra não dispara.
+- **Aviso de método:** não é fora da amostra; os consertos vêm de erros desses mesmos 47 (vale a rodada de 06/11).
+
+### Replay com um subconjunto seguro de `os`
+
+**Mudança de critério:** o replay em CPython agora pode servir como evidência para harnesses que leem `os.getenv`,
+`os.environ` e funções de caminho permitidas. O ambiente entregue ao replay é vazio, `os.environ` não aceita escrita,
+e ações como `os.system` e `os.remove` continuam recusadas. Isso amplia os harnesses que podem ser validados; não
+libera operações do sistema operacional. A mudança deve ser descrita no artigo.
+
+Os testes focados passaram: 26 de sandbox e replay e 1 teste de integração de coroutine com ESBMC. A suíte completa
+terminou com 1.650 aprovados, 1 ignorado e as mesmas 13 falhas da linha de base. A rodada dos 47 e a medição de
+`pyspartn_4` e `mavproxy_741` ainda não foram executadas; a autora fará essas medições com as flags de 09/11 acima.
+
+### `cantools_804`: equivalência de exceções avaliada
+
+A mudança de critério proposta para tratar `AttributeError` do ESBMC como equivalente ao `UnboundLocalError` do
+CPython não foi adotada. O ESBMC aponta a linha 63 (`database.messages`), mas o replay falha na linha 73 (`if
+signals:`). Como os pontos não coincidem, não há mudança de critério para declarar no artigo neste caso.
+
+### Investigação do replay nos três casos UNVALIDATED
+
+Em `pythoncan_225`, confirmado defeito nosso: o método alvo é gerador e o driver do replay descartava o objeto
+gerador sem consumir seu corpo. O driver do replay agora consome geradores. Um teste mínimo reproduzia a omissão antes
+e confirma a exceção depois. Isto não prova ainda que o erro apontado pela hipótese original seja reproduzido.
+Em `pyserial_149`, o witness salvo tem lista aninhada sem extração para sementes e o harness contém nomes gerados de
+`serial` sobrepostos; causa exata não confirmada, sem alteração específica. Em `dronekit_890`, reprodutor pequeno indica
+diferença do modelo de comparação do ESBMC com CPython; defeito nosso não confirmado. Nenhum dos três foi medido no
+pipeline após a análise.
+
+A correção do driver para geradores passou no teste mínimo. A suíte completa terminou com 1.651 aprovados,
+1 ignorado e 13 falhas, as mesmas categorias da linha de base: 12 pelo caderno de reparos já preenchido e uma pela
+tentativa de escrita do cache fora do espaço permitido.
+
+### `piouart_6`: tipo do parâmetro antes da reatribuição
+
+Confirmado que `n` tem tipo `int` na especificação, alimenta `bytearray(n)` antes de ser reatribuído por
+`self.readinto(buf)`, e a regra deixava de reconhecê-lo por causa da reatribuição posterior. Corrigi a análise por
+ponto de uso. O teste focado de compatibilidade passou com 61 testes. A medição do bug no pipeline fica pendente;
+`array.array(n)` no outro ramo ainda pode ser recusado.
+
+Depois de manter as proteções para `import`, `match` e definição local, 113 testes focados passaram. A suíte completa
+terminou com 1.652 aprovados, 1 ignorado e as mesmas 13 falhas da linha de base.
+
+### `mavproxy_1380` e `mavproxy_1447`: formatação `%`
+
+Passo 0: `%u` com inteiro simbólico e `%.1f` com `Optional[float]` sob guarda reproduzem a recusa em reprodutores
+pequenos. O ESBMC aceita `%.Nf` para float comum, inclusive lido por subscript. A causa observada é suporte parcial
+às conversões dinâmicas, não uma regressão confirmada; não achei relação com a #8672. Não alterei o pipeline nem
+abri issue. A suíte completa ao fim deste item está pendente.
+
+A suíte completa terminou com 1.652 aprovados, 1 ignorado e as mesmas 13 falhas da linha de base.
+
+### `opcua_1131`, `pymavlink_1217` e `cantools_595`: tipos de elementos
+
+Leitura dos harnesses da rodada: no OPC UA, as listas de valores e eventos ainda têm elemento `_Opaque`, mesmo com
+`_HistEvent` declarado; uma proposta com `DataValue` não foi preservada no programa gerado. No pymavlink, o tipo
+`object` em `messages[mtype]` causa a recusa, e uma tentativa com classe `_Msg` removeu esse erro, mas o driver ainda
+cria um mapa com elemento `_Opaque`. No cantools, a recusa é outra (`.attrib.get()`); o harness declara
+`ArxmlElement` e `ArxmlAttrib`, mas a resolução do receiver ainda falha. Não há causa comum confirmada. Não alterei
+código nem acrescentei teste. A suíte completa ao fim deste item está pendente.
+
+A suíte completa terminou com 1.652 aprovados, 1 ignorado e as mesmas 13 falhas da linha de base.

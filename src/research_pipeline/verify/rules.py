@@ -10,6 +10,7 @@ METHOD_ALIAS = "compat_method_alias"
 REBOUND_PARAMETER = "compat_rebound_parameter"
 ATTRIBUTE_ITEM = "compat_attribute_item"
 FUNCTION_ALIAS = "compat_function_alias"
+BYTEARRAY = "compat_bytearray"
 NONDET_CLOCK = "nondet_clock"
 BUILTIN_NAMED_METHODS = "builtin_named_methods_renamed"
 PROPERTIES_AS_ATTRIBUTES = "properties_as_attributes"
@@ -20,6 +21,6 @@ NONE_SUBSCRIPT = "none_guards_subscript"
 NONE_CALL = "none_guards_call"
 
 NONE_GUARD_KINDS = frozenset({NONE_ATTRIBUTE, NONE_SUBSCRIPT, NONE_CALL})
-ALL_RULES = frozenset({PERCENT_FORMAT, METHOD_ALIAS, REBOUND_PARAMETER, ATTRIBUTE_ITEM, FUNCTION_ALIAS, NONDET_CLOCK,
+ALL_RULES = frozenset({PERCENT_FORMAT, METHOD_ALIAS, REBOUND_PARAMETER, ATTRIBUTE_ITEM, FUNCTION_ALIAS, BYTEARRAY, NONDET_CLOCK,
                        BUILTIN_NAMED_METHODS, PROPERTIES_AS_ATTRIBUTES, PROJECT_DECORATORS, CONDITIONAL_ASSIGNMENTS,
                        *NONE_GUARD_KINDS})

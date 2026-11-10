@@ -90,6 +90,22 @@ def _without_replaced_stubs(source: str, added: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _without_replaced_functions(source: str, definitions: str) -> str:
+    """The stubs are inserted near the top, so the real function of the same name, defined later, would win
+    (Python keeps the last definition) and the stub never runs: a stub of a callee replaces it instead.
+    ``patch_problems`` already refuses a patch that changes the target function."""
+    try:
+        stubbed = {n.name for n in ast.parse(definitions).body if isinstance(n, ast.FunctionDef)}
+        old = [n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef) and n.name in stubbed]
+    except SyntaxError:
+        return source
+    lines = source.splitlines()
+    for node in old:
+        for number in range(min([node.lineno, *(d.lineno for d in node.decorator_list)]) - 1, node.end_lineno):
+            lines[number] = ""
+    return "\n".join(lines) + "\n"
+
+
 def apply_patch(source: str, patch: Patch) -> str:
     for old, new in patch.edits:
         count = source.count(old)
@@ -102,6 +118,8 @@ def apply_patch(source: str, patch: Patch) -> str:
     if not added.strip():
         return source
     source = _without_replaced_stubs(source, added)
+    if patch.definitions.strip():
+        source = _without_replaced_functions(source, patch.definitions)
     lines = source.splitlines()
     try:
         at = _insert_point(lines, ast.parse(source))

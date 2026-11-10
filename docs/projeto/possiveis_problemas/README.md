@@ -282,3 +282,37 @@ Reduzidos de quatro programas da rodada dos 47. Conferido contra o CPython e con
 Também medido e descartado: `'Click %.1f m' % (x,)` com `len(...) > 0` dava FAILED só por `--unwind 5` curto (o `strlen` precisa de mais voltas); com `--unwind 20` dá SUCCESSFUL, então não é defeito.
 O `array.array` já tem a #8222 (aberta, o Lucas comentou o modelo em classe).
 Nota: o reprodutor do subagente para o 76 usava `nondet_bool()` e não roda no CPython; esta versão foi trocada por `f(b"")`, que reproduz nos dois.
+
+## 09/11/2026: bytearray e bytes(lista)
+
+- **Regra nova `compat_bytearray`** (compat.py): `bytearray()`, `bytearray(b"..")`, `bytearray([..])` e `bytearray(n)` com `n` inteiro (literal ou parâmetro `int`) viram lista de inteiros. Atinge as hipóteses que paravam em "bytearray is not supported" (21 na rodada final; bugs minimqtt_5, piouart_6, pythoncan_225, mavproxy_1572, umqtt_1149). Ainda **não medida** em rodada: precisa de LLM para a especificação.
+- **Limite da regra:** um byte maior que 255 deixa de dar ValueError; o replay em CPython pega isso e o veredito vira UNVALIDATED, não confirmação falsa.
+- **Candidato a issue 78 (não postado):** `bytes(buf)` com `buf` lista em variável tem tamanho errado no ESBMC (falso alarme). Reprodutor `78_bytes_de_lista_variavel.py`. Por isso a regra não reescreve um buffer que passa por `bytes(...)` no mesmo código.
+
+## Candidatos novos da rodada de 09/11/2026 (parcial, 66 de 109 hipóteses; sem reprodutor, nada aberto)
+
+Vêm das recusas `LLM_ONLY` do `v2_verify_report`/checkpoint da rodada final. Falta reduzir cada um a um arquivo pequeno e conferir no ESBMC mais novo e no GitHub antes de virar rascunho.
+
+| Nº provisório | Mensagem do ESBMC | Casos da rodada | Observação |
+|---|---|---|---|
+| 79 | `uncaught exception [N6type2t18symbolic_type_excpE]` | mavproxy_741 e mavproxy_989 (`LogModule.log_status`) | crash interno; aparecia também em pyspartn_4 e pymodbus_2977 em rodadas anteriores |
+| 80 | `attribute '_sock' holds a '_Obj_self__sock' and is assigned ...` | minimqtt_5 (`MQTT.connect`) | atributo recebe objeto de outra classe |
+| 81 | `unsupported: non-constant argument in str % formatting` | mavproxy_1380, mavproxy_1447, mavproxy_1572 | formato com `%u`/`%.2f` e valores de atributo; a regra `compat_percent_format` só cobre argumento constante |
+| 82 | `Cannot unpack symbol/empty - only tuples and arrays can be unpacked` | gps_60 (`GPS.update`), pymavlink_1058 (`init_arrays_fast`) | desempacotar valor que o ESBMC não vê como tupla |
+| 83 | `class '_OsModule' is defined 2 times ... ESBMC keys a class` | mavproxy_989, piouart_6 | o harness define a mesma classe de stub duas vezes: provável defeito do nosso render, conferir antes de culpar o ESBMC |
+
+Fora da lista de issues, um caso nosso: em piouart_6 a regra `compat_bytearray` não disparou (o `n` é parâmetro reatribuído). Conserto pequeno possível depois da entrega.
+
+## Issues abertas em 09/11/2026
+
+Autorizado pela Fernanda no mesmo dia. Conferido antes: nenhuma issue nem PR igual entre as issues e PRs com rótulo `python` (por título); reprodutores rodados no ESBMC `b76980aaa0` (o master estava 12 commits à frente, nenhum sobre essas construções pelo título; não recompilado). O 74 cita a #9841.
+
+| Rascunho | Issue |
+|---|---|
+| 74 float em variável passada por `self` (SIGSEGV) | esbmc/esbmc#10204 |
+| 75 staticmethod com dict aninhado (`irep2_cast_error`) | esbmc/esbmc#10205 |
+| 76 `d[0] == b"P"` com `bytes` vazio (falso negativo) | esbmc/esbmc#10206 |
+| 77 suporte a `bytearray` (pedido de recurso) | esbmc/esbmc#10207 |
+| 78 `bytes(lista_em_variavel)` com tamanho errado | esbmc/esbmc#10208 |
+
+Os candidatos 79 a 83 acima continuam sem reprodutor e sem issue.

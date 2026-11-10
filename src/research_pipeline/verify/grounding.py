@@ -71,6 +71,8 @@ class Grounded:
     forwarded: tuple[tuple[str, str, str], ...] = ()
     # A module-level ``async def``: the driver runs it with ``asyncio.run``.
     coroutine: bool = False
+    # CPython does not run a generator body until the driver consumes it.
+    generator: bool = False
     # What the real __init__ rejects (``if bad: raise``), as conditions on ``self.attr`` the receiver satisfies.
     init_guards: tuple[str, ...] = ()
 
@@ -548,6 +550,15 @@ def _module_coroutine_limit(tree: ast.Module, function: ast.AsyncFunctionDef,
     return coroutine_limit(function, awaited, module_level=True)
 
 
+def _is_generator(function: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+    for node in ast.walk(function):
+        if node is not function and isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            continue
+        if isinstance(node, (ast.Yield, ast.YieldFrom)):
+            return True
+    return False
+
+
 def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
            rules: frozenset[str] = ALL_RULES) -> Grounded | GroundingFailure:
     properties = PROPERTIES_AS_ATTRIBUTES in rules
@@ -672,5 +683,6 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         receiver_subclass=subclass,
         called_attrs=_called_attrs(cls, function.name, receiver_attrs, properties) if receiver_attrs else {},
         coroutine=isinstance(function, ast.AsyncFunctionDef),
+        generator=isinstance(function, ast.FunctionDef) and _is_generator(function),
         init_guards=constructor_guards(cls, set(receiver_attrs)) if cls and receiver_attrs else (),
     )

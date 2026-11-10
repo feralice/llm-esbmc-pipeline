@@ -31,6 +31,7 @@ LIBRARY_UNWIND = 64
 # A run killed after printing the target exception gets one rerun this long: at 300 s the three GPS
 # programs that timed out at 180 s reached a full verdict (RESULTADOS_MELHORIAS_PIPELINE_PGENE601_2026-11-03).
 ESCALATED_TIMEOUT = 300
+REDUCED_BOUNDS = (3, 2)
 _LOOP = re.compile(r"goto-loop Loop \d+ \(([^():]+:\d+)\):\s*\n\s*file (\S+)")
 
 
@@ -176,6 +177,20 @@ def check(path: Path, *, esbmc_command: list[str] | None, bound: int, timeout_se
         else:
             partial = _partial_exception_violation(result, path)
             if partial is not None:
+                partial_timeout = (result, partial, "")
+    if reading.kind == "timeout" and isinstance(how["unwind"], int):
+        # A bug usually shows within a few iterations; a counterexample at a smaller bound is as valid (CPython
+        # replays it). Only a violation counts: "safe" at a smaller bound proves nothing about the bound asked.
+        for reduced in REDUCED_BOUNDS:
+            if reduced >= how["unwind"]:
+                continue
+            result, result_reading = run(reduced, tag_suffix=f"_bound{reduced}")
+            if result_reading.kind in {"violation", "artifact"} and not only_unwinding(result_reading):
+                esbmc, reading, how = result, result_reading, {**how, "unwind": reduced, "reduced_bound": reduced}
+                partial_timeout = None
+                break
+            partial = _partial_exception_violation(result, path)
+            if partial is not None and partial_timeout is None:
                 partial_timeout = (result, partial, "")
     if reading.kind == "timeout" and partial_timeout is not None:
         esbmc, partial_reading, solver = partial_timeout

@@ -105,6 +105,39 @@ def test_host_unsafe_program_is_not_executed():
     assert verdict.status == "unavailable"
 
 
+def test_replay_runs_safe_os_path_getenv_and_read_only_environ():
+    source = '''import os
+from os import getenv
+
+
+def joined(name):
+    path = os.path.join("folder", name)
+    return path + str(getenv("MISSING", "default")) + str(os.environ.get("MISSING"))
+
+
+def main() -> None:
+    joined("file")
+
+
+main()
+'''
+    verdict = concrete_replay(_program(source, 7), "joined")
+    assert verdict.status == "not_reproduced"
+
+
+def test_replay_executes_a_generator_body():
+    from research_pipeline.verify.grounding import ground
+    from research_pipeline.verify.hypothesis import BugHypothesis
+    from research_pipeline.verify.render import render_program
+    from research_pipeline.verify.spec import InputSpec
+
+    source = "class Reader:\n    def __iter__(self):\n        yield 1 // 0\n"
+    grounded = ground(BugHypothesis("reader.py", "Reader.__iter__", "1 // 0"), source)
+    program = render_program(grounded, InputSpec({}, {}, ()))
+    verdict = concrete_replay(program, "__iter__")
+    assert (verdict.status, verdict.exception_type) == ("reproduced", "ZeroDivisionError")
+
+
 def test_infinite_loop_runs_are_discarded():
     source = '''def spin(n):
     while n >= 0:

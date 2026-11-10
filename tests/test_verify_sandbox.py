@@ -10,7 +10,7 @@ def test_pure_computation_may_run_on_the_host():
 @pytest.mark.parametrize(
     ("source", "reason"),
     [
-        ("import os\n", "imports os"),
+        ("import os\nos.system('unsafe')\n", "unsupported os member"),
         ("from subprocess import run\n", "imports subprocess"),
         ("from . import sibling\n", "relative module"),
         ("data = open('x').read()\n", "uses open"),
@@ -56,3 +56,19 @@ def test_asyncio_may_run_a_coroutine_and_nothing_else():
 def test_time_and_the_instance_own_dict_may_run_on_the_host():
     assert host_replay_problem("import time\n\nclass A:\n    def f(self):\n        return time.time()\n") == ""
     assert host_replay_problem("class A:\n    def f(self):\n        return list(self.__dict__)\n") == ""
+
+
+def test_read_only_os_helpers_may_run_on_the_host():
+    source = "import os\nfrom os import getenv\np = os.path.join('a', 'b')\ne = os.environ.get('KEY')\nv = getenv('KEY')\n"
+    assert host_replay_problem(source) == ""
+
+
+@pytest.mark.parametrize("source", [
+    "import os\nos.system('echo unsafe')\n",
+    "import os\nos.remove('file')\n",
+    "from os import system\nsystem('echo unsafe')\n",
+    "from os import remove\nremove('file')\n",
+    "import os\nos.environ['KEY'] = 'value'\n",
+])
+def test_os_mutation_and_execution_stay_refused(source):
+    assert host_replay_problem(source)

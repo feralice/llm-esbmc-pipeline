@@ -14,6 +14,7 @@ from .astutil import find_function
 from .rules import (
     ALL_RULES,
     ATTRIBUTE_ITEM,
+    BYTEARRAY,
     FUNCTION_ALIAS,
     METHOD_ALIAS,
     NONE_ATTRIBUTE,
@@ -60,15 +61,26 @@ def _parameter_domains(tree: ast.Module, parameter_types: dict[str, dict[str, st
         if len(refs) > 1 or any(node in refs for node in ast.walk(function)):
             continue
         parameters = {arg.arg for arg in [*function.args.posonlyargs, *function.args.args, *function.args.kwonlyargs]}
-        readonly = parameters - _bound_names(function)
-        domain = {key: value for key, value in types.items() if key in readonly}
+        domain = {key: value for key, value in types.items() if key in parameters}
+        stored = {node.id for node in ast.walk(function)
+                  if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del))}
+        rebound_without_store = (_bound_names(function) - stored) & parameters
+        first_write = {}
         pending = list(function.body)
+        nodes = []
         while pending:
             node = pending.pop()
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
                 continue
-            domains[node] = domain
+            nodes.append(node)
+            if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)) and node.id in parameters:
+                first_write[node.id] = min(first_write.get(node.id, node.lineno), node.lineno)
             pending.extend(ast.iter_child_nodes(node))
+        for node in nodes:
+            if hasattr(node, "lineno"):
+                domains[node] = {name: kind for name, kind in domain.items()
+                                 if name not in rebound_without_store
+                                 and first_write.get(name, node.lineno + 1) >= node.lineno}
     return domains
 
 
@@ -429,6 +441,42 @@ def _function_alias_edits(tree: ast.Module) -> list[tuple[int, int, int, int, st
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in aliases]
 
 
+def _bytearray_edits(tree: ast.Module, parameter_types: dict[str, dict[str, str]]) -> list[tuple[int, int, int, int, str]]:
+    """ESBMC refuses ``bytearray``. A list of ints indexes, appends, extends and goes through ``bytes()`` the
+    same way. Only constructors whose argument kind is known change: ``bytearray()``, ``bytearray(b"..")``,
+    ``bytearray([..])`` (also ``[0] * k``) and ``bytearray(n)`` with ``n`` an int literal or int parameter.
+    A byte above 255 stops raising ValueError; the CPython replay catches that."""
+    domains = _parameter_domains(tree, parameter_types)
+    # ESBMC 8.6 gives bytes(<list variable>) the wrong length, so a buffer passed to bytes() stays unsupported.
+    converted = {n.args[0].id for n in ast.walk(tree)
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == "bytes"
+                 and len(n.args) == 1 and isinstance(n.args[0], ast.Name)}
+    targets = {t.id: v for n in ast.walk(tree) if isinstance(n, ast.Assign) and isinstance(n.value, ast.Call)
+               for t in n.targets if isinstance(t, ast.Name) for v in [n.value]}
+    skip = {id(v) for name, v in targets.items() if name in converted}
+    edits = []
+    for node in ast.walk(tree):
+        if id(node) in skip:
+            continue
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "bytearray"
+                and not node.keywords and len(node.args) <= 1 and node.end_lineno == node.lineno):
+            continue
+        arg = node.args[0] if node.args else None
+        if arg is None:
+            text = "[]"
+        elif isinstance(arg, ast.Constant) and isinstance(arg.value, bytes):
+            text = repr(list(arg.value))
+        elif isinstance(arg, ast.List) or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Mult)
+                                           and isinstance(arg.left, ast.List)):
+            text = ast.unparse(arg)
+        elif _operand_kind(arg, {}) == "int" or _operand_kind(arg, domains.get(node, {})) == "int":
+            text = f"[0] * {ast.unparse(arg)}"
+        else:
+            continue
+        edits.append((node.lineno, node.col_offset, node.end_lineno, node.end_col_offset, text))
+    return edits
+
+
 def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | None = None,
                    rules: frozenset[str] = ALL_RULES) -> tuple[str, list[str]]:
     try:
@@ -440,7 +488,8 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
     renames = _rebound_parameter_edits(tree) if REBOUND_PARAMETER in rules else []
     items = _attribute_item_edits(tree, source) if ATTRIBUTE_ITEM in rules else []
     calls = _function_alias_edits(tree) if FUNCTION_ALIAS in rules else []
-    if not percent and not aliases and not renames and not items and not calls:
+    arrays = _bytearray_edits(tree, parameter_types or {}) if BYTEARRAY in rules else []
+    if not percent and not aliases and not renames and not items and not calls and not arrays:
         return source, []
     offsets = [0]
     for line in source.splitlines(keepends=True):
@@ -453,7 +502,7 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
     items = [e for pair in pairs if not {e[0] for e in pair} & touched for e in pair]
     calls = [c for c in calls if not any(p[:2] <= c[:2] and c[2:4] <= p[2:4] for p in percent)]
     edits = [*percent, *((line, start, line, end, text) for line, start, end, text in aliases), *renames,
-             *items, *calls]
+             *items, *calls, *arrays]
     raw = source.encode("utf-8")
     for line, start, end_line, end, text in sorted(edits, reverse=True):
         raw = raw[:offsets[line - 1] + start] + text.encode("utf-8") + raw[offsets[end_line - 1] + end:]
@@ -466,6 +515,8 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
         transforms.append(f"{ATTRIBUTE_ITEM}:{len(items) // 2}")
     if calls:
         transforms.append(f"{FUNCTION_ALIAS}:{len(calls)}")
+    if arrays:
+        transforms.append(f"{BYTEARRAY}:{len(arrays)}")
     return raw.decode("utf-8"), transforms
 
 

@@ -1,28 +1,89 @@
 # Handoff (05/11/2026)
 
-## PARADO AQUI: atualização mais recente
+## PARADO AQUI: atualização mais recente (05/11, noite)
 
-Fernanda pediu para **parar e esquecer o PR da #9074** e focar no pipeline. Não retomar essa issue nem abrir PR sem novo pedido. O worktree `~/esbmc-wt/issue-9074` permanece com alterações e testes sem commit. As instruções antigas abaixo para retomar a #9074 estão superadas.
+Fernanda vai continuar com o Codex. Ler antes o `CLAUDE.md` do repo. Regras: português, palavras simples, sem
+travessão; commit só com pedido dela, sem coautoria de IA; push, tag, PR e issue só com ok dela; não adicionar
+os dois PDFs da raiz; nenhuma chamada de API paga sem ok (rodadas usam a assinatura, `claude_cli`).
 
-O ESBMC `~/esbmc-master/build-bw` foi compilado no master `451f54cab68f22261aad0f53ea8236261d8384a5`, versão 8.6.0. O master remoto foi consultado e estava nesse commit; `ninja -C build-bw esbmc` terminou com sucesso. Antes de congelar ou rodar experimentos, conferir novamente o master mais recente. O binário anterior está em `~/esbmc-bin/esbmc-d520a903ae`.
+### Feito nesta sessão
 
-### Próximos passos do pipeline
+- **Congelamento c:** tag `v2-congelado-2026-11c` (commit `578673c`; último commit de código `428454f`), ESBMC
+  master `451f54cab68f22261aad0f53ea8236261d8384a5` em `~/esbmc-master/build-bw` (8.6.0). Suíte: 1599 passaram
+  em seis pedaços (`ls tests/test_*.py | split -n r/6`, cada um com `timeout 10m .venv/bin/python -m pytest -q -p no:cacheprovider`).
+  Registrado em `docs/experimentos/README.md`. Tag e branch **sem push**.
+- **Extensão (`d553e97`):** em inglês, comando `/verify-repo` (era `/verificar-repo`); `/self-healing` removido
+  porque o self-healing já roda dentro do fluxo (decisão dela). `scripts/add_repair.py` e `check_preserved.py` ficam.
+- **Catálogo `possiveis_problemas`:** `rodar.sh ~/esbmc-master/esbmc.sh` (sem flags extras: o `esbmc.sh` já
+  passa `--no-pointer-check --no-align-check`) deu o mesmo do README; nenhum caso corrigido.
+- **Decisão dela (05/11):** ESBMC sempre o master mais novo, inclusive antes de cada rodada durante os
+  experimentos (registrar o commit do ESBMC por rodada); issues continuam sendo abertas.
 
-1. Rever `docs/projeto/possiveis_problemas/` com o ESBMC atualizado: executar `rodar.sh`, trocar o valor das asserções nos casos que passarem, conferir e registrar os resultados. Explicar o que foi observado para Fernanda avaliar.
-2. Revisar as alterações sem commit e, para congelar, registrar em `docs/experimentos/README.md` os commits do pipeline e do ESBMC. A tag planejada é `v2-congelado-2026-11c`; commit, tag e push só com pedido explícito dela.
-3. Depois, os experimentos escolhidos são os 47 bugs da disciplina PGENE601 (prazo registrado: 08/12), o item 14 (bug semeado) e 200 smells. Os demais itens continuam na seção histórica abaixo.
+### Issues do ESBMC (conferido em 05/11)
 
-### Estado local e verificações
+- Fechadas pelo professor e já no binário: #9835, #9836, #9838, #9840 a #9843 (e quase todas de #9073 a #9093).
+- Com PR do professor aberto: #9837 (PR #9864), #9839 (PR #9861). Não mexer.
+- Sem PR e sem responsável: **#9074** (a nossa, abaixo), #9953, #9954 (worktree `~/esbmc-wt/issue-9953` só
+  com cmake configurado, nada feito).
 
-- As 25 melhorias do pipeline, as lições automáticas do self-healing (`764fe85`) e a comparação de AST menos restrita (`c74c900`) foram concluídas e commitadas localmente, sem push.
-- `src/research_pipeline/verify/pytest_gen.py` está sem commit: chamadas geradas pelo ESBMC com quantidade incorreta de argumentos são identificadas como inválidas. `tests/test_verify_esbmc_integration.py` e `tests/test_verify_pytest_gen.py` também foram alterados, com teste específico da contagem e expectativas adaptadas. Revisar os diffs antes de congelar.
-- Os 12 testes diretamente relacionados ao gerador e às duas integrações passaram. A suíte completa passou em seis grupos: **1.599 testes** (230, 233, 211, 381, 160 e 384). O terceiro grupo precisou ser repetido com acesso ao cache em `~/.cache/llm_esbmc`.
-- `docs/projeto/possiveis_problemas/issues/73_pytest_argumentos_extras.md` é um rascunho sem commit. O defeito foi reproduzido isoladamente: o ESBMC gerou `inverse(arg0, arg1)` para uma função de um argumento, e o pytest terminou com `TypeError`. A issue fechada #7188 também relata argumentos incorretos; conferir se é a mesma causa e verificar PRs antes de propor uma nova issue.
-- Os dois PDFs não rastreados na raiz não devem ser adicionados ao Git. A branch `feat/harness-de-agente` estava 23 commits à frente da origem, sem push, nesta atualização.
+### PR da #9074: em andamento, abrir só com 100% testado (pedido dela)
 
-### Registro da #9074, suspensa por pedido de Fernanda
+Worktree `~/esbmc-wt/issue-9074`, branch `fix/issue-9074`, sobre master `451f54cab6`, **sem commit**:
+`src/python-frontend/preprocessor/vararg_mixin.py`, `src/python-frontend/python_annotation/annotation_conversion.inl`
+e 22 testes `regression/python/github_9074_*`. Título e descrição propostos:
 
-A sessão corrigiu uma colisão de nomes gerados. Passaram 285 testes relacionados, 24 casos específicos com Z3 e os novos pares com Bitwuzla; a checagem dos exemplos Python também passou. A revisão refeita não encontrou outro bloqueio concreto. O portão de cobertura **não passou**: as 40 linhas executáveis adicionadas foram alcançadas, mas uma campanha ampliada mostrou queda local de 30,03% para 29,95% e avisos de incompatibilidade de hash. Mode C-Live ficou inconclusivo porque o parser do ESBMC não analisou o cabeçalho real. A investigação foi interrompida por pedido dela. Não retomar sem novo pedido.
+```
+[python] Lower **kwargs read through .get() in __init__
+
+A constructor that reads its `**kwargs` was refused with `Object "kw" not found`.
+The preprocessor now packs the keywords each construction passes into a dict and
+rewrites `__init__` to take them, and `d.get(k)` on a `dict[K, int]` (or an
+empty `{}` only read by `.get`) is typed `Optional[int]` so the stored attribute
+compares against None. Shapes it cannot preserve (str/float/None values,
+mutation of the dict, name collisions) are refused with a message instead of a
+wrong verdict.
+
+Fixes #9074
+```
+Label `python`. Já passou: `scripts/check_python_tests.sh github_9074`; clang-format 23.1.1 nas linhas novas
+(`/tmp/t9074/cf/v/bin/clang-format`, só as linhas do diff: o arquivo tem violações antigas fora dele); YAPF 0.43
+(`/tmp/t9074/cf/v/bin/yapf`) aplicado nos 22 testes. Revisão anterior sem bloqueio.
+
+**Atualização (05/11, fim):** cobertura Mode B deu **PASS** (40/40 linhas C++ novas; `.inl` 80,62% para 80,97%;
+a queda antiga era erro de medição). Os 24 `github_9074*` passaram com Bitwuzla e `--z3`.
+`github_9074_empty_dict_fail/test.desc` ganhou `assertion !b->x\.is_none` (antes passava no master pelo motivo
+errado). Revisão feita: achados de veredito errado testados e refutados; aplicadas duas correções em
+`vararg_mixin.py` (classe nunca construída recusada com o motivo "the class is never constructed"; tirado o
+default `calls=()`), com teste novo `github_9074_unused_unsupported`. **Falta recompilar**
+(`ninja -C build/coverage-pr -j4 esbmc`) e rodar de novo os `github_9074*` (Bitwuzla e Z3) e o subconjunto
+(`ctest -R ... -j2`). A troca `__esbmc_` para `_esbmc_` nos nomes gerados é proposital (name mangling dentro da
+classe): citar no PR. O WSL travou 3 vezes por memória: usar `ulimit -v 6000000`, `ctest -j2`, `ninja -j4`.
+Mode C ainda não feito.
+
+Falta, nesta ordem:
+1. **Cobertura (esbmc-coverage-pr Mode B):** estava rodando no fim da sessão. A primeira tentativa travou o WSL
+   (falta de memória: 23 GiB, 16 núcleos): usar `ninja -j6` e `ctest -j4` no máximo. Bars: 100% das linhas
+   adicionadas, nenhum arquivo tocado caindo, total do repo não caindo. Uma medição antiga deu 30,03% para
+   29,95% em `annotation_conversion.inl` com avisos de "hash mismatch" (provável mistura de perfis de binários
+   diferentes): medir com pasta de perfil limpa. `~/esbmc-master/build-cov` existe; conferir de que commit é.
+2. Regressão: todos `github_9074*` com Bitwuzla e com `--z3`, e o subconjunto
+   `regression/python/.*(dict|get|kwarg|vararg|9073|9074|optional|class|init|attr|none)` (cada ctest até 10 min).
+3. Mode C-Live nos ramos novos do C++ (Bitwuzla e Z3). Da outra vez ficou inconclusivo: o ESBMC não lê o
+   cabeçalho de JSON do frontend. Se travar de novo, perguntar a ela se aceita como prova que cada ramo novo é
+   executado por um teste (medido na cobertura).
+4. Revisão de código do diff final.
+5. Mostrar a ela título, descrição e diff; com o ok: commit (sem coautoria), push e PR no esbmc/esbmc.
+
+### Depois do PR
+
+- Ver se há algo a melhorar no pipeline (pedido dela).
+- Rodada PGENE601 pronta, **não rodada**: `artifacts/pgene601/congelado-c-2026-11-05/run.sh` (igual a
+  `e2e-2026-11-02`, só muda a pasta; `commit.txt` gravado). Em 02/11 foram 226 chamadas (73 detecção, 153
+  síntese). Antes: atualizar o ESBMC se houver master novo. Não rodar junto com build pesado. Registrar no README.
+- Push da branch `feat/harness-de-agente` e das tags, com ok dela.
+- Rascunho `docs/projeto/possiveis_problemas/issues/73_pytest_argumentos_extras.md`: conferir contra a #7188 e
+  PRs antes de propor issue.
+- Testar `/verify-repo` num repositório pequeno. Depois: item 14, smells 200, 8a/8b/8c, 13, porte Codex.
 
 ## Histórico da sessão anterior
 
