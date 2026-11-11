@@ -27,6 +27,7 @@ ANTHROPIC_PRICES: dict[str, tuple[float, float, float]] = {
 }
 # Billed by the plan the CLI is logged into, not per token.
 SUBSCRIPTION_PROVIDERS = frozenset({"claude_cli", "codex"})
+ANTHROPIC_PROVIDERS = frozenset({"anthropic", "claude_cli"})
 SUBSCRIPTION = "assinatura"
 
 _DATE_SUFFIX = re.compile(r"-\d{8}$")
@@ -39,11 +40,10 @@ def billing(provider: str) -> str | None:
 
 
 def call_cost(provider: str, model: str | None, usage: dict) -> float | None:
-    """0.0 for a subscription CLI; for the Anthropic API, the list price of ``usage``; None when the price is
-    unknown (another provider, a model missing from the table, or no token counts), never a guessed 0."""
-    if provider in SUBSCRIPTION_PROVIDERS:
-        return 0.0
-    if provider != "anthropic":
+    """US$ the call would cost at Anthropic list prices: the equivalent cost for ``claude_cli`` (its subscription
+    is not billed per token), the billed cost for ``anthropic``. None when there is no price (another provider,
+    a model missing from the table, a CLI alias, or no token counts), never a guessed 0."""
+    if provider not in ANTHROPIC_PROVIDERS:
         return None
     price = ANTHROPIC_PRICES.get(_DATE_SUFFIX.sub("", model or ""))
     tokens_in, tokens_out = usage.get("input_tokens"), usage.get("output_tokens")

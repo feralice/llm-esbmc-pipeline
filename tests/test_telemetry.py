@@ -1,5 +1,7 @@
 from research_pipeline.llm.pricing import call_cost, total_cost
+from research_pipeline.llm.rate_limit import UsageLimitReached
 from research_pipeline.llm.telemetry import response_event
+from research_pipeline.llm.usage_summary import summarize
 
 
 def test_response_event_normalizes_provider_usage() -> None:
@@ -91,11 +93,63 @@ def test_a_failed_anthropic_call_has_no_cost() -> None:
     assert event["cost_usd"] is None
 
 
-def test_the_claude_cli_subscription_costs_nothing_per_call() -> None:
+def test_claude_cli_keeps_the_cost_the_cli_reported_and_bills_nothing_per_token() -> None:
     event = response_event(provider="claude_cli", requested_model="sonnet", duration_seconds=1.0,
-                           response={"usage": {"input_tokens": 10, "output_tokens": 4}})
-    assert event["cost_usd"] == 0.0
+                           response={"model": "sonnet", "reported_cost_usd": 0.0123,
+                                     "usage": {"input_tokens": 10, "output_tokens": 4}})
+    assert event["cost_usd"] == 0.0123
+    assert event["cost_source"] == "cli_reported"
+    assert event["billed_usd"] is None
     assert event["billing"] == "assinatura"
+
+
+def test_claude_cli_without_a_reported_cost_or_known_model_has_unknown_cost_not_zero() -> None:
+    event = response_event(provider="claude_cli", requested_model="sonnet", duration_seconds=1.0,
+                           response={"model": "sonnet", "usage": {"input_tokens": 10, "output_tokens": 4}})
+    assert event["cost_usd"] is None
+    assert event["cost_source"] is None
+
+
+def test_claude_cli_prices_a_known_model_as_an_estimate_when_the_cli_omits_its_cost() -> None:
+    event = response_event(provider="claude_cli", requested_model="claude-sonnet-5-5", duration_seconds=1.0,
+                           response={"model": "claude-sonnet-5-5",
+                                     "usage": {"input_tokens": 1_000_000, "output_tokens": 100_000}})
+    assert event["cost_usd"] == 2.0 + 1.0
+    assert event["cost_source"] == "estimated"
+    assert event["billed_usd"] is None
+
+
+def test_claude_cli_prompt_total_includes_cache_writes_and_reads() -> None:
+    event = response_event(
+        provider="claude_cli", requested_model="sonnet", duration_seconds=1.0,
+        response={"model": "sonnet", "usage": {
+            "input_tokens": 6, "output_tokens": 879,
+            "cache_creation_input_tokens": 1000, "cache_read_input_tokens": 50_000,
+        }},
+    )
+    assert event["prompt_tokens"] == 51_006
+    assert event["cached_tokens"] == 50_000
+    assert event["cache_creation_tokens"] == 1000
+    assert event["total_tokens"] == 51_006 + 879
+
+
+def test_api_calls_are_billed_at_the_estimate() -> None:
+    event = response_event(provider="anthropic", requested_model="claude-sonnet-5-5", duration_seconds=1.0,
+                           response={"model": "claude-sonnet-5-5", "usage": {"input_tokens": 1_000_000, "output_tokens": 0}})
+    assert event["cost_source"] == "estimated"
+    assert event["billed_usd"] == event["cost_usd"] == 2.0
+
+
+def test_usage_limit_and_timeout_are_classified_apart_from_other_errors() -> None:
+    limit = response_event(provider="claude_cli", requested_model="sonnet", duration_seconds=1.0,
+                           error=UsageLimitReached("You've hit your 5-hour limit"))
+    timeout = response_event(provider="claude_cli", requested_model="sonnet", duration_seconds=1.0,
+                             error=TimeoutError("Timeout ao chamar claude -p."))
+    other = response_event(provider="claude_cli", requested_model="sonnet", duration_seconds=1.0,
+                           error=RuntimeError("JSON inválido"))
+    assert (limit["status"], limit["error_kind"]) == ("error", "usage_limit")
+    assert (timeout["status"], timeout["error_kind"]) == ("timeout", "timeout")
+    assert (other["status"], other["error_kind"]) == ("error", "error")
 
 
 def test_other_api_providers_are_not_priced() -> None:
@@ -107,3 +161,39 @@ def test_other_api_providers_are_not_priced() -> None:
 def test_total_cost_is_unknown_when_no_call_was_priced() -> None:
     assert total_cost([{"cost_usd": None}, {}]) is None
     assert total_cost([{"cost_usd": 0.5}, {"cost_usd": None}, {"cost_usd": 0.25}]) == 0.75
+
+
+def test_summary_counts_unknown_costs_and_tokens_apart_from_zero() -> None:
+    rows = [
+        {"provider": "claude_cli", "requested_model": "sonnet", "stage": "detection", "status": "success",
+         "prompt_tokens": 10, "completion_tokens": 5, "cost_usd": 0.5, "cost_source": "cli_reported", "billed_usd": None},
+        {"provider": "claude_cli", "requested_model": "sonnet", "stage": "detection", "status": "error",
+         "error_kind": "usage_limit", "prompt_tokens": None, "completion_tokens": None, "cost_usd": None},
+    ]
+    (group,) = summarize(rows)
+    assert group["calls"] == 2
+    assert group["usage_limit"] == 1
+    assert group["unknown_prompt"] == 1
+    assert group["costed"] == 1
+    assert group["cost_usd"] == 0.5
+
+
+def test_rows_written_before_cost_source_are_unknown_cost_not_the_old_zero() -> None:
+    (group,) = summarize([{"provider": "claude_cli", "requested_model": "sonnet", "stage": "synthesis",
+                           "status": "success", "prompt_tokens": 6, "completion_tokens": 9, "cost_usd": 0.0}])
+    assert group["legacy"] == 1
+    assert group["costed"] == 0
+    assert group["cost_usd"] == 0.0
+
+
+def test_legacy_errors_are_classified_from_their_message() -> None:
+    rows = [
+        {"provider": "claude_cli", "requested_model": "sonnet", "stage": "synthesis", "status": "error",
+         "error": "claude -p saiu com código 1: You've hit your 5-hour limit"},
+        {"provider": "claude_cli", "requested_model": "sonnet", "stage": "synthesis", "status": "timeout",
+         "error": "Timeout ao chamar claude -p."},
+        {"provider": "claude_cli", "requested_model": "sonnet", "stage": "synthesis", "status": "error",
+         "error": "JSON inválido"},
+    ]
+    (group,) = summarize(rows)
+    assert (group["usage_limit"], group["timeout"]) == (1, 1)

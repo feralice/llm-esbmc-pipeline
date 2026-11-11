@@ -557,15 +557,25 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
                 "calls": 0, "failed_calls": 0, "tokens": 0, "prompt_tokens": 0,
                 "cached_tokens": 0, "calls_with_cache_data": 0, "seconds": 0.0,
                 "localization_calls": 0, "classification_calls": 0, "cost_usd": None, "calls_without_cost": 0,
+                "cost_reported_usd": None, "cost_estimated_usd": None, "billed_usd": None,
+                "cache_creation_tokens": 0, "usage_limit_calls": 0, "timeout_calls": 0,
             },
         )
         totals["calls"] += 1
         cost = event.get("cost_usd")
         if isinstance(cost, (int, float)):
             totals["cost_usd"] = round((totals["cost_usd"] or 0.0) + cost, 6)
+            source_key = "cost_reported_usd" if event.get("cost_source") == "cli_reported" else "cost_estimated_usd"
+            totals[source_key] = round((totals[source_key] or 0.0) + cost, 6)
         else:
             totals["calls_without_cost"] += 1
+        billed = event.get("billed_usd")
+        if isinstance(billed, (int, float)):
+            totals["billed_usd"] = round((totals["billed_usd"] or 0.0) + billed, 6)
         totals["failed_calls"] += int(event.get("status") != "success")
+        totals["usage_limit_calls"] += int(event.get("error_kind") == "usage_limit")
+        totals["timeout_calls"] += int(event.get("error_kind") == "timeout")
+        totals["cache_creation_tokens"] += int(event.get("cache_creation_tokens") or 0)
         if event.get("analysis_stage") == "localize":
             totals["localization_calls"] += 1
         elif event.get("analysis_stage") == "classify":

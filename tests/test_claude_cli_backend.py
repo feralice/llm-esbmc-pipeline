@@ -216,3 +216,22 @@ def test_synthesis_nonzero_exit_reports_the_reason_from_the_stdout_envelope(monk
     )
     with pytest.raises(RuntimeError, match=r"\[429\] Claude usage limit reached"):
         LLMClient(backend="claude_cli").complete("system", "user", json_mode=True)
+
+
+def test_analyze_telemetry_keeps_cache_tokens_and_the_cli_cost(monkeypatch):
+    usage = {"input_tokens": 6, "output_tokens": 879,
+             "cache_creation_input_tokens": 1000, "cache_read_input_tokens": 50_000}
+    monkeypatch.setattr(
+        "research_pipeline.llm.backends.claude_cli.subprocess.run",
+        lambda command, **kwargs: _FakeCompleted(_envelope(usage=usage, total_cost_usd=0.042)),
+    )
+    analyzer = ClaudeCliAnalyzer(model="sonnet")
+    analyzer.analyze(_unit())
+
+    (event,) = analyzer.telemetry_events
+    assert event["prompt_tokens"] == 51_006
+    assert event["cached_tokens"] == 50_000
+    assert event["cache_creation_tokens"] == 1000
+    assert event["cost_usd"] == 0.042
+    assert event["cost_source"] == "cli_reported"
+    assert event["billed_usd"] is None

@@ -185,3 +185,22 @@ def test_post_json_url_error_omits_ollama_hint_for_gemini_backend(monkeypatch):
     with pytest.raises(RuntimeError) as excinfo:
         analyzer.analyze(_unit())
     assert "ollama" not in str(excinfo.value).lower()
+
+
+def test_synthesis_claude_cli_reply_keeps_cache_tokens_and_the_cli_cost(monkeypatch):
+    from research_pipeline.verify.llm_client import LLMClient
+
+    envelope = {"is_error": False, "result": "print(1)",
+                "usage": {"input_tokens": 3, "output_tokens": 7, "cache_read_input_tokens": 400},
+                "total_cost_usd": 0.01}
+    monkeypatch.setattr(
+        "research_pipeline.verify.llm_client.subprocess.run",
+        lambda command, **kwargs: type("Done", (), {"returncode": 0, "stdout": json.dumps(envelope), "stderr": ""})(),
+    )
+    client = LLMClient(backend="claude_cli", model="sonnet")
+    reply = client.complete("system", "user")
+
+    assert reply.telemetry["prompt_tokens"] == 403
+    assert reply.telemetry["cached_tokens"] == 400
+    assert reply.telemetry["cost_usd"] == 0.01
+    assert reply.telemetry["cost_source"] == "cli_reported"

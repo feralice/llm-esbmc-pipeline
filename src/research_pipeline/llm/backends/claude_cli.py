@@ -148,13 +148,9 @@ class ClaudeCliAnalyzer:
                 "(verifique se --json-schema é suportado nesta versão)."
             )
 
-        usage = envelope.get("usage") or {}
         return {
             "payload": envelope["structured_output"],
             "model": self.model,
-            "cost_usd": envelope.get("total_cost_usd"),
-            "usage": {
-                "input_tokens": usage.get("input_tokens"),
-                "output_tokens": usage.get("output_tokens"),
-            },
+            "reported_cost_usd": envelope.get("total_cost_usd"),
+            "usage": envelope.get("usage") or {},
         }

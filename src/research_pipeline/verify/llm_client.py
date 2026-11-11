@@ -281,14 +281,11 @@ class LLMClient:
         if envelope.get("is_error"):
             raise turn_failure(self.claude_command, envelope.get("result"))
 
-        usage = envelope.get("usage") or {}
         return {
             "output_text": envelope.get("result", ""),
             "model": self.model,
-            "usage": {
-                "input_tokens": usage.get("input_tokens"),
-                "output_tokens": usage.get("output_tokens"),
-            },
+            "reported_cost_usd": envelope.get("total_cost_usd"),
+            "usage": envelope.get("usage") or {},
         }
 
     _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
