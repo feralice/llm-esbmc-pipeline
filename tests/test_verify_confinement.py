@@ -11,6 +11,12 @@ import pytest
 from research_pipeline.verify.sandbox import host_replay_problem
 
 
+def _unavailable(reason):
+    if os.environ.get("CI"):
+        pytest.fail(f"kernel boundary not exercised in CI: {reason}")
+    pytest.skip(reason)
+
+
 def _environment():
     return {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src")}
 
@@ -21,13 +27,20 @@ def _environment():
     "x = getattr(generator, 'gi_frame')\n",
     "x = getattr(frame, 'f_builtins')\n",
     "from random import *\n",
+    "import enum\nx = enum.bltns.eval\n",
+    "from re import enum\nx = enum.bltns.open\n",
+    "import random\nclass A:\n    def f(self):\n        return self.__dict__\nx = A.f(random)['_os']\n",
+    "import os\nx = os\ny = x.system\n",
+    "import random\ng = getattr\nx = g(random, '_os')\n",
+    "import os\nos.environ['A'], b = '1', 2\n",
+    "import os\ne = os.environ\ne['A'] = '1'\n",
 ])
 def test_indirect_access_to_host_objects_is_rejected(source):
     assert host_replay_problem(source)
 
 
-def test_own_instance_dict_remains_available():
-    assert host_replay_problem("class A:\n    def f(self):\n        return list(self.__dict__)\n") == ""
+def test_instance_dict_is_rejected_even_inside_a_method():
+    assert host_replay_problem("class A:\n    def f(self):\n        return list(self.__dict__)\n")
 
 
 def test_kernel_boundary_preserves_external_files_and_allows_local_results(tmp_path):
@@ -67,7 +80,7 @@ print(json.dumps({'blocked': blocked}))
                           capture_output=True, text=True, check=True, env=_environment())
     data = json.loads(done.stdout)
     if "unavailable" in data:
-        pytest.skip(data["unavailable"])
+        _unavailable(data["unavailable"])
     assert data["blocked"] == [True] * 6
     assert sentinel.read_text() == "preserve this"
     assert not (tmp_path / "unexpected").exists()
@@ -150,6 +163,6 @@ print(all(blocked))
     done = subprocess.run([sys.executable, "-c", script, str(tmp_path)], capture_output=True,
                           text=True, check=False, env=_environment())
     if done.returncode == 77:
-        pytest.skip("OS isolation unavailable")
+        _unavailable("OS isolation unavailable")
     assert done.returncode == 0, done.stderr
     assert done.stdout.strip() == "True"

@@ -1,5 +1,5 @@
 import json
-from pathlib import Path
+import os
 
 import pytest
 
@@ -18,10 +18,10 @@ def test_failed_replace_keeps_the_previous_checkpoint(tmp_path, monkeypatch):
     path = tmp_path / "checkpoint.json"
     path.write_text('{"old": true}')
 
-    def refused(self, destination):
+    def refused(source, destination):
         raise OSError("replace unavailable")
 
-    monkeypatch.setattr(Path, "replace", refused)
+    monkeypatch.setattr(os, "replace", refused)
     with pytest.raises(OSError):
         write_json_atomic(path, {"new": True})
     assert json.loads(path.read_text()) == {"old": True}

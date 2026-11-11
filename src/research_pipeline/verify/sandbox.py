@@ -28,7 +28,7 @@ _UNSAFE_DUNDERS = frozenset({
 # operator's string-driven attribute access: reaching them reaches everything.
 _UNSAFE_MEMBERS = frozenset({
     "sys", "_sys", "os", "_os", "inspect", "builtins", "importlib", "subprocess", "modules",
-    "attrgetter", "methodcaller",
+    "attrgetter", "methodcaller", "bltns", "eval", "exec", "globals", "locals", "vars",
 })
 _UNSAFE_PREFIXES = ("f_", "gi_", "cr_", "ag_", "tb_", "co_")
 # Attribute access by name is safe only with a literal, non-dunder name.
@@ -47,21 +47,25 @@ def _only_asyncio_run(tree: ast.Module) -> bool:
     return all(id(n) in runs for n in ast.walk(tree) if isinstance(n, ast.Name) and n.id == "asyncio")
 
 
-def _own_dict(node: ast.Attribute, parents: dict[ast.AST, ast.AST]) -> bool:
-    """Allow an ordinary method receiver, never a module merely named ``self``."""
-    if not (node.attr == "__dict__" and isinstance(node.value, ast.Name) and node.value.id == "self"):
+def _in_read_position(node: ast.AST, parents: dict[ast.AST, ast.AST]) -> bool:
+    """``os.environ`` read by subscript or ``.get(...)``; anywhere else it is an alias the gate cannot follow."""
+    parent = parents.get(node)
+    if isinstance(parent, ast.Subscript) and parent.value is node:
+        return isinstance(parent.ctx, ast.Load)
+    if isinstance(parent, ast.Attribute) and parent.attr == "get":
+        call = parents.get(parent)
+        return isinstance(call, ast.Call) and call.func is parent
+    return False
+
+
+def _literal_named_access(node: ast.Name, parents: dict[ast.AST, ast.AST]) -> bool:
+    """``getattr(obj, "name")`` with a literal, non-dunder, non-introspective name; any other use is an alias."""
+    call = parents.get(node)
+    if not (isinstance(call, ast.Call) and call.func is node and len(call.args) >= 2):
         return False
-    scope = parents.get(node)
-    while scope is not None and not isinstance(scope, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
-        scope = parents.get(scope)
-    if not isinstance(scope, (ast.FunctionDef, ast.AsyncFunctionDef)):
-        return False
-    args = [*scope.args.posonlyargs, *scope.args.args]
-    if not (args and args[0].arg == "self" and isinstance(parents.get(scope), ast.ClassDef)):
-        return False
-    # Rebinding the receiver (including through imports or a closure) invalidates the exception.
-    return not any((isinstance(n, ast.Name) and n.id == "self" and isinstance(n.ctx, (ast.Store, ast.Del)))
-                   or (isinstance(n, ast.alias) and (n.asname or n.name) == "self") for n in ast.walk(scope))
+    name = call.args[1]
+    return (isinstance(name, ast.Constant) and isinstance(name.value, str)
+            and not name.value.startswith("__") and not _unsafe_attribute(name.value))
 
 
 def _unsafe_attribute(name: str) -> bool:
@@ -74,12 +78,6 @@ def _attribute_path(node: ast.AST) -> tuple[str, ...]:
     if isinstance(node, ast.Attribute):
         return (*_attribute_path(node.value), node.attr)
     return ()
-
-
-def _os_environ_target(node: ast.AST) -> bool:
-    while isinstance(node, ast.Subscript):
-        node = node.value
-    return _attribute_path(node)[:2] == ("os", "environ")
 
 
 def host_replay_problem(source: str) -> str:
@@ -104,8 +102,9 @@ def host_replay_problem(source: str) -> str:
                     return "imports os under another name"
             elif node.module == "os":
                 members = {alias.name for alias in node.names}
-                if any(alias.asname for alias in node.names) or "*" in members or not members <= _SAFE_OS_MEMBERS:
-                    return f"imports unsafe member from os: {', '.join(sorted(members - _SAFE_OS_MEMBERS)) or 'alias'}"
+                by_name = _SAFE_OS_MEMBERS - {"environ"}
+                if any(alias.asname for alias in node.names) or "*" in members or not members <= by_name:
+                    return f"imports unsafe member from os: {', '.join(sorted(members - by_name)) or 'alias'}"
             elif node.module == "os.path":
                 members = {alias.name for alias in node.names}
                 if any(alias.asname for alias in node.names) or "*" in members or not members <= _SAFE_OS_PATH:
@@ -120,9 +119,13 @@ def host_replay_problem(source: str) -> str:
                     return f"imports {', '.join(hidden)} from {node.module}"
         elif isinstance(node, ast.Name) and node.id in _UNSAFE_NAMES:
             return f"uses {node.id}"
+        elif isinstance(node, ast.Name) and node.id == "os" and not isinstance(parents.get(node), ast.Attribute):
+            return "uses os as a value"
+        elif isinstance(node, ast.Name) and node.id in _NAMED_ACCESS and not _literal_named_access(node, parents):
+            return f"uses {node.id} without a literal attribute name"
         elif isinstance(node, ast.Attribute):
-            if _own_dict(node, parents):
-                continue
+            if _attribute_path(node) == ("os", "environ") and not _in_read_position(node, parents):
+                return "uses os.environ outside a read"
             path = _attribute_path(node)
             if path[:1] == ("os",):
                 allowed = (path in {("os", "path"), ("os", "environ"), ("os", "getenv"),
@@ -132,19 +135,6 @@ def host_replay_problem(source: str) -> str:
                     return f"uses unsupported os member: {'.'.join(path[1:])}"
             if _unsafe_attribute(node.attr):
                 return f"uses introspection attribute {node.attr}"
-        elif isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.Delete)):
-            targets = node.targets if isinstance(node, ast.Assign) else ([node.target] if hasattr(node, "target")
-                                                                         else node.targets)
-            if any(_os_environ_target(target) for target in targets):
-                return "writes os.environ"
-        elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _NAMED_ACCESS
-              and not (len(node.args) >= 2 and isinstance(node.args[1], ast.Constant)
-                       and isinstance(node.args[1].value, str) and not node.args[1].value.startswith("__")
-                       and not _unsafe_attribute(node.args[1].value))):
-            return f"uses {node.func.id} without a literal attribute name"
-        elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _NAMED_ACCESS
-              and node.args and _attribute_path(node.args[0])[:1] == ("os",)):
-            return f"uses {node.func.id} on os"
     return ""
 
 

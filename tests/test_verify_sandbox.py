@@ -53,9 +53,8 @@ def test_asyncio_may_run_a_coroutine_and_nothing_else():
     assert "imports from asyncio" in host_replay_problem("from asyncio.subprocess import create_subprocess_exec\n")
 
 
-def test_time_and_the_instance_own_dict_may_run_on_the_host():
+def test_time_may_run_on_the_host():
     assert host_replay_problem("import time\n\nclass A:\n    def f(self):\n        return time.time()\n") == ""
-    assert host_replay_problem("class A:\n    def f(self):\n        return list(self.__dict__)\n") == ""
 
 
 def test_read_only_os_helpers_may_run_on_the_host():

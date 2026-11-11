@@ -35,7 +35,10 @@ def replay_original(harness: str, target: ast.FunctionDef, original: str, origin
         tree = ast.parse(spliced)
     except SyntaxError as exc:
         return ReplayVerdict("unavailable", reason=f"original body does not fit the harness: {exc.msg}"), None
-    swapped = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.lineno == def_line)
+    swapped = next((n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and n.lineno == def_line), None)
+    if swapped is None:
+        return ReplayVerdict("unavailable", reason="original function does not fit the harness"), None
     raw_nodes = expression_nodes(swapped, expression) if expression is not None else [swapped]
     nodes = [node for node in raw_nodes if isinstance(node, (ast.expr, ast.stmt))]
     if not nodes:

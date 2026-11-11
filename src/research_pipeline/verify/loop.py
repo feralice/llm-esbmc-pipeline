@@ -248,7 +248,8 @@ def verify_hypothesis(
             last_problems = problems
             continue
         last_problems = []
-        assert spec is not None  # A successfully parsed specification is required after the rejection branch.
+        if spec is None:
+            raise RuntimeError("prepare_spec returned no specification without problems")
         if assumed:
             # The callers' guards on the arguments, as the harness's assumptions (caller_facts.caller_guards).
             spec = dataclasses.replace(spec, assumptions=(*spec.assumptions, *assumed))

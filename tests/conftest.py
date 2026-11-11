@@ -30,8 +30,9 @@ def _offline_and_temporary_caches(monkeypatch, tmp_path_factory):
         return original_connect(sock, address)
 
     def popen(command, *args, **kwargs):
-        executable = command[0] if isinstance(command, (list, tuple)) and command else command
-        if isinstance(executable, str) and Path(executable).name in {"codex", "claude", "gemini", "ollama"}:
+        words = [word for part in (command if isinstance(command, (list, tuple)) else [command])
+                 for word in str(part).split()]
+        if any(Path(word).name in {"codex", "claude", "gemini", "ollama"} for word in words):
             pytest.fail("Live LLM commands are disabled in the offline test suite")
         return original_popen(command, *args, **kwargs)
 
