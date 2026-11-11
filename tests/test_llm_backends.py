@@ -113,14 +113,31 @@ def test_analyze_happy_path_parses_findings(monkeypatch):
     assert len(analyzer.telemetry_events) == 1
 
 
-def test_analyze_malformed_content_returns_no_findings_not_an_exception(monkeypatch):
+def test_analyze_malformed_content_is_a_failure_not_an_empty_detection(monkeypatch):
     response = _FakeHTTPResponse(_openai_shaped_response("not json at all"))
     monkeypatch.setattr(
         "research_pipeline.llm.backends.chat_completions.request.urlopen",
         lambda *a, **k: response,
     )
     analyzer = ChatCompletionsAnalyzer(api_key="k")
-    assert analyzer.analyze(_unit()) == []
+    with pytest.raises(RuntimeError, match="JSON"):
+        analyzer.analyze(_unit())
+
+
+@pytest.mark.parametrize("response", [
+    {}, {"choices": []}, {"choices": [{"message": {"content": ""}}]},
+    {"choices": [{"message": {"content": "[]"}}]},
+    {"choices": [{"message": {"content": '{"findings": 1}'}}]},
+    {"choices": [{"message": {"content": '{"findings": [1]}'}}]},
+])
+def test_malformed_envelope_or_findings_never_becomes_an_empty_success(response):
+    with pytest.raises(RuntimeError, match="JSON|resposta|findings"):
+        ChatCompletionsAnalyzer()._extract_findings_payload(response)
+
+
+def test_valid_empty_findings_are_a_success():
+    assert ChatCompletionsAnalyzer()._extract_findings_payload(
+        _openai_shaped_response('{"findings": []}')) == []
 
 
 def test_post_json_retries_on_server_error_then_succeeds(monkeypatch):

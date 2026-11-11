@@ -118,30 +118,27 @@ class ChatCompletionsAnalyzer:
         raise RuntimeError("API Chat Completions falhou após todas as tentativas.")
 
     def _extract_findings_payload(self, response_data: dict) -> list[dict]:
-        choices = response_data.get("choices", [])
-        if choices:
-            content = choices[0].get("message", {}).get("content", "")
-            if content:
-                try:
-                    return coerce_findings_payload(
-                        json.loads(strip_markdown_json(content))
-                    )
-                except (json.JSONDecodeError, RuntimeError) as exc:
-                    logger.warning(
-                        "JSON parse failed for model %s: %s | raw: %.200s",
-                        self.model, exc, content,
-                    )
-                    return []
-        return []
+        payload = self._extract_json_payload(response_data)
+        try:
+            findings = coerce_findings_payload(payload)
+        except (TypeError, RuntimeError) as exc:
+            raise RuntimeError("Resposta JSON sem findings válidos") from exc
+        if not all(isinstance(item, dict) for item in findings):
+            raise RuntimeError("Resposta JSON contém findings que não são objetos")
+        return findings
 
     def _extract_json_payload(self, response_data: dict) -> dict:
-        choices = response_data.get("choices", [])
-        if choices:
-            content = choices[0].get("message", {}).get("content", "")
-            if content:
-                try:
-                    return json.loads(strip_markdown_json(content))
-                except (json.JSONDecodeError, RuntimeError) as exc:
-                    logger.warning("JSON parse failed for model %s: %s | raw: %.200s", self.model, exc, content)
-                    raise RuntimeError("Resposta staged sem JSON válido") from exc
-        return []
+        try:
+            content = response_data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise RuntimeError("A resposta não contém conteúdo JSON analisável") from exc
+        if not isinstance(content, str) or not content.strip():
+            raise RuntimeError("A resposta não contém conteúdo JSON analisável")
+        try:
+            payload = json.loads(strip_markdown_json(content))
+        except (json.JSONDecodeError, RuntimeError) as exc:
+            logger.warning("JSON parse failed for model %s: %s", self.model, exc)
+            raise RuntimeError("Resposta sem JSON válido") from exc
+        if not isinstance(payload, dict):
+            raise RuntimeError("A resposta JSON deve ser um objeto")
+        return payload

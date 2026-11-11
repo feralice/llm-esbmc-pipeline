@@ -47,9 +47,25 @@ def _only_asyncio_run(tree: ast.Module) -> bool:
     return all(id(n) in runs for n in ast.walk(tree) if isinstance(n, ast.Name) and n.id == "asyncio")
 
 
-def _own_dict(node: ast.Attribute) -> bool:
-    """``self.__dict__`` only lists the instance's own attributes; on a module or function it would reach globals."""
-    return node.attr == "__dict__" and isinstance(node.value, ast.Name) and node.value.id == "self"
+def _own_dict(node: ast.Attribute, parents: dict[ast.AST, ast.AST]) -> bool:
+    """Allow an ordinary method receiver, never a module merely named ``self``."""
+    if not (node.attr == "__dict__" and isinstance(node.value, ast.Name) and node.value.id == "self"):
+        return False
+    scope = parents.get(node)
+    while scope is not None and not isinstance(scope, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+        scope = parents.get(scope)
+    if not isinstance(scope, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        return False
+    args = [*scope.args.posonlyargs, *scope.args.args]
+    if not (args and args[0].arg == "self" and isinstance(parents.get(scope), ast.ClassDef)):
+        return False
+    # Rebinding the receiver (including through imports or a closure) invalidates the exception.
+    return not any((isinstance(n, ast.Name) and n.id == "self" and isinstance(n.ctx, (ast.Store, ast.Del)))
+                   or (isinstance(n, ast.alias) and (n.asname or n.name) == "self") for n in ast.walk(scope))
+
+
+def _unsafe_attribute(name: str) -> bool:
+    return name in _UNSAFE_DUNDERS or name in _UNSAFE_MEMBERS or name.startswith(_UNSAFE_PREFIXES)
 
 
 def _attribute_path(node: ast.AST) -> tuple[str, ...]:
@@ -72,6 +88,7 @@ def host_replay_problem(source: str) -> str:
         tree = ast.parse(source)
     except SyntaxError as exc:
         return f"syntax error: {exc.msg}"
+    parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
     safe = _SAFE_MODULES | {"os"} | ({"asyncio"} if _only_asyncio_run(tree) else set())
     for node in ast.walk(tree):
         if isinstance(node, ast.Import) and any(a.name.split(".")[0] == "asyncio" and a.asname not in (None, "asyncio")
@@ -97,13 +114,14 @@ def host_replay_problem(source: str) -> str:
             if unsafe or (isinstance(node, ast.ImportFrom) and node.level):
                 return f"imports {', '.join(unsafe) or 'a relative module'}"
             if isinstance(node, ast.ImportFrom):
-                hidden = [alias.name for alias in node.names if alias.name in _UNSAFE_MEMBERS]
+                hidden = [alias.name for alias in node.names
+                          if alias.name == "*" or alias.name in _UNSAFE_NAMES or _unsafe_attribute(alias.name)]
                 if hidden:
                     return f"imports {', '.join(hidden)} from {node.module}"
         elif isinstance(node, ast.Name) and node.id in _UNSAFE_NAMES:
             return f"uses {node.id}"
         elif isinstance(node, ast.Attribute):
-            if _own_dict(node):
+            if _own_dict(node, parents):
                 continue
             path = _attribute_path(node)
             if path[:1] == ("os",):
@@ -112,7 +130,7 @@ def host_replay_problem(source: str) -> str:
                            or (len(path) == 3 and path[:2] == ("os", "path") and path[2] in _SAFE_OS_PATH))
                 if not allowed:
                     return f"uses unsupported os member: {'.'.join(path[1:])}"
-            if node.attr in _UNSAFE_DUNDERS or node.attr in _UNSAFE_MEMBERS or node.attr.startswith(_UNSAFE_PREFIXES):
+            if _unsafe_attribute(node.attr):
                 return f"uses introspection attribute {node.attr}"
         elif isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.Delete)):
             targets = node.targets if isinstance(node, ast.Assign) else ([node.target] if hasattr(node, "target")
@@ -121,7 +139,8 @@ def host_replay_problem(source: str) -> str:
                 return "writes os.environ"
         elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _NAMED_ACCESS
               and not (len(node.args) >= 2 and isinstance(node.args[1], ast.Constant)
-                       and isinstance(node.args[1].value, str) and not node.args[1].value.startswith("__"))):
+                       and isinstance(node.args[1].value, str) and not node.args[1].value.startswith("__")
+                       and not _unsafe_attribute(node.args[1].value))):
             return f"uses {node.func.id} without a literal attribute name"
         elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in _NAMED_ACCESS
               and node.args and _attribute_path(node.args[0])[:1] == ("os",)):

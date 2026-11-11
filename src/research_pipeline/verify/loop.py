@@ -16,7 +16,8 @@ from research_pipeline.models import ESBMCDirectResult
 from ..llm.rate_limit import UsageLimitReached
 from ..scan.callgraph import CallGraph
 from .astutil import undefined_globals
-from .caller_facts import collect_facts, guard_assumptions, render_section, usage_problems
+from .attempts import prepare_spec
+from .caller_facts import collect_facts, render_section
 from .grounding import Grounded, GroundingFailure, ground
 from .external_origin import stubbed_response_origin
 from .hypothesis import VALUE_ORACLE, BugHypothesis
@@ -41,7 +42,7 @@ from .outcome import (
 from .render import DRIVER, Program, RenderError, render_program
 from .rules import ALL_RULES
 from .replay import ReplayVerdict, concrete_replay, counterexample_seeds
-from .spec import InputSpec, ignored_keys, parse_spec, resolved_types, shape_unpacked, spec_problems
+from .spec import InputSpec, ignored_keys, resolved_types, shape_unpacked
 from .string_witness import string_witness
 from .value_oracle import value_outcome
 
@@ -240,21 +241,14 @@ def verify_hypothesis(
         record: dict = {"attempt": attempt, "spec": reply.harness, "feedback_given": feedback}
         result.attempts.append(record)
         previous = reply.harness
-        try:
-            spec = shape_unpacked(parse_spec(reply.harness), grounded)
-            problems = spec_problems(spec, grounded, require_property=value)
-            assumed: tuple[str, ...] = ()
-            if not problems and facts is not None:
-                assumed, contradicted = guard_assumptions(facts, spec, grounded)
-                problems = usage_problems(spec, grounded, facts) + contradicted
-        except ValueError as exc:
-            problems = [str(exc)]
+        spec, problems, assumed = prepare_spec(reply.harness, grounded, facts, require_property=value)
         if problems:
             record["problems"] = problems
             feedback = "The JSON was rejected: " + "; ".join(problems)
             last_problems = problems
             continue
         last_problems = []
+        assert spec is not None  # A successfully parsed specification is required after the rejection branch.
         if assumed:
             # The callers' guards on the arguments, as the harness's assumptions (caller_facts.caller_guards).
             spec = dataclasses.replace(spec, assumptions=(*spec.assumptions, *assumed))

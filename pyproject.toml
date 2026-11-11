@@ -1,0 +1,25 @@
+[tool.ruff]
+target-version = "py311"
+extend-exclude = ["dataset", "archive", "src/research_pipeline/verify/probes"]
+
+[tool.ruff.lint]
+# Correctness checks first; scientific input programs use a different language contract.
+select = ["F", "E9", "B006", "B008"]
+dummy-variable-rgx = "^_$"
+
+[tool.mypy]
+python_version = "3.11"
+follow_imports = "silent"
+ignore_missing_imports = true
+check_untyped_defs = true
+files = [
+  "src/research_pipeline/storage.py",
+  "src/research_pipeline/cli_config.py",
+  "src/research_pipeline/cli_args.py",
+  "src/research_pipeline/verify/confinement.py",
+  "src/research_pipeline/verify/attempts.py",
+  "src/research_pipeline/verify/source_replay.py",
+  "src/research_pipeline/verify/agent_validation.py",
+  "src/research_pipeline/verify/agent_scan.py",
+  "src/research_pipeline/scan/pipeline.py",
+]

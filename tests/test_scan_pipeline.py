@@ -75,6 +75,24 @@ def _fake_verify(calls: list):
     return verify
 
 
+def test_malformed_chat_reply_persists_an_error_and_resume_retries(tmp_path):
+    from research_pipeline.llm.backends.chat_completions import ChatCompletionsAnalyzer
+
+    root = tmp_path / "single"
+    root.mkdir()
+    (root / "f.py").write_text("def f(x):\n    return 1 // x\n")
+    plan = plan_scan(root, tmp_path / "out")
+    analyzer = ChatCompletionsAnalyzer(v2_detection=True)
+    replies = iter(["invalid JSON", '{"findings": []}'])
+    analyzer._post_json = lambda payload: {"choices": [{"message": {"content": next(replies)}}]}
+    first = execute_scan(plan, analyzer=analyzer, spec_llm=None)
+    assert first["detection"]["failed"] == 1
+    saved = json.loads((plan.output_dir / "scan_checkpoint.json").read_text())
+    assert next(iter(saved["detection"].values()))["error"]
+    second = execute_scan(plan, analyzer=analyzer, spec_llm=None, resume=True)
+    assert second["detection"]["failed"] == 0
+
+
 def test_plan_ranks_risky_and_called_functions_first_and_writes_the_selection(tmp_path: Path) -> None:
     out = tmp_path / "out"
     plan = plan_scan(_repo(tmp_path), out)

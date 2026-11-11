@@ -16,9 +16,11 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from .render import DRIVER, Program
+from .source_replay import without_esbmc_imports
 from .replay import _no_network_prefix
 from .sandbox import host_replay_problem, process_limits
 from .spec import parse_type
@@ -96,19 +98,25 @@ def awaited_test(test: str, function: str) -> str:
 def _run_generated_test(test: Path, module: Path, library: str, exception: str) -> dict:
     """Run ESBMC's test against ``library`` (the module without its call); accept it only when it fails
     with ``exception``."""
-    out_dir = test.parent
     problem = host_replay_problem(library)
     if problem:
         return {"status": "not_run", "path": str(test), "reason": f"not executed on host: {problem}"}
     module.write_text(library, encoding="utf-8")
+    worker = Path(__file__).with_name("pytest_worker.py")
     try:
-        done = subprocess.run([*_no_network_prefix(), sys.executable, "-m", "pytest", "-q", "--tb=short",
-                               "-p", "no:cacheprovider", test.name], cwd=out_dir, capture_output=True, text=True, timeout=60, check=False,
-                              env={key: os.environ[key] for key in ("PATH", "HOME") if key in os.environ},
-                              preexec_fn=process_limits(60))
+        with tempfile.TemporaryDirectory(prefix="llm-esbmc-pytest-") as scratch:
+            directory = Path(scratch)
+            (directory / module.name).write_text(library, encoding="utf-8")
+            (directory / test.name).write_text(test.read_text(encoding="utf-8"), encoding="utf-8")
+            done = subprocess.run([*_no_network_prefix(), sys.executable, "-I", str(worker), test.name],
+                                  cwd=directory, capture_output=True, text=True, timeout=60, check=False,
+                                  env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1"},
+                                  preexec_fn=process_limits(60))
     except subprocess.TimeoutExpired:
         return {"status": "invalid", "path": str(test), "reason": "pytest timed out"}
     output = done.stdout + done.stderr
+    if done.returncode == 125:
+        return {"status": "not_run", "path": str(test), "reason": output.strip()[:300]}
     tail = " ".join(output.strip().splitlines()[-2:])[:300]
     if "No module named pytest" in output:
         return {"status": "not_run", "path": str(test), "reason": "pytest is not installed"}
@@ -121,9 +129,7 @@ def _run_generated_test(test: Path, module: Path, library: str, exception: str) 
 
 
 def _cpython_source(nodes: list[ast.stmt]) -> str:
-    from .agent_arm import _without_esbmc_imports  # agent_arm imports this module
-
-    return _without_esbmc_imports(ast.unparse(ast.Module(nodes, [])))
+    return without_esbmc_imports(ast.unparse(ast.Module(nodes, [])))
 
 
 def _driver_call(tree: ast.Module) -> tuple[ast.FunctionDef, ast.Expr, ast.Call] | None:

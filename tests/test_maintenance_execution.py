@@ -271,6 +271,44 @@ def test_real_launcher_exits_without_running_maintenance_for_an_empty_queue(tmp_
     assert not (tmp_path / 'output').exists()
 
 
+def test_launcher_uses_active_interpreter_when_checkout_has_no_venv(tmp_path, monkeypatch):
+    import subprocess
+    from research_pipeline.maintenance.execution import start_automatic_worker
+
+    root = tmp_path / 'checkout'
+    root.mkdir()
+    (root / 'src').symlink_to(Path(__file__).resolve().parents[1] / 'src', target_is_directory=True)
+    spawned = []
+    original = subprocess.Popen
+
+    def capture(*args, **kwargs):
+        process = original(*args, **kwargs)
+        spawned.append(process)
+        return process
+
+    monkeypatch.setattr(subprocess, 'Popen', capture)
+    result = start_automatic_worker(root, tmp_path / 'run', ['esbmc'], tmp_path / 'output')
+    assert result['scheduled'] is True
+    try:
+        assert spawned[0].wait(timeout=5) == 0
+    finally:
+        if spawned[0].poll() is None:
+            spawned[0].kill()
+            spawned[0].wait()
+    assert not (tmp_path / 'output').exists()
+
+
+def test_launcher_rejects_an_unusable_project_interpreter_before_scheduling(tmp_path):
+    from research_pipeline.maintenance.execution import start_automatic_worker
+
+    interpreter = tmp_path / '.venv/bin/python'
+    interpreter.parent.mkdir(parents=True)
+    interpreter.write_text('not executable')
+    result = start_automatic_worker(tmp_path, tmp_path / 'run', ['esbmc'], tmp_path / 'out')
+    assert result['scheduled'] is False
+    assert 'interpreter' in result['reason']
+
+
 def test_replay_refuses_to_start_if_windows_disk_is_nearly_full(tmp_path, monkeypatch):
     import shutil
 

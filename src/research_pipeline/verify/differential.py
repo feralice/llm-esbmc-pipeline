@@ -16,7 +16,7 @@ import tempfile
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from . import agent_arm
+from .source_replay import first_line, without_esbmc_imports, replay_original
 from .astutil import locate
 from .hypothesis import BugHypothesis
 from .preservation import Cosmetic
@@ -99,7 +99,7 @@ class _Frame:
     def of(cls, node: ast.FunctionDef, reference: ast.FunctionDef | None = None, first: int | None = None) -> _Frame:
         """``reference`` is the original target whose statements name the lines; ``first`` the line where
         the function starts in the program, when it was spliced there from another file."""
-        start = agent_arm._first_line(node)
+        start = first_line(node)
         end = node.end_lineno or node.lineno
         own = _statements(node)
         if reference is None:
@@ -145,12 +145,12 @@ class _Sides:
         self.harness, self.original = harness, original
         self.target, self.original_target = target, original_target
         span = (target.lineno, target.end_lineno or target.lineno)
-        self.program = Program(agent_arm._without_esbmc_imports(harness), 0, (span,), (), span)
+        self.program = Program(without_esbmc_imports(harness), 0, (span,), (), span)
         self.harness_frame = _Frame.of(target, original_target)
         self.original_frame = _Frame.of(original_target, first=self.harness_frame.first)
 
     def run_original(self, **kwargs) -> ReplayVerdict:
-        verdict, _ = agent_arm._replay_original(self.harness, self.target, self.original, self.original_target,
+        verdict, _ = replay_original(self.harness, self.target, self.original, self.original_target,
                                                 None, kwargs.pop("seeds", {}), **kwargs)
         return verdict
 
@@ -245,7 +245,7 @@ def _real_level(sides: _Sides, path: Path, function: str, sequences: list[list])
     real_target = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == function)
     worker = Path(__file__).with_name("differential_worker.py")
     config = {"function": function, "module": str(path.resolve()), "sequences": sequences,
-              "range": [agent_arm._first_line(sides.target), sides.target.end_lineno]}
+              "range": [first_line(sides.target), sides.target.end_lineno]}
     try:
         with tempfile.TemporaryDirectory(prefix="llm-esbmc-differential-") as temp_dir:
             directory = Path(temp_dir)

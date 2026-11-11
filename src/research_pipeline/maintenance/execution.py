@@ -8,10 +8,21 @@ import shlex
 import shutil
 import signal
 import subprocess
+import sys
 import time
 from pathlib import Path
+from functools import partial
 
 from .gate import read_junit, recorded_replay
+
+
+def _python(root: Path) -> str:
+    """Use the project environment when present, otherwise the running interpreter."""
+    local = root / '.venv/bin/python'
+    interpreter = local if local.exists() else Path(sys.executable)
+    if not interpreter.is_file() or not os.access(interpreter, os.X_OK):
+        raise OSError(f'Python interpreter is not executable: {interpreter}')
+    return str(interpreter)
 
 
 def _environment(root: Path) -> dict[str, str]:
@@ -50,7 +61,7 @@ def _stop_group(process) -> bool:
 def run_suite(root: Path, output: Path) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     report = output / 'pytest.xml'
-    command = [str(root / '.venv/bin/python'), '-m', 'pytest', 'tests', '-q', '-m', 'not live_llm',
+    command = [_python(root), '-m', 'pytest', 'tests', '-q', '-m', 'not live_llm',
                f'--junitxml={report.resolve()}']
     env = _environment(root)
     env['TMPDIR'] = '/tmp'
@@ -75,7 +86,7 @@ def run_replay(root: Path, reference: Path, output: Path, esbmc_command: list[st
     if windows_disk.is_dir() and shutil.disk_usage(windows_disk).free < 3 * 1024 ** 3:
         return {'complete': False, 'confirmed': None, 'reason': 'espaço insuficiente no disco C'}
     output.mkdir(parents=True, exist_ok=True)
-    command = [str(root / '.venv/bin/python'), str(root / 'scripts/v2_replay_specs.py'), str(reference.resolve()),
+    command = [_python(root), str(root / 'scripts/v2_replay_specs.py'), str(reference.resolve()),
                '--esbmc', shlex.join(esbmc_command), '--timeout', '180', '--sources',
                'dataset/disciplina_pgene601/arquivo_com_bug', '--strict-sources', '--heal', 'none',
                '--out', str(output.resolve())]
@@ -117,7 +128,7 @@ def run_probes(root: Path, output: Path, esbmc_command: list[str]) -> dict:
     env = _environment(root)
     if Path('/mnt/e').is_dir():
         env['TMPDIR'] = '/mnt/e'
-    command = [str(root / '.venv/bin/python'), '-c', program, json.dumps(esbmc_command),
+    command = [_python(root), '-c', program, json.dumps(esbmc_command),
                str(output.resolve())]
     shell_command = ['/bin/bash', '-c', 'ulimit -c 0; exec "$@"', 'maintenance-probes', *command]
     try:
@@ -176,12 +187,34 @@ def prepare_baseline(root: Path, reference: Path, output: Path, esbmc_command: l
             'reference_hash': reference_hash}
 
 
+def _evaluate_candidate(candidate: Path, *, reference: Path, output: Path, esbmc_command: list[str],
+                        baseline: dict, suite_runner, probe_runner, replay_runner) -> dict:
+    from .automatic import _snapshot
+    from .gate import run_gate
+
+    before = _snapshot(candidate)
+    suite = suite_runner(candidate, output / 'depois' / 'suite')
+    probes = probe_runner(candidate, output / 'depois' / 'sondas', esbmc_command)
+    replay = replay_runner(candidate, reference, output / 'depois' / 'replay', esbmc_command)
+    result = run_gate(reference, esbmc_command=esbmc_command, runner=lambda: probes,
+                      replay=lambda path: replay, suite=lambda: suite, baseline_probes=baseline['probes'],
+                      baseline_failures=baseline['suite']['failures'], baseline_passed=baseline['suite']['passed'])
+    import hashlib
+
+    if hashlib.sha256(reference.read_bytes()).hexdigest() != baseline['reference_hash']:
+        result['verdict'] = 'REJEITADA'
+        result['reasons'].append('a referência mudou durante a avaliação')
+    if _snapshot(candidate) != before:
+        result['verdict'] = 'REJEITADA'
+        result['reasons'].append('o candidato mudou durante os testes')
+    return result
+
+
 def process_lesson(root: Path, proposals_root: Path, proposal_id: str, reference: Path, output: Path,
                    esbmc_command: list[str], *, suite_runner=run_suite, probe_runner=run_probes,
                    replay_runner=run_replay) -> dict:
     """Mede base e candidato; aplica a lição apenas depois de todas as comparações."""
     from .automatic import _snapshot
-    from .gate import run_gate
     from .learning import promote_lesson
     from .proposals import list_proposals
 
@@ -198,23 +231,9 @@ def process_lesson(root: Path, proposals_root: Path, proposal_id: str, reference
     if _snapshot(root) != baseline['snapshot']:
         return {'applied': False, 'reason': 'o código mudou depois de medir a base'}
 
-    def evaluate(candidate: Path) -> dict:
-        before = _snapshot(candidate)
-        suite = suite_runner(candidate, output / 'depois' / 'suite')
-        probes = probe_runner(candidate, output / 'depois' / 'sondas', esbmc_command)
-        replay = replay_runner(candidate, reference, output / 'depois' / 'replay', esbmc_command)
-        result = run_gate(reference, esbmc_command=esbmc_command, runner=lambda: probes,
-                          replay=lambda path: replay, suite=lambda: suite, baseline_probes=baseline['probes'],
-                          baseline_failures=baseline['suite']['failures'], baseline_passed=baseline['suite']['passed'])
-        import hashlib
-
-        if hashlib.sha256(reference.read_bytes()).hexdigest() != baseline['reference_hash']:
-            result['verdict'] = 'REJEITADA'
-            result['reasons'].append('a referência mudou durante a avaliação')
-        if _snapshot(candidate) != before:
-            result['verdict'] = 'REJEITADA'
-            result['reasons'].append('o candidato mudou durante os testes')
-        return result
+    evaluate = partial(_evaluate_candidate, reference=reference, output=output, esbmc_command=esbmc_command,
+                       baseline=baseline, suite_runner=suite_runner, probe_runner=probe_runner,
+                       replay_runner=replay_runner)
 
     return promote_lesson(root, proposals_root, proposal_id, scratch=output / 'candidatos', evaluate=evaluate)
 
@@ -224,7 +243,6 @@ def process_code(root: Path, proposals_root: Path, proposal_id: str, reference: 
                  replay_runner=run_replay) -> dict:
     """Aplica um patch de código só após medir a base e testar a cópia alterada."""
     from .automatic import _snapshot, apply_proposal
-    from .gate import run_gate
     from .proposals import accept_by_gate, list_proposals
 
     entries = [p for p in list_proposals(proposals_root) if p['id'] == proposal_id]
@@ -240,23 +258,9 @@ def process_code(root: Path, proposals_root: Path, proposal_id: str, reference: 
     if _snapshot(root) != baseline['snapshot']:
         return {'applied': False, 'reason': 'o código mudou depois de medir a base'}
 
-    def evaluate(candidate: Path) -> dict:
-        before = _snapshot(candidate)
-        suite = suite_runner(candidate, output / 'depois' / 'suite')
-        probes = probe_runner(candidate, output / 'depois' / 'sondas', esbmc_command)
-        replay = replay_runner(candidate, reference, output / 'depois' / 'replay', esbmc_command)
-        result = run_gate(reference, esbmc_command=esbmc_command, runner=lambda: probes,
-                          replay=lambda path: replay, suite=lambda: suite, baseline_probes=baseline['probes'],
-                          baseline_failures=baseline['suite']['failures'], baseline_passed=baseline['suite']['passed'])
-        import hashlib
-
-        if hashlib.sha256(reference.read_bytes()).hexdigest() != baseline['reference_hash']:
-            result['verdict'] = 'REJEITADA'
-            result['reasons'].append('a referência mudou durante a avaliação')
-        if _snapshot(candidate) != before:
-            result['verdict'] = 'REJEITADA'
-            result['reasons'].append('o candidato mudou durante os testes')
-        return result
+    evaluate = partial(_evaluate_candidate, reference=reference, output=output, esbmc_command=esbmc_command,
+                       baseline=baseline, suite_runner=suite_runner, probe_runner=probe_runner,
+                       replay_runner=replay_runner)
 
     result = apply_proposal(root, patch.encode('utf-8'), scratch=output / 'candidatos', evaluate=evaluate)
     if result['applied']:
@@ -271,12 +275,16 @@ def start_automatic_worker(root: Path, run_dir: Path, esbmc_command: list[str], 
 
     if not esbmc_command:
         return {'scheduled': False, 'reason': 'comando ESBMC ausente'}
+    try:
+        interpreter = _python(root)
+    except OSError as exc:
+        return {'scheduled': False, 'reason': str(exc)}
     log_path = output / f'auto_{uuid.uuid4().hex}.log'
     program = ('import json,sys; from pathlib import Path; '
                'from research_pipeline.maintenance.execution import _launch_automatic_worker; '
                'root,run,command,output,log=json.loads(sys.argv[1]); '
                '_launch_automatic_worker(Path(root),Path(run),command,Path(output),log_path=Path(log))')
-    command = [str(root / '.venv/bin/python'), '-c', program,
+    command = [interpreter, '-c', program,
                json.dumps([str(root), str(run_dir), esbmc_command, str(output), str(log_path)])]
     shell_command = ['/bin/bash', '-c', 'ulimit -c 0; exec "$@"', 'maintenance-launcher', *command]
     process = subprocess.Popen(shell_command, cwd=root, env=_environment(root), stdin=subprocess.DEVNULL,
@@ -301,7 +309,7 @@ def _launch_automatic_worker(root: Path, run_dir: Path, esbmc_command: list[str]
         fd, log_path = tempfile.mkstemp(prefix='auto_', suffix='.log', dir=output)
     else:
         fd = os.open(log_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    command = [str(root / '.venv/bin/python'), str(root / 'scripts/maintenance.py'), '--output-dir', str(output),
+    command = [_python(root), str(root / 'scripts/maintenance.py'), '--output-dir', str(output),
                '--esbmc', esbmc_command[0], *(f'--esbmc-arg={flag}' for flag in esbmc_command[1:]),
                'auto', str(queue)]
     shell_command = ['/bin/bash', '-c', 'ulimit -c 0; exec "$@"', 'maintenance-worker', *command]

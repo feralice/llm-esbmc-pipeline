@@ -14,9 +14,16 @@ import sys
 import time
 import traceback
 import types
+from pathlib import Path
 from types import MappingProxyType
 import genericpath
 import posixpath
+
+if __package__:
+    from .confinement import IsolationUnavailable, confine_writes
+else:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from confinement import IsolationUnavailable, confine_writes
 
 DOMAINS = {
     int: [0, 1, -1, 2],
@@ -268,6 +275,12 @@ def _fixed(code, inputs, target):
 
 
 def main(program_path, config_path, output_path):
+    try:
+        confine_writes(Path(output_path).resolve().parent)
+    except IsolationUnavailable as exc:
+        with open(output_path, "w", encoding="utf-8") as handle:
+            json.dump({"status": "unavailable", "reason": f"worker isolation unavailable: {exc}", "runs": 0}, handle)
+        return
     with open(program_path, encoding="utf-8") as handle:
         # Annotations stay unevaluated: ESBMC models types (e.g. uint64) CPython does not define.
         code = compile(handle.read(), "<program>", "exec", flags=__future__.annotations.compiler_flag)

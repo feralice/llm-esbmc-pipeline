@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import os
 import re
@@ -10,6 +10,7 @@ from hashlib import sha256
 from pathlib import Path
 
 from ..models import ESBMCDirectResult
+from ..verify.procs import run_command
 
 # ESBMC master build with Bitwuzla (~/esbmc-master/build-bw) behind a wrapper adding --no-pointer-check
 # --no-align-check, the flags of every run since phase 13; without them 8.6 times out on small list
@@ -78,13 +79,7 @@ def run_esbmc_direct(
 
     start = time.monotonic()
     try:
-        completed = subprocess.run(
-            command,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-        )
+        completed = run_command(command, timeout=timeout_seconds)
         elapsed = time.monotonic() - start
     except subprocess.TimeoutExpired as exc:
         partial_stdout = _timeout_text(exc.stdout)

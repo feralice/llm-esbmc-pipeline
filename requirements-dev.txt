@@ -1,0 +1,5 @@
+# Development tools; Python >= 3.11. Runtime requirements remain in requirements.txt.
+-r requirements.txt
+pytest==9.0.3
+ruff==0.16.5
+mypy==2.1.0

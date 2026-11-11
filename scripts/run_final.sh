@@ -29,18 +29,18 @@ fi
 if [[ ! -f $OUT/control/report_0of1.json ]]; then
   step "2/5 control on the fixed versions (saved specs, no LLM)"
   "$PY" scripts/v2_replay_specs.py "$OUT/v2_verify_report.json" --esbmc "${LLM_ESBMC:-$HOME/esbmc-master/esbmc.sh}" --timeout 180 \
-    --sources dataset/bugs_reais/arquivo_corrigido --strict-sources --out "$OUT/control" >> "$OUT/run.log" 2>&1
+    --sources dataset/bugs_reais/arquivo_corrigido --strict-sources --out "$OUT/control" >> "$OUT/run.log" 2>&1 || { step "2/5 failed"; exit 1; }
 fi
 
 step "3/5 orchestrator on the control ($ARMS without agents)"
 "$PY" scripts/v2_orchestrate.py "$OUT/control/report_0of1.json" --arms dynamic,pinned \
-  --verification-sources dataset/bugs_reais/arquivo_corrigido --out "$OUT/orq-control" >> "$OUT/run.log" 2>&1
+  --verification-sources dataset/bugs_reais/arquivo_corrigido --out "$OUT/orq-control" >> "$OUT/run.log" 2>&1 || { step "3/5 failed"; exit 1; }
 
 step "4/5 orchestrator ($ARMS)"
 "$PY" scripts/v2_orchestrate.py "$OUT/v2_verify_report.json" --arms "$ARMS" \
-  --agent-model claude-sonnet-5-5 --control "$OUT/orq-control/orchestrated.json" --out "$OUT/orq" >> "$OUT/run.log" 2>&1
+  --agent-model claude-sonnet-5-5 --control "$OUT/orq-control/orchestrated.json" --out "$OUT/orq" >> "$OUT/run.log" 2>&1 || { step "4/5 failed"; exit 1; }
 
 step "5/5 validation"
-"$PY" scripts/v2_validate.py "$OUT" --control "$OUT/control/report_0of1.json" --mutants >> "$OUT/run.log" 2>&1
+"$PY" scripts/v2_validate.py "$OUT" --control "$OUT/control/report_0of1.json" --mutants >> "$OUT/run.log" 2>&1 || { step "5/5 failed"; exit 1; }
 
 step "done"

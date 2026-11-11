@@ -55,8 +55,8 @@ class _UnitCollector(ast.NodeVisitor):
         self.generic_visit(node)
         self.scope.pop()
 
-    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """Create a CodeUnit for a regular function, unless it is skipped."""
+    def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        """Create a CodeUnit for a sync or async function, unless it is skipped."""
         if self._should_skip(node.name):
             return
         self.units.append(self._build_unit(node))
@@ -64,14 +64,7 @@ class _UnitCollector(ast.NodeVisitor):
         self.generic_visit(node)
         self.scope.pop()
 
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
-        """Create a CodeUnit for an async function, unless it is skipped."""
-        if self._should_skip(node.name):
-            return
-        self.units.append(self._build_unit(node))
-        self.scope.append(node.name)
-        self.generic_visit(node)
-        self.scope.pop()
+    visit_AsyncFunctionDef = visit_FunctionDef
 
     def _should_skip(self, name: str) -> bool:
         """Return True for helper functions that should not be analyzed."""
@@ -137,7 +130,7 @@ class _StructureExtractor(ast.NodeVisitor):
         self.source_text = "\n".join(source_lines)
         self._entered = False
 
-    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+    def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
         """Visit this function's body once; a nested `def` is its own CodeUnit."""
         if self._entered:
             return

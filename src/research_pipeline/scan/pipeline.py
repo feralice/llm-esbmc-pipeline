@@ -14,11 +14,13 @@ from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TypedDict
 
 from ..llm.prompts import build_user_prompt, load_system_prompt
 from ..llm.pricing import total_cost
 from ..llm.rate_limit import UsageLimitReached
 from ..models import CodeUnit
+from ..storage import write_json_atomic as _write_json
 from ..preprocess import preprocess_file
 from ..smells.filter import SmellCandidate, filter_candidates, ruff_candidates
 from ..verify.agent_arm import REPRODUCED_CPYTHON
@@ -48,7 +50,7 @@ from .graph_metrics import (
     pagerank,
 )
 
-# A5 (the benchmark's detection prompt) plus the repository call sites.
+# Detection variants A1/A2 with repository call sites (A12).
 DEFAULT_VARIANTS = ("A1", "A2", "A12")
 # Detection replies are a short JSON list; this is a generous ceiling, not a measurement.
 OUTPUT_TOKENS_PER_CALL = 1_500
@@ -56,6 +58,19 @@ CHARS_PER_TOKEN = 4
 _RISKY_KINDS = {"division", "subscript"}
 # Code a repository ships for reading, not running: scanning it spends calls on tutorials. Matched ignoring case.
 NON_PRODUCT_DIRS = frozenset({"examples", "example", "samples", "sample", "docs", "doc"})
+
+
+class DetectionState(TypedDict):
+    error: str
+    candidates: list[dict[str, str]]
+    held: list[dict[str, str]]
+
+
+class ScanCheckpoint(TypedDict):
+    detection_fingerprint: str
+    verify_fingerprint: str
+    detection: dict[str, DetectionState]
+    verify_results: dict[str, dict]
 
 
 @dataclass
@@ -275,11 +290,11 @@ def _verify_fingerprint(verifier: str = "engine", verify_config: dict | None = N
     return _hash({"verifier": verifier, "verify_config": _plain_config(verify_config or {}), "spec_model": spec_model})
 
 
-def _resume(checkpoint_path: Path, detection: str, verify: str) -> dict:
+def _resume(checkpoint_path: Path, detection: str, verify: str) -> ScanCheckpoint:
     """The saved detection is kept only for the same selection, prompts and model. Verify results are kept only
     for the same verify settings; otherwise verify starts again from scratch (never mixed with the old verdicts),
     and the old ones are moved to a file of their own."""
-    saved = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+    saved: ScanCheckpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
     if saved.get("detection_fingerprint") != detection:
         raise ValueError("cannot resume: repository selection, prompts or detection model changed "
                          "(or the checkpoint predates the split fingerprint)")
@@ -290,11 +305,12 @@ def _resume(checkpoint_path: Path, detection: str, verify: str) -> dict:
             _write_json(moved, {"verify_fingerprint": old, "verify_results": saved["verify_results"]})
             print(f"As configurações da verificação mudaram: a detecção salva é reaproveitada e a verificação "
                   f"recomeça do zero. Os {len(saved['verify_results'])} veredito(s) antigos foram para {moved}.")
-        saved.update(verify_fingerprint=verify, verify_results={})
+        saved["verify_fingerprint"] = verify
+        saved["verify_results"] = {}
     return saved
 
 
-def _detect(analyzer, target: Target) -> dict:
+def _detect(analyzer, target: Target) -> DetectionState:
     try:
         findings = analyzer.analyze(target.unit)
     except UsageLimitReached:
@@ -323,7 +339,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     # A verifier names itself (agent_verifier does), so a resume never mixes the engine's verdicts with the agent's.
     spec_model = f"{getattr(spec_llm, 'backend', '')}:{getattr(spec_llm, 'model', '')}"
     verify_fp = _verify_fingerprint(getattr(verify, "label", "engine"), verify_kwargs, spec_model)
-    checkpoint = {"detection_fingerprint": detection, "verify_fingerprint": verify_fp, "detection": {},
+    checkpoint: ScanCheckpoint = {"detection_fingerprint": detection, "verify_fingerprint": verify_fp, "detection": {},
                   "verify_results": {}}
     if resume and checkpoint_path.exists():
         checkpoint = _resume(checkpoint_path, detection, verify_fp)
@@ -446,10 +462,6 @@ def summary_markdown(report: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _write_json(path: Path, payload: object) -> None:
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    tmp.replace(path)
 
 
 _ENVY_PROMPT = Path(__file__).resolve().parents[1] / "prompts" / "smell_feature_envy.txt"

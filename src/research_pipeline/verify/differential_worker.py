@@ -12,10 +12,12 @@ import json
 import os
 import signal
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from replay_worker import RUN_SECONDS, _Discard, _FixedChooser, _intrinsics, _timeout
+from confinement import IsolationUnavailable, confine_writes
 
 SCALARS = (int, float, bool, str)
 
@@ -88,6 +90,12 @@ def _load(path, function):
 
 
 def main(program_path, config_path, output_path):
+    try:
+        confine_writes(Path(output_path).resolve().parent)
+    except IsolationUnavailable as exc:
+        with open(output_path, "w", encoding="utf-8") as handle:
+            json.dump({"import_error": f"worker isolation unavailable: {exc}"}, handle)
+        return
     with open(program_path, encoding="utf-8") as handle:
         code = compile(handle.read(), "<program>", "exec", flags=__future__.annotations.compiler_flag)
     with open(config_path, encoding="utf-8") as handle:

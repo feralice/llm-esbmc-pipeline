@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Protocol, cast
 
 from ..llm.rate_limit import UsageLimitReached
 from .agent_arm import AGENT_FAILED, RunAgent, run_agent_arm
@@ -15,6 +16,13 @@ from .outcome import PIPELINE_ERROR
 
 # run_agent_arm's reason when the session did not finish; a TimeoutExpired is the case's own result.
 _UNFINISHED = "agent did not finish: "
+
+
+class AgentVerifier(Protocol):
+    label: str
+
+    def __call__(self, hypotheses: list[BugHypothesis], *, llm, output_dir: Path,
+                 completed: dict[int, dict], on_result: Callable[[int, dict], None], **kwargs) -> list[dict]: ...
 
 
 def learn_from_rounds(case_dir: Path, data: dict, run_dir: Path) -> int:
@@ -30,7 +38,7 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
                    agent_timeout: int, graph_tool: bool = False, retry: bool = True,
                    model: str | None = None, auto_lessons: bool = False, project_skills: bool = True,
                    skill: bool = True, backend: str = "claude",
-                   documentation_root: Path | None = None) -> Callable[..., list[dict]]:
+                   documentation_root: Path | None = None) -> AgentVerifier:
     """``auto_lessons`` queues candidate repairs without changing the active notebook."""
     docs = documentation_snapshot(documentation_root) if documentation_root is not None else None
     def verify(hypotheses: list[BugHypothesis], *, llm, output_dir: Path, completed: dict[int, dict],
@@ -47,7 +55,8 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
                                      log_rounds=project_skills,
                                      absolute_logger=backend == "codex", retry=retry, graph_tool=graph_tool,
                                      documentation=(relevant_documentation(docs, documentation_root, Path(h.file),
-                                                                           h.function) if docs else ""))
+                                                                           h.function)
+                                                    if docs is not None and documentation_root is not None else ""))
                 if "skills" in data:
                     data["notebook_version"] = data["skills"].get("reparos-aprendidos", "")
             except UsageLimitReached:
@@ -67,9 +76,10 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
             results.append(data)
         return results
     backend_label = "" if backend == "claude" else f"{backend}:"
-    verify.label = f"agent:{backend_label}{model or 'default'}:graph_tool={graph_tool}:retry={retry}:timeout={agent_timeout}"
+    configured = cast(AgentVerifier, verify)  # Python functions carry attributes; the protocol describes that API.
+    configured.label = f"agent:{backend_label}{model or 'default'}:graph_tool={graph_tool}:retry={retry}:timeout={agent_timeout}"
     if docs is not None:
-        verify.label += f":docs-v1={docs.digest}"
+        configured.label += f":docs-v1={docs.digest}"
     if auto_lessons:  # off keeps the label of runs made before 05/11, which read a fixed notebook
-        verify.label += ":lesson-quarantine-v1:auto_lessons"
-    return verify
+        configured.label += ":lesson-quarantine-v1:auto_lessons"
+    return configured

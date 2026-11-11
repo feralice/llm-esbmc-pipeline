@@ -81,7 +81,7 @@ foi removido. Os resultados continuam em `reports/json/v1_benchmark/` e `logs/`,
 | Backend | Onde roda | Precisa de |
 |---|---|---|
 | `openai` | API OpenAI | `OPENAI_API_KEY` |
-| `anthropic` | API Anthropic (só `--backend`; não existe em `--synth-backend`) | `ANTHROPIC_API_KEY` |
+| `anthropic` | API Anthropic: disponível em `--synth-backend`; a detecção hybrid/benchmark não aceita esse backend | `ANTHROPIC_API_KEY` |
 | `google` | API Gemini | `GEMINI_API_KEY` |
 | `ollama` | Ollama local | `--ollama-base-url` (padrão `http://localhost:11434/v1`) |
 | `codex` | `codex exec` local | assinatura Codex já paga, sem token de API |

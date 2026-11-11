@@ -164,7 +164,7 @@ O mapa de todas as pastas de `dataset/` (inclusive `code_smell/`, `harness_bugs_
 
 ## Instalação
 
-**Python 3.9+** (usa `ast.unparse()`).
+**Python 3.11+**, compatível com a versão declarada de NetworkX.
 
 ```bash
 git clone <repo>
@@ -174,16 +174,27 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`requirements.txt` só traz `python-dotenv` e `pytest`: o resto do pipeline usa
-biblioteca padrão do Python (nenhum SDK de LLM é dependência, as chamadas vão
-por `urllib` puro).
+`requirements.txt` declara `python-dotenv`, `pytest` e `networkx`. Nenhum SDK de
+LLM é obrigatório: as chamadas HTTP usam `urllib`. Para desenvolvimento, instale
+`pip install -r requirements-dev.txt`; esse arquivo fixa também Ruff e Mypy.
+`make check` executa lint, tipagem incremental e testes offline. O Mypy cobre os
+módulos listados em `pyproject.toml`, não todo o legado.
 
-**Requisito externo:** ESBMC 8.5.0. A V2 usa o binário oficial em `/usr/local/bin/esbmc` quando ele
-existe (um build de desenvolvimento no PATH não é usado sem `--esbmc-command`).
+**Requisito externo:** uma instalação compatível do ESBMC-Python. O padrão atual
+é `~/esbmc-master/esbmc.sh`, substituído por `LLM_ESBMC` ou `--esbmc-command`.
+Registre a versão e as flags da instalação usada em cada rodada; resultados
+históricos devem ser reproduzidos com o ambiente correspondente.
 
 ```bash
-/usr/local/bin/esbmc --version   # verificar instalação
+"${LLM_ESBMC:-$HOME/esbmc-master/esbmc.sh}" --version
 ```
+
+Os workers CPython exigem Linux x86_64/aarch64 com Landlock ABI 3 ou posterior e
+`libseccomp.so.2`. Eles restringem escrita ao temporário, além de `/dev/null`, e
+bloqueiam alterações de metadados, novos processos e conexões externas. Se o host
+não oferece essa contenção, o replay é registrado como indisponível. Leitura de
+arquivos permanece disponível para carregar módulos e dependências; isso não é
+uma máquina virtual. Consulte o [guia de manutenção](docs/projeto/manutencao.md).
 
 Para modelos locais, instale o [Ollama](https://ollama.ai) e baixe os modelos:
 

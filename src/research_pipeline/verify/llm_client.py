@@ -8,7 +8,11 @@ import re
 import subprocess
 import tempfile
 import time
+import signal
+import threading
+from contextlib import contextmanager
 from dataclasses import dataclass, field
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
 from urllib import error, request
@@ -18,6 +22,53 @@ from ..llm.rate_limit import UsageLimitReached, call_failure, is_daily_quota_exh
 from ..llm.telemetry import response_event
 
 _FENCE = re.compile(r"```(?:python|json)?\s*\n(.*?)```", re.DOTALL)
+_CALL_DEADLINE: ContextVar[float | None] = ContextVar("llm_call_deadline", default=None)
+
+
+@contextmanager
+def _hard_timeout(seconds: float | None):
+    """Interrupt response reads too; socket inactivity timeouts alone are insufficient."""
+    if seconds is None:
+        yield
+        return
+    if seconds <= 0:
+        raise TimeoutError("LLM call deadline exceeded")
+    if not hasattr(signal, "setitimer") or threading.current_thread() is not threading.main_thread():
+        raise RuntimeError("A total LLM deadline requires the POSIX main thread")
+    if signal.getitimer(signal.ITIMER_REAL)[0]:
+        raise RuntimeError("Cannot replace an active process timer for an LLM deadline")
+    previous = signal.getsignal(signal.SIGALRM)
+
+    def expired(signum, frame):
+        raise TimeoutError("LLM call deadline exceeded")
+
+    signal.signal(signal.SIGALRM, expired)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous)
+
+
+def _call_timeout(limit: float) -> float:
+    deadline = _CALL_DEADLINE.get()
+    if deadline is None:
+        return limit
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError("LLM call deadline exceeded")
+    return min(limit, remaining)
+
+
+def _pause(seconds: float) -> None:
+    deadline = _CALL_DEADLINE.get()
+    if deadline is not None:
+        remaining = deadline - time.monotonic()
+        if remaining <= seconds:
+            time.sleep(max(0, remaining))
+            raise TimeoutError("LLM call deadline exceeded during retry delay")
+    time.sleep(seconds)
 
 
 _MAX_UNTRUSTED_CHARS = 32_000
@@ -54,7 +105,7 @@ class SynthResult:
 
 
 class LLMClient:
-    """OpenAI-backed harness synthesizer (Responses API, plain-text output).
+    """Text/JSON synthesis client for the configured API or CLI backend.
 
     Kept separate from research_pipeline.llm.backends.* because those analyzers
     are hard-wired to the findings JSON schema; synthesis needs free-form text.
@@ -101,7 +152,18 @@ class LLMClient:
             self.api_key = "ollama"
         self.telemetry_events: list[dict] = []
 
-    def complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False) -> SynthResult:
+    def complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False,
+                 timeout_seconds: float | None = None) -> SynthResult:
+        """Optionally bound the entire call, including retries and their delays."""
+        deadline = None if timeout_seconds is None else time.monotonic() + timeout_seconds
+        token = _CALL_DEADLINE.set(deadline)
+        try:
+            with _hard_timeout(timeout_seconds):
+                return self._complete(system_prompt, user_prompt, json_mode=json_mode)
+        finally:
+            _CALL_DEADLINE.reset(token)
+
+    def _complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False) -> SynthResult:
         """One call to the configured backend; the fence-stripped text lands in ``harness``."""
         payload: dict[str, Any] = {}
         if self.backend == "openai":
@@ -185,7 +247,7 @@ class LLMClient:
                     check=False,
                     capture_output=True,
                     text=True,
-                    timeout=self.timeout_seconds,
+                    timeout=_call_timeout(self.timeout_seconds),
                     stdin=subprocess.DEVNULL,
                 )
             except subprocess.TimeoutExpired as exc:
@@ -261,7 +323,7 @@ class LLMClient:
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=self.timeout_seconds,
+                timeout=_call_timeout(self.timeout_seconds),
                 stdin=subprocess.DEVNULL,
                 env=env,
             )
@@ -301,13 +363,13 @@ class LLMClient:
         for attempt in range(_retries):
             try:
                 with request.urlopen(request.Request(self._ANTHROPIC_URL, data=body, headers=headers, method="POST"),
-                                     timeout=self.timeout_seconds) as response:
+                                     timeout=_call_timeout(self.timeout_seconds)) as response:
                     data = json.loads(response.read().decode("utf-8"))
                 break
             except error.HTTPError as exc:
                 details = exc.read().decode("utf-8", errors="replace")
                 if exc.code in (429, 500, 502, 503, 504, 529) and attempt < _retries - 1:
-                    time.sleep(30 if exc.code == 429 else 2 ** (attempt + 2))
+                    _pause(30 if exc.code == 429 else 2 ** (attempt + 2))
                     continue
                 message = f"Falha ao chamar Anthropic Messages API: {exc.code} {details}"
                 # Still rate-limited or overloaded after the retries: the next hypotheses would fail the same way.
@@ -316,7 +378,7 @@ class LLMClient:
                 raise call_failure(message, details) from exc
             except (error.URLError, TimeoutError) as exc:
                 if attempt < _retries - 1:
-                    time.sleep(2 ** attempt)
+                    _pause(2 ** attempt)
                     continue
                 raise RuntimeError(f"Falha de rede ao chamar Anthropic Messages API: {exc}") from exc
         if data.get("stop_reason") == "max_tokens":
@@ -326,7 +388,7 @@ class LLMClient:
 
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         if self.request_delay > 0:
-            time.sleep(self.request_delay)
+            _pause(self.request_delay)
         body = json.dumps(payload).encode("utf-8")
         for attempt in range(_retries):
             req = request.Request(
@@ -339,7 +401,7 @@ class LLMClient:
                 method="POST",
             )
             try:
-                with request.urlopen(req, timeout=self.timeout_seconds) as response:
+                with request.urlopen(req, timeout=_call_timeout(self.timeout_seconds)) as response:
                     return json.loads(response.read().decode("utf-8"))
             except error.HTTPError as exc:
                 details = exc.read().decode("utf-8", errors="replace")
@@ -347,17 +409,17 @@ class LLMClient:
                     raise UsageLimitReached(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}") from exc
                 if exc.code in (429, 500, 502, 503, 504) and attempt < _retries - 1:
                     sleep_time = 45 if exc.code == 429 else 2 ** (attempt + 2)
-                    time.sleep(sleep_time)
+                    _pause(sleep_time)
                     continue
                 raise call_failure(f"Falha ao chamar OpenAI Responses API: {exc.code} {details}", details) from exc
             except error.URLError as exc:
                 if attempt < _retries - 1:
-                    time.sleep(2 ** attempt)
+                    _pause(2 ** attempt)
                     continue
                 raise RuntimeError(f"Falha de rede ao chamar OpenAI Responses API: {exc.reason}") from exc
             except TimeoutError as exc:
                 if attempt < _retries - 1:
-                    time.sleep(2 ** attempt)
+                    _pause(2 ** attempt)
                     continue
                 raise RuntimeError("Timeout ao chamar OpenAI Responses API.") from exc
         raise RuntimeError("OpenAI API falhou após todas as tentativas de retry.")
