@@ -197,3 +197,10 @@ def test_legacy_errors_are_classified_from_their_message() -> None:
     ]
     (group,) = summarize(rows)
     assert (group["usage_limit"], group["timeout"]) == (1, 1)
+
+
+def test_legacy_api_rows_keep_their_stored_cost() -> None:
+    (group,) = summarize([{"provider": "anthropic", "requested_model": "claude-sonnet-5-5", "stage": "synthesis",
+                           "status": "success", "prompt_tokens": 10, "completion_tokens": 4, "cost_usd": 0.0045}])
+    assert group["costed"] == 1
+    assert group["cost_usd"] == 0.0045

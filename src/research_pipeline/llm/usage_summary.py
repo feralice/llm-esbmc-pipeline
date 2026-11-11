@@ -9,6 +9,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from .pricing import SUBSCRIPTION_PROVIDERS
 from .rate_limit import is_usage_limit
 
 
@@ -46,8 +47,9 @@ def summarize(rows: list[dict]) -> list[dict]:
         group["cache_creation_tokens"] += row.get("cache_creation_tokens") or 0
         # Rows written before cost_source existed stored 0.0 for subscription calls: unknown, not zero.
         legacy = "cost_source" not in row
+        unknown_subscription = legacy and row.get("provider") in SUBSCRIPTION_PROVIDERS
         group["legacy"] += legacy
-        cost = None if legacy else row.get("cost_usd")
+        cost = None if unknown_subscription else row.get("cost_usd")
         if isinstance(cost, (int, float)):
             group["cost_usd"] += cost
             group["costed"] += 1

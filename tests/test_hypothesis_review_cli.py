@@ -84,3 +84,32 @@ def test_threshold_must_be_between_0_and_10(tmp_path: Path) -> None:
 
     with pytest.raises(SystemExit):
         main.build_parser().parse_args(["--review-threshold", "11"])
+
+
+class _ReviewerThatHitsTheLimit(_Reviewer):
+    def __init__(self):
+        self.telemetry_events = []
+
+    def complete(self, system_prompt, user_prompt, *, json_mode=False):
+        if type(self).calls >= 1:
+            from research_pipeline.llm.rate_limit import UsageLimitReached
+            raise UsageLimitReached("You've hit your 5-hour limit")
+        self.telemetry_events.append({"provider": "claude_cli", "requested_model": "sonnet", "status": "success",
+                                      "prompt_tokens": 5, "completion_tokens": 9, "cost_usd": 0.01,
+                                      "cost_source": "cli_reported", "billed_usd": None})
+        return super().complete(system_prompt, user_prompt, json_mode=json_mode)
+
+
+def test_calls_made_before_the_usage_limit_stay_in_the_telemetry(tmp_path: Path, monkeypatch) -> None:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y + x+1 + y - 1\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: _ThreeFindings())
+    monkeypatch.setattr(main, "LLMClient", lambda **kwargs: _ReviewerThatHitsTheLimit())
+    out = tmp_path / "out"
+    argv = ["--mode", "hybrid", "--v2-stage", "detection", "--input", str(source), "--output-dir", str(out),
+            "--review-threshold", "5"]
+    assert main.mode_v2(main.build_parser().parse_args(argv)) == main.USAGE_LIMIT_EXIT
+    events = json.loads((out / "llm_telemetry.json").read_text())
+    assert [e["stage"] for e in events] == ["synthesis"]
+    assert events[0]["cost_usd"] == 0.01

@@ -868,6 +868,9 @@ def mode_v2(args: argparse.Namespace) -> int:
             candidates, review_report = _apply_review(
                 candidates, unit_sources, synthesizer, checkpoint, checkpoint_path, args.review_threshold)
         except UsageLimitReached as exc:
+            capture_telemetry()
+            _save_checkpoint(checkpoint_path, checkpoint)
+            _write_json_atomic(output_path / "llm_telemetry.json", checkpoint["telemetry_events"])
             print(_usage_limit_message(exc, checkpoint_path), file=sys.stderr)
             return USAGE_LIMIT_EXIT
         print(f"Revisão (corte {args.review_threshold}): {len(review_report['review_dropped'])} hipótese(s) "
