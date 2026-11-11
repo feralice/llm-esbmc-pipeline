@@ -276,8 +276,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-auto-lessons",
         dest="auto_lessons",
         action="store_false",
-        help="Motor verify e agente do scan: mantém o caderno de reparos fixo. Por padrão (decisão de 05/11), todo "
-             "reparo que fez o ESBMC chegar a um veredito entra no caderno na hora, e os casos seguintes o leem.",
+        help="Motor verify e agente do scan: desliga a coleta automática de candidatos de lição em quarentena.",
     )
     parser.add_argument(
         "--spec-context",
@@ -740,6 +739,7 @@ def _mode_v2_verify(
         checkpoint["interruption_reason"] = "usage_limit" if limit else "keyboard_interrupt"
         capture_telemetry()
         _write_json_atomic(checkpoint_path, checkpoint)
+        _schedule_automatic_maintenance(args, output_path)
         if limit:
             print(_usage_limit_message(exc, checkpoint_path), file=sys.stderr)
             return USAGE_LIMIT_EXIT
@@ -773,7 +773,23 @@ def _mode_v2_verify(
           f"{levels['confirmed']} confirmado(s); só LLM por motivo: "
           f"{ {k: v for k, v in levels['llm_only_by_limit'].items() if v} }")
     print(f"Relatório JSON: {report_path}")
+    _schedule_automatic_maintenance(args, output_path)
     return 0
+
+
+def _schedule_automatic_maintenance(args: argparse.Namespace, run_dir: Path) -> None:
+    """Inicia o processador de propostas sem bloquear a rodada de análise."""
+    if not args.auto_lessons:
+        return
+    from research_pipeline.maintenance.execution import start_automatic_worker
+
+    try:
+        result = start_automatic_worker(REPO_ROOT, Path(run_dir), args.esbmc_command or ["esbmc"],
+                                        Path("/mnt/e/manutencao_automatica"))
+        if result.get("scheduled") or result.get("started"):
+            print(f"Avaliação automática das lições agendada; log previsto se houver propostas: {result['log']}")
+    except (OSError, ValueError) as exc:
+        print(f"Não foi possível iniciar avaliação automática: {exc}", file=sys.stderr)
 
 
 def _build_synthesizer(args: argparse.Namespace, synth_backend: str, synth_model: str,
@@ -842,11 +858,16 @@ def mode_scan(args: argparse.Namespace) -> int:
         if not shutil.which(esbmc[0]):
             print(f"Erro: o ESBMC do agente não existe ou não é executável: {esbmc[0]}", file=sys.stderr)
             return 1
-        agent, _ = make_agent("claude", model=args.agent_model, esbmc=esbmc[0], bound=args.bound, log_rounds=True,
-                              graph_tool=True)
+        has_tools = args.agent_backend in {"claude", "codex"}
+        agent, skill = make_agent(args.agent_backend, model=args.agent_model, esbmc=esbmc[0], bound=args.bound,
+                                  log_rounds=has_tools, graph_tool=has_tools,
+                                  base_url=args.ollama_base_url if args.agent_backend == "ollama" else None)
         verifier["verify"] = agent_verifier(agent, esbmc_command=esbmc, bound=args.bound,
                                             timeout_seconds=args.timeout, agent_timeout=args.agent_timeout,
-                                            graph_tool=True, model=args.agent_model,
+                                            graph_tool=has_tools, model=args.agent_model,
+                                            project_skills=has_tools, skill=skill,
+                                            backend=args.agent_backend,
+                                            documentation_root=plan.root,
                                             auto_lessons=args.auto_lessons)
     else:
         # The agent writes its own harness and ignores the rewrite rules: only the engine is probed.
@@ -871,8 +892,10 @@ def mode_scan(args: argparse.Namespace) -> int:
         print(f"Erro: {exc}", file=sys.stderr)
         return 1
     except UsageLimitReached as exc:
+        _schedule_automatic_maintenance(args, plan.output_dir)
         print(_usage_limit_message(exc, plan.output_dir / "scan_checkpoint.json"), file=sys.stderr)
         return USAGE_LIMIT_EXIT
+    _schedule_automatic_maintenance(args, plan.output_dir)
     return 2 if report["detection"]["failed"] else 0
 
 
@@ -972,6 +995,7 @@ def mode_v2(args: argparse.Namespace) -> int:
     if args.auto_lessons:
         # Only when on, so a --no-auto-lessons run keeps the fingerprint of runs that read a fixed notebook.
         config["auto_lessons"] = True
+        config["lesson_storage"] = "quarantine-v1"
     if args.max_hypotheses_per_function:
         # Only when given, like fixed_sources: verify_results are indexed by the capped list.
         config["max_hypotheses_per_function"] = args.max_hypotheses_per_function

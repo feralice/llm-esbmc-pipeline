@@ -77,6 +77,8 @@ class Grounded:
     init_guards: tuple[str, ...] = ()
     # Literal dictionary assignments are locations to inspect, not proven lifecycle invariants.
     dict_assignments: tuple[dict, ...] = ()
+    # Keys every dict-valued assignment of an attribute creates, when no other code can replace or shrink it.
+    required_dict_keys: tuple[tuple[str, tuple], ...] = ()
 
     @property
     def stub_keys(self) -> tuple[str, ...]:
@@ -144,6 +146,32 @@ def _dict_assignments(cls: ast.ClassDef, attrs: set[str]) -> tuple[dict, ...]:
 
         Visitor().visit(method)
     return tuple(found)
+
+
+def _required_dict_keys(cls: ast.ClassDef, assignments: tuple[dict, ...]) -> tuple[tuple[str, tuple], ...]:
+    """Keys that a dict attribute holds whenever it is a dict. Only when every assignment is a literal dict or
+    None and nothing deletes or drops keys: any other writer could make the attribute differ."""
+    spoiled: set[str] = set()
+    for node in ast.walk(cls):
+        if isinstance(node, (ast.Assign, ast.AnnAssign)) and node.value is not None:
+            literal = isinstance(node.value, ast.Dict) or (isinstance(node.value, ast.Constant)
+                                                          and node.value.value is None)
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            if not literal:
+                spoiled |= {name for name in map(_self_attribute, targets) if name}
+        elif isinstance(node, ast.Delete):
+            spoiled |= {name for t in node.targets if isinstance(t, ast.Subscript)
+                        and (name := _self_attribute(t.value))}
+        elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+              and node.func.attr in ("pop", "popitem", "clear") and (name := _self_attribute(node.func.value))):
+            spoiled.add(name)
+    keys: dict[str, list] = {}
+    for item in assignments:
+        if item["attribute"] in spoiled:
+            continue
+        known = keys.get(item["attribute"])
+        keys[item["attribute"]] = list(item["keys"]) if known is None else [k for k in known if k in item["keys"]]
+    return tuple((name, tuple(found)) for name, found in keys.items() if found)
 
 
 def _class_of(tree: ast.Module, name: str) -> ast.ClassDef | None:
@@ -728,4 +756,6 @@ def ground(h: BugHypothesis, source: str, refused: frozenset[str] = frozenset(),
         generator=isinstance(function, ast.FunctionDef) and _is_generator(function),
         init_guards=constructor_guards(cls, set(receiver_attrs)) if cls and receiver_attrs else (),
         dict_assignments=_dict_assignments(cls, set(receiver_attrs)) if cls and receiver_attrs else (),
+        required_dict_keys=_required_dict_keys(cls, _dict_assignments(cls, set(receiver_attrs)))
+        if cls and receiver_attrs else (),
     )

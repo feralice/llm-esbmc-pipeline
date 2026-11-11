@@ -148,8 +148,9 @@ def add_auto_lesson(*, error: str, fix: str, reached: str, case: str, run: str, 
         lines = [*lines[:MAX_FIX_LINES], f" ... ({len(lines) - MAX_FIX_LINES} more lines)"]
     body = "\n".join(lines)
     rule = (f"### Automatic repair {key}: {error[:80]}\n- Origin: {AUTO_ORIGIN}\n- Error: `{error}`\n"
-            f"- What to do: the change below made ESBMC reach {_one_line(reached)} without changing the target "
-            f"function's behaviour.\n```diff\n{body}\n```\n- Source case: {_one_line(case)}\n"
+            f"- What to do: the change below made ESBMC reach {_one_line(reached)}. "
+            f"Inspect the original code and available preservation checks before reusing it.\n"
+            f"```diff\n{body}\n```\n- Source case: {_one_line(case)}\n"
             f"- Run: {_one_line(run) or 'unknown'}\n- Date: {today.isoformat()}.\n- Key: {key}\n\n")
     with _locked(path):
         parts = _split(path.read_text(encoding="utf-8"))
@@ -176,8 +177,11 @@ def round_repairs(case_dir: Path, entry: dict | None) -> list[dict]:
     case_dir = Path(case_dir)
     rounds = read_rounds(case_dir)
     return [{"caso": case_dir.name, "rodada": first.index, "erro": first_error(first.output),
+             "program": first.source,
              "diff": "".join(difflib.unified_diff(first.source.splitlines(keepends=True),
                                                   second.source.splitlines(keepends=True),
                                                   f"rodada {first.index:03d}", f"rodada {second.index:03d}"))}
             for first, second in pairwise(rounds)
-            if first.kind == "refused" and second.kind == "verdict"]
+            if first.kind == "refused" and second.kind == "verdict"
+            and first.source.strip() and second.source.strip() and first.source != second.source
+            and first_error(first.output).startswith("ERROR:")]

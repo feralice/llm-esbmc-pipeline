@@ -1,5 +1,7 @@
 # Registro de experimentos
 
+Rodada de 10/11/2026, em andamento: [varredura do pymodbus com Codex](scan_pymodbus_codex_2026-11-10.md).
+
 Rodada de 10/11/2026: [varredura do pyserial e revisão dos resultados](scan_pyserial_2026-11-10.md). A investigação dos crashes está em andamento.
 
 Toda rodada do pipeline entra aqui: o que foi, quando, com qual código, com qual comando, onde está a
@@ -1728,3 +1730,67 @@ cria um mapa com elemento `_Opaque`. No cantools, a recusa é outra (`.attrib.ge
 código nem acrescentei teste. A suíte completa ao fim deste item está pendente.
 
 A suíte completa terminou com 1.652 aprovados, 1 ignorado e as mesmas 13 falhas da linha de base.
+
+## Manutenção, limites conhecidos (10/11/2026)
+
+Execução local dos reprodutores de `docs/projeto/possiveis_problemas/`, sem LLM, com ESBMC 8.6.0 do checkout `7c91b097bf9cf31c8b2cd35357e69f367ba9e1cc`, `ulimit -c 0` e limite de 300 segundos por arquivo. Logs e primeira base em `/mnt/e/manutencao_limites_2026-11-10/`. A base original classificou `75_staticmethod_dict_aninhado_irep2.py` incorretamente por causa do nome do arquivo; `resultados_corrigidos.json` e `baseline_corrigida.json` preservam a correção após conferir `VERIFICATION SUCCESSFUL` no log. Os arquivos originais foram mantidos. Os detalhes de propriedades na base foram registrados antes do ajuste que extrai o texto da propriedade e podem exigir consulta aos logs.
+
+Comparação com a tabela histórica do master `822227ff96` em `docs/projeto/possiveis_problemas/README.md`: os casos `20_kwargs.py` e `24_numpy_shape_parametro.py` mantiveram as mensagens de recusa; `31_strip_split_laco.py` terminou por tempo, enquanto a tabela histórica registra apenas asserções de unwinding. Os cinco casos `60`, `63`, `70`, `71` e `72` registraram `SUCCESSFUL`. Isso é uma mudança observada sob outra versão, não prova automática de correção.
+
+Adaptações da Tarefa 1: `Runner` é um tipo de função e a execução reutiliza `run_esbmc_direct`; sinais adicionais de crash são tratados no módulo de manutenção porque `_CRASH` não cobre literalmente `ESBMC caught SIGSEGV`. A base é gravada no disco E nesta rodada, em vez do caminho no plano, para respeitar os caminhos autorizados. O comando e a impressão digital completos ficam para a Tarefa 6.
+
+## Manutenção, triagem de recusas (10/11/2026)
+
+A base permanente dos limites foi regenerada com o extrator corrigido a partir dos logs da rodada anterior, sem executar novamente o ESBMC. Ela está em `docs/projeto/possiveis_problemas/baseline.json`; a cópia `baseline_corrigida.json` no disco E foi atualizada. A identidade do ESBMC da medição original foi preservada.
+
+Teste local da triagem sobre `artifacts/scan_pyserial_2026-11-10/scan_report.json` e `/mnt/e/scan_amazon/cost-explorer_2026-11-10/scan_report.json`, sem LLM e sem busca externa. A mensagem de subscript sem tipo conhecido reúne seis hipóteses `Serial.from_url` em quatro arquivos do pyserial, numa assinatura. Os relatórios não informam o modelo em `config.model`, então a triagem os separa por arquivo. O plano mencionava cinco casos; os dados mostram seis hipóteses. `limit_group` classifica essa mensagem específica como `other`, por isso a triagem reconhece também a recusa explícita do ESBMC.
+
+O registro inicial de assinaturas está em `src/research_pipeline/maintenance/registry.json`, inicialmente vazio. Esse caminho respeita a restrição de arquivos autorizados para a implementação; o plano previa `docs/projeto/possiveis_problemas/registro.json`. A busca de possíveis issues é uma função injetável e não foi executada nesta rodada.
+
+## Manutenção, tempos registrados (10/11/2026)
+
+A coleta de tempos foi exercitada localmente com os relatórios já gravados de pyserial e `glue_haiku_lote1`, sem LLM e sem nova varredura. Os arquivos consultados foram `artifacts/scan_pyserial_2026-11-10/scan_report.json` e `/mnt/e/scan_amazon/glue_haiku_lote1/scan_report.json`.
+
+Nos relatórios examinados, `results[].seconds` é o tempo total da hipótese; `attempts[].unwind` registra o limite da tentativa quando disponível, mas não encontrei `seconds` por tentativa. Por isso a coleta não atribui o tempo total a cada tentativa e marca o tempo individual como ausente. No relatório de pyserial, as 77 linhas coletadas ficaram sem tempo individual e 7 sem limite; no de Glue, as 36 linhas ficaram sem tempo individual e 1 sem limite. A taxa de timeout usa os estados registrados das tentativas com limite e estado disponíveis. Esses registros não demonstram que cada execução interna ou repetição do ESBMC esteja representada separadamente; não servem, sozinhos, para concluir qual limite inicial escolher.
+
+## Manutenção, quarentena de propostas (11/11/2026)
+
+A implementação local da quarentena foi exercitada com diretórios temporários nos testes, sem LLM, sem portão e sem aplicar mudanças ao pipeline. Propostas exigem programa e origem com rodada e caso. Duplicatas da mesma espécie e evidência reutilizam o registro existente. Para lições que fornecem erro e diff, a chave é comparada com as lições aceitas do caderno; sem esses dois campos, essa comparação não é possível. O estado `aceita` em propostas de código exige informar `aprovada_por`; o nome é uma declaração registrada, sem autenticação de identidade. Alterar o estado não aplica código nem executa o portão.
+
+O plano não especifica como passar `aprovada_por` a `set_status`; a função aceita esse campo como argumento opcional nomeado. O diretório da quarentena é informado pelo chamador; os testes não criaram `docs/projeto/quarentena/`, que estava fora dos caminhos autorizados para esta tarefa.
+
+## Conferência local de self-learning e prompts (11/11/2026)
+
+Foram examinados `verify/lessons.py`, `verify/healing.py`, `verify/agent_scan.py`, `prompts/system_prompt_v2.txt` e `llm/prompt_variants.py`, além dos testes existentes. O comando `pytest tests/test_prompt_variants.py tests/test_prompt_surface_consistency.py tests/test_print_detection_prompt.py tests/test_verify_auto_lesson_guard.py -q` passou com 50 testes. Isso verifica montagem, consistência e casos específicos de proteção, não mede a capacidade da LLM em bugs novos.
+
+O self-learning existente escreve no caderno ativo quando `auto_lessons` está ligado; `--no-auto-lessons` o mantém fixo. Ele ainda não passa pelo novo portão. A proteção das rodadas do agente exige mensagem `ERROR:`, programas presentes e mudança entre eles. `teaches_repair` exclui algumas alterações e casos induzidos por stub, mas a ausência de evidência de preservação não é, por si, uma confirmação de preservação. Antes de ligar a aplicação automática ao fluxo real, é preciso registrar evidências completas e validar o portão.
+
+O prompt base pede evidência de entrada e caminho; a variante A1, usada junto com A2 na rodada final registrada, pede que hipóteses sejam relatadas mesmo quando falta contexto. Isso é uma escolha existente de cobertura e triagem, não garantia de que o estado seja alcançável. O prompt também sugere inferir intenção a partir de nomes, o que pode ser insuficiente. Os testes locais não permitem afirmar que o prompt está adequado para todos os repositórios; uma avaliação de detecção exige casos e critérios definidos pela autora. Nenhuma chamada nova de LLM foi feita nessa conferência.
+
+## Manutenção, comando e comparação (11/11/2026)
+
+O comando `scripts/maintenance.py` reúne `limits`, `refusals`, `timing`, `proposals` e a comparação `gate`. Por padrão, grava JSON e Markdown em `/mnt/e/manutencao_AAAA-MM-DD/`, sem sobrescrever relatórios anteriores. Use `--output-dir` antes do subcomando para escolher outra pasta. O `gate` recebe evidências existentes com `--replay-dir`, `--suite-evidence` e `--baseline-suite`; sem evidências suficientes ele rejeita a comparação. Esses arquivos não são gerados automaticamente pelo subcomando neste estágio.
+
+Foram executados `ulimit -c 0; TMPDIR=/mnt/e .venv/bin/python scripts/maintenance.py refusals /mnt/e/scan_amazon/*/scan_report.json` e, depois, o mesmo comando com `limits`. Os relatórios estão em `/mnt/e/manutencao_2026-11-11/`. O relatório `limits.json` mostra nenhuma mudança de categoria entre a base e os resultados observados. Por um erro da versão que o gerou, a mensagem textual diz que houve mudança; a lista de mudanças está vazia. O erro foi corrigido no código e testado, mas o relatório original foi preservado. O relatório de recusas registra busca de issues não realizada.
+
+A suíte completa foi executada com `timeout 10m` e `ulimit -c 0`: 1.710 passaram, 1 ignorado e 12 falharam em `tests/test_verify_auto_lessons.py`, conforme `/mnt/e/manutencao_2026-11-11/pytest_suite_tmp.log`. As mesmas 12 falhas foram reproduzidas no arquivo de testes em uma cópia do commit HEAD, em `/mnt/e/manutencao_2026-11-11/pytest_head_auto_lessons.log`. A primeira tentativa de suíte com `TMPDIR=/mnt/e` falhou na captura do pytest antes de executar testes; a segunda usou o diretório temporário normal e gravou o log no E.
+
+## Manutenção, lições em quarentena (11/11/2026)
+
+Depois da conferência acima, o motor de self-healing e o agente do scan foram alterados para registrar novas lições em `<pasta-da-rodada>/quarentena/`, com programa, erro, alteração e origem. Eles não escrevem a lição nova no caderno ativo nesse momento. A impressão digital de retomada mudou para identificar a política de quarentena. O comando `maintenance.py auto <pasta-da-quarentena>` tenta avaliar propostas de lição ou código automaticamente, sem LLM; cada proposta usa uma cópia do repositório e só é aplicada se o portão aceitar. Propostas de outros tipos ainda não são aplicadas pelo comando.
+
+A avaliação automática executa a suíte antes e depois com limite de 10 minutos, compara sondas e refaz as especificações sem LLM. Ela interrompe a aplicação se a reexecução anterior não reproduzir os bugs confirmados pela função registrados na referência. Como a rodada de 09/11 usou self-healing e outro commit do ESBMC, a equivalência com o replay sem LLM não está demonstrada. Até demonstrá-la, não se deve considerar a aplicação automática validada. A cópia de trabalho evita alterações diretas em arquivos de origem durante a avaliação, mas não constitui um isolamento de segurança do sistema operacional.
+
+Ao terminar uma rodada compatível que tenha propostas pendentes, o pipeline tenta iniciar a manutenção em segundo plano. A aplicação continua condicionada ao portão. A descrição anterior sobre escrita direta no caderno registra o comportamento encontrado antes desta alteração.
+
+Na validação posterior, o acesso ao disco E deixou de responder. Uma execução da suíte ficou aguardando o sistema de arquivos e não produziu resultado final verificável. Um teste específico confirmou que o pedido de interrupção da manutenção não espera indefinidamente quando o processo não termina. A validação completa e a reprodução da referência continuam pendentes; não se deve interpretar a implementação como validada de ponta a ponta.
+
+Na revisão seguinte, um teste mostrou que o portão aceitava uma queda de testes aprovados quando não havia falhas novas. O portão passou a rejeitar também essa queda. Depois da correção, `pytest tests/test_maintenance_*.py -q --tb=short` passou com 88 testes. Os testes de execução e impressão digital simulam a presença e o espaço dos discos Windows, para não depender de montagens WSL durante verificações unitárias. Isso não substitui a execução real.
+
+Fernanda informou depois que o SSD também trava no Windows. No WSL, a consulta à pasta de manutenção continuou bloqueada. Foi conferido que `~/esbmc-master/build-bw` é um link para `/mnt/e/esbmc-builds/esbmc-master-build-bw`, o que também impede executar esse build enquanto o disco não responder.
+
+O agendamento automático foi corrigido para delegar a consulta da fila e a abertura do log a outro processo. Antes disso, essas operações podiam prender a rodada principal mesmo com a intenção de executar a manutenção em segundo plano. O teste novo falhou antes da correção e passou depois. Um teste com subprocesso real confirmou que o iniciador encerra sem executar manutenção quando a fila está vazia. A mensagem no terminal informa agora que a avaliação foi agendada; isso não comprova que ela começou ou terminou. A falha do disco ainda pode impedir o processo separado de avançar.
+
+Após essa correção, `pytest tests/test_maintenance_*.py tests/test_verify_auto_lesson_guard.py tests/test_prompt_variants.py tests/test_prompt_surface_consistency.py tests/test_print_detection_prompt.py -q --tb=short` passou com 140 testes. A saída foi curta e conferida no terminal, sem gerar log grande em outro disco. A suíte completa e a reprodução da referência permanecem pendentes.
+
+Na tentativa de restabelecer o disco, os eventos do Windows mostraram repetidos avisos do provedor `disk`, ID 153, sobre operações de entrada e saída repetidas no Disco 1. A consulta do volume E excedeu o tempo limite. A lista de dispositivos identificou um NVMe interno e um `Seagate Portable USB Device`; a associação deste último ao E é uma inferência baseada no disco externo informado por Fernanda, pois a consulta detalhada do volume não respondeu. Foi solicitado ao Windows, com elevação, o reinício somente desse dispositivo USB via `pnputil /restart-device`, sem forçar remoção nem reiniciar o computador. O log está em `C:\Users\ferna\AppData\Local\Temp\codex-recuperacao-e-20261111.log`. No momento deste registro, a ferramenta continuava em execução e a recuperação ainda não estava comprovada. Não foi executado reparo do sistema de arquivos nem formatação.

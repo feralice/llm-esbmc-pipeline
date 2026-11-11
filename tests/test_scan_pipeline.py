@@ -302,6 +302,23 @@ def test_cli_scan_verify_agent_uses_the_agent_verifier(tmp_path: Path, monkeypat
     assert callable(seen["scan"]["verify"]) and "rules" not in seen["scan"]
 
 
+def test_cli_scan_verify_agent_respects_codex_backend(tmp_path: Path, monkeypatch) -> None:
+    seen = {}
+    monkeypatch.setattr(main, "build_analyzer", lambda **kw: _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", lambda **kw: type("Client", (), {"model": kw["model"]})())
+    monkeypatch.setattr(main, "make_agent", lambda backend, **kw: seen.setdefault("agent", (backend, kw)) and
+                        ((lambda *a: "DONE"), False))
+    monkeypatch.setattr(main, "agent_verifier", lambda agent, **kw: seen.setdefault("verifier", kw) and (lambda: 0))
+    monkeypatch.setattr(main, "execute_scan", lambda plan, **kw: {"detection": {"failed": 0}})
+    esbmc = _fake_esbmc(tmp_path)
+    assert _run_main(monkeypatch, ["--mode", "scan", "--input", str(_repo(tmp_path)), "--output-dir",
+                     str(tmp_path / "out"), "--backend", "codex", "--agent-backend", "codex", "--yes",
+                     "--esbmc-command", esbmc, "--scan-verify", "agent"]) == 0
+    assert seen["agent"][0] == "codex" and seen["agent"][1]["graph_tool"] is True
+    assert seen["verifier"]["project_skills"] is True
+    assert seen["verifier"]["skill"] is False
+
+
 def test_cli_scan_verify_agent_fails_clearly_without_the_esbmc_binary(tmp_path: Path, monkeypatch, capsys) -> None:
     monkeypatch.setattr(main, "build_analyzer", lambda **kw: _Analyzer())
     monkeypatch.setattr(main, "LLMClient", lambda **kw: type("C", (), {"model": kw["model"]})())

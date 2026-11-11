@@ -321,3 +321,38 @@ def test_a_constructor_guard_on_something_else_is_ignored():
     cls = ast.parse("class T:\n    def __init__(self, a, b):\n        if open(a):\n            raise ValueError\n"
                     "        if b > other():\n            raise ValueError\n        self.a = a\n        self.b = b\n").body[0]
     assert constructor_guards(cls, {"a", "b"}) == ()
+
+
+OPTIONS_SOURCE = '''class Port:
+    def __init__(self):
+        self.options = None
+
+    def open(self):
+        self.options = {'purge': 1, 'control': 2}
+        self.options.update({'baud': 3})
+
+    def send(self, value):
+        item = self.options['control']
+        return item
+'''
+
+
+def _options_program(source: str = OPTIONS_SOURCE) -> str:
+    grounded = ground(BugHypothesis("p.py", "Port.send", "self.options['control']"), source)
+    spec = InputSpec({"value": "int"}, {"options": "dict[str, int]"}, ())
+    return render_program(grounded, spec).source
+
+
+def test_dict_attribute_keeps_the_keys_the_class_always_creates():
+    source = _options_program()
+    assert "_attr_options['control']" in source and "_attr_options['purge']" in source
+
+
+def test_dict_attribute_without_a_single_literal_origin_stays_free():
+    other = OPTIONS_SOURCE + "\n    def reset(self, x):\n        self.options = x\n"
+    assert "_attr_options['control']" not in _options_program(other)
+
+
+def test_dict_attribute_loses_required_keys_when_the_class_removes_keys():
+    popped = OPTIONS_SOURCE + "\n    def close(self):\n        self.options.pop('control')\n"
+    assert "_attr_options['control']" not in _options_program(popped)

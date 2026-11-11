@@ -1,0 +1,109 @@
+{
+  "identity": {
+    "command": [
+      "/home/fernanda/esbmc-master/build-bw/src/esbmc/esbmc"
+    ],
+    "version": "ESBMC version 8.6.0 64-bit x86_64 linux",
+    "files": {
+      "/mnt/e/esbmc-builds/esbmc-master-build-bw/src/esbmc/esbmc": "e7e10400dd9531f715074152802c49e3d2c64348337b1ed6f03048e27a5c7346"
+    }
+  },
+  "outcomes": {
+    "20_kwargs.py": {
+      "outcome": "refused",
+      "detail": "ERROR: Object \"kw\" not found."
+    },
+    "24_numpy_shape_parametro.py": {
+      "outcome": "refused",
+      "detail": "ERROR: TypeError: numpy.array() of a value that is not a numpy array or a list or tuple literal is not supported"
+    },
+    "31_strip_split_laco.py": {
+      "outcome": "timeout",
+      "detail": "unwinding assertion loop 6"
+    },
+    "33_atributo_ausente_uniao.py": {
+      "outcome": "refused",
+      "detail": "ERROR: docs/projeto/possiveis_problemas/33_atributo_ausente_uniao.py:24:13: storing or passing 'x', which holds an instance of A or B depending on the path, is not supported"
+    },
+    "45_nondet_str_contraexemplo.py": {
+      "outcome": "failed",
+      "detail": "assertion return_value$_strcmp$1 != 0"
+    },
+    "48_atributo_aninhado_campo_none.py": {
+      "outcome": "refused",
+      "detail": "ERROR: Cannot resolve nested attribute: next"
+    },
+    "51_pytest_metodo.py": {
+      "outcome": "failed",
+      "detail": "uncaught exception: ZeroDivisionError"
+    },
+    "52_pytest_varios_args.py": {
+      "outcome": "failed",
+      "detail": "uncaught exception: ZeroDivisionError"
+    },
+    "53_pytest_str.py": {
+      "outcome": "failed",
+      "detail": "uncaught exception: ValueError"
+    },
+    "57_global_nondet_str_lida_em_funcao.py": {
+      "outcome": "crash",
+      "detail": "ERROR: uncaught exception [St13runtime_error]: Unexpected index type in computer_pointer_offset"
+    },
+    "58_alias_de_funcao_como_argumento.py": {
+      "outcome": "refused",
+      "detail": "ERROR: Function `py:docs/projeto/possiveis_problemas/58_alias_de_funcao_como_argumento.py@op' type mismatch: expected code"
+    },
+    "60_lista_em_valor_de_dict.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "63_getitem_tupla_em_atributo.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "65_parametro_reatribuido_dict_get.py": {
+      "outcome": "refused",
+      "detail": "ERROR: Member 'is_none' is not a field of pointer_struct, whose members are: pointer_object, pointer_offset"
+    },
+    "66_desempacotar_getitem_de_atributo.py": {
+      "outcome": "refused",
+      "detail": "ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked"
+    },
+    "70_tupla_opcional_len.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "71_tupla_opcional_desempacotada.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "72_tupla_opcional_com_bool.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "74_float_variavel_passada_por_self.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "75_staticmethod_dict_aninhado_irep2.py": {
+      "outcome": "successful",
+      "detail": ""
+    },
+    "76_bytes_vazio_indice_falso_negativo.py": {
+      "outcome": "failed",
+      "detail": "uncaught exception: IndexError"
+    },
+    "77_bytearray_nao_suportado.py": {
+      "outcome": "refused",
+      "detail": "ERROR: bytearray is not supported; use bytes for an immutable byte sequence"
+    },
+    "78_bytes_de_lista_variavel.py": {
+      "outcome": "refused",
+      "detail": "ERROR: bytes(): only a bytes value, a constant count, or a list or tuple of constant integers is supported"
+    },
+    "79_dict_aninhado_reatribuido.py": {
+      "outcome": "refused",
+      "detail": "ERROR: TypeError at docs/projeto/possiveis_problemas/79_dict_aninhado_reatribuido.py 6: list indices must be integers or slices, not str"
+    }
+  }
+}

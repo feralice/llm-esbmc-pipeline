@@ -193,6 +193,51 @@ description: Repairs learned from earlier harness attempts that ESBMC-Python rej
 - Date: 2026-11-10.
 - Key: aabd19a75840
 
+### Automatic repair 49dd9edd068e: ERROR: /mnt/e/scan_amazon/rotation_haiku_lote1/programs/2d6dd2606c9d_a1.py:104:1
+- Origin: automatica
+- Error: `ERROR: /mnt/e/scan_amazon/rotation_haiku_lote1/programs/2d6dd2606c9d_a1.py:104:18: 'json.loads', where 'json' holds an instance of _JsonModule or _Opaque depending on the path, is not supported`
+- What to do: the change below made ESBMC reach a verdict (OTHER_FAILURE). Inspect the original code and available preservation checks before reusing it.
+```diff
+-import json
+-    def loads(self, s: str = None) -> _SecretDict:
++    def loads(self, s: str = None) -> _SecretDict:
++        return _SecretDict()
++
++    def _loads_unused(self, s: str = None) -> _SecretDict:
+```
+- Source case: 2d6dd2606c9d, round 2
+- Run: /mnt/e/scan_amazon/rotation_haiku_lote1
+- Date: 2026-11-10.
+- Key: 49dd9edd068e
+
+### Automatic repair 694234fd342a: ERROR: unsupported: non-constant argument in str % formatting
+- Origin: automatica
+- Error: `ERROR: unsupported: non-constant argument in str % formatting`
+- What to do: the change below made ESBMC reach a verdict (OTHER_FAILURE). Inspect the original code and available preservation checks before reusing it.
+```diff
++class _SecretDict:
++    def __init__(self) -> None:
++        self.marker: int = nondet_int()
++
++    def __getitem__(self, key: str = None) -> str:
++        return nondet_str()
++
++    def __contains__(self, key: str = None) -> bool:
++        return nondet_bool()
++
++
++def fetch_instance_arn_from_system_tags(service_client: object = None, arn: str = None) -> str:
++    return nondet_str()
++
++
++def get_connection_params_from_rds_api(secret_dict: _SecretDict = None, db_instance_info: str = None) -> _SecretDict:
++    return _SecretDict()
+```
+- Source case: bf0b8ccd4291, round 0
+- Run: /mnt/e/scan_amazon/rotation_haiku_lote1
+- Date: 2026-11-10.
+- Key: 694234fd342a
+
 ## Format of an approved repair
 
 Since 05/11 the hybrid and scan runs add a repair here by themselves (Origin: automatica) as soon as it made

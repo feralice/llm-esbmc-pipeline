@@ -164,16 +164,32 @@ class _Declarer:
         return lines
 
 
+def _required_key_lines(name: str, type_text: str, keys: tuple, indent: str, decl: _Declarer) -> list[str]:
+    shape = parse_type(type_text)
+    if shape is None or shape.kind != "dict" or shape.optional:
+        return []
+    lines: list[str] = []
+    for key in keys:
+        if type(key) is not {"str": str, "int": int}.get(shape.key):
+            continue
+        value = decl.fresh()
+        lines += [*decl._shape(value, shape.elem, indent, None, True), f"{indent}_attr_{name}[{key!r}] = {value}"]
+    return lines
+
+
 def _shell_init(attributes: dict[str, str], indent: str, decl: _Declarer,
-                called: dict[str, CallShape] | None = None) -> list[str]:
+                called: dict[str, CallShape] | None = None,
+                required: dict[str, tuple] | None = None) -> list[str]:
     body = indent * 2
     called = called or {}
+    required = required or {}
     lines = [f"{indent}def __init__(self) -> None:"]
     for name, type_text in attributes.items():
         if name in called:
             continue
         cls = object_class(f"self.{name}")
         lines += decl.declare(f"_attr_{name}", type_text, body, cls)
+        lines += _required_key_lines(name, type_text, required.get(name, ()), body, decl)
         shape = parse_type(type_text)
         # ESBMC resolves self.x's methods from this annotation, not from the local's.
         annotation = "" if shape is None or shape.kind == "none" else f": {_annotation(shape, cls)}"
@@ -186,19 +202,20 @@ def _shell_init(attributes: dict[str, str], indent: str, decl: _Declarer,
 
 
 def _insert_shell(module: str, class_name: str, attributes: dict[str, str], decl: _Declarer,
-                  subclass: bool = False, called: dict[str, CallShape] | None = None) -> str:
+                  subclass: bool = False, called: dict[str, CallShape] | None = None,
+                  required: dict[str, tuple] | None = None) -> str:
     tree = ast.parse(module)
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == class_name)
     lines = module.splitlines()
     if subclass:
         lines[cls.end_lineno:cls.end_lineno] = ["", "", f"class {RECEIVER_CLASS}({class_name}):",
-                                                *_shell_init(attributes, "    ", decl, called)]
+                                                *_shell_init(attributes, "    ", decl, called, required)]
         return "\n".join(lines) + "\n"
     first = cls.body[0]
     docstring = (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
                  and isinstance(first.value.value, str))
     at = first.end_lineno if docstring else min([first.lineno, *(d.lineno for d in getattr(first, "decorator_list", []))]) - 1
-    lines[at:at] = _shell_init(attributes, " " * first.col_offset, decl, called)
+    lines[at:at] = _shell_init(attributes, " " * first.col_offset, decl, called, required)
     return "\n".join(lines) + "\n"
 
 
@@ -495,7 +512,7 @@ def render_program(grounded: Grounded, spec: InputSpec, rules: frozenset[str] = 
         raise RenderError(f"the module already uses the name {RECEIVER_CLASS}")
     if grounded.has_receiver:
         module = _insert_shell(module, grounded.class_name, attributes, decl, grounded.receiver_subclass,
-                               grounded.called_attrs)
+                               grounded.called_attrs, dict(grounded.required_dict_keys))
     module = _annotate_inputs(module, _input_annotations(grounded, params))
     stubs = _stubs(grounded, spec.stubs, decl) + _object_classes(
         grounded, input_types(spec, grounded), member_types(spec, grounded), decl)

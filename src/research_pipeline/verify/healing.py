@@ -15,7 +15,6 @@ import json
 import re
 import textwrap
 from dataclasses import asdict, dataclass, replace
-from datetime import datetime
 from pathlib import Path
 
 from ..scan.callgraph import CallGraph, FunctionNode
@@ -28,9 +27,21 @@ from .esbmc_knowledge import (
     lookup,
 )
 from .hypothesis import BugHypothesis
-from .lessons import add_auto_lesson, first_error, obstacle, read_notebook, teaches_repair
+from .lessons import (
+    first_error,
+    obstacle,
+    read_notebook,
+    teaches_repair,
+)
 from .loop import VerifyResult, verify_hypothesis
-from .outcome import CHECKED, ESBMC_ERROR, GROUNDING_FAILED, LLM_ONLY, MISSING_DEPENDENCY, UNSUPPORTED
+from .outcome import (
+    CHECKED,
+    ESBMC_ERROR,
+    GROUNDING_FAILED,
+    LLM_ONLY,
+    MISSING_DEPENDENCY,
+    UNSUPPORTED,
+)
 from .preservation import same_code
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parents[1] / "prompts" / "healing_prompt.txt").read_text(encoding="utf-8")
@@ -303,8 +314,7 @@ class Healer:
 
     def __init__(self, llm, knowledge: KnowledgeIndex | None, graph: CallGraph | None = None,
                  lessons: str | None = None, *, auto_lessons: bool = False, run_dir: Path | None = None):
-        """``lessons``: fixed repairs (default: the notebook the agent arm also reads); ``auto_lessons`` appends to
-        that notebook each repair that made ESBMC reach a verdict, naming ``run_dir``, and reads it for each case."""
+        """``lessons`` are approved repairs; ``auto_lessons`` queues candidates under ``run_dir``."""
         self.llm, self.knowledge, self.graph = llm, knowledge, graph
         self.auto_lessons, self.run_dir = auto_lessons and lessons is None, run_dir
         if lessons is None:
@@ -314,8 +324,7 @@ class Healer:
             self.lessons_version = hashlib.sha256(self.lessons.encode("utf-8")).hexdigest()[:12]
 
     def refresh(self) -> str:
-        """With automatic lessons, read the notebook again so a case sees what earlier cases added (a fixed
-        notebook stays as read at the start); returns the version this case reads."""
+        """Reload approved repairs when automatic proposal collection is enabled."""
         if self.auto_lessons:
             self.lessons, self.lessons_version = read_notebook()
         return self.lessons_version
@@ -323,22 +332,25 @@ class Healer:
     @property
     def config_label(self) -> str:
         """The heal mode and the notebook version (the hash the agent arm records), for a scan's resume fingerprint.
-        A notebook that grows during the run is named by ``auto`` instead: each case records the version it read."""
+        The quarantine mode and approved notebook version enter the resume fingerprint."""
         mode = "error+kb" if self.knowledge is not None else "error"
         if self.auto_lessons:
-            return f"{mode}+notes:auto"
+            return f"{mode}+notes:quarantine-v1:{self.lessons_version}"
         return f"{mode}+notes:{self.lessons_version}" if self.lessons else mode
 
     def learn(self, h: BugHypothesis, log: list[dict], result: dict) -> int:
-        """Append the case's successful repairs to the notebook; returns how many were new."""
+        """Queue candidate repairs for the gate; return how many were new."""
         if not self.auto_lessons or not teaches_repair(result):
             return 0
-        today = datetime.now().astimezone().date()
-        return sum(add_auto_lesson(error=first_error(entry["reason_before"]), fix=fix,
-                                   reached=f"a verdict ({entry['verdict_after']})",
-                                   case=f"{h.hypothesis_id}, round {entry['round']}",
-                                   run=str(self.run_dir or ""), today=today)
-                   for entry, fix in learned_repairs(log))
+        program = result.get("_learning_program", "")
+        if not self.run_dir or not isinstance(program, str) or not program.strip():
+            return 0
+        from research_pipeline.maintenance.learning import queue_lesson
+
+        return sum(queue_lesson(error=first_error(entry["reason_before"]), fix=fix, program=program,
+                                case=h.hypothesis_id, run_dir=self.run_dir)
+                   for entry, fix in learned_repairs(log)
+                   if first_error(entry["reason_before"]).startswith("ERROR:"))
 
     def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str, previous: list[dict]) -> Patch | None:
         try:
@@ -470,7 +482,10 @@ def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str,
     if result.verdict in HEALABLE:
         result.reason, result.verdict = f"{result.verdict}: {result.reason}", LLM_ONLY
     result.hypothesis, result.healing, result.notebook_version = h, log, version
-    healer.learn(h, log, result.to_dict())
+    try:
+        healer.learn(h, log, {**result.to_dict(), "_learning_program": source})
+    except (OSError, ValueError) as exc:
+        log.append({"learning_error": f"{type(exc).__name__}: {exc}"})
     return result
 
 

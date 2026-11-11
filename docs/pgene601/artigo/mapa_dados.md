@@ -10,7 +10,12 @@ Só aponta onde estão os dados. O texto é da autora.
 | Linha pytest | 10 diferenciais; 36 sem teste Python | `scripts/pgene601_tabela.py` |
 | Resultado, rodada de 06/11 | 5 pela expressão, 8 pela função (única fora da amostra) | `artifacts/pgene601/congelado-c-2026-11-06/` |
 | Resultado, rodada de 08/11 | 9 pela expressão, 14 pela função; 36/47 com hipótese certa | `artifacts/pgene601/rodada-final-2026-11-08/` (`resumo.md`, `funil.txt`, `tabela.md`) |
-| Resultado, rodada de 09/11 | a preencher quando fechar | `artifacts/pgene601/rodada-final-2026-11-09/` |
+| Resultado, rodada de 09/11 | 9 pela expressão, 14 pela função; 37/47 com hipótese certa | `artifacts/pgene601/rodada-final-2026-11-09/` (`resumo.md`, `funil.txt`, `tabela.md`) |
 | Discussão | por que param (bytearray, array.array, crashes) | `docs/projeto/possiveis_problemas/README.md` |
 | Scan | pymodbus antes dos consertos, 3 bugs de referência | `artifacts/scan_pymodbus_2026-11-09/` |
+| Scan, pymodbus | rodada Codex parcial e análise das hipóteses | `docs/pgene601/artigo/tabela_scans.md`, `docs/experimentos/scan_pymodbus_codex_2026-11-10.md`, `artifacts/scan_pymodbus_codex_2026-11-10/` |
+| Scan, pyserial | resultado e análise das hipóteses | `docs/pgene601/artigo/tabela_scans.md`, `artifacts/scan_pyserial_2026-11-10/scan_summary.md`, `scan_report.json` |
+| Scan, aws-cost-explorer-report | resultado | `docs/pgene601/artigo/tabela_scans.md`, `/mnt/e/scan_amazon/cost-explorer_2026-11-10/scan_summary.md`, `scan_report.json` |
+| Scan, aws-glue-samples | resultado e análise das hipóteses | `docs/pgene601/artigo/tabela_scans.md`, `/mnt/e/scan_amazon/glue_haiku_lote1/scan_summary.md`, `scan_report.json` |
+| Scan, aws-secrets-manager-rotation-lambdas | em andamento, sem resumo na conferência | `docs/pgene601/artigo/tabela_scans.md`, `/mnt/e/scan_amazon/rotation_haiku_lote1/` |
 | Ameaças à validade | 47 usados para corrigir erros; só 06/11 é fora da amostra | `docs/experimentos/README.md` |

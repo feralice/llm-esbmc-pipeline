@@ -18,6 +18,7 @@ from ..scan.callgraph import CallGraph
 from .astutil import undefined_globals
 from .caller_facts import collect_facts, guard_assumptions, render_section, usage_problems
 from .grounding import Grounded, GroundingFailure, ground
+from .external_origin import stubbed_response_origin
 from .hypothesis import VALUE_ORACLE, BugHypothesis
 from .llm_client import SynthResult, _bound_untrusted
 from .esbmc_run import check, esbmc_output
@@ -25,6 +26,7 @@ from .oracle import convert, refusals
 from .pytest_gen import pytest_reproducer
 from .outcome import (
     CONFIRMED,
+    DEPENDS_ON_LIBRARY,
     ESBMC_TIMEOUT,
     GROUNDING_FAILED,
     MISSING_DEPENDENCY,
@@ -265,7 +267,8 @@ def verify_hypothesis(
         result.harness_state = {"generated_attributes": {
             name: kind for name, kind in attributes.items()
             if grounded.has_receiver and name not in grounded.called_attrs
-        }, "dict_assignments": list(grounded.dict_assignments)}
+        }, "dict_assignments": list(grounded.dict_assignments),
+            "assumed_dict_keys": {name: list(keys) for name, keys in grounded.required_dict_keys}}
         no_replay = ""
         if replay_source is not None:
             rebuilt = with_original_replay(program, h, replay_source, spec, rules)
@@ -330,6 +333,11 @@ def verify_hypothesis(
             result.replay = held[0]
             result.harness_state = held[2]
             return finish(OTHER_FAILURE, held[1])
+        if verdict == CONFIRMED:
+            origin = stubbed_response_origin(source, grounded, replay.exception_type)
+            if origin:
+                return finish(DEPENDS_ON_LIBRARY, f"{reading.message}; the dict read comes from the stubbed call "
+                                                  f"{origin}(), whose real response the harness does not know")
         if verdict == CONFIRMED and esbmc_command:
             result.pytest = _pytest_for(program, grounded, spec, replay, esbmc_command, bound, work_dir)
         return finish(verdict, reading.message)

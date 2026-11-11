@@ -631,6 +631,94 @@ def test_api_agent_refuses_the_graph_tool():
         agent_arm.make_agent("openai", model="m", esbmc="esbmc", bound=5, graph_tool=True)
 
 
+def test_codex_agent_runs_in_case_with_graph_and_recording_esbmc(tmp_path, monkeypatch):
+    seen = {}
+    def run(command, **kwargs):
+        seen.update(command=command, **kwargs)
+        return subprocess.CompletedProcess(command, 0, stdout='{"type":"item.completed","item":{"type":"agent_message","text":"DONE"}}\n', stderr="")
+    import subprocess
+    monkeypatch.setattr(agent_arm, "run_group", run)
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-be-forwarded")
+    agent, skill = agent_arm.make_agent("codex", model=None, esbmc="/x/esbmc", bound=5,
+                                        graph_tool=True, log_rounds=True)
+    assert agent("use graph.py and make harness.py", tmp_path, 42) == "DONE"
+    assert skill == (Path.home() / ".codex/skills/esbmc-verification/SKILL.md").is_file()
+    assert seen["cwd"] == tmp_path and seen["timeout_seconds"] == 42
+    assert "--skip-git-repo-check" in seen["command"] and "workspace-write" in seen["command"]
+    assert seen["env"]["PATH"].split(":")[0] == str(tmp_path.resolve() / "bin")
+    assert "OPENAI_API_KEY" not in seen["env"]
+
+
+def test_project_skills_are_also_available_to_codex(tmp_path):
+    agent_arm.install_project_skills(tmp_path)
+    for name in ("regras-harness", "reparos-aprendidos"):
+        assert (tmp_path / ".agents" / "skills" / name / "SKILL.md").is_file()
+
+
+def test_codex_agent_case_can_read_skills_query_graph_and_record_esbmc(tmp_path):
+    import sys
+    case = tmp_path / "case"
+    case.mkdir()
+    agent_arm.install_project_skills(case)
+    agent_arm.write_graph(case, "def f(x):\n    return x\n")
+    binary = tmp_path / "real-esbmc"
+    binary.write_text("#!/bin/sh\necho VERIFICATION SUCCESSFUL\n")
+    binary.chmod(0o755)
+    agent_arm.install_round_logger(case, [str(binary)])
+    fake = tmp_path / "fake-codex"
+    fake.write_text(f"#!{sys.executable}\n" + '''import json, pathlib, subprocess
+assert pathlib.Path('.claude/skills/regras-harness/SKILL.md').is_file()
+assert pathlib.Path('.agents/skills/reparos-aprendidos/SKILL.md').is_file()
+assert 'f: lines' in subprocess.check_output(['python3', 'graph.py', 'where', 'f'], text=True)
+pathlib.Path('harness.py').write_text('assert True\\n')
+subprocess.run(['esbmc', 'harness.py'], check=True, capture_output=True)
+print(json.dumps({'type': 'item.completed', 'item': {'type': 'agent_message', 'text': 'DONE'}}))
+''')
+    fake.chmod(0o755)
+    run = agent_arm.codex_agent(codex_command=str(fake), esbmc=str(binary), log_rounds=True)
+    assert run("verify", case, 30) == "DONE"
+    assert (case / "rounds/001/input.py").read_text() == "assert True\n"
+    assert "VERIFICATION SUCCESSFUL" in (case / "rounds/001/output.txt").read_text()
+
+
+def test_codex_prompt_names_recording_binary_by_absolute_path(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    agent = _agent(PRESERVED)
+    h = _hypothesis(tmp_path)
+    run_agent_arm(h, work_dir=tmp_path / "work", run_agent=agent, esbmc_command=["esbmc"], bound=5,
+                  timeout_seconds=30, log_rounds=True, absolute_logger=True)
+    binary = (tmp_path / "work" / h.hypothesis_id / "bin" / "esbmc").resolve()
+    assert f"`{binary} harness.py --unwind 5" in agent.calls[0]
+
+
+def test_documentation_is_untrusted_context_not_a_harness_assumption(tmp_path, monkeypatch):
+    monkeypatch.setattr(esbmc_run, "run_esbmc_direct", _esbmc())
+    agent = _agent(PRESERVED)
+    result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work", run_agent=agent,
+        esbmc_command=["esbmc"], bound=5, timeout_seconds=30,
+        documentation="docs/api.rst:4\nratio expects a nonzero count")
+    assert "docs/api.rst:4" in agent.calls[0]
+    assert "untrusted source material" in agent.calls[0]
+    assert "do not assume examples or claims are invariants" in agent.calls[0]
+    assert result["documentation"].startswith("docs/api.rst:4")
+
+
+def test_codex_usage_limit_stops_the_run(tmp_path, monkeypatch):
+    import subprocess
+    monkeypatch.setattr(agent_arm, "run_group", lambda command, **kw:
+                        subprocess.CompletedProcess(command, 1, "", "You've hit your usage limit"))
+    with pytest.raises(UsageLimitReached):
+        agent_arm.codex_agent()("verify", tmp_path, 1)
+
+
+def test_codex_failed_turn_is_not_treated_as_success(tmp_path, monkeypatch):
+    import subprocess
+    monkeypatch.setattr(agent_arm, "run_group", lambda command, **kw:
+                        subprocess.CompletedProcess(command, 0, '{"type":"turn.failed","error":"network error"}\n', ""))
+    with pytest.raises(RuntimeError, match="network error"):
+        agent_arm.codex_agent()("verify", tmp_path, 1)
+
+
 def test_an_api_error_from_the_agent_session_is_a_pipeline_error(tmp_path):
     result = run_agent_arm(_hypothesis(tmp_path), work_dir=tmp_path / "work",
                            run_agent=lambda prompt, cwd, timeout: "API Error: Can't reach the API server (EAI_AGAIN)",

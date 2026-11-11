@@ -1,17 +1,32 @@
-"""Automatic lessons (decision of 05/11): a repair that made ESBMC reach a verdict enters the notebook at once."""
+"""Candidate lessons stay in quarantine until evaluated by the maintenance gate."""
 
 import json
-from datetime import date, datetime
+from datetime import date
 from types import SimpleNamespace
 
 import pytest
 
 import main
+from research_pipeline.maintenance.proposals import list_proposals
 from research_pipeline.verify import agent_scan, healing, lessons
 from research_pipeline.verify.healing import Healer, Patch, verify_with_healing
 from research_pipeline.verify.hypothesis import BugHypothesis
 from research_pipeline.verify.loop import VerifyResult
 from research_pipeline.verify.outcome import CONFIRMED, UNSUPPORTED
+
+RUN_DIR = None
+
+
+@pytest.fixture(autouse=True)
+def _isolated_learning(tmp_path, monkeypatch, _notebook_copy):
+    global RUN_DIR
+    RUN_DIR = tmp_path / "run"
+    lessons.NOTEBOOK.write_text("# Learned repairs\n\n## Format of an approved repair\n\n")
+
+
+def _proposals():
+    return list_proposals(RUN_DIR / "quarentena")
+
 
 SOURCE = "def f(x):\n    return 1 / x\n"
 STUB = "def g(a=None) -> int:\n    return nondet_int()\n"
@@ -38,7 +53,7 @@ def _heals(monkeypatch, error="ERROR: Unsupported call g at line 3"):
 
 
 def _healer(**kwargs):
-    return Healer(_LLM(), None, **{"auto_lessons": True, "run_dir": "artifacts/v2/run-x", **kwargs})
+    return Healer(_LLM(), None, **{"auto_lessons": True, "run_dir": RUN_DIR, **kwargs})
 
 
 def _auto_rules():
@@ -50,12 +65,13 @@ def test_a_successful_repair_adds_one_lesson_with_its_provenance(monkeypatch):
     h = _h()
     result = verify_with_healing(h, healer=_healer(), source=SOURCE, llm="spec")
     assert result.verdict == CONFIRMED
-    [rule] = _auto_rules()
-    assert "- Error: `ERROR: Unsupported call g at line 3`" in rule
-    assert f"- Source case: {h.hypothesis_id}, round 0" in rule and "- Run: artifacts/v2/run-x" in rule
-    assert f"- Date: {datetime.now().astimezone().date().isoformat()}." in rule and "+    return nondet_int()" in rule
-    assert "a verdict (CONFIRMED)" in rule and "- Key: " in rule
-    assert lessons.read_notebook()[0].index("Automatic repair") < lessons.NOTEBOOK.read_text().index("## Format")
+    [proposal] = _proposals()
+    assert proposal["status"] == "quarentena"
+    assert proposal["evidence"]["error"] == "ERROR: Unsupported call g at line 3"
+    assert proposal["evidence"]["origin"] == {"run": str(RUN_DIR), "case": h.hypothesis_id}
+    assert proposal["evidence"]["program"] == SOURCE
+    assert "+    return nondet_int()" in proposal["evidence"]["fix"]
+    assert _auto_rules() == []
 
 
 @pytest.mark.parametrize("patch", [
@@ -82,17 +98,18 @@ def test_a_stub_induced_or_behaviour_changing_case_adds_none(entry):
     log = [{"round": 0, "verdict_before": UNSUPPORTED, "reason_before": "ERROR: x", "verdict_after": CONFIRMED,
             "simplified_body": False, "patch": {"edits": [], "definitions": STUB, "hypothesis_function": ""}}]
     assert _healer().learn(_h(), log, entry) == 0 and _auto_rules() == []
-    assert _healer().learn(_h(), log, {"verdict": "CONFIRMED"}) == 1
+    assert _healer().learn(_h(), log, {"verdict": "CONFIRMED", "_learning_program": SOURCE}) == 1
+    assert len(_proposals()) == 1
 
 
 def test_the_same_fix_for_the_same_obstacle_is_added_once(monkeypatch):
     for line, name in ((3, "a"), (9, "b")):
         _heals(monkeypatch, f"ERROR: Unsupported call g at line {line}")
         verify_with_healing(_h(name), healer=_healer(), source=SOURCE, llm="spec")
-    assert len(_auto_rules()) == 1
+    assert len(_proposals()) == 1 and _auto_rules() == []
     _heals(monkeypatch, "ERROR: another obstacle")
     verify_with_healing(_h("c"), healer=_healer(), source=SOURCE, llm="spec")
-    assert len(_auto_rules()) == 2
+    assert len(_proposals()) == 2 and _auto_rules() == []
 
 
 def test_a_later_case_reads_the_new_lesson_and_records_that_version(monkeypatch):
@@ -101,8 +118,9 @@ def test_a_later_case_reads_the_new_lesson_and_records_that_version(monkeypatch)
     first = verify_with_healing(_h("a"), healer=healer, source=SOURCE, llm="spec").to_dict()
     after_first = lessons.notebook_version()
     second = verify_with_healing(_h("b"), healer=healer, source=SOURCE, llm="spec").to_dict()
-    assert "Automatic repair" not in healer.llm.tasks[0] and "Automatic repair" in healer.llm.tasks[1]
-    assert first["notebook_version"] != second["notebook_version"] == after_first
+    assert all("Automatic repair" not in task for task in healer.llm.tasks)
+    assert first["notebook_version"] == second["notebook_version"] == after_first
+    assert len(_proposals()) == 1
 
 
 def test_no_auto_lessons_keeps_the_notebook_and_its_label(monkeypatch):
@@ -111,7 +129,8 @@ def test_no_auto_lessons_keeps_the_notebook_and_its_label(monkeypatch):
     fixed = _healer(auto_lessons=False)
     verify_with_healing(_h(), healer=fixed, source=SOURCE, llm="spec")
     assert lessons.NOTEBOOK.read_bytes() == before
-    assert fixed.config_label != _healer().config_label == "error+notes:auto"
+    assert fixed.config_label != _healer().config_label
+    assert _healer().config_label.startswith("error+notes:quarantine-v1:")
 
 
 def test_the_flag_is_on_by_default_and_turns_off_in_both_modes():
@@ -161,8 +180,11 @@ def test_the_scan_agent_learns_from_its_rounds_and_names_the_mode(tmp_path, monk
     run(True, _h("s"))
     assert _auto_rules() == []
     on, _ = run(True, _h("a"))
-    [rule] = _auto_rules()
-    assert "- Error: `ERROR: Unsupported y`" in rule and f"- Run: {tmp_path}" in rule and "+x = b" in rule
+    [proposal] = list_proposals(tmp_path / "quarentena")
+    assert proposal["evidence"]["error"] == "ERROR: Unsupported y"
+    assert proposal["evidence"]["origin"]["run"] == str(tmp_path)
+    assert "+x = b" in proposal["evidence"]["fix"]
+    assert _auto_rules() == []
     assert off.label != on.label and on.label.endswith(":auto_lessons")
 
 
@@ -215,5 +237,5 @@ def test_a_fixed_notebook_is_read_once(monkeypatch):
     _healer().learn(_h(), [{"round": 0, "verdict_before": UNSUPPORTED, "reason_before": "ERROR: x",
                             "verdict_after": CONFIRMED, "patch": {"definitions": STUB}}], {"verdict": CONFIRMED})
     result = verify_with_healing(_h("b"), healer=fixed, source=SOURCE, llm="spec").to_dict()
-    assert result["notebook_version"] == fixed.lessons_version != lessons.notebook_version()
+    assert result["notebook_version"] == fixed.lessons_version == lessons.notebook_version()
     assert "Automatic repair" not in fixed.llm.tasks[0]

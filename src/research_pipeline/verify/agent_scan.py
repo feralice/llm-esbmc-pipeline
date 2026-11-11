@@ -4,13 +4,13 @@ run_agent_arm, with the same signature as verify.loop.run_verify so execute_scan
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import datetime
 from pathlib import Path
 
 from ..llm.rate_limit import UsageLimitReached
 from .agent_arm import AGENT_FAILED, RunAgent, run_agent_arm
+from .doc_context import documentation_snapshot, relevant_documentation
 from .hypothesis import BugHypothesis
-from .lessons import add_auto_lesson, round_repairs
+from .lessons import round_repairs
 from .outcome import PIPELINE_ERROR
 
 # run_agent_arm's reason when the session did not finish; a TimeoutExpired is the case's own result.
@@ -18,17 +18,21 @@ _UNFINISHED = "agent did not finish: "
 
 
 def learn_from_rounds(case_dir: Path, data: dict, run_dir: Path) -> int:
-    """Append to the notebook each refused round the agent's next round turned into a verdict."""
-    today = datetime.now().astimezone().date()
-    return sum(add_auto_lesson(error=c["erro"], fix=c["diff"], reached="a verdict", run=str(run_dir),
-                               case=f"{c['caso']}, round {c['rodada']}", today=today)
+    """Queue refused rounds that a later attempt turned into a verdict."""
+    from research_pipeline.maintenance.learning import queue_lesson
+
+    return sum(queue_lesson(error=c["erro"], fix=c["diff"], program=c["program"],
+                            case=c["caso"], run_dir=run_dir)
                for c in round_repairs(case_dir, data))
 
 
 def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, bound: int, timeout_seconds: int,
                    agent_timeout: int, graph_tool: bool = False, retry: bool = True,
-                   model: str | None = None, auto_lessons: bool = False) -> Callable[..., list[dict]]:
-    """``auto_lessons`` appends the repairs each case's rounds teach to the notebook the next case reads."""
+                   model: str | None = None, auto_lessons: bool = False, project_skills: bool = True,
+                   skill: bool = True, backend: str = "claude",
+                   documentation_root: Path | None = None) -> Callable[..., list[dict]]:
+    """``auto_lessons`` queues candidate repairs without changing the active notebook."""
+    docs = documentation_snapshot(documentation_root) if documentation_root is not None else None
     def verify(hypotheses: list[BugHypothesis], *, llm, output_dir: Path, completed: dict[int, dict],
                on_result: Callable[[int, dict], None], **_ignored) -> list[dict]:
         results, cases_dir = [], Path(output_dir) / "agent_cases"
@@ -39,8 +43,11 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
             try:
                 data = run_agent_arm(h, work_dir=cases_dir, run_agent=run_agent,
                                      esbmc_command=esbmc_command, bound=bound, timeout_seconds=timeout_seconds,
-                                     agent_timeout=agent_timeout, project_skills=True, log_rounds=True,
-                                     retry=retry, graph_tool=graph_tool)
+                                     agent_timeout=agent_timeout, project_skills=project_skills, skill=skill,
+                                     log_rounds=project_skills,
+                                     absolute_logger=backend == "codex", retry=retry, graph_tool=graph_tool,
+                                     documentation=(relevant_documentation(docs, documentation_root, Path(h.file),
+                                                                           h.function) if docs else ""))
                 if "skills" in data:
                     data["notebook_version"] = data["skills"].get("reparos-aprendidos", "")
             except UsageLimitReached:
@@ -52,11 +59,17 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
                 # A usage limit or a crashed session says nothing about the case: --resume runs it again.
                 data = {**data, "verdict": PIPELINE_ERROR}
             if auto_lessons and data["verdict"] != PIPELINE_ERROR:
-                learn_from_rounds(cases_dir / h.hypothesis_id, data, Path(output_dir))
+                try:
+                    learn_from_rounds(cases_dir / h.hypothesis_id, data, Path(output_dir))
+                except (OSError, ValueError) as exc:
+                    data["learning_error"] = f"{type(exc).__name__}: {exc}"
             on_result(index, data)
             results.append(data)
         return results
-    verify.label = f"agent:{model or 'default'}:graph_tool={graph_tool}:retry={retry}:timeout={agent_timeout}"
+    backend_label = "" if backend == "claude" else f"{backend}:"
+    verify.label = f"agent:{backend_label}{model or 'default'}:graph_tool={graph_tool}:retry={retry}:timeout={agent_timeout}"
+    if docs is not None:
+        verify.label += f":docs-v1={docs.digest}"
     if auto_lessons:  # off keeps the label of runs made before 05/11, which read a fixed notebook
-        verify.label += ":auto_lessons"
+        verify.label += ":lesson-quarantine-v1:auto_lessons"
     return verify

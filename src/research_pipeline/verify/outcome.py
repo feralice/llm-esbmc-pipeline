@@ -39,13 +39,16 @@ PROPERTY_REJECTED = "PROPERTY_REJECTED"
 # Self-healing (verify/healing.py) ran out of rounds before ESBMC reached a verdict: the LLM's finding stands
 # unverified, reported apart from the confirmed ones.
 LLM_ONLY = "LLM_ONLY"
+# ESBMC and the replay agree, but the failing subscript reads a dict that a stub of a library call returned with
+# free keys: the harness invented the response, so the project is not shown to be at fault.
+DEPENDS_ON_LIBRARY = "DEPENDS_ON_LIBRARY"
 
 VERDICTS = (CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED, GROUNDING_FAILED,
             MISSING_DEPENDENCY, UNSUPPORTED, SPEC_FAILED, ESBMC_TIMEOUT, ESBMC_ERROR, PIPELINE_ERROR, NO_SOURCE,
-            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, LLM_ONLY, BOUND_INCONCLUSIVE)
+            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, LLM_ONLY, BOUND_INCONCLUSIVE, DEPENDS_ON_LIBRARY)
 # Verdicts reached by a program ESBMC actually checked: the success@k numerator.
 CHECKED = frozenset({CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED,
-                     VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED})
+                     VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, DEPENDS_ON_LIBRARY})
 
 # "inconclusive" is VERIFICATION UNKNOWN or a crash without a verdict, never evidence of safety.
 _SAFE_STATUSES = frozenset({"no_violation_found", "no_vcc_generated"})
