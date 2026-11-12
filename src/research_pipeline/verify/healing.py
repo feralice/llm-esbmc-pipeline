@@ -12,6 +12,7 @@ import ast
 import difflib
 import hashlib
 import json
+import threading
 import re
 import textwrap
 from dataclasses import asdict, dataclass, replace
@@ -317,6 +318,7 @@ class Healer:
         """``lessons`` are approved repairs; ``auto_lessons`` queues candidates under ``run_dir``."""
         self.llm, self.knowledge, self.graph = llm, knowledge, graph
         self.auto_lessons, self.run_dir = auto_lessons and lessons is None, run_dir
+        self._learn_lock = threading.Lock()
         if lessons is None:
             self.lessons, self.lessons_version = read_notebook()
         else:
@@ -347,10 +349,11 @@ class Healer:
             return 0
         from research_pipeline.maintenance.learning import queue_lesson
 
-        return sum(queue_lesson(error=first_error(entry["reason_before"]), fix=fix, program=program,
-                                case=h.hypothesis_id, run_dir=self.run_dir)
-                   for entry, fix in learned_repairs(log)
-                   if first_error(entry["reason_before"]).startswith("ERROR:"))
+        with self._learn_lock:
+            return sum(queue_lesson(error=first_error(entry["reason_before"]), fix=fix, program=program,
+                                    case=h.hypothesis_id, run_dir=self.run_dir)
+                       for entry, fix in learned_repairs(log)
+                       if first_error(entry["reason_before"]).startswith("ERROR:"))
 
     def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str, previous: list[dict]) -> Patch | None:
         try:
@@ -434,12 +437,12 @@ _INTERNAL = re.compile(r"vector::_M_range_check|json\.exception|irep2_cast_error
 
 
 def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str, rounds: int = 3,
-                        spec_llm_after_heal=None, **verify_kwargs) -> VerifyResult:
+                        spec_llm_after_heal=None, triage: bool = False, **verify_kwargs) -> VerifyResult:
     """``verify_hypothesis`` plus up to ``rounds`` repairs per obstacle, while the verdict is one ESBMC never
     reached; a new ESBMC message is progress and gets its own rounds (at most ``3 * rounds`` in all).
     The result keeps the original hypothesis, which is what the metric scores."""
     result = verify_hypothesis(h, source=source, **verify_kwargs)
-    if healer is None:
+    if healer is None or (triage and result.verdict == UNSUPPORTED):
         return result
     version = healer.refresh()
     log: list[dict] = []

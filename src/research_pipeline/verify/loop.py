@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
 import dataclasses
 import re
 import time
@@ -435,37 +438,59 @@ def run_verify(
     hypotheses: list[BugHypothesis], *, llm: SpecLLM, output_dir: Path, verification_sources: Path | None = None,
     completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None,
     strict_sources: bool = False, fixed_sources: Path | None = None, healer=None, heal_rounds: int = 3,
-    **kwargs,
+    workers: int = 1, heal_triage: bool = False, **kwargs,
 ) -> list[dict]:
     """``strict_sources`` skips a hypothesis with no file in ``verification_sources`` instead of
     falling back to its detection file (needed when those files are, e.g., the fixed versions).
-    ``healer`` (verify/healing.py) repairs a hypothesis ESBMC never reached, up to ``heal_rounds`` times."""
+    ``healer`` (verify/healing.py) repairs a hypothesis ESBMC never reached, up to ``heal_rounds`` times.
+    ``workers`` > 1 verifies hypotheses in threads; results keep the input order, ``on_result`` is called one
+    at a time, and a usage limit stops the batch without starting the hypotheses still waiting."""
     from .healing import verify_with_healing  # healing imports this module
-    results: list[dict] = []
-    for index, h in enumerate(hypotheses):
+    report_lock = threading.Lock()
+    stop = threading.Event()
+
+    def verify_one(index: int, h: BugHypothesis) -> dict | None:
+        if stop.is_set():
+            return None
         if completed and index in completed:
-            results.append(completed[index])
-            continue
+            return completed[index]
         path = verification_source(h, verification_sources)
         if strict_sources and path == Path(h.file):
             data = VerifyResult(h, NO_SOURCE, "no file in the verification sources").to_dict()
-            results.append(data)
-            if on_result is not None:
-                on_result(index, data)
-            continue
+            with report_lock:
+                if on_result is not None:
+                    on_result(index, data)
+            return data
         source = path.read_text(encoding="utf-8", errors="replace")
-        print(f"[{index + 1}/{len(hypotheses)}] {Path(h.file).name}::{h.function}")
+        with report_lock:
+            print(f"[{index + 1}/{len(hypotheses)}] {Path(h.file).name}::{h.function}")
         try:
             common = {"llm": llm, "work_dir": Path(output_dir) / "programs",
                       "fixed_source": _fixed_source(h, fixed_sources), **kwargs}
-            data = (verify_with_healing(h, healer=healer, source=source, rounds=heal_rounds, **common)
+            data = (verify_with_healing(h, healer=healer, source=source, rounds=heal_rounds, triage=heal_triage,
+                                        **common)
                     if healer is not None else verify_hypothesis(h, source=source, **common)).to_dict()
         except UsageLimitReached:
+            stop.set()
             raise
         except Exception as exc:  # noqa: BLE001 - one broken case must not end the batch
             data = VerifyResult(h, PIPELINE_ERROR, f"{type(exc).__name__}: {exc}").to_dict()
-        print(f"    -> {data['verdict']} {data['reason'][:120]}")
-        results.append(data)
-        if on_result is not None:
-            on_result(index, data)
-    return results
+        with report_lock:
+            print(f"    -> {data['verdict']} {data['reason'][:120]}")
+            if on_result is not None:
+                on_result(index, data)
+        return data
+
+    if workers <= 1:
+        results = [verify_one(index, h) for index, h in enumerate(hypotheses)]
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(verify_one, index, h) for index, h in enumerate(hypotheses)]
+            try:
+                results = [future.result() for future in futures]
+            except BaseException:
+                stop.set()
+                for future in futures:
+                    future.cancel()
+                raise
+    return [r for r in results if r is not None]

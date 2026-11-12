@@ -329,7 +329,7 @@ def test_a_definition_named_only_by_itself_is_unused():
 
 
 def test_rule_names_cover_every_none_guard_kind():
-    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 14
+    assert NONE_GUARD_KINDS < ALL_RULES and len(ALL_RULES) == 15
 
 
 def test_rewrite_compat_skips_a_disabled_percent_rule():
