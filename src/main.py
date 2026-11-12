@@ -44,6 +44,7 @@ from research_pipeline.llm.backends.factory import (
     Backend,
     build_analyzer,
 )
+from research_pipeline.llm.detection_cache import make_cache
 from research_pipeline.llm.example_pool import load_example_pool
 from research_pipeline.llm.prompts import (
     load_system_prompt,
@@ -253,7 +254,7 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
                 "cached_tokens": 0, "calls_with_cache_data": 0, "seconds": 0.0,
                 "localization_calls": 0, "classification_calls": 0, "cost_usd": None, "calls_without_cost": 0,
                 "cost_reported_usd": None, "cost_estimated_usd": None, "billed_usd": None,
-                "cache_creation_tokens": 0, "usage_limit_calls": 0, "timeout_calls": 0,
+                "cache_creation_tokens": 0, "usage_limit_calls": 0, "timeout_calls": 0, "retried_calls": 0,
             },
         )
         totals["calls"] += 1
@@ -269,6 +270,7 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
             totals["billed_usd"] = round((totals["billed_usd"] or 0.0) + billed, 6)
         totals["failed_calls"] += int(event.get("status") != "success")
         totals["usage_limit_calls"] += int(event.get("error_kind") == "usage_limit")
+        totals["retried_calls"] += int((event.get("attempts") or 1) > 1)
         totals["timeout_calls"] += int(event.get("error_kind") == "timeout")
         totals["cache_creation_tokens"] += int(event.get("cache_creation_tokens") or 0)
         if event.get("analysis_stage") == "localize":
@@ -435,6 +437,8 @@ def _mode_v2_verify(
             healer=build_healer(args.heal, llm=llm, esbmc_command=args.esbmc_command,
                                 auto_lessons=args.auto_lessons, run_dir=output_path),
             heal_rounds=args.heal_rounds,
+            workers=args.workers,
+            heal_triage=args.heal_triage,
         )
         agent_results = (_agent_fallback(args, results, output_path, checkpoint, checkpoint_path)
                          if args.agent_fallback else [])
@@ -768,6 +772,7 @@ def mode_v2(args: argparse.Namespace) -> int:
     else:
         print(f"\nModo V2 — etapa 1: detecção em {len(input_paths)} arquivo(s)")
     unit_sources: dict[tuple[str, str], str] = {}
+    detection_cache = make_cache(analyzer, Path(args.detection_cache)) if args.detection_cache else None
     for file_index, file_path in enumerate(detection_inputs, 1):
         if usage_limit is not None:
             break
@@ -784,9 +789,11 @@ def mode_v2(args: argparse.Namespace) -> int:
                     detection_trace.append(saved_unit["trace"])
                 print(f"  [{file_index}/{len(input_paths)}] Retomada: {file_path.name}::{unit.qualname}")
                 continue
-            print(f"  [{file_index}/{len(input_paths)}] Analisando {file_path.name}::{unit.qualname}...")
+            cache_hit = detection_cache.get(unit) if detection_cache else None
+            label = "Cache" if cache_hit else "Analisando"
+            print(f"  [{file_index}/{len(input_paths)}] {label} {file_path.name}::{unit.qualname}...")
             try:
-                findings = analyzer.analyze(unit)
+                findings, cached_trace = cache_hit if cache_hit else (analyzer.analyze(unit), None)
             except Exception as exc:  # noqa: BLE001 - one API failure must not discard other units
                 analyzer_trace = getattr(analyzer, "detection_trace", [])
                 trace = dict(analyzer_trace[-1]) if analyzer_trace else {
@@ -809,13 +816,15 @@ def mode_v2(args: argparse.Namespace) -> int:
                     break
                 continue
             analyzer_trace = getattr(analyzer, "detection_trace", [])
-            trace = dict(analyzer_trace[-1]) if analyzer_trace else {
+            trace = cached_trace or (dict(analyzer_trace[-1]) if analyzer_trace else {
                 "function": unit.qualname,
                 "strategy": "single",
                 "located_candidates": len(findings),
                 "classified_candidates": len(findings),
                 "rejected_candidates": 0,
-            }
+            })
+            if detection_cache and cache_hit is None:
+                detection_cache.put(unit, findings, trace)
             unit_candidates: list[Candidate] = []
             unit_rejections: list[dict[str, str]] = []
             for finding in findings:

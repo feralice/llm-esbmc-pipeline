@@ -18,7 +18,7 @@ def load_rows(path: Path) -> list[dict]:
     return rows if isinstance(rows, list) else []
 
 
-_TOTALS = ("calls", "success", "usage_limit", "timeout", "legacy", "unknown_prompt", "prompt_tokens",
+_TOTALS = ("calls", "success", "usage_limit", "timeout", "retried", "legacy", "unknown_prompt", "prompt_tokens",
            "completion_tokens", "cached_tokens", "cache_creation_tokens", "cost_usd", "costed", "billed_usd")
 
 
@@ -40,6 +40,7 @@ def summarize(rows: list[dict]) -> list[dict]:
         kind = row.get("error_kind") or _legacy_error_kind(row.get("error"))
         group["usage_limit"] += kind == "usage_limit"
         group["timeout"] += kind == "timeout"
+        group["retried"] += (row.get("attempts") or 1) > 1
         group["unknown_prompt"] += row.get("prompt_tokens") is None
         group["prompt_tokens"] += row.get("prompt_tokens") or 0
         group["completion_tokens"] += row.get("completion_tokens") or 0

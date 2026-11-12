@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import re
 
 _SAFE_MODULES = frozenset({
     "abc", "bisect", "collections", "copy", "dataclasses", "decimal", "enum", "fractions",
@@ -80,12 +81,28 @@ def _attribute_path(node: ast.AST) -> tuple[str, ...]:
     return ()
 
 
+_FORMAT_TRAVERSAL = re.compile(r"\{[^{}]*[.\[]")
+
+
+def _format_problem(tree: ast.Module) -> str:
+    """``"{0._os}".format(random)`` reaches a module's attributes through the format string itself."""
+    formatting = any(isinstance(n, ast.Attribute) and n.attr in ("format", "format_map") for n in ast.walk(tree))
+    if not formatting:
+        return ""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) and _FORMAT_TRAVERSAL.search(node.value):
+            return "format string reads attributes or items"
+    return ""
+
+
 def host_replay_problem(source: str) -> str:
     """Why ``source`` must not run on the host, or "" when it only computes."""
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
         return f"syntax error: {exc.msg}"
+    if problem := _format_problem(tree):
+        return problem
     parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
     safe = _SAFE_MODULES | {"os"} | ({"asyncio"} if _only_asyncio_run(tree) else set())
     for node in ast.walk(tree):

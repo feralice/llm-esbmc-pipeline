@@ -13,6 +13,7 @@ def response_event(
     duration_seconds: float,
     response: dict | None = None,
     error: Exception | None = None,
+    attempts: int = 1,
 ) -> dict:
     """Normalize one provider call without assuming every provider reports usage.
 
@@ -51,6 +52,7 @@ def response_event(
         "cost_source": source,
         "billing": billing(provider),
         "billed_usd": cost if billing(provider) == "api" else None,
+        "attempts": attempts,
     }
 
 

@@ -38,6 +38,7 @@ class OpenAIResponsesAnalyzer:
                 "OPENAI_API_KEY não configurada. Defina a variável de ambiente ou passe api_key."
             )
         self.telemetry_events: list[dict] = []
+        self.last_attempts = 1
 
     def analyze(self, unit: CodeUnit) -> list[Finding]:
         payload = {
@@ -61,12 +62,12 @@ class OpenAIResponsesAnalyzer:
         except Exception as exc:
             self.telemetry_events.append(response_event(
                 provider="openai", requested_model=self.model,
-                duration_seconds=time.monotonic() - started, error=exc,
+                duration_seconds=time.monotonic() - started, error=exc, attempts=self.last_attempts,
             ))
             raise
         self.telemetry_events.append(response_event(
             provider="openai", requested_model=self.model,
-            duration_seconds=time.monotonic() - started, response=raw_response,
+            duration_seconds=time.monotonic() - started, response=raw_response, attempts=self.last_attempts,
         ))
         findings_data = self._extract_findings_payload(raw_response)
         findings = [finding_from_dict(item) for item in findings_data]
@@ -76,6 +77,7 @@ class OpenAIResponsesAnalyzer:
     def _post_json(self, payload: dict, _retries: int = 3) -> dict:
         body = json.dumps(payload).encode("utf-8")
         for attempt in range(_retries):
+            self.last_attempts = attempt + 1
             req = request.Request(
                 self.base_url,
                 data=body,

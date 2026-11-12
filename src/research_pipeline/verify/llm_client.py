@@ -151,6 +151,7 @@ class LLMClient:
         if backend == "ollama" and not self.api_key:
             self.api_key = "ollama"
         self.telemetry_events: list[dict] = []
+        self.last_attempts = 1
 
     def complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False,
                  timeout_seconds: float | None = None) -> SynthResult:
@@ -200,13 +201,13 @@ class LLMClient:
         except Exception as exc:
             event = response_event(
                 provider=self.backend, requested_model=self.model,
-                duration_seconds=time.monotonic() - started, error=exc,
+                duration_seconds=time.monotonic() - started, error=exc, attempts=self.last_attempts,
             )
             self.telemetry_events.append(event)
             raise
         event = response_event(
             provider=self.backend, requested_model=self.model,
-            duration_seconds=time.monotonic() - started, response=raw_response,
+            duration_seconds=time.monotonic() - started, response=raw_response, attempts=self.last_attempts,
         )
         self.telemetry_events.append(event)
 
@@ -361,6 +362,7 @@ class LLMClient:
         headers = {"x-api-key": self.api_key, "anthropic-version": "2023-06-01",
                    "Content-Type": "application/json"}
         for attempt in range(_retries):
+            self.last_attempts = attempt + 1
             try:
                 with request.urlopen(request.Request(self._ANTHROPIC_URL, data=body, headers=headers, method="POST"),
                                      timeout=_call_timeout(self.timeout_seconds)) as response:
@@ -391,6 +393,7 @@ class LLMClient:
             _pause(self.request_delay)
         body = json.dumps(payload).encode("utf-8")
         for attempt in range(_retries):
+            self.last_attempts = attempt + 1
             req = request.Request(
                 self.base_url,
                 data=body,

@@ -207,6 +207,11 @@ def build_parser() -> argparse.ArgumentParser:
              "ao LLM, 'error+kb' também o README e os testes de regressão do checkout do ESBMC",
     )
     parser.add_argument("--heal-rounds", type=int, default=3, help="Rodadas de self-healing por hipótese")
+    parser.add_argument("--heal-triage", action="store_true",
+                        help="Não pede reparo para hipóteses que o ESBMC recusou como UNSUPPORTED (economiza chamadas; "
+                             "pode perder confirmações que só apareceriam depois do reparo).")
+    parser.add_argument("--workers", type=int, default=1, metavar="N",
+                        help="Hipóteses verificadas em paralelo (threads); 1 é o comportamento sequencial.")
     parser.add_argument(
         "--no-auto-lessons",
         dest="auto_lessons",
@@ -239,6 +244,11 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="DIR",
         help="Variante A11: lê o contexto (imports, classe, chamadores) do arquivo de mesmo nome deste "
              "diretório; padrão: --verification-sources.",
+    )
+    parser.add_argument(
+        "--detection-cache", default=None, metavar="PASTA",
+        help="Guarda a detecção de cada função por hash (código, modelo, prompt, variantes) e reutiliza nas próximas "
+             "rodadas com a mesma configuração, sem nova chamada à LLM.",
     )
     parser.add_argument(
         "--v2-variants",

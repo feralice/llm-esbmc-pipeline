@@ -12,6 +12,7 @@ import ast
 
 from .astutil import find_function
 from .rules import (
+    IO_ERROR_ALIAS,
     ALL_RULES,
     ATTRIBUTE_ITEM,
     BYTEARRAY,
@@ -441,6 +442,18 @@ def _function_alias_edits(tree: ast.Module) -> list[tuple[int, int, int, int, st
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in aliases]
 
 
+_IO_ERROR_NAMES = {"IOError": "OSError", "EnvironmentError": "OSError"}
+
+
+def _io_error_edits(tree: ast.Module) -> list[tuple[int, int, int, int, str]]:
+    """``IOError`` and ``EnvironmentError`` are ``OSError`` in Python 3; ESBMC-Python 8.6 does not define them.
+    Skipped when the program binds the name itself."""
+    counts = _binding_counts(tree)
+    return [(node.lineno, node.col_offset, node.end_lineno, node.end_col_offset, _IO_ERROR_NAMES[node.id])
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Name) and node.id in _IO_ERROR_NAMES and not counts.get(node.id)]
+
+
 def _bytearray_edits(tree: ast.Module, parameter_types: dict[str, dict[str, str]]) -> list[tuple[int, int, int, int, str]]:
     """ESBMC refuses ``bytearray``. A list of ints indexes, appends, extends and goes through ``bytes()`` the
     same way. Only constructors whose argument kind is known change: ``bytearray()``, ``bytearray(b"..")``,
@@ -489,7 +502,8 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
     items = _attribute_item_edits(tree, source) if ATTRIBUTE_ITEM in rules else []
     calls = _function_alias_edits(tree) if FUNCTION_ALIAS in rules else []
     arrays = _bytearray_edits(tree, parameter_types or {}) if BYTEARRAY in rules else []
-    if not percent and not aliases and not renames and not items and not calls and not arrays:
+    io_errors = _io_error_edits(tree) if IO_ERROR_ALIAS in rules else []
+    if not percent and not aliases and not renames and not items and not calls and not arrays and not io_errors:
         return source, []
     offsets = [0]
     for line in source.splitlines(keepends=True):
@@ -502,13 +516,15 @@ def rewrite_compat(source: str, *, parameter_types: dict[str, dict[str, str]] | 
     items = [e for pair in pairs if not {e[0] for e in pair} & touched for e in pair]
     calls = [c for c in calls if not any(p[:2] <= c[:2] and c[2:4] <= p[2:4] for p in percent)]
     edits = [*percent, *((line, start, line, end, text) for line, start, end, text in aliases), *renames,
-             *items, *calls, *arrays]
+             *items, *calls, *arrays, *io_errors]
     raw = source.encode("utf-8")
     for line, start, end_line, end, text in sorted(edits, reverse=True):
         raw = raw[:offsets[line - 1] + start] + text.encode("utf-8") + raw[offsets[end_line - 1] + end:]
     transforms = [f"compat_percent_format:{len(percent)}"] if percent else []
     if aliases:
         transforms.append(f"compat_method_alias:{len(aliases)}")
+    if io_errors:
+        transforms.append(f"{IO_ERROR_ALIAS}:{len(io_errors)}")
     if renames:
         transforms.append(f"{REBOUND_PARAMETER}:{len({text for *_, text in renames})}")
     if items:
