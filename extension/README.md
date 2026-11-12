@@ -20,6 +20,12 @@ In Claude Code, the command appears as `/verify-repo` (or `/llm-esbmc:verify-rep
 Requirements: the pipeline environment (`$LLM_ESBMC_HOME/.venv`), ESBMC on the `PATH` (or `--esbmc-command`) and
 Claude Code with a login (detection and the agent use the subscription, `claude_cli`).
 
+## Backend
+
+`/verify-repo <folder> [focus] backend=codex` runs the same flow with the Codex CLI (ChatGPT account) instead of
+Claude. The default is `backend=claude`. Outputs go to `artifacts/extensao/<backend>/<folder>`, so the two
+backends never overwrite each other. Gemini is not available yet: it has no command-running agent.
+
 ## Cost
 
 The command always does a dry run first and only spends after you confirm. Detection makes one call per chosen

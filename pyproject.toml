@@ -23,3 +23,24 @@ files = [
   "src/research_pipeline/verify/agent_scan.py",
   "src/research_pipeline/scan/pipeline.py",
 ]
+
+[project]
+name = "llm-esbmc"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["python-dotenv>=1.0.0", "networkx==3.6.1"]
+
+[project.scripts]
+llm-esbmc = "research_pipeline.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+py-modules = ["main"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["research_pipeline*"]
