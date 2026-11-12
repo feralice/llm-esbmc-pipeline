@@ -71,3 +71,10 @@ def test_read_only_os_helpers_may_run_on_the_host():
 ])
 def test_os_mutation_and_execution_stay_refused(source):
     assert host_replay_problem(source)
+
+
+def test_format_strings_cannot_traverse_attributes_or_items():
+    assert host_replay_problem("import random\nx = '{0._os}'.format(random)\n")
+    assert host_replay_problem("x = '{a[0]}'.format(a=[1])\n")
+    assert host_replay_problem("x = '{0.__class__}'.format(1)\n")
+    assert host_replay_problem("x = '{0} {1}'.format(1, 2)\n") == ""

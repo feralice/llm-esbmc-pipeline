@@ -221,3 +221,22 @@ def test_synthesis_claude_cli_reply_keeps_cache_tokens_and_the_cli_cost(monkeypa
     assert reply.telemetry["cached_tokens"] == 400
     assert reply.telemetry["cost_usd"] == 0.01
     assert reply.telemetry["cost_source"] == "cli_reported"
+
+
+def test_openai_retry_after_a_server_error_is_recorded_as_attempts(monkeypatch):
+    from research_pipeline.llm.backends import openai as openai_backend
+    from research_pipeline.llm.backends.openai import OpenAIResponsesAnalyzer
+
+    calls = {"n": 0}
+
+    def fake_urlopen(req, timeout):
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise error.HTTPError("https://api.openai.com", 500, "boom", {}, BytesIO(b"oops"))
+        return BytesIO(json.dumps({"output": [], "usage": {"input_tokens": 1, "output_tokens": 1}}).encode("utf-8"))
+
+    monkeypatch.setattr(openai_backend.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(openai_backend.time, "sleep", lambda seconds: None)
+    analyzer = OpenAIResponsesAnalyzer(api_key="test-key")
+    analyzer._post_json({"model": "gpt-5.5", "input": "x"})
+    assert calls["n"] == 3 and analyzer.last_attempts == 3

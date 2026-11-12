@@ -13,7 +13,7 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from research_pipeline.llm.usage_summary import load_rows, summarize
 
-HEADER = ("provider", "model", "stage", "calls", "ok", "limit", "timeout", "legacy",
+HEADER = ("provider", "model", "stage", "calls", "ok", "limit", "timeout", "retried", "legacy",
           "prompt_tok", "compl_tok", "cache_read", "cache_write", "cost_usd", "costed", "billed_usd", "no_prompt")
 
 
@@ -28,7 +28,7 @@ def main(roots: list[str]) -> None:
     print(" | ".join(HEADER))
     for group in summarize(rows):
         values = [group["provider"], group["model"], group["stage"], int(group["calls"]), int(group["success"]),
-                  int(group["usage_limit"]), int(group["timeout"]), int(group["legacy"]),
+                  int(group["usage_limit"]), int(group["timeout"]), int(group["retried"]), int(group["legacy"]),
                   int(group["prompt_tokens"]), int(group["completion_tokens"]), int(group["cached_tokens"]),
                   int(group["cache_creation_tokens"]), round(group["cost_usd"], 4), int(group["costed"]),
                   round(group["billed_usd"], 4), int(group["unknown_prompt"])]

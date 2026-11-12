@@ -204,3 +204,11 @@ def test_legacy_api_rows_keep_their_stored_cost() -> None:
                            "status": "success", "prompt_tokens": 10, "completion_tokens": 4, "cost_usd": 0.0045}])
     assert group["costed"] == 1
     assert group["cost_usd"] == 0.0045
+
+
+def test_attempts_are_recorded_and_retried_calls_counted() -> None:
+    event = response_event(provider="openai", requested_model="gpt-4o-mini", duration_seconds=1.0,
+                           response={"usage": {"input_tokens": 1, "output_tokens": 1}}, attempts=3)
+    assert event["attempts"] == 3
+    (group,) = summarize([event])
+    assert group["retried"] == 1
