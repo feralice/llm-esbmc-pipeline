@@ -272,6 +272,8 @@ def build_parser() -> argparse.ArgumentParser:
             "detecção, para comparar prompts sem gastar verificação."
         ),
     )
+    parser.add_argument("--scan-repository-context", choices=("off", "evidence"), default="off",
+                        help="Scan: contexto estático de integração e documentação, com origem (padrão: off).")
     parser.add_argument("--scan-limit", type=_positive_int, default=None, metavar="N",
                         help="Modo scan: analisa só as N primeiras funções do ranking (padrão: todas).")
     parser.add_argument("--scan-include-tests", action="store_true",

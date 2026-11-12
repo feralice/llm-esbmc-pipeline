@@ -38,7 +38,7 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
                    agent_timeout: int, graph_tool: bool = False, retry: bool = True,
                    model: str | None = None, auto_lessons: bool = False, project_skills: bool = True,
                    skill: bool = True, backend: str = "claude",
-                   documentation_root: Path | None = None) -> AgentVerifier:
+                   documentation_root: Path | None = None, repository_context=None) -> AgentVerifier:
     """``auto_lessons`` queues candidate repairs without changing the active notebook."""
     docs = documentation_snapshot(documentation_root) if documentation_root is not None else None
     def verify(hypotheses: list[BugHypothesis], *, llm, output_dir: Path, completed: dict[int, dict],
@@ -49,14 +49,15 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
                 results.append(completed[index])
                 continue
             try:
+                documentation = (repository_context(h) if repository_context is not None else
+                                 relevant_documentation(docs, documentation_root, Path(h.file), h.function)
+                                 if docs is not None and documentation_root is not None else "")
                 data = run_agent_arm(h, work_dir=cases_dir, run_agent=run_agent,
                                      esbmc_command=esbmc_command, bound=bound, timeout_seconds=timeout_seconds,
                                      agent_timeout=agent_timeout, project_skills=project_skills, skill=skill,
                                      log_rounds=project_skills,
                                      absolute_logger=backend == "codex", retry=retry, graph_tool=graph_tool,
-                                     documentation=(relevant_documentation(docs, documentation_root, Path(h.file),
-                                                                           h.function)
-                                                    if docs is not None and documentation_root is not None else ""))
+                                     documentation=documentation)
                 if "skills" in data:
                     data["notebook_version"] = data["skills"].get("reparos-aprendidos", "")
             except UsageLimitReached:
@@ -80,6 +81,8 @@ def agent_verifier(run_agent: RunAgent, *, esbmc_command: list[str] | None, boun
     configured.label = f"agent:{backend_label}{model or 'default'}:graph_tool={graph_tool}:retry={retry}:timeout={agent_timeout}"
     if docs is not None:
         configured.label += f":docs-v1={docs.digest}"
+    if repository_context is not None:
+        configured.label += f":{repository_context.config_label}"
     if auto_lessons:  # off keeps the label of runs made before 05/11, which read a fixed notebook
         configured.label += ":lesson-quarantine-v1:auto_lessons"
     return configured
