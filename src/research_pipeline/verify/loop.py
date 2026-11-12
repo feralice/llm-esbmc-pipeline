@@ -202,6 +202,7 @@ def verify_hypothesis(
     timeout_seconds: int, work_dir: Path, max_repairs: int = 2, replay_runs: int = 400,
     strategy: str = "repair", rules: frozenset[str] = ALL_RULES, spec_context: str = "none",
     graph: CallGraph | None = None, fixed_source: str | None = None, replay_source: str | None = None,
+    repository_context: str = "",
 ) -> VerifyResult:
     """``strategy="resample"`` spends the same call budget on independent samples that never see
     the previous error: the baseline a guided repair has to beat (Olausson et al., ICLR 2024).
@@ -232,6 +233,9 @@ def verify_hypothesis(
         result.spec_context = {"call_sites": facts.site_count, "references": len(facts.references),
                                "caller_guards": [f"{p}: {form}" for p, form in facts.guards],
                                "chars": len(context)}
+    if repository_context:
+        context = f"{context}\n\n{repository_context}" if context else repository_context
+        result.spec_context["repository_evidence_chars"] = len(repository_context)
     work_dir.mkdir(parents=True, exist_ok=True)
     previous, feedback, last_problems = "", "", []
     refinements, limit, held, reached = 0, 1 + max_repairs, None, ""
@@ -438,7 +442,7 @@ def run_verify(
     hypotheses: list[BugHypothesis], *, llm: SpecLLM, output_dir: Path, verification_sources: Path | None = None,
     completed: dict[int, dict] | None = None, on_result: Callable[[int, dict], None] | None = None,
     strict_sources: bool = False, fixed_sources: Path | None = None, healer=None, heal_rounds: int = 3,
-    workers: int = 1, heal_triage: bool = False, **kwargs,
+    workers: int = 1, heal_triage: bool = False, repository_context=None, **kwargs,
 ) -> list[dict]:
     """``strict_sources`` skips a hypothesis with no file in ``verification_sources`` instead of
     falling back to its detection file (needed when those files are, e.g., the fixed versions).
@@ -467,6 +471,8 @@ def run_verify(
         try:
             common = {"llm": llm, "work_dir": Path(output_dir) / "programs",
                       "fixed_source": _fixed_source(h, fixed_sources), **kwargs}
+            if repository_context is not None:
+                common["repository_context"] = repository_context(h)
             data = (verify_with_healing(h, healer=healer, source=source, rounds=heal_rounds, triage=heal_triage,
                                         **common)
                     if healer is not None else verify_hypothesis(h, source=source, **common)).to_dict()

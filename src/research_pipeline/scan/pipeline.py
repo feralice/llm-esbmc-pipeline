@@ -43,6 +43,7 @@ from ..verify.report import summarize
 from ..verify.run_report import render_run_report
 from .callgraph import CallGraph, build_callgraph
 from .context import caller_context
+from .repository_context import RepositoryContextSnapshot, collect_repository_context, render_repository_context
 from .graph_metrics import (
     architecture_smells,
     envy_candidates,
@@ -106,13 +107,16 @@ class ScanPlan:
     excluded: dict[str, int] = field(default_factory=dict)
     only: tuple[str, ...] = ()
     caller_depth: int = 1
+    repository_context: RepositoryContextSnapshot | None = None
+    context_audit: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus,
                 "only": list(self.only), "caller_depth": self.caller_depth,
                 "candidates_total": self.candidates_total, "excluded": self.excluded,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
-                "targets": [t.to_dict() for t in self.targets]}
+                "targets": [t.to_dict() for t in self.targets],
+                **({"repository_context": self.repository_context.config_label} if self.repository_context else {})}
 
 
 def _units_by_location(graph: CallGraph) -> dict[tuple[str, int], CodeUnit]:
@@ -207,16 +211,37 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
               variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
               focus: str = "", include_examples: bool = False, only: tuple[str, ...] = (),
-              caller_depth: int = 1) -> ScanPlan:
+              caller_depth: int = 1, repository_context: str = "off") -> ScanPlan:
     if caller_depth < 1:
         raise ValueError("--scan-caller-depth must be at least 1")
+    if repository_context not in {"off", "evidence"}:
+        raise ValueError("repository_context must be off or evidence")
     graph = build_callgraph(root, include_tests=include_tests)
     excluded: dict[str, int] = {}
     targets, total = select_targets(graph, limit=limit, rank=rank, include_examples=include_examples,
                                     only=only, excluded=excluded, caller_depth=caller_depth)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
                     rank, focus.strip(), excluded, only, caller_depth)
+    if repository_context == "evidence":
+        plan.repository_context = collect_repository_context(graph.root, graph)
+        for target in targets:
+            evidence = render_repository_context(plan.repository_context.by_function[target.key])
+            target.unit = replace(target.unit, caller_context=target.unit.caller_context + "\n\n" + evidence)
+        plan.estimated_tokens = estimate_tokens(targets, variants)
     plan.output_dir.mkdir(parents=True, exist_ok=True)
+    if plan.repository_context is not None:
+        audit_path = plan.output_dir / "scan_repository_context.json"
+        if audit_path.exists():
+            prior = json.loads(audit_path.read_text(encoding="utf-8"))
+            if prior.get("digest") == plan.repository_context.digest:
+                plan.context_audit = prior
+            else:
+                _write_json(audit_path.with_name(f"scan_repository_context_{prior.get('digest', 'old')[:12]}.json"), prior)
+        if not plan.context_audit:
+            plan.context_audit = {**plan.repository_context.to_dict(), "sent_to_detection": [],
+                                  "provided_to_verification": [], "sent_to_specification": [],
+                                  "delivery_note": "Recorded dispatch or successful specification attempt; not proof the model used evidence correctly."}
+        _write_json(audit_path, plan.context_audit)
     _write_json(plan.output_dir / "scan_graph.json", graph.to_dict())
     if smells:
         try:
@@ -283,7 +308,8 @@ def _hash(payload: dict) -> str:
 
 def _detection_fingerprint(plan: ScanPlan, model: str) -> str:
     return _hash({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
-                  "prompts": _prompts_hash(plan), "targets": [t.key for t in plan.targets]})
+                  "prompts": _prompts_hash(plan), "targets": [t.key for t in plan.targets],
+                  **({"repository_context": plan.repository_context.config_label} if plan.repository_context else {})})
 
 
 def _verify_fingerprint(verifier: str = "engine", verify_config: dict | None = None, spec_model: str = "") -> str:
@@ -335,6 +361,14 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     """``capabilities`` (the probes' report) only goes into the report; the rule set it gave reaches the
     verifier as the ``rules`` verify setting."""
     checkpoint_path = plan.output_dir / "scan_checkpoint.json"
+    if plan.repository_context is not None:
+        verify_kwargs = {**verify_kwargs, "repository_context": plan.repository_context}
+    def save_context(stage, identifier):
+        if plan.repository_context is not None:
+            values = plan.context_audit[stage]
+            if identifier not in values:
+                values.append(identifier)
+            _write_json(plan.output_dir / "scan_repository_context.json", plan.context_audit)
     detection = _detection_fingerprint(plan, getattr(analyzer, "model", ""))
     # A verifier names itself (agent_verifier does), so a resume never mixes the engine's verdicts with the agent's.
     spec_model = f"{getattr(spec_llm, 'backend', '')}:{getattr(spec_llm, 'model', '')}"
@@ -352,6 +386,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
         if done is not None and not done["error"]:
             continue
         print(f"  [{index}/{len(plan.targets)}] {Path(target.file).name}::{target.qualname}")
+        save_context("sent_to_detection", target.key)
         checkpoint["detection"][target.key] = _detect(analyzer, target)
         save()
 
@@ -361,8 +396,12 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     # Saved by hypothesis_id: a detection retried on resume can add hypotheses and shift every position.
     def on_result(index: int, data: dict) -> None:
         checkpoint["verify_results"][hypotheses[index].hypothesis_id] = data
+        if data.get("attempts") and (data.get("spec_context") or {}).get("repository_evidence_chars"):
+            save_context("sent_to_specification", hypotheses[index].hypothesis_id)
         save()
 
+    for hypothesis in hypotheses:
+        save_context("provided_to_verification", hypothesis.hypothesis_id)
     saved = checkpoint["verify_results"]
     completed = {index: saved[h.hypothesis_id] for index, h in enumerate(hypotheses)
                  if h.hypothesis_id in saved and saved[h.hypothesis_id].get("verdict") != "PIPELINE_ERROR"}
@@ -406,6 +445,13 @@ def _report(plan: ScanPlan, detection: dict, hypotheses: list[BugHypothesis], re
                                 if any("tokens" in r for r in results) else None),
         "levels": {"summary": level_summary(levels), "rows": levels},
         "results": results,
+        **({"repository_context": {"digest": plan.repository_context.digest,
+                                    "version": plan.repository_context.config_label.split(":")[0],
+                                    "artifact": "scan_repository_context.json",
+                                    "sent_to_detection": plan.context_audit["sent_to_detection"],
+                                    "provided_to_verification": plan.context_audit["provided_to_verification"],
+                                    "sent_to_specification": plan.context_audit["sent_to_specification"]}}
+           if plan.repository_context is not None else {}),
     }
 
 

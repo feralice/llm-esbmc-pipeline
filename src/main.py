@@ -531,7 +531,7 @@ def mode_scan(args: argparse.Namespace) -> int:
                          include_tests=args.scan_include_tests, rank=args.scan_rank,
                          smells=args.scan_smells, focus=args.scan_focus,
                          include_examples=args.scan_include_examples, only=tuple(args.scan_only),
-                         caller_depth=args.scan_caller_depth)
+                         caller_depth=args.scan_caller_depth, repository_context=args.scan_repository_context)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 1
@@ -576,6 +576,7 @@ def mode_scan(args: argparse.Namespace) -> int:
                                             project_skills=has_tools, skill=skill,
                                             backend=args.agent_backend,
                                             documentation_root=plan.root,
+                                            **({"repository_context": plan.repository_context} if plan.repository_context else {}),
                                             auto_lessons=args.auto_lessons)
     else:
         # The agent writes its own harness and ignores the rewrite rules: only the engine is probed.
@@ -999,6 +1000,9 @@ def mode_v2(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = build_parser()
     args   = parser.parse_args()
+    if args.mode != "scan" and args.scan_repository_context != "off":
+        print("--scan-repository-context evidence é exclusivo do modo scan.", file=sys.stderr)
+        return 1
 
 
     dispatch = {

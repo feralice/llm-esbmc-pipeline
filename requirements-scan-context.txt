@@ -1,0 +1,2 @@
+# Optional dependency for --scan-repository-context evidence
+PyYAML>=6.0
