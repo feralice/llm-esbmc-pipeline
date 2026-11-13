@@ -44,6 +44,7 @@ from ..verify.run_report import render_run_report
 from .callgraph import CallGraph, build_callgraph
 from .context import caller_context
 from .repository_context import RepositoryContextSnapshot, collect_repository_context, render_repository_context
+from .prefilter import drop_reason
 from .graph_metrics import (
     architecture_smells,
     envy_candidates,
@@ -109,6 +110,7 @@ class ScanPlan:
     caller_depth: int = 1
     repository_context: RepositoryContextSnapshot | None = None
     context_audit: dict = field(default_factory=dict)
+    prefilter: bool = False
 
     def to_dict(self) -> dict:
         return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus,
@@ -116,7 +118,8 @@ class ScanPlan:
                 "candidates_total": self.candidates_total, "excluded": self.excluded,
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets],
-                **({"repository_context": self.repository_context.config_label} if self.repository_context else {})}
+                **({"repository_context": self.repository_context.config_label} if self.repository_context else {}),
+                **({"prefilter": True} if self.prefilter else {})}
 
 
 def _units_by_location(graph: CallGraph) -> dict[tuple[str, int], CodeUnit]:
@@ -166,7 +169,8 @@ def _exclusion(graph: CallGraph, function, include_examples: bool) -> str:
 
 def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "callers",
                    include_examples: bool = False, only: tuple[str, ...] = (),
-                   excluded: dict[str, int] | None = None, caller_depth: int = 1) -> tuple[list[Target], int]:
+                   excluded: dict[str, int] | None = None, caller_depth: int = 1,
+                   skip: int = 0) -> tuple[list[Target], int]:
     """Returns the selection and how many functions were eligible before ``limit``; ``excluded`` receives the
     count left out per reason. ``only`` (keys or qualified names) keeps just those functions, each with its
     position in the full ranking, so a run on known functions still reports whether the ranking reaches them."""
@@ -199,6 +203,7 @@ def select_targets(graph: CallGraph, *, limit: int | None = None, rank: str = "c
         if missing:
             raise ValueError(f"--scan-only names no selectable function: {', '.join(missing)}")
         targets = [t for t in targets if t.key in only or t.qualname in only]
+    targets = targets[skip:]
     return (targets[:limit] if limit else targets), total
 
 
@@ -211,7 +216,8 @@ def estimate_tokens(targets: list[Target], variants: tuple[str, ...]) -> int:
 def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = None, include_tests: bool = False,
               variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
               focus: str = "", include_examples: bool = False, only: tuple[str, ...] = (),
-              caller_depth: int = 1, repository_context: str = "off") -> ScanPlan:
+              caller_depth: int = 1, repository_context: str = "off", prefilter: bool = False,
+              skip: int = 0) -> ScanPlan:
     if caller_depth < 1:
         raise ValueError("--scan-caller-depth must be at least 1")
     if repository_context not in {"off", "evidence"}:
@@ -219,9 +225,9 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
     graph = build_callgraph(root, include_tests=include_tests)
     excluded: dict[str, int] = {}
     targets, total = select_targets(graph, limit=limit, rank=rank, include_examples=include_examples,
-                                    only=only, excluded=excluded, caller_depth=caller_depth)
+                                    only=only, excluded=excluded, caller_depth=caller_depth, skip=skip)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
-                    rank, focus.strip(), excluded, only, caller_depth)
+                    rank, focus.strip(), excluded, only, caller_depth, prefilter=prefilter)
     if repository_context == "evidence":
         plan.repository_context = collect_repository_context(graph.root, graph)
         for target in targets:
@@ -309,7 +315,8 @@ def _hash(payload: dict) -> str:
 def _detection_fingerprint(plan: ScanPlan, model: str) -> str:
     return _hash({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
                   "prompts": _prompts_hash(plan), "targets": [t.key for t in plan.targets],
-                  **({"repository_context": plan.repository_context.config_label} if plan.repository_context else {})})
+                  **({"repository_context": plan.repository_context.config_label} if plan.repository_context else {}),
+                  **({"prefilter": True} if plan.prefilter else {})})
 
 
 def _verify_fingerprint(verifier: str = "engine", verify_config: dict | None = None, spec_model: str = "") -> str:
@@ -336,7 +343,14 @@ def _resume(checkpoint_path: Path, detection: str, verify: str) -> ScanCheckpoin
     return saved
 
 
-def _detect(analyzer, target: Target) -> DetectionState:
+def _read_module(path: str) -> str:
+    try:
+        return Path(path).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+
+
+def _detect(analyzer, target: Target, prefilter: bool = False) -> DetectionState:
     try:
         findings = analyzer.analyze(target.unit)
     except UsageLimitReached:
@@ -348,6 +362,10 @@ def _detect(analyzer, target: Target) -> DetectionState:
         expression = str(finding.metadata.get("expression", ""))
         if not finding.verifiable:
             held.append({"expression": expression, "explanation": finding.explanation})
+            continue
+        reason = drop_reason(expression, finding.explanation, _read_module(target.file), target.qualname) if prefilter else None
+        if reason:
+            held.append({"expression": expression, "explanation": finding.explanation, "reason": reason})
             continue
         candidates.append(Candidate(file=target.file, function=target.qualname, expression=expression,
                                     note=finding.explanation,
@@ -387,7 +405,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
             continue
         print(f"  [{index}/{len(plan.targets)}] {Path(target.file).name}::{target.qualname}")
         save_context("sent_to_detection", target.key)
-        checkpoint["detection"][target.key] = _detect(analyzer, target)
+        checkpoint["detection"][target.key] = _detect(analyzer, target, plan.prefilter)
         save()
 
     candidates = [Candidate.from_dict(c) for t in plan.targets for c in checkpoint["detection"][t.key]["candidates"]]

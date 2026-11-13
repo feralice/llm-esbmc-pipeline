@@ -319,6 +319,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--scan-repository-context", choices=("off", "evidence"), default="off",
                         help="Scan: contexto estático de integração e documentação, com origem (padrão: off).")
+    parser.add_argument("--scan-skip", type=int, default=0, metavar="N",
+                        help="Modo scan: pula as N primeiras funções do ranking (para varrer o próximo lote).")
+    parser.add_argument("--scan-prefilter", action="store_true",
+                        help="Scan: derruba antes do ESBMC a hipótese que diz faltar um método ou nome que o código "
+                             "define, ou que admite depender de código não mostrado. As quedas ficam em held, com o motivo.")
     parser.add_argument("--scan-limit", type=_positive_int, default=None, metavar="N",
                         help="Modo scan: analisa só as N primeiras funções do ranking (padrão: todas).")
     parser.add_argument("--scan-include-tests", action="store_true",

@@ -552,7 +552,8 @@ def mode_scan(args: argparse.Namespace) -> int:
                          include_tests=args.scan_include_tests, rank=args.scan_rank,
                          smells=args.scan_smells, focus=args.scan_focus,
                          include_examples=args.scan_include_examples, only=tuple(args.scan_only),
-                         caller_depth=args.scan_caller_depth, repository_context=args.scan_repository_context)
+                         caller_depth=args.scan_caller_depth, repository_context=args.scan_repository_context,
+                         prefilter=args.scan_prefilter, skip=args.scan_skip)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 1
