@@ -45,6 +45,7 @@ from research_pipeline.llm.backends.factory import (
     build_analyzer,
 )
 from research_pipeline.llm.detection_cache import make_cache
+from research_pipeline.llm.prompt_routing import DEFAULT_VARIANTS, ROUTING_VERSION, route_variants
 from research_pipeline.llm.example_pool import load_example_pool
 from research_pipeline.llm.prompts import (
     load_system_prompt,
@@ -609,7 +610,8 @@ def mode_scan(args: argparse.Namespace) -> int:
 
 
 def mode_v2(args: argparse.Namespace) -> int:
-    variants = tuple(v for v in args.v2_variants.split(",") if v)
+    routing = args.v2_variants.strip() == "auto"
+    variants = DEFAULT_VARIANTS if routing else tuple(v for v in args.v2_variants.split(",") if v)
     input_paths = _resolve_input_paths(args.input)
     if not input_paths:
         print("Nenhum arquivo Python encontrado para a V2.", file=sys.stderr)
@@ -680,6 +682,7 @@ def mode_v2(args: argparse.Namespace) -> int:
         "synth_model": synth_model,
         "v2_stage": args.v2_stage,
         "v2_variants": list(variants),
+        "routing": ROUTING_VERSION if routing else None,
         "input_files": [str(path.resolve()) for path in input_paths],
         "excluded_patch_context_files": len(all_input_paths) - len(input_paths),
         "verification_sources": args.verification_sources,
@@ -789,6 +792,8 @@ def mode_v2(args: argparse.Namespace) -> int:
                     detection_trace.append(saved_unit["trace"])
                 print(f"  [{file_index}/{len(input_paths)}] Retomada: {file_path.name}::{unit.qualname}")
                 continue
+            if routing:
+                analyzer.v2_variants = route_variants(unit.source)
             cache_hit = detection_cache.get(unit) if detection_cache else None
             label = "Cache" if cache_hit else "Analisando"
             print(f"  [{file_index}/{len(input_paths)}] {label} {file_path.name}::{unit.qualname}...")
@@ -823,6 +828,8 @@ def mode_v2(args: argparse.Namespace) -> int:
                 "classified_candidates": len(findings),
                 "rejected_candidates": 0,
             })
+            if routing:
+                trace = {**trace, "variants": list(analyzer.v2_variants)}
             if detection_cache and cache_hit is None:
                 detection_cache.put(unit, findings, trace)
             unit_candidates: list[Candidate] = []

@@ -17,11 +17,16 @@ from research_pipeline.models import CodeUnit, Finding
 _FORMAT = "detection-cache-v1"
 
 
-def make_cache(analyzer, root: Path) -> DetectionCache:
+def _prefix(analyzer) -> str:
     system_prompt = load_system_prompt(include_smells=bool(getattr(analyzer, "include_smells", True)),
                                        v2_detection=bool(getattr(analyzer, "v2_detection", False)),
                                        v2_variants=tuple(getattr(analyzer, "v2_variants", ()) or ()))
-    return DetectionCache(root, _fingerprint(analyzer, system_prompt))
+    return _fingerprint(analyzer, system_prompt)
+
+
+def make_cache(analyzer, root: Path) -> DetectionCache:
+    """The prefix is read per call: with routing the variants change from one function to the next."""
+    return DetectionCache(root, _prefix(analyzer), prefix_for=lambda _unit: _prefix(analyzer))
 
 
 def _fingerprint(analyzer, system_prompt: str) -> str:
@@ -38,12 +43,14 @@ def _fingerprint(analyzer, system_prompt: str) -> str:
 
 
 class DetectionCache:
-    def __init__(self, root: Path, key_prefix: str):
+    def __init__(self, root: Path, key_prefix: str, prefix_for=None):
         self.root = Path(root)
         self.key_prefix = key_prefix
+        self.prefix_for = prefix_for
 
     def _path(self, unit: CodeUnit) -> Path:
-        digest = hashlib.sha256(f"{self.key_prefix}\0{unit.source}".encode("utf-8")).hexdigest()
+        prefix = self.prefix_for(unit) if self.prefix_for else self.key_prefix
+        digest = hashlib.sha256(f"{prefix}\0{unit.source}".encode("utf-8")).hexdigest()
         return self.root / f"{digest}.json"
 
     def get(self, unit: CodeUnit) -> tuple[list[Finding], dict] | None:
