@@ -1,0 +1,8 @@
+## DECORATORS
+
+When a `<UNTRUSTED_CONTEXT_DECORATORS>` section is present, it lists the decorators of the function
+(for example `@staticmethod`, `@classmethod`, `@property`, `@lru_cache`). The code above starts at `def`
+and does not show them. Decorators change how the function is called: a `@staticmethod` takes no
+receiver, a `@classmethod` receives the class, a `@property` is read without parentheses. Do not report
+a call-signature problem that a listed decorator explains.
+

@@ -95,6 +95,7 @@ class _UnitCollector(ast.NodeVisitor):
             hints["return"] = ast.unparse(node.returns)
 
         return CodeUnit(
+            decorators=[f"@{ast.unparse(d)}" for d in node.decorator_list],
             path=self.path,
             name=node.name,
             qualname=qualname,

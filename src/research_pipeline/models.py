@@ -36,6 +36,7 @@ class CodeUnit:
     metrics: dict[str, int]            # Simple metrics such as line and parameter count.
     kind: str = "function"             # ``function`` or ``module``.
     caller_context: str = ""           # Call sites from the repo graph (scan mode, variant A12).
+    decorators: list[str] = field(default_factory=list)  # "@staticmethod", ...; source starts at def (variant A22).
 
 
 # ---------------------------------------------------------------------------
