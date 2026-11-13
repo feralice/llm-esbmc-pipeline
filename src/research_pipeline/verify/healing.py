@@ -47,6 +47,9 @@ from .preservation import same_code
 
 SYSTEM_PROMPT = (Path(__file__).resolve().parents[1] / "prompts" / "healing_prompt.txt").read_text(encoding="utf-8")
 HEALABLE = frozenset({GROUNDING_FAILED, MISSING_DEPENDENCY, UNSUPPORTED})
+# ESBMC-Python refusals with no rewrite that keeps the bug: repairing the harness only spends calls (PGENE601 11/11:
+# the async entry point and numpy array parameter refusals). Other refusals have rewrites or annotations.
+_NO_WORKAROUND = re.compile(r"async entry point|numpy array parameter is expected", re.I)
 
 
 class PatchError(ValueError):
@@ -442,7 +445,7 @@ def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str,
     reached; a new ESBMC message is progress and gets its own rounds (at most ``3 * rounds`` in all).
     The result keeps the original hypothesis, which is what the metric scores."""
     result = verify_hypothesis(h, source=source, **verify_kwargs)
-    if healer is None or (triage and result.verdict == UNSUPPORTED):
+    if healer is None or (result.verdict == UNSUPPORTED and (triage or _NO_WORKAROUND.search(result.reason))):
         return result
     version = healer.refresh()
     log: list[dict] = []
