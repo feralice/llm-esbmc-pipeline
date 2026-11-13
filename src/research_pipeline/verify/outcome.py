@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import re
 from dataclasses import dataclass, field
 
@@ -36,6 +37,7 @@ NO_SOURCE = "NO_SOURCE"
 VALUE_VIOLATION = "VALUE_VIOLATION"
 VALUE_CONFIRMED = "VALUE_CONFIRMED"
 PROPERTY_REJECTED = "PROPERTY_REJECTED"
+HANDLED_BY_CALLER = "HANDLED_BY_CALLER"
 # Self-healing (verify/healing.py) ran out of rounds before ESBMC reached a verdict: the LLM's finding stands
 # unverified, reported apart from the confirmed ones.
 LLM_ONLY = "LLM_ONLY"
@@ -45,10 +47,11 @@ DEPENDS_ON_LIBRARY = "DEPENDS_ON_LIBRARY"
 
 VERDICTS = (CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED, GROUNDING_FAILED,
             MISSING_DEPENDENCY, UNSUPPORTED, SPEC_FAILED, ESBMC_TIMEOUT, ESBMC_ERROR, PIPELINE_ERROR, NO_SOURCE,
-            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, LLM_ONLY, BOUND_INCONCLUSIVE, DEPENDS_ON_LIBRARY)
+            VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, LLM_ONLY, BOUND_INCONCLUSIVE, DEPENDS_ON_LIBRARY,
+            HANDLED_BY_CALLER)
 # Verdicts reached by a program ESBMC actually checked: the success@k numerator.
 CHECKED = frozenset({CONFIRMED, ESBMC_MISSED, UNVALIDATED, OTHER_FAILURE, NOT_CONFIRMED,
-                     VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, DEPENDS_ON_LIBRARY})
+                     VALUE_CONFIRMED, VALUE_VIOLATION, PROPERTY_REJECTED, DEPENDS_ON_LIBRARY, HANDLED_BY_CALLER})
 
 # "inconclusive" is VERIFICATION UNKNOWN or a crash without a verdict, never evidence of safety.
 _SAFE_STATUSES = frozenset({"no_violation_found", "no_vcc_generated"})
@@ -111,11 +114,27 @@ _TERMINAL = {"timeout": ESBMC_TIMEOUT, "missing_dependency": MISSING_DEPENDENCY,
              "repairable": UNSUPPORTED, "error": ESBMC_ERROR}
 
 
-def final_verdict(reading: EsbmcReading, replay: ReplayVerdict) -> str:
+def handles(exception: str, handlers: frozenset[str]) -> bool:
+    """Whether one of the caught names (``ValueError``, ``Exception``...) catches ``exception``."""
+    cls = getattr(builtins, exception, None)
+    if not (isinstance(cls, type) and issubclass(cls, BaseException)):
+        return False
+    return any(isinstance(getattr(builtins, name, None), type) and issubclass(cls, getattr(builtins, name))
+               for name in handlers)
+
+
+def final_verdict(reading: EsbmcReading, replay: ReplayVerdict,
+                  caught: tuple[frozenset[str], ...] = ()) -> str:
+    """``caught``: per call site of the target, the exception names its caller catches. When every site
+    catches the exception, the failure is not reachable as a crash: HANDLED_BY_CALLER, not CONFIRMED."""
     if reading.kind == "violation":
         if replay.status == "reproduced":
             # ESBMC must have seen the same failure the replay reproduced at the hypothesis.
-            return CONFIRMED if replay.exception_type in reading.exceptions else UNVALIDATED
+            if replay.exception_type not in reading.exceptions:
+                return UNVALIDATED
+            if caught and all(handles(replay.exception_type, sites) for sites in caught):
+                return HANDLED_BY_CALLER
+            return CONFIRMED
         return OTHER_FAILURE if replay.status == "other_failure" else UNVALIDATED
     if reading.kind == "artifact":
         return BOUND_INCONCLUSIVE

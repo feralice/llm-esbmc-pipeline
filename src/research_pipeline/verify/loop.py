@@ -20,7 +20,7 @@ from ..llm.rate_limit import UsageLimitReached
 from ..scan.callgraph import CallGraph
 from .astutil import undefined_globals
 from .attempts import prepare_spec
-from .caller_facts import collect_facts, render_section
+from .caller_facts import caught_by_callers, collect_facts, render_section
 from .grounding import Grounded, GroundingFailure, ground
 from .external_origin import stubbed_response_origin
 from .hypothesis import VALUE_ORACLE, BugHypothesis
@@ -228,6 +228,7 @@ def verify_hypothesis(
         return finish(verdict, reason)
 
     facts = collect_facts(h, grounded, source, graph=graph) if spec_context == "callers" else None
+    caught = caught_by_callers(h, source, graph)
     context = render_section(facts, grounded) if facts is not None else ""
     if facts is not None:
         result.spec_context = {"call_sites": facts.site_count, "references": len(facts.references),
@@ -322,7 +323,7 @@ def verify_hypothesis(
         if value:
             return finish(*_value_outcome(result, reading, esbmc, program, grounded, replay, fixed_source,
                                            source if replay_source is None else replay_source))
-        verdict = final_verdict(reading, replay)
+        verdict = final_verdict(reading, replay, caught)
         if verdict == OTHER_FAILURE and held is None and strategy == "repair" and refinements < MAX_REFINEMENTS \
                 and _failed_before_target(replay):
             held = (replay.to_dict(), reading.message, result.harness_state)
