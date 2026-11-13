@@ -35,6 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--focus", default="", help="foco em texto livre")
     scan.add_argument("--out", type=Path, metavar="PASTA",
                       help="pasta de saída (padrão: artifacts/cli/<backend>/<nome da pasta>)")
+    scan.add_argument("--resume", action="store_true",
+                      help="retoma do checkpoint da pasta de saída, sem repetir chamadas já feitas")
     scan.add_argument("--yes", action="store_true",
                       help="gasta a cota: chamadas à LLM e agente que tenta confirmar cada hipótese com ESBMC")
     return parser
@@ -49,6 +51,8 @@ def scan_argv(args: argparse.Namespace) -> list[str]:
         argv += ["--scan-focus", args.focus]
     if args.limit is not None:
         argv += ["--scan-limit", str(args.limit)]
+    if args.resume:
+        argv.append("--resume")
     if args.yes:
         argv += ["--yes", "--scan-verify", "agent"]
     return argv

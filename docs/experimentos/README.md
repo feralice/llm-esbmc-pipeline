@@ -4,6 +4,8 @@ Rodada de 10/11/2026, em andamento: [varredura do pymodbus com Codex](scan_pymod
 
 Rodada de 10/11/2026: [varredura do pyserial e revisão dos resultados](scan_pyserial_2026-11-10.md). A investigação dos crashes está em andamento.
 
+Rodada de 12/11/2026: [varredura do Adafruit CircuitPython GPS pela CLI `llm-esbmc`](scan_cps_gps_2026-11-12.md). 2 confirmados pelo ESBMC, ambos com alcance a verificar.
+
 Toda rodada do pipeline entra aqui: o que foi, quando, com qual código, com qual comando, onde está a
 saída e o que deu. As saídas ficam em `artifacts/v2/<pasta>` (fora do git); este registro é a parte
 versionada. Rodada nova = linha nova na tabela e seção nova abaixo, antes de discutir o resultado.
