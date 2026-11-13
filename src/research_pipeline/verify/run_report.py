@@ -11,6 +11,7 @@ from .levels import limit_group
 from .outcome import CHECKED
 
 _CONFIRMED = ("CONFIRMED",)
+_HANDLED = ("HANDLED_BY_CALLER",)
 # ESBMC confirmed it on a body the agent changed: evidence, never a confirmed bug of the real code.
 _SIMPLIFIED = ("CONFIRMED_SIMPLIFIED",)
 # ESBMC decided nothing; CPython alone raised the exception at the suspect expression, past the same controls.
@@ -61,6 +62,7 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
     environment), each with ``file``, ``function``, ``expression`` and ``explanation``. ``detection``: how many
     functions were analysed and the errors of those that failed, so a failed scan never reads as a clean one."""
     confirmed = sorted((r for r in results if r["verdict"] in _CONFIRMED), key=lambda r: -len(evidence(r)))
+    handled = [r for r in results if r["verdict"] in _HANDLED]
     simplified = [r for r in results if r["verdict"] in _SIMPLIFIED]
     cpython = sorted((r for r in results if r["verdict"] in _CPYTHON), key=lambda r: -len(evidence(r)))
     rejected = [r for r in results if r["verdict"] in _REJECTED]
@@ -78,14 +80,20 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
                     "Essas funções não foram analisadas: o relatório abaixo não diz nada sobre elas.", "",
                     *(f"- {error[:200]}" for error in errors[:10]), ""]
     lines = ["# Relatório da rodada", "", *failures,
-             (f"{len(results)} hipóteses: {len(confirmed)} confirmadas pelo ESBMC, {len(rejected)} barradas pelos "
+             (f"{len(results)} hipóteses: {len(confirmed)} confirmadas pelo ESBMC (isoladas), {len(handled)} tratadas "
+              f"pelo chamador, {len(rejected)} barradas pelos "
               f"controles, {len(simplified)} confirmadas só em código simplificado, {len(cpython)} reproduzidas só no "
               f"CPython, {len(results) - len(confirmed) - len(rejected) - len(simplified) - len(cpython)} não confirmadas (o ESBMC disse seguro, "
               "não decidiu, ou o harness não chegou a rodar)."), "",
-             f"## Confirmados ({len(confirmed)})", "",
-             "Do mais para o menos verificado. Cada um passa por auditoria manual antes de virar issue.", "",
-             "O replay executa o programa gerado e não demonstra, sozinho, que seu estado é alcançável no projeto.", "",
+             f"## Confirmados isolados ({len(confirmed)})", "",
+             "O ESBMC e o replay confirmaram a exceção na função isolada. Isso não prova que o projeto chega a esse "
+             "estado: confira os chamadores e a entrada pública antes de chamar de bug (ver o checklist em docs/projeto). "
+             "Cada um passa por auditoria manual antes de virar issue.", "",
              *(_confirmed(r, root) for r in confirmed), "",
+             f"## Tratados pelo chamador ({len(handled)})", "",
+             "O ESBMC confirmou a exceção na função isolada, mas todo chamador conhecido a captura. Não chega ao usuário "
+             "por esse caminho.", "",
+             *(f"- {_where(r, root)}: {r.get('reason', '')}" for r in handled), "",
              f"## Reproduzidos só no CPython ({len(cpython)})", "",
              "O ESBMC não chegou a um veredito; o CPython levantou o erro na expressão suspeita, com o corpo original e",
              "os mesmos controles. Evidência de execução, sem prova formal.", "",

@@ -125,6 +125,47 @@ def _defaults(function: ast.FunctionDef, params: set[str]) -> dict[str, str]:
     return {a.arg: kind for a, d in pairs if a.arg in params and (kind := literal_type(d))}
 
 
+def caught_by_callers(h: BugHypothesis, source: str, graph: CallGraph | None) -> tuple[frozenset[str], ...]:
+    """For each call site of the target function, the exception names an enclosing ``try`` in the caller
+    catches. Empty when a site cannot be located or there is no site: then no caller is known to catch."""
+    try:
+        tree = ast.parse(source)
+        if graph is None:
+            graph = build_source_callgraph(source, Path(h.file).name)
+    except (SyntaxError, ValueError, RecursionError):
+        return ()
+    key = function_key(graph, h.file, h.function)
+    sites = graph.callers(key) if key else []
+    if not sites:
+        return ()
+    caught = []
+    for site_tree, call in _site_calls(graph, sites):
+        if call is None:
+            return ()
+        caught.append(_caught_at(site_tree, call))
+    return tuple(caught)
+
+
+def _caught_at(tree: ast.Module, call: ast.Call) -> frozenset[str]:
+    parents = {id(child): node for node in ast.walk(tree) for child in ast.iter_child_nodes(node)}
+    names: set[str] = set()
+    node: ast.AST = call
+    while id(node) in parents and not isinstance(node, _SCOPES):
+        parent = parents[id(node)]
+        if isinstance(parent, ast.Try) and any(node is statement for statement in parent.body):
+            for handler in parent.handlers:
+                names |= _handler_names(handler)
+        node = parent
+    return frozenset(names)
+
+
+def _handler_names(handler: ast.ExceptHandler) -> set[str]:
+    if handler.type is None:
+        return {"BaseException"}
+    types = handler.type.elts if isinstance(handler.type, ast.Tuple) else [handler.type]
+    return {t.id if isinstance(t, ast.Name) else t.attr for t in types if isinstance(t, (ast.Name, ast.Attribute))}
+
+
 def _call_at(tree: ast.Module, site: CallSite) -> ast.Call | None:
     return next((n for n in ast.walk(tree) if isinstance(n, ast.Call) and n.lineno == site.line
                  and (n.end_lineno or n.lineno) == site.end_line and _shorten(ast.unparse(n.func)) == site.expression),

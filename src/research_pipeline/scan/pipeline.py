@@ -477,7 +477,7 @@ def summary_markdown(report: dict) -> str:
         f"- Vereditos: {verdicts or 'nenhum'}.",
         f"- Nível que decidiu: {_levels_text(report['levels']['summary']['by_level'])}.",
     ]
-    for title, verdict in (("Reproduzidos no programa gerado (ESBMC e CPython; falta conferir no projeto)", CONFIRMED),
+    for title, verdict in (("Confirmados isolados: ESBMC e replay (o alcance no projeto ainda não foi verificado)", CONFIRMED),
                            ("Reproduzidos só no CPython (o ESBMC não decidiu)", REPRODUCED_CPYTHON)):
         lines += ["", f"## {title}", ""]
         found = [r for r in report["results"] if r["verdict"] == verdict]

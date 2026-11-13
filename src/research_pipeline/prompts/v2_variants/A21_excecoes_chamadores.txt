@@ -1,0 +1,8 @@
+## EXCEPTIONS AND REACHABILITY
+
+After the function comes an `UNTRUSTED_CONTEXT_EXCEPTIONS` block: for each caller in the file, the exceptions
+the call already catches, and the functions nothing in the file calls (possible public entries). An exception
+that every caller catches does not crash the program: do not report it as a bug unless the failing value can
+also reach the function another way. For each finding, say in `explanation` which public entry can pass the
+failing value and in what format. If only a caller that validates the value can pass it, say so and lower
+the confidence. Do not report findings about the callers' code.

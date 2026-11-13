@@ -64,7 +64,7 @@ def test_report_lists_confirmed_first_with_their_test():
                                         pytest={"status": "reproduces", "path": "cases/a/test_replay.py"},
                                         replay={"exception_type": "TypeError", "inputs": [""]})])
     sections = [line for line in report.splitlines() if line.startswith("## ")]
-    assert sections[0].startswith("## Confirmados (1)")
+    assert sections[0].startswith("## Confirmados isolados (1)")
     assert "cases/a/test_replay.py" in report.split(sections[1])[0]
 
 
@@ -92,12 +92,12 @@ def test_report_lists_held_findings_apart_and_never_as_confirmed():
     report = render_run_report([_result("CONFIRMED")], held=held)
     section = report.split("## Suspeitas do LLM que o ESBMC não verifica (1)")[1]
     assert "`x.py::g`" in section and "round(x)" in section and "wrong rounding" in section
-    assert report.index("## Confirmados (1)") < report.index("## Suspeitas do LLM que o ESBMC não verifica")
+    assert report.index("## Confirmados isolados (1)") < report.index("## Suspeitas do LLM que o ESBMC não verifica")
 
 
 def test_simplified_confirmations_are_not_counted_as_confirmed():
     report = render_run_report([_result("CONFIRMED"), _result("CONFIRMED_SIMPLIFIED", "body changed")])
-    assert "## Confirmados (1)" in report and "1 confirmadas pelo ESBMC" in report
+    assert "## Confirmados isolados (1)" in report and "1 confirmadas pelo ESBMC (isoladas)" in report
     section = report.split("## Confirmados em código simplificado (1)")[1].split("## ")[0]
     assert "body changed" in section
 
@@ -136,8 +136,8 @@ def test_cpython_only_reproductions_are_listed_below_esbmc_confirmations():
     cpython = _result("REPRODUCED_CPYTHON", "ESBMC reached no decision", function="g",
                       replay={"exception_type": "KeyError", "inputs": ["k"]}, pytest={"status": "reproduces", "path": "t.py"})
     report = render_run_report([_result("CONFIRMED"), cpython])
-    assert "1 confirmadas pelo ESBMC" in report and "1 reproduzidas só no CPython" in report
+    assert "1 confirmadas pelo ESBMC (isoladas)" in report and "1 reproduzidas só no CPython" in report
     section = report.split("## Reproduzidos só no CPython (1)")[1].split("## ")[0]
     assert "x.py::g" in section and "KeyError" in section and "t.py" in section
-    assert report.index("## Confirmados (1)") < report.index("## Reproduzidos só no CPython")
+    assert report.index("## Confirmados isolados (1)") < report.index("## Reproduzidos só no CPython")
     assert "x.py::g" not in report.split("## Suspeitas do LLM")[1]

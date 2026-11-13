@@ -390,7 +390,7 @@ def test_execute_scan_writes_relatorio_md(tmp_path: Path) -> None:
     plan = plan_scan(_repo(tmp_path), tmp_path / "out")
     execute_scan(plan, analyzer=_Analyzer(), spec_llm=None, verify=_fake_verify([]))
     text = (tmp_path / "out" / "relatorio.md").read_text(encoding="utf-8")
-    assert "## Confirmados (1)" in text and "## Suspeitas do LLM que o ESBMC não verifica (1)" in text
+    assert "## Confirmados isolados (1)" in text and "## Suspeitas do LLM que o ESBMC não verifica (1)" in text
 
 
 def test_agent_results_without_tokens_report_cost_as_unmeasured(tmp_path: Path) -> None:
