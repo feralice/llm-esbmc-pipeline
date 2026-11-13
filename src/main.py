@@ -45,6 +45,7 @@ from research_pipeline.llm.backends.factory import (
     build_analyzer,
 )
 from research_pipeline.llm.detection_cache import make_cache
+from research_pipeline.llm.failure_policy import FailurePolicy, RetryingAnalyzer
 from research_pipeline.llm.prompt_routing import DEFAULT_VARIANTS, ROUTING_VERSION, route_variants
 from research_pipeline.llm.example_pool import load_example_pool
 from research_pipeline.llm.prompts import (
@@ -56,6 +57,7 @@ from research_pipeline.llm.prompts import (
 from research_pipeline.llm.rate_limit import USAGE_LIMIT_EXIT, UsageLimitReached
 from research_pipeline.llm.schema import v2_findings_schema
 from research_pipeline.preprocess import preprocess_file
+from research_pipeline.scan.pipeline import DEFAULT_VARIANTS as DEFAULT_SCAN_VARIANTS
 from research_pipeline.scan.pipeline import execute_scan, judge_smells, plan_scan
 from research_pipeline.verify.candidate import Candidate
 from research_pipeline.verify.capabilities import resolve_rules
@@ -256,6 +258,7 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
                 "localization_calls": 0, "classification_calls": 0, "cost_usd": None, "calls_without_cost": 0,
                 "cost_reported_usd": None, "cost_estimated_usd": None, "billed_usd": None,
                 "cache_creation_tokens": 0, "usage_limit_calls": 0, "timeout_calls": 0, "retried_calls": 0,
+                "operational_retries": 0, "context_reduced_calls": 0,
             },
         )
         totals["calls"] += 1
@@ -273,6 +276,8 @@ def _summarize_v2_telemetry(events: list[dict]) -> dict:
         totals["usage_limit_calls"] += int(event.get("error_kind") == "usage_limit")
         totals["retried_calls"] += int((event.get("attempts") or 1) > 1)
         totals["timeout_calls"] += int(event.get("error_kind") == "timeout")
+        totals["operational_retries"] += int(event.get("operational_retries") or 0)
+        totals["context_reduced_calls"] += int(bool(event.get("context_reduced")))
         totals["cache_creation_tokens"] += int(event.get("cache_creation_tokens") or 0)
         if event.get("analysis_stage") == "localize":
             totals["localization_calls"] += 1
@@ -488,6 +493,14 @@ def _mode_v2_verify(
     return 0
 
 
+def maintenance_dir() -> Path:
+    """LLM_ESBMC_MAINTENANCE_DIR, else the E: drive when mounted (WSL), else inside the repository."""
+    if os.environ.get("LLM_ESBMC_MAINTENANCE_DIR"):
+        return Path(os.environ["LLM_ESBMC_MAINTENANCE_DIR"])
+    base = Path("/mnt/e") if Path("/mnt/e").is_dir() else REPO_ROOT / "artifacts"
+    return base / "manutencao_automatica"
+
+
 def _schedule_automatic_maintenance(args: argparse.Namespace, run_dir: Path) -> None:
     """Inicia o processador de propostas sem bloquear a rodada de análise."""
     if not args.auto_lessons:
@@ -496,11 +509,15 @@ def _schedule_automatic_maintenance(args: argparse.Namespace, run_dir: Path) -> 
 
     try:
         result = start_automatic_worker(REPO_ROOT, Path(run_dir), args.esbmc_command or ["esbmc"],
-                                        Path("/mnt/e/manutencao_automatica"))
+                                        maintenance_dir())
         if result.get("scheduled") or result.get("started"):
             print(f"Avaliação automática das lições agendada; log previsto se houver propostas: {result['log']}")
     except (OSError, ValueError) as exc:
         print(f"Não foi possível iniciar avaliação automática: {exc}", file=sys.stderr)
+
+
+def _failure_policy(args: argparse.Namespace) -> FailurePolicy:
+    return FailurePolicy(retries=args.operational_retries, reduce_context=args.operational_shrink_context)
 
 
 def _build_synthesizer(args: argparse.Namespace, synth_backend: str, synth_model: str,
@@ -519,6 +536,8 @@ def _build_synthesizer(args: argparse.Namespace, synth_backend: str, synth_model
         else "https://api.openai.com/v1/responses",
         timeout_seconds=args.llm_timeout,
         request_delay=4.0 if synth_backend == "google" else 0.0,
+        isolated=args.claude_isolated,
+        policy=_failure_policy(args),
     )
 
 
@@ -528,7 +547,8 @@ def mode_scan(args: argparse.Namespace) -> int:
         print("O modo scan recebe um único diretório de repositório em --input.", file=sys.stderr)
         return 1
     try:
-        plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit,
+        variants = tuple(v for v in args.v2_variants.split(",") if v) or DEFAULT_SCAN_VARIANTS
+        plan = plan_scan(root, args.output_dir or _default_output_dir("scan"), limit=args.scan_limit, variants=variants,
                          include_tests=args.scan_include_tests, rank=args.scan_rank,
                          smells=args.scan_smells, focus=args.scan_focus,
                          include_examples=args.scan_include_examples, only=tuple(args.scan_only),
@@ -553,7 +573,8 @@ def mode_scan(args: argparse.Namespace) -> int:
         analyzer = build_analyzer(backend=backend, llm_model=model, openai_api_key=openai_key,
                                   anthropic_api_key=anthropic_key, google_api_key=google_key,
                                   ollama_base_url=args.ollama_base_url, timeout_seconds=args.llm_timeout,
-                                  include_smells=False, v2_detection=True, v2_variants=plan.variants)
+                                  include_smells=False, v2_detection=True, v2_variants=plan.variants,
+                                  claude_isolated=args.claude_isolated)
         spec_llm = _build_synthesizer(args, synth_backend, synth_model, openai_key, google_key)
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
@@ -636,9 +657,9 @@ def mode_v2(args: argparse.Namespace) -> int:
     model = _resolve_model(args.model, backend)
     if backend in {"codex", "claude_cli"} and not args.model:
         model = ""
-    if backend not in {"openai", "ollama", "google", "codex", "claude_cli"}:
+    if backend not in {"openai", "anthropic", "ollama", "google", "codex", "claude_cli"}:
         print(
-            "O modo V2 detecta via OpenAI, Gemini, Ollama, Codex CLI ou Claude CLI.",
+            "O modo V2 detecta via OpenAI, Anthropic, Gemini, Ollama, Codex CLI ou Claude CLI.",
             file=sys.stderr,
         )
         return 1
@@ -658,7 +679,10 @@ def mode_v2(args: argparse.Namespace) -> int:
             include_smells=False,
             v2_detection=True,
             v2_variants=variants,
+            claude_isolated=args.claude_isolated,
         )
+        if args.operational_retries:
+            analyzer = RetryingAnalyzer(analyzer, _failure_policy(args))
         context_sources = args.context_sources or args.verification_sources
         set_context_sources(Path(context_sources) if context_sources else None)
         if "A13" in variants:
@@ -701,6 +725,17 @@ def mode_v2(args: argparse.Namespace) -> int:
         # Only when on, so a --no-auto-lessons run keeps the fingerprint of runs that read a fixed notebook.
         config["auto_lessons"] = True
         config["lesson_storage"] = "quarantine-v1"
+    # Only when changed from the default, so older checkpoints keep their fingerprint.
+    if args.profile and args.profile != "padrao":
+        config["profile"] = args.profile
+    if args.claude_isolated:
+        config["claude_isolated"] = True
+    if args.operational_retries:
+        config["operational_policy"] = _failure_policy(args).as_config()
+    if args.heal_triage:
+        config["heal_triage"] = True
+    if args.heal_rounds != 3:
+        config["heal_rounds"] = args.heal_rounds
     if args.max_hypotheses_per_function:
         # Only when given, like fixed_sources: verify_results are indexed by the capped list.
         config["max_hypotheses_per_function"] = args.max_hypotheses_per_function

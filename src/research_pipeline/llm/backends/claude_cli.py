@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import tempfile
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 from ...models import CodeUnit, Finding
 from ..findings import coerce_findings_payload, finding_from_dict, normalize_findings
@@ -19,6 +22,35 @@ from ..telemetry import response_event
 # relying on --restricted alone, and keeps the guarantee auditable here
 # instead of depending on what --restricted happens to cover this version.
 _DENIED_TOOLS = "Read Write Edit Bash Glob Grep WebFetch WebSearch Task"
+
+
+def claude_print_command(claude_command: str, *, model: str, system_prompt: str, user_prompt: str,
+                         schema: dict | None = None, isolated: bool = False) -> list[str]:
+    """The ``claude -p`` command line shared by detection and synthesis.
+
+    ``isolated`` sends the pipeline prompt as the system prompt and drops tools, skills and MCP servers, so the
+    call does not carry Claude Code's own context. Off by default: it changes what the model reads.
+    """
+    command = [claude_command, "--print", "--output-format", "json"]
+    if schema is not None:
+        command += ["--json-schema", json.dumps(schema)]
+    command += ["--disallowed-tools", _DENIED_TOOLS, "--permission-prompts", "none", "--no-session-persistence"]
+    if model:
+        command += ["--model", model]
+    if isolated:
+        return command + ["--system-prompt", system_prompt, "--tools", "", "--disable-slash-commands",
+                          "--strict-mcp-config", user_prompt]
+    return command + [f"{system_prompt}\n\n{user_prompt}"]
+
+
+@contextmanager
+def claude_workdir(isolated: bool) -> Iterator[dict]:
+    """Subprocess kwargs: an isolated call runs in an empty directory, so no project CLAUDE.md is read."""
+    if not isolated:
+        yield {}
+        return
+    with tempfile.TemporaryDirectory(prefix="claude_isolated_") as directory:
+        yield {"cwd": directory}
 
 
 def cli_failure_detail(stdout: str, stderr: str) -> str:
@@ -62,7 +94,9 @@ class ClaudeCliAnalyzer:
         include_smells: bool = True,
         v2_detection: bool = False,
         v2_variants: tuple[str, ...] = (),
+        isolated: bool = False,
     ) -> None:
+        self.isolated = isolated
         self.model = model
         self.timeout_seconds = timeout_seconds
         self.claude_command = claude_command
@@ -99,17 +133,8 @@ class ClaudeCliAnalyzer:
 
     def _run_cli(self, system_prompt: str, user_prompt: str, schema: dict | None = None) -> dict:
         schema = schema or (v2_findings_schema(self.v2_variants) if self.v2_detection else FINDINGS_JSON_SCHEMA)["schema"]
-        command = [
-            self.claude_command, "--print",
-            "--output-format", "json",
-            "--json-schema", json.dumps(schema),
-            "--disallowed-tools", _DENIED_TOOLS,
-            "--permission-prompts", "none",
-            "--no-session-persistence",
-        ]
-        if self.model:
-            command += ["--model", self.model]
-        command.append(f"{system_prompt}\n\n{user_prompt}")
+        command = claude_print_command(self.claude_command, model=self.model, system_prompt=system_prompt,
+                                       user_prompt=user_prompt, schema=schema, isolated=self.isolated)
 
         # main.py's load_dotenv() puts .env's ANTHROPIC_API_KEY in this process's
         # environment for the openai/anthropic backends; inherited as-is, it makes
@@ -118,15 +143,17 @@ class ClaudeCliAnalyzer:
         env = {key: value for key, value in os.environ.items() if key != "ANTHROPIC_API_KEY"}
 
         try:
-            completed = subprocess.run(
-                command,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=self.timeout_seconds,
-                stdin=subprocess.DEVNULL,
-                env=env,
-            )
+            with claude_workdir(self.isolated) as workdir:
+                completed = subprocess.run(
+                    command,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=self.timeout_seconds,
+                    stdin=subprocess.DEVNULL,
+                    env=env,
+                    **workdir,
+                )
         except subprocess.TimeoutExpired as exc:
             raise TimeoutError(f"Timeout ao chamar {self.claude_command} -p.") from exc
         except FileNotFoundError as exc:

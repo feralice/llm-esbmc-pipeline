@@ -146,13 +146,22 @@ def strip_markdown_json(text: str) -> str:
             lines = lines[:-1]
         text = "\n".join(lines).strip()
 
-    # Some models append explanations after valid JSON. Keep only the first
-    # complete JSON value when possible.
+    # Text that already starts like JSON is left whole, so a truncated or malformed reply still fails to parse
+    # instead of yielding a nested fragment. With prose before the JSON, an object wins over a bracketed number.
+    decoder = json.JSONDecoder()
     try:
-        _, end = json.JSONDecoder().raw_decode(text)
-        text = text[:end]
+        _, end = decoder.raw_decode(text)
+        return text[:end]
     except json.JSONDecodeError:
-        pass
+        if text.startswith(("{", "[")):
+            return text
+    opening = "{" if "{" in text else "["
+    for match in re.finditer(re.escape(opening), text):
+        try:
+            _, end = decoder.raw_decode(text, match.start())
+        except json.JSONDecodeError:
+            continue
+        return text[match.start():end]
     return text
 
 

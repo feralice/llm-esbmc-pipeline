@@ -35,6 +35,7 @@ def build_analyzer(
     include_smells: bool = True,
     v2_detection: bool = False,
     v2_variants: tuple[str, ...] = (),
+    claude_isolated: bool = False,
 ) -> LLMAnalyzer:
     if backend not in _DEFAULT_MODEL:
         raise ValueError(
@@ -78,5 +79,6 @@ def build_analyzer(
     if backend == "codex":
         return CodexAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection, v2_variants=v2_variants)
     if backend == "claude_cli":
-        return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells, v2_detection=v2_detection, v2_variants=v2_variants)
+        return ClaudeCliAnalyzer(model=model, timeout_seconds=timeout_seconds, include_smells=include_smells,
+                                 v2_detection=v2_detection, v2_variants=v2_variants, isolated=claude_isolated)
     raise AssertionError(f"unreachable: {backend!r} passed the _DEFAULT_MODEL membership check above")

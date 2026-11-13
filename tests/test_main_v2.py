@@ -555,3 +555,84 @@ def test_a_changed_prompt_with_the_same_format_is_refused_as_before(tmp_path: Pa
     code, err = _resume_with_saved_fingerprint(tmp_path, monkeypatch, capsys,
                                                lambda fp: fp.update(detector_system_prompt="0" * 64))
     assert code == 1 and "configuração, prompt ou fontes mudaram" in err
+
+
+def _run_config(tmp_path: Path, monkeypatch, *flags: str) -> tuple[dict, dict, dict]:
+    source = tmp_path / "sample.py"
+    source.write_text("def divide(x: int, y: int) -> int:\n    return x // y\n", encoding="utf-8")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    detector, synth = {}, {}
+    monkeypatch.setattr(main, "build_analyzer", lambda **kwargs: detector.update(kwargs) or _Analyzer())
+    monkeypatch.setattr(main, "LLMClient", lambda **kwargs: synth.update(kwargs) or _Synthesizer(**kwargs))
+    out = tmp_path / "out"
+    args = main.build_parser().parse_args(["--mode", "hybrid", "--v2-stage", "detection", "--input", str(source),
+                                           "--output-dir", str(out), *flags])
+    assert main.mode_v2(args) == 0
+    return json.loads((out / "v2_verify_report.json").read_text())["config"], detector, synth
+
+
+def test_isolated_claude_is_off_by_default_and_keeps_the_old_config(tmp_path: Path, monkeypatch) -> None:
+    config, detector, synth = _run_config(tmp_path, monkeypatch)
+    assert not detector.get("claude_isolated") and not synth.get("isolated")
+    assert not {"claude_isolated", "heal_triage", "heal_rounds"} & config.keys()
+
+
+def test_isolated_claude_and_heal_limits_enter_the_config_only_when_changed(tmp_path: Path, monkeypatch) -> None:
+    config, detector, synth = _run_config(tmp_path, monkeypatch, "--claude-isolated", "--heal-triage",
+                                          "--heal-rounds", "1")
+    assert detector["claude_isolated"] is True and synth["isolated"] is True
+    assert config["claude_isolated"] is True and config["heal_triage"] is True and config["heal_rounds"] == 1
+
+
+def test_v2_detection_accepts_the_anthropic_backend(tmp_path: Path, monkeypatch) -> None:
+    config, detector, _ = _run_config(tmp_path, monkeypatch, "--backend", "anthropic", "--anthropic-api-key", "k")
+    assert detector["backend"] == "anthropic" and config["backend"] == "anthropic"
+
+
+def _sub(path: Path) -> Path:
+    (path / "b").mkdir()
+    return path / "b"
+
+
+def test_operational_policy_is_off_by_default_and_recorded_when_on(tmp_path: Path, monkeypatch) -> None:
+    config, detector, synth = _run_config(tmp_path, monkeypatch)
+    assert "operational_policy" not in config and synth["policy"].retries == 0
+    config, detector, synth = _run_config(_sub(tmp_path), monkeypatch, "--operational-retries", "2",
+                                          "--operational-shrink-context")
+    assert config["operational_policy"] == {"retries": 2, "base_delay": 2.0, "reduce_context": True}
+    assert synth["policy"].retries == 2
+
+
+def test_summarize_v2_telemetry_counts_operational_retries_and_reduced_prompts():
+    events = [
+        {"stage": "synthesis", "status": "success", "operational_retries": 2, "context_reduced": True},
+        {"stage": "synthesis", "status": "success", "operational_retries": 0, "context_reduced": False},
+        {"stage": "synthesis", "status": "success"},
+    ]
+    summary = main._summarize_v2_telemetry(events)["synthesis"]
+    assert summary["operational_retries"] == 2 and summary["context_reduced_calls"] == 1
+
+
+def test_profile_name_enters_the_run_config(tmp_path: Path, monkeypatch) -> None:
+    config, _, synth = _run_config(tmp_path, monkeypatch, "--profile", "medicao")
+    assert config["profile"] == "medicao" and config["operational_policy"]["retries"] == 2
+    assert "auto_lessons" not in config
+
+
+def test_scan_uses_the_default_variants_unless_v2_variants_is_given(monkeypatch, tmp_path: Path) -> None:
+    from research_pipeline.scan.pipeline import DEFAULT_VARIANTS
+
+    seen = {}
+
+    def fake_plan(*args, **kwargs):
+        seen.update(kwargs)
+        raise ValueError("stop")
+
+    monkeypatch.setattr(main, "plan_scan", fake_plan)
+    root = tmp_path / "repo"
+    root.mkdir()
+    base = ["--mode", "scan", "--input", str(root), "--output-dir", str(tmp_path / "o")]
+    assert main.mode_scan(main.build_parser().parse_args(base)) == 1
+    assert seen["variants"] == DEFAULT_VARIANTS
+    assert main.mode_scan(main.build_parser().parse_args([*base, "--v2-variants", "A1,A2,A12,A22"])) == 1
+    assert seen["variants"] == ("A1", "A2", "A12", "A22")

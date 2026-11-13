@@ -14,6 +14,7 @@ from research_pipeline.cli_args import REPO_ROOT
 BACKENDS = {
     "claude": ["--backend", "claude_cli", "--agent-backend", "claude"],
     "codex": ["--backend", "codex", "--agent-backend", "codex"],
+    **{name: ["--backend", name, "--agent-backend", name] for name in ("anthropic", "openai", "google", "ollama")},
 }
 
 
@@ -30,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     scan.add_argument("folder", help="pasta com o código Python")
     scan.add_argument("--backend", choices=sorted(BACKENDS), default="claude",
-                      help="assinatura que roda o scan (padrão: claude)")
+                      help="claude e codex usam a assinatura; os demais, chave de API ou modelo local (padrão: claude)")
     scan.add_argument("--limit", type=int, metavar="N", help="máximo de funções (ex.: 5 para um teste)")
     scan.add_argument("--focus", default="", help="foco em texto livre")
     scan.add_argument("--out", type=Path, metavar="PASTA",

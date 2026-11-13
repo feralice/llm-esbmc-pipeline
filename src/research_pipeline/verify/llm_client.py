@@ -17,11 +17,15 @@ from pathlib import Path
 from typing import Any
 from urllib import error, request
 
-from ..llm.backends.claude_cli import cli_failure, turn_failure
+from ..llm.backends.claude_cli import claude_print_command, claude_workdir, cli_failure, turn_failure
+from ..llm.failure_policy import (ContextOverflow, DeadlineExceeded, EmptyResponse, FailurePolicy, as_transient,
+                                  run_with_policy)
 from ..llm.rate_limit import UsageLimitReached, call_failure, is_daily_quota_exhausted
 from ..llm.telemetry import response_event
 
 _FENCE = re.compile(r"```(?:python|json)?\s*\n(.*?)```", re.DOTALL)
+_OVERFLOW = re.compile(r"prompt is too long|context[_ ]length|maximum context|too many tokens", re.IGNORECASE)
+_NO_TEXT = "não contém texto analisável"
 _CALL_DEADLINE: ContextVar[float | None] = ContextVar("llm_call_deadline", default=None)
 
 
@@ -122,7 +126,11 @@ class LLMClient:
         codex_command: str = "codex",
         claude_command: str = "claude",
         request_delay: float = 0.0,
+        isolated: bool = False,
+        policy: FailurePolicy | None = None,
     ) -> None:
+        self.isolated = isolated
+        self.policy = policy or FailurePolicy()
         if backend not in {"openai", "ollama", "google", "codex", "claude_cli", "anthropic"}:
             raise ValueError(
                 f"synth backend {backend!r} not supported yet; "
@@ -160,9 +168,37 @@ class LLMClient:
         token = _CALL_DEADLINE.set(deadline)
         try:
             with _hard_timeout(timeout_seconds):
-                return self._complete(system_prompt, user_prompt, json_mode=json_mode)
+                if self.policy.retries == 0:
+                    return self._complete(system_prompt, user_prompt, json_mode=json_mode)
+                outcome = run_with_policy(lambda prompt: self._attempt(system_prompt, prompt, json_mode),
+                                          user_prompt, self.policy)
+                result = outcome.value
+                result.telemetry = {**result.telemetry, "operational_retries": outcome.retries,
+                                    "context_reduced": outcome.context_reduced}
+                return result
         finally:
             _CALL_DEADLINE.reset(token)
+
+    def _attempt(self, system_prompt: str, user_prompt: str, json_mode: bool) -> SynthResult:
+        """One try under a failure policy: provider symptoms become the policy's own exception types."""
+        try:
+            result = self._complete(system_prompt, user_prompt, json_mode=json_mode)
+        except TimeoutError as exc:
+            if "deadline exceeded" in str(exc):
+                raise DeadlineExceeded(str(exc)) from exc
+            raise
+        except RuntimeError as exc:
+            transient = as_transient(exc)
+            if transient is not None:
+                raise transient from exc
+            if _NO_TEXT in str(exc):
+                raise EmptyResponse(str(exc)) from exc
+            if not isinstance(exc, UsageLimitReached) and _OVERFLOW.search(str(exc)):
+                raise ContextOverflow(str(exc)) from exc
+            raise
+        if not result.raw_response.strip():
+            raise EmptyResponse("resposta vazia")
+        return result
 
     def _complete(self, system_prompt: str, user_prompt: str, *, json_mode: bool = False) -> SynthResult:
         """One call to the configured backend; the fence-stripped text lands in ``harness``."""
@@ -187,6 +223,8 @@ class LLMClient:
                 "temperature": 0,
                 "stream": False,
             }
+            if json_mode:
+                payload["response_format"] = {"type": "json_object"}
 
         started = time.monotonic()
         try:
@@ -302,16 +340,8 @@ class LLMClient:
         text `result` field is what _extract_output_text()/_strip_fence()
         already expect from every other backend.
         """
-        command = [
-            self.claude_command, "--print",
-            "--output-format", "json",
-            "--disallowed-tools", "Read Write Edit Bash Glob Grep WebFetch WebSearch Task",
-            "--permission-prompts", "none",
-            "--no-session-persistence",
-        ]
-        if self.model:
-            command += ["--model", self.model]
-        command.append(f"{system_prompt}\n\n{user_prompt}")
+        command = claude_print_command(self.claude_command, model=self.model, system_prompt=system_prompt,
+                                       user_prompt=user_prompt, isolated=self.isolated)
 
         # See backends/claude_cli.py: strip ANTHROPIC_API_KEY (leaked in via
         # main.py's load_dotenv) so `claude -p` uses the CLI's own subscription
@@ -319,15 +349,17 @@ class LLMClient:
         env = {key: value for key, value in os.environ.items() if key != "ANTHROPIC_API_KEY"}
 
         try:
-            completed = subprocess.run(
-                command,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=_call_timeout(self.timeout_seconds),
-                stdin=subprocess.DEVNULL,
-                env=env,
-            )
+            with claude_workdir(self.isolated) as workdir:
+                completed = subprocess.run(
+                    command,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=_call_timeout(self.timeout_seconds),
+                    stdin=subprocess.DEVNULL,
+                    env=env,
+                    **workdir,
+                )
         except subprocess.TimeoutExpired as exc:
             raise TimeoutError(f"Timeout ao chamar {self.claude_command} -p.") from exc
         except FileNotFoundError as exc:

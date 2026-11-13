@@ -30,11 +30,35 @@ class _CommandWords(argparse.Action):
             values = shlex.split(values[0])
         setattr(namespace, self.dest, values)
 
+# Option values a profile sets; an option the user passed explicitly keeps the user's value.
+PROFILES: dict[str, dict] = {
+    "rapido": {"heal_triage": True, "heal_rounds": 1, "workers": 4},
+    "padrao": {},
+    "medicao": {"auto_lessons": False, "operational_retries": 2, "workers": 1},
+}
+
+
+class _ProfileParser(argparse.ArgumentParser):
+    def parse_args(self, args=None, namespace=None):
+        parsed = super().parse_args(args, namespace)
+        for dest, value in PROFILES.get(parsed.profile or "padrao", {}).items():
+            if getattr(parsed, dest) == self.get_default(dest):
+                setattr(parsed, dest, value)
+        return parsed
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
+    parser = _ProfileParser(
         description="Pipeline LLM + AST + ESBMC para análise de bugs em Python.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
+    )
+    parser.add_argument(
+        "--profile",
+        choices=sorted(PROFILES),
+        default=None,
+        help="Conjunto de opções: rapido (reparo com teto de 1 rodada e triagem), padrao (nada muda) ou medicao "
+             "(lições automáticas desligadas e retentativa operacional). Uma flag passada com o valor padrão não vence o perfil.",
     )
     parser.add_argument(
         "--mode",
@@ -210,6 +234,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--heal-triage", action="store_true",
                         help="Não pede reparo para hipóteses que o ESBMC recusou como UNSUPPORTED (economiza chamadas; "
                              "pode perder confirmações que só apareceriam depois do reparo).")
+    parser.add_argument("--claude-isolated", action="store_true",
+                        help="Backend claude_cli: envia o prompt do pipeline como prompt de sistema, sem ferramentas, "
+                             "skills nem servidores MCP, numa pasta vazia (CLAUDE.md do projeto não é lido; o global e hooks "
+                             "podem ser). Muda a entrada do LLM: rodadas sem a flag não são "
+                             "comparáveis. Ignorada pelos outros backends.")
+    parser.add_argument("--operational-retries", type=int, default=0, metavar="N",
+                        help="Falha operacional (timeout, resposta vazia): tenta de novo até N vezes com espera fixa "
+                             "(2 s, 4 s, ...). 0 desliga. Cota esgotada nunca é retentada: a rodada para e retoma.")
+    parser.add_argument("--operational-shrink-context", action="store_true",
+                        help="Com --operational-retries: se o prompt estourar o contexto, corta o meio dele pela "
+                             "metade e tenta de novo. Marca o caso como reduzido na telemetria.")
     parser.add_argument("--workers", type=int, default=1, metavar="N",
                         help="Hipóteses verificadas em paralelo (threads); 1 é o comportamento sequencial.")
     parser.add_argument(
