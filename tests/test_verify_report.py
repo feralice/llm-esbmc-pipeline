@@ -65,3 +65,13 @@ def test_the_bucket_counts_the_bug_apart_and_leaves_the_main_metric_alone():
     assert both["same_function_other_line"]["bugs_not_confirmed_at_line"] == 0
     elsewhere = evaluate_verify([_other_failure(12, function="other")], candidates, GT, [DETECTION], [])
     assert elsewhere["same_function_other_line"]["bugs"] == 0
+
+
+def test_summarize_reports_operational_failures_apart_from_verdicts():
+    results = [{"verdict": "PIPELINE_ERROR", "reason": "TimeoutError: llm"},
+               {"verdict": "PIPELINE_ERROR", "reason": "TimeoutError: llm again"},
+               {"verdict": "PIPELINE_ERROR", "reason": "UsageLimitReached: cota"},
+               {"verdict": "CONFIRMED", "llm_calls": 1}]
+    failures = summarize(results)["operational_failures"]
+    assert failures == {"count": 3, "by_reason": {"TimeoutError": 2, "UsageLimitReached": 1}}
+    assert summarize([{"verdict": "CONFIRMED"}])["operational_failures"] == {"count": 0, "by_reason": {}}

@@ -12,7 +12,7 @@ from research_pipeline.v2_evaluator import (
     evaluate_detection,
 )
 
-from .outcome import CHECKED, CONFIRMED, OTHER_FAILURE, VALUE_CONFIRMED, VERDICTS
+from .outcome import CHECKED, CONFIRMED, OTHER_FAILURE, PIPELINE_ERROR, VALUE_CONFIRMED, VERDICTS
 
 MAX_CALLS = 3
 
@@ -23,6 +23,13 @@ def failed_in_function(result: dict) -> bool:
     line, span = replay.get("line"), replay.get("target_range")
     return (result["verdict"] == OTHER_FAILURE and isinstance(line, int) and bool(span) and bool(span[1])
             and span[0] <= line <= span[1])
+
+
+def _operational_failures(results: list[dict]) -> dict:
+    """Cases the pipeline could not process (network, quota, crash): no verdict about the hypothesis, so apart."""
+    reasons = Counter(str(r.get("reason", "")).split(":")[0] or "unknown"
+                      for r in results if r["verdict"] == PIPELINE_ERROR)
+    return {"count": sum(reasons.values()), "by_reason": dict(reasons)}
 
 
 def summarize(results: list[dict]) -> dict:
@@ -41,6 +48,7 @@ def summarize(results: list[dict]) -> dict:
                        **{verdict: n for verdict, n in counts.items() if verdict not in VERDICTS}},
         # Inside by_verdict's OTHER_FAILURE, never added to CONFIRMED.
         "same_function_other_line": sum(failed_in_function(r) for r in results),
+        "operational_failures": _operational_failures(results),
         "reached_llm": len(reached),
         "success_at_k": success,
     }
