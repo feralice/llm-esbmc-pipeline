@@ -103,3 +103,35 @@ def test_build_index_reads_the_website_limitation_pages(tmp_path):
     index = build_index(root)
     assert any(s.title == "Strings" and "bytearray" in s.text and s.source.endswith("limitations.md")
                for s in index.sections)
+
+
+def test_content_cache_refreshes_an_uncommitted_document(tmp_path):
+    root = _checkout(tmp_path / 'esbmc')
+    docs = root / 'website/content/docs/python'
+    docs.mkdir(parents=True)
+    page = docs / 'limitations.md'
+    page.write_text('## Cache test\nold restriction\n')
+    first = load_index(root, tmp_path / 'cache', content_cache=True)
+    page.write_text('## Cache test\nnew restriction\n')
+    second = load_index(root, tmp_path / 'cache', content_cache=True)
+    assert first.commit == second.commit
+    assert any('new restriction' in s.text for s in second.sections)
+    assert not any('old restriction' in s.text for s in second.sections)
+    assert len(list((tmp_path / 'cache').glob('*.json'))) == 2
+
+
+def test_legacy_cache_keeps_old_key_and_output_without_option(tmp_path):
+    root = _checkout(tmp_path / 'esbmc')
+    first = load_index(root, tmp_path / 'cache')
+    (root / 'src/python-frontend/README.md').write_text('## Changed\nnew text\n')
+    second = load_index(root, tmp_path / 'cache')
+    assert first == second
+    assert [p.name for p in (tmp_path / 'cache').glob('*.json')] == [f'{first.commit}-v2.json']
+
+
+def test_content_cache_refreshes_regression_snippets(tmp_path):
+    root = _checkout(tmp_path / 'esbmc')
+    load_index(root, tmp_path / 'cache', content_cache=True)
+    (root / 'regression/python/annot_ok/main.py').write_text('answer = 77\n')
+    second = load_index(root, tmp_path / 'cache', content_cache=True)
+    assert any(s.text == 'answer = 77\n' for s in second.tests)

@@ -35,16 +35,29 @@ PROFILES: dict[str, dict] = {
     "rapido": {"heal_triage": True, "heal_rounds": 1, "workers": 4},
     "padrao": {},
     "medicao": {"auto_lessons": False, "operational_retries": 2, "workers": 1},
+    "congelado": {"claude_isolated": True, "auto_lessons": False, "operational_retries": 2,
+                  "workers": 1, "heal": "error+kb", "require_fresh_esbmc": True,
+                  "kb_content_cache": True, "evaluate_by_function": True},
 }
 
 
 class _ProfileParser(argparse.ArgumentParser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._explicit_options: set[str] = set()
+
     def parse_args(self, args=None, namespace=None):
+        self._explicit_options = set()
         parsed = super().parse_args(args, namespace)
         for dest, value in PROFILES.get(parsed.profile or "padrao", {}).items():
-            if getattr(parsed, dest) == self.get_default(dest):
+            if dest not in self._explicit_options:
                 setattr(parsed, dest, value)
         return parsed
+
+    def _get_values(self, action, arg_strings):
+        if action.option_strings:
+            self._explicit_options.add(action.dest)
+        return super()._get_values(action, arg_strings)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -53,12 +66,17 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
+    parser.set_defaults(require_fresh_esbmc=False)
+    parser.add_argument("--kb-content-cache", action=argparse.BooleanOptionalAction, default=False,
+                        help="Renova o índice da base de conhecimento quando o conteúdo muda.")
+    parser.add_argument("--evaluate-by-function", action=argparse.BooleanOptionalAction, default=False,
+                        help="Acrescenta avaliação por função e exceção, sem alterar as métricas anteriores.")
     parser.add_argument(
         "--profile",
         choices=sorted(PROFILES),
         default=None,
         help="Conjunto de opções: rapido (reparo com teto de 1 rodada e triagem), padrao (nada muda) ou medicao "
-             "(lições automáticas desligadas e retentativa operacional). Uma flag passada com o valor padrão não vence o perfil.",
+             "(lições automáticas desligadas e retentativa operacional), ou congelado (experimento isolado com ESBMC atualizado). Flags explícitas vencem o perfil.",
     )
     parser.add_argument(
         "--mode",
@@ -234,7 +252,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--heal-triage", action="store_true",
                         help="Não pede reparo para hipóteses que o ESBMC recusou como UNSUPPORTED (economiza chamadas; "
                              "pode perder confirmações que só apareceriam depois do reparo).")
-    parser.add_argument("--claude-isolated", action="store_true",
+    parser.add_argument("--claude-isolated", action=argparse.BooleanOptionalAction, default=False,
                         help="Backend claude_cli: envia o prompt do pipeline como prompt de sistema, sem ferramentas, "
                              "skills nem servidores MCP, numa pasta vazia (CLAUDE.md do projeto não é lido; o global e hooks "
                              "podem ser). Muda a entrada do LLM: rodadas sem a flag não são "
@@ -321,6 +339,10 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Scan: contexto estático de integração e documentação, com origem (padrão: off).")
     parser.add_argument("--scan-skip", type=int, default=0, metavar="N",
                         help="Modo scan: pula as N primeiras funções do ranking (para varrer o próximo lote).")
+    parser.add_argument("--scan-dedupe", action="store_true",
+                        help="Scan: verifica uma vez hipóteses de funções com AST idêntica.")
+    parser.add_argument("--scan-context-retry", action="store_true",
+                        help="Scan: refaz uma detecção com definições ausentes; requer --scan-prefilter.")
     parser.add_argument("--scan-prefilter", action="store_true",
                         help="Scan: derruba antes do ESBMC a hipótese que diz faltar um método ou nome que o código "
                              "define, ou que admite depender de código não mostrado. As quedas ficam em held, com o motivo.")

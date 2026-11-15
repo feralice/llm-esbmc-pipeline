@@ -636,3 +636,11 @@ def test_scan_uses_the_default_variants_unless_v2_variants_is_given(monkeypatch,
     assert seen["variants"] == DEFAULT_VARIANTS
     assert main.mode_scan(main.build_parser().parse_args([*base, "--v2-variants", "A1,A2,A12,A22"])) == 1
     assert seen["variants"] == ("A1", "A2", "A12", "A22")
+
+
+def test_fingerprint_diff_names_what_changed():
+    from main import _fingerprint_diff
+
+    saved = {"config": {"model": "a", "bound": 5}, "detector_prompt": "x", "sources": {"f": "1"}}
+    current = {"config": {"model": "a", "bound": 6, "auto_lessons": False}, "detector_prompt": "y", "sources": {"f": "1"}}
+    assert _fingerprint_diff(saved, current) == ["config.auto_lessons", "config.bound", "detector_prompt"]

@@ -99,11 +99,15 @@ def _same_function_other_line(results: list[dict], items: list[dict], base: Path
 
 
 def evaluate_verify(results: list[dict], candidates: list, ground_truth_path: str | Path,
-                evaluated_sources: list, rejected_findings: list[dict]) -> dict:
+                evaluated_sources: list, rejected_findings: list[dict], *,
+                evaluate_by_function: bool = False, additional_findings: list[dict] | None = None) -> dict:
     detection = evaluate_detection(candidates=candidates, ground_truth_path=ground_truth_path,
-                                   evaluated_sources=evaluated_sources, rejected_findings=rejected_findings)
+                                   evaluated_sources=evaluated_sources, rejected_findings=rejected_findings,
+                                   evaluate_by_function=evaluate_by_function, results=results,
+                                   additional_findings=additional_findings)
     items, base = _expected_items(Path(ground_truth_path), evaluated_sources)
     return {
+        **({"by_function": detection["by_function"]} if evaluate_by_function else {}),
         "triage": detection["triage"],
         "detection_by_location": detection["bug_detection"],
         "confirmed_by_location": _confirmed_by_location(results, CONFIRMED, items, base),

@@ -14,7 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from ..llm.prompts import build_user_prompt, load_system_prompt
 from ..llm.pricing import total_cost
@@ -42,6 +42,8 @@ from ..verify.outcome import CONFIRMED
 from ..verify.report import summarize
 from ..verify.run_report import render_run_report
 from .callgraph import CallGraph, build_callgraph
+from .dedupe import deduplicate, duplicates_markdown, function_ast
+from .context_retry import missing_context, retry_context
 from .context import caller_context
 from .repository_context import RepositoryContextSnapshot, collect_repository_context, render_repository_context
 from .prefilter import drop_reason
@@ -65,7 +67,8 @@ NON_PRODUCT_DIRS = frozenset({"examples", "example", "samples", "sample", "docs"
 class DetectionState(TypedDict):
     error: str
     candidates: list[dict[str, str]]
-    held: list[dict[str, str]]
+    held: list[dict]
+    context_retry_pending: NotRequired[bool]
 
 
 class ScanCheckpoint(TypedDict):
@@ -111,6 +114,8 @@ class ScanPlan:
     repository_context: RepositoryContextSnapshot | None = None
     context_audit: dict = field(default_factory=dict)
     prefilter: bool = False
+    context_retry: bool = False
+    dedupe: bool = False
 
     def to_dict(self) -> dict:
         return {"root": str(self.root), "variants": list(self.variants), "rank": self.rank, "focus": self.focus,
@@ -119,7 +124,9 @@ class ScanPlan:
                 "selected": len(self.targets), "estimated_detection_tokens": self.estimated_tokens,
                 "targets": [t.to_dict() for t in self.targets],
                 **({"repository_context": self.repository_context.config_label} if self.repository_context else {}),
-                **({"prefilter": True} if self.prefilter else {})}
+                **({"prefilter": True} if self.prefilter else {}),
+                **({"context_retry": True} if self.context_retry else {}),
+                **({"dedupe": True} if self.dedupe else {})}
 
 
 def _units_by_location(graph: CallGraph) -> dict[tuple[str, int], CodeUnit]:
@@ -217,7 +224,9 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
               variants: tuple[str, ...] = DEFAULT_VARIANTS, rank: str = "callers", smells: bool = False,
               focus: str = "", include_examples: bool = False, only: tuple[str, ...] = (),
               caller_depth: int = 1, repository_context: str = "off", prefilter: bool = False,
-              skip: int = 0) -> ScanPlan:
+              skip: int = 0, context_retry: bool = False, dedupe: bool = False) -> ScanPlan:
+    if context_retry and not prefilter:
+        raise ValueError("--scan-context-retry requires --scan-prefilter")
     if caller_depth < 1:
         raise ValueError("--scan-caller-depth must be at least 1")
     if repository_context not in {"off", "evidence"}:
@@ -227,7 +236,7 @@ def plan_scan(root: str | Path, output_dir: str | Path, *, limit: int | None = N
     targets, total = select_targets(graph, limit=limit, rank=rank, include_examples=include_examples,
                                     only=only, excluded=excluded, caller_depth=caller_depth, skip=skip)
     plan = ScanPlan(graph.root, Path(output_dir), graph, targets, variants, estimate_tokens(targets, variants), total,
-                    rank, focus.strip(), excluded, only, caller_depth, prefilter=prefilter)
+                    rank, focus.strip(), excluded, only, caller_depth, prefilter=prefilter, context_retry=context_retry, dedupe=dedupe)
     if repository_context == "evidence":
         plan.repository_context = collect_repository_context(graph.root, graph)
         for target in targets:
@@ -316,7 +325,10 @@ def _detection_fingerprint(plan: ScanPlan, model: str) -> str:
     return _hash({"root": str(plan.root), "variants": plan.variants, "model": model, "focus": plan.focus,
                   "prompts": _prompts_hash(plan), "targets": [t.key for t in plan.targets],
                   **({"repository_context": plan.repository_context.config_label} if plan.repository_context else {}),
-                  **({"prefilter": True} if plan.prefilter else {})})
+                  **({"prefilter": True} if plan.prefilter else {}),
+                  **({"context_retry": True, "context_retry_sources": _hash(plan.graph.sources)}
+                     if plan.context_retry else {}),
+                  **({"dedupe": True} if plan.dedupe else {})})
 
 
 def _verify_fingerprint(verifier: str = "engine", verify_config: dict | None = None, spec_model: str = "") -> str:
@@ -401,15 +413,42 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
 
     for index, target in enumerate(plan.targets, 1):
         done = checkpoint["detection"].get(target.key)
-        if done is not None and not done["error"]:
+        if done is not None and not done["error"] and not done.get("context_retry_pending"):
             continue
         print(f"  [{index}/{len(plan.targets)}] {Path(target.file).name}::{target.qualname}")
         save_context("sent_to_detection", target.key)
-        checkpoint["detection"][target.key] = _detect(analyzer, target, plan.prefilter)
+        pending = done is not None and done.get("context_retry_pending")
+        state = done if pending else _detect(analyzer, target, plan.prefilter)
+        if plan.context_retry and (pending or not state["error"]):
+            definitions = retry_context(plan.graph, target, state["held"])
+            if definitions:
+                state["context_retry_pending"] = True
+                checkpoint["detection"][target.key] = state
+                save()
+                enriched = replace(target, unit=replace(
+                    target.unit, caller_context=target.unit.caller_context + "\n\n" + definitions))
+                retried = _detect(analyzer, enriched, plan.prefilter)
+                for entry in state["held"]:
+                    if missing_context(entry):
+                        entry["retried"] = True
+                        if retried["error"]:
+                            entry["retry_error"] = retried["error"]
+                        else:
+                            entry.pop("retry_error", None)
+                state["error"] = retried["error"]
+                state["context_retry_pending"] = bool(retried["error"])
+                state["candidates"].extend(retried["candidates"])
+                state["held"].extend(retried["held"])
+        checkpoint["detection"][target.key] = state
         save()
 
     candidates = [Candidate.from_dict(c) for t in plan.targets for c in checkpoint["detection"][t.key]["candidates"]]
     hypotheses = list({h.hypothesis_id: h for h in map(BugHypothesis.from_candidate, candidates)}.values())
+
+    duplicates = []
+    if plan.dedupe:
+        bodies = {(t.file, t.qualname): function_ast(_read_module(t.file), t.qualname) for t in plan.targets}
+        hypotheses, duplicates = deduplicate(hypotheses, lambda h: bodies.get((h.file, h.function)))
 
     # Saved by hypothesis_id: a detection retried on resume can add hypotheses and shift every position.
     def on_result(index: int, data: dict) -> None:
@@ -427,6 +466,8 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
                      on_result=on_result, **verify_kwargs) if hypotheses else []
     report = _report(plan, checkpoint["detection"], hypotheses, results, analyzer, spec_llm,
                      agent=getattr(verify, "label", "").startswith("agent"), capabilities=capabilities)
+    if plan.dedupe:
+        report["detection"]["duplicates"] = duplicates
     _write_json(plan.output_dir / "scan_report.json", report)
     (plan.output_dir / "scan_summary.md").write_text(summary_markdown(report), encoding="utf-8")
     held = [{"file": t.file, "function": t.qualname, **entry}
@@ -434,7 +475,7 @@ def execute_scan(plan: ScanPlan, *, analyzer, spec_llm, resume: bool = False,
     errors = [f"{t.qualname}: {checkpoint['detection'][t.key]['error']}" for t in plan.targets
               if checkpoint["detection"][t.key]["error"]]
     (plan.output_dir / "relatorio.md").write_text(
-        render_run_report(results, held=held, detection=(len(plan.targets), errors), root=plan.root)
+        render_run_report(results, held=held, detection=(len(plan.targets), errors), root=plan.root, duplicates=duplicates)
         + smells_section(plan.output_dir), encoding="utf-8")
     print(f"Relatório: {plan.output_dir / 'scan_report.json'}")
     return report
@@ -495,6 +536,14 @@ def summary_markdown(report: dict) -> str:
         f"- Vereditos: {verdicts or 'nenhum'}.",
         f"- Nível que decidiu: {_levels_text(report['levels']['summary']['by_level'])}.",
     ]
+    retried = [(row, entry) for row in detection.get("functions_detail", [])
+               for entry in row.get("held", []) if entry.get("retried")]
+    if retried:
+        lines += ["", "## Detecção refeita com definições", ""]
+        for row, entry in retried:
+            lines.append(f"- `{row['file']}::{row['function']}` `{entry['expression']}`: "
+                         "hipótese original refeita com definições; preservada como histórico."
+                         + (f" Falha na refação: {entry['retry_error']}" if entry.get("retry_error") else ""))
     for title, verdict in (("Confirmados isolados: ESBMC e replay (o alcance no projeto ainda não foi verificado)", CONFIRMED),
                            ("Reproduzidos só no CPython (o ESBMC não decidiu)", REPRODUCED_CPYTHON)):
         lines += ["", f"## {title}", ""]
@@ -502,6 +551,7 @@ def summary_markdown(report: dict) -> str:
         if not found:
             lines.append("Nenhum.")
         elif verdict == CONFIRMED:
+            lines.append("confirmado no harness; a entrada usada pode não ser alcançável pelo código real; leia o código e reproduza fora do harness antes de reportar.")
             lines.append("O replay executa o programa gerado. Ele não demonstra, sozinho, que o estado usado "
                          "seja um estado alcançável no projeto.")
             lines.append("")
@@ -523,7 +573,7 @@ def summary_markdown(report: dict) -> str:
                 for item in assignments:
                     lines.append(f"  - `{item['method']}`, linha {item['line']}: "
                                  f"`self.{item['attribute']}` inclui as chaves `{item['keys']}`.")
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines) + "\n" + duplicates_markdown(detection.get("duplicates", []), report["results"])
 
 
 

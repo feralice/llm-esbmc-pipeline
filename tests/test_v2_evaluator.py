@@ -172,3 +172,81 @@ def test_at_bug_line_accepts_any_cause_line_from_the_patch():
     item = {"function": "f", "expression": "window = get(k)", "cause_expressions": ["k = k or 1"]}
     assert at_bug_line({"function": "f", "suspect_expression": "k = k or 1"}, item)
     assert not at_bug_line({"function": "f", "suspect_expression": "other()"}, item)
+
+
+def test_function_metrics_ignore_expression_but_require_matching_replay_exception(tmp_path):
+    from research_pipeline.v2_evaluator import evaluate_functions
+    items = [{'id': 'a', 'detection_file': 'a.py', 'function': 'f / g', 'categories': ['bug'],
+              'expression': 'labelled()', 'expected_type': 'IndexError'},
+             {'id': 'b', 'detection_file': 'b.py', 'function': 'f', 'categories': ['bug'],
+              'expected_type': 'struct.error'}]
+    candidates = [{'file': str(tmp_path / 'a.py'), 'function': 'g', 'expression': 'other()'},
+                  {'file': str(tmp_path / 'a.py'), 'function': 'g', 'expression': 'duplicate()'},
+                  {'file': str(tmp_path / 'b.py'), 'function': 'f', 'expression': 'any()'}]
+    results = [{'hypothesis': {'file': c['file'], 'function': c['function']}, 'verdict': verdict,
+                'replay': {'status': 'reproduced', 'exception_type': exception}}
+               for c, verdict, exception in [(candidates[0], 'CONFIRMED', 'IndexError'),
+                                             (candidates[2], 'CONFIRMED', 'TypeError')]]
+    metrics = evaluate_functions(items, candidates, tmp_path, results=results)
+    assert metrics['total'] == metrics['apontado'] == 2
+    assert metrics['apontado_e_reproduzido'] == metrics['confirmado_esbmc'] == 1
+    assert metrics['cases'][1]['apontado_e_reproduzido'] is False
+    detection_only = evaluate_functions(items, candidates, tmp_path)
+    assert detection_only['apontado_e_reproduzido'] is None
+    assert detection_only['confirmado_esbmc'] is None
+
+
+def test_function_metrics_keep_sisters_separate_and_exclude_broad_patches(tmp_path):
+    from research_pipeline.v2_evaluator import evaluate_functions
+    items = [{'id': name, 'detection_file': name + '.py', 'function': 'f',
+              'categories': ['bug'], 'expected_type': 'IndexError'}
+             for name in ('case', 'cps_pymodbus_2977', 'cps_pycomm3_331', 'cps_gps_127')]
+    siblings = [{'id': item['id'], 'tocadas_pelo_patch': ['f', 'sister']} for item in items]
+    candidates = [{'file': str(tmp_path / item['detection_file']), 'function': 'sister', 'expression': 'x[0]'}
+                  for item in items]
+    metrics = evaluate_functions(items, candidates, tmp_path, results=[], sibling_labels=siblings)
+    assert metrics['apontado'] == metrics['apontado_e_reproduzido'] == 0
+    assert [r['id'] for r in metrics['mesmo_padrao_em_outra_funcao']] == ['case']
+    assert metrics['mesmo_padrao_em_outra_funcao'][0]['functions'] == ['sister']
+
+
+def test_function_replay_other_line_counts_only_inside_target(tmp_path):
+    from research_pipeline.v2_evaluator import evaluate_functions
+    items = [{'id': 'a', 'detection_file': 'a.py', 'function': 'f', 'categories': ['bug'],
+              'expected_type': 'IndexError'}]
+    candidates = [{'file': str(tmp_path / 'a.py'), 'function': 'f', 'expression': 'x[0]'}]
+    result = {'hypothesis': candidates[0], 'verdict': 'OTHER_FAILURE',
+              'replay': {'status': 'other_failure', 'exception_type': 'IndexError',
+                         'line': 15, 'target_range': [10, 20]}}
+    assert evaluate_functions(items, candidates, tmp_path, results=[result])['apontado_e_reproduzido'] == 1
+    result['replay']['line'] = 4
+    assert evaluate_functions(items, candidates, tmp_path, results=[result])['apontado_e_reproduzido'] == 0
+
+
+def test_function_metric_flag_preserves_existing_evaluation(tmp_path):
+    items = [{'id': 'a', 'detection_file': 'a.py', 'function': 'f', 'categories': ['bug'],
+              'expression': 'x[0]', 'expected_type': 'IndexError'}]
+    (tmp_path / 'manifest.json').write_text(json.dumps({'items': items}))
+    gt = tmp_path / 'ground_truths.json'
+    gt.write_text(json.dumps({'items': items}))
+    candidates = [{'file': str(tmp_path / 'a.py'), 'function': 'f', 'expression': 'different()'}]
+    before = evaluate_detection(candidates=candidates, ground_truth_path=gt)
+    after = evaluate_detection(candidates=candidates, ground_truth_path=gt, evaluate_by_function=True)
+    assert after.pop('by_function')['apontado'] == 1
+    assert after == before
+
+
+def test_review_dropped_hypothesis_still_counts_only_in_new_metrics(tmp_path):
+    items = [{'id': 'a', 'detection_file': 'a.py', 'function': 'f', 'categories': ['bug'],
+              'expression': 'x[0]', 'expected_type': 'IndexError'}]
+    (tmp_path / 'manifest.json').write_text(json.dumps({'items': items}))
+    gt = tmp_path / 'ground_truths.json'
+    gt.write_text(json.dumps({'items': items}))
+    dropped = {'file': str(tmp_path / 'a.py'), 'function': 'f', 'expression': 'different()'}
+    before = evaluate_detection(candidates=[], ground_truth_path=gt)
+    after = evaluate_detection(candidates=[], ground_truth_path=gt, evaluate_by_function=True,
+                               additional_findings=[dropped], results=[])
+    by_function = after.pop('by_function')
+    assert by_function['apontado'] == 1
+    assert by_function['apontado_e_reproduzido'] == 0
+    assert after == before

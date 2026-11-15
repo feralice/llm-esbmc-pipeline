@@ -70,7 +70,8 @@ from research_pipeline.verify.healing import build_healer
 from research_pipeline.verify.loop import run_verify
 from research_pipeline.hypothesis_cap import cap_per_function
 from research_pipeline.hypothesis_review import PROMPT_PATH as REVIEW_PROMPT_PATH, review_candidates, split_by_threshold
-from research_pipeline.v2_evaluator import evaluate_detection
+from research_pipeline.verify.esbmc_provenance import check_fresh, esbmc_provenance
+from research_pipeline.v2_evaluator import evaluate_detection, render_function_evaluation
 from research_pipeline.verify.report import evaluate_verify, summarize
 from research_pipeline.verify.rules import ALL_RULES
 
@@ -441,7 +442,8 @@ def _mode_v2_verify(
             fixed_sources=Path(args.fixed_sources) if args.fixed_sources else None,
             rules=ALL_RULES - frozenset(capabilities["disabled_rules"]),
             healer=build_healer(args.heal, llm=llm, esbmc_command=args.esbmc_command,
-                                auto_lessons=args.auto_lessons, run_dir=output_path),
+                                auto_lessons=args.auto_lessons, run_dir=output_path,
+                                kb_content_cache=args.kb_content_cache),
             heal_rounds=args.heal_rounds,
             workers=args.workers,
             heal_triage=args.heal_triage,
@@ -470,20 +472,28 @@ def _mode_v2_verify(
     summary = summarize(results)
     level_rows = consolidate(results, agent_results)
     levels = level_summary(level_rows)
+    evaluation = (
+            evaluate_verify(results, candidates, args.ground_truth, input_paths, rejected_findings,
+                            **({"evaluate_by_function": True,
+                                "additional_findings": [*detection.get("capped_candidates", []),
+                                                        *detection.get("review_dropped", [])]}
+                               if args.evaluate_by_function else {}))
+            if args.ground_truth and args.v2_stage == "end-to-end" else None
+        )
     _write_json_atomic(report_path, {
         "config": {**config, "esbmc_version": _esbmc_version(args.esbmc_command or ["esbmc"]),
                    "capabilities": capabilities},
         "detection": detection,
         "verification": summary,
         "telemetry": _summarize_v2_telemetry(telemetry_events),
-        "evaluation": (
-            evaluate_verify(results, candidates, args.ground_truth, input_paths, rejected_findings)
-            if args.ground_truth and args.v2_stage == "end-to-end" else None
-        ),
+        "evaluation": evaluation,
         "results": results,
         "agent_results": agent_results,
         "levels": {"summary": levels, "rows": level_rows},
     })
+    if args.evaluate_by_function and evaluation is not None:
+        (output_path / "avaliacao_funcoes.md").write_text(
+            render_function_evaluation(evaluation["by_function"]), encoding="utf-8")
     print("\nVereditos:", {k: v for k, v in summary["by_verdict"].items() if v})
     print(f"Níveis: {levels['by_level']}; veredito do ESBMC em {levels['esbmc_verdict']}/{levels['hypotheses']}, "
           f"{levels['confirmed']} confirmado(s); só LLM por motivo: "
@@ -491,6 +501,20 @@ def _mode_v2_verify(
     print(f"Relatório JSON: {report_path}")
     _schedule_automatic_maintenance(args, output_path)
     return 0
+
+
+def _fingerprint_diff(saved: dict, current: dict) -> list[str]:
+    """Names of the fingerprint entries that differ (config keys as ``config.key``)."""
+    changed = []
+    for key in sorted(set(saved) | set(current)):
+        old, new = saved.get(key), current.get(key)
+        if old == new:
+            continue
+        if isinstance(old, dict) and isinstance(new, dict):
+            changed += [f"{key}.{sub}" for sub in sorted(set(old) | set(new)) if old.get(sub) != new.get(sub)]
+        else:
+            changed.append(key)
+    return changed
 
 
 def maintenance_dir() -> Path:
@@ -542,6 +566,10 @@ def _build_synthesizer(args: argparse.Namespace, synth_backend: str, synth_model
 
 
 def mode_scan(args: argparse.Namespace) -> int:
+    if args.profile == "congelado":
+        print("O perfil congelado exige --mode hybrid ou benchmark; sua procedência é registrada na V2.",
+              file=sys.stderr)
+        return 1
     root = Path(args.input[0])
     if len(args.input) != 1 or not root.is_dir():
         print("O modo scan recebe um único diretório de repositório em --input.", file=sys.stderr)
@@ -553,7 +581,8 @@ def mode_scan(args: argparse.Namespace) -> int:
                          smells=args.scan_smells, focus=args.scan_focus,
                          include_examples=args.scan_include_examples, only=tuple(args.scan_only),
                          caller_depth=args.scan_caller_depth, repository_context=args.scan_repository_context,
-                         prefilter=args.scan_prefilter, skip=args.scan_skip)
+                         prefilter=args.scan_prefilter, skip=args.scan_skip, context_retry=args.scan_context_retry,
+                         dedupe=args.scan_dedupe)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 1
@@ -618,7 +647,7 @@ def mode_scan(args: argparse.Namespace) -> int:
                               strategy=args.spec_strategy, spec_context=args.spec_context, graph=plan.graph,
                               healer=build_healer(args.heal, llm=spec_llm, esbmc_command=args.esbmc_command,
                                                   graph=plan.graph, auto_lessons=args.auto_lessons,
-                                                  run_dir=plan.output_dir),
+                                                  run_dir=plan.output_dir, kb_content_cache=args.kb_content_cache),
                               heal_rounds=args.heal_rounds)
     except ValueError as exc:
         print(f"Erro: {exc}", file=sys.stderr)
@@ -652,6 +681,19 @@ def mode_v2(args: argparse.Namespace) -> int:
         input_paths = _v2_detection_input_paths(args.ground_truth, input_paths)
         if not input_paths:
             print("Nenhum arquivo V2 elegível sem contexto do patch.", file=sys.stderr)
+            return 1
+
+    provenance = None
+    if args.require_fresh_esbmc:
+        if args.esbmc_command is None and Path(_VERIFY_DEFAULT_ESBMC).exists():
+            args.esbmc_command = [_VERIFY_DEFAULT_ESBMC]
+        try:
+            provenance = esbmc_provenance(args.esbmc_command or ["esbmc"])
+            check_fresh(provenance)
+            args.esbmc_command = [provenance.get("wrapper", provenance["binary"]),
+                                  *(args.esbmc_command or ["esbmc"])[1:]]
+        except ValueError as exc:
+            print(f"Erro: {exc}", file=sys.stderr)
             return 1
 
     backend: Backend = args.backend or _infer_backend(args.model or "")
@@ -729,6 +771,12 @@ def mode_v2(args: argparse.Namespace) -> int:
     # Only when changed from the default, so older checkpoints keep their fingerprint.
     if args.profile and args.profile != "padrao":
         config["profile"] = args.profile
+    if provenance is not None:
+        config["esbmc_provenance"] = provenance
+    if args.kb_content_cache:
+        config["kb_content_cache"] = True
+    if args.evaluate_by_function:
+        config["evaluate_by_function"] = True
     if args.claude_isolated:
         config["claude_isolated"] = True
     if args.operational_retries:
@@ -762,11 +810,13 @@ def mode_v2(args: argparse.Namespace) -> int:
                   "texto de prompt de toda variante). Rode de novo, sem --resume, em outra pasta.", file=sys.stderr)
             return 1
         if saved != fingerprint:
-            print("Não é seguro retomar a V2: configuração, prompt ou fontes mudaram.", file=sys.stderr)
+            print("Não é seguro retomar a V2: configuração, prompt ou fontes mudaram. Mudou: "
+                  + ", ".join(_fingerprint_diff(saved, fingerprint)), file=sys.stderr)
             return 1
     else:
         checkpoint = {
             "fingerprint": fingerprint,
+            **({"esbmc_provenance": provenance} if provenance is not None else {}),
             "detection_units": {},
             "detection_trace": [],
             "status": "running",
@@ -969,6 +1019,12 @@ def mode_v2(args: argparse.Namespace) -> int:
         return 2
 
     if args.v2_stage == "detection":
+        evaluation = (evaluate_detection(candidates=candidates, ground_truth_path=args.ground_truth,
+                                                 evaluated_sources=input_paths, rejected_findings=rejected_findings,
+                                                 **({"evaluate_by_function": True,
+                                                     "additional_findings": [*capped_dicts, *review_report.get("review_dropped", [])]}
+                                                    if args.evaluate_by_function else {}))
+                if args.ground_truth else None)
         capture_telemetry()
         checkpoint["status"] = "detection_complete"
         _write_json_atomic(checkpoint_path, checkpoint)
@@ -990,13 +1046,14 @@ def mode_v2(args: argparse.Namespace) -> int:
                     "trace": detection_trace,
                     "trace_summary": _summarize_detection_trace(detection_trace),
                 },
-                "evaluation": evaluate_detection(candidates=candidates, ground_truth_path=args.ground_truth,
-                                                 evaluated_sources=input_paths, rejected_findings=rejected_findings)
-                if args.ground_truth else None,
+                "evaluation": evaluation,
                 "telemetry": _summarize_v2_telemetry(checkpoint["telemetry_events"]),
                 "results": [],
             },
         )
+        if args.evaluate_by_function and evaluation is not None:
+            (output_path / "avaliacao_funcoes.md").write_text(
+                render_function_evaluation(evaluation["by_function"]), encoding="utf-8")
         print(f"Detecção concluída: {len(candidates)} hipótese(s) enviada(s), "
               f"{len(rejected_findings)} segurada(s).")
         return 0

@@ -500,7 +500,7 @@ HEAL_MODES = ("none", "error", "error+kb")
 
 def build_healer(mode: str, *, llm, esbmc_command: list[str] | None, graph: CallGraph | None = None,
                  cache_dir: Path = KNOWLEDGE_CACHE, auto_lessons: bool = False,
-                 run_dir: Path | None = None) -> Healer | None:
+                 run_dir: Path | None = None, kb_content_cache: bool = False) -> Healer | None:
     """``error``: the LLM sees ESBMC's message only; ``error+kb``: also the checkout's README and tests."""
     if mode not in HEAL_MODES:
         raise ValueError(f"heal mode must be one of {HEAL_MODES}")
@@ -509,5 +509,6 @@ def build_healer(mode: str, *, llm, esbmc_command: list[str] | None, graph: Call
     knowledge = None
     if mode == "error+kb":
         root = esbmc_root_of(esbmc_command or ["esbmc"])
-        knowledge = load_index(root, cache_dir) if root is not None else KnowledgeIndex("")
+        knowledge = (load_index(root, cache_dir, **({"content_cache": True} if kb_content_cache else {}))
+                     if root is not None else KnowledgeIndex(""))
     return Healer(llm, knowledge, graph, auto_lessons=auto_lessons, run_dir=run_dir)

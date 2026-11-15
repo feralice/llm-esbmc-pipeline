@@ -5,6 +5,7 @@ follows ESBMC as it evolves instead of hand-written notes (verify/esbmc_python_n
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import re
 import subprocess
@@ -80,9 +81,23 @@ def build_index(esbmc_root: Path) -> KnowledgeIndex:
     return KnowledgeIndex(_commit(esbmc_root), sections, _tests(esbmc_root))
 
 
-def load_index(esbmc_root: Path, cache_dir: Path) -> KnowledgeIndex:
+def knowledge_digest(esbmc_root: Path) -> str:
+    digest = hashlib.sha256()
+    paths = {esbmc_root / page for page in (README, *DOCS)}
+    for desc in (esbmc_root / REGRESSION).glob("*/test.desc"):
+        paths.update((desc, desc.parent / "main.py"))
+    for path in sorted(paths):
+        digest.update(str(path.relative_to(esbmc_root)).encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes() if path.is_file() else b"missing")
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def load_index(esbmc_root: Path, cache_dir: Path, *, content_cache: bool = False) -> KnowledgeIndex:
     commit = _commit(esbmc_root)
-    cached = cache_dir / f"{commit}-{CACHE_FORMAT}.json"
+    suffix = f"-{knowledge_digest(esbmc_root)}" if content_cache else ""
+    cached = cache_dir / f"{commit}-{CACHE_FORMAT}{suffix}.json"
     if commit and cached.exists():
         data = json.loads(cached.read_text(encoding="utf-8"))
         return KnowledgeIndex(data["commit"], [Snippet(**s) for s in data["sections"]],

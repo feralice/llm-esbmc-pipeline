@@ -9,6 +9,7 @@ from __future__ import annotations
 import ast
 import json
 import textwrap
+from collections import Counter
 from pathlib import Path
 
 
@@ -231,6 +232,9 @@ def evaluate_detection(
     manifest_path: str | Path | None = None,
     evaluated_sources: list[str | Path] | None = None,
     rejected_findings: list[dict] | None = None,
+    evaluate_by_function: bool = False,
+    results: list[dict] | None = None,
+    additional_findings: list[dict] | None = None,
 ) -> dict:
     """Detection by location (file, function, expression) and the triage of what goes to ESBMC."""
     gt_path = Path(ground_truth_path)
@@ -260,4 +264,135 @@ def evaluate_detection(
         # Whether detection sent to ESBMC the found bugs ESBMC can confirm, and held back the rest.
         "triage": location["triage"],
         "bug_detection": location,
+        **({"by_function": evaluate_functions(
+            evaluated_items, [*candidates, *(rejected_findings or []), *(additional_findings or [])], base, results=results,
+            sibling_labels=json.loads((base / "gabarito_funcoes.json").read_text(encoding="utf-8"))
+            if (base / "gabarito_funcoes.json").exists() else None)} if evaluate_by_function else {}),
     }
+
+
+_SIBLING_REVIEW_PENDING = frozenset({'pymodbus_2977', 'pycomm3_331', 'gps_127'})
+
+
+def _function_names(label: str) -> set[str]:
+    return {part.strip() for part in label.split('/') if part.strip()}
+
+
+def _replayed_exception(result: dict, expected_type: str) -> bool:
+    replay = result.get('replay') or {}
+    if not expected_type or replay.get('exception_type') != expected_type:
+        return False
+    if replay.get('status') == 'reproduced':
+        return True
+    line, span = replay.get('line'), replay.get('target_range')
+    return (replay.get('status') == 'other_failure' and isinstance(line, int)
+            and isinstance(span, (list, tuple)) and len(span) == 2
+            and all(isinstance(value, int) for value in span) and span[0] <= line <= span[1])
+
+
+def evaluate_functions(expected_items: list[dict], candidates: list, base: Path, *,
+                       results: list[dict] | None = None, sibling_labels: list[dict] | None = None) -> dict:
+    """Count labelled cases once, independently of expression, and keep patch siblings separate.
+
+    Replay exception names must match exactly. A bare ``error`` cannot establish ``struct.error``.
+    None for ``results`` means replay and ESBMC were not evaluated (detection-only).
+    """
+    generated = [c if isinstance(c, dict) else c.to_dict() for c in candidates]
+    sisters = {str(row['id']): set(row['tocadas_pelo_patch']) for row in (sibling_labels or [])}
+    cases, sibling_rows = [], []
+    for item in expected_items:
+        if not item.get('categories'):
+            continue
+        case_id = str(item['id'])
+        file = (base / item['detection_file']).resolve()
+        labelled = _function_names(item.get('function', ''))
+
+        def matches(hypothesis: dict, functions: set[str]) -> bool:
+            return Path(hypothesis['file']).resolve() == file and hypothesis.get('function') in functions
+
+        pointed = any(matches(c, labelled) for c in generated)
+        matching = [r for r in (results or []) if matches(r['hypothesis'], labelled)]
+        reproduced = [r for r in matching if _replayed_exception(r, item.get('expected_type', ''))]
+        cases.append({'id': case_id, 'functions': sorted(labelled), 'expected_type': item.get('expected_type'),
+                      'apontado': pointed,
+                      'apontado_e_reproduzido': pointed and bool(reproduced) if results is not None else None,
+                      'confirmado_esbmc': pointed and any(r['verdict'] == 'CONFIRMED' for r in reproduced)
+                      if results is not None else None})
+        if case_id.removeprefix('cps_') in _SIBLING_REVIEW_PENDING:
+            continue
+        sibling_functions = sisters.get(case_id, set()) - labelled
+        found_sisters = sorted({c['function'] for c in generated if matches(c, sibling_functions)})
+        if found_sisters:
+            sibling_rows.append({'id': case_id, 'functions': found_sisters,
+                                 'file': str(file), 'source': 'gabarito_funcoes.json'})
+    return {'total': len(cases), 'apontado': sum(row['apontado'] for row in cases),
+            'apontado_e_reproduzido': sum(row['apontado_e_reproduzido'] for row in cases)
+            if results is not None else None,
+            'confirmado_esbmc': sum(row['confirmado_esbmc'] for row in cases) if results is not None else None,
+            'cases': cases, 'mesmo_padrao_em_outra_funcao': sibling_rows,
+            'sibling_labels_available': sibling_labels is not None,
+            'excluded_sibling_cases': sorted(_SIBLING_REVIEW_PENDING),
+            'input_layout': _function_input_layout(expected_items, base)}
+
+
+
+def _function_input_layout(items: list[dict], base: Path) -> dict:
+    from .preprocess import preprocess_file
+    labelled = [item for item in items if item.get("categories")]
+    paths = sorted({(base / item["detection_file"]).resolve() for item in labelled})
+    functions, missing = {}, []
+    for path in paths:
+        try:
+            functions[path] = {u.qualname for u in preprocess_file(path) if u.kind == "function"}
+        except (OSError, SyntaxError, ValueError, UnicodeError, RecursionError):
+            missing.append(str(path))
+    counts = [len(names) for names in functions.values()]
+    complete = bool(paths) and not missing
+    return {"files": len(paths), "available_files": len(functions), "missing_sources": missing,
+            "functions": sum(counts) if complete else None,
+            "min_functions": min(counts) if complete else None,
+            "max_functions": max(counts) if complete else None,
+            "mean_functions": sum(counts) / len(counts) if complete else None,
+            "distribution": dict(sorted(Counter(counts).items())),
+            "all_functions_labelled": complete and all(
+                bool(functions[(base / item["detection_file"]).resolve()])
+                and functions[(base / item["detection_file"]).resolve()] <= _function_names(item.get("function", ""))
+                for item in labelled)}
+
+
+def render_function_evaluation(metrics: dict, *, fix_judge: dict | None = None) -> str:
+    """Present the measured levels before the function-localization support metric."""
+    total = metrics["total"]
+
+    def count(value):
+        return "não medido" if value is None else f"{value} de {total}"
+
+    lines = ["# Avaliação por função", "",
+             f"**Apontado e reproduzido: {count(metrics['apontado_e_reproduzido'])}.**", "",
+             f"**Confirmado pelo ESBMC: {count(metrics['confirmado_esbmc'])}.**", ""]
+    if fix_judge is not None and fix_judge.get("fixed_ok") is not None:
+        lines += [f"**Juiz do conserto: {fix_judge['fixed_ok']} entradas deixam de falhar na versão corrigida.**",
+                  f"Fonte: {fix_judge.get('source', 'não informada')}. Controle separado, sem somar aos outros níveis.", ""]
+    else:
+        lines += ["Juiz do conserto: não medido neste relatório.", ""]
+    lines += [f"Apontado (apoio): {count(metrics['apontado'])}.", ""]
+    layout = metrics.get("input_layout", {})
+    if layout.get("functions") is not None:
+        lines += [(f"Entrada: {layout['files']} arquivos, {layout['functions']} funções; "
+                   f"de {layout['min_functions']} a {layout['max_functions']} funções por arquivo, "
+                   f"média {layout['mean_functions']:.2f}."), ""]
+        if layout.get("all_functions_labelled"):
+            lines += ["Aviso: o nível apontado não tem poder de discriminação da localização neste desenho. "
+                      "Todas as funções oferecidas estão nos rótulos; quando a LLM apresenta uma hipótese, "
+                      "não há outra função disponível para escolher. Esse nível não mede distinguir código "
+                      "com bug de código sem bug.", ""]
+    else:
+        lines += ["Entrada: não foi possível conferir a quantidade de funções em todos os arquivos.", ""]
+    lines += ["A reprodução ocorre no harness; não prova alcance pelo código real. "
+              "Os números de confirmação acima são o subconjunto reproduzido com a exceção esperada.", "",
+              "## Mesmo padrão em outra função", "", "| Caso | Funções |", "|---|---|"]
+    for row in metrics.get("mesmo_padrao_em_outra_funcao", []):
+        lines.append(f"| {row['id']} | {', '.join(row['functions'])} |")
+    if not metrics.get("mesmo_padrao_em_outra_funcao"):
+        lines += ["", "Nenhum caso listado nesta tabela."]
+    return "\n".join(lines) + "\n"

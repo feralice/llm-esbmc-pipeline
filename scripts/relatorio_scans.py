@@ -36,6 +36,8 @@ def summarize(folders: list[Path]) -> str:
         done = (folder / "scan_report.json").exists()
         lines += [f"## {folder.name}", "", f"Relatório final: {'sim' if done else 'não (rodada incompleta)'}. "
                   f"Hipóteses verificadas: {len(results)}. Vereditos: {dict(counts)}", ""]
+        if counts["CONFIRMED"]:
+            lines += ["confirmado no harness; a entrada usada pode não ser alcançável pelo código real; leia o código e reproduza fora do harness antes de reportar.", ""]
         for r in results:
             if r.get("verdict") in LISTED:
                 h = r["hypothesis"]

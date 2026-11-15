@@ -57,7 +57,8 @@ def _confirmed(result: dict, root: str | Path | None = None) -> str:
 
 
 def render_run_report(results: list[dict], held: list[dict] | None = None,
-                      detection: tuple[int, list[str]] | None = None, root: str | Path | None = None) -> str:
+                      detection: tuple[int, list[str]] | None = None, root: str | Path | None = None,
+                      duplicates: list[dict] | None = None) -> str:
     """``held``: findings the detection itself marked as not verifiable by ESBMC (a wrong value, the
     environment), each with ``file``, ``function``, ``expression`` and ``explanation``. ``detection``: how many
     functions were analysed and the errors of those that failed, so a failed scan never reads as a clean one."""
@@ -86,9 +87,8 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
               f"CPython, {len(results) - len(confirmed) - len(rejected) - len(simplified) - len(cpython)} não confirmadas (o ESBMC disse seguro, "
               "não decidiu, ou o harness não chegou a rodar)."), "",
              f"## Confirmados isolados ({len(confirmed)})", "",
-             "O ESBMC e o replay confirmaram a exceção na função isolada. Isso não prova que o projeto chega a esse "
-             "estado: confira os chamadores e a entrada pública antes de chamar de bug (ver o checklist em docs/projeto). "
-             "Cada um passa por auditoria manual antes de virar issue.", "",
+             *(["confirmado no harness; a entrada usada pode não ser alcançável pelo código real; leia o código e reproduza fora do harness antes de reportar.",
+                "Exige auditoria manual antes de reportar.", ""] if confirmed else []),
              *(_confirmed(r, root) for r in confirmed), "",
              f"## Tratados pelo chamador ({len(handled)})", "",
              "O ESBMC confirmou a exceção na função isolada, mas todo chamador conhecido a captura. Não chega ao usuário "
@@ -105,9 +105,12 @@ def render_run_report(results: list[dict], held: list[dict] | None = None,
              *(f"- {_where(r, root)}: {r['verdict']}, {r.get('reason', '')}" for r in rejected), "",
              *([f"## Suspeitas do LLM que o ESBMC não verifica ({len(held)})", "",
                 *(f"- {_place(h['file'], h['function'], root)}: `{h['expression']}`. {h['explanation']}"
+                  + (" Hipótese original refeita com definições; preservada como histórico." if h.get("retried") else "")
+                  + (f" Falha na refação: {h['retry_error']}" if h.get("retry_error") else "")
                   for h in held), ""] if held is not None else []),
              "## Suspeitas do LLM", ""]
     for group in sorted(suspicions):
         lines += [f"### {group} ({len(suspicions[group])})", "",
                   *(f"- {_where(r, root)}: {r['verdict']}, {r.get('reason', '')[:200]}" for r in suspicions[group]), ""]
-    return "\n".join(lines)
+    from ..scan.dedupe import duplicates_markdown
+    return "\n".join(lines) + duplicates_markdown(duplicates or [], results)
