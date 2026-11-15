@@ -7,12 +7,12 @@
 cd "$(dirname "$0")/.."
 ulimit -v 8000000
 DATA=$(date +%Y-%m-%d)
-FIRST=artifacts/pgene601/ruido-$DATA-r1
+FIRST=artifacts/pgene601/congelado-$DATA-r1
 D=dataset/disciplina_pgene601
 ESBMC="$HOME/esbmc-master/build-bw/src/esbmc/esbmc"
 while pgrep -f "main.py --mode scan" >/dev/null; do sleep 120; done
 for rep in $(seq 1 "${1:-2}"); do
-  OUT=artifacts/pgene601/ruido-$DATA-r$rep
+  OUT=artifacts/pgene601/congelado-$DATA-r$rep
   mkdir -p "$OUT"
   resume=()
   if [[ $rep -gt 1 && ! -f $OUT/v2_checkpoint.json ]]; then
@@ -31,7 +31,7 @@ PY
       --input $D/funcao_com_bug --ground-truth $D/ground_truths.json \
       --verification-sources $D/arquivo_com_bug --fixed-sources $D/arquivo_corrigido \
       --v2-variants A1,A2 --backend claude_cli --model claude-sonnet-5-5 \
-      --synth-backend claude_cli --synth-model claude-sonnet-5-5 --no-auto-lessons \
+      --synth-backend claude_cli --synth-model claude-sonnet-5-5 --profile congelado \
       --esbmc-command "$ESBMC" --bound 5 --timeout 180 \
       --output-dir "$OUT" "${resume[@]}" >> "$OUT/run.log" 2>&1
     code=$?
@@ -42,4 +42,4 @@ PY
     sleep 1800
   done
 done
-echo "$(date -Is) fim" >> artifacts/pgene601/ruido-status.log
+echo "$(date -Is) fim" >> artifacts/pgene601/congelado-status.log
