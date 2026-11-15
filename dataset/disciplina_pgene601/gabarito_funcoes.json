@@ -1,0 +1,394 @@
+[
+ {
+  "id": "cps_pymodbus_2980",
+  "rotulada": "ReadFileRecordRequest.decode",
+  "tocadas_pelo_patch": [
+   "ReadFileRecordRequest.decode",
+   "WriteFileRecordRequest.decode",
+   "ReadFifoQueueResponse.decode"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pymavlink_1259",
+  "rotulada": "DFReader_binary.init_arrays_fast",
+  "tocadas_pelo_patch": [
+   "DFReader_binary.init_arrays_fast"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_opcua_1131",
+  "rotulada": "HistoryDict.read_node_history / HistoryDict.read_event_history",
+  "tocadas_pelo_patch": [
+   "HistoryDict.read_node_history",
+   "HistoryDict.read_event_history"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_opcua_1955",
+  "rotulada": "DataSetWriter.generate_uadp_dataset",
+  "tocadas_pelo_patch": [
+   "DataSetWriter.generate_uadp_dataset"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pythoncan_1811",
+  "rotulada": "ASCReader.__iter__ / ASCReader._process_fd_can_frame",
+  "tocadas_pelo_patch": [
+   "ASCReader.__iter__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_cantools_595",
+  "rotulada": "SystemLoader._load_comments",
+  "tocadas_pelo_patch": [
+   "SystemLoader._load_comments"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_cantools_804",
+  "rotulada": "_dump_signals",
+  "tocadas_pelo_patch": [
+   "_dump_signals"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pythoncan_1599",
+  "rotulada": "find_available_interfaces",
+  "tocadas_pelo_patch": [
+   "find_available_interfaces"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pythoncan_1293",
+  "rotulada": "IscanError.__init__",
+  "tocadas_pelo_patch": [
+   "IscanError.__init__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pyserial_820",
+  "rotulada": "PosixPollSerial.read",
+  "tocadas_pelo_patch": [
+   "PosixPollSerial.read"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pyserial_149",
+  "rotulada": "FramedPacket.data_received",
+  "tocadas_pelo_patch": [
+   "FramedPacket.data_received"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pymavlink_1217",
+  "rotulada": "add_message",
+  "tocadas_pelo_patch": [
+   "add_message"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_1032",
+  "rotulada": "FakeGPSModule.idle_task",
+  "tocadas_pelo_patch": [
+   "FakeGPSModule.idle_task"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_881",
+  "rotulada": "FTPModule.__init__ / FTPModule.check_read_send",
+  "tocadas_pelo_patch": [
+   "FTPModule.__init__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_dronekit_890",
+  "rotulada": "Vehicle.is_armable",
+  "tocadas_pelo_patch": [
+   "Vehicle.is_armable"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_blinka_434",
+  "rotulada": "PWMOut.deinit",
+  "tocadas_pelo_patch": [
+   "PWMOut.deinit"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_opcua_1826",
+  "rotulada": "UaProcessor._process_message",
+  "tocadas_pelo_patch": [
+   "UaProcessor._process_message"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_opcua_671",
+  "rotulada": "application_to_strings",
+  "tocadas_pelo_patch": [
+   "application_to_strings"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_ros2cli_1112",
+  "rotulada": "get_port",
+  "tocadas_pelo_patch": [
+   "get_port"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_ros2cli_1026",
+  "rotulada": "InterfaceFlags.__str__ / NetworkReport.report",
+  "tocadas_pelo_patch": [
+   "InterfaceFlags.__str__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pymodbus_2921",
+  "rotulada": "FramerTLS.decode",
+  "tocadas_pelo_patch": [
+   "FramerTLS.decode"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pymodbus_1738",
+  "rotulada": "ReadDeviceInformationResponse.calculateRtuFrameSize",
+  "tocadas_pelo_patch": [
+   "ReadDeviceInformationResponse.calculateRtuFrameSize"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pymodbus_2977",
+  "rotulada": "WriteMultipleRegistersRequest.decode",
+  "tocadas_pelo_patch": [
+   "<módulo>",
+   "ReadWriteMultipleRegistersRequest.decode",
+   "ReadWriteMultipleRegistersRequest.datastore_update",
+   "WriteMultipleRegistersRequest.decode",
+   "WriteMultipleRegistersRequest.datastore_update"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_minimqtt_5",
+  "rotulada": "MQTT.connect",
+  "tocadas_pelo_patch": [
+   "MQTT.connect"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_umqtt_1149",
+  "rotulada": "MQTTClient.connect",
+  "tocadas_pelo_patch": [
+   "MQTTClient.connect"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pyrtcm_34",
+  "rotulada": "RTCMMessage.__str__",
+  "tocadas_pelo_patch": [
+   "RTCMMessage.__str__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pycomm3_331",
+  "rotulada": "PCCCStringType._slc_string_swap",
+  "tocadas_pelo_patch": [
+   "<módulo>",
+   "PCCCStringType._slc_string_swap",
+   "PCCC_ASCII._encode",
+   "PCCC_STRING._encode",
+   "PCCC_STRING._decode"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_udsoncan_291",
+  "rotulada": "AsciiCodec.decode",
+  "tocadas_pelo_patch": [
+   "AsciiCodec.decode"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_udsoncan_198",
+  "rotulada": "Client.send_request",
+  "tocadas_pelo_patch": [
+   "Client.send_request"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_gps_127",
+  "rotulada": "_parse_degrees",
+  "tocadas_pelo_patch": [
+   "_parse_degrees",
+   "_read_degrees",
+   "_read_deg_mins",
+   "_parse_data"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_gps_126",
+  "rotulada": "GPS._update_timestamp_utc",
+  "tocadas_pelo_patch": [
+   "GPS._update_timestamp_utc"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_gps_60",
+  "rotulada": "GPS.update / _parse_talker",
+  "tocadas_pelo_patch": [
+   "GPS.update"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pythoncan_713",
+  "rotulada": "CanutilsLogReader.__iter__",
+  "tocadas_pelo_patch": [
+   "CanutilsLogReader.__iter__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pythoncan_225",
+  "rotulada": "ASCReader.__iter__",
+  "tocadas_pelo_patch": [
+   "ASCReader.__iter__",
+   "ASCWriter.log_event"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pymavlink_1058",
+  "rotulada": "DFReader_binary.init_arrays_fast",
+  "tocadas_pelo_patch": [
+   "DFReader_binary.init_arrays_fast"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_989",
+  "rotulada": "LogModule.log_status",
+  "tocadas_pelo_patch": [
+   "LogModule.log_status"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_741",
+  "rotulada": "LogModule.log_status",
+  "tocadas_pelo_patch": [
+   "LogModule.log_status"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_piouart_6",
+  "rotulada": "UART.read",
+  "tocadas_pelo_patch": [
+   "UART.read"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_1572",
+  "rotulada": "FTPModule.send",
+  "tocadas_pelo_patch": [
+   "FTPModule.send"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_1447",
+  "rotulada": "BatteryModule.cmd_bat",
+  "tocadas_pelo_patch": [
+   "BatteryModule.cmd_bat"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_gpiozero_716",
+  "rotulada": "CPUTemperature.__init__ / CPUTemperature.value",
+  "tocadas_pelo_patch": [
+   "CPUTemperature.__init__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_simpleio_43",
+  "rotulada": "map_range",
+  "tocadas_pelo_patch": [
+   "map_range"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_pyspartn_4",
+  "rotulada": "SPARTNMessage.__init__",
+  "tocadas_pelo_patch": [
+   "<módulo>",
+   "SPARTNMessage.__init__"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_mavproxy_1380",
+  "rotulada": "MPSlipMapPanel.click_position_text",
+  "tocadas_pelo_patch": [
+   "MPSlipMapPanel.click_position_text"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_ros2cli_370",
+  "rotulada": "_check_network_config_helper",
+  "tocadas_pelo_patch": [
+   "_check_network_config_helper"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_ros2cli_646",
+  "rotulada": "ListVerb.main",
+  "tocadas_pelo_patch": [
+   "ListVerb.main"
+  ],
+  "rotulada_foi_tocada": true
+ },
+ {
+  "id": "cps_paho_118",
+  "rotulada": "Client._host_matches_cert",
+  "tocadas_pelo_patch": [
+   "Client._host_matches_cert"
+  ],
+  "rotulada_foi_tocada": true
+ }
+]

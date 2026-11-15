@@ -1,0 +1,664 @@
+{
+  "source_report": "artifacts/pgene601/ajustes-2026-11-07/v2_verify_report.json",
+  "source_hashes": {
+    "artifacts/pgene601/ajustes-2026-11-07/v2_verify_report.json": "c1a84f593e5db75c1452deb91b59eafbe1ffff169d844cbeff274a6a96b895ac",
+    "dataset/disciplina_pgene601/ground_truths.json": "9b4c4947720d02fd43a68d8046056401a45145cd947750bf48169f561e5f8a7a",
+    "dataset/disciplina_pgene601/manifest.json": "5c84997144b680a2163caa17f63dec4be5414c6b9320cf64df5c5166a64801ad",
+    "dataset/disciplina_pgene601/gabarito_funcoes.json": "23727c668833771269c16b914e5ad03c1e087b7d78927e5d4f3ad7ee75711adb"
+  },
+  "legacy_metrics_unchanged": true,
+  "legacy_evaluation": {
+    "triage": {
+      "should_send": {
+        "sent": 38,
+        "held": 0
+      },
+      "should_hold": {
+        "sent": 0,
+        "held": 0
+      },
+      "uncertain_label": 0,
+      "sent_when_should": 1.0,
+      "held_when_should": null
+    },
+    "detection_by_location": {
+      "detection": {
+        "tp": 7,
+        "fp": 137,
+        "fn": 40,
+        "precision": 0.04861111111111111,
+        "recall": 0.14893617021276595,
+        "f1": 0.07329842931937174
+      },
+      "file": {
+        "tp": 47,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "location": {
+        "tp": 47,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "expression": {
+        "tp": 7,
+        "fp": 137,
+        "fn": 40,
+        "precision": 0.04861111111111111,
+        "recall": 0.14893617021276595,
+        "f1": 0.07329842931937174
+      },
+      "expression_equivalent": {
+        "tp": 38,
+        "fp": 96,
+        "fn": 9,
+        "precision": 0.2835820895522388,
+        "recall": 0.8085106382978723,
+        "f1": 0.4198895027624309
+      },
+      "triage": {
+        "should_send": {
+          "sent": 38,
+          "held": 0
+        },
+        "should_hold": {
+          "sent": 0,
+          "held": 0
+        },
+        "uncertain_label": 0,
+        "sent_when_should": 1.0,
+        "held_when_should": null
+      }
+    },
+    "confirmed_by_location": {
+      "detection": {
+        "tp": 2,
+        "fp": 7,
+        "fn": 45,
+        "precision": 0.2222222222222222,
+        "recall": 0.0425531914893617,
+        "f1": 0.07142857142857142
+      },
+      "file": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 39,
+        "precision": 1.0,
+        "recall": 0.1702127659574468,
+        "f1": 0.2909090909090909
+      },
+      "location": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 39,
+        "precision": 1.0,
+        "recall": 0.1702127659574468,
+        "f1": 0.2909090909090909
+      },
+      "expression": {
+        "tp": 2,
+        "fp": 7,
+        "fn": 45,
+        "precision": 0.2222222222222222,
+        "recall": 0.0425531914893617,
+        "f1": 0.07142857142857142
+      },
+      "expression_equivalent": {
+        "tp": 5,
+        "fp": 4,
+        "fn": 42,
+        "precision": 0.5555555555555556,
+        "recall": 0.10638297872340426,
+        "f1": 0.17857142857142855
+      }
+    },
+    "value_confirmed_by_location": {
+      "detection": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 47,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "file": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 47,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "location": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 47,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "expression": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 47,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      },
+      "expression_equivalent": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 47,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null
+      }
+    },
+    "same_function_other_line": {
+      "hypotheses": 3,
+      "bugs": 2,
+      "bugs_not_confirmed_at_line": 2,
+      "bug_ids": [
+        "cps_pymodbus_1738",
+        "cps_pymodbus_2980"
+      ]
+    }
+  },
+  "by_function": {
+    "total": 47,
+    "apontado": 47,
+    "apontado_e_reproduzido": 8,
+    "confirmado_esbmc": 5,
+    "cases": [
+      {
+        "id": "cps_pymodbus_2980",
+        "functions": [
+          "ReadFileRecordRequest.decode"
+        ],
+        "expected_type": "struct.error",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pymavlink_1259",
+        "functions": [
+          "DFReader_binary.init_arrays_fast"
+        ],
+        "expected_type": "struct.error",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_opcua_1131",
+        "functions": [
+          "HistoryDict.read_event_history",
+          "HistoryDict.read_node_history"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_opcua_1955",
+        "functions": [
+          "DataSetWriter.generate_uadp_dataset"
+        ],
+        "expected_type": "struct.error",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pythoncan_1811",
+        "functions": [
+          "ASCReader.__iter__",
+          "ASCReader._process_fd_can_frame"
+        ],
+        "expected_type": "ValueError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_cantools_595",
+        "functions": [
+          "SystemLoader._load_comments"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_cantools_804",
+        "functions": [
+          "_dump_signals"
+        ],
+        "expected_type": "UnboundLocalError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pythoncan_1599",
+        "functions": [
+          "find_available_interfaces"
+        ],
+        "expected_type": "KeyError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pythoncan_1293",
+        "functions": [
+          "IscanError.__init__"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": true
+      },
+      {
+        "id": "cps_pyserial_820",
+        "functions": [
+          "PosixPollSerial.read"
+        ],
+        "expected_type": "UnboundLocalError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pyserial_149",
+        "functions": [
+          "FramedPacket.data_received"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pymavlink_1217",
+        "functions": [
+          "add_message"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_1032",
+        "functions": [
+          "FakeGPSModule.idle_task"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_881",
+        "functions": [
+          "FTPModule.__init__",
+          "FTPModule.check_read_send"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_dronekit_890",
+        "functions": [
+          "Vehicle.is_armable"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_blinka_434",
+        "functions": [
+          "PWMOut.deinit"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": true
+      },
+      {
+        "id": "cps_opcua_1826",
+        "functions": [
+          "UaProcessor._process_message"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_opcua_671",
+        "functions": [
+          "application_to_strings"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_ros2cli_1112",
+        "functions": [
+          "get_port"
+        ],
+        "expected_type": "ValueError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_ros2cli_1026",
+        "functions": [
+          "InterfaceFlags.__str__",
+          "NetworkReport.report"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pymodbus_2921",
+        "functions": [
+          "FramerTLS.decode"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pymodbus_1738",
+        "functions": [
+          "ReadDeviceInformationResponse.calculateRtuFrameSize"
+        ],
+        "expected_type": "struct.error",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pymodbus_2977",
+        "functions": [
+          "WriteMultipleRegistersRequest.decode"
+        ],
+        "expected_type": "struct.error",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_minimqtt_5",
+        "functions": [
+          "MQTT.connect"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_umqtt_1149",
+        "functions": [
+          "MQTTClient.connect"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pyrtcm_34",
+        "functions": [
+          "RTCMMessage.__str__"
+        ],
+        "expected_type": "KeyError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pycomm3_331",
+        "functions": [
+          "PCCCStringType._slc_string_swap"
+        ],
+        "expected_type": "ValueError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_udsoncan_291",
+        "functions": [
+          "AsciiCodec.decode"
+        ],
+        "expected_type": "UnicodeDecodeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_udsoncan_198",
+        "functions": [
+          "Client.send_request"
+        ],
+        "expected_type": "UnboundLocalError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_gps_127",
+        "functions": [
+          "_parse_degrees"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_gps_126",
+        "functions": [
+          "GPS._update_timestamp_utc"
+        ],
+        "expected_type": "ValueError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_gps_60",
+        "functions": [
+          "GPS.update",
+          "_parse_talker"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pythoncan_713",
+        "functions": [
+          "CanutilsLogReader.__iter__"
+        ],
+        "expected_type": "UnboundLocalError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pythoncan_225",
+        "functions": [
+          "ASCReader.__iter__"
+        ],
+        "expected_type": "ValueError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_pymavlink_1058",
+        "functions": [
+          "DFReader_binary.init_arrays_fast"
+        ],
+        "expected_type": "KeyError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_989",
+        "functions": [
+          "LogModule.log_status"
+        ],
+        "expected_type": "ZeroDivisionError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_741",
+        "functions": [
+          "LogModule.log_status"
+        ],
+        "expected_type": "ValueError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_piouart_6",
+        "functions": [
+          "UART.read"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_1572",
+        "functions": [
+          "FTPModule.send"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_1447",
+        "functions": [
+          "BatteryModule.cmd_bat"
+        ],
+        "expected_type": "KeyError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_gpiozero_716",
+        "functions": [
+          "CPUTemperature.__init__",
+          "CPUTemperature.value"
+        ],
+        "expected_type": "ZeroDivisionError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": true
+      },
+      {
+        "id": "cps_simpleio_43",
+        "functions": [
+          "map_range"
+        ],
+        "expected_type": "ZeroDivisionError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": true
+      },
+      {
+        "id": "cps_pyspartn_4",
+        "functions": [
+          "SPARTNMessage.__init__"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_mavproxy_1380",
+        "functions": [
+          "MPSlipMapPanel.click_position_text"
+        ],
+        "expected_type": "TypeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_ros2cli_370",
+        "functions": [
+          "_check_network_config_helper"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_ros2cli_646",
+        "functions": [
+          "ListVerb.main"
+        ],
+        "expected_type": "AttributeError",
+        "apontado": true,
+        "apontado_e_reproduzido": false,
+        "confirmado_esbmc": false
+      },
+      {
+        "id": "cps_paho_118",
+        "functions": [
+          "Client._host_matches_cert"
+        ],
+        "expected_type": "IndexError",
+        "apontado": true,
+        "apontado_e_reproduzido": true,
+        "confirmado_esbmc": true
+      }
+    ],
+    "mesmo_padrao_em_outra_funcao": [],
+    "sibling_labels_available": true,
+    "excluded_sibling_cases": [
+      "gps_127",
+      "pycomm3_331",
+      "pymodbus_2977"
+    ]
+  }
+}
