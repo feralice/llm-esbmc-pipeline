@@ -78,14 +78,13 @@ def test_patched_source_and_new_spec_llm_are_used(monkeypatch):
     assert "def g" in seen[1][1] and "def g" not in SOURCE
 
 
-def test_invalid_patch_spends_a_round(monkeypatch):
+def test_invalid_patch_spends_a_round_and_ends_the_repairs(monkeypatch):
     seen = []
     monkeypatch.setattr(healing, "verify_hypothesis", _verify([UNSUPPORTED], seen))
     bad = Patch(edits=(("return 1 / x", "return 0"),))
     result = verify_with_healing(H, healer=ScriptedHealer([bad, None]), source=SOURCE, llm="spec", rounds=2)
-    assert result.verdict == LLM_ONLY and len(seen) == 1
+    assert result.verdict == LLM_ONLY and len(seen) == 1 and len(result.healing) == 1
     assert "suspect" in result.healing[0]["problems"][0]
-    assert result.healing[1]["problems"] == ["no usable repair"]
 
 
 def test_without_healer_is_identity(monkeypatch):
@@ -202,7 +201,8 @@ def test_a_new_obstacle_resets_the_rounds(monkeypatch):
 
 def test_the_same_obstacle_gets_only_its_rounds(monkeypatch):
     seen = []
-    monkeypatch.setattr(healing, "verify_hypothesis", _reasons([(UNSUPPORTED, "ERROR: same at line 3")] * 9, seen))
+    moving = [(UNSUPPORTED, f"ERROR: same at line {n}") for n in range(9)]
+    monkeypatch.setattr(healing, "verify_hypothesis", _reasons(moving, seen))
     result = verify_with_healing(H, healer=ScriptedHealer([STUB] * 9), source=SOURCE, llm="spec", rounds=2)
     assert result.verdict == LLM_ONLY and len(seen) == 3
 
@@ -265,3 +265,29 @@ def test_a_stub_function_replaces_the_real_one_defined_later():
     patch = Patch(edits=(), definitions="def helper(x: int = None) -> str:\n    return nondet_str()\n")
     text = apply_patch(source, patch)
     assert text.count("def helper") == 1 and "x.y.z" not in text and "def target" in text
+
+
+def _same_reason(verdicts, seen):
+    def fake(h, *, source, llm, **kwargs):
+        seen.append(h)
+        return VerifyResult(h, verdicts.pop(0), reason="Unsupported construct: bytearray")
+    return fake
+
+
+def test_repair_that_leaves_the_same_error_stops_the_rounds(monkeypatch):
+    seen = []
+    monkeypatch.setattr(healing, "verify_hypothesis", _same_reason([UNSUPPORTED] * 4, seen))
+    stub = Patch(definitions="def g(a=None) -> int:\n    return nondet_int()\n")
+    healer = ScriptedHealer([stub] * 3)
+    result = verify_with_healing(H, healer=healer, source=SOURCE, llm="spec", rounds=3)
+    assert result.verdict == LLM_ONLY
+    assert len(result.healing) == 1 and len(healer.calls) == 1 and len(seen) == 2
+
+
+def test_unusable_repair_stops_the_rounds(monkeypatch):
+    seen = []
+    monkeypatch.setattr(healing, "verify_hypothesis", _same_reason([UNSUPPORTED], seen))
+    healer = ScriptedHealer([])
+    result = verify_with_healing(H, healer=healer, source=SOURCE, llm="spec", rounds=3)
+    assert result.verdict == LLM_ONLY
+    assert len(result.healing) == 1 and len(healer.calls) == 1 and len(seen) == 1

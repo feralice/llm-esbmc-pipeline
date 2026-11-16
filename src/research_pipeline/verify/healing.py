@@ -445,7 +445,9 @@ _INTERNAL = re.compile(r"vector::_M_range_check|json\.exception|irep2_cast_error
 def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str, rounds: int = 3,
                         spec_llm_after_heal=None, triage: bool = False, **verify_kwargs) -> VerifyResult:
     """``verify_hypothesis`` plus up to ``rounds`` repairs per obstacle, while the verdict is one ESBMC never
-    reached; a new ESBMC message is progress and gets its own rounds (at most ``3 * rounds`` in all).
+    reached; a new ESBMC message is progress and gets its own rounds (at most ``3 * rounds`` in all). A round that
+    leaves the message unchanged, or yields no usable repair, ends the repairs: in the 47-bug runs 80% of the
+    later rounds met the same error and almost none of them reached a verdict.
     The result keeps the original hypothesis, which is what the metric scores."""
     result = verify_hypothesis(h, source=source, **verify_kwargs)
     if healer is None or (result.verdict == UNSUPPORTED and (triage or _NO_WORKAROUND.search(result.reason))):
@@ -454,12 +456,16 @@ def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str,
     log: list[dict] = []
     current, text, replay_text = h, source, source
     spent: dict[str, int] = {}
+    last_reason = None
     for number in range(3 * rounds):
         if result.verdict not in HEALABLE:
             break
         if _INTERNAL.search(result.reason):
             result.reason, result.verdict = f"internal ESBMC error (tool bug): {result.reason}", ESBMC_ERROR
             break
+        if result.reason == last_reason:
+            break
+        last_reason = result.reason
         seen = obstacle(result.reason)
         if spent.get(seen, 0) >= rounds:
             break
