@@ -5,7 +5,7 @@
     ],
     "version": "ESBMC version 8.6.0 64-bit x86_64 linux",
     "files": {
-      "/mnt/e/esbmc-builds/esbmc-master-build-bw/src/esbmc/esbmc": "e7e10400dd9531f715074152802c49e3d2c64348337b1ed6f03048e27a5c7346"
+      "/mnt/e/esbmc-builds/esbmc-master-build-bw/src/esbmc/esbmc": "d9f0de1f5a367fa265505c3ec78aa8b58c19ca90ee7d602226637a91b2a36d4a"
     }
   },
   "outcomes": {
@@ -49,18 +49,6 @@
       "outcome": "crash",
       "detail": "ERROR: uncaught exception [St13runtime_error]: Unexpected index type in computer_pointer_offset"
     },
-    "58_alias_de_funcao_como_argumento.py": {
-      "outcome": "refused",
-      "detail": "ERROR: Function `py:docs/projeto/possiveis_problemas/58_alias_de_funcao_como_argumento.py@op' type mismatch: expected code"
-    },
-    "60_lista_em_valor_de_dict.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
-    "63_getitem_tupla_em_atributo.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
     "65_parametro_reatribuido_dict_get.py": {
       "outcome": "refused",
       "detail": "ERROR: Member 'is_none' is not a field of pointer_struct, whose members are: pointer_object, pointer_offset"
@@ -69,37 +57,9 @@
       "outcome": "refused",
       "detail": "ERROR: Cannot unpack pointer - only tuples and arrays can be unpacked"
     },
-    "70_tupla_opcional_len.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
-    "71_tupla_opcional_desempacotada.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
-    "72_tupla_opcional_com_bool.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
-    "74_float_variavel_passada_por_self.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
-    "75_staticmethod_dict_aninhado_irep2.py": {
-      "outcome": "successful",
-      "detail": ""
-    },
-    "76_bytes_vazio_indice_falso_negativo.py": {
-      "outcome": "failed",
-      "detail": "uncaught exception: IndexError"
-    },
     "77_bytearray_nao_suportado.py": {
       "outcome": "refused",
       "detail": "ERROR: bytearray is not supported; use bytes for an immutable byte sequence"
-    },
-    "78_bytes_de_lista_variavel.py": {
-      "outcome": "refused",
-      "detail": "ERROR: bytes(): only a bytes value, a constant count, or a list or tuple of constant integers is supported"
     },
     "79_dict_aninhado_reatribuido.py": {
       "outcome": "refused",

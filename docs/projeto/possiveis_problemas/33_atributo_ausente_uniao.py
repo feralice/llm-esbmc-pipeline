@@ -1,5 +1,5 @@
 # CPython: AttributeError ('B' object has no attribute 'size') quando nondet_bool() é verdadeiro.
-# ESBMC master: VERIFICATION SUCCESSFUL.
+# ESBMC master de72a905e0: recusa (storing or passing 'x'), issue #10792.
 from typing import Union
 
 

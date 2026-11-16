@@ -9,7 +9,59 @@ Rodar com `./rodar.sh /caminho/do/esbmc "--no-pointer-check --no-align-check"`. 
 `--unwind 5 --multi-property`. As duas flags extras desligam as checagens de memória dos modelos em C;
 `--no-bounds-check` não pode entrar, porque troca o `IndexError` do Python por `out-of-bounds read in list`.
 
-## Situação no master `822227ff96` (08/11/2026)
+## Situação no master `de72a905e0` (16/11/2026)
+
+ESBMC 8.6.0, build Bitwuzla em `~/esbmc-master/build-bw` (master de 16/11, 41 commits depois do `fbaf8089b9`), o mesmo
+que o pipeline usa na tag `v2-congelado-2026-11f`. Medido com `./rodar.sh <esbmc> "--no-pointer-check --no-align-check"`.
+O estado das issues foi conferido no GitHub no mesmo dia. Os arquivos de resultado ficam em `baseline.json`.
+
+**Ainda dão problema (14 reprodutores):**
+
+| Arquivo | Veredito em `de72a905e0` | Issue |
+|---|---|---|
+| `20_kwargs.py` | `Object "kw" not found` | #9074 (aberta) |
+| `24_numpy_shape_parametro.py` | recusa explícita: `numpy.array() of a value that is not a numpy array or a list or tuple literal` | #9077 (fechada: o erro virou recusa explícita, #9141) |
+| `31_strip_split_laco.py` | só `unwinding assertion` (laços 6 e 7) | nenhuma |
+| `33_atributo_ausente_uniao.py` | recusa: `storing or passing 'x', which holds an instance of A or B` | #8408 (fechada em 14/11; o programa da issue, uma chamada de método, passou a dar o veredito certo, mas este reprodutor é outra construção e continua recusado) e #10792 (aberta em 16/11, só para o atributo de `Union`) |
+| `45_nondet_str_contraexemplo.py` | FAILED, sem o valor de `s` | #9091 (fechada como "not planned") |
+| `48_atributo_aninhado_campo_none.py` | `Cannot resolve nested attribute: next` | nenhuma (contorno no `compat.py`) |
+| `51_pytest_metodo.py` | FAILED (`ZeroDivisionError`); o teste gerado chama `media(arg0)` como função solta, e o método é de `Conta` | nenhuma |
+| `52_pytest_varios_args.py` | FAILED (`ZeroDivisionError`); teste gerado `f(arg0,arg1,arg2)` | nenhuma |
+| `53_pytest_str.py` | FAILED (`ValueError`; `unwinding assertion` laço 2) | nenhuma |
+| `57_global_nondet_str_lida_em_funcao.py` | aborta: `Unexpected index type in computer_pointer_offset` | nenhuma |
+| `65_parametro_reatribuido_dict_get.py` | `Member 'is_none' is not a field of pointer_struct` | rascunho em `issues/` (contorno: regra `compat_rebound_parameter`) |
+| `66_desempacotar_getitem_de_atributo.py` | recusa: `Cannot unpack pointer` | rascunho em `issues/` (contorno: regra `compat_attribute_item`) |
+| `77_bytearray_nao_suportado.py` | recusa: `bytearray is not supported; use bytes for an immutable byte sequence` | #10207 (aberta); contorno: regra `compat_bytearray` |
+| `79_dict_aninhado_reatribuido.py` | erro falso: `TypeError ... list indices must be integers or slices, not str` (em CPython os dois ramos rodam sem erro) | #10791 (aberta em 16/11) |
+
+**Resolvidos e removidos da pasta (10 reprodutores).** Todos dão SUCCESSFUL, ou FAILED com a exceção certa no caso do 76.
+Em 16/11 conferi o veredito com o valor do `assert` trocado nos quatro que não tinham essa checagem recente: 58, 74, 75
+e 78 dão FAILED com o valor trocado. Nos outros (60, 63, 70, 71, 72) a checagem com valor trocado é a de 08/11; hoje
+só repeti o veredito simples.
+
+| Reprodutor | Issue ou origem | Situação em 16/11 |
+|---|---|---|
+| 58 (alias de função como argumento) | nenhuma issue; corrigido no master por outra mudança | SUCCESSFUL (antes abortava com `type mismatch`) |
+| 60 (lista em valor de `dict`) | #9837, PR #9864 | SUCCESSFUL. O caso real `bip_ansible_16` mistura lista e `int` no mesmo dicionário e não foi remedido hoje |
+| 63 (`__getitem__` com tupla em atributo) | #9839, PR #9861 | SUCCESSFUL |
+| 70 e 71 (`Optional[tuple]` com `len`, `for` e desempacotamento) | #9953, PR #10000 | SUCCESSFUL |
+| 72 (`Optional[tuple[bool, float]]`) | #9954, PR #10020 | SUCCESSFUL |
+| 74 (float passado por `self`) | #10204 | SUCCESSFUL (antes SIGSEGV) |
+| 75 (`staticmethod` com `dict` aninhado) | #10205 | SUCCESSFUL (antes `irep2_cast_error`) |
+| 76 (`bytes` vazio indexado) | #10206 | FAILED com `IndexError`, como no CPython |
+| 78 (`bytes(buf)` com lista em variável) | #10208 | SUCCESSFUL com `len == 2`; FAILED com `len == 3` |
+
+**Gerador de pytest.** `--generate-pytest-testcase` funciona: nos reprodutores 51, 52 e 53 o ESBMC dá FAILED e escreve o
+arquivo `test_*.py`. O defeito do 51 continua: o teste chama o método como função solta. O rascunho 73 (teste gerado
+com argumentos extras) saiu da pasta: em 16/11 o teste gerado chama `inverse(arg0)` com um argumento e o valor `0`, como esperado.
+
+**Issues abertas em 16/11/2026:** #10791 (reprodutor 79, erro falso) e #10792 (reprodutor 33, atributo de `Union`). Os
+outros sem issue têm contorno no pipeline, então não viram issue: 57 (driver), 51 (o `pytest_gen` trata as chamadas
+inválidas do teste gerado), 48, 65 e 66 (`compat.py`). O 31 é escalonamento do solver com string de tamanho livre, não um erro de veredito.
+
+Tudo abaixo desta linha é histórico, medido em masters anteriores, e fica como registro.
+
+## Histórico: Situação no master `822227ff96` (08/11/2026)
 
 ESBMC 8.6.0 (build Bitwuzla em `~/esbmc-master/build-bw`, master `822227ff96`, compilado em 07/11), o mesmo que o
 pipeline usa agora. 95 commits depois do `451f54c`. Saída completa em
@@ -47,7 +99,7 @@ no `822227ff96`. Então o 60 está corrigido, mas o `bip_ansible_16` não.
 Sobram 13 reprodutores. Dos 13, 2 têm issue aberta (20 e 33), 2 têm rascunho em `issues/` (65 e 66), 3 são do
 gerador de pytest e os outros 6 não têm issue (31, 45, 48, 57, 58 e o 24, que já é recusa explícita).
 
-## Situação no master `451f54c` (05/11/2026)
+## Histórico: Situação no master `451f54c` (05/11/2026)
 
 Build com Bitwuzla (worktree `~/esbmc-wt/issue-9843`, master `451f54cab6`). Saída completa em
 `artifacts/esbmc-master-451f54c-2026-11-05/`, junto com a do `d520a903ae`, o ESBMC congelado que o pipeline usa
