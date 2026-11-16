@@ -1,8 +1,6 @@
 import json
-from pathlib import Path
 
 import main
-from research_pipeline.models import Finding
 
 
 class _Recorder:

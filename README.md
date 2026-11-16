@@ -81,7 +81,7 @@ Regras que definem o método (detalhes em [`docs/desenho/motor_verify.md`](docs/
 | **Scan** | `--mode scan` | Varre um repositório: grafo de chamadas, detecção por função e motor verify |
 
 O código da V1 (fluxos A/B/C, benchmark V1 e ensemble) foi removido. Ficam os resultados em
-`reports/json/v1_benchmark/` e `logs/`, o dataset em `dataset/v1_sintetico/` e a descrição em `docs/historico/v1/`.
+`archive/v1_reports/json/v1_benchmark/` e `archive/v1_logs/`, o dataset em `dataset/v1_sintetico/` e a descrição em `docs/historico/v1/`.
 
 ---
 
@@ -301,7 +301,7 @@ Scripts da V2:
 ### Resultados V1 (histórico)
 
 A V1 não roda mais neste repositório: o código dos fluxos A/B/C foi removido. Os relatórios do
-benchmark V1 continuam em `reports/json/v1_benchmark/`, os logs em `logs/` e a descrição dos fluxos e
+benchmark V1 continuam em `archive/v1_reports/json/v1_benchmark/`, os logs em `archive/v1_logs/` e a descrição dos fluxos e
 métricas em [`docs/historico/v1/`](docs/historico/v1).
 
 ---

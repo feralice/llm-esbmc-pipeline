@@ -129,7 +129,7 @@ def caught_by_callers(h: BugHypothesis, source: str, graph: CallGraph | None) ->
     """For each call site of the target function, the exception names an enclosing ``try`` in the caller
     catches. Empty when a site cannot be located or there is no site: then no caller is known to catch."""
     try:
-        tree = ast.parse(source)
+        ast.parse(source)
         if graph is None:
             graph = build_source_callgraph(source, Path(h.file).name)
     except (SyntaxError, ValueError, RecursionError):

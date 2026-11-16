@@ -1,4 +1,3 @@
-from pathlib import Path
 
 from research_pipeline.verify import healing, loop
 from research_pipeline.verify.hypothesis import BugHypothesis
