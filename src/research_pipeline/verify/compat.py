@@ -27,6 +27,7 @@ from .rules import (
 )
 
 _NUMERIC = {"int", "float", "bool"}
+_INT_KINDS = {"int", "Optional[int]", "int|None", "None|int"}
 _SCALAR = _NUMERIC | {"str", "bytes", "None", "none"}
 
 
@@ -457,7 +458,8 @@ def _io_error_edits(tree: ast.Module) -> list[tuple[int, int, int, int, str]]:
 def _bytearray_edits(tree: ast.Module, parameter_types: dict[str, dict[str, str]]) -> list[tuple[int, int, int, int, str]]:
     """ESBMC refuses ``bytearray``. A list of ints indexes, appends, extends and goes through ``bytes()`` the
     same way. Only constructors whose argument kind is known change: ``bytearray()``, ``bytearray(b"..")``,
-    ``bytearray([..])`` (also ``[0] * k``) and ``bytearray(n)`` with ``n`` an int literal or int parameter.
+    ``bytearray([..])`` (also ``[0] * k``) and ``bytearray(n)`` with ``n`` an int literal or an int parameter (``Optional[int]`` too: ``[0] * None`` and
+    ``bytearray(None)`` both raise TypeError).
     A byte above 255 stops raising ValueError; the CPython replay catches that."""
     domains = _parameter_domains(tree, parameter_types)
     # ESBMC 8.6 gives bytes(<list variable>) the wrong length, so a buffer passed to bytes() stays unsupported.
@@ -482,7 +484,7 @@ def _bytearray_edits(tree: ast.Module, parameter_types: dict[str, dict[str, str]
         elif isinstance(arg, ast.List) or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Mult)
                                            and isinstance(arg.left, ast.List)):
             text = ast.unparse(arg)
-        elif _operand_kind(arg, {}) == "int" or _operand_kind(arg, domains.get(node, {})) == "int":
+        elif _operand_kind(arg, {}) == "int" or _operand_kind(arg, domains.get(node, {})).replace(" ", "") in _INT_KINDS:
             text = f"[0] * {ast.unparse(arg)}"
         else:
             continue

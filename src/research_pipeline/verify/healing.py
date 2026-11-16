@@ -159,7 +159,10 @@ def stub_problems(definitions: str) -> list[str]:
     except SyntaxError:
         return ["the stubs do not parse"]
     classes = {n.name for n in tree.body if isinstance(n, ast.ClassDef)}
-    problems = []
+    problems = [f"the stub names {n.id!r}, which ESBMC refuses; use bytes or list[int]"
+                for n in ast.walk(tree) if isinstance(n, ast.Name) and n.id == "bytearray"]
+    problems += [f"the stub defines the builtin {n.name!r}" for n in tree.body
+                 if isinstance(n, ast.ClassDef) and n.name == "bytearray"]
     for function in (n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)):
         for node in ast.walk(function):
             if isinstance(node, (ast.Raise, ast.Assert)):

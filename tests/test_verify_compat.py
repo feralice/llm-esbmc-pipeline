@@ -511,3 +511,14 @@ def test_bytearray_parameter_type_applies_before_later_reassignment():
     assert "buf = [0] * n" in text
     assert "n_esbmc = self.readinto(buf)" in text
     assert "compat_bytearray:1" in transforms
+
+
+def test_bytearray_optional_int_parameter_becomes_int_list():
+    from research_pipeline.verify.compat import rewrite_compat
+
+    source = "def read(n):\n    buf = bytearray(n)\n    return buf\n"
+    text, transforms = rewrite_compat(source, parameter_types={"read": {"n": "Optional[int]"}})
+    assert "buf = [0] * n" in text
+    text, _ = rewrite_compat(source, parameter_types={"read": {"n": "int | None"}})
+    assert "buf = [0] * n" in text
+    assert transforms == ["compat_bytearray:1"]
