@@ -152,6 +152,7 @@ def test_the_replay_program_carries_the_original_body():
     spec = InputSpec({"x": "int"}, {}, ())
     program = render_program(ground(h, simplified), spec)
     replayed = with_original_replay(program, h, BODY, spec)
+    assert not isinstance(replayed, str)
     assert "%r" not in replayed.source
     assert "%r" in replayed.replay_source
     lines = replayed.replay_source.splitlines()

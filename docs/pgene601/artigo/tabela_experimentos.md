@@ -23,10 +23,28 @@ Organização de registros existentes, preparada com apoio do Codex. As contagen
 | Rodada final | 08/11/2026, terminou em 09/11 | `claude-sonnet-5-5` / `claude_cli` | `8579920` | 8.6.0; commit `95f025adf4` segundo o registro | 9 | 14 | 36 | dentro | `artifacts/pgene601/rodada-final-2026-11-08/` |
 | Subconjunto | 09/11/2026 | `claude-sonnet-5-5` / `claude_cli`, conforme comando | `a347d3d` + alterações registradas | 8.6.0 | não conferido | não conferido | não conferido | dentro | `artifacts/pgene601/rodada-subconjunto-2026-11-09/` |
 | Rodada final | 09/11/2026 | `claude-sonnet-5-5` / `claude_cli` | `a347d3d` + alterações registradas | 8.6.0; commit `b76980aaa0` segundo o registro | 9 | 14 | 37 | dentro | `artifacts/pgene601/rodada-final-2026-11-09/` |
+| Rodada | 11/11/2026 | `claude-sonnet-5-5` / `claude_cli` | `63c9e42` (tag `v2-congelado-2026-11d`) | 8.6.0; commit exato não registrado na pasta | 9 | 15 | 37 | dentro | `artifacts/pgene601/rodada-2026-11-11/` |
+| Medição de ruído, parcial | 14/11/2026 | `claude-sonnet-5-5` / `claude_cli` | `e346b00` | 8.6.0 | interrompida | interrompida | interrompida | dentro | `artifacts/pgene601/ruido-2026-11-14-r1/`; parou no limite de uso com a detecção pronta e 89 de 128 verificações; não vale |
+| Rodada com o pipeline congelado | 16/11/2026, em andamento | `claude-sonnet-5-5` / `claude_cli` | `f086e22` (código da tag `v2-congelado-2026-11f`) | 8.6.0; commit `de72a905e0` | em andamento | em andamento | em andamento | dentro | `artifacts/pgene601/congelado-2026-11-16-r1/`; regras contra viés em `docs/experimentos/README.md` |
 
 O mypy apontou linhas selecionadas em 2 casos no modo padrão e em 5 com a opção, segundo `docs/experimentos/README.md`. Nos testes das PRs, o registro conta 10 casos cujo teste falhou por comportamento ligado ao defeito e passou na versão corrigida, entre 11 casos com teste Python; não conta uma falha causada pelo ambiente. Essas medidas não preenchem as colunas de confirmação do pipeline.
 
 A rodada perdida de 05/11 e a de 06/11 compartilham a detecção: o README diz que a segunda copiou o checkpoint da primeira e refez a verificação. O README chama a rodada de 06/11 de única fora da amostra e declara que os consertos posteriores vieram da análise desses casos. Há uma divergência no próprio histórico: a seção de 07/11 diz que o caderno foi mantido sem lições para preservar o teste fora da amostra, enquanto a seção posterior de 08/11 classifica somente 06/11 como fora da amostra. O commit `8579920` registra a ressalva em seu título. Isso não comprova, por si só, que nenhuma pessoa olhou os casos antes de 06/11; além disso, há registros anteriores com o mesmo conjunto. Por isso, a classificação das rodadas anteriores fica não conferida, em vez de presumir que sejam dentro ou fora. As linhas de base não usam o mesmo critério de ajuste do pipeline.
+
+## Tipo de cada rodada (conferido nos checkpoints em 16/11/2026)
+
+Só as rodadas de **08 e 09/11**, **09/11** e **11/11** foram completas, de ponta a ponta: detecção e verificação do começo ao fim, a partir de pasta vazia. As demais:
+
+- **02/11, Claude inicial:** só a detecção vale. 118 das 121 verificações terminaram em `PIPELINE_ERROR` (`claude -p saiu com código 1`).
+- **03/11, Codex:** a rodada não terminou (checkpoint em estado `running`, 36 verificações). Só a detecção serve.
+- **06/11 e 07/11:** a verificação foi refeita e a detecção foi copiada da rodada anterior (05/11 e 06/11, respectivamente), segundo o `run.sh` de cada pasta.
+- **14/11:** parou no limite de uso da assinatura e não vale.
+
+A contagem por bug de 11/11 (9 pela expressão, 15 pela função, 37 com hipótese certa) vem do `resumo.md` e do `funil.txt` da própria pasta.
+
+## Critério de acerto
+
+Até 13/11 o acerto era contado pela linha ou expressão do rótulo (colunas "pela expressão"). Em 14/11 passou a valer a regra por função, em dois níveis, escrita antes de qualquer rodada nova e descrita em `docs/projeto/REGRA_DE_ACERTO_2026-11-14.md`. Motivo: em 13 dos 47 rótulos a linha é a vizinha do guarda inserido pelo patch, e o que os mantenedores validaram foi a função corrigida. As colunas "pela expressão" e "pela função" desta tabela continuam lado a lado.
 
 ## Pendências para fechar
 

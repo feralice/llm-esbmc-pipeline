@@ -17,6 +17,7 @@ import re
 import textwrap
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
+from typing import Protocol
 
 from ..scan.callgraph import CallGraph, FunctionNode
 from .astutil import expression_nodes, find_function
@@ -442,7 +443,14 @@ _INTERNAL = re.compile(r"vector::_M_range_check|json\.exception|irep2_cast_error
                        r"|bad optional access|Z3 error|Incompatible struct in cast-to-struct|std::\w+")
 
 
-def verify_with_healing(h: BugHypothesis, *, healer: Healer | None, source: str, rounds: int = 3,
+class HealerLike(Protocol):
+    def refresh(self) -> str: ...
+    def learn(self, h: BugHypothesis, log: list[dict], result: dict) -> int: ...
+    def propose(self, h: BugHypothesis, source: str, verdict: str, reason: str,
+                previous: list[dict]) -> Patch | None: ...
+
+
+def verify_with_healing(h: BugHypothesis, *, healer: HealerLike | None, source: str, rounds: int = 3,
                         spec_llm_after_heal=None, triage: bool = False, **verify_kwargs) -> VerifyResult:
     """``verify_hypothesis`` plus up to ``rounds`` repairs per obstacle, while the verdict is one ESBMC never
     reached; a new ESBMC message is progress and gets its own rounds (at most ``3 * rounds`` in all). A round that

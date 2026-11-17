@@ -30,6 +30,15 @@ fernandaalice2003@gmail.com}}
 \section{Introdução}
 % Problema; lacuna; o que este trabalho faz; contribuições em lista curta.
 
+
+Segundo o índice TIOBE, Python está entre as linguagens de programação mais populares do mundo. Sua utilização abrange diferentes áreas da computação e da tecnologia, além de aplicações em outros campos do conhecimento.
+
+Com o avanço da inteligência artificial (IA), a geração de código tem se tornado cada vez mais rápida. Entretanto, esse aumento na capacidade de produção traz desafios para as etapas de revisão, identificação de defeitos e manutenção de software, que nem sempre acompanham o mesmo ritmo.
+
+Embora ferramentas tradicionais de análise estática auxiliem na identificação de defeitos, sua capacidade de detecção depende das técnicas e regras empregadas. Diante dessas limitações, os modelos de linguagem de grande porte (\textit{Large Language Models} -- LLMs) podem complementar essas ferramentas ao considerar informações contextuais e semânticas do código, como nomes de funções, relações entre operações e descrições de comportamento, para identificar possíveis inconsistências lógicas.
+
+Entretanto, as hipóteses de defeitos geradas por LLMs nem sempre correspondem a falhas reais, podendo resultar em falsos positivos. Uma alternativa para investigar essas hipóteses consiste em combinar modelos de linguagem com técnicas de verificação formal, como o \textit{Bounded Model Checking} (BMC). Nesse processo, a construção de \textit{harnesses} permite estabelecer cenários e propriedades de verificação que podem ser analisados por ferramentas como o ESBMC, fornecendo evidências adicionais sobre os possíveis defeitos identificados.
+
 \section{Fundamentação e Trabalhos Relacionados}
 % ESBMC-Python; mypy; pytest; LLM para detectar bugs. Só citar o que foi conferido.
 
